@@ -218,7 +218,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return number of subkernels
 		 */
-		inline int32_t get_num_subkernels()
+		inline index_t get_num_subkernels()
 		{
 			if (append_subkernel_weights)
 			{
@@ -270,8 +270,8 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t * weights);
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -284,7 +284,7 @@ class CCombinedKernel : public CKernel
 		 * @param idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual float64_t compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(index_t idx);
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -295,9 +295,9 @@ class CCombinedKernel : public CKernel
 		 * weights
 		 */
 		virtual void compute_batch(
-			int32_t num_vec, int32_t* vec_idx, float64_t* target,
-			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** emulates batch computation, via linadd optimization w^t x or even
 		 * down to sum_i alpha_i K(x_i,x)
@@ -311,15 +311,15 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 */
 		void emulate_compute_batch(
-			CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* target,
-			int32_t num_suppvec, int32_t* IDX, float64_t* weights);
+		    CKernel* k, index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* weights);
 
 		/** add to normal vector
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		virtual void add_to_normal(index_t idx, float64_t weight);
 
 		/** clear normal vector */
 		virtual void clear_normal();
@@ -329,8 +329,8 @@ class CCombinedKernel : public CKernel
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(
-			int32_t idx, float64_t * subkernel_contrib);
+		virtual void
+		compute_by_subkernel(index_t idx, float64_t* subkernel_contrib);
 
 		/** get subkernel weights
 		 *
@@ -413,7 +413,7 @@ class CCombinedKernel : public CKernel
 		 * @param y y
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t x, int32_t y);
+		virtual float64_t compute(index_t x, index_t y);
 
 		/** adjust the variables num_lhs, num_rhs and initialized
 		 * based on the kernel to be appended/inserted
@@ -466,7 +466,7 @@ class CCombinedKernel : public CKernel
 		/** list of kernels */
 		CDynamicObjectArray* kernel_array;
 		/** support vector count */
-		int32_t   sv_count;
+		index_t sv_count;
 		/** support vector index */
 		int32_t*  sv_idx;
 		/** support vector weights */

@@ -80,7 +80,7 @@ class CLinearKernel: public CDotKernel
 		 * @return if optimization was successful
 		 */
 		virtual bool init_optimization(
-			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
+		    index_t num_suppvec, index_t* sv_idx, float64_t* alphas);
 
 		/** init optimization
 		 * @param km
@@ -98,7 +98,7 @@ class CLinearKernel: public CDotKernel
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(index_t idx);
 
 		virtual void clear_normal()
 		{
@@ -112,7 +112,7 @@ class CLinearKernel: public CDotKernel
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		virtual void add_to_normal(index_t idx, float64_t weight);
 
 		/** get normal vector
 		 *

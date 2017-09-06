@@ -243,31 +243,41 @@ public:
 	 */
 	//@{
 	virtual void get_sparse_matrix(
-			SGSparseVector<bool>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<bool>*& matrix, index_t& num_feat, index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint8_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<uint8_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-		SGSparseVector<int8_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<int8_t>*& matrix, index_t& num_feat, index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<char>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<char>*& matrix, index_t& num_feat, index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<int32_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<int32_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint32_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<uint32_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<int64_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<int64_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint64_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<uint64_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<int16_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<int16_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint16_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<uint16_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<float32_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<float32_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<float64_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<float64_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	virtual void get_sparse_matrix(
-			SGSparseVector<floatmax_t>*& matrix, index_t num_feat, index_t num_vec){};
+		SGSparseVector<floatmax_t>*& matrix, index_t& num_feat,
+		index_t& num_vec){};
 	//@}
 
 
@@ -280,44 +290,42 @@ public:
 	 */
 	//@{
 	virtual void get_string_list(
-			SGString<bool>*& strings, index_t num_str,
-			index_t max_string_len);
+		SGString<bool>*& strings, index_t& num_str, index_t& max_string_len);
 	virtual void get_string_list(
-			SGString<uint8_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<uint8_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<int8_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<int8_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<char>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<char>*& strings, index_t& num_str, index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<int32_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<int32_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<uint32_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<uint32_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<int16_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<int16_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<uint16_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<uint16_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<int64_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<int64_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<uint64_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<uint64_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<float32_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<float32_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<float64_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<float64_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	virtual void get_string_list(
-			SGString<floatmax_t>*& strings, index_t num_str,
-			index_t max_string_len){};
+		SGString<floatmax_t>*& strings, index_t& num_str,
+		index_t& max_string_len){};
 	//@}
 
 	/** vector access functions */

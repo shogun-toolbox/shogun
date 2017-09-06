@@ -238,21 +238,21 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 	CSparseMatrixOperator<bool>* b_op
 		=static_cast<CSparseMatrixOperator<bool>*>(op);
 
-	SparseMatrix<bool, RowMajor, int32_t> sp
-		=EigenSparseUtil<bool>::toEigenSparse(b_op->get_matrix_operator());
-	SparseMatrix<float64_t, RowMajor, int32_t> sm2
-		=EigenSparseUtil<float64_t>::toEigenSparse(sm);
+	SparseMatrix<bool, RowMajor, index_t> sp =
+	    EigenSparseUtil<bool>::toEigenSparse(b_op->get_matrix_operator());
+	SparseMatrix<float64_t, RowMajor, index_t> sm2 =
+	    EigenSparseUtil<float64_t>::toEigenSparse(sm);
 
 	// compute direct matrix power and then the sparsity structure
-	for (int32_t i=2; i<=max_pow; ++i)
+	for (index_t i = 2; i <= max_pow; ++i)
 #if EIGEN_VERSION_AT_LEAST(3,2,91)
 		sp=(sp.cast<float64_t>()*sm2).cast<bool>();
 #else
 		sp=sp*sm2;
 #endif
 
-	int32_t* outerIndexPtr=const_cast<int32_t*>(sp.outerIndexPtr());
-	int32_t* innerIndexPtr=const_cast<int32_t*>(sp.innerIndexPtr());
+	index_t* outerIndexPtr = const_cast<index_t*>(sp.outerIndexPtr());
+	index_t* innerIndexPtr = const_cast<index_t*>(sp.innerIndexPtr());
 
 	SparsityStructure* sp_struct1
 		=new SparsityStructure(outerIndexPtr, innerIndexPtr, sp.cols());

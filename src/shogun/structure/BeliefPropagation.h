@@ -42,32 +42,36 @@ enum EEdgeType
 
 struct GraphNode
 {
-	int32_t node_id;
+	index_t node_id;
 	ENodeType node_type; // 1 var, 0 factor
-	int32_t parent; // where came from
+	index_t parent;      // where came from
 
-	GraphNode(int32_t id, ENodeType type, int32_t pa)
-		: node_id(id), node_type(type), parent(pa) { }
+	GraphNode(index_t id, ENodeType type, index_t pa)
+		: node_id(id), node_type(type), parent(pa)
+	{
+	}
 	~GraphNode() { }
 };
 
 struct MessageEdge
 {
 	EEdgeType mtype; // 1 var_to_factor, 0 factor_to_var
-	int32_t child;
-	int32_t parent;
+	index_t child;
+	index_t parent;
 
-	MessageEdge(EEdgeType type, int32_t ch, int32_t pa)
-		: mtype(type), child(ch), parent(pa) { }
+	MessageEdge(EEdgeType type, index_t ch, index_t pa)
+		: mtype(type), child(ch), parent(pa)
+	{
+	}
 
 	~MessageEdge() { }
 
-	inline int32_t get_var_node()
+	inline index_t get_var_node()
 	{
 		return mtype == VAR_TO_FAC ? child : parent;
 	}
 
-	inline int32_t get_factor_node()
+	inline index_t get_factor_node()
 	{
 		return mtype == VAR_TO_FAC ? parent : child;
 	}
@@ -85,7 +89,7 @@ public:
 	/** @return class name */
 	virtual const char* get_name() const { return "BeliefPropagation"; }
 
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	virtual float64_t inference(SGVector<index_t> assignment);
 
 protected:
 	float64_t m_map_energy;
@@ -103,7 +107,7 @@ IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation
 {
 	typedef std::unordered_map<uint32_t, uint32_t> msg_map_type;
 	typedef std::unordered_map<uint32_t, std::set<uint32_t> > msgset_map_type;
-	typedef std::unordered_multimap<int32_t, int32_t> var_factor_map_type;
+	typedef std::unordered_multimap<index_t, index_t> var_factor_map_type;
 
 public:
 	CTreeMaxProduct();
@@ -114,7 +118,7 @@ public:
 	/** @return class name */
 	virtual const char* get_name() const { return "TreeMaxProduct"; }
 
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	virtual float64_t inference(SGVector<index_t> assignment);
 
 protected:
 	void bottom_up_pass();
@@ -129,7 +133,7 @@ private:
 	std::vector<bool> m_is_root;
 	std::vector< std::vector<float64_t> > m_fw_msgs;
 	std::vector< std::vector<float64_t> > m_bw_msgs;
-	std::vector<int32_t> m_states;
+	std::vector<index_t> m_states;
 
 	msg_map_type m_msg_map_var;
 	msg_map_type m_msg_map_fac;

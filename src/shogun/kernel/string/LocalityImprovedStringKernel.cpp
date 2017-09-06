@@ -63,9 +63,9 @@ bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CLocalityImprovedStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);

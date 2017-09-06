@@ -59,10 +59,10 @@ void test()
 	// Classify the training examples and show the results
 	CMulticlassLabels* output = CLabelsFactory::to_multiclass(mc_svm->apply());
 
-	SGVector< int32_t > out_labels = output->get_int_labels();
-	SGVector<int32_t>::display_vector(out_labels.vector, out_labels.vlen);
+	SGVector<index_t> out_labels = output->get_int_labels();
+	SGVector<index_t>::display_vector(out_labels.vector, out_labels.vlen);
 
-	for (int32_t i=0; i<output->get_num_labels(); i++)
+	for (index_t i = 0; i < output->get_num_labels(); i++)
 	{
 		SG_SPRINT("out_values[%d] = ", i);
 		SGVector<float64_t> out_values = output->get_multiclass_confidences(i);

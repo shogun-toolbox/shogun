@@ -141,7 +141,7 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	EXPECT_EQ(comb_feat->get_nnz_features_for_vector(0), 6);
 
 	float64_t value=0;
-	int32_t index=0;
+	index_t index = 0;
 	index_t nnz_index=0;
 	void* itcomb = comb_feat->get_feature_iterator(0);
 	while (comb_feat->get_next_feature(index, value, itcomb))

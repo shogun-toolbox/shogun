@@ -61,7 +61,7 @@ class CDiscreteDistribution : public CDistribution
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters()=0;
+		virtual index_t get_num_model_parameters() = 0;
 
 		/** get model parameter (logarithmic)
 		 *
@@ -69,7 +69,7 @@ class CDiscreteDistribution : public CDistribution
 		 *
 		 * @return model parameter (logarithmic)
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param)=0;
+		virtual float64_t get_log_model_parameter(index_t num_param) = 0;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -79,7 +79,8 @@ class CDiscreteDistribution : public CDistribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example)=0;
+		virtual float64_t
+		get_log_derivative(index_t num_param, index_t num_example) = 0;
 
 		/** compute log likelihood for example
 		 *
@@ -88,7 +89,7 @@ class CDiscreteDistribution : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example)=0;
+		virtual float64_t get_log_likelihood_example(index_t num_example) = 0;
 
 		/** update parameters in the em maximization step for mixture model of which
 		 * this distribution is a part

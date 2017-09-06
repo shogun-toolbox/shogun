@@ -35,14 +35,14 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		 * @param size cache size
 		 * @param file file to load features from
 		 */
-		CRealFileFeatures(int32_t size, FILE* file);
+		CRealFileFeatures(index_t size, FILE* file);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param filename filename to load features from
 		 */
-		CRealFileFeatures(int32_t size, char* filename);
+		CRealFileFeatures(index_t size, char* filename);
 
 		/** copy constructor */
 		CRealFileFeatures(const CRealFileFeatures& orig);
@@ -60,7 +60,7 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		 * @param idx index to look at
 		 * @return label at given index
 		 */
-		int32_t get_label(int32_t idx);
+		index_t get_label(index_t idx);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "RealFileFeatures"; }
@@ -74,7 +74,7 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		 * @param target target
 		 */
 		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL);
+		    index_t num, index_t& len, float64_t* target = NULL);
 
 		/** load base data
 		 *
@@ -94,7 +94,7 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		/** status */
 		bool status;
 		/** labels */
-		int32_t* labels;
+		index_t* labels;
 
 		/** intlen */
 		uint8_t intlen;

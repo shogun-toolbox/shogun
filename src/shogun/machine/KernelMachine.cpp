@@ -45,8 +45,9 @@ CKernelMachine::CKernelMachine() : CMachine()
     init();
 }
 
-CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
-        SGVector<int32_t> svs, float64_t b) : CMachine()
+CKernelMachine::CKernelMachine(
+    CKernel* k, SGVector<float64_t> alphas, SGVector<index_t> svs, float64_t b)
+    : CMachine()
 {
     init();
 
@@ -64,7 +65,7 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 	init();
 
 	SGVector<float64_t> alphas = machine->get_alphas().clone();
-	SGVector<int32_t> svs = machine->get_support_vectors().clone();
+	SGVector<index_t> svs = machine->get_support_vectors().clone();
 	float64_t bias = machine->get_bias();
 	CKernel* ker = machine->get_kernel();
 
@@ -181,12 +182,12 @@ void CKernelMachine::set_alphas(SGVector<float64_t> alphas)
     m_alpha = alphas;
 }
 
-void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
+void CKernelMachine::set_support_vectors(SGVector<index_t> svs)
 {
     m_svs = svs;
 }
 
-SGVector<int32_t> CKernelMachine::get_support_vectors()
+SGVector<index_t> CKernelMachine::get_support_vectors()
 {
 	return m_svs;
 }
@@ -199,18 +200,18 @@ SGVector<float64_t> CKernelMachine::get_alphas()
 bool CKernelMachine::create_new_model(index_t num)
 {
     m_alpha=SGVector<float64_t>();
-    m_svs=SGVector<int32_t>();
+	m_svs = SGVector<index_t>();
 
-    m_bias=0;
+	m_bias = 0;
 
-    if (num>0)
-    {
-        m_alpha= SGVector<float64_t>(num);
-        m_svs= SGVector<int32_t>(num);
-        return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
-    }
-    else
-        return true;
+	if (num > 0)
+	{
+		m_alpha = SGVector<float64_t>(num);
+		m_svs = SGVector<index_t>(num);
+		return (m_alpha.vector != NULL && m_svs.vector != NULL);
+	}
+	else
+		return true;
 }
 
 bool CKernelMachine::init_kernel_optimization()
@@ -498,7 +499,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		io->disable_progress();
 
 	/* custom kernel never has batch evaluation property so dont do this here */
-	auto pb = progress(range(0, num_inds));
+	auto pb = progress(range(index_t(0), num_inds));
 	int32_t num_threads;
 	int64_t step;
 #pragma omp parallel shared(num_threads, step)
@@ -557,7 +558,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	return output;
 }
 
-float64_t CKernelMachine::apply_one(int32_t num)
+float64_t CKernelMachine::apply_one(index_t num)
 {
 	ASSERT(kernel)
 
@@ -569,7 +570,7 @@ float64_t CKernelMachine::apply_one(int32_t num)
 	else
 	{
 		float64_t score = 0;
-		for (int32_t i = 0; i < get_num_support_vectors(); i++)
+		for (index_t i = 0; i < get_num_support_vectors(); i++)
 			score += kernel->kernel(get_support_vector(i), num) * get_alpha(i);
 
 		return score + get_bias();

@@ -27,26 +27,26 @@ class CHMM;
 struct T_HMM_INDIZES
 {
 	/** index p */
-	int32_t* idx_p;
+	index_t* idx_p;
 	/** index q */
-	int32_t* idx_q;
+	index_t* idx_q;
 	/** index a rows */
-	int32_t* idx_a_rows;
+	index_t* idx_a_rows;
 	/** index a cols */
-	int32_t* idx_a_cols;
+	index_t* idx_a_cols;
 	/** index b rows */
-	int32_t* idx_b_rows;
+	index_t* idx_b_rows;
 	/** index b cols */
-	int32_t* idx_b_cols;
+	index_t* idx_b_cols;
 
 	/** number p */
-	int32_t num_p;
+	index_t num_p;
 	/** number q */
-	int32_t num_q;
+	index_t num_q;
 	/** number a */
-	int32_t num_a;
+	index_t num_a;
 	/** number b */
-	int32_t num_b;
+	index_t num_b;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -81,7 +81,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param neglin if negative HMM is of linear shape
 		 * @param poslin if positive HMM is of linear shape
 		 */
-		CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
+		CTOPFeatures(index_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 
 		/** copy constructor */
 		CTOPFeatures(const CTOPFeatures &orig);
@@ -127,7 +127,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @return something floaty
 		 */
 		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL);
+		    index_t num, index_t& len, float64_t* target = NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -135,7 +135,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param num num
 		 * @param len len
 		 */
-		void compute_feature_vector(float64_t* addr, int32_t num, int32_t& len);
+		void compute_feature_vector(float64_t* addr, index_t num, index_t& len);
 
 	private:
 		void init();

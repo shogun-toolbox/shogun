@@ -63,7 +63,7 @@ class CCanberraWordDistance: public CStringDistance<uint16_t>
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(index_t idx_a, index_t idx_b);
 };
 } // namespace shogun
 #endif /* _CANBERRAWORDDISTANCE_H___ */

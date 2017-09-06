@@ -186,7 +186,8 @@ bool CQDA::train_machine(CFeatures* data)
 	if (!m_features)
 		SG_ERROR("No features allocated in QDA training\n")
 
-	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> train_labels =
+	    ((CMulticlassLabels*)m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in QDA training\n")
@@ -195,17 +196,18 @@ bool CQDA::train_machine(CFeatures* data)
 
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
-	int32_t num_vec  = m_features->get_num_vectors();
+	index_t num_vec = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
 		SG_ERROR("Dimension mismatch between features and labels in QDA training")
 
-	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes); // number of examples of each class
-	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
-	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
-	int32_t class_idx;
+	index_t* class_idxs = SG_MALLOC(
+	    index_t, num_vec * m_num_classes); // number of examples of each class
+	index_t* class_nums = SG_MALLOC(index_t, m_num_classes);
+	memset(class_nums, 0, m_num_classes * sizeof(index_t));
+	index_t class_idx;
 
-	for (int i = 0; i < train_labels.vlen; i++)
+	for (index_t i = 0; i < train_labels.vlen; i++)
 	{
 		class_idx = train_labels.vector[i];
 
@@ -220,7 +222,7 @@ bool CQDA::train_machine(CFeatures* data)
 		}
 	}
 
-	for (int i = 0; i < m_num_classes; i++)
+	for (index_t i = 0; i < m_num_classes; i++)
 	{
 		if (class_nums[i] <= 0)
 		{
@@ -254,11 +256,11 @@ bool CQDA::train_machine(CFeatures* data)
 	m_means.zero();
 
 	SGVector<float64_t> vec;
-	for (int k = 0; k < m_num_classes; k++)
+	for (index_t k = 0; k < m_num_classes; k++)
 	{
 		MatrixXd buffer(class_nums[k], m_dim);
 		Map< VectorXd > Em_means(m_means.get_column_vector(k), m_dim);
-		for (int i = 0; i < class_nums[k]; i++)
+		for (index_t i = 0; i < class_nums[k]; i++)
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i]);
 			ASSERT(vec.vector)

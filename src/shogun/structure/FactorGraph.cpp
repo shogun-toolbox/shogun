@@ -22,8 +22,7 @@ CFactorGraph::CFactorGraph()
 	init();
 }
 
-CFactorGraph::CFactorGraph(SGVector<int32_t> card)
-	: CSGObject()
+CFactorGraph::CFactorGraph(SGVector<index_t> card) : CSGObject()
 {
 	m_cardinalities = card;
 	register_parameters();
@@ -115,17 +114,17 @@ CDynamicObjectArray* CFactorGraph::get_factor_data_sources() const
 	return m_datasources;
 }
 
-int32_t CFactorGraph::get_num_factors() const
+index_t CFactorGraph::get_num_factors() const
 {
 	return m_factors->get_num_elements();
 }
 
-SGVector<int32_t> CFactorGraph::get_cardinalities() const
+SGVector<index_t> CFactorGraph::get_cardinalities() const
 {
 	return m_cardinalities;
 }
 
-void CFactorGraph::set_cardinalities(SGVector<int32_t> cards)
+void CFactorGraph::set_cardinalities(SGVector<index_t> cards)
 {
 	m_cardinalities = cards.clone();
 }
@@ -136,19 +135,19 @@ CDisjointSet* CFactorGraph::get_disjoint_set() const
 	return m_dset;
 }
 
-int32_t CFactorGraph::get_num_edges() const
+index_t CFactorGraph::get_num_edges() const
 {
 	return m_num_edges;
 }
 
-int32_t CFactorGraph::get_num_vars() const
+index_t CFactorGraph::get_num_vars() const
 {
 	return m_cardinalities.size();
 }
 
 void CFactorGraph::compute_energies()
 {
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (index_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		fac->compute_energies();
@@ -156,12 +155,12 @@ void CFactorGraph::compute_energies()
 	}
 }
 
-float64_t CFactorGraph::evaluate_energy(const SGVector<int32_t> state) const
+float64_t CFactorGraph::evaluate_energy(const SGVector<index_t> state) const
 {
 	ASSERT(state.size() == m_cardinalities.size());
 
 	float64_t energy = 0.0;
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (index_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
 		energy += fac->evaluate_energy(state);
@@ -178,23 +177,23 @@ float64_t CFactorGraph::evaluate_energy(const CFactorGraphObservation* obs) cons
 SGVector<float64_t> CFactorGraph::evaluate_energies() const
 {
 	int num_assig = 1;
-	SGVector<int32_t> cumprod_cards(m_cardinalities.size());
-	for (int32_t n = 0; n < m_cardinalities.size(); ++n)
+	SGVector<index_t> cumprod_cards(m_cardinalities.size());
+	for (index_t n = 0; n < m_cardinalities.size(); ++n)
 	{
 		cumprod_cards[n] = num_assig;
 		num_assig *= m_cardinalities[n];
 	}
 
 	SGVector<float64_t> etable(num_assig);
-	for (int32_t ei = 0; ei < num_assig; ++ei)
+	for (index_t ei = 0; ei < num_assig; ++ei)
 	{
-		SGVector<int32_t> assig(m_cardinalities.size());
-		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
+		SGVector<index_t> assig(m_cardinalities.size());
+		for (index_t vi = 0; vi < m_cardinalities.size(); ++vi)
 			assig[vi] = (ei / cumprod_cards[vi]) % m_cardinalities[vi];
 
 		etable[ei] = evaluate_energy(assig);
 
-		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
+		for (index_t vi = 0; vi < m_cardinalities.size(); ++vi)
 			SG_SPRINT("%d ", assig[vi]);
 
 		SG_SPRINT("| %f\n", etable[ei]);
@@ -212,18 +211,18 @@ void CFactorGraph::connect_components()
 	m_dset->make_sets();
 	bool flag = false;
 
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (index_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
-		SGVector<int32_t> vars = fac->get_variables();
+		SGVector<index_t> vars = fac->get_variables();
 
-		int32_t r0 = m_dset->find_set(vars[0]);
-		for (int32_t vi = 1; vi < vars.size(); vi++)
+		index_t r0 = m_dset->find_set(vars[0]);
+		for (index_t vi = 1; vi < vars.size(); vi++)
 		{
 			// for two nodes in a factor, should be an edge between them
 			// but this time link() isn't performed, if they are linked already
 			// means there is another path connected them, so cycle detected
-			int32_t ri = m_dset->find_set(vars[vi]);
+			index_t ri = m_dset->find_set(vars[vi]);
 
 			if (r0 == ri)
 			{
@@ -260,7 +259,8 @@ void CFactorGraph::loss_augmentation(CFactorGraphObservation* gt)
 	loss_augmentation(gt->get_data(), gt->get_loss_weights());
 }
 
-void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float64_t> loss)
+void CFactorGraph::loss_augmentation(
+    SGVector<index_t> states_gt, SGVector<float64_t> loss)
 {
 	if (loss.size() == 0)
 	{
@@ -268,31 +268,31 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0 / states_gt.size());
 	}
 
-	int32_t num_vars = states_gt.size();
+	index_t num_vars = states_gt.size();
 	ASSERT(num_vars == loss.size());
 
-	SGVector<int32_t> var_flags(num_vars);
+	SGVector<index_t> var_flags(num_vars);
 	var_flags.zero();
 
 	// augment loss to incorrect states in the first factor containing the variable
 	// since += L_i for each variable if it takes wrong state ever
 	// TODO: augment unary factors
-	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	for (index_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
-		SGVector<int32_t> vars = fac->get_variables();
-		for (int32_t vi = 0; vi < vars.size(); vi++)
+		SGVector<index_t> vars = fac->get_variables();
+		for (index_t vi = 0; vi < vars.size(); vi++)
 		{
-			int32_t vv = vars[vi];
+			index_t vv = vars[vi];
 			ASSERT(vv < num_vars);
 			if (var_flags[vv])
 				continue;
 
 			SGVector<float64_t> energies = fac->get_energies();
-			for (int32_t ei = 0; ei < energies.size(); ei++)
+			for (index_t ei = 0; ei < energies.size(); ei++)
 			{
 				CTableFactorType* ftype = fac->get_factor_type();
-				int32_t vstate = ftype->state_from_index(ei, vi);
+				index_t vstate = ftype->state_from_index(ei, vi);
 				SG_UNREF(ftype);
 
 				if (states_gt[vv] == vstate)
@@ -309,7 +309,7 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	}
 
 	// make sure all variables have been checked
-	int32_t min_var = CMath::min(var_flags.vector, var_flags.vlen);
+	index_t min_var = CMath::min(var_flags.vector, var_flags.vlen);
 	ASSERT(min_var == 1);
 }
 

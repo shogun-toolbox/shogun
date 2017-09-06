@@ -254,14 +254,15 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 float64_t CMKLMulticlass::getsumofsignfreealphas()
 {
 
-   std::vector<int> trainlabels2(m_labels->get_num_labels());
-   SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
-   std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
+	std::vector<index_t> trainlabels2(m_labels->get_num_labels());
+	SGVector<index_t> lab = ((CMulticlassLabels*)m_labels)->get_int_labels();
+	std::copy(lab.vector, lab.vector + lab.vlen, trainlabels2.begin());
 
 	ASSERT (trainlabels2.size()>0)
 	float64_t sum=0;
 
-   for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
+	for (index_t nc = 0; nc < ((CMulticlassLabels*)m_labels)->get_num_classes();
+	     ++nc)
 	{
 		CSVM * sm=svm->get_svm(nc);
 

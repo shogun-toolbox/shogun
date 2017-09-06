@@ -89,8 +89,10 @@ bool CGaussianBlobsDataGenerator::get_next_example()
 	SGVector<float64_t> result=SGVector<float64_t>(2);
 
 	/* sample latent distribution to compute offsets */
-	index_t x_offset=CMath::random(0, m_sqrt_num_blobs-1)*m_distance;
-	index_t y_offset=CMath::random(0, m_sqrt_num_blobs-1)*m_distance;
+	index_t x_offset =
+	    CMath::random(index_t(0), m_sqrt_num_blobs - 1) * m_distance;
+	index_t y_offset =
+	    CMath::random(index_t(0), m_sqrt_num_blobs - 1) * m_distance;
 
 	/* sample from std Gaussian */
 	float64_t x=CMath::randn_double();

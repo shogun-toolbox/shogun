@@ -157,7 +157,7 @@ public:
 	/** a getter
 	 * @return the set value of protected member dim_feature_space
 	 */
-	int32_t get_dim_feature_space() const;
+	index_t get_dim_feature_space() const;
 
 	/** inherited from base class
 	 * does nothing
@@ -196,18 +196,17 @@ protected:
 	/** actual dimension of input features as set by bool init_randomcoefficients() or void set_randomcoefficients
 	 *
 	 */
-	int32_t cur_dim_input_space;
-
+	index_t cur_dim_input_space;
 
 	/** desired dimension of output features  as set by void set_dim_feature_space(const int32_t dim)
 	 *
 	 */
-	int32_t dim_feature_space;
+	index_t dim_feature_space;
 
 	/** actual dimension of output features as set by bool init_randomcoefficients() or void set_randomcoefficients
 	 *
 	 */
-	int32_t cur_dim_feature_space;
+	index_t cur_dim_feature_space;
 
 	/**
 	 * tests whether rf features have already been initialized

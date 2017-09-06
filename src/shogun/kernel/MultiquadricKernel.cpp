@@ -49,7 +49,7 @@ bool CMultiquadricKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-float64_t CMultiquadricKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CMultiquadricKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist = m_distance->distance(idx_a, idx_b);
 	return sqrt(CMath::sq(dist) + CMath::sq(m_coef));

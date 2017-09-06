@@ -10,16 +10,16 @@ TEST(GEMPLP, find_intersections_index)
 	CGEMPLP* mplp = new CGEMPLP();
 	SG_REF(mplp);
 
-	SGVector<int32_t> clique_A(3);
-	SGVector<int32_t> clique_B(3);
+	SGVector<index_t> clique_A(3);
+	SGVector<index_t> clique_B(3);
 
-	for (int32_t i = 0; i < 3; i++)
+	for (index_t i = 0; i < 3; i++)
 	{
 		clique_A[i] = i;
 		clique_B[i] = i + 3;
 	}
 
-	int32_t k;
+	index_t k;
 	k = mplp->find_intersection_index(clique_A, clique_B);
 	EXPECT_EQ(k, -1);
 
@@ -47,11 +47,11 @@ TEST(GEMPLP, max_in_subdimension)
 	SG_REF(mplp);
 
 	// dimensions of the target array 2x2
-	SGVector<int32_t> dims_tar(2);
+	SGVector<index_t> dims_tar(2);
 	dims_tar[0] = 2;
 	dims_tar[1] = 2;
 	// dimensions of the result (sub) array 1x2
-	SGVector<int32_t> dims_max(1);
+	SGVector<index_t> dims_max(1);
 	dims_max[0] = 2;
 
 	// define target nd array
@@ -65,7 +65,7 @@ TEST(GEMPLP, max_in_subdimension)
 	SGNDArray<float64_t> arr_max(dims_max);
 
 	// define sub-dimension
-	SGVector<int32_t> subset_inds(1);
+	SGVector<index_t> subset_inds(1);
 	subset_inds[0] = 0;
 
 	// perform max operation
@@ -139,7 +139,7 @@ TEST(GEMPLP, simple_chain)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment[0],0);
@@ -156,7 +156,7 @@ TEST(GEMPLP, random_chain)
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
 	SG_REF(fg_test_data);
 
-	SGVector<int32_t> assignment_expected; // expected assignment
+	SGVector<index_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
 	CFactorGraph* fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
@@ -165,12 +165,12 @@ TEST(GEMPLP, random_chain)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
-	for (int32_t i = 0; i < assignment.size(); i++)
+	for (index_t i = 0; i < assignment.size(); i++)
 		EXPECT_EQ(assignment[i], assignment_expected[i]);
 
 	EXPECT_NEAR(min_energy_expected, infer_met.get_energy(), 1E-10);

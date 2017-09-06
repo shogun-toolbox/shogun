@@ -102,7 +102,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t apply_one(int32_t num)
+		virtual float64_t apply_one(index_t num)
 		{
 			return CKernelMachine::apply_one(num);
 		}

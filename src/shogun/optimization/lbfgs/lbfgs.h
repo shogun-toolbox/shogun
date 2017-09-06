@@ -355,12 +355,8 @@ typedef struct {
  *                          variables.
  */
 typedef float64_t (*lbfgs_evaluate_t)(
-    void *instance,
-    const float64_t *x,
-    float64_t *g,
-    const int n,
-    const float64_t step
-    );
+	void* instance, const float64_t* x, float64_t* g, const index_t n,
+	const float64_t step);
 
 /**
  * Callback interface to receive the progress of the optimization process.
@@ -481,16 +477,10 @@ In this formula, ||.|| denotes the Euclidean norm.
  *                      minimization process terminates without an error. A
  *                      non-zero value indicates an error.
  */
-int lbfgs(
-    int n,
-    float64_t *x,
-    float64_t *ptr_fx,
-    lbfgs_evaluate_t proc_evaluate,
-    lbfgs_progress_t proc_progress,
-    void *instance,
-    lbfgs_parameter_t *param,
-    lbfgs_adjust_step_t proc_adjust_step=NULL
-    );
+index_t lbfgs(
+	index_t n, float64_t* x, float64_t* ptr_fx, lbfgs_evaluate_t proc_evaluate,
+	lbfgs_progress_t proc_progress, void* instance, lbfgs_parameter_t* param,
+	lbfgs_adjust_step_t proc_adjust_step = NULL);
 
 /**
  * Initialize L-BFGS parameters to the default values.

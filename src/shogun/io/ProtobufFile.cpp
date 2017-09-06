@@ -50,14 +50,14 @@ void CProtobufFile::init()
 	buffer=SG_MALLOC(uint8_t, message_size*sizeof(uint32_t));
 }
 
-#define GET_VECTOR(sg_type) \
-void CProtobufFile::get_vector(sg_type*& vector, int32_t& len) \
-{ \
-	read_and_validate_global_header(ShogunVersion::VECTOR); \
-	VectorHeader data_header=read_vector_header(); \
-	len=data_header.len(); \
-	read_memory_block(vector, len, data_header.num_messages()); \
-}
+#define GET_VECTOR(sg_type)                                                    \
+	void CProtobufFile::get_vector(sg_type*& vector, index_t& len)             \
+	{                                                                          \
+		read_and_validate_global_header(ShogunVersion::VECTOR);                \
+		VectorHeader data_header = read_vector_header();                       \
+		len = data_header.len();                                               \
+		read_memory_block(vector, len, data_header.num_messages());            \
+	}
 
 GET_VECTOR(int8_t)
 GET_VECTOR(uint8_t)
@@ -73,15 +73,17 @@ GET_VECTOR(int64_t)
 GET_VECTOR(uint64_t)
 #undef GET_VECTOR
 
-#define GET_MATRIX(read_func, sg_type) \
-void CProtobufFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{ \
-	read_and_validate_global_header(ShogunVersion::MATRIX); \
-	MatrixHeader data_header=read_matrix_header(); \
-	num_feat=data_header.num_cols(); \
-	num_vec=data_header.num_rows(); \
-	read_memory_block(matrix, num_feat*num_vec, data_header.num_messages()); \
-}
+#define GET_MATRIX(read_func, sg_type)                                         \
+	void CProtobufFile::get_matrix(                                            \
+	    sg_type*& matrix, index_t& num_feat, index_t& num_vec)                 \
+	{                                                                          \
+		read_and_validate_global_header(ShogunVersion::MATRIX);                \
+		MatrixHeader data_header = read_matrix_header();                       \
+		num_feat = data_header.num_cols();                                     \
+		num_vec = data_header.num_rows();                                      \
+		read_memory_block(                                                     \
+		    matrix, num_feat* num_vec, data_header.num_messages());            \
+	}
 
 GET_MATRIX(read_char, int8_t)
 GET_MATRIX(read_byte, uint8_t)
@@ -112,16 +114,16 @@ GET_NDARRAY(read_short, int16_t)
 GET_NDARRAY(read_word, uint16_t)
 #undef GET_NDARRAY
 
-#define GET_SPARSE_MATRIX(sg_type) \
-void CProtobufFile::get_sparse_matrix( \
-			SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{ \
-	read_and_validate_global_header(ShogunVersion::SPARSE_MATRIX); \
-	SparseMatrixHeader data_header=read_sparse_matrix_header(); \
-	num_feat=data_header.num_features(); \
-	num_vec=data_header.num_vectors(); \
-	read_sparse_matrix(matrix, data_header); \
-}
+#define GET_SPARSE_MATRIX(sg_type)                                             \
+	void CProtobufFile::get_sparse_matrix(                                     \
+	    SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec) \
+	{                                                                          \
+		read_and_validate_global_header(ShogunVersion::SPARSE_MATRIX);         \
+		SparseMatrixHeader data_header = read_sparse_matrix_header();          \
+		num_feat = data_header.num_features();                                 \
+		num_vec = data_header.num_vectors();                                   \
+		read_sparse_matrix(matrix, data_header);                               \
+	}
 
 GET_SPARSE_MATRIX(bool)
 GET_SPARSE_MATRIX(int8_t)
@@ -138,14 +140,15 @@ GET_SPARSE_MATRIX(int64_t)
 GET_SPARSE_MATRIX(uint64_t)
 #undef GET_SPARSE_MATRIX
 
-#define SET_VECTOR(sg_type) \
-void CProtobufFile::set_vector(const sg_type* vector, int32_t len) \
-{ \
-	int32_t num_messages=compute_num_messages(len, sizeof(sg_type)); \
-	write_global_header(ShogunVersion::VECTOR); \
-	write_vector_header(len, num_messages); \
-	write_memory_block(vector, len, num_messages); \
-}
+#define SET_VECTOR(sg_type)                                                    \
+	void CProtobufFile::set_vector(const sg_type* vector, index_t len)         \
+	{                                                                          \
+		index_t num_messages =                                                 \
+		    compute_num_messages((uint64_t)len, sizeof(sg_type));              \
+		write_global_header(ShogunVersion::VECTOR);                            \
+		write_vector_header(len, num_messages);                                \
+		write_memory_block(vector, len, num_messages);                         \
+	}
 
 SET_VECTOR(int8_t)
 SET_VECTOR(uint8_t)
@@ -161,14 +164,16 @@ SET_VECTOR(int16_t)
 SET_VECTOR(uint16_t)
 #undef SET_VECTOR
 
-#define SET_MATRIX(sg_type) \
-void CProtobufFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
-{ \
-	int32_t num_messages=compute_num_messages(num_feat*num_vec, sizeof(sg_type)); \
-	write_global_header(ShogunVersion::MATRIX); \
-	write_matrix_header(num_feat, num_vec, num_messages); \
-	write_memory_block(matrix, num_feat*num_vec, num_messages); \
-}
+#define SET_MATRIX(sg_type)                                                    \
+	void CProtobufFile::set_matrix(                                            \
+	    const sg_type* matrix, index_t num_feat, index_t num_vec)              \
+	{                                                                          \
+		int32_t num_messages =                                                 \
+		    compute_num_messages(num_feat * num_vec, sizeof(sg_type));         \
+		write_global_header(ShogunVersion::MATRIX);                            \
+		write_matrix_header(num_feat, num_vec, num_messages);                  \
+		write_memory_block(matrix, num_feat* num_vec, num_messages);           \
+	}
 
 SET_MATRIX(int8_t)
 SET_MATRIX(uint8_t)
@@ -184,14 +189,15 @@ SET_MATRIX(int16_t)
 SET_MATRIX(uint16_t)
 #undef SET_MATRIX
 
-#define SET_SPARSE_MATRIX(sg_type) \
-void CProtobufFile::set_sparse_matrix( \
-			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
-{ \
-	write_global_header(ShogunVersion::SPARSE_MATRIX); \
-	write_sparse_matrix_header(matrix, num_feat, num_vec); \
-	write_sparse_matrix(matrix, num_vec); \
-}
+#define SET_SPARSE_MATRIX(sg_type)                                             \
+	void CProtobufFile::set_sparse_matrix(                                     \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec)                                                       \
+	{                                                                          \
+		write_global_header(ShogunVersion::SPARSE_MATRIX);                     \
+		write_sparse_matrix_header(matrix, num_feat, num_vec);                 \
+		write_sparse_matrix(matrix, num_vec);                                  \
+	}
 
 SET_SPARSE_MATRIX(bool)
 SET_SPARSE_MATRIX(int8_t)
@@ -208,17 +214,17 @@ SET_SPARSE_MATRIX(int16_t)
 SET_SPARSE_MATRIX(uint16_t)
 #undef SET_SPARSE_MATRIX
 
-#define GET_STRING_LIST(sg_type) \
-void CProtobufFile::get_string_list( \
-			SGString<sg_type>*& strings, int32_t& num_str, \
-			int32_t& max_string_len) \
-{ \
-	read_and_validate_global_header(ShogunVersion::STRING_LIST); \
-	StringListHeader data_header=read_string_list_header(); \
-	num_str=data_header.num_str(); \
-	max_string_len=data_header.max_string_len(); \
-	read_string_list(strings, data_header); \
-}
+#define GET_STRING_LIST(sg_type)                                               \
+	void CProtobufFile::get_string_list(                                       \
+	    SGString<sg_type>*& strings, index_t& num_str,                         \
+	    index_t& max_string_len)                                               \
+	{                                                                          \
+		read_and_validate_global_header(ShogunVersion::STRING_LIST);           \
+		StringListHeader data_header = read_string_list_header();              \
+		num_str = data_header.num_str();                                       \
+		max_string_len = data_header.max_string_len();                         \
+		read_string_list(strings, data_header);                                \
+	}
 
 GET_STRING_LIST(int8_t)
 GET_STRING_LIST(uint8_t)
@@ -234,14 +240,14 @@ GET_STRING_LIST(int16_t)
 GET_STRING_LIST(uint16_t)
 #undef GET_STRING_LIST
 
-#define SET_STRING_LIST(sg_type) \
-void CProtobufFile::set_string_list( \
-			const SGString<sg_type>* strings, int32_t num_str) \
-{ \
-	write_global_header(ShogunVersion::STRING_LIST); \
-	write_string_list_header(strings, num_str); \
-	write_string_list(strings, num_str); \
-}
+#define SET_STRING_LIST(sg_type)                                               \
+	void CProtobufFile::set_string_list(                                       \
+	    const SGString<sg_type>* strings, index_t num_str)                     \
+	{                                                                          \
+		write_global_header(ShogunVersion::STRING_LIST);                       \
+		write_string_list_header(strings, num_str);                            \
+		write_string_list(strings, num_str);                                   \
+	}
 
 SET_STRING_LIST(int8_t)
 SET_STRING_LIST(uint8_t)
@@ -276,7 +282,8 @@ uint32_t CProtobufFile::read_big_endian_uint(uint8_t* array, uint32_t size)
 	return (array[0]<<24) | (array[1]<<16) | (array[2]<<8) | array[3];
 }
 
-int32_t CProtobufFile::compute_num_messages(uint64_t len, int32_t sizeof_type) const
+index_t
+CProtobufFile::compute_num_messages(uint64_t len, index_t sizeof_type) const
 {
 	uint32_t elements_in_message=message_size/sizeof_type;
 	uint32_t num_messages=len/elements_in_message;

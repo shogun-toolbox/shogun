@@ -20,8 +20,7 @@
 
 using namespace shogun;
 
-CPlif::CPlif(int32_t l)
-: CPlifBase()
+CPlif::CPlif(index_t l) : CPlifBase()
 {
 	limits=SGVector<float64_t>();
 	penalties=SGVector<float64_t>();
@@ -79,11 +78,11 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	float64_t* local_cache=SG_MALLOC(float64_t,  ((int32_t) max_value) + 2);
+	float64_t* local_cache = SG_MALLOC(float64_t, ((index_t)max_value) + 2);
 
 	if (local_cache)
 	{
-		for (int32_t i=0; i<=max_value; i++)
+		for (index_t i = 0; i <= max_value; i++)
 		{
 			if (i<min_value)
 				local_cache[i] = -CMath::INFTY ;
@@ -107,14 +106,14 @@ char* CPlif::get_plif_name() const
 	else
 	{
 		char buf[20];
-		sprintf(buf, "plif%i", id);
+		sprintf(buf, "plif%lli", id);
 		return get_strdup(buf);
 	}
 }
 
-void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
+void CPlif::delete_penalty_struct(CPlif** PEN, index_t P)
 {
-	for (int32_t i=0; i<P; i++)
+	for (index_t i = 0; i < P; i++)
 		delete PEN[i] ;
 	SG_FREE(PEN);
 }
@@ -151,9 +150,9 @@ float64_t CPlif::lookup_penalty_svm(
 		break ;
 	}
 
-	int32_t idx = 0 ;
+	index_t idx = 0;
 	float64_t ret ;
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -182,7 +181,7 @@ float64_t CPlif::lookup_penalty_svm(
 	return ret ;
 }
 
-float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
+float64_t CPlif::lookup_penalty(index_t p_value, float64_t* svm_values) const
 {
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
@@ -247,9 +246,9 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 	SG_PRINT("  -> value = %1.4f ", d_value)
 #endif
 
-	int32_t idx = 0 ;
+	index_t idx = 0;
 	float64_t ret ;
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -282,7 +281,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 
 void CPlif::penalty_clear_derivative()
 {
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		cum_derivatives[i]=0.0 ;
 }
 
@@ -320,8 +319,8 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 		break ;
 	}
 
-	int32_t idx = 0 ;
-	for (int32_t i=0; i<len; i++)
+	index_t idx = 0;
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -367,8 +366,8 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 		break ;
 	}
 
-	int32_t idx = 0 ;
-	for (int32_t i=0; i<len; i++)
+	index_t idx = 0;
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -385,7 +384,7 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 	}
 }
 
-void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
+void CPlif::get_used_svms(int32_t* num_svms, index_t* svm_ids)
 {
 	if (use_svm)
 	{

@@ -56,14 +56,14 @@ TEST(MultilabelSOLabels, set_sparse_label)
 	EXPECT_EQ(ml->get_num_labels(), 1);
 	EXPECT_EQ(ml->get_num_classes(), 2);
 
-	SGVector<int32_t> lab(2);
+	SGVector<index_t> lab(2);
 	lab[0] = 0;
 	lab[1] = 1;
-	ml->set_sparse_label(0, lab);
+	ml->set_sparse_label(index_t(0), lab);
 
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(
 	                                     ml->get_label(0));
-	SGVector<int32_t> slabel_data = slabel->get_data();
+	SGVector<index_t> slabel_data = slabel->get_data();
 
 	for (int i = 0; i < slabel_data.vlen; i++)
 	{
@@ -83,16 +83,16 @@ TEST(MultilabelSOLabels, set_label)
 	EXPECT_EQ(ml->get_num_labels(), 1);
 	EXPECT_EQ(ml->get_num_classes(), 2);
 
-	SGVector<int32_t> lab(2);
+	SGVector<index_t> lab(2);
 	lab[0] = 0;
 	lab[1] = 1;
 	CSparseMultilabel * slabel = new CSparseMultilabel(lab);
 	SG_REF(slabel);
-	ml->set_label(0, slabel);
+	ml->set_label(index_t(0), slabel);
 
 	CSparseMultilabel * slabel_out = CSparseMultilabel::obtain_from_generic(
 	                ml->get_label(0));
-	SGVector<int32_t> slabel_data = slabel_out->get_data();
+	SGVector<index_t> slabel_data = slabel_out->get_data();
 
 	for (index_t i = 0; i < slabel_data.vlen; i++)
 	{
@@ -112,11 +112,11 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 	EXPECT_EQ(ml->get_num_labels(), 2);
 	EXPECT_EQ(ml->get_num_classes(), 3);
 
-	SGVector<int32_t> * labels = new SGVector<int32_t>[2];
-	SGVector<int32_t> lab1(2);
+	SGVector<index_t>* labels = new SGVector<index_t>[2];
+	SGVector<index_t> lab1(2);
 	lab1[0] = 0;
 	lab1[1] = 2;
-	SGVector<int32_t> lab2(3);
+	SGVector<index_t> lab2(3);
 	lab2[0] = 0;
 	lab2[1] = 1;
 	lab2[2] = 2;
@@ -125,14 +125,14 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 
 	ml->set_sparse_labels(labels);
 
-	for (int i = 0; i < ml->get_num_labels(); i++)
+	for (index_t i = 0; i < ml->get_num_labels(); i++)
 	{
 		CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(ml->get_label(i));
-		SGVector<int32_t> slabel_data = slabel->get_data();
-		SGVector<int32_t> lab = labels[i];
+		SGVector<index_t> slabel_data = slabel->get_data();
+		SGVector<index_t> lab = labels[i];
 		EXPECT_EQ(slabel_data.vlen, lab.vlen);
 
-		for (int j = 0; i < slabel_data.vlen; i++)
+		for (index_t j = 0; i < slabel_data.vlen; i++)
 		{
 			EXPECT_EQ(lab[j], slabel_data[j]);
 		}
@@ -152,11 +152,11 @@ TEST(MultilabelSOLabels, to_dense)
 	EXPECT_EQ(ml->get_num_labels(), 2);
 	EXPECT_EQ(ml->get_num_classes(), 3);
 
-	SGVector<int32_t> * labels = new SGVector<int32_t>[2];
-	SGVector<int32_t> lab1(2);
+	SGVector<index_t>* labels = new SGVector<index_t>[2];
+	SGVector<index_t> lab1(2);
 	lab1[0] = 0;
 	lab1[1] = 2;
-	SGVector<int32_t> lab2(3);
+	SGVector<index_t> lab2(3);
 	lab2[0] = 0;
 	lab2[1] = 1;
 	lab2[2] = 2;

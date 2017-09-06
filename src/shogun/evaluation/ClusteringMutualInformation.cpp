@@ -27,8 +27,10 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 	index_t n_class=label_p.vlen;
 	float64_t n_label=predicted->get_num_labels();
 
-	SGVector<int32_t> ilabels_p=((CMulticlassLabels*) predicted)->get_int_labels();
-	SGVector<int32_t> ilabels_g=((CMulticlassLabels*) ground_truth)->get_int_labels();
+	SGVector<index_t> ilabels_p =
+	    ((CMulticlassLabels*)predicted)->get_int_labels();
+	SGVector<index_t> ilabels_g =
+	    ((CMulticlassLabels*)ground_truth)->get_int_labels();
 
 	SGMatrix<float64_t> G(n_class, n_class);
 	for (index_t i=0; i < n_class; ++i)

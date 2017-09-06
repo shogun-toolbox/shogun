@@ -19,7 +19,7 @@ CLatentFeatures::CLatentFeatures()
 	SG_REF(m_samples);
 }
 
-CLatentFeatures::CLatentFeatures(int32_t num_samples)
+CLatentFeatures::CLatentFeatures(index_t num_samples)
 {
 	init();
 	m_samples = new CDynamicObjectArray(num_samples);
@@ -46,8 +46,7 @@ EFeatureClass CLatentFeatures::get_feature_class() const
 	return C_LATENT;
 }
 
-
-int32_t CLatentFeatures::get_num_vectors() const
+index_t CLatentFeatures::get_num_vectors() const
 {
 	if (m_samples == NULL)
 		return 0;

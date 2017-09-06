@@ -58,7 +58,9 @@ class CDistanceMachine : public CMachine
 		 * @param idx_a2 last feature vector a2 at idx_a2
 		 * @param idx_b feature vector b at idx_b
 		 */
-		void distances_lhs(SGVector<float64_t>& result, int32_t idx_a1, int32_t idx_a2, int32_t idx_b);
+		void distances_lhs(
+		    SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2,
+		    index_t idx_b);
 
 		/**
 		 * get distance functions for rhs feature vectors
@@ -69,7 +71,9 @@ class CDistanceMachine : public CMachine
 		 * @param idx_b2 last feature vector a2 at idx_b2
 		 * @param idx_a feature vector a at idx_a
 		 */
-		void distances_rhs(SGVector<float64_t>& result, int32_t idx_b1, int32_t idx_b2, int32_t idx_a);
+		void distances_rhs(
+		    SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2,
+		    index_t idx_a);
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.

@@ -38,7 +38,7 @@ class CPlifBase : public CSGObject
 		virtual float64_t lookup_penalty(
 			float64_t p_value, float64_t* svm_values) const =0;
 
-		/** lookup penalty int32_t
+		/** lookup penalty index_t
 		 *
 		 * abstract base method
 		 *
@@ -46,8 +46,8 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 * @return penalty
 		 */
-		virtual float64_t lookup_penalty(
-			int32_t p_value, float64_t* svm_values) const =0;
+		virtual float64_t
+		lookup_penalty(index_t p_value, float64_t* svm_values) const = 0;
 
 		/** penalty clear derivative
 		 *
@@ -86,7 +86,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * abstract base method
 		 */
-		virtual void get_used_svms(int32_t* num_svms, int32_t* svm_ids) = 0;
+		virtual void get_used_svms(int32_t* num_svms, index_t* svm_ids) = 0;
 
 		/** if plif uses SVM values
 		 *
@@ -102,7 +102,7 @@ class CPlifBase : public CSGObject
 		 *
 		 * @return maximum ID
 		 */
-		virtual int32_t get_max_id() const = 0;
+		virtual index_t get_max_id() const = 0;
 
 		/** print PLIF
 		 *

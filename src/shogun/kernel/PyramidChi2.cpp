@@ -158,7 +158,10 @@ float64_t CPyramidChi2::compute(index_t idx_a, index_t idx_b)
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(index_t i=0; i< numind;++i)
-					featindices[i]=CMath::random(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1);
+					featindices[i] = CMath::random(
+					    index_t(0),
+					    ((CDenseFeatures<float64_t>*)lhs)->get_num_vectors() -
+					        1);
 			}
 			else
 			{

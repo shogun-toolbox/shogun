@@ -44,7 +44,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param len len
 		 */
-		CPlif(int32_t len=0);
+		CPlif(index_t len = 0);
 		virtual ~CPlif();
 
 		/** init penalty struct cache */
@@ -74,7 +74,7 @@ class CPlif: public CPlifBase
 		 * @param svm_values SVM values
 		 * @return the penalty
 		 */
-		float64_t lookup_penalty(int32_t p_value, float64_t* svm_values) const;
+		float64_t lookup_penalty(index_t p_value, float64_t* svm_values) const;
 
 		/** lookup
 		 *
@@ -112,7 +112,7 @@ class CPlif: public CPlifBase
 		 * @param p_len len
 		 * @return cum derivative
 		 */
-		const float64_t * get_cum_derivative(int32_t & p_len) const
+		const float64_t* get_cum_derivative(index_t& p_len) const
 		{
 			p_len = len;
 			return cum_derivatives.vector;
@@ -151,7 +151,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_id the id to set
 		 */
-		void set_id(int32_t p_id)
+		void set_id(index_t p_id)
 		{
 			id=p_id;
 		}
@@ -160,7 +160,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return the ID
 		 */
-		int32_t get_id() const
+		index_t get_id() const
 		{
 			return id;
 		}
@@ -169,7 +169,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return maximum ID
 		 */
-		int32_t get_max_id() const
+		index_t get_max_id() const
 		{
 			return get_id();
 		}
@@ -206,7 +206,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_use_cache if cache shall be used
 		 */
-		void set_use_cache(int32_t p_use_cache)
+		void set_use_cache(index_t p_use_cache)
 		{
 			invalidate_cache();
 			use_cache=p_use_cache;
@@ -224,7 +224,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return if cache is used
 		 */
-		int32_t get_use_cache()
+		index_t get_use_cache()
 		{
 			return use_cache;
 		}
@@ -235,12 +235,12 @@ class CPlif: public CPlifBase
 		 * @param p_limits limit
 		 * @param p_penalties penalties
 		 */
-		void set_plif(
-			int32_t p_len, float64_t *p_limits, float64_t* p_penalties)
+		void
+		set_plif(index_t p_len, float64_t* p_limits, float64_t* p_penalties)
 		{
 			ASSERT(len==p_len)
 
-			for (int32_t i=0; i<len; i++)
+			for (index_t i = 0; i < len; i++)
 			{
 				limits[i]=p_limits[i];
 				penalties[i]=p_penalties[i];
@@ -283,7 +283,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param p_len len
 		 */
-		void set_plif_length(int32_t p_len)
+		void set_plif_length(index_t p_len)
 		{
 			if (len!=p_len)
 			{
@@ -389,13 +389,13 @@ class CPlif: public CPlifBase
 		/** get SVM_ids and number of SVMs used
 		 *
 		 */
-		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
+		void get_used_svms(int32_t* num_svms, index_t* svm_ids);
 
 		/** get plif len
 		 *
 		 * @return plif len
 		 */
-		inline int32_t get_plif_len()
+		inline index_t get_plif_len()
 		{
 			return len;
 		}
@@ -414,14 +414,14 @@ class CPlif: public CPlifBase
 		 * @param PEN array of plifs
 		 * @param P id of plif
 		 */
-		static void delete_penalty_struct(CPlif** PEN, int32_t P);
+		static void delete_penalty_struct(CPlif** PEN, index_t P);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Plif"; }
 
 	protected:
 		/** len */
-		int32_t len;
+		index_t len;
 		/** limits */
 		SGVector<float64_t> limits;
 		/** penalties */
@@ -437,7 +437,7 @@ class CPlif: public CPlifBase
 		/** transform type */
 		enum ETransformType transform;
 		/** id */
-		int32_t id;
+		index_t id;
 		/** name */
 		char * name;
 		/** if SVM shall be used */

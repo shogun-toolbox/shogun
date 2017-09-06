@@ -162,7 +162,7 @@ int32_t CFeatures::get_cache_size() const
 	return cache_size;
 }
 
-bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
+bool CFeatures::reshape(index_t num_features, index_t num_vectors)
 {
 	SG_NOTIMPLEMENTED
 	return false;

@@ -77,8 +77,8 @@ class CGMNPLib: public CSGObject
 		 * @param reg_const reg const
 		 */
 		CGMNPLib(
-			float64_t* vector_y, CKernel* kernel, int32_t num_data,
-			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
+		    float64_t* vector_y, CKernel* kernel, index_t num_data,
+		    index_t num_virtual_data, index_t num_classes, float64_t reg_const);
 
 		virtual ~CGMNPLib();
 
@@ -91,16 +91,10 @@ class CGMNPLib: public CSGObject
 Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,
 tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
-		int8_t gmnp_imdm(float64_t *vector_c,
-				int32_t dim,
-				int32_t tmax,
-				float64_t tolabs,
-				float64_t tolrel,
-				float64_t th,
-				float64_t *alpha,
-				int32_t  *ptr_t,
-				float64_t **ptr_History,
-				int32_t verb);
+		int8_t gmnp_imdm(
+		    float64_t* vector_c, int32_t dim, int32_t tmax, float64_t tolabs,
+		    float64_t tolrel, float64_t th, float64_t* alpha, index_t* ptr_t,
+		    float64_t** ptr_History, int32_t verb);
 
 		/** get indices2
 		 *
@@ -108,7 +102,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param c c
 		 * @param i i
 		 */
-		void get_indices2( int32_t *index, int32_t *c, int32_t i );
+		void get_indices2(index_t* index, index_t* c, index_t i);
 
 	protected:
 		/** get kernel col
@@ -116,7 +110,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param a a
 		 * @return col at a
 		 */
-		float64_t *get_kernel_col( int32_t a );
+		float64_t* get_kernel_col(index_t a);
 
 		/** get col
 		 *
@@ -124,7 +118,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return col at a, b
 		 */
-		float64_t* get_col( int32_t a, int32_t b );
+		float64_t* get_col(index_t a, index_t b);
 
 		/** kernel fce
 		 *
@@ -132,7 +126,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		 * @param b b
 		 * @return something floaty
 		 */
-		float64_t kernel_fce( int32_t a, int32_t b );
+		float64_t kernel_fce(index_t a, index_t b);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GMNPLib"; }
@@ -145,7 +139,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** cache index */
 		float64_t* cache_index;
 		/** first kernel inx */
-		int32_t first_kernel_inx;
+		index_t first_kernel_inx;
 		/** cache size */
 		int64_t Cache_Size;
 		/** num data */

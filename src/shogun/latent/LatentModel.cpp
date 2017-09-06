@@ -40,7 +40,7 @@ CLatentModel::~CLatentModel()
 	SG_UNREF(m_cached_psi);
 }
 
-int32_t CLatentModel::get_num_vectors() const
+index_t CLatentModel::get_num_vectors() const
 {
 	return m_features->get_num_vectors();
 }

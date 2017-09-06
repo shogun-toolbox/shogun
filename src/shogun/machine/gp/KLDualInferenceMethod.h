@@ -73,8 +73,9 @@ private:
 	/** A helper function is used in the C-style LBFGS API
 	 * Note that this function should be static and
 	 * private. */
-	static float64_t evaluate(void *obj, const float64_t *variable,
-		float64_t *gradient, const int dim, const float64_t step);
+	static float64_t evaluate(
+		void* obj, const float64_t* variable, float64_t* gradient,
+		const index_t dim, const float64_t step);
 
 	/** A helper function is passed to the LBFGS API
 	 * to adjust step size based on the feasible set S

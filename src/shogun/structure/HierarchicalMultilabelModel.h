@@ -44,19 +44,21 @@ public:
 	 * TERMINAL NODES) are only allowed or not
 	 * class or not
 	 */
-	CHierarchicalMultilabelModel(CFeatures * features, CStructuredLabels * labels,
-	                             SGVector<int32_t> taxonomy, bool leaf_nodes_mandatory = false);
+	CHierarchicalMultilabelModel(
+		CFeatures* features, CStructuredLabels* labels,
+		SGVector<index_t> taxonomy, bool leaf_nodes_mandatory = false);
 
 	/** destructor */
 	virtual ~CHierarchicalMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(int32_t num_labels = 0);
+	virtual CStructuredLabels*
+	structured_labels_factory(index_t num_labels = 0);
 
 	/** @return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
 	 */
-	virtual int32_t get_dim() const;
+	virtual index_t get_dim() const;
 
 	/** get joint feature vector
 	 *
@@ -69,8 +71,8 @@ public:
 	 *
 	 * @return joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** obtain the argmax of
 	 *
@@ -82,8 +84,8 @@ public:
 	 * @param feat_idx index of the feature vector to use
 	 * @param training whether training is being used
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
-	                            bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -122,21 +124,21 @@ public:
 	}
 
 private:
-	int32_t m_num_classes;
-	SGVector<int32_t> m_taxonomy;
+	index_t m_num_classes;
+	SGVector<index_t> m_taxonomy;
 	bool m_leaf_nodes_mandatory;
-	int32_t m_root;
+	index_t m_root;
 	// array for vectors storing the node-ids of the children
 	// m_children[node_id] = vector of node_ids of the children
 	//                     = empty vector, if node is a terminal node
-	SGVector<int32_t> * m_children;
+	SGVector<index_t>* m_children;
 
 private:
-	void init(SGVector<int32_t> taxonomy, bool leaf_nodes_mandatory);
+	void init(SGVector<index_t> taxonomy, bool leaf_nodes_mandatory);
 
 	/** different versions of delta loss function */
-	float64_t delta_loss(SGVector<int32_t> y1, SGVector<int32_t> y2);
-	float64_t delta_loss(int32_t y1, int32_t y2);
+	float64_t delta_loss(SGVector<index_t> y1, SGVector<index_t> y2);
+	float64_t delta_loss(index_t y1, index_t y2);
 
 	/** get the label vector for any label
 	 * the label vector would be vector with value 1 for all the nodes
@@ -144,7 +146,7 @@ private:
 	 *
 	 * @return label vector
 	 */
-	SGVector<int32_t> get_label_vector(SGVector<int32_t> sparse_label);
+	SGVector<index_t> get_label_vector(SGVector<index_t> sparse_label);
 
 }; /* class CHierarchicalMultilabelModel */
 

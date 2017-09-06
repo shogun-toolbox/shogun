@@ -3350,7 +3350,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
 	gpc->train();
 
 	CMulticlassLabels* prediction=gpc->apply_multiclass(features_test);
-	SGVector<int32_t> p=prediction->get_int_labels();
+	SGVector<index_t> p = prediction->get_int_labels();
 
 	EXPECT_EQ(p[0], 0);
 	EXPECT_EQ(p[1], 1);

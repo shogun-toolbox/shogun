@@ -47,10 +47,11 @@ bool CPerceptron::train_machine(CFeatures* data)
 
 	ASSERT(features)
 	bool converged=false;
-	int32_t iter=0;
-	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
-	int32_t num_feat=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
+	index_t iter = 0;
+	SGVector<index_t> train_labels =
+	    ((CBinaryLabels*)m_labels)->get_int_labels();
+	index_t num_feat = features->get_dim_feature_space();
+	index_t num_vec = features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen)
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
@@ -61,7 +62,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 		w = SGVector<float64_t>(num_feat);
 		//start with uniform w, bias=0
 		bias=0;
-		for (int32_t i=0; i<num_feat; i++)
+		for (index_t i = 0; i < num_feat; i++)
 			w.vector[i]=1.0/num_feat;
 	}
 

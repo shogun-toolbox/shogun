@@ -62,7 +62,9 @@ class CKernelMachine : public CMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
+		CKernelMachine(
+		    CKernel* k, const SGVector<float64_t> alphas,
+		    const SGVector<index_t> svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy
@@ -144,14 +146,14 @@ class CKernelMachine : public CMachine
 		 * @param idx index of support vector
 		 * @return support vector
 		 */
-		int32_t get_support_vector(int32_t idx);
+		index_t get_support_vector(index_t idx);
 
 		/** get alpha at given index
 		 *
 		 * @param idx index of alpha
 		 * @return alpha
 		 */
-		float64_t get_alpha(int32_t idx);
+		float64_t get_alpha(index_t idx);
 
 		/** set support vector at given index to given value
 		 *
@@ -159,7 +161,7 @@ class CKernelMachine : public CMachine
 		 * @param val new value of support vector
 		 * @return if operation was successful
 		 */
-		bool set_support_vector(int32_t idx, int32_t val);
+		bool set_support_vector(index_t idx, int32_t val);
 
 		/** set alpha at given index to given value
 		 *
@@ -167,13 +169,13 @@ class CKernelMachine : public CMachine
 		 * @param val new value of alpha vector
 		 * @return if operation was successful
 		 */
-		bool set_alpha(int32_t idx, float64_t val);
+		bool set_alpha(index_t idx, float64_t val);
 
 		/** get number of support vectors
 		 *
 		 * @return number of support vectors
 		 */
-		int32_t get_num_support_vectors();
+		index_t get_num_support_vectors();
 
 		/** set alphas to given values
 		 *
@@ -185,10 +187,10 @@ class CKernelMachine : public CMachine
 		 *
 		 * @param svs integer vector with all support vectors indexes to set
 		 */
-		void set_support_vectors(SGVector<int32_t> svs);
+		void set_support_vectors(SGVector<index_t> svs);
 
 		/** @return all support vectors */
-		SGVector<int32_t> get_support_vectors();
+		SGVector<index_t> get_support_vectors();
 
 		/** @return vector of alphas */
 		SGVector<float64_t> get_alphas();
@@ -197,7 +199,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @param num number of alphas and support vectors in new model
 		 */
-		bool create_new_model(int32_t num);
+		bool create_new_model(index_t num);
 
 		/** initialise kernel optimisation
 		 *
@@ -328,7 +330,7 @@ class CKernelMachine : public CMachine
 		SGVector<float64_t> m_alpha;
 
 		/** array of ``support vectors'' (indices of feature objects) */
-		SGVector<int32_t> m_svs;
+		SGVector<index_t> m_svs;
 };
 }
 #endif /* _KERNEL_MACHINE_H__ */

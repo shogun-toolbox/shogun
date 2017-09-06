@@ -1198,12 +1198,12 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 	CDynamicArray<float64_t>* r_cv=new CDynamicArray<float64_t>();
 	CDynamicArray<float64_t>* alphak=new CDynamicArray<float64_t>();
 	SGVector<int32_t> num_alphak(folds);
-	for (int32_t i=0;i<folds;i++)
+	for (index_t i = 0; i < folds; i++)
 	{
 		// for chosen fold, create subset for training parameters
-		CDynamicArray<int32_t>* test_indices=new CDynamicArray<int32_t>();
-		CDynamicArray<int32_t>* train_indices=new CDynamicArray<int32_t>();
-		for (int32_t j=0;j<num_vecs;j++)
+		CDynamicArray<index_t>* test_indices = new CDynamicArray<index_t>();
+		CDynamicArray<index_t>* train_indices = new CDynamicArray<index_t>();
+		for (index_t j = 0; j < num_vecs; j++)
 		{
 			if (subid[j]==i)
 				test_indices->push_back(j);
@@ -1217,11 +1217,13 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 					"the subsets in cross-validation is not represented at all. Please re-run.")
 		}
 
-		SGVector<int32_t> subset(train_indices->get_array(),train_indices->get_num_elements(),false);
+		SGVector<index_t> subset(
+		    train_indices->get_array(), train_indices->get_num_elements(),
+		    false);
 		data->add_subset(subset);
 		m_labels->add_subset(subset);
 		SGVector<float64_t> subset_weights(train_indices->get_num_elements());
-		for (int32_t j=0;j<train_indices->get_num_elements();j++)
+		for (index_t j = 0; j < train_indices->get_num_elements(); j++)
 			subset_weights[j]=m_weights[train_indices->get_element(j)];
 
 		// train with training subset
@@ -1234,16 +1236,17 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 
 		data->remove_subset();
 		m_labels->remove_subset();
-		subset=SGVector<int32_t>(test_indices->get_array(),test_indices->get_num_elements(),false);
+		subset = SGVector<index_t>(
+		    test_indices->get_array(), test_indices->get_num_elements(), false);
 		data->add_subset(subset);
 		m_labels->add_subset(subset);
 		subset_weights=SGVector<float64_t>(test_indices->get_num_elements());
-		for (int32_t j=0;j<test_indices->get_num_elements();j++)
+		for (index_t j = 0; j < test_indices->get_num_elements(); j++)
 			subset_weights[j]=m_weights[test_indices->get_element(j)];
 
 		// calculate R_CV values for each alpha_k using test subset and store them
 		num_alphak[i]=m_alphas->get_num_elements();
-		for (int32_t j=0;j<m_alphas->get_num_elements();j++)
+		for (index_t j = 0; j < m_alphas->get_num_elements(); j++)
 		{
 			alphak->push_back(m_alphas->get_element(j));
 			CSGObject* jth_element=pruned_trees->get_element(j);

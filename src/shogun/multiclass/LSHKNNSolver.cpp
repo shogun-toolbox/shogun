@@ -14,8 +14,11 @@ using namespace Eigen;
 #ifdef HAVE_CXX11
 #include <shogun/lib/external/falconn/lsh_nn_table.h>
 
-CLSHKNNSolver::CLSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t):
-CKNNSolver(k, q, num_classes, min_label, train_labels)
+CLSHKNNSolver::CLSHKNNSolver(
+    const index_t k, const float64_t q, const index_t num_classes,
+    const index_t min_label, const SGVector<index_t> train_labels,
+    const index_t lsh_l, const index_t lsh_t)
+    : CKNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	init();
 
@@ -23,14 +26,16 @@ CKNNSolver(k, q, num_classes, min_label, train_labels)
 	m_lsh_t=lsh_t;
 }
 
-CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+CMulticlassLabels* CLSHKNNSolver::classify_objects(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 	CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(knn_distance->get_lhs());
 	std::vector<falconn::DenseVector<double>> feats;
-	for(int32_t i=0; i < features->get_num_vectors(); i++)
+	for (index_t i = 0; i < features->get_num_vectors(); i++)
 	{
-		int32_t len;
+		index_t len;
 		bool free;
 		float64_t* vec = features->get_feature_vector(i, len, free);
 		falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
@@ -46,7 +51,9 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 	if (m_lsh_l && m_lsh_t)
 		params.l = m_lsh_l;
 
-	auto lsh_table = falconn::construct_table<falconn::DenseVector<double>>(feats, params);
+	auto lsh_table =
+	    falconn::construct_table<falconn::DenseVector<double>, index_t>(
+	        feats, params);
 	if (m_lsh_t)
 		lsh_table->set_num_probes(m_lsh_t);
 
@@ -56,13 +63,14 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 	SGMatrix<index_t> NN (m_k, query_features->get_num_vectors());
 	for(index_t i=0; i < query_features->get_num_vectors(); i++)
 	{
-		int32_t len;
+		index_t len;
 		bool free;
 		float64_t* vec = query_features->get_feature_vector(i, len, free);
 		falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
-		auto indices = new std::vector<int32_t> ();
+		auto indices = new std::vector<index_t>();
 		lsh_table->find_k_nearest_neighbors(temp, (int_fast64_t)m_k, indices);
-		sg_memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
+		sg_memcpy(
+		    NN.get_column_vector(i), indices->data(), sizeof(index_t) * m_k);
 		delete indices;
 	}
 
@@ -82,7 +90,9 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 	return output;
 }
 
-SGVector<int32_t> CLSHKNNSolver::classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<index_t> CLSHKNNSolver::classify_objects_k(
+    CDistance* d, const index_t num_lab, SGVector<index_t>& train_lab,
+    SGVector<index_t>& classes) const
 {
 	SG_NOTIMPLEMENTED
 	return 0;

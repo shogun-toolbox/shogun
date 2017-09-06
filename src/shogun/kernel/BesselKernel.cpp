@@ -62,7 +62,7 @@ void CBesselKernel::init()
 	SG_ADD(&degree, "degree", "Kernel degree.", MS_AVAILABLE);
 }
 
-float64_t CBesselKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CBesselKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
 	return jn(order,dist/width)/CMath::pow(dist,-degree*order);

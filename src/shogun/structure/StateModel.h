@@ -37,10 +37,10 @@ class CStateModel : public CSGObject
 		virtual ~CStateModel();
 
 		/** @return number of states */
-		int32_t get_num_states() const;
+		index_t get_num_states() const;
 
 		/** @return number of transmission parameters to be learnt */
-		int32_t get_num_transmission_params() const;
+		index_t get_num_transmission_params() const;
 
 		/**
 		 * computes a loss matrix with m_num_states rows and number of columns
@@ -76,8 +76,9 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
-			SGVector< float64_t > w, int32_t num_feats, int32_t num_obs) = 0;
+		virtual void reshape_emission_params(
+		    SGVector<float64_t>& emission_weights, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_obs) = 0;
 
 		/**
 		 * arranges the emission parameters of the weight vector into a matrix
@@ -89,8 +90,9 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
-			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) = 0;
+		virtual void reshape_emission_params(
+		    CDynamicObjectArray* plif_matrix, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_plif_nodes) = 0;
 
 		/**
 		 * arranges the transmission parameters of the weight vector into a matrix
@@ -110,7 +112,8 @@ class CStateModel : public CSGObject
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const = 0;
+		virtual SGVector<index_t>
+		labels_to_states(CSequence* label_seq) const = 0;
 
 		/** translates state sequence to label sequence
 		 *
@@ -118,7 +121,8 @@ class CStateModel : public CSGObject
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< int32_t > state_seq) const = 0;
+		virtual CSequence*
+		states_to_labels(SGVector<index_t> state_seq) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -132,10 +136,10 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void weights_to_vector(SGVector< float64_t >& psi,
-				SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights,
-				int32_t num_feats, int32_t num_obs) const = 0;
+		virtual void weights_to_vector(
+		    SGVector<float64_t>& psi, SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -149,8 +153,10 @@ class CStateModel : public CSGObject
 		 *
 		 * @return psi output vector
 		 */
-		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const = 0;
+		virtual SGVector<float64_t> weights_to_vector(
+		    SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const = 0;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The
@@ -170,8 +176,8 @@ class CStateModel : public CSGObject
 		 * @return vector with monotonicity constraints of length num_feats times
 		 * num_free_states
 		 */
-		virtual SGVector< int32_t > get_monotonicity(int32_t num_free_states,
-				int32_t num_feats) const;
+		virtual SGVector<index_t>
+		get_monotonicity(index_t num_free_states, index_t num_feats) const;
 
 		/**
 		 * return the distribution of start states, i.e. the specification
@@ -216,10 +222,10 @@ class CStateModel : public CSGObject
 
 	protected:
 		/** the number of states */
-		int32_t m_num_states;
+		index_t m_num_states;
 
 		/** the number of transmission parameters */
-		int32_t m_num_transmission_params;
+		index_t m_num_transmission_params;
 
 		/** state loss matrix, loss for every pair of states */
 		SGMatrix< float64_t > m_state_loss_mat;

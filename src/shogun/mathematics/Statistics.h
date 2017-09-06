@@ -251,15 +251,14 @@ public:
 
 	/** @return mutual information of \f$p\f$ which is given in logspace
 	 * where \f$p,q\f$ are given in logspace */
-	static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
+	static float64_t mutual_info(float64_t* p1, float64_t* p2, index_t len);
 
 	/** @return relative entropy \f$H(P||Q)\f$
 	 * where \f$p,q\f$ are given in logspace */
-	static float64_t relative_entropy(
-			float64_t* p, float64_t* q, int32_t len);
+	static float64_t relative_entropy(float64_t* p, float64_t* q, index_t len);
 
 	/** @return entropy of \f$p\f$ which is given in logspace */
-	static float64_t entropy(float64_t* p, int32_t len);
+	static float64_t entropy(float64_t* p, index_t len);
 
 	/** fisher's test for multiple 2x3 tables
 	 * @param tables
@@ -275,7 +274,7 @@ public:
 	 * @param sample_size size of sample to pick
 	 * @param N total number of indices
 	 */
-	static SGVector<int32_t> sample_indices(int32_t sample_size, int32_t N);
+	static SGVector<index_t> sample_indices(index_t sample_size, index_t N);
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -379,8 +378,9 @@ public:
 	 * @param precision_matrix if true, sample from N(mu,C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
-	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
-	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+	static SGMatrix<float64_t> sample_from_gaussian(
+		SGVector<float64_t> mean, SGMatrix<float64_t> cov, index_t N = 1,
+		bool precision_matrix = false);
 
 	/** Sampling from a multivariate Gaussian distribution with
 	 * sparse covariance matrix
@@ -397,8 +397,9 @@ public:
 	 * @param precision_matrix if true, sample from N(mu,C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
-	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
-	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+	static SGMatrix<float64_t> sample_from_gaussian(
+		SGVector<float64_t> mean, SGSparseMatrix<float64_t> cov, index_t N = 1,
+		bool precision_matrix = false);
 
 	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE1;

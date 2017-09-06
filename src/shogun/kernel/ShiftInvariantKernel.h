@@ -100,7 +100,7 @@ public:
 	 * @param y index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t x, int32_t y)=0;
+	virtual float64_t compute(index_t x, index_t y) = 0;
 
 	/** @return kernel type */
 	virtual EKernelType get_kernel_type()=0;

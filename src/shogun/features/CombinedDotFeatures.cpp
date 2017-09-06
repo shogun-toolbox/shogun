@@ -83,7 +83,8 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions)
 }
 
-float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t
+CCombinedDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	float64_t result=0;
 
@@ -114,7 +115,8 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 	return result;
 }
 
-float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CCombinedDotFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	float64_t result=0;
 
@@ -133,7 +135,9 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	return result;
 }
 
-void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CCombinedDotFeatures::dense_dot_range(
+    float64_t* output, index_t start, index_t stop, float64_t* alphas,
+    float64_t* vec, index_t dim, float64_t b)
 {
 	if (stop<=start)
 		return;
@@ -166,7 +170,9 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	SG_FREE(tmp);
 }
 
-void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CCombinedDotFeatures::dense_dot_range_subset(
+    index_t* sub_index, index_t num, float64_t* output, float64_t* alphas,
+    float64_t* vec, index_t dim, float64_t b)
 {
 	if (num<=0)
 		return;
@@ -198,7 +204,9 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 	SG_FREE(tmp);
 }
 
-void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CCombinedDotFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	uint32_t offs=0;
 
@@ -213,7 +221,7 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 	}
 }
 
-void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
+void* CCombinedDotFeatures::get_feature_iterator(index_t vector_index)
 {
 	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
@@ -224,7 +232,8 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 	return it;
 }
 
-bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool CCombinedDotFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	ASSERT(iterator)
 	combined_feature_iterator* it = (combined_feature_iterator*) iterator;
@@ -266,7 +275,7 @@ void CCombinedDotFeatures::free_feature_iterator(void* iterator)
 	}
 }
 
-CDotFeatures* CCombinedDotFeatures::get_feature_obj(int32_t idx)
+CDotFeatures* CCombinedDotFeatures::get_feature_obj(index_t idx)
 {
 	return (CDotFeatures*) feature_array->get_element(idx);
 }
@@ -301,7 +310,7 @@ int32_t CCombinedDotFeatures::get_num_feature_obj()
 	return feature_array->get_num_elements();
 }
 
-int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
+index_t CCombinedDotFeatures::get_nnz_features_for_vector(index_t num)
 {
 	int32_t result=0;
 

@@ -70,7 +70,7 @@ bool CPeriodicKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-float64_t CPeriodicKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CPeriodicKernel::compute(index_t idx_a, index_t idx_b)
 {
 	/* Periodic kernel defined as by David Duvenaud in
 	 http://mlg.eng.cam.ac.uk/duvenaud/cookbook/index.html

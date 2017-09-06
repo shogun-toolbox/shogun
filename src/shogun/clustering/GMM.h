@@ -45,7 +45,7 @@ class CGMM : public CDistribution
 		 * @param n number of Gaussians
 		 * @param cov_type covariance type
 		 */
-		CGMM(int32_t n, ECovType cov_type=FULL);
+		CGMM(index_t n, ECovType cov_type = FULL);
 		/** constructor
 		 *
 		 * @param components GMM components
@@ -75,8 +75,9 @@ class CGMM : public CDistribution
 		 *
 		 * @return log likelihood of training data
 		 */
-		float64_t train_em(float64_t min_cov=1e-9, int32_t max_iter=1000,
-				float64_t min_change=1e-9);
+		float64_t train_em(
+		    float64_t min_cov = 1e-9, index_t max_iter = 1000,
+		    float64_t min_change = 1e-9);
 
 		/** learn model using SMEM
 		 *
@@ -88,9 +89,10 @@ class CGMM : public CDistribution
 		 *
 		 * @return log likelihood of training data
 		 */
-		float64_t train_smem(int32_t max_iter=100, int32_t max_cand=5,
-				float64_t min_cov=1e-9, int32_t max_em_iter=1000,
-				float64_t min_change=1e-9);
+		float64_t train_smem(
+		    index_t max_iter = 100, index_t max_cand = 5,
+		    float64_t min_cov = 1e-9, index_t max_em_iter = 1000,
+		    float64_t min_change = 1e-9);
 
 		/** maximum likelihood estimation
 		 *
@@ -239,8 +241,9 @@ class CGMM : public CDistribution
 		 * @param max_em_iter maximum iterations for EM
 		 * @param min_change minimum change in log likelihood
 		 */
-		void partial_em(index_t comp1, index_t comp2, index_t comp3,
-				float64_t min_cov, int32_t max_em_iter, float64_t min_change);
+		void partial_em(
+		    index_t comp1, index_t comp2, index_t comp3, float64_t min_cov,
+		    index_t max_em_iter, float64_t min_change);
 
 	protected:
 		/** Mixture components */

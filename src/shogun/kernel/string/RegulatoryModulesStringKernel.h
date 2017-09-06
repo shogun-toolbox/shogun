@@ -96,7 +96,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 		/** compute WDS kernel for features a and b
 		 *
@@ -105,8 +105,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param len length of string
 		 * @return computed kernel function
 		 */
-		float64_t compute_wds(char* avec, char* bvec, int32_t len);
-
+		float64_t compute_wds(char* avec, char* bvec, index_t len);
 
 		/** set standard weighted degree kernel weighting */
 		void set_wd_weights();

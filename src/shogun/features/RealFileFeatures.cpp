@@ -24,8 +24,8 @@ CRealFileFeatures::CRealFileFeatures()
 	init();
 }
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
-: CDenseFeatures<float64_t>(size)
+CRealFileFeatures::CRealFileFeatures(index_t size, char* fname)
+    : CDenseFeatures<float64_t>(size)
 {
 	init();
 
@@ -35,8 +35,8 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 	status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
-: CDenseFeatures<float64_t>(size)
+CRealFileFeatures::CRealFileFeatures(index_t size, FILE* file)
+    : CDenseFeatures<float64_t>(size)
 {
 	init();
 
@@ -72,13 +72,13 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 		working_filename=get_strdup(orig.working_filename);
 	if (orig.labels && get_num_vectors())
 	{
-		labels=SG_MALLOC(int32_t, get_num_vectors());
-		sg_memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
+		labels = SG_MALLOC(index_t, get_num_vectors());
+		sg_memcpy(labels, orig.labels, sizeof(index_t) * get_num_vectors());
 	}
 }
 
 float64_t* CRealFileFeatures::compute_feature_vector(
-	int32_t num, int32_t &len, float64_t* target)
+    index_t num, index_t& len, float64_t* target)
 {
 	ASSERT(num<num_vectors)
 	len=num_features;
@@ -103,7 +103,7 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 
 	SG_INFO("loading... be patient.\n")
 
-	for (int32_t i=0; i<(int32_t) num_vectors; i++)
+	for (index_t i = 0; i < (index_t)num_vectors; i++)
 	{
 		if (!(i % (num_vectors/10+1)))
 			SG_PRINT("%02d%%.", (int) (100.0*i/num_vectors))
@@ -117,7 +117,7 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-int32_t CRealFileFeatures::get_label(int32_t idx)
+index_t CRealFileFeatures::get_label(index_t idx)
 {
 	ASSERT(idx<num_vectors)
 	if (labels)
@@ -128,8 +128,8 @@ int32_t CRealFileFeatures::get_label(int32_t idx)
 bool CRealFileFeatures::load_base_data()
 {
 	ASSERT(working_file)
-	uint32_t num_vec=0;
-	uint32_t num_feat=0;
+	index_t num_vec = 0;
+	index_t num_feat = 0;
 
 	ASSERT(fread(&intlen, sizeof(uint8_t), 1, working_file)==1)
 	ASSERT(fread(&doublelen, sizeof(uint8_t), 1, working_file)==1)
@@ -144,7 +144,7 @@ bool CRealFileFeatures::load_base_data()
 	set_num_features(num_feat);
 	fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
 	SG_FREE(labels);
-	labels=SG_MALLOC(int, num_vec);
+	labels = SG_MALLOC(index_t, num_vec);
 	ASSERT(fread(labels, intlen, num_vec, working_file) == num_vec)
 	return true;
 }

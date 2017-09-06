@@ -40,11 +40,11 @@ CFKFeatures::~CFKFeatures()
 	SG_UNREF(neg);
 }
 
-float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension)
+float64_t CFKFeatures::deriv_a(float64_t a, index_t dimension)
 {
 	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
 	float64_t deriv=0.0 ;
-	int32_t i=dimension ;
+	index_t i = dimension;
 
 	if (dimension==-1)
 	{
@@ -146,7 +146,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 }
 
 float64_t* CFKFeatures::compute_feature_vector(
-	int32_t num, int32_t &len, float64_t* target)
+    index_t num, index_t& len, float64_t* target)
 {
 	float64_t* featurevector=target;
 
@@ -166,9 +166,9 @@ float64_t* CFKFeatures::compute_feature_vector(
 }
 
 void CFKFeatures::compute_feature_vector(
-	float64_t* featurevector, int32_t num, int32_t& len)
+    float64_t* featurevector, index_t num, index_t& len)
 {
-	int32_t i,j,p=0,x=num;
+	index_t i, j, p = 0, x = num;
 
 	float64_t posx=pos->model_probability(x);
 	float64_t negx=neg->model_probability(x);
@@ -218,7 +218,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	ASSERT(neg)
 	ASSERT(neg->get_observations())
 
-	int32_t len=0;
+	index_t len = 0;
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
@@ -230,7 +230,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 
 	SG_INFO("calculating FK feature matrix\n")
 
-	for (int32_t x=0; x<num_vectors; x++)
+	for (index_t x = 0; x < num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
 			SG_DEBUG("%02d%%.", (int) (100.0*x/num_vectors))

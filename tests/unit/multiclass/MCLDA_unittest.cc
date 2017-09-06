@@ -17,8 +17,8 @@ TEST(MCLDA, train_and_apply)
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
 	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
-	for( int i = 0 ; i < CLASSES ; ++i )
-		for( int j = 0 ; j < NUM ; ++j )
+	for (index_t i = 0; i < CLASSES; ++i)
+		for (index_t j = 0; j < NUM; ++j)
 			lab[i*NUM+j] = double(i);
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);

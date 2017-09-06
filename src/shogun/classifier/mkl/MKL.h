@@ -424,7 +424,7 @@ class CMKL : public CSVM
 
 		/** sub-kernel weights on the L1-term of ElasticnetMKL */
 		float64_t* beta_local;
-		int32_t beta_local_size;
+		index_t beta_local_size;
 
 		/** number of mkl steps */
 		int32_t mkl_iterations;

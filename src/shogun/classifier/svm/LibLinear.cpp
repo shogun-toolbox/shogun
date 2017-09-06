@@ -486,7 +486,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	CDotFeatures* x = (CDotFeatures*) prob_col->x;
 	void* iterator;
-	int32_t ind;
+	index_t ind;
 	float64_t val;
 
 	double C[3] = {Cn,0,Cp};

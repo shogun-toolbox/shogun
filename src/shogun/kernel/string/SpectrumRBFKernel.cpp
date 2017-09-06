@@ -344,22 +344,22 @@ float64_t CSpectrumRBFKernel::AA_helper(const char* path, const int seq_degree, 
   return exp( - diff/width) ;
 }
 
-float64_t CSpectrumRBFKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSpectrumRBFKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	float64_t result=0;
-	for (int32_t i=0; i<alen; i++)
-	  {
-	    for (int32_t j=0; j<blen; j++)
-	      {
-		if ((i+degree<=alen) && (j+degree<=blen))
-		  result += AA_helper(&(avec[i]), degree, bvec, j) ;
-	      }
+	for (index_t i = 0; i < alen; i++)
+	{
+		for (index_t j = 0; j < blen; j++)
+		{
+			if ((i + degree <= alen) && (j + degree <= blen))
+				result += AA_helper(&(avec[i]), degree, bvec, j);
+		}
 	  }
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, afree);

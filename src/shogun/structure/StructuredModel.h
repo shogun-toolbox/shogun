@@ -136,7 +136,7 @@ class CStructuredModel : public CSGObject
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const = 0;
+		virtual index_t get_dim() const = 0;
 
 		/** set labels
 		 *
@@ -151,7 +151,8 @@ class CStructuredModel : public CSGObject
 		CStructuredLabels* get_labels();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
+		virtual CStructuredLabels*
+		structured_labels_factory(index_t num_labels = 0);
 
 		/** set features
 		 *
@@ -177,7 +178,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, int32_t lab_idx);
+		SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, index_t lab_idx);
 
 		/**
 		 * get joint feature vector
@@ -191,7 +193,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * gets joint feature vector
@@ -205,8 +208,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		SGSparseVector< float64_t > get_sparse_joint_feature_vector(int32_t feat_idx,
-				int32_t lab_idx);
+		SGSparseVector<float64_t>
+		get_sparse_joint_feature_vector(index_t feat_idx, index_t lab_idx);
 
 		/**
 		 * get joint feature vector
@@ -220,8 +223,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGSparseVector< float64_t > get_sparse_joint_feature_vector(int32_t feat_idx,
-				CStructuredData* y);
+		virtual SGSparseVector<float64_t>
+		get_sparse_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -236,7 +239,9 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) = 0;
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
@@ -245,7 +250,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		float64_t delta_loss(index_t ytrue_idx, CStructuredData* ypred);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -283,7 +288,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * return the number of auxiliary variables
 		 */
-		virtual int32_t get_num_aux() const;
+		virtual index_t get_num_aux() const;
 
 		/**
 		 * get the number of auxiliary constraints to introduce in the
@@ -294,7 +299,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * return the number of auxiliary constraints
 		 */
-		virtual int32_t get_num_aux_con() const;
+		virtual index_t get_num_aux_con() const;
 
 	private:
 		/** internal initialization */

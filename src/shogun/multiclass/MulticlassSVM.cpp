@@ -269,15 +269,17 @@ bool CMulticlassSVM::save(FILE* modelfl)
 	SG_INFO("Writing model file...")
 	fprintf(modelfl,"%%MultiClassSVM\n");
 	fprintf(modelfl,"num_classes=%d;\n", m_multiclass_strategy->get_num_classes());
-	fprintf(modelfl,"num_svms=%d;\n", m_machines->get_num_elements());
+	fprintf(modelfl, "num_svms=%lld;\n", m_machines->get_num_elements());
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
 		CSVM* svm=get_svm(i);
 		ASSERT(svm)
-		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_machines->get_num_elements()-1);
-		fprintf(modelfl,"numsv%d=%d;\n", i, svm->get_num_support_vectors());
+		fprintf(
+		    modelfl, "\n%%SVM %d of %lld\n", i,
+		    m_machines->get_num_elements() - 1);
+		fprintf(modelfl, "numsv%d=%lld;\n", i, svm->get_num_support_vectors());
 		fprintf(modelfl,"b%d=%+10.16e;\n",i,svm->get_bias());
 
 		fprintf(modelfl, "alphas%d=[\n", i);

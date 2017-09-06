@@ -192,7 +192,8 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 	return return_labels;
 }
 
-CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, int32_t n_outputs)
+CMultilabelLabels*
+CMulticlassMachine::apply_multilabel_output(CFeatures* data, index_t n_outputs)
 {
 	CMultilabelLabels* return_labels=NULL;
 

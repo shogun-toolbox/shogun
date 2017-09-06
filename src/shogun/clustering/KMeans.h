@@ -55,14 +55,14 @@ class CKMeans : public CKMeansBase
 		 * @param d distance
 		 * @param kmeanspp Set to true for using KMeans++ (default false)
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
+		CKMeans(index_t k, CDistance* d, bool kmeanspp = false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		 */
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
+		CKMeans(index_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
 
 		virtual ~CKMeans();
 
@@ -83,7 +83,7 @@ class CKMeans : public CKMeansBase
 
 		/** Lloyd's KMeans training method
 		 */
-		void Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers);
+		void Lloyd_KMeans(SGMatrix<float64_t> centers, index_t num_centers);
 };
 }
 #endif

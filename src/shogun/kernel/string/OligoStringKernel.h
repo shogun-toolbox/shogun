@@ -87,8 +87,7 @@ class COligoStringKernel : public CStringKernel<char>
 		 */
 		virtual const char* get_name() const { return "OligoStringKernel"; }
 
-
-		virtual float64_t compute(int32_t x, int32_t y);
+		virtual float64_t compute(index_t x, index_t y);
 
 		/** clean up your kernel
 		 */

@@ -94,7 +94,8 @@ float32_t CStreamingHashedSparseFeatures<ST>::dot(CStreamingDotFeatures* df)
 }
 
 template <class ST>
-float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, int32_t vec2_len)
+float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(
+	const float32_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == dim);
 
@@ -106,8 +107,8 @@ float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, i
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::add_to_dense_vec(float32_t alpha, float32_t* vec2,
-	int32_t vec2_len, bool abs_val)
+void CStreamingHashedSparseFeatures<ST>::add_to_dense_vec(
+	float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2_len == dim);
 
@@ -119,7 +120,7 @@ void CStreamingHashedSparseFeatures<ST>::add_to_dense_vec(float32_t alpha, float
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_dim_feature_space() const
+index_t CStreamingHashedSparseFeatures<ST>::get_dim_feature_space() const
 {
 	return dim;
 }
@@ -131,7 +132,7 @@ const char* CStreamingHashedSparseFeatures<ST>::get_name() const
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
+index_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
 {
 	return 1;
 }
@@ -203,7 +204,7 @@ void CStreamingHashedSparseFeatures<ST>::release_example()
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_num_features()
+index_t CStreamingHashedSparseFeatures<ST>::get_num_features()
 {
 	return dim;
 }

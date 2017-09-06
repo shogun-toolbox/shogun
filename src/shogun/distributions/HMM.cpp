@@ -5155,7 +5155,7 @@ bool CHMM::linear_train(bool right_align)
 		int32_t histsize=(get_M()*get_N());
 		int32_t* hist=SG_MALLOC(int32_t, histsize);
 		int32_t* startendhist=SG_MALLOC(int32_t, get_N());
-		int32_t i,dim;
+		index_t i, dim;
 
 		ASSERT(p_observations->get_max_vector_length()<=get_N())
 
@@ -5169,7 +5169,7 @@ bool CHMM::linear_train(bool right_align)
 		{
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
-				int32_t len=0;
+				index_t len = 0;
 				bool free_vec;
 				uint16_t* obs=p_observations->get_feature_vector(dim, len, free_vec);
 
@@ -5204,7 +5204,7 @@ bool CHMM::linear_train(bool right_align)
 		{
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
-				int32_t len=0;
+				index_t len = 0;
 				bool free_vec;
 				uint16_t* obs=p_observations->get_feature_vector(dim, len, free_vec);
 
@@ -5452,13 +5452,13 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	invalidate_model();
 }
 
-bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
+bool CHMM::permutation_entropy(int32_t window_width, index_t sequence_number)
 {
 	if (p_observations && window_width>0 &&
 			( sequence_number<0 || sequence_number < p_observations->get_num_vectors()))
 	{
-		int32_t min_sequence=sequence_number;
-		int32_t max_sequence=sequence_number;
+		index_t min_sequence = sequence_number;
+		index_t max_sequence = sequence_number;
 
 		if (sequence_number<0)
 		{
@@ -5470,7 +5470,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 		SG_INFO("min_sequence: %d max_sequence: %d\n", min_sequence, max_sequence)
 		for (sequence_number=min_sequence; sequence_number<max_sequence; sequence_number++)
 		{
-			int32_t sequence_length=0;
+			index_t sequence_length = 0;
 			bool free_vec;
 			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length, free_vec);
 
@@ -5510,7 +5510,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 		return false;
 }
 
-float64_t CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CHMM::get_log_derivative(index_t num_param, index_t num_example)
 {
 	if (num_param<N)
 		return model_derivative_p(num_param, num_example);
@@ -5535,7 +5535,7 @@ float64_t CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return -1;
 }
 
-float64_t CHMM::get_log_model_parameter(int32_t num_param)
+float64_t CHMM::get_log_model_parameter(index_t num_param)
 {
 	if (num_param<N)
 		return get_p(num_param);

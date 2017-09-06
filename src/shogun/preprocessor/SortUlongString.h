@@ -51,7 +51,7 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual uint64_t* apply_to_string(uint64_t* f, int32_t &len);
+	virtual uint64_t* apply_to_string(uint64_t* f, index_t& len);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "SortUlongString"; }

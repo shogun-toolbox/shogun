@@ -340,8 +340,9 @@ int32_t CCircularBuffer::append_chunk(FILE* source, int32_t source_size,
 	return actually_read;
 }
 
-void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes,
-					bool from_buffer_begin)
+void CCircularBuffer::detach_chunk(
+    char** dest, index_t* dest_size, index_t dest_offset, int32_t num_bytes,
+    bool from_buffer_begin)
 {
 	if (dest==NULL || dest_size==NULL)
 	{

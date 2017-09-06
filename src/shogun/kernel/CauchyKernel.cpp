@@ -56,7 +56,7 @@ void CCauchyKernel::init()
 	    MS_AVAILABLE);
 }
 
-float64_t CCauchyKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCauchyKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist = m_distance->distance(idx_a, idx_b);
 	return 1.0/(1.0+dist*dist/m_sigma);

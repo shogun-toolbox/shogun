@@ -240,46 +240,47 @@ public:
      *
      * @return 1 if an example could be fetched, 0 otherwise
      */
-    int32_t get_next_example(T* &feature_vector,
-                 int32_t &length,
-                 float64_t &label);
+	index_t
+	get_next_example(T*& feature_vector, index_t& length, float64_t& label);
 
-    /**
-     * Gets the next example, assuming it to be unlabelled.
-     *
-     * @param feature_vector
-     * @param length
-     *
-     * @return 1 if an example could be fetched, 0 otherwise
-     */
-    int32_t get_next_example(T* &feature_vector,
-                 int32_t &length);
+	/**
+	 * Gets the next example, assuming it to be unlabelled.
+	 *
+	 * @param feature_vector
+	 * @param length
+	 *
+	 * @return 1 if an example could be fetched, 0 otherwise
+	 */
+	index_t get_next_example(T*& feature_vector, index_t& length);
 
-    /**
-     * Finalize the current example, indicating that the buffer
-     * position it occupies may be overwritten by the parser.
-     *
-     * Should be called when the example has been processed by the
-     * external algorithm.
-     */
-    void finalize_example();
+	/**
+	 * Finalize the current example, indicating that the buffer
+	 * position it occupies may be overwritten by the parser.
+	 *
+	 * Should be called when the example has been processed by the
+	 * external algorithm.
+	 */
+	void finalize_example();
 
-    /**
-     * End the parser, waiting for the parse thread to complete.
-     *
-     */
-    void end_parser();
+	/**
+	 * End the parser, waiting for the parse thread to complete.
+	 *
+	 */
+	void end_parser();
 
-    /** Terminates the parsing thread
-     */
-    void exit_parser();
+	/** Terminates the parsing thread
+	 */
+	void exit_parser();
 
-    /**
-     * Returns the size of the examples ring
-     *
-     * @return ring size in terms of number of examples
-     */
-    int32_t get_ring_size() { return ring_size; }
+	/**
+	 * Returns the size of the examples ring
+	 *
+	 * @return ring size in terms of number of examples
+	 */
+	int32_t get_ring_size()
+	{
+		return ring_size;
+	}
 
 private:
     /**
@@ -588,8 +589,9 @@ template <class T> Example<T>* CInputParser<T>::retrieve_example()
     return ex;
 }
 
-template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
-        int32_t &length, float64_t &label)
+template <class T>
+index_t
+CInputParser<T>::get_next_example(T*& fv, index_t& length, float64_t& label)
 {
     /* if reading is done, no more examples can be fetched. return 0
        else, if example can be read, get the example and return 1.
@@ -635,7 +637,7 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
 }
 
 template <class T>
-    int32_t CInputParser<T>::get_next_example(T* &fv, int32_t &length)
+index_t CInputParser<T>::get_next_example(T*& fv, index_t& length)
 {
     float64_t label_dummy;
 

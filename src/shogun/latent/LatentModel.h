@@ -51,95 +51,107 @@ namespace shogun
 			 *
 			 * @return number of examples/vectors in latent features
 			 */
-			virtual int32_t get_num_vectors() const;
+		    virtual index_t get_num_vectors() const;
 
-			/** get the dimension of the combined features, i.e \f$\Psi(\ldots)\f$
-			 *
-			 * @return dimension of features, i.e. psi vector
-			 */
-			virtual int32_t get_dim() const=0;
+		    /** get the dimension of the combined features, i.e
+		     * \f$\Psi(\ldots)\f$
+		     *
+		     * @return dimension of features, i.e. psi vector
+		     */
+		    virtual index_t get_dim() const = 0;
 
-			/** set latent labels
-			 *
-			 * @param labs latent labels
-			 */
-			void set_labels(CLatentLabels* labs);
+		    /** set latent labels
+		     *
+		     * @param labs latent labels
+		     */
+		    void set_labels(CLatentLabels* labs);
 
-			/** get latent labels
-			 *
-			 * @return latent labels
-			 */
-			CLatentLabels* get_labels() const;
+		    /** get latent labels
+		     *
+		     * @return latent labels
+		     */
+		    CLatentLabels* get_labels() const;
 
-			/** set latent features
-			 *
-			 * @param feats the latent features of the problem
-			 */
-			void set_features(CLatentFeatures* feats);
+		    /** set latent features
+		     *
+		     * @param feats the latent features of the problem
+		     */
+		    void set_features(CLatentFeatures* feats);
 
-			/** get latent features
-			 *
-			 * @return latent features
-			 */
-			CLatentFeatures* get_features() const;
+		    /** get latent features
+		     *
+		     * @return latent features
+		     */
+		    CLatentFeatures* get_features() const;
 
-			/** Calculate the PSI vectors for all features
-			 *
-			 * @return PSI vectors
-			 */
-			virtual CDotFeatures* get_psi_feature_vectors()=0;
+		    /** Calculate the PSI vectors for all features
+		     *
+		     * @return PSI vectors
+		     */
+		    virtual CDotFeatures* get_psi_feature_vectors() = 0;
 
-			/** User defined \f$h^{*} = argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
-			 * This function has to be defined the user as it is applications specific, since
-			 * it depends on the user defined latent feature and latent label.
-			 *
-			 * @param w weight vector
-			 * @param idx index of the example
-			 * @return returns \f$h^{*}\f$ for the given example
-			 */
-			virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)=0;
+		    /** User defined \f$h^{*} = argmax_{h} \langle
+		     * \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
+		     * This function has to be defined the user as it is applications
+		     * specific, since
+		     * it depends on the user defined latent feature and latent label.
+		     *
+		     * @param w weight vector
+		     * @param idx index of the example
+		     * @return returns \f$h^{*}\f$ for the given example
+		     */
+		    virtual CData* infer_latent_variable(
+		        const SGVector<float64_t>& w, index_t idx) = 0;
 
-			/** Calculates \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
-			 * The default implementaiton calculates the argmax_h only on the positive examples.
-			 *
-			 * @param w weight vector (cutting plane) supplied by the underlying optimizer.
-			 */
-			virtual void argmax_h(const SGVector<float64_t>& w);
+		    /** Calculates \f$argmax_{h} \langle
+		     * \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
+		     * The default implementaiton calculates the argmax_h only on the
+		     * positive examples.
+		     *
+		     * @param w weight vector (cutting plane) supplied by the underlying
+		     * optimizer.
+		     */
+		    virtual void argmax_h(const SGVector<float64_t>& w);
 
-			/** cache the PSI vectors
-			 *
-			 */
-			void cache_psi_features();
+		    /** cache the PSI vectors
+		     *
+		     */
+		    void cache_psi_features();
 
-			/** get the cached PSI vectors
-			 *
-			 * @return the cached PSI vectors
-			 */
-			CDotFeatures* get_cached_psi_features() const;
+		    /** get the cached PSI vectors
+		     *
+		     * @return the cached PSI vectors
+		     */
+		    CDotFeatures* get_cached_psi_features() const;
 
-			/** get caching
-			 *
-			 * @return true if caching of PSI vectors is enabled; false otherwise
-			 */
-			inline bool get_caching() const
-			{
-				return m_do_caching;
-			}
+		    /** get caching
+		     *
+		     * @return true if caching of PSI vectors is enabled; false
+		     * otherwise
+		     */
+		    inline bool get_caching() const
+		    {
+			    return m_do_caching;
+		    }
 
-			/** set caching of PSI features
-			 *
-			 * @param caching true if one wants to cache PSI vectors; false otherwise
-			 */
-			inline void set_caching(bool caching)
-			{
-				m_do_caching = caching;
-			}
+		    /** set caching of PSI features
+		     *
+		     * @param caching true if one wants to cache PSI vectors; false
+		     * otherwise
+		     */
+		    inline void set_caching(bool caching)
+		    {
+			    m_do_caching = caching;
+		    }
 
-			/** Returns the name of the SGSerializable instance.
-			 *
-			 * @return name of the SGSerializable
-			 */
-			virtual const char* get_name() const { return "LatentModel"; }
+		    /** Returns the name of the SGSerializable instance.
+		     *
+		     * @return name of the SGSerializable
+		     */
+		    virtual const char* get_name() const
+		    {
+			    return "LatentModel";
+		    }
 
 		protected:
 			/** latent features for training */

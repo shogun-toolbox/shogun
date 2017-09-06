@@ -79,7 +79,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @return if optimization was successful
 		 */
 		virtual bool init_optimization(
-			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
+		    index_t num_suppvec, index_t* sv_idx, float64_t* alphas);
 
 		/** delete optimization
 		 *
@@ -92,7 +92,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(index_t idx);
 
 		/** clear normal */
 		virtual void clear_normal();
@@ -102,7 +102,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		virtual void add_to_normal(index_t idx, float64_t weight);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -113,7 +113,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */

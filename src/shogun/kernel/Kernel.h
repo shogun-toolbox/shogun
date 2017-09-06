@@ -184,7 +184,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param size cache size
 		 */
-		CKernel(int32_t size);
+		CKernel(index_t size);
 
 		/** constructor
 		 *
@@ -192,7 +192,7 @@ class CKernel : public CSGObject
 		 * @param r features for right-hand side
 		 * @param size cache size
 		 */
-		CKernel(CFeatures* l, CFeatures* r, int32_t size);
+		CKernel(CFeatures* l, CFeatures* r, index_t size);
 
 		virtual ~CKernel();
 
@@ -203,7 +203,7 @@ class CKernel : public CSGObject
 		 * @param idx_b index of feature vector b
 		 * @return computed kernel function
 		 */
-		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
+		inline float64_t kernel(index_t idx_a, index_t idx_b)
 		{
 			REQUIRE(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
 				"%s::kernel(): index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
@@ -259,12 +259,12 @@ class CKernel : public CSGObject
 		 *
 		 * @return the jth column of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_col(int32_t j)
+		virtual SGVector<float64_t> get_kernel_col(index_t j)
 		{
 
 			SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
 
-			for (int32_t i=0; i!=num_rhs; i++)
+			for (index_t i = 0; i != num_rhs; i++)
 				col[i] = kernel(i,j);
 
 			return col;
@@ -276,7 +276,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return the ith row of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_row(int32_t i)
+		virtual SGVector<float64_t> get_kernel_row(index_t i)
 		{
 			SGVector<float64_t> row = SGVector<float64_t>(num_lhs);
 
@@ -513,7 +513,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return num_lhs;
 		}
@@ -522,7 +522,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return num_rhs;
 		}
@@ -583,7 +583,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param size of kernel cache
 		 */
-		inline void set_cache_size(int32_t size)
+		inline void set_cache_size(index_t size)
 		{
 			cache_size = size;
 #ifdef USE_SVMLIGHT
@@ -595,7 +595,10 @@ class CKernel : public CSGObject
 		 *
 		 * @return size of kernel cache
 		 */
-		inline int32_t get_cache_size() { return cache_size; }
+		inline index_t get_cache_size()
+		{
+			return cache_size;
+		}
 
 #ifdef USE_SVMLIGHT
 		/** cache reset */
@@ -605,13 +608,19 @@ class CKernel : public CSGObject
 		 *
 		 * @return maximum elements in cache
 		 */
-		inline int32_t get_max_elems_cache() { return kernel_cache.max_elems; }
+		inline index_t get_max_elems_cache()
+		{
+			return kernel_cache.max_elems;
+		}
 
 		/** get activenum cache
 		 *
 		 * @return activecnum cache
 		 */
-		inline int32_t get_activenum_cache() { return kernel_cache.activenum; }
+		inline index_t get_activenum_cache()
+		{
+			return kernel_cache.activenum;
+		}
 
 		/** get kernel row
 		 *
@@ -621,8 +630,8 @@ class CKernel : public CSGObject
 		 * @param full_line full line
 		 */
 		void get_kernel_row(
-			int32_t docnum, int32_t *active2dnum, float64_t *buffer,
-			bool full_line=false);
+		    int32_t docnum, index_t* active2dnum, float64_t* buffer,
+		    bool full_line = false);
 
 		/** cache kernel row
 		 *
@@ -635,7 +644,7 @@ class CKernel : public CSGObject
 		 * @param key key
 		 * @param varnum
 		 */
-		void cache_multiple_kernel_rows(int32_t* key, int32_t varnum);
+		void cache_multiple_kernel_rows(index_t* key, index_t varnum);
 
 		/** kernel cache reset lru */
 		void kernel_cache_reset_lru();
@@ -646,8 +655,8 @@ class CKernel : public CSGObject
 		 * @param num_shrink number of shrink
 		 * @param after after
 		 */
-		void kernel_cache_shrink(
-			int32_t totdoc, int32_t num_shrink, int32_t *after);
+		void
+		kernel_cache_shrink(int32_t totdoc, int32_t num_shrink, index_t* after);
 
 		/** resize kernel cache
 		 *
@@ -671,7 +680,7 @@ class CKernel : public CSGObject
 		 * @param cacheidx index in cache
 		 * @return if updating was successful
 		 */
-		inline int32_t kernel_cache_touch(int32_t cacheidx)
+		inline index_t kernel_cache_touch(index_t cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -686,7 +695,7 @@ class CKernel : public CSGObject
 		 * @param cacheidx index in cache
 		 * @return if row at given index is cached
 		 */
-		inline int32_t kernel_cache_check(int32_t cacheidx)
+		inline index_t kernel_cache_check(index_t cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] >= 0);
 		}
@@ -732,7 +741,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(int32_t vector_idx, float64_t weight);
+		virtual void add_to_normal(index_t vector_idx, float64_t weight);
 
 		/** get optimization type
 		 *
@@ -759,8 +768,8 @@ class CKernel : public CSGObject
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t *weights);
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -780,7 +789,7 @@ class CKernel : public CSGObject
 		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual float64_t compute_optimized(int32_t vector_idx);
+		virtual float64_t compute_optimized(index_t vector_idx);
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -791,9 +800,9 @@ class CKernel : public CSGObject
 		 * and weights
 		 */
 		virtual void compute_batch(
-			int32_t num_vec, int32_t* vec_idx, float64_t* target,
-			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** get combined kernel weight
 		 *
@@ -811,15 +820,15 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels();
+		virtual index_t get_num_subkernels();
 
 		/** compute by subkernel
 		 *
 		 * @param vector_idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(
-			int32_t vector_idx, float64_t * subkernel_contrib);
+		virtual void
+		compute_by_subkernel(index_t vector_idx, float64_t* subkernel_contrib);
 
 		/** get subkernel weights
 		 *
@@ -908,7 +917,7 @@ class CKernel : public CSGObject
 		 * @param y index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t x, int32_t y)=0;
+		virtual float64_t compute(index_t x, index_t y) = 0;
 
 		/** compute row start offset for parallel kernel matrix computation
 		 *
@@ -916,14 +925,15 @@ class CKernel : public CSGObject
 		 * @param n number of columns
 		 * @param symmetric whether matrix is symmetric
 		 */
-		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
+		index_t compute_row_start(int64_t offs, index_t n, bool symmetric)
 		{
-			int32_t i_start;
+			index_t i_start;
 
 			if (symmetric)
-				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+				i_start = (index_t)CMath::floor(
+				    n - CMath::sqrt(CMath::sq((float64_t)n) - offs));
 			else
-				i_start=(int32_t) (offs/int64_t(n));
+				i_start = (index_t)(offs / int64_t(n));
 
 			return i_start;
 		}
@@ -981,9 +991,9 @@ class CKernel : public CSGObject
 		/**@ cache kernel evalutations to improve speed */
 		struct KERNEL_CACHE {
 			/** index */
-			int32_t   *index;
+			index_t* index;
 			/** inverse index */
-			int32_t   *invindex;
+			index_t* invindex;
 			/** active2totdoc */
 			int32_t   *active2totdoc;
 			/** totdoc2active */
@@ -993,13 +1003,13 @@ class CKernel : public CSGObject
 			/** occu */
 			int32_t   *occu;
 			/** elements */
-			int32_t   elems;
+			index_t elems;
 			/** max elements */
-			int32_t   max_elems;
+			index_t max_elems;
 			/** time */
 			int32_t   time;
 			/** active num */
-			int32_t   activenum;
+			index_t activenum;
 
 			/** buffer */
 			KERNELCACHE_ELEM  *buffer;
@@ -1044,7 +1054,7 @@ class CKernel : public CSGObject
 
 	protected:
 		/// cache_size in MB
-		int32_t cache_size;
+		index_t cache_size;
 
 #ifdef USE_SVMLIGHT
 		/// kernel cache
@@ -1064,9 +1074,9 @@ class CKernel : public CSGObject
 		bool lhs_equals_rhs;
 
 		/// number of feature vectors on left hand side
-		int32_t num_lhs;
+		index_t num_lhs;
 		/// number of feature vectors on right hand side
-		int32_t num_rhs;
+		index_t num_rhs;
 
 		/** combined kernel weight */
 		float64_t combined_kernel_weight;

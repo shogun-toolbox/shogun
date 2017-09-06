@@ -99,8 +99,8 @@ class CSVRLight: public CSVMLight
 		 * @param totdoc totdoc
 		 */
 		virtual float64_t compute_objective_function(
-			float64_t *a, float64_t *lin, float64_t *c, float64_t* eps,
-			int32_t *label, int32_t totdoc);
+		    float64_t* a, float64_t* lin, float64_t* c, float64_t* eps,
+		    index_t* label, int32_t totdoc);
 
 		/** update linear component
 		 *
@@ -116,10 +116,9 @@ class CSVRLight: public CSVMLight
 		 * @param c c
 		 */
 		virtual void update_linear_component(
-			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, float64_t *a, float64_t* a_old,
-			int32_t *working2dnum, int32_t totdoc,
-			float64_t *lin, float64_t *aicache, float64_t* c);
+		    int32_t* docs, index_t* label, index_t* active2dnum, float64_t* a,
+		    float64_t* a_old, index_t* working2dnum, int32_t totdoc,
+		    float64_t* lin, float64_t* aicache, float64_t* c);
 
 		/** update linear component MKL
 		 *
@@ -135,10 +134,9 @@ class CSVRLight: public CSVMLight
 		 * @param c c
 		 */
 		virtual void update_linear_component_mkl(
-			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, float64_t *a, float64_t* a_old,
-			int32_t *working2dnum, int32_t totdoc,
-			float64_t *lin, float64_t *aicache, float64_t* c);
+		    int32_t* docs, index_t* label, index_t* active2dnum, float64_t* a,
+		    float64_t* a_old, index_t* working2dnum, int32_t totdoc,
+		    float64_t* lin, float64_t* aicache, float64_t* c);
 
 		/** update linear component MKL linadd
 		 *
@@ -154,10 +152,9 @@ class CSVRLight: public CSVMLight
 		 * @param c c
 		 */
 		virtual void update_linear_component_mkl_linadd(
-			int32_t* docs, int32_t *label,
-			int32_t *active2dnum, float64_t *a, float64_t* a_old,
-			int32_t *working2dnum, int32_t totdoc,
-			float64_t *lin, float64_t *aicache, float64_t* c);
+		    int32_t* docs, index_t* label, index_t* active2dnum, float64_t* a,
+		    float64_t* a_old, index_t* working2dnum, int32_t totdoc,
+		    float64_t* lin, float64_t* aicache, float64_t* c);
 
 		/** call mkl callback
 		 * @param a
@@ -166,7 +163,9 @@ class CSVRLight: public CSVMLight
 		 * @param c
 		 * @param totdoc
 		 */
-		void call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, float64_t* c, int32_t totdoc);
+		void call_mkl_callback(
+		    float64_t* a, index_t* label, float64_t* lin, float64_t* c,
+		    int32_t totdoc);
 
 		/** reactivate inactive examples
 		 *
@@ -183,11 +182,10 @@ class CSVRLight: public CSVMLight
 		 * @param maxdiff maxdiff
 		 */
 		virtual void reactivate_inactive_examples(
-			int32_t *label,float64_t *a,SHRINK_STATE *shrink_state,
-			float64_t *lin, float64_t *c, int32_t totdoc,int32_t iteration,
-			int32_t *inconsistent,
-			int32_t *docs,float64_t *aicache,
-			float64_t* maxdiff);
+		    index_t* label, float64_t* a, SHRINK_STATE* shrink_state,
+		    float64_t* lin, float64_t* c, int32_t totdoc, index_t iteration,
+		    index_t* inconsistent, int32_t* docs, float64_t* aicache,
+		    float64_t* maxdiff);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SVRLight"; }
@@ -204,7 +202,7 @@ class CSVRLight: public CSVMLight
 		 * @param i i
 		 * @return fix index
 		 */
-		int32_t regression_fix_index(int32_t i);
+		index_t regression_fix_index(index_t i);
 
 		/** regression fix index2
 		 *
@@ -212,8 +210,7 @@ class CSVRLight: public CSVMLight
 		 * @param num_vectors number of vectors
 		 * @return fix index
 		 */
-		static int32_t regression_fix_index2(
-			int32_t i, int32_t num_vectors);
+		static index_t regression_fix_index2(index_t i, index_t num_vectors);
 
 		/** compute kernel at given index
 		 *
@@ -221,7 +218,7 @@ class CSVRLight: public CSVMLight
 		 * @param j index j
 		 * @return kernel value at i,j
 		 */
-		virtual float64_t compute_kernel(int32_t i, int32_t j);
+		virtual float64_t compute_kernel(index_t i, index_t j);
 
 		/** train regression
 		 *

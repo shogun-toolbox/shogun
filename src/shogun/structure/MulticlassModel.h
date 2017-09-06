@@ -42,13 +42,14 @@ class CMulticlassModel : public CStructuredModel
 		virtual ~CMulticlassModel();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
+		virtual CStructuredLabels*
+		structured_labels_factory(index_t num_labels = 0);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		virtual index_t get_dim() const;
 
 		/**
 		 * get joint feature vector
@@ -62,7 +63,8 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -77,7 +79,9 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -115,11 +119,11 @@ class CMulticlassModel : public CStructuredModel
 
 		/** Different flavours of the delta_loss that become handy */
 		float64_t delta_loss(float64_t y1, float64_t y2);
-		float64_t delta_loss(int32_t y1_idx, float64_t y2);
+		float64_t delta_loss(index_t y1_idx, float64_t y2);
 
 	private:
 		/** number of classes */
-		int32_t m_num_classes;
+		index_t m_num_classes;
 
 }; /* MulticlassModel */
 

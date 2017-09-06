@@ -51,14 +51,14 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	labels->ensure_valid();
 
 	// get the original labels
-	SGVector<int32_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
+	SGVector<index_t> int_labels = ((CBinaryLabels*)labels)->get_int_labels();
 	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen)
 
 	// count positive and negative
-	int32_t num_pos=0;
-	int32_t num_neg=0;
+	index_t num_pos = 0;
+	index_t num_neg = 0;
 
-	for (int32_t i=0; i<int_labels.vlen; i++)
+	for (index_t i = 0; i < int_labels.vlen; i++)
 	{
 		if (int_labels.vector[i]==1)
 			num_pos++;
@@ -74,12 +74,12 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
 	int32_t n=0 ;
 
-	for (int32_t i=0; i<int_labels.vlen; i++)
+	for (index_t i = 0; i < int_labels.vlen; i++)
 	{
 		if (int_labels.vector[i]!=1)
 			continue;
 
-		for (int32_t j=0; j<int_labels.vlen; j++)
+		for (index_t j = 0; j < int_labels.vlen; j++)
 		{
 			if (int_labels.vector[j]!=-1)
 				continue;
@@ -109,7 +109,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	SG_REF(lab_auc);
 
 	// create feature object
-	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(0);
+	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(index_t(0));
 	f->set_feature_matrix(features_auc);
 
 	// create AUC kernel and attach the features
@@ -128,31 +128,34 @@ bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CAUCKernel::compute(index_t idx_a, index_t idx_b)
 {
-  int32_t alen, blen;
-  bool afree, bfree;
+	index_t alen, blen;
+	bool afree, bfree;
 
-  uint16_t* avec=((CDenseFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-  uint16_t* bvec=((CDenseFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	uint16_t* avec = ((CDenseFeatures<uint16_t>*)lhs)
+	                     ->get_feature_vector(idx_a, alen, afree);
+	uint16_t* bvec = ((CDenseFeatures<uint16_t>*)rhs)
+	                     ->get_feature_vector(idx_b, blen, bfree);
 
-  ASSERT(alen==2)
-  ASSERT(blen==2)
+	ASSERT(alen == 2)
+	ASSERT(blen == 2)
 
-  ASSERT(subkernel && subkernel->has_features())
+	ASSERT(subkernel && subkernel->has_features())
 
-  float64_t k11,k12,k21,k22;
-  int32_t idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];
+	float64_t k11, k12, k21, k22;
+	int32_t idx_a1 = avec[0], idx_a2 = avec[1], idx_b1 = bvec[0],
+	        idx_b2 = bvec[1];
 
-  k11 = subkernel->kernel(idx_a1,idx_b1);
-  k12 = subkernel->kernel(idx_a1,idx_b2);
-  k21 = subkernel->kernel(idx_a2,idx_b1);
-  k22 = subkernel->kernel(idx_a2,idx_b2);
+	k11 = subkernel->kernel(idx_a1, idx_b1);
+	k12 = subkernel->kernel(idx_a1, idx_b2);
+	k21 = subkernel->kernel(idx_a2, idx_b1);
+	k22 = subkernel->kernel(idx_a2, idx_b2);
 
-  float64_t result = k11+k22-k21-k12;
+	float64_t result = k11 + k22 - k21 - k12;
 
-  ((CDenseFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CDenseFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<uint16_t>*)lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<uint16_t>*)rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+	return result;
 }

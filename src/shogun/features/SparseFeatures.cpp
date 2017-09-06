@@ -13,22 +13,25 @@ namespace shogun
 
 template <class ST> class CSparsePreprocessor;
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
-: CDotFeatures(size), feature_cache(NULL)
+template <class ST>
+CSparseFeatures<ST>::CSparseFeatures(index_t size)
+	: CDotFeatures(size), feature_cache(NULL)
 {
 	init();
 }
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> sparse)
-: CDotFeatures(0), feature_cache(NULL)
+template <class ST>
+CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> sparse)
+	: CDotFeatures(index_t(0)), feature_cache(NULL)
 {
 	init();
 
 	set_sparse_feature_matrix(sparse);
 }
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
-: CDotFeatures(0), feature_cache(NULL)
+template <class ST>
+CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
+	: CDotFeatures(index_t(0)), feature_cache(NULL)
 {
 	init();
 
@@ -62,7 +65,8 @@ template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 	return new CSparseFeatures<ST>(*this);
 }
 
-template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
+template <class ST>
+ST CSparseFeatures<ST>::get_feature(index_t num, index_t index)
 {
 	REQUIRE(index>=0 && index<get_num_features(),
 		"get_feature(num=%d,index=%d): index exceeds [0;%d]\n",
@@ -75,7 +79,8 @@ template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t inde
 	return ret;
 }
 
-template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int32_t num)
+template <class ST>
+SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(index_t num)
 {
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 	SGVector<ST> dense = sv.get_dense(get_num_features());
@@ -83,7 +88,8 @@ template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int
 	return dense;
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+template <class ST>
+index_t CSparseFeatures<ST>::get_nnz_features_for_vector(index_t num)
 {
 	SGSparseVector<ST> sv = get_sparse_feature_vector(num);
 	int32_t len=sv.num_feat_entries;
@@ -91,7 +97,8 @@ template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int3
 	return len;
 }
 
-template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(int32_t num)
+template <class ST>
+SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(index_t num)
 {
 	REQUIRE(num>=0 && num<get_num_vectors(),
 		"get_sparse_feature_vector(num=%d): num exceeds [0;%d]\n",
@@ -153,7 +160,9 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 	}
 }
 
-template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b)
+template <class ST>
+ST CSparseFeatures<ST>::dense_dot(
+	ST alpha, index_t num, ST* vec, index_t dim, ST b)
 {
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 	ST result = sv.dense_dot(alpha,vec,dim,b);
@@ -161,7 +170,9 @@ template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* 
 	return result;
 }
 
-template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+template <class ST>
+void CSparseFeatures<ST>::add_to_dense_vec(
+	float64_t alpha, index_t num, float64_t* vec, index_t dim, bool abs_val)
 {
 	REQUIRE(vec, "add_to_dense_vec(num=%d,dim=%d): vec must not be NULL\n",
 		num, dim);
@@ -194,14 +205,15 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 	free_sparse_feature_vector(num);
 }
 
-template<>
-void CSparseFeatures<complex128_t>::add_to_dense_vec(float64_t alpha,
-	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+template <>
+void CSparseFeatures<complex128_t>::add_to_dense_vec(
+	float64_t alpha, index_t num, float64_t* vec, index_t dim, bool abs_val)
 {
 	SG_NOTIMPLEMENTED;
 }
 
-template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
+template <class ST>
+void CSparseFeatures<ST>::free_sparse_feature_vector(index_t num)
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -328,19 +340,22 @@ template<> void CSparseFeatures<complex128_t>::obtain_from_simple(CDenseFeatures
 	SG_NOTIMPLEMENTED;
 }
 
-template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
+template <class ST>
+index_t CSparseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : sparse_feature_matrix.num_vectors;
 }
 
-template<class ST> int32_t  CSparseFeatures<ST>::get_num_features() const
+template <class ST>
+index_t CSparseFeatures<ST>::get_num_features() const
 {
 	return sparse_feature_matrix.num_features;
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::set_num_features(int32_t num)
+template <class ST>
+index_t CSparseFeatures<ST>::set_num_features(index_t num)
 {
-	int32_t n=get_num_features();
+	index_t n = get_num_features();
 	ASSERT(n<=num)
 	sparse_feature_matrix.num_features=num;
 	return sparse_feature_matrix.num_features;
@@ -351,7 +366,8 @@ template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class() const
 	return C_SPARSE;
 }
 
-template<class ST> void CSparseFeatures<ST>::free_feature_vector(int32_t num)
+template <class ST>
+void CSparseFeatures<ST>::free_feature_vector(index_t num)
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -394,11 +410,12 @@ template<> float64_t* CSparseFeatures<complex128_t>::compute_squared(float64_t* 
 	return sq;
 }
 
-template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
-		CSparseFeatures<float64_t>* lhs, float64_t* sq_lhs, int32_t idx_a,
-		CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs, int32_t idx_b)
+template <class ST>
+float64_t CSparseFeatures<ST>::compute_squared_norm(
+	CSparseFeatures<float64_t>* lhs, float64_t* sq_lhs, index_t idx_a,
+	CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs, index_t idx_b)
 {
-	int32_t i,j;
+	index_t i, j;
 	ASSERT(lhs)
 	ASSERT(rhs)
 
@@ -454,13 +471,15 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 	return CMath::abs(result);
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_dim_feature_space() const
+template <class ST>
+index_t CSparseFeatures<ST>::get_dim_feature_space() const
 {
 	return get_num_features();
 }
 
-template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2)
+template <class ST>
+float64_t
+CSparseFeatures<ST>::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -477,14 +496,17 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 	return result;
 }
 
-template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2)
+template <>
+float64_t CSparseFeatures<complex128_t>::dot(
+	index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
 }
 
-template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+template <class ST>
+float64_t CSparseFeatures<ST>::dense_dot(
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	REQUIRE(vec2, "dense_dot(vec_idx1=%d,vec2_len=%d): vec2 must not be NULL\n",
 		vec_idx1, vec2_len);
@@ -514,14 +536,16 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 	return result;
 }
 
-template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
-	const float64_t* vec2, int32_t vec2_len)
+template <>
+float64_t CSparseFeatures<complex128_t>::dense_dot(
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
 }
 
-template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
+template <class ST>
+void* CSparseFeatures<ST>::get_feature_iterator(index_t vector_index)
 {
 	if (vector_index>=get_num_vectors())
 	{
@@ -540,7 +564,9 @@ template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vecto
 	return it;
 }
 
-template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+template <class ST>
+bool CSparseFeatures<ST>::get_next_feature(
+	index_t& index, float64_t& value, void* iterator)
 {
 	sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
 	if (!it || it->index>=it->sv.num_feat_entries)
@@ -554,8 +580,9 @@ template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, fl
 	return true;
 }
 
-template<> bool CSparseFeatures<complex128_t>::get_next_feature(int32_t& index,
-	float64_t& value, void* iterator)
+template <>
+bool CSparseFeatures<complex128_t>::get_next_feature(
+	index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
 	return false;
@@ -591,8 +618,9 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 	return result;
 }
 
-template<class ST> SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_feature_vector(int32_t num,
-	int32_t& len, SGSparseVectorEntry<ST>* target)
+template <class ST>
+SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_feature_vector(
+	index_t num, index_t& len, SGSparseVectorEntry<ST>* target)
 {
 	SG_NOTIMPLEMENTED
 

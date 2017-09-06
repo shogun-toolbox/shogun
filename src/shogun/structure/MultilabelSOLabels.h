@@ -38,7 +38,10 @@ public:
 	 *
 	 * @param label sparse label
 	 */
-	CSparseMultilabel(SGVector<int32_t> label) : CStructuredData(), m_label(label) { }
+	CSparseMultilabel(SGVector<index_t> label)
+		: CStructuredData(), m_label(label)
+	{
+	}
 
 	/** destructor */
 	~CSparseMultilabel() { }
@@ -68,14 +71,14 @@ public:
 	}
 
 	/** @return label */
-	SGVector<int32_t> get_data() const
+	SGVector<index_t> get_data() const
 	{
 		return m_label;
 	}
 
 protected:
 	/** sparse label */
-	SGVector<int32_t> m_label;
+	SGVector<index_t> m_label;
 }; /* class CSparseMultilabel */
 
 /** @brief Class CMultilabelSOLabels used in the application of Structured
@@ -130,14 +133,14 @@ public:
 	 *
 	 * @param labels list of sparse labels
 	 */
-	virtual void set_sparse_labels(SGVector<int32_t> * labels);
+	virtual void set_sparse_labels(SGVector<index_t>* labels);
 
 	/** set sparse assignment for j-th label
 	 *
 	 * @param j label index
 	 * @param label sparse label
 	 */
-	virtual void set_sparse_label(index_t j, SGVector<int32_t> label);
+	virtual void set_sparse_label(index_t j, SGVector<index_t> label);
 
 	/** set assignment for j-th label
 	 *
@@ -157,7 +160,7 @@ public:
 	 *
 	 * @param j label index
 	 */
-	virtual SGVector<int32_t> get_sparse_label(index_t j);
+	virtual SGVector<index_t> get_sparse_label(index_t j);
 
 	/** get label for j-th index
 	 *

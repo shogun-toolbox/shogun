@@ -80,27 +80,29 @@ protected:
      * @param idx_b index b
      * @return computed kernel function at indices a,b
      */
-    virtual float64_t compute(int32_t idx_a, int32_t idx_b)
-    {
-        int32_t alen, blen;
-        bool afree, bfree;
+	virtual float64_t compute(index_t idx_a, index_t idx_b)
+	{
+		index_t alen, blen;
+		bool afree, bfree;
 
-        float64_t* avec=
-            ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-        float64_t* bvec=
-            ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		float64_t* avec = ((CDenseFeatures<float64_t>*)lhs)
+		                      ->get_feature_vector(idx_a, alen, afree);
+		float64_t* bvec = ((CDenseFeatures<float64_t>*)rhs)
+		                      ->get_feature_vector(idx_b, blen, bfree);
 
-        ASSERT(alen==blen);
+		ASSERT(alen == blen);
 
-        float64_t result=0;
-        for (int32_t i=0; i<alen; i++)
-            result+=avec[i]*bvec[alen-i-1];
+		float64_t result = 0;
+		for (int32_t i = 0; i < alen; i++)
+			result += avec[i] * bvec[alen - i - 1];
 
-        ((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-        ((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+		((CDenseFeatures<float64_t>*)lhs)
+		    ->free_feature_vector(avec, idx_a, afree);
+		((CDenseFeatures<float64_t>*)rhs)
+		    ->free_feature_vector(bvec, idx_b, bfree);
 
-        return result;
-    }
+		return result;
+	}
 };
 
 void print_message(FILE* target, const char* str)

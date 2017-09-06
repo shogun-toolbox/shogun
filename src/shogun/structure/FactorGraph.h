@@ -34,7 +34,7 @@ public:
 	 *
 	 * @param card cardinalities of all the variables in the factor graph
 	 */
-	CFactorGraph(const SGVector<int32_t> card);
+	CFactorGraph(const SGVector<index_t> card);
 
 	/** Copy constructor
 	 *
@@ -67,16 +67,16 @@ public:
 	CDynamicObjectArray* get_factor_data_sources() const;
 
 	/** @return number of factors */
-	int32_t get_num_factors() const;
+	index_t get_num_factors() const;
 
 	/** @return cardinalities */
-	SGVector<int32_t> get_cardinalities() const;
+	SGVector<index_t> get_cardinalities() const;
 
 	/** set cardinalities
 	 *
 	 * @param cards cardinalities of all variables
 	 */
-	void set_cardinalities(SGVector<int32_t> cards);
+	void set_cardinalities(SGVector<index_t> cards);
 
 	/** compute energy tables in the factor graph */
 	void compute_energies();
@@ -85,7 +85,7 @@ public:
 	 *
 	 * @param state an assignment
 	 */
-	float64_t evaluate_energy(const SGVector<int32_t> state) const;
+	float64_t evaluate_energy(const SGVector<index_t> state) const;
 
 	/** evaluate energy for a given fully observed assignment
 	 *
@@ -100,10 +100,10 @@ public:
 	CDisjointSet* get_disjoint_set() const;
 
 	/** @return number of edges */
-	int32_t get_num_edges() const;
+	index_t get_num_edges() const;
 
 	/** @return number of variable nodes */
-	int32_t get_num_vars() const;
+	index_t get_num_vars() const;
 
 	/** connect graph nodes by performing union-find algorithm
 	 * NOTE: make sure call this func before performing inference
@@ -131,7 +131,8 @@ public:
 	 * @param states_gt ground truth states
 	 * @param loss weighted loss for each variable
 	 */
-	virtual void loss_augmentation(SGVector<int32_t> states_gt, \
+	virtual void loss_augmentation(
+		SGVector<index_t> states_gt,
 		SGVector<float64_t> loss = SGVector<float64_t>());
 
 private:
@@ -145,7 +146,7 @@ protected:
 	// TODO: FactorNode, VariableNode, such that they have IDs
 
 	/** cardinalities */
-	SGVector<int32_t> m_cardinalities;
+	SGVector<index_t> m_cardinalities;
 
 	/** added factors */
 	CDynamicObjectArray* m_factors;
@@ -160,8 +161,7 @@ protected:
 	bool m_has_cycle;
 
 	/** number of edges */
-	int32_t m_num_edges;
-
+	index_t m_num_edges;
 };
 
 }

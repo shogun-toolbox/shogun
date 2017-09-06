@@ -75,9 +75,9 @@ void CSNPStringKernel::obtain_base_strings()
 
 	m_str_len=0;
 
-	for (int32_t i=0; i<num_lhs; i++)
+	for (index_t i = 0; i < num_lhs; i++)
 	{
-		int32_t len;
+		index_t len;
 		bool free_vec;
 		char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(i, len, free_vec);
 
@@ -92,7 +92,7 @@ void CSNPStringKernel::obtain_base_strings()
 			ASSERT(m_str_len==len)
 		}
 
-		for (int32_t j=0; j<len; j++)
+		for (index_t j = 0; j < len; j++)
 		{
 			// skip sequencing errors
 			if (vec[j]=='0')
@@ -107,7 +107,7 @@ void CSNPStringKernel::obtain_base_strings()
 		((CStringFeatures<char>*) lhs)->free_feature_vector(vec, i, free_vec);
 	}
 
-	for (int32_t j=0; j<m_str_len; j++)
+	for (index_t j = 0; j < m_str_len; j++)
 	{
         // if only one one symbol occurs use 0
 		if (m_str_min[j]==0)
@@ -120,9 +120,9 @@ void CSNPStringKernel::obtain_base_strings()
 	}
 }
 
-float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSNPStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);

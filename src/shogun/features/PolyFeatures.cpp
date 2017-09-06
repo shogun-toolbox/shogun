@@ -52,12 +52,12 @@ CPolyFeatures::CPolyFeatures(const CPolyFeatures & orig)
 	SG_NOTIMPLEMENTED
 };
 
-int32_t CPolyFeatures::get_dim_feature_space() const
+index_t CPolyFeatures::get_dim_feature_space() const
 {
 	return m_output_dimensions;
 }
 
-int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num)
+index_t CPolyFeatures::get_nnz_features_for_vector(index_t num)
 {
 	return m_output_dimensions;
 }
@@ -72,7 +72,7 @@ EFeatureClass CPolyFeatures::get_feature_class() const
 	return C_POLY;
 }
 
-int32_t CPolyFeatures::get_num_vectors() const
+index_t CPolyFeatures::get_num_vectors() const
 {
 	if (m_feat)
 		return m_feat->get_num_vectors();
@@ -81,13 +81,14 @@ int32_t CPolyFeatures::get_num_vectors() const
 
 }
 
-void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
+void* CPolyFeatures::get_feature_iterator(index_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool CPolyFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
@@ -98,9 +99,8 @@ void CPolyFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-
-
-float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t
+CPolyFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -108,11 +108,11 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 
 	CPolyFeatures* pf=(CPolyFeatures*) df;
 
-	int32_t len1;
+	index_t len1;
 	bool do_free1;
 	float64_t* vec1 = m_feat->get_feature_vector(vec_idx1, len1, do_free1);
 
-	int32_t len2;
+	index_t len2;
 	bool do_free2;
 	float64_t* vec2 = pf->m_feat->get_feature_vector(vec_idx2, len2, do_free2);
 
@@ -136,12 +136,13 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 	return sum;
 }
 
-float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CPolyFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
-	int32_t len;
+	index_t len;
 	bool do_free;
 	float64_t* vec = m_feat->get_feature_vector(vec_idx1, len, do_free);
 
@@ -164,12 +165,14 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 	m_feat->free_feature_vector(vec, len, do_free);
 	return sum;
 }
-void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CPolyFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
-	int32_t len;
+	index_t len;
 	bool do_free;
 	float64_t* vec = m_feat->get_feature_vector(vec_idx1, len, do_free);
 

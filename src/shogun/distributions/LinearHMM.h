@@ -160,7 +160,10 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return number of model parameters
 		 */
-		virtual int32_t get_num_model_parameters() { return num_params; }
+		virtual index_t get_num_model_parameters()
+		{
+			return num_params;
+		}
 
 		/** get positional log parameter
 		 *
@@ -179,7 +182,7 @@ class CLinearHMM : public CDistribution
 		 * @param num_param which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param)
+		virtual float64_t get_log_model_parameter(index_t num_param)
 		{
 			ASSERT(log_transition_probs)
 			ASSERT(num_param<num_params)
@@ -224,9 +227,9 @@ class CLinearHMM : public CDistribution
 
 	protected:
 		/** examples' sequence length */
-		int32_t sequence_length;
+		index_t sequence_length;
 		/** number of symbols in examples */
-		int32_t num_symbols;
+		index_t num_symbols;
 		/** number of parameters */
 		int32_t num_params;
 		/** transition probs */

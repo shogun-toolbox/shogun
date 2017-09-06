@@ -40,8 +40,9 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param image_h image height
 		 * @param num_pyramids the number of pyramids to consider
 		 */
-		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h,
-			uint16_t num_pyramids);
+		CLBPPyrDotFeatures(
+		    CDenseFeatures<uint32_t>* image_set, index_t image_w,
+		    index_t image_h, uint16_t num_pyramids);
 
 		/** Destructor */
 		virtual ~CLBPPyrDotFeatures();
@@ -58,14 +59,14 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @return dimensions of feature space
 		 */
-		virtual int32_t get_dim_feature_space() const;
+		virtual index_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num);
+		virtual index_t get_nnz_features_for_vector(index_t num);
 
 		/** get feature type
 		 *
@@ -83,7 +84,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @return number of vectors
 		 */
-		virtual int32_t get_num_vectors() const;
+		virtual index_t get_num_vectors() const;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -92,7 +93,8 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+		virtual float64_t
+		dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2);
 
 		/** iterate over the non-zero features
 		 *
@@ -103,7 +105,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index);
+		virtual void* get_feature_iterator(index_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -115,7 +117,8 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
+		virtual bool
+		get_next_feature(index_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
@@ -143,7 +146,8 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t
+		dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len);
 
 		/** compute alpha*x+vec2
 		 *
@@ -153,8 +157,9 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(
+		    float64_t alpha, index_t vec_idx1, float64_t* vec2,
+		    index_t vec2_len, bool abs_val = false);
 
 		/** gets a copy of the specified image.
 		 *
@@ -163,13 +168,14 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param height the height of the image (returned by reference)
 		 * @return the image at the given index
 		 */
-		uint32_t* get_image(int32_t index, int32_t& width, int32_t& height);
+		uint32_t* get_image(index_t index, index_t& width, index_t& height);
 
 		/** returns the transformed representation of the image
 		 *
 		 * @param index the index of the image
 		 */
-		SGVector<char> get_transformed_image(int32_t index);
+		SGVector<char> get_transformed_image(index_t index);
+
 	protected:
 
 		/** lib lbp pyr get dim
@@ -183,26 +189,27 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param x the x index
 		 * @param y the y index
 		 */
-		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y);
+		uint8_t create_lbp_pattern(uint32_t* img, index_t x, index_t y);
 
 	private:
 
 		/** init */
-		void init(CDenseFeatures<uint32_t>* image_set, int32_t image_w,
-				int32_t image_h);
+		void init(
+		    CDenseFeatures<uint32_t>* image_set, index_t image_w,
+		    index_t image_h);
 
 	protected:
 		/** features in original space */
 		CDenseFeatures<uint32_t>* images;
 
 		/** image width */
-		int32_t image_width;
+		index_t image_width;
 
 		/** image height */
-		int32_t image_height;
+		index_t image_height;
 
 		/** vec nDim */
-		int32_t vec_nDim;
+		index_t vec_nDim;
 };
 }
 #endif /* _LBP_PYR_DOTFEATURES__H__  */

@@ -2,9 +2,9 @@
 
 using namespace shogun;
 
-CFactorGraphObservation::CFactorGraphObservation(SGVector<int32_t> observed_state,
-	SGVector<float64_t> loss_weights)
-	: CStructuredData(), m_observed_state(observed_state)
+CFactorGraphObservation::CFactorGraphObservation(
+    SGVector<index_t> observed_state, SGVector<float64_t> loss_weights)
+    : CStructuredData(), m_observed_state(observed_state)
 {
 	if (loss_weights.size() == 0)
 	{
@@ -15,7 +15,7 @@ CFactorGraphObservation::CFactorGraphObservation(SGVector<int32_t> observed_stat
 	set_loss_weights(loss_weights);
 }
 
-SGVector<int32_t> CFactorGraphObservation::get_data() const
+SGVector<index_t> CFactorGraphObservation::get_data() const
 {
 	return m_observed_state;
 }

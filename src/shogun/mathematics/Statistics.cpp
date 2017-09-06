@@ -185,7 +185,7 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	ASSERT(table.num_rows==2)
 	ASSERT(table.num_cols==3)
 
-	int32_t m_len=3+2;
+	index_t m_len = 3 + 2;
 	float64_t* m=SG_MALLOC(float64_t, 3+2);
 	m[0]=table.matrix[0]+table.matrix[2]+table.matrix[4];
 	m[1]=table.matrix[1]+table.matrix[3]+table.matrix[5];
@@ -194,19 +194,19 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	m[4]=table.matrix[4]+table.matrix[5];
 
 	float64_t n=SGVector<float64_t>::sum(m, m_len)/2.0;
-	int32_t x_len=2*3*CMath::sq(CMath::max(m, m_len));
+	index_t x_len = 2 * 3 * CMath::sq(CMath::max(m, m_len));
 	float64_t* x=SG_MALLOC(float64_t, x_len);
 	SGVector<float64_t>::fill_vector(x, x_len, 0.0);
 
 	float64_t log_nom=0.0;
-	for (int32_t i=0; i<3+2; i++)
+	for (index_t i = 0; i < 3 + 2; i++)
 		log_nom+=lgamma(m[i]+1);
 	log_nom-=lgamma(n+1.0);
 
 	float64_t log_denomf=0;
 	floatmax_t log_denom=0;
 
-	for (int32_t i=0; i<3*2; i++)
+	for (index_t i = 0; i < 3 * 2; i++)
 	{
 		log_denom+=lgammal((floatmax_t)table.matrix[i]+1);
 		log_denomf+=lgammal((floatmax_t)table.matrix[i]+1);
@@ -214,14 +214,14 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 
 	floatmax_t prob_table_log=log_nom-log_denom;
 
-	int32_t dim1=CMath::min(m[0], m[2]);
+	index_t dim1 = CMath::min(m[0], m[2]);
 
 	//traverse all possible tables with given m
-	int32_t counter=0;
-	for (int32_t k=0; k<=dim1; k++)
+	index_t counter = 0;
+	for (index_t k = 0; k <= dim1; k++)
 	{
-		for (int32_t l=CMath::max(0.0, m[0]-m[4]-k);
-				l<=CMath::min(m[0]-k, m[3]); l++)
+		for (index_t l = CMath::max(0.0, m[0] - m[4] - k);
+		     l <= CMath::min(m[0] - k, m[3]); l++)
 		{
 			x[0+0*2+counter*2*3]=k;
 			x[0+1*2+counter*2*3]=l;
@@ -251,16 +251,16 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	floatmax_t* log_denom_vec=SG_MALLOC(floatmax_t, counter);
 	SGVector<floatmax_t>::fill_vector(log_denom_vec, counter, (floatmax_t)0.0);
 
-	for (int32_t k=0; k<counter; k++)
+	for (index_t k = 0; k < counter; k++)
 	{
-		for (int32_t j=0; j<3; j++)
+		for (index_t j = 0; j < 3; j++)
 		{
-			for (int32_t i=0; i<2; i++)
+			for (index_t i = 0; i < 2; i++)
 				log_denom_vec[k]+=lgammal(x[i+j*2+k*2*3]+1.0);
 		}
 	}
 
-	for (int32_t i=0; i<counter; i++)
+	for (index_t i = 0; i < counter; i++)
 		log_denom_vec[i]=log_nom-log_denom_vec[i];
 
 #ifdef DEBUG_FISHER_TABLE
@@ -287,44 +287,44 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	return nonrand_p;
 }
 
-float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
+float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, index_t len)
 {
 	double e=0;
 
-	for (int32_t i=0; i<len; i++)
-		for (int32_t j=0; j<len; j++)
+	for (index_t i = 0; i < len; i++)
+		for (index_t j = 0; j < len; j++)
 			e+=exp(p2[j*len+i])*(p2[j*len+i]-p1[i]-p1[j]);
 
 	return (float64_t)e;
 }
 
-float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
+float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, index_t len)
 {
 	double e=0;
 
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		e+=exp(p[i])*(p[i]-q[i]);
 
 	return (float64_t)e;
 }
 
-float64_t CStatistics::entropy(float64_t* p, int32_t len)
+float64_t CStatistics::entropy(float64_t* p, index_t len)
 {
 	double e=0;
 
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		e-=exp(p[i])*p[i];
 
 	return (float64_t)e;
 }
 
-SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
+SGVector<index_t> CStatistics::sample_indices(index_t sample_size, index_t N)
 {
 	REQUIRE(sample_size<N,
 			"sample size should be less than number of indices\n");
-	int32_t* idxs=SG_MALLOC(int32_t,N);
-	int32_t i, rnd;
-	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
+	index_t* idxs = SG_MALLOC(index_t, N);
+	index_t i, rnd;
+	index_t* permuted_idxs = SG_MALLOC(index_t, sample_size);
 
 	// reservoir sampling
 	for (i=0; i<N; i++)
@@ -333,13 +333,13 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 		permuted_idxs[i]=idxs[i];
 	for (i=sample_size; i<N; i++)
 	{
-		rnd=CMath::random(1, i);
+		rnd = CMath::random(index_t(1), i);
 		if (rnd<sample_size)
 			permuted_idxs[rnd]=idxs[i];
 	}
 	SG_FREE(idxs);
 
-	SGVector<int32_t> result=SGVector<int32_t>(permuted_idxs, sample_size);
+	SGVector<index_t> result = SGVector<index_t>(permuted_idxs, sample_size);
 	CMath::qsort(result);
 	return result;
 }
@@ -671,7 +671,8 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 	/* calculate the log-determinant */
 	VectorXd diag = l.diagonal();
 	float64_t retval = 0.0;
-	for( int32_t i = 0; i < diag.rows(); ++i ) {
+	for (index_t i = 0; i < diag.rows(); ++i)
+	{
 		retval += log(diag(i));
 	}
 	retval *= 2;
@@ -699,8 +700,9 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 	return retval;
 }
 
-SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
-	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(
+    SGVector<float64_t> mean, SGMatrix<float64_t> cov, index_t N,
+    bool precision_matrix)
 {
 	REQUIRE(cov.num_rows>0, "Number of covariance rows must be positive!\n");
 	REQUIRE(cov.num_cols>0,"Number of covariance cols must be positive!\n");
@@ -708,14 +710,14 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	REQUIRE(cov.num_rows==cov.num_cols, "Covariance should be square matrix!\n");
 	REQUIRE(mean.vlen==cov.num_rows, "Mean and covariance dimension mismatch!\n");
 
-	int32_t dim=mean.vlen;
+	index_t dim = mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
+	for (index_t j = 0; j < N; ++j)
+		for (index_t i = 0; i < dim; ++i)
 			S(i,j)=CMath::randn_double();
 
 	// the cholesky factorization c=L*U
@@ -743,14 +745,15 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
-	for( int32_t i=0; i<N; ++i )
+	for (index_t i = 0; i < N; ++i)
 		x.row(i)+=mu;
 
 	return S;
 }
 
-SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
- SGSparseMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(
+    SGVector<float64_t> mean, SGSparseMatrix<float64_t> cov, index_t N,
+    bool precision_matrix)
 {
 	REQUIRE(cov.num_vectors>0,
 		"CStatistics::sample_from_gaussian(): \
@@ -768,7 +771,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 		"CStatistics::sample_from_gaussian(): \
 		Mean and covariance dimension mismatch!\n");
 
-	int32_t dim=mean.vlen;
+	index_t dim = mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 
 	typedef SparseMatrix<float64_t> MatrixType;
@@ -778,8 +781,8 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j )
-		for( int32_t i=0; i<dim; ++i )
+	for (index_t j = 0; j < N; ++j)
+		for (index_t i = 0; i < dim; ++i)
 			S(i,j)=CMath::randn_double();
 
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
@@ -810,7 +813,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
-	for( int32_t i=0; i<N; ++i )
+	for (index_t i = 0; i < N; ++i)
 		x.row(i)+=mu;
 
 	return S;

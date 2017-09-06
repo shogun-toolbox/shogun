@@ -18,7 +18,7 @@ CIndexFeatures::~CIndexFeatures()
 {
 }
 
-int32_t CIndexFeatures::get_num_vectors() const
+index_t CIndexFeatures::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }

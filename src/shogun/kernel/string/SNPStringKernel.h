@@ -143,7 +143,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 	protected:
 		/** degree */
@@ -156,7 +156,7 @@ class CSNPStringKernel: public CStringKernel<char>
 
 		/** total string length / must match length of min/maj strings and
 		 * string length of each vector */
-		int32_t m_str_len;
+		index_t m_str_len;
 
 		/** allele A */
 		char* m_str_min;

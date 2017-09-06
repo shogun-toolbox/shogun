@@ -169,7 +169,7 @@ l2r_l2_svc_fun::l2r_l2_svc_fun(const liblinear_problem *p, double* Cs)
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
-	I = SG_MALLOC(int, l);
+	I = SG_MALLOC(index_t, l);
 	C=Cs;
 
 }

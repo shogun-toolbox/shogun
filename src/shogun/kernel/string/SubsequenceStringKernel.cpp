@@ -53,13 +53,13 @@ void CSubsequenceStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSubsequenceStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	// sanity check
 	REQUIRE(lhs, "lhs feature vector is not set!\n")
 	REQUIRE(rhs, "rhs feature vector is not set!\n")
 
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	char* avec=dynamic_cast<CStringFeatures<char>*>(lhs)

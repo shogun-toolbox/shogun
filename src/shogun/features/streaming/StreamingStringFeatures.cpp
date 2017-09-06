@@ -81,7 +81,7 @@ floatmax_t CStreamingStringFeatures<T>::get_num_symbols()
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_num_vectors() const
+index_t CStreamingStringFeatures<T>::get_num_vectors() const
 {
 	if (current_string)
 		return 1;
@@ -89,7 +89,7 @@ int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_num_features()
+index_t CStreamingStringFeatures<T>::get_num_features()
 {
 	return current_length;
 }

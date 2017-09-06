@@ -68,7 +68,8 @@ public:
 	 * @param sparse pointer to sparse entries
 	 * @param dlen number of entries
 	 */
-	virtual void set_data_sparse(SGSparseVectorEntry<float64_t>* sparse, int32_t dlen);
+	virtual void
+	set_data_sparse(SGSparseVectorEntry<float64_t>* sparse, index_t dlen);
 
 private:
 	/** register parameters */
@@ -98,7 +99,9 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
+	CFactor(
+		CTableFactorType* ftype, SGVector<index_t> var_index,
+		SGVector<float64_t> data);
 
 	/** Constructor
 	 *
@@ -106,7 +109,8 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_sparse sparse data, can be empty
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
+	CFactor(
+		CTableFactorType* ftype, SGVector<index_t> var_index,
 		SGSparseVector<float64_t> data_sparse);
 
 	/** Constructor
@@ -115,7 +119,8 @@ public:
 	 * @param var_index indices of variables
 	 * @param data_source common data for many factors
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
+	CFactor(
+		CTableFactorType* ftype, SGVector<index_t> var_index,
 		CFactorDataSource* data_source);
 
 	/** deconstructor */
@@ -134,19 +139,19 @@ public:
 	void set_factor_type(CTableFactorType* ftype);
 
 	/** @return adjacent variables */
-	const SGVector<int32_t> get_variables() const;
+	const SGVector<index_t> get_variables() const;
 
 	/** @return number of the adjacent variables */
-	const int32_t get_num_vars() const;
+	const index_t get_num_vars() const;
 
 	/** set variables
 	 *
 	 * @param vars indices of variables
 	 */
-	void set_variables(SGVector<int32_t> vars);
+	void set_variables(SGVector<index_t> vars);
 
 	/** @return cardinalities of variables */
-	const SGVector<int32_t> get_cardinalities() const;
+	const SGVector<index_t> get_cardinalities() const;
 
 	/** @return dense factor data */
 	SGVector<float64_t> get_data() const;
@@ -165,7 +170,8 @@ public:
 	 * @param data_sparse pointer to sparse entries
 	 * @param dlen number of entries
 	 */
-	void set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse, int32_t dlen);
+	void
+	set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse, index_t dlen);
 
 	/** @return whether this factor has data */
 	bool is_data_dependent() const;
@@ -182,7 +188,7 @@ public:
 	 * @param index in the table
 	 * @return energy value
 	 */
-	float64_t get_energy(int32_t index) const;
+	float64_t get_energy(index_t index) const;
 
 	/** set energies with new values
 	 * @param ft_energies new energy table
@@ -193,13 +199,13 @@ public:
 	 * @param ei index in the energy table
 	 * @param value energy value
 	 */
-	void set_energy(int32_t ei, float64_t value);
+	void set_energy(index_t ei, float64_t value);
 
 	/** evaluate energy for a given assignment
 	 * @param state variable assignments
 	 * @return energy
 	 */
-	float64_t evaluate_energy(const SGVector<int32_t> state) const;
+	float64_t evaluate_energy(const SGVector<index_t> state) const;
 
 	/** Compute energy table */
 	void compute_energies();
@@ -218,7 +224,7 @@ protected:
 	CTableFactorType* m_factor_type;
 
 	/** variable indices */
-	SGVector<int32_t> m_var_index;
+	SGVector<index_t> m_var_index;
 
 	/** energy table */
 	SGVector<float64_t> m_energies;

@@ -83,7 +83,7 @@ bool CGaussian::train(CFeatures* data)
 	return true;
 }
 
-int32_t CGaussian::get_num_model_parameters()
+index_t CGaussian::get_num_model_parameters()
 {
 	switch (m_cov_type)
 	{
@@ -97,19 +97,19 @@ int32_t CGaussian::get_num_model_parameters()
 	return 0;
 }
 
-float64_t CGaussian::get_log_model_parameter(int32_t num_param)
+float64_t CGaussian::get_log_model_parameter(index_t num_param)
 {
 	SG_NOTIMPLEMENTED
 	return 0;
 }
 
-float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CGaussian::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;
 }
 
-float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
+float64_t CGaussian::get_log_likelihood_example(index_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT))
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
@@ -117,7 +117,7 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	return answer;
 }
 
-float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
+float64_t CGaussian::update_params_em(float64_t* alpha_k, index_t len)
 {
 	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
 	REQUIRE(

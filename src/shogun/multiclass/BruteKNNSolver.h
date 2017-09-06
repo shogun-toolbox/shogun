@@ -37,11 +37,18 @@ class CBruteKNNSolver : public CKNNSolver
 		 * @param train_labels m_train_labels
 		 * @param NN nn
 		 */
-		CBruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN);
+		CBruteKNNSolver(
+		    const index_t k, const float64_t q, const index_t num_classes,
+		    const index_t min_label, const SGVector<index_t> train_labels,
+		    const SGMatrix<index_t> NN);
 
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		virtual CMulticlassLabels* classify_objects(
+		    CDistance* d, const index_t num_lab, SGVector<index_t>& train_lab,
+		    SGVector<float64_t>& classes) const;
 
-		virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		virtual SGVector<index_t> classify_objects_k(
+		    CDistance* d, const index_t num_lab, SGVector<index_t>& train_lab,
+		    SGVector<index_t>& classes) const;
 
 		/** @return object name */
 		const char* get_name() const { return "BruteKNNSolver"; }

@@ -38,7 +38,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	CFactorType(index_t id, SGVector<index_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
 	virtual ~CFactorType();
@@ -47,13 +47,13 @@ public:
 	virtual const char* get_name() const { return "FactorType"; }
 
 	/** @return get factor type id */
-	virtual int32_t get_type_id() const;
+	virtual index_t get_type_id() const;
 
 	/** set factor type id
 	 *
 	 * @param id type id in CFactorGraphModel
 	 */
-	virtual void set_type_id(int32_t id);
+	virtual void set_type_id(index_t id);
 
 	/** @return get factor parameters */
 	virtual SGVector<float64_t> get_w();
@@ -68,22 +68,22 @@ public:
 	void set_w(SGVector<float64_t> w);
 
 	/** @return dimension of the factor parameter vector */
-	virtual int32_t get_w_dim() const;
+	virtual index_t get_w_dim() const;
 
 	/** @return cardinalities of the variables */
-	virtual const SGVector<int32_t> get_cardinalities() const;
+	virtual const SGVector<index_t> get_cardinalities() const;
 
 	/** set cardinalities
 	 *
 	 * @param cards cardinalities of variables
 	 */
-	virtual void set_cardinalities(SGVector<int32_t> cards);
+	virtual void set_cardinalities(SGVector<index_t> cards);
 
 	/** get number of variables */
-	virtual int32_t get_num_vars();
+	virtual index_t get_num_vars();
 
 	/** @return number of configurations of variables */
-	virtual int32_t get_num_assignments() const;
+	virtual index_t get_num_assignments() const;
 
 	/** @return is it a table factor type */
 	virtual bool is_table() const { return false; }
@@ -98,19 +98,19 @@ private:
 
 protected:
 	/** factor type identifier */
-	int32_t m_type_id;
+	index_t m_type_id;
 
 	/** variable cardinalities */
-	SGVector<int32_t> m_cards;
+	SGVector<index_t> m_cards;
 
 	/** the cumulative product of cardinalities */
-	SGVector<int32_t> m_cumprod_cards;
+	SGVector<index_t> m_cumprod_cards;
 
 	/** number of state assignments (for each variable) */
-	int32_t m_num_assignments;
+	index_t m_num_assignments;
 
 	/** data size */
-	int32_t m_data_size;
+	index_t m_data_size;
 
 	/** factor paramters */
 	SGVector<float64_t> m_w;
@@ -131,7 +131,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CTableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	CTableFactorType(index_t id, SGVector<index_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
 	virtual ~CTableFactorType();
@@ -148,14 +148,14 @@ public:
 	 * @param var_index the variable index of this factor:
 	 * @return variable state
 	 */
-	int32_t state_from_index(int32_t ei, int32_t var_index) const;
+	index_t state_from_index(index_t ei, index_t var_index) const;
 
 	/** get variable assignment from absolute energy index
 	 *
 	 * @param ei energy index
 	 * @return variable assignment
 	 */
-	SGVector<int32_t> assignment_from_index(int32_t ei) const;
+	SGVector<index_t> assignment_from_index(index_t ei) const;
 
 	/** update energy index by substituting with contribution
 	 * from new state of a particular variable
@@ -165,14 +165,15 @@ public:
 	 * @param var_state new variable state
 	 * @return new energy index
 	 */
-	int32_t index_from_new_state(int32_t old_ei, int32_t var_index, int32_t var_state) const;
+	index_t index_from_new_state(
+		index_t old_ei, index_t var_index, index_t var_state) const;
 
 	/** energy index from a given assignment
 	 *
 	 * @param assig variable assignments
 	 * @return energy index
 	 */
-	int32_t index_from_assignment(const SGVector<int32_t> assig) const;
+	index_t index_from_assignment(const SGVector<index_t> assig) const;
 
 	/** energy index in the table of a factor given an universe assignment
 	 *
@@ -180,8 +181,8 @@ public:
 	 * @param var_index variable indices of that particular factor
 	 * @return energy index
 	 */
-	int32_t index_from_universe_assignment(const SGVector<int32_t> assig,
-		const SGVector<int32_t> var_index) const;
+	index_t index_from_universe_assignment(
+		const SGVector<index_t> assig, const SGVector<index_t> var_index) const;
 
 	/** compute energy values from parameters for a specific factor.
 	 *

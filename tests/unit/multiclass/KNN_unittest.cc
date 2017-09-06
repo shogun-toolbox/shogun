@@ -135,7 +135,7 @@ TEST(KNN, lsh_solver)
 	CFeatures* features_test = (CFeatures*) features->clone();	
 	CLabels* labels_test = (CLabels*) labels->clone();
 
-	int32_t k=4;
+	index_t k = 4;
 	CEuclideanDistance* distance = new CEuclideanDistance();	
 	CKNN* knn=new CKNN (k, distance, labels, KNN_LSH);
 	SG_REF(knn);
@@ -179,7 +179,7 @@ TEST(KNN, classify_multiple_brute)
 	CFeatures* features_test = (CFeatures*) features->clone();  
 	CLabels* labels_test = (CLabels*) labels->clone();
 
-	int32_t k=4;
+	index_t k = 4;
 	CEuclideanDistance* distance = new CEuclideanDistance();                
 	CKNN* knn=new CKNN (k, distance, labels, KNN_BRUTE);
 	SG_REF(knn);
@@ -194,7 +194,7 @@ TEST(KNN, classify_multiple_brute)
 
 	CEuclideanDistance* dist = new CEuclideanDistance(features, ((CDotFeatures*)features_test));  
 	knn->set_distance(dist);
-	SGMatrix<int32_t> out_mat =knn->classify_for_multiple_k();
+	SGMatrix<index_t> out_mat = knn->classify_for_multiple_k();
 	features_test->remove_subset();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
@@ -228,7 +228,7 @@ TEST(KNN, classify_multiple_kdtree)
 	CFeatures* features_test = (CFeatures*) features->clone();	
 	CLabels* labels_test = (CLabels*) labels->clone();
 
-	int32_t k=4;
+	index_t k = 4;
 	CEuclideanDistance* distance = new CEuclideanDistance();	
 	CKNN* knn=new CKNN (k, distance, labels, KNN_KDTREE);
 	SG_REF(knn);
@@ -242,7 +242,7 @@ TEST(KNN, classify_multiple_kdtree)
 	labels_test->add_subset(test);
 	CEuclideanDistance* dist = new CEuclideanDistance(features, ((CDotFeatures*)features_test));
 	knn->set_distance(dist);
-	SGMatrix<int32_t> out_mat =knn->classify_for_multiple_k();
+	SGMatrix<index_t> out_mat = knn->classify_for_multiple_k();
 	features_test->remove_subset();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )

@@ -31,14 +31,14 @@ TEST(MultilabelModel, get_joint_feature_vector)
 
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(2, 3);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_2(3);
+	SGVector<index_t> lab_2(3);
 	lab_2[0] = 0;
 	lab_2[1] = 1;
 	lab_2[2] = 2;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_2);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_2);
 
 	CMultilabelModel * model = new CMultilabelModel(features, labels);
 	SG_REF(model);
@@ -90,11 +90,11 @@ TEST(MultilabelModel, delta_loss)
 	CMultilabelModel * model = new CMultilabelModel(features, labels);
 	SG_REF(model);
 
-	SGVector<int32_t> lab_3(3);
+	SGVector<index_t> lab_3(3);
 	lab_3[0] = 0;
 	lab_3[1] = 1;
 	lab_3[2] = 2;
-	SGVector<int32_t> lab_4(3);
+	SGVector<index_t> lab_4(3);
 	lab_4[0] = 0;
 	lab_4[1] = 1;
 	lab_4[2] = 2;
@@ -113,11 +113,11 @@ TEST(MultilabelModel, delta_loss)
 	float64_t false_neg = 2;
 	model->set_misclass_cost(false_pos, false_neg);
 
-	SGVector<int32_t> lab_5(3);
+	SGVector<index_t> lab_5(3);
 	lab_5[0] = 0;
 	lab_5[1] = 1;
 	lab_5[2] = 2;
-	SGVector<int32_t> lab_6(2);
+	SGVector<index_t> lab_6(2);
 	lab_6[0] = 0;
 	lab_6[1] = 1;
 
@@ -153,9 +153,9 @@ TEST(MultilabelModel, argmax)
 
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(2, 3);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 2;
-	SGVector<int32_t> lab_2(2);
+	SGVector<index_t> lab_2(2);
 	lab_2[0] = 0;
 	lab_2[1] = 1;
 	labels->set_sparse_label(0, lab_1);
@@ -178,16 +178,16 @@ TEST(MultilabelModel, argmax)
 	CResultSet * ret_1 = model->argmax(w, 0, true);
 	CResultSet * ret_2 = model->argmax(w, 1, true);
 
-	SGVector<int32_t>y_1_expected(2);
+	SGVector<index_t> y_1_expected(2);
 	y_1_expected[0] = 0;
 	y_1_expected[1] = 2;
-	SGVector<int32_t>y_2_expected(2);
+	SGVector<index_t> y_2_expected(2);
 	y_2_expected[0] = 0;
 	y_2_expected[1] = 1;
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
-	SGVector<int32_t> slabel_1 = y_1->get_data();
+	SGVector<index_t> slabel_1 = y_1->get_data();
 	SGVector<float64_t> psi_truth_1 = ret_1->psi_truth;
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
@@ -212,7 +212,7 @@ TEST(MultilabelModel, argmax)
 
 	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_2->argmax);
-	SGVector<int32_t> slabel_2 = y_2->get_data();
+	SGVector<index_t> slabel_2 = y_2->get_data();
 	SGVector<float64_t> psi_truth_2 = ret_2->psi_truth;
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
@@ -240,7 +240,7 @@ TEST(MultilabelModel, argmax)
 
 	CSparseMultilabel * y_3 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_3->argmax);
-	SGVector<int32_t> slabel_3 = y_3->get_data();
+	SGVector<index_t> slabel_3 = y_3->get_data();
 	SGVector<float64_t> psi_pred_3 = ret_3->psi_pred;
 
 	for (index_t i = 0; i < slabel_3.vlen; i++)
@@ -263,7 +263,7 @@ TEST(MultilabelModel, argmax)
 
 	CSparseMultilabel * y_4 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_4->argmax);
-	SGVector<int32_t> slabel_4 = y_4->get_data();
+	SGVector<index_t> slabel_4 = y_4->get_data();
 	SGVector<float64_t> psi_pred_4 = ret_4->psi_pred;
 
 	for (index_t i = 0; i < slabel_4.vlen; i++)

@@ -99,24 +99,24 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		SG_PRINT("Obj =%f\n", obj)
 		SG_PRINT("Grad=\n")
 
-		for (int32_t i=0; i<x_d+1; i++)
+		for (index_t i = 0; i < x_d + 1; i++)
 			SG_PRINT("grad[%d]=%.16g\n", i, grad[i])
 		SG_PRINT("SV=\n")
 
-		for (int32_t i=0; i<size_sv; i++)
+		for (index_t i = 0; i < size_sv; i++)
 			SG_PRINT("sv[%d]=%d\n", i, sv[i])
 #endif
 
 		SGVector<float64_t> sgv;
 		float64_t* Xsv = SG_MALLOC(float64_t, x_d*size_sv);
-		for (int32_t k=0; k<size_sv; k++)
+		for (index_t k = 0; k < size_sv; k++)
 		{
 			sgv=features->get_computed_dot_feature_vector(sv[k]);
-			for (int32_t j=0; j<x_d; j++)
+			for (index_t j = 0; j < x_d; j++)
 				Xsv[k*x_d+j]=sgv.vector[j];
 		}
-		int32_t tx=x_d;
-		int32_t ty=size_sv;
+		index_t tx = x_d;
+		index_t ty = size_sv;
 		SGMatrix<float64_t>::transpose_matrix(Xsv, tx, ty);
 
 #ifdef DEBUG_NEWTON

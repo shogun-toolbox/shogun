@@ -65,7 +65,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 		virtual bool apply_to_string_features(CFeatures* f);
 
 		/// apply preproc on single feature vector
-		virtual ST* apply_to_string(ST* f, int32_t &len);
+		virtual ST* apply_to_string(ST* f, index_t& len);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "DecompressString"; }

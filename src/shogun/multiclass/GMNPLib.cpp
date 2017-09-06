@@ -192,7 +192,7 @@ float64_t* CGMNPLib::get_kernel_col( index_t a )
   Computes index of input example and its class label from
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
-void CGMNPLib::get_indices2( index_t *index, int32_t *c, int32_t i )
+void CGMNPLib::get_indices2(index_t* index, index_t* c, index_t i)
 {
    *index = i / (m_num_classes-1);
 
@@ -210,38 +210,41 @@ void CGMNPLib::get_indices2( index_t *index, int32_t *c, int32_t i )
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
-float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
+float64_t* CGMNPLib::get_col(index_t a, index_t b)
 {
-  int32_t i;
-  float64_t *col_ptr;
-  float64_t *ker_ptr;
-  float64_t value;
-  int32_t i1,c1,i2,c2;
+	index_t i;
+	float64_t* col_ptr;
+	float64_t* ker_ptr;
+	float64_t value;
+	index_t i1, c1, i2, c2;
 
-  col_ptr = virt_columns[first_virt_inx++];
-  if( first_virt_inx >= 3 ) first_virt_inx = 0;
+	col_ptr = virt_columns[first_virt_inx++];
+	if (first_virt_inx >= 3)
+		first_virt_inx = 0;
 
-  get_indices2( &i1, &c1, a );
-  ker_ptr = (float64_t*) get_kernel_col( i1 );
+	get_indices2(&i1, &c1, a);
+	ker_ptr = (float64_t*)get_kernel_col(i1);
 
-  for( i=0; i < m_num_virt_data; i++ ) {
-    get_indices2( &i2, &c2, i );
+	for (i = 0; i < m_num_virt_data; i++)
+	{
+		get_indices2(&i2, &c2, i);
 
-    if( KDELTA4(m_vector_y[i1],m_vector_y[i2],c1,c2) ) {
-      value = (+KDELTA(m_vector_y[i1],m_vector_y[i2])
-               -KDELTA(m_vector_y[i1],c2)
-               -KDELTA(m_vector_y[i2],c1)
-               +KDELTA(c1,c2)
-              )*(ker_ptr[i2]+1);
-    }
-    else
-    {
-      value = 0;
-    }
+		if (KDELTA4(m_vector_y[i1], m_vector_y[i2], c1, c2))
+		{
+			value = (+KDELTA(m_vector_y[i1], m_vector_y[i2]) -
+			         KDELTA(m_vector_y[i1], c2) - KDELTA(m_vector_y[i2], c1) +
+			         KDELTA(c1, c2)) *
+			        (ker_ptr[i2] + 1);
+		}
+		else
+		{
+			value = 0;
+		}
 
-    if(a==i) value += m_reg_const;
+		if (a == i)
+			value += m_reg_const;
 
-    col_ptr[i] = value;
+		col_ptr[i] = value;
   }
 
   return( col_ptr );
@@ -258,16 +261,10 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
                   tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 
-int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
-            int32_t dim,
-            int32_t tmax,
-            float64_t tolabs,
-            float64_t tolrel,
-            float64_t th,
-            float64_t *alpha,
-            int32_t  *ptr_t,
-            float64_t **ptr_History,
-            int32_t verb)
+int8_t CGMNPLib::gmnp_imdm(
+    float64_t* vector_c, int32_t dim, int32_t tmax, float64_t tolabs,
+    float64_t tolrel, float64_t th, float64_t* alpha, index_t* ptr_t,
+    float64_t** ptr_History, int32_t verb)
 {
   float64_t LB;
   float64_t UB;
@@ -482,10 +479,10 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   Retures (a,b)-th element of the virtual kernel matrix
   of size [num_virt_data x num_virt_data].
 ------------------------------------------------------------ */
-float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
+float64_t CGMNPLib::kernel_fce(index_t a, index_t b)
 {
   float64_t value;
-  int32_t i1,c1,i2,c2;
+  index_t i1, c1, i2, c2;
 
   get_indices2( &i1, &c1, a );
   get_indices2( &i2, &c2, b );

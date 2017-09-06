@@ -184,7 +184,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return classified label
 		 */
-		virtual float32_t apply_one(float32_t* vec, int32_t len);
+		virtual float32_t apply_one(float32_t* vec, index_t len);
 
 		/**
 		 * apply linear machine to vector currently being processed

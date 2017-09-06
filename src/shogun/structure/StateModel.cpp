@@ -21,12 +21,12 @@ CStateModel::~CStateModel()
 {
 }
 
-int32_t CStateModel::get_num_states() const
+index_t CStateModel::get_num_states() const
 {
 	return m_num_states;
 }
 
-int32_t CStateModel::get_num_transmission_params() const
+index_t CStateModel::get_num_transmission_params() const
 {
 	return m_num_transmission_params;
 }
@@ -45,10 +45,10 @@ void CStateModel::init()
 	m_num_transmission_params = 0;
 }
 
-SGVector< int32_t > CStateModel::get_monotonicity(int32_t num_free_states,
-		int32_t num_feats) const
+SGVector<index_t>
+CStateModel::get_monotonicity(index_t num_free_states, index_t num_feats) const
 {
-	SGVector< int32_t > ret(num_feats*num_free_states);
+	SGVector<index_t> ret(num_feats * num_free_states);
 	ret.zero();
 	return ret;
 }

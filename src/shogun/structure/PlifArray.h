@@ -42,7 +42,7 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @return number of plifs
 		 */
-		int32_t get_num_plifs()
+		index_t get_num_plifs()
 		{
 			return m_array.get_num_elements();
 		}
@@ -55,13 +55,13 @@ class CPlifArray: public CPlifBase
 		virtual float64_t lookup_penalty(
 			float64_t p_value, float64_t* svm_values) const;
 
-		/** lookup penalty int32_t
+		/** lookup penalty index_t
 		 *
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual float64_t lookup_penalty(
-			int32_t p_value, float64_t* svm_values) const;
+		virtual float64_t
+		lookup_penalty(index_t p_value, float64_t* svm_values) const;
 
 		/** penalty clear derivative */
 		virtual void penalty_clear_derivative();
@@ -103,9 +103,9 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @return maximum ID
 		 */
-		virtual int32_t get_max_id() const;
+		virtual index_t get_max_id() const;
 
-		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
+		void get_used_svms(int32_t* num_svms, index_t* svm_ids);
 
 		/** print PLIF
 		 *
@@ -114,7 +114,7 @@ class CPlifArray: public CPlifBase
 		virtual void list_plif() const
 		{
 			SG_PRINT("CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value)
-			for (int32_t i=0; i<m_array.get_num_elements(); i++)
+			for (index_t i = 0; i < m_array.get_num_elements(); i++)
 			{
 				SG_PRINT("%i. ", i)
 				m_array[i]->list_plif() ;

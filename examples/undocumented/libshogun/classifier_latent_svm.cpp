@@ -44,51 +44,58 @@ class CObjectDetector: public CLatentModel
 
 		virtual ~CObjectDetector() {}
 
-		virtual int32_t get_dim() const { return HOG_SIZE; }
+	    virtual index_t get_dim() const
+	    {
+		    return HOG_SIZE;
+	    }
 
-		virtual CDotFeatures* get_psi_feature_vectors()
-		{
-			int32_t num_examples = this->get_num_vectors();
-			int32_t dim = this->get_dim();
-			SGMatrix<float64_t> psi_m(dim, num_examples);
-			for (int32_t i = 0; i < num_examples; ++i)
-			{
-				CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(i);
-				CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(i);
-				memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
-			}
+	    virtual CDotFeatures* get_psi_feature_vectors()
+	    {
+		    int32_t num_examples = this->get_num_vectors();
+		    int32_t dim = this->get_dim();
+		    SGMatrix<float64_t> psi_m(dim, num_examples);
+		    for (int32_t i = 0; i < num_examples; ++i)
+		    {
+			    CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(i);
+			    CBoundingBox* bb = (CBoundingBox*)m_labels->get_latent_label(i);
+			    memcpy(
+			        psi_m.matrix + i * dim, hf->hog[bb->x_pos][bb->y_pos],
+			        dim * sizeof(float64_t));
+		    }
 
-			CDenseFeatures<float64_t>* psi_feats = new CDenseFeatures<float64_t>(psi_m);
-			return psi_feats;
-		}
+		    CDenseFeatures<float64_t>* psi_feats =
+		        new CDenseFeatures<float64_t>(psi_m);
+		    return psi_feats;
+	    }
 
-		virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
-		{
-			int32_t pos_x = 0, pos_y = 0;
-			float64_t max_score = -CMath::INFTY;
+	    virtual CData*
+	    infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+	    {
+		    int32_t pos_x = 0, pos_y = 0;
+		    float64_t max_score = -CMath::INFTY;
 
-			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
-			for (int i = 0; i < hf->width; ++i)
-			{
-				for (int j = 0; j < hf->height; ++j)
-				{
-					float64_t score = CMath::dot(w.vector, hf->hog[i][j], w.vlen);
+		    CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(idx);
+		    for (int i = 0; i < hf->width; ++i)
+		    {
+			    for (int j = 0; j < hf->height; ++j)
+			    {
+				    float64_t score =
+				        CMath::dot(w.vector, hf->hog[i][j], w.vlen);
 
-					if (score > max_score)
-					{
-						pos_x = i;
-						pos_y = j;
-						max_score = score;
-					}
-				}
-			}
-			SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
-			CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
-			SG_REF(h);
+				    if (score > max_score)
+				    {
+					    pos_x = i;
+					    pos_y = j;
+					    max_score = score;
+				    }
+			    }
+		    }
+		    SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
+		    CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
+		    SG_REF(h);
 
-			return h;
-		}
-
+		    return h;
+	    }
 };
 
 static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& labels)

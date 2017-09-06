@@ -103,11 +103,11 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 
 	MatrixXd X(num_vecs, m_dim);
 
-	int32_t vlen;
+	index_t vlen;
 	bool vfree;
 	float64_t* vec;
 	Map< VectorXd > Em_xbar(m_xbar, m_dim);
-	for (int i = 0; i < num_vecs; i++)
+	for (index_t i = 0; i < num_vecs; i++)
 	{
 		vec = rf->get_feature_vector(i, vlen, vfree);
 		ASSERT(vec)
@@ -169,7 +169,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 	if (!m_features)
 		SG_ERROR("No features allocated in MCLDA training\n")
 
-	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> train_labels =
+	    ((CMulticlassLabels*)m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in MCLDA training\n")
@@ -178,18 +179,19 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
-	int32_t num_vec  = m_features->get_num_vectors();
+	index_t num_vec = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
 		SG_ERROR("Dimension mismatch between features and labels in MCLDA training")
 
-	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes);
-	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes); // number of examples of each class
-	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
+	index_t* class_idxs = SG_MALLOC(index_t, num_vec * m_num_classes);
+	index_t* class_nums =
+	    SG_MALLOC(index_t, m_num_classes); // number of examples of each class
+	memset(class_nums, 0, m_num_classes * sizeof(index_t));
 
-	for (int i = 0; i < train_labels.vlen; i++)
+	for (index_t i = 0; i < train_labels.vlen; i++)
 	{
-		int32_t class_idx = train_labels.vector[i];
+		index_t class_idx = train_labels.vector[i];
 
 		if (class_idx < 0 || class_idx >= m_num_classes)
 		{
@@ -202,7 +204,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		}
 	}
 
-	for (int i = 0; i < m_num_classes; i++)
+	for (index_t i = 0; i < m_num_classes; i++)
 	{
 		if (class_nums[i] <= 0)
 		{
@@ -224,19 +226,19 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	// matrix of all samples
 	MatrixXd X =  MatrixXd::Zero(num_vec, m_dim);
-	int32_t iX = 0;
+	index_t iX = 0;
 
 	m_means.zero();
 
-	int32_t vlen;
+	index_t vlen;
 	bool vfree;
 	float64_t* vec;
-	for (int k = 0; k < m_num_classes; k++)
+	for (index_t k = 0; k < m_num_classes; k++)
 	{
 		// gather all the samples for class k into buffer and calculate the mean of class k
 		MatrixXd buffer(class_nums[k], m_dim);
 		Map< VectorXd > Em_mean(m_means.get_column_vector(k), m_dim);
-		for (int i = 0; i < class_nums[k]; i++)
+		for (index_t i = 0; i < class_nums[k]; i++)
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
@@ -251,7 +253,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		Em_mean /= class_nums[k];
 
 		// subtract the mean of class k from each sample of class k and store the centered data in Xc
-		for (int i = 0; i < class_nums[k]; i++)
+		for (index_t i = 0; i < class_nums[k]; i++)
 		{
 			buffer.row(i) -= Em_mean;
 			X.row(iX) += buffer.row(i);
@@ -277,7 +279,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		m_cov.zero();
 		Map< MatrixXd > Em_cov(m_cov.matrix, m_dim, m_dim);
 
-		for (int k = 0; k < m_num_classes; k++)
+		for (index_t k = 0; k < m_num_classes; k++)
 		{
 			Map< MatrixXd > Em_cov_k(covs.get_matrix(k), m_dim, m_dim);
 			Em_cov += Em_cov_k;

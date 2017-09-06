@@ -87,7 +87,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		virtual float64_t compute(index_t idx_a, index_t idx_b)
 		{
 			return tanh(gamma*CDotKernel::compute(idx_a,idx_b)+coef0);
 		}

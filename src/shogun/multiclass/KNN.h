@@ -85,7 +85,9 @@ class CKNN : public CDistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+		CKNN(
+		    index_t k, CDistance* d, CLabels* trainlab,
+		    KNN_SOLVER knn_solver = KNN_BRUTE);
 
 		virtual ~CKNN();
 
@@ -114,7 +116,7 @@ class CKNN : public CDistanceMachine
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
-		virtual float64_t apply_one(int32_t vec_idx)
+		virtual float64_t apply_one(index_t vec_idx)
 		{
 			SG_ERROR("for performance reasons use apply() instead of apply(int32_t vec_idx)\n")
 			return 0;
@@ -123,7 +125,7 @@ class CKNN : public CDistanceMachine
 		/** classify all examples for 1...k
 		 *
 		 */
-		SGMatrix<int32_t> classify_for_multiple_k();
+		SGMatrix<index_t> classify_for_multiple_k();
 
 		/** load from file
 		 *
@@ -143,7 +145,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @param k k to be set
 		 */
-		inline void set_k(int32_t k)
+		inline void set_k(index_t k)
 		{
 			ASSERT(k>0)
 			m_k=k;
@@ -153,7 +155,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return value of k
 		 */
-		inline int32_t get_k()
+		inline index_t get_k()
 		{
 			return m_k;
 		}
@@ -210,7 +212,7 @@ class CKNN : public CDistanceMachine
 		  * @param l number of hash tables for LSH
 		  * @param t number of probes per query for LSH
 		  */
-		inline void set_lsh_parameters(int32_t l, int32_t t)
+		inline void set_lsh_parameters(index_t l, index_t t)
 		{
 			m_lsh_l = l;
 			m_lsh_t = t;
@@ -259,7 +261,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return index of the most frequent class, class detected by KNN
 		 */
-		int32_t choose_class(float64_t* classes, int32_t* train_lab);
+		index_t choose_class(float64_t* classes, index_t* train_lab);
 
 		/** compute the histogram of class outputs of the k nearest neighbors
 		 *  to a test vector, using k from 1 to m_k, and write the most frequent
@@ -273,7 +275,9 @@ class CKNN : public CDistanceMachine
 		 * in ascending order
 		 * @param step distance between elements to be written in output
 		 */
-		void choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step);
+		void choose_class_for_multiple_k(
+		    index_t* output, index_t* classes, index_t* train_lab,
+		    index_t step);
 
 		/** 
 		 * To init the solver pointer indicated which solver will been used to classify_objects
@@ -282,19 +286,19 @@ class CKNN : public CDistanceMachine
 
 	protected:
 		/// the k parameter in KNN
-		int32_t m_k;
+		index_t m_k;
 
 		/// parameter q of rank weighting
 		float64_t m_q;
 
 		/// number of classes (i.e. number of values labels can take)
-		int32_t m_num_classes;
+		index_t m_num_classes;
 
 		/// smallest label, i.e. -1
-		int32_t m_min_label;
+		index_t m_min_label;
 
 		/** the actual trainlabels */
-		SGVector<int32_t> m_train_labels;
+		SGVector<index_t> m_train_labels;
 
 		/// Solver for KNN
 		CKNNSolver* solver;

@@ -82,7 +82,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(index_t idx_a, index_t idx_b);
 
 		/** compute index
 		 *
@@ -123,11 +123,11 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		float64_t* plo_rhs;
 
 		/** number of parameters */
-		int32_t num_params;
+		index_t num_params;
 		/** number of parameters2 */
-		int32_t num_params2;
+		index_t num_params2;
 		/** number of symbols */
-		int32_t num_symbols;
+		index_t num_symbols;
 		/** sum m2 s2 */
 		float64_t sum_m2_s2;
 

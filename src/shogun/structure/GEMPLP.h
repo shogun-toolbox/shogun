@@ -46,17 +46,16 @@ public:
 	struct Parameter
 	{
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-		Parameter(const int32_t max_iter = 1000,
-		          const float64_t obj_del_thr = 0.0002,
-		          const float64_t int_gap_thr = 0.0002)
-			: m_max_iter(max_iter),
-			  m_obj_del_thr(obj_del_thr),
+		Parameter(
+			const index_t max_iter = 1000, const float64_t obj_del_thr = 0.0002,
+			const float64_t int_gap_thr = 0.0002)
+			: m_max_iter(max_iter), m_obj_del_thr(obj_del_thr),
 			  m_int_gap_thr(int_gap_thr)
 		{}
 #endif
 
 		/** maximum number of outer iterations*/
-		int32_t m_max_iter;
+		index_t m_max_iter;
 		/** threshold of the delta objective value, i.e., last_obj - curr_obj */
 		float64_t m_obj_del_thr;
 		/** threshold of the duality gap, i.e., primal_obj - dual_obj */
@@ -88,7 +87,7 @@ public:
 	 * @param assignment the assignment
 	 * @return the total energy after doing inference
 	 */
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	virtual float64_t inference(SGVector<index_t> assignment);
 
 private:
 	/** Initialize GEMPLP with factor graph */
@@ -100,7 +99,7 @@ private:
 	 * A. Globerson and T. Jaakkola [1] for more details.
 	 *
 	 */
-	void update_messages(int32_t id_region);
+	void update_messages(index_t id_region);
 
 public:
 	/** Computer the maximum value along the sub-dimension
@@ -109,7 +108,9 @@ public:
 	 * @param subset_inds sub-dimension indices
 	 * @param max_res the result nd array
 	 */
-	void max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t> &subset_inds, SGNDArray<float64_t> &max_res) const;
+	void max_in_subdimension(
+		SGNDArray<float64_t> tar_arr, SGVector<index_t>& subset_inds,
+		SGNDArray<float64_t>& max_res) const;
 
 	/** Find intersection index between regions
 	 *
@@ -117,7 +118,8 @@ public:
 	 * @param region_B region B
 	 * @return index in all intersection
 	 */
-	int32_t find_intersection_index(SGVector<int32_t> region_A, SGVector<int32_t> region_B);
+	index_t find_intersection_index(
+		SGVector<index_t> region_A, SGVector<index_t> region_B);
 
 	/** Convert original energies to potentials of the region
 	 * GEMPLP objective function is a maximazation function, we use - energy
@@ -135,11 +137,11 @@ public:
 	/** all factors in the graph*/
 	CDynamicObjectArray* m_factors;
 	/** all intersections */
-	std::vector<SGVector<int32_t> > m_all_intersections;
+	std::vector<SGVector<index_t>> m_all_intersections;
 	/** the intersection indices (node indices) on each region */
-	std::vector<std::set<int32_t> > m_region_intersections;
+	std::vector<std::set<index_t>> m_region_intersections;
 	/** the indices (orders in the region) of the intersections on each region */
-	std::vector<std::vector<SGVector<int32_t> > > m_region_inds_intersections;
+	std::vector<std::vector<SGVector<index_t>>> m_region_inds_intersections;
 	/** store the sum of messages into intersections */
 	std::vector<SGNDArray<float64_t> > m_msgs_into_intersections;
 	/** store the messages from region to intersection */

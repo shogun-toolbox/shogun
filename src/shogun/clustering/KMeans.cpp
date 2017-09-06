@@ -27,11 +27,13 @@ CKMeans::CKMeans():CKMeansBase()
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+CKMeans::CKMeans(index_t k_i, CDistance* d_i, bool use_kmpp_i)
+	: CKMeansBase(k_i, d_i, use_kmpp_i)
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+CKMeans::CKMeans(index_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
+	: CKMeansBase(k_i, d_i, centers_i)
 {
 }
 
@@ -39,7 +41,7 @@ CKMeans::~CKMeans()
 {
 }
 
-void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
+void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, index_t num_centers)
 {
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
@@ -47,10 +49,11 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	index_t lhs_size=lhs->get_num_vectors();
 	index_t dim=lhs->get_num_features();
 
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CDenseFeatures<float64_t>* rhs_mus =
+		new CDenseFeatures<float64_t>(index_t(0));
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 
-	SGVector<int32_t> cluster_assignments=SGVector<int32_t>(lhs_size);
+	SGVector<index_t> cluster_assignments = SGVector<index_t>(lhs_size);
 	cluster_assignments.zero();
 
 	/* Weights : Number of points in each cluster */
@@ -82,8 +85,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		/* Assigment step : Assign each point to nearest cluster */
 		for (index_t i=0; i<lhs_size; i++)
 		{
-			const int32_t cluster_assignments_i=cluster_assignments[i];
-			int32_t min_cluster, j;
+			const index_t cluster_assignments_i = cluster_assignments[i];
+			index_t min_cluster, j;
 			float64_t min_dist, dist;
 
 			min_cluster=0;

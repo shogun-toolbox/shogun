@@ -129,7 +129,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(index_t idx_a, index_t idx_b);
 
 		/** register the parameters */
 		virtual void register_param();
@@ -161,9 +161,9 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** string features */
 		CStringFeatures<char>* string_features;
 		/** nof sequences */
-		int32_t nof_sequences;
+		index_t nof_sequences;
 		/** max sequence length */
-		int32_t max_sequence_length;
+		index_t max_sequence_length;
 
 		/** if kernel is initialized */
 		bool initialized;

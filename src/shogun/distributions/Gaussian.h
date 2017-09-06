@@ -73,14 +73,14 @@ class CGaussian : public CDistribution
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters();
+		virtual index_t get_num_model_parameters();
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic) if num_param < m_dim returns
 		 * an element from the mean, else return an element from the covariance
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param);
+		virtual float64_t get_log_model_parameter(index_t num_param);
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -88,8 +88,8 @@ class CGaussian : public CDistribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+		virtual float64_t
+		get_log_derivative(index_t num_param, index_t num_example);
 
 		/** compute log likelihood for example
 		 *
@@ -98,7 +98,7 @@ class CGaussian : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(index_t num_example);
 
 		/** update parameters in the em maximization step for mixture model of which
 		 * this distribution is a part
@@ -107,7 +107,7 @@ class CGaussian : public CDistribution
 		 * @param len length of alpha_k array
 		 * @return sum of values in alpha_k
 		 */
-		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
+		virtual float64_t update_params_em(float64_t* alpha_k, index_t len);
 
 		/** compute PDF
 		 *

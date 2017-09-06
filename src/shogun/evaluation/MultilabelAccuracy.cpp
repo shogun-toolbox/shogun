@@ -42,37 +42,38 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
 
     for (index_t k=0; k<num_labels; k++)
     {
-        SGVector<int32_t> slabel_true = m_ground_truth->get_label(k);
-        SGVector<int32_t> slabel_pred = m_predicted->get_label(k);
+		SGVector<index_t> slabel_true = m_ground_truth->get_label(k);
+		SGVector<index_t> slabel_pred = m_predicted->get_label(k);
 
-        int32_t true_pos = 0;
-        index_t i = 0, j = 0;
+		int32_t true_pos = 0;
+		index_t i = 0, j = 0;
 
-        while (i<slabel_true.vlen && j<slabel_pred.vlen)
-        {
-            /** true positive */
-            if (slabel_true[i] == slabel_pred[j])
-            {
-                true_pos ++;
-                i++;
-                j++;
-            }
-            /** false positive */
-            else if (slabel_true[i] < slabel_pred[j])
-            {
-                i++;
-            }
-            /** false negative */
-            else
-            {
-                j++;
-            }
-        }
+		while (i < slabel_true.vlen && j < slabel_pred.vlen)
+		{
+			/** true positive */
+			if (slabel_true[i] == slabel_pred[j])
+			{
+				true_pos++;
+				i++;
+				j++;
+			}
+			/** false positive */
+			else if (slabel_true[i] < slabel_pred[j])
+			{
+				i++;
+			}
+			/** false negative */
+			else
+			{
+				j++;
+			}
+		}
 
-        accuracy += ((float)true_pos /
-                     (float)(slabel_true.vlen + slabel_pred.vlen - true_pos));
-    }
+		accuracy +=
+		    ((float)true_pos /
+		     (float)(slabel_true.vlen + slabel_pred.vlen - true_pos));
+	}
 
-    return accuracy/num_labels;
+	return accuracy / num_labels;
 }
 

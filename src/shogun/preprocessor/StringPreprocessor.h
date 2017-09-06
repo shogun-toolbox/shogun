@@ -50,7 +50,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		virtual bool apply_to_string_features(CFeatures* f)=0;
 
 		/// apply preproc on single feature vector
-		virtual ST* apply_to_string(ST* f, int32_t &len)=0;
+		virtual ST* apply_to_string(ST* f, index_t& len) = 0;
 
 		/// return that we are string features (just fixed size matrices)
 		virtual EFeatureClass get_feature_class() { return C_STRING; }

@@ -178,13 +178,15 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 		SG_NOTIMPLEMENTED
 		break;
 	case CT_VECTOR: case CT_SGVECTOR:
-		if (fprintf(m_fstream, "%" PRIi32 " %c", len_real_y,
-					CHAR_CONT_BEGIN) <= 0)
+		if (fprintf(
+		        m_fstream, "%li" PRIi32 " %c", len_real_y, CHAR_CONT_BEGIN) <=
+		    0)
 			return false;
 		break;
 	case CT_MATRIX: case CT_SGMATRIX:
-		if (fprintf(m_fstream, "%" PRIi32" %" PRIi32 " %c",
-					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
+		if (fprintf(
+		        m_fstream, "%li" PRIi32 " %ll" PRIi32 " %c", len_real_y,
+		        len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
 	case CT_UNDEFINED:
@@ -210,8 +212,8 @@ bool
 CSerializableAsciiFile::write_string_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
-	if (fprintf(m_fstream, "%" PRIi32 " %c", length,
-				CHAR_STRING_BEGIN) <= 0) return false;
+	if (fprintf(m_fstream, "%li" PRIi32 " %c", length, CHAR_STRING_BEGIN) <= 0)
+		return false;
 
 	return true;
 }
@@ -247,8 +249,8 @@ bool
 CSerializableAsciiFile::write_sparse_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
-	if (fprintf(m_fstream, "%" PRIi32" %c", length,
-				CHAR_SPARSE_BEGIN) <= 0) return false;
+	if (fprintf(m_fstream, "%li" PRIi32 " %c", length, CHAR_SPARSE_BEGIN) <= 0)
+		return false;
 
 	return true;
 }
@@ -267,8 +269,9 @@ CSerializableAsciiFile::write_sparseentry_begin_wrapped(
 	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
-	if (fprintf(m_fstream, " %" PRIi32 " %c", feat_index, CHAR_ITEM_BEGIN)
-		<= 0) return false;
+	if (fprintf(m_fstream, " %ll" PRIi32 " %c", feat_index, CHAR_ITEM_BEGIN) <=
+	    0)
+		return false;
 
 	return true;
 }

@@ -163,9 +163,9 @@ float64_t CLBFGSMinimizer::minimize()
 	init_minimization();
 
 	float64_t cost=0.0;
-	int32_t error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
-		&cost, CLBFGSMinimizer::evaluate,
-		NULL, this, &lbfgs_param);
+	index_t error_code = lbfgs(
+		m_target_variable.vlen, m_target_variable.vector, &cost,
+		CLBFGSMinimizer::evaluate, NULL, this, &lbfgs_param);
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
@@ -176,8 +176,9 @@ float64_t CLBFGSMinimizer::minimize()
 	return cost;
 }
 
-float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
-	float64_t *gradient, const int32_t dim, const float64_t step)
+float64_t CLBFGSMinimizer::evaluate(
+	void* obj, const float64_t* variable, float64_t* gradient,
+	const index_t dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
 	CLBFGSMinimizer * obj_prt

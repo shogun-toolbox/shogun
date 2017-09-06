@@ -486,17 +486,17 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		node_t* right_child=dynamic_cast<node_t*>(children->get_element(1));
 
 		int32_t count_left=0;
-		for (int32_t k=0;k<feature_matrix.num_cols;k++)
+		for (index_t k = 0; k < feature_matrix.num_cols; k++)
 		{
 			if (feature_matrix(current->data.attribute_id,k)<=left_child->data.transit_if_feature_value)
 				count_left++;
 		}
 
-		SGVector<int32_t> left_subset(count_left);
-		SGVector<int32_t> right_subset(feature_matrix.num_cols-count_left);
-		int32_t l=0;
-		int32_t r=0;
-		for (int32_t k=0;k<feature_matrix.num_cols;k++)
+		SGVector<index_t> left_subset(count_left);
+		SGVector<index_t> right_subset(feature_matrix.num_cols - count_left);
+		index_t l = 0;
+		index_t r = 0;
+		for (index_t k = 0; k < feature_matrix.num_cols; k++)
 		{
 			if (feature_matrix(current->data.attribute_id,k)<=left_child->data.transit_if_feature_value)
 				left_subset[l++]=k;

@@ -26,7 +26,7 @@ inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
 
 void create_tree_graph(int hh, int ww)
 {
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -34,24 +34,24 @@ void create_tree_graph(int hh, int ww)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> vc(hh*ww);
-	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	SGVector<index_t> vc(hh * ww);
+	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph* fg = new CFactorGraph(vc);
 	SG_REF(fg);
 
 	// Add factors
-	for (int32_t x = 0; x < ww; x++)
+	for (index_t x = 0; x < ww; x++)
 	{
-		for (int32_t y = 0; y < hh; y++)
+		for (index_t y = 0; y < hh; y++)
 		{
 			if (x > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -61,7 +61,7 @@ void create_tree_graph(int hh, int ww)
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -84,7 +84,7 @@ void create_tree_graph(int hh, int ww)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	assignment.display_vector();

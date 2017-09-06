@@ -66,13 +66,13 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 
 	protected:
 		/** idx */
-		SGVector<int32_t> m_idx;
+		SGVector<index_t> m_idx;
 		/** mean */
 		SGVector<float64_t> m_mean;
 		/** std */
 		SGVector<float64_t> m_std;
 		/** num idx */
-		int32_t m_num_idx;
+		index_t m_num_idx;
 		/** divide by std */
 		bool m_divide_by_std;
 

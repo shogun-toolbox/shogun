@@ -100,7 +100,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		}
 
 		MatrixXd slice_mat(d, slice_size);
-		for (int32_t j = 0; j < slice_size; ++j)
+		for (index_t j = 0; j < slice_size; ++j)
 			slice_mat.col(j) = Map<const VectorXd>(x->get_feature_vector(idxsmap[j]).vector, d);
 
 		features_slice->set_feature_matrix(SGMatrix<float64_t>(slice_mat.data(), d, slice_size, false));
@@ -112,7 +112,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		labels_slice->set_labels(labels_vec);
 
 		CKNN* knn = new CKNN(k+1, new CEuclideanDistance(features_slice, features_slice), labels_slice);
-		SGMatrix<int32_t> target_slice = knn->nearest_neighbors();
+		SGMatrix<index_t> target_slice = knn->nearest_neighbors();
 		// sanity check
 		ASSERT(target_slice.num_rows==k+1 && target_slice.num_cols==slice_size)
 

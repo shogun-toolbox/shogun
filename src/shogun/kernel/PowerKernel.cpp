@@ -56,7 +56,7 @@ void CPowerKernel::init()
 			MS_AVAILABLE);
 }
 
-float64_t CPowerKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CPowerKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
 	float64_t temp = pow(dist, m_degree);

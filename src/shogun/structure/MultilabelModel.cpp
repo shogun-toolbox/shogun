@@ -28,7 +28,8 @@ CMultilabelModel::~CMultilabelModel()
 {
 }
 
-CStructuredLabels * CMultilabelModel::structured_labels_factory(int32_t num_labels)
+CStructuredLabels*
+CMultilabelModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMultilabelSOLabels(num_labels, m_num_classes);
 }
@@ -46,10 +47,10 @@ void CMultilabelModel::init()
 	m_num_classes = 0;
 }
 
-int32_t CMultilabelModel::get_dim() const
+index_t CMultilabelModel::get_dim() const
 {
-	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	int32_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return feats_dim * num_classes;
 }
@@ -60,8 +61,8 @@ void CMultilabelModel::set_misclass_cost(float64_t false_positive, float64_t fal
 	m_false_negative = false_negative;
 }
 
-SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
-                CStructuredData * y)
+SGVector<float64_t>
+CMultilabelModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
 {
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
@@ -70,7 +71,7 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 	                        get_computed_dot_feature_vector(feat_idx);
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(y);
 	ASSERT(slabel != NULL);
-	SGVector<int32_t> slabel_data = slabel->get_data();
+	SGVector<index_t> slabel_data = slabel->get_data();
 
 	for (index_t i = 0; i < slabel_data.vlen; i++)
 	{
@@ -118,10 +119,10 @@ float64_t CMultilabelModel::delta_loss(float64_t y1, float64_t y2)
 	return y1 > y2 ? m_false_negative : y1 < y2 ? m_false_positive : 0;
 }
 
-SGVector<int32_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
-                float64_t d_true, float64_t d_false)
+SGVector<index_t> CMultilabelModel::to_sparse(
+    SGVector<float64_t> dense_vec, float64_t d_true, float64_t d_false)
 {
-	int32_t size = 0;
+	index_t size = 0;
 
 	for (index_t i = 0; i < dense_vec.vlen; i++)
 	{
@@ -135,7 +136,7 @@ SGVector<int32_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
 		}
 	}
 
-	SGVector<int32_t> sparse_vec(size);
+	SGVector<index_t> sparse_vec(size);
 	index_t j = 0;
 
 	for (index_t i = 0; i < dense_vec.vlen; i++)
@@ -150,11 +151,11 @@ SGVector<int32_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
 	return sparse_vec;
 }
 
-CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
-                                      bool const training)
+CResultSet* CMultilabelModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
-	int32_t feats_dim = dot_feats->get_dim_feature_space();
+	index_t feats_dim = dot_feats->get_dim_feature_space();
 
 	CMultilabelSOLabels * multi_labs = (CMultilabelSOLabels *)m_labels;
 
@@ -168,14 +169,14 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 		        "it for prediction\n");
 	}
 
-	int32_t dim = get_dim();
+	index_t dim = get_dim();
 	ASSERT(dim == w.vlen);
 
 	float64_t score = 0, total_score = 0;
 	SGVector<float64_t> y_pred_dense(m_num_classes);
 	y_pred_dense.zero();
 
-	for (int32_t c = 0; c < m_num_classes; c++)
+	for (index_t c = 0; c < m_num_classes; c++)
 	{
 		score = dot_feats->dense_dot(feat_idx, w.vector + c * feats_dim, feats_dim);
 
@@ -187,7 +188,7 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 
 	}
 
-	SGVector<int32_t> y_pred_sparse = to_sparse(y_pred_dense, 1, 0);
+	SGVector<index_t> y_pred_sparse = to_sparse(y_pred_dense, 1, 0);
 
 	CResultSet * ret = new CResultSet();
 	SG_REF(ret);

@@ -8,10 +8,16 @@
 
 using namespace shogun;
 
-CCoverTreeKNNSolver::CCoverTreeKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels):
-CKNNSolver(k, q, num_classes, min_label, train_labels) { /* nothing to do */ }
+CCoverTreeKNNSolver::CCoverTreeKNNSolver(
+    const index_t k, const float64_t q, const index_t num_classes,
+    const index_t min_label, const SGVector<index_t> train_labels)
+    : CKNNSolver(k, q, num_classes, min_label, train_labels)
+{ /* nothing to do */
+}
 
-CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 
@@ -43,9 +49,9 @@ CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance
 if (io->get_loglevel()<= MSG_DEBUG)
 {
 	SG_DEBUG("\nJL Results:\n")
-	for ( int32_t i = 0 ; i < res.index ; ++i )
+	for (index_t i = 0; i < res.index; ++i)
 	{
-		for ( int32_t j = 0 ; j < res[i].index ; ++j )
+		for (index_t j = 0; j < res[i].index; ++j)
 		{
 			SG_DEBUG("%d ", res[i][j].m_index);
 		}
@@ -70,9 +76,11 @@ if (io->get_loglevel()<= MSG_DEBUG)
 	return output;
 }
 
-SGVector<int32_t> CCoverTreeKNNSolver::classify_objects_k(CDistance* knn_distance, int32_t num_lab, SGVector<int32_t>& train_lab,  SGVector<int32_t>& classes) const
+SGVector<index_t> CCoverTreeKNNSolver::classify_objects_k(
+    CDistance* knn_distance, index_t num_lab, SGVector<index_t>& train_lab,
+    SGVector<index_t>& classes) const
 {
-	SGVector<int32_t> output(m_k*num_lab);
+	SGVector<index_t> output(m_k * num_lab);
 
 	//allocation for distances to nearest neighbors
 	SGVector<float64_t> dists(m_k);

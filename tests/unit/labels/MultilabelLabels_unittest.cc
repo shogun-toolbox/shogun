@@ -115,12 +115,14 @@ TEST(MultilabelLabels, get_label)
 	EXPECT_EQ(ml->get_num_labels(), 10);
 	EXPECT_EQ(ml->get_num_classes(), 5);
 
-	for (int32_t i = 0; i < ml->get_num_labels(); i++)
+	for (index_t i = 0; i < ml->get_num_labels(); i++)
 	{
-		SGVector<int32_t> sparse = ml->get_label(i);
+		SGVector<index_t> sparse = ml->get_label(i);
 		EXPECT_EQ(0, sparse.size());
 
-		SGVector<float64_t> dense = CMultilabelLabels::to_dense<int32_t, float64_t> (&sparse, ml->get_num_labels(), +1, -1);
+		SGVector<float64_t> dense =
+		    CMultilabelLabels::to_dense<index_t, float64_t>(
+		        &sparse, ml->get_num_labels(), +1, -1);
 		EXPECT_EQ(ml->get_num_labels(), dense.size());
 	}
 
@@ -139,14 +141,16 @@ TEST(MultilabelLabels, get_class_labels)
 	EXPECT_EQ(ml->get_num_labels(), 10);
 	EXPECT_EQ(ml->get_num_classes(), 5);
 
-	SGVector<int32_t> ** class_labels = ml->get_class_labels();
+	SGVector<index_t>** class_labels = ml->get_class_labels();
 	ASSERT_TRUE(class_labels != NULL);
 
-	for (int32_t i = 0; i < ml->get_num_classes(); i++)
+	for (index_t i = 0; i < ml->get_num_classes(); i++)
 	{
 		EXPECT_EQ(0, class_labels[i]->size());
 
-		SGVector<float64_t> dense = CMultilabelLabels::to_dense<int32_t, float64_t> (class_labels[i], ml->get_num_labels(), +1, -1);
+		SGVector<float64_t> dense =
+		    CMultilabelLabels::to_dense<index_t, float64_t>(
+		        class_labels[i], ml->get_num_labels(), +1, -1);
 
 		EXPECT_EQ(ml->get_num_labels(), dense.size());
 		delete class_labels[i];

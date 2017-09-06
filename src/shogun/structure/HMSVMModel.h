@@ -42,7 +42,9 @@ class CHMSVMModel : public CStructuredModel
 		 * @param num_obs number of observations
 		 * @param use_plifs whether to model the observations using PLiFs
 		 */
-		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs=0, bool use_plifs=false);
+		CHMSVMModel(
+		    CFeatures* features, CStructuredLabels* labels, EStateModelType smt,
+		    index_t num_obs = 0, bool use_plifs = false);
 
 		/** destructor */
 		virtual ~CHMSVMModel();
@@ -51,7 +53,7 @@ class CHMSVMModel : public CStructuredModel
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		virtual index_t get_dim() const;
 
 		/**
 		 * get joint feature vector
@@ -65,7 +67,8 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -80,7 +83,9 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -124,7 +129,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return the number of auxiliary variables
 		 */
-		virtual int32_t get_num_aux() const;
+		virtual index_t get_num_aux() const;
 
 		/**
 		 * get the number of auxiliary constraints to introduce in the
@@ -133,7 +138,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return the number of auxiliary constraints
 		 */
-		virtual int32_t get_num_aux_con() const;
+		virtual index_t get_num_aux_con() const;
 
 		/** setter for use_plifs
 		 *
@@ -178,10 +183,10 @@ class CHMSVMModel : public CStructuredModel
 
 	private:
 		/** in case of discrete observations, the cardinality of the space of observations */
-		int32_t m_num_obs;
+		index_t m_num_obs;
 
 		/** the number of auxiliary variables */
-		int32_t m_num_aux;
+		index_t m_num_aux;
 
 		/** the state model */
 		CStateModel* m_state_model;
@@ -193,7 +198,7 @@ class CHMSVMModel : public CStructuredModel
 		SGVector< float64_t > m_emission_weights;
 
 		/** number of supporting points for each PLiF */
-		int32_t m_num_plif_nodes;
+		index_t m_num_plif_nodes;
 
 		/** PLiF matrix of dimensions (num_states, num_features) */
 		CDynamicObjectArray* m_plif_matrix;

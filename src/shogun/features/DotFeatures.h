@@ -49,7 +49,7 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @param size cache size
 		 */
-		CDotFeatures(int32_t size=0);
+		CDotFeatures(index_t size = 0);
 
 		/** copy constructor */
 		CDotFeatures(const CDotFeatures & orig);
@@ -168,10 +168,10 @@ class CDotFeatures : public CFeatures
 		SGVector<float64_t> get_computed_dot_feature_vector(index_t num);
 
 		/** run benchmark for add_to_dense_vec */
-		void benchmark_add_to_dense_vector(int32_t repeats=5);
+		void benchmark_add_to_dense_vector(index_t repeats = 5);
 
 		/** run benchmark for dense_dot_range */
-		void benchmark_dense_dot_range(int32_t repeats=5);
+		void benchmark_dense_dot_range(index_t repeats = 5);
 
 		/** iterate over the non-zero features
 		 *

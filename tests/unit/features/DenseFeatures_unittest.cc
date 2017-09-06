@@ -134,7 +134,7 @@ TEST(DenseFeaturesTest, copy_dimension_subset)
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i] = CMath::random(index_t(0), dim - 1);
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);
@@ -164,13 +164,13 @@ TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 
 	SGVector<index_t> inds(n/2);
 	for (index_t i=0; i<inds.vlen; ++i)
-		inds[i]=CMath::random(0, n-1);
+		inds[i] = CMath::random(index_t(0), n - 1);
 
 	features->add_subset(inds);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i] = CMath::random(index_t(0), dim - 1);
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);

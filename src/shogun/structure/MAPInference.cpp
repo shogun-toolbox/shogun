@@ -86,7 +86,7 @@ void CMAPInference::init()
 
 void CMAPInference::inference()
 {
-	SGVector<int32_t> assignment(m_fg->get_num_vars());
+	SGVector<index_t> assignment(m_fg->get_num_vars());
 	assignment.zero();
 	m_energy = m_infer_impl->inference(assignment);
 

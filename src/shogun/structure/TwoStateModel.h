@@ -66,8 +66,9 @@ class CTwoStateModel : public CStateModel
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
-				SGVector< float64_t > w, int32_t num_feats, int32_t num_obs);
+		virtual void reshape_emission_params(
+		    SGVector<float64_t>& emission_weights, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_obs);
 
 		/**
 		 * arranges the emission parameters of the weight vector into a matrix
@@ -79,8 +80,9 @@ class CTwoStateModel : public CStateModel
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
-			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes);
+		virtual void reshape_emission_params(
+		    CDynamicObjectArray* plif_matrix, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_plif_nodes);
 
 		/**
 		 * arranges the transmission parameters of the weight vector into a matrix
@@ -100,7 +102,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const;
+		virtual SGVector<index_t> labels_to_states(CSequence* label_seq) const;
 
 		/** translates state sequence to label sequence
 		 *
@@ -108,7 +110,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< int32_t > state_seq) const;
+		virtual CSequence* states_to_labels(SGVector<index_t> state_seq) const;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -122,10 +124,10 @@ class CTwoStateModel : public CStateModel
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void weights_to_vector(SGVector< float64_t >& psi,
-				SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights,
-				int32_t num_feats, int32_t num_obs) const;
+		virtual void weights_to_vector(
+		    SGVector<float64_t>& psi, SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -139,8 +141,10 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return psi output vector
 		 */
-		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const;
+		virtual SGVector<float64_t> weights_to_vector(
+		    SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The
@@ -154,8 +158,8 @@ class CTwoStateModel : public CStateModel
 		 * @return vector with monotonicity constraints of length num_feats times
 		 * num_learnt_states
 		 */
-		virtual SGVector< int32_t > get_monotonicity(int32_t num_free_states,
-				int32_t num_feats) const;
+		virtual SGVector<index_t>
+		get_monotonicity(index_t num_free_states, index_t num_feats) const;
 
 		/**
 		 * generates simulated data. The features are generated from the label
@@ -168,7 +172,9 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return a model that contains the data simulated
 		 */
-		static CHMSVMModel* simulate_data(int32_t num_exm, int32_t exm_len, int32_t num_features, int32_t num_noise_features);
+		static CHMSVMModel* simulate_data(
+		    index_t num_exm, index_t exm_len, index_t num_features,
+		    index_t num_noise_features);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "TwoStateModel"; }

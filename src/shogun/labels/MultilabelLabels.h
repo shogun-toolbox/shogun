@@ -109,25 +109,25 @@ public:
 	 *
 	 * @param labels list of sparse labels
 	 */
-	void set_labels(SGVector<int32_t> * labels);
+	void set_labels(SGVector<index_t>* labels);
 
 	/** get list of sparse class labels (one vector per class)
 	 *
 	 * @return list of sparse class labels
 	 */
-	SGVector<int32_t> ** get_class_labels() const;
+	SGVector<index_t>** get_class_labels() const;
 
 	/** get label matrix, only for multiclass multiple output labels
 	 *
 	 * @return label matrix
 	 */
-	SGMatrix<int32_t> get_labels() const;
+	SGMatrix<index_t> get_labels() const;
 
 	/** get sparse assignment for j-th label
 	 *
 	 * @return sparse label
 	 */
-	SGVector<int32_t> get_label(index_t j);
+	SGVector<index_t> get_label(index_t j);
 
 	/** Convert sparse label vector to dense.  The dense vector
 	 * will be {d_true; d_false}^dense_dim.  Indices in sparse
@@ -148,7 +148,7 @@ public:
 	 * @param j     label index
 	 * @param label sparse label
 	 */
-	void set_label(index_t j, SGVector<int32_t> label);
+	void set_label(index_t j, SGVector<index_t> label);
 
 	/** assigning class labels */
 	void set_class_labels(SGVector <int32_t> ** labels_list);
@@ -157,7 +157,7 @@ public:
 	void display() const;
 
 private:
-	void init(int32_t num_labels, int32_t num_classes);
+	void init(index_t num_labels, index_t num_classes);
 
 protected:
 	/** Number of labels */
@@ -167,7 +167,7 @@ protected:
 	index_t m_num_classes;
 
 	/** Labels themselves */
-	SGVector<int32_t>* m_labels;
+	SGVector<index_t>* m_labels;
 };
 
 }

@@ -21,21 +21,21 @@ CDirectorStructuredModel::~CDirectorStructuredModel()
 {
 }
 
-int32_t CDirectorStructuredModel::get_dim() const
+index_t CDirectorStructuredModel::get_dim() const
 {
 	SG_ERROR("Please implemement get_dim() in your target language before use\n")
 	return 0;
 }
 
-CResultSet* CDirectorStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training)
+CResultSet* CDirectorStructuredModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	SG_ERROR("Please implemement argmax(w,feat_idx,lab_idx,training) in your target language before use\n")
 	return NULL;
 }
 
-SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx,
-		CStructuredData* y)
+SGVector<float64_t> CDirectorStructuredModel::get_joint_feature_vector(
+    index_t feat_idx, CStructuredData* y)
 {
 	SG_ERROR("Please implemement get_joint_feature_vector(feat_idx,y) in your target language before use\n")
 	return SGVector<float64_t>();

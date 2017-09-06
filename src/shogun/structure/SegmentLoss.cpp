@@ -34,7 +34,7 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 }
 
-void CSegmentLoss::set_segment_ids(CDynamicArray<int32_t>* segment_ids)
+void CSegmentLoss::set_segment_ids(CDynamicArray<index_t>* segment_ids)
 {
 	m_segment_ids = segment_ids;
 }
@@ -44,7 +44,7 @@ void CSegmentLoss::set_segment_mask(CDynamicArray<float64_t>* segment_mask)
 	m_segment_mask = segment_mask;
 }
 
-void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
+void CSegmentLoss::compute_loss(index_t* all_pos, index_t len)
 {
 #ifdef DEBUG
 	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types)
@@ -59,11 +59,11 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 	for (int seg_type=0; seg_type<m_num_segment_types; seg_type++)
 	{
 		float32_t value = 0;
-		int32_t last_id = -1;
-		int32_t last_pos = all_pos[len-1];
+		index_t last_id = -1;
+		index_t last_pos = all_pos[len - 1];
 		for (int pos=len-1;pos>=0; pos--)
 		{
-			int32_t cur_id = m_segment_ids->element(pos);
+			index_t cur_id = m_segment_ids->element(pos);
 			if (cur_id!=last_id)
 			{
 				// segment contribution

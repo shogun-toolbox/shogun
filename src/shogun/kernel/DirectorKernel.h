@@ -138,7 +138,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return CKernel::get_num_vec_lhs();
 		}
@@ -147,7 +147,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return CKernel::get_num_vec_rhs();
 		}
@@ -237,7 +237,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param vector_idx index
 		 * @param weight weight
 		 */
-		virtual void add_to_normal(int32_t vector_idx, float64_t weight)
+		virtual void add_to_normal(index_t vector_idx, float64_t weight)
 		{
 			CKernel::add_to_normal(vector_idx, weight);
 		}
@@ -258,8 +258,8 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t *weights)
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights)
 		{
 			return CKernel::init_optimization(count, IDX, weights);
 		}
@@ -278,7 +278,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param vector_idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual float64_t compute_optimized(int32_t vector_idx)
+		virtual float64_t compute_optimized(index_t vector_idx)
 		{
 			return CKernel::compute_optimized(vector_idx);
 		}
@@ -303,7 +303,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels()
+		virtual index_t get_num_subkernels()
 		{
 			return CKernel::get_num_subkernels();
 		}
@@ -399,7 +399,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		virtual float64_t compute(index_t idx_a, index_t idx_b)
 		{
 			return kernel_function(idx_a, idx_b);
 		}

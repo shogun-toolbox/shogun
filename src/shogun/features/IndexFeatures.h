@@ -75,7 +75,7 @@ class CIndexFeatures : public CDummyFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t get_num_vectors() const;
+		virtual index_t get_num_vectors() const;
 
 		/** duplicate features
 		 *

@@ -154,9 +154,9 @@ float64_t CSNPFeatures::dot(index_t idx_a, CDotFeatures* df, index_t idx_b)
 
 	for (index_t i = 0; i<alen-1; i+=2)
 	{
-		int32_t sumaa=0;
-		int32_t sumbb=0;
-		int32_t sumab=0;
+		index_t sumaa = 0;
+		index_t sumbb = 0;
+		index_t sumab = 0;
 
 		uint8_t a1=avec[i];
 		uint8_t a2=avec[i+1];
@@ -396,7 +396,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 	{
 		for (index_t i=0; i<string_length/2; i++)
 		{
-			for (int32_t j=0; j<nsym; j++)
+			for (index_t j = 0; j < nsym; j++)
 			{
 				if (h_normalizer && h_normalizer[i])
 					h[int64_t(i)*nsym+j]/=h_normalizer[i];

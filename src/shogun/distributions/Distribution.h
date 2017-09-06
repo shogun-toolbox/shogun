@@ -66,7 +66,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters()=0;
+		virtual index_t get_num_model_parameters() = 0;
 
 		/** get number of parameters in model that are relevant,
 		 * i.e. > ALMOST_NEG_INFTY
@@ -81,7 +81,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return model parameter (logarithmic)
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param)=0;
+		virtual float64_t get_log_model_parameter(index_t num_param) = 0;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *

@@ -18,12 +18,12 @@ TEST(SOSVM, sgd_check_w_helper)
 	int32_t num_samples = 1;
 
 	// define factor type
-	SGVector<int32_t> card(1);
+	SGVector<index_t> card(1);
 	card[0] = 2;
 	SGVector<float64_t> w(2);
 	w[0] = -1;
 	w[1] = 1;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -33,10 +33,10 @@ TEST(SOSVM, sgd_check_w_helper)
 	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
 	SG_REF(labels);
 
-	for (int32_t n = 0; n < num_samples; ++n)
+	for (index_t n = 0; n < num_samples; ++n)
 	{
 		// factor graph
-		SGVector<int32_t> vc(1);
+		SGVector<index_t> vc(1);
 		vc[0] = 2;
 
 		CFactorGraph* fg = new CFactorGraph(vc);
@@ -44,7 +44,7 @@ TEST(SOSVM, sgd_check_w_helper)
 		// add factors
 		SGVector<float64_t> data1(1);
 		data1[0] = -1.0;
-		SGVector<int32_t> var_index1(1);
+		SGVector<index_t> var_index1(1);
 		var_index1[0] = 0;
 		CFactor* fac1 = new CFactor(factortype, var_index1, data1);
 		fg->add_factor(fac1);
@@ -81,7 +81,7 @@ TEST(SOSVM, sgd_check_w_helper)
 	sgd->train();
 	w = sgd->get_w();
 
-	for (int32_t i = 0; i < w.vlen; i++)
+	for (index_t i = 0; i < w.vlen; i++)
 		EXPECT_NEAR(w_truth[i], w[i], 1E-10);
 
 	EXPECT_NEAR(1.0, CSOSVMHelper::primal_objective(w, model, 1.0), 1E-10);
@@ -99,12 +99,12 @@ TEST(SOSVM, fw_check_w_helper)
 	int32_t num_samples = 1;
 
 	// define factor type
-	SGVector<int32_t> card(1);
+	SGVector<index_t> card(1);
 	card[0] = 2;
 	SGVector<float64_t> w(2);
 	w[0] = -sqrt(0.5);
 	w[1] = sqrt(0.5);
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -114,10 +114,10 @@ TEST(SOSVM, fw_check_w_helper)
 	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
 	SG_REF(labels);
 
-	for (int32_t n = 0; n < num_samples; ++n)
+	for (index_t n = 0; n < num_samples; ++n)
 	{
 		// factor graph
-		SGVector<int32_t> vc(1);
+		SGVector<index_t> vc(1);
 		vc[0] = 2;
 
 		CFactorGraph* fg = new CFactorGraph(vc);
@@ -125,7 +125,7 @@ TEST(SOSVM, fw_check_w_helper)
 		// add factors
 		SGVector<float64_t> data1(1);
 		data1[0] = -sqrt(0.5);
-		SGVector<int32_t> var_index1(1);
+		SGVector<index_t> var_index1(1);
 		var_index1[0] = 0;
 		CFactor* fac1 = new CFactor(factortype, var_index1, data1);
 		fg->add_factor(fac1);
@@ -164,7 +164,7 @@ TEST(SOSVM, fw_check_w_helper)
 	fw->train();
 	w = fw->get_w();
 
-	for (int32_t i = 0; i < w.vlen; i++)
+	for (index_t i = 0; i < w.vlen; i++)
 		EXPECT_NEAR(w_truth[i], w[i], 1E-10);
 
 	EXPECT_NEAR(0.5, CSOSVMHelper::primal_objective(w, model, 1.0), 1E-10);

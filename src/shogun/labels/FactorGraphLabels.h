@@ -39,8 +39,8 @@ public:
 	 * @param observed_state Discrete labeling of a set of variables.
 	 * @param loss_weights weighted loss for each variable
 	 */
-	CFactorGraphObservation(SGVector<int32_t> observed_state,
-		SGVector<float64_t> loss_weights);
+	CFactorGraphObservation(
+		SGVector<index_t> observed_state, SGVector<float64_t> loss_weights);
 
 	~CFactorGraphObservation() { }
 
@@ -62,7 +62,7 @@ public:
 	virtual const char* get_name() const { return "FactorGraphObservation"; }
 
 	/** @return data */
-	SGVector<int32_t> get_data() const;
+	SGVector<index_t> get_data() const;
 
 	/** @return loss weights */
 	SGVector<float64_t> get_loss_weights() const;
@@ -78,7 +78,7 @@ protected:
 	SGVector<float64_t> m_loss_weights;
 
 	/** ground truth states */
-	SGVector<int32_t> m_observed_state;
+	SGVector<index_t> m_observed_state;
 };
 
 

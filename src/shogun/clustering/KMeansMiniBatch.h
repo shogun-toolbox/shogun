@@ -54,33 +54,33 @@ class CKMeansMiniBatch : public CKMeansBase
 		 *
 		 *@param b batch size int32_t(greater than 0)
 		 */
-		void set_batch_size(int32_t b);
+		void set_batch_size(index_t b);
 
 		/** get batch size for mini-batch KMeans
 		 *
 		 *@return batch size
 		 */
-		int32_t get_batch_size() const;
+		index_t get_batch_size() const;
 
 		/** set no. of iterations for mini-batch KMeans
 		 *
 		 *@param t %rename(KMeans) CKMeans;
 no. of iterations int32_t(greater than 0)
 		 */
-		void set_mb_iter(int32_t t);
+		void set_mb_iter(index_t t);
 
 		/** get no. of iterations for mini-batch KMeans
 		 *
 		 *@return no. of iterations
 		 */
-		int32_t get_mb_iter() const;
+		index_t get_mb_iter() const;
 
 		/** set batch size and no. of iteration for mini-batch KMeans
 		 *
 		 *@param b batch size
 		 *@param t no. of iterations
 		 */
-		void set_mb_params(int32_t b, int32_t t);
+		void set_mb_params(index_t b, index_t t);
 
 	protected:
 
@@ -105,7 +105,7 @@ no. of iterations int32_t(greater than 0)
 		/* choose b integers between 0 and num-1
 		 *
 		 */
-		SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num);
+		SGVector<int32_t> mbchoose_rand(index_t b, int32_t num);
 
 	protected:
 

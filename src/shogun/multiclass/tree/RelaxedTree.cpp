@@ -300,14 +300,14 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 				long_mu[classes[i]] = -1;
 		}
 
-		SGVector<int32_t> subset(m_feats->get_num_vectors());
+		SGVector<index_t> subset(m_feats->get_num_vectors());
 		SGVector<float64_t> binlab(m_feats->get_num_vectors());
-		int32_t k=0;
+		index_t k = 0;
 
 		CMulticlassLabels *labs = dynamic_cast<CMulticlassLabels *>(m_labels);
-		for (int32_t i=0; i < binlab.vlen; ++i)
+		for (index_t i = 0; i < binlab.vlen; ++i)
 		{
-			int32_t lab = labs->get_int_label(i);
+			index_t lab = labs->get_int_label(i);
 			binlab[i] = long_mu[lab];
 			if (long_mu[lab] != 0)
 				subset[k++] = i;

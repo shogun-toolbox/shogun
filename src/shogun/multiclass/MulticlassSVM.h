@@ -220,7 +220,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 			return dynamic_cast<CSVM*>(m_machine);
 		}
 		/** returns support vectors */
-		SGVector<int32_t> svm_svs()
+		SGVector<index_t> svm_svs()
 		{
 			return svm_proto()->m_svs;
 		}

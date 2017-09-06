@@ -51,18 +51,18 @@ index_t CKMeansMiniBatch::get_batch_size() const
 	return batch_size;
 }
 
-void CKMeansMiniBatch::set_mb_iter(int32_t i)
+void CKMeansMiniBatch::set_mb_iter(index_t i)
 {
 	REQUIRE(i>0, "Parameter number of iterations should be > 0");
 	minib_iter=i;
 }
 
-int32_t CKMeansMiniBatch::get_mb_iter() const
+index_t CKMeansMiniBatch::get_mb_iter() const
 {
 	return minib_iter;
 }
 
-void CKMeansMiniBatch::set_mb_params(index_t b, int32_t t)
+void CKMeansMiniBatch::set_mb_params(index_t b, index_t t)
 {
 	REQUIRE(b>0, "Parameter bach size should be > 0");
 	REQUIRE(t>0, "Parameter number of iterations should be > 0");

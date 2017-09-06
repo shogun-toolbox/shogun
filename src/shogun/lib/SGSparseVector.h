@@ -114,7 +114,7 @@ public:
 	 *
 	 * @return largest feature index
 	 */
-	int32_t get_num_dimensions();
+	index_t get_num_dimensions();
 
 	/**
 	 * sort features by indices  (Setting stable_pointer=true to

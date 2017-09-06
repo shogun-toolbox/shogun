@@ -178,16 +178,17 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<T> clone() const;
 
 		/** Clone vector */
-		static T* clone_vector(const T* vec, int32_t len);
+		static T* clone_vector(const T* vec, index_t len);
 
 		/** Fill vector */
-		static void fill_vector(T* vec, int32_t len, T value);
+		static void fill_vector(T* vec, index_t len, T value);
 
 		/** Range fill vector */
-		static void range_fill_vector(T* vec, int32_t len, T start=0);
+		static void range_fill_vector(T* vec, index_t len, T start = 0);
 
 		/** Random vector */
-		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
+		static void
+		random_vector(T* vec, index_t len, T min_value, T max_value);
 #endif // SWIG // SWIG should skip this part
 
 		/** Get element at index
@@ -215,7 +216,7 @@ template<class T> class SGVector : public SGReferencedData
 		 *
 		 * @param n new size
 		 */
-		void resize_vector(int32_t n);
+		void resize_vector(index_t n);
 
 		/** Operator overload for vector read only access
 		 *
@@ -348,29 +349,28 @@ template<class T> class SGVector : public SGReferencedData
 		bool equals(SGVector<T>& other);
 
 		/// || x ||_2
-		static T twonorm(const T* x, int32_t len);
+		static T twonorm(const T* x, index_t len);
 
 		/// || x ||_1
-		static float64_t onenorm(T* x, int32_t len);
+		static float64_t onenorm(T* x, index_t len);
 
 		/// || x ||_q^q
-		static T qsq(T* x, int32_t len, float64_t q);
+		static T qsq(T* x, index_t len, float64_t q);
 
 		/// || x ||_q
-		static T qnorm(T* x, int32_t len, float64_t q);
+		static T qnorm(T* x, index_t len, float64_t q);
 
 		/// x=x+alpha*y
-		static void vec1_plus_scalar_times_vec2(T* vec1,
-				const T scalar, const T* vec2, int32_t n);
+		static void vec1_plus_scalar_times_vec2(
+		    T* vec1, const T scalar, const T* vec2, index_t n);
 
 		/// Compute vector multiplication
-		static inline void vector_multiply(
-				T* target, const T* v1, const T* v2,int32_t len)
-			{
-				for (int32_t i=0; i<len; i++)
-					target[i]=v1[i]*v2[i];
-			}
-
+		static inline void
+		vector_multiply(T* target, const T* v1, const T* v2, index_t len)
+		{
+			for (index_t i = 0; i < len; i++)
+				target[i] = v1[i] * v2[i];
+		}
 
 		/// target=alpha*vec1 + beta*vec2
 		static inline void add(
@@ -389,13 +389,13 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/// Scale vector inplace
-		static void scale_vector(T alpha, T* vec, int32_t len);
+		static void scale_vector(T alpha, T* vec, index_t len);
 
 		/// Return sum(vec)
-		static inline T sum(T* vec, int32_t len)
+		static inline T sum(T* vec, index_t len)
 		{
 			T result=0;
-			for (int32_t i=0; i<len; i++)
+			for (index_t i = 0; i < len; i++)
 				result+=vec[i];
 
 			return result;
@@ -424,12 +424,12 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/** @return sum(abs(vec)) */
-		static T sum_abs(T* vec, int32_t len);
+		static T sum_abs(T* vec, index_t len);
 
 		/** Performs a inplace unique of a vector of type T using quicksort
 		 * returns the new number of elements
 		 */
-		static int32_t unique(T* output, int32_t size);
+		static index_t unique(T* output, index_t size);
 
 		/** Display array size */
 		void display_size() const;
@@ -440,8 +440,8 @@ template<class T> class SGVector : public SGReferencedData
 
 		/// Display vector (useful for debugging)
 		static void display_vector(
-			const T* vector, int32_t n, const char* name="vector",
-			const char* prefix="");
+		    const T* vector, index_t n, const char* name = "vector",
+		    const char* prefix = "");
 
 		/// Display vector (useful for debugging)
 		static void display_vector(
@@ -516,7 +516,9 @@ template<class T> class SGVector : public SGReferencedData
 		 *	false - row-major order (C, Python)
 		 * @return matrix
 		 */
-		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+		static void convert_to_matrix(
+		    T*& matrix, index_t nrows, index_t ncols, const T* vector,
+		    index_t vlen, bool fortran_order);
 #endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
@@ -551,11 +553,13 @@ template<class T> class SGVector : public SGReferencedData
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-template<> void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
-				const float64_t scalar, const float64_t* vec2, int32_t n);
+template <>
+void SGVector<float64_t>::vec1_plus_scalar_times_vec2(
+	float64_t* vec1, const float64_t scalar, const float64_t* vec2, index_t n);
 
-template<> void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
-				const float32_t scalar, const float32_t* vec2, int32_t n);
+template <>
+void SGVector<float32_t>::vec1_plus_scalar_times_vec2(
+	float32_t* vec1, const float32_t scalar, const float32_t* vec2, index_t n);
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif // __SGVECTOR_H__

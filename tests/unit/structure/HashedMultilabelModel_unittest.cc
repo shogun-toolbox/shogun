@@ -37,14 +37,14 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_EXAMPLES,
 	                NUM_CLASSES);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_2(3);
+	SGVector<index_t> lab_2(3);
 	lab_2[0] = 0;
 	lab_2[1] = 1;
 	lab_2[2] = 2;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_2);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_2);
 
 	CHashedMultilabelModel * model = new CHashedMultilabelModel(features,
 	                labels, HASH_DIMS);
@@ -68,7 +68,7 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 	{
 		uint32_t seed = (uint32_t)lab_1[i];
 
-		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
+		for (index_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
@@ -112,11 +112,11 @@ TEST(HashedMultilabelModel, delta_loss)
 	                labels, HASH_DIMS);
 	SG_REF(model);
 
-	SGVector<int32_t> lab_3(3);
+	SGVector<index_t> lab_3(3);
 	lab_3[0] = 0;
 	lab_3[1] = 1;
 	lab_3[2] = 2;
-	SGVector<int32_t> lab_4(3);
+	SGVector<index_t> lab_4(3);
 	lab_4[0] = 0;
 	lab_4[1] = 1;
 	lab_4[2] = 2;
@@ -135,11 +135,11 @@ TEST(HashedMultilabelModel, delta_loss)
 	float64_t false_neg = 2;
 	model->set_misclass_cost(false_pos, false_neg);
 
-	SGVector<int32_t> lab_5(3);
+	SGVector<index_t> lab_5(3);
 	lab_5[0] = 0;
 	lab_5[1] = 1;
 	lab_5[2] = 2;
-	SGVector<int32_t> lab_6(2);
+	SGVector<index_t> lab_6(2);
 	lab_6[0] = 0;
 	lab_6[1] = 1;
 
@@ -175,13 +175,13 @@ TEST(HashedMultilabelModel, argmax)
 
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(2, 3);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 2;
-	SGVector<int32_t> lab_2(2);
+	SGVector<index_t> lab_2(2);
 	lab_2[0] = 0;
 	lab_2[1] = 1;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_2);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_2);
 
 	CHashedMultilabelModel * model = new CHashedMultilabelModel(features,
 	                labels, HASH_DIMS);
@@ -195,8 +195,7 @@ TEST(HashedMultilabelModel, argmax)
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
-	SGVector<int32_t> slabel_1 = y_1->get_data();
-
+	SGVector<index_t> slabel_1 = y_1->get_data();
 
 	SGSparseVector<float64_t> feat_1 = features->get_sparse_feature_vector(0);
 
@@ -205,7 +204,7 @@ TEST(HashedMultilabelModel, argmax)
 		uint32_t seed = (uint32_t)slabel_1[i];
 		SGSparseVector<float64_t> h_vec(feat_1.num_feat_entries);
 
-		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
+		for (index_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
@@ -231,14 +230,14 @@ TEST(HashedMultilabelModel, argmax)
 
 	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_2->argmax);
-	SGVector<int32_t> slabel_2 = y_2->get_data();
+	SGVector<index_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
 	{
 		uint32_t seed = (uint32_t)slabel_1[i];
 		SGSparseVector<float64_t> h_vec(feat_1.num_feat_entries);
 
-		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
+		for (index_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,

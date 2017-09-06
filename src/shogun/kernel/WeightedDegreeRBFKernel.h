@@ -111,32 +111,31 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		    virtual float64_t compute(index_t idx_a, index_t idx_b);
 
-		/** init degree weights
-		 *
-		 * @return if initialization was successful
-		 */
-		bool init_wd_weights();
+		    /** init degree weights
+		     *
+		     * @return if initialization was successful
+		     */
+		    bool init_wd_weights();
 
-	protected:
-		/** width */
-		float64_t width;
+		protected:
+		    /** width */
+		    float64_t width;
 
-		/** degree */
-		int32_t degree;
+		    /** degree */
+		    int32_t degree;
 
-		/** number of properties per amino acid */
-		int32_t nof_properties;
+		    /** number of properties per amino acid */
+		    int32_t nof_properties;
 
-		/** weights
-		 */
-		float64_t* weights;
+		    /** weights
+		     */
+		    float64_t* weights;
 
-	private:
-		/** register parameters */
-		void register_params();
-
+		private:
+		    /** register parameters */
+		    void register_params();
 };
 }
 #endif /* _WEIGHTEDDEGREERBFKERNEL_H__ */

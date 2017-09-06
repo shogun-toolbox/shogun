@@ -14,8 +14,8 @@ int main()
 	SGMatrix<float64_t> features_mat(features_dat,1,12,false);
 	CMatrixFeatures<float64_t>* features = new CMatrixFeatures<float64_t>(features_mat,3,4);
 
-	int32_t labels_dat[] = {0,0,0, 1,1,1, 0,0,0, 1,1,1};
-	SGVector<int32_t> labels_vec(labels_dat,12,false);
+	index_t labels_dat[] = {0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1};
+	SGVector<index_t> labels_vec(labels_dat, 12, false);
 	CSequenceLabels* labels = new CSequenceLabels(labels_vec,3,4,2);
 	labels->io->set_loglevel(MSG_DEBUG);
 

@@ -92,18 +92,18 @@ float64_t CStructuredAccuracy::evaluate_real(CStructuredLabels * predicted,
 float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
                 CStructuredLabels * ground_truth)
 {
-	int32_t length = predicted->get_num_labels();
+	index_t length = predicted->get_num_labels();
 	// Accuracy of each each label
 	SGVector<float64_t> accuracies(length);
-	int32_t num_equal = 0;
+	index_t num_equal = 0;
 
-	for (int32_t i = 0 ; i < length ; ++i)
+	for (index_t i = 0; i < length; ++i)
 	{
 		CSequence * true_seq = CSequence::obtain_from_generic(ground_truth->get_label(i));
 		CSequence * pred_seq = CSequence::obtain_from_generic(predicted->get_label(i));
 
-		SGVector<int32_t> true_seq_data = true_seq->get_data();
-		SGVector<int32_t> pred_seq_data = pred_seq->get_data();
+		SGVector<index_t> true_seq_data = true_seq->get_data();
+		SGVector<index_t> pred_seq_data = pred_seq->get_data();
 
 		REQUIRE(true_seq_data.size() == pred_seq_data.size(), "Corresponding ground "
 		        "truth and predicted sequences must be equally long\n");

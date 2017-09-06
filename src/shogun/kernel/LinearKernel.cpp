@@ -49,7 +49,7 @@ void CLinearKernel::cleanup()
 	CKernel::cleanup();
 }
 
-void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
+void CLinearKernel::add_to_normal(index_t idx, float64_t weight)
 {
 	((CDotFeatures*) lhs)->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal.vector, normal.size());
@@ -57,7 +57,7 @@ void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 }
 
 bool CLinearKernel::init_optimization(
-	int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas)
+    index_t num_suppvec, index_t* sv_idx, float64_t* alphas)
 {
 	clear_normal();
 
@@ -89,7 +89,7 @@ bool CLinearKernel::delete_optimization()
 	return true;
 }
 
-float64_t CLinearKernel::compute_optimized(int32_t idx)
+float64_t CLinearKernel::compute_optimized(index_t idx)
 {
 	ASSERT(get_is_initialized())
 	float64_t result = ((CDotFeatures*) rhs)->

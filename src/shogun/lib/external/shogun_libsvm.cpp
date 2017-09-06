@@ -2452,7 +2452,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->objective = f[0].objective;
 		model->nr_class = nr_class;
 
-		model->label = SG_MALLOC(int32_t, nr_class);
+		model->label = SG_MALLOC(index_t, nr_class);
 		for(i=0;i<nr_class;i++)
 			model->label[i] = label[i];
 
@@ -2466,7 +2466,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		for(i=0;i<nr_class;i++)
 		{
 			int32_t nSV = 0;
-			for(int32_t j=0;j<count[i];j++)
+			for (index_t j = 0; j < count[i]; j++)
 				if(nonzero[start[i]+j])
 				{
 					++nSV;

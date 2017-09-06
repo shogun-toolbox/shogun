@@ -69,7 +69,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(r)
 
 	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l, r)
-	int32_t i;
+	index_t i;
 	initialized=false;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -154,15 +154,15 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute mean
 		for (i=0; i<num_vectors; i++)
 		{
-			int32_t len;
+			index_t len;
 			bool free_vec;
 			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
 			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 
-			for (int32_t j=0; j<len; j++)
+			for (index_t j = 0; j < len; j++)
 			{
-				int32_t idx=compute_index(j, vec[j]);
+				index_t idx = compute_index(j, vec[j]);
 				mean[idx]             += estimate->log_derivative_pos_obsolete(vec[j], j)/num_vectors;
 				mean[idx+num_params] += estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
 			}
@@ -173,17 +173,17 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		// compute variance
 		for (i=0; i<num_vectors; i++)
 		{
-			int32_t len;
+			index_t len;
 			bool free_vec;
 			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
 			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 
-			for (int32_t j=0; j<len; j++)
+			for (index_t j = 0; j < len; j++)
 			{
-				for (int32_t k=0; k<4; k++)
+				for (index_t k = 0; k < 4; k++)
 				{
-					int32_t idx=compute_index(j, k);
+					index_t idx = compute_index(j, k);
 					if (k!=vec[j])
 					{
 						variance[idx]+=mean[idx]*mean[idx]/num_vectors;
@@ -220,14 +220,14 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	//result -= estimate->log_derivative_neg(avec[i], i)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
-		int32_t alen;
+		index_t alen;
 		bool free_avec;
 		uint16_t* avec = l->get_feature_vector(i, alen, free_avec);
 
 		float64_t  result=0 ;
-		for (int32_t j=0; j<alen; j++)
+		for (index_t j = 0; j < alen; j++)
 		{
-			int32_t a_idx = compute_index(j, avec[j]);
+			index_t a_idx = compute_index(j, avec[j]);
 			result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 			result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 		}
@@ -245,14 +245,14 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//result -= estimate->log_derivative_neg(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;
 		for (i=0; i < r->get_num_vectors(); i++)
 		{
-			int32_t alen;
+			index_t alen;
 			bool free_avec;
 			uint16_t* avec=r->get_feature_vector(i, alen, free_avec);
 
 			float64_t  result=0 ;
-			for (int32_t j=0; j<alen; j++)
+			for (index_t j = 0; j < alen; j++)
 			{
-				int32_t a_idx = compute_index(j, avec[j]) ;
+				index_t a_idx = compute_index(j, avec[j]);
 				result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 				result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 			}
@@ -354,9 +354,9 @@ void CHistogramWordStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CHistogramWordStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
@@ -429,9 +429,9 @@ void CHistogramWordStringKernel::init()
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION
-float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
+float64_t CHistogramWordStringKernel::compute_slow(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
@@ -442,10 +442,10 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
-	for (int32_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 	{
-		int32_t a_idx = compute_index(i, avec[i]) ;
-		int32_t b_idx = compute_index(i, bvec[i]) ;
+		index_t a_idx = compute_index(i, avec[i]);
+		index_t b_idx = compute_index(i, bvec[i]);
 
 		if (avec[i]==bvec[i])
 		{

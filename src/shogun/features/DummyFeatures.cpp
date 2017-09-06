@@ -24,7 +24,7 @@ CDummyFeatures::~CDummyFeatures()
 {
 }
 
-int32_t CDummyFeatures::get_num_vectors() const
+index_t CDummyFeatures::get_num_vectors() const
 {
 	return num_vectors;
 }

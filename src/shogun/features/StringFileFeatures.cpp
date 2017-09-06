@@ -103,7 +103,8 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 
 			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].string=line;
 			CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].slen=len;
-			CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, len);
+			CStringFeatures<ST>::max_string_length = CMath::max(
+				(uint64_t)CStringFeatures<ST>::max_string_length, len);
 		}
 		else
 			break;

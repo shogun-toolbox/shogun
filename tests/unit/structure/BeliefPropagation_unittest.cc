@@ -22,10 +22,10 @@ inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
 	y = index / w;
 }
 
-float64_t hamming_loss(SGVector<int32_t> y_truth, SGVector<int32_t> y_pred)
+float64_t hamming_loss(SGVector<index_t> y_truth, SGVector<index_t> y_pred)
 {
 	float64_t loss = 0.0;
-	for (int32_t i = 0; i < y_truth.size(); i++)
+	for (index_t i = 0; i < y_truth.size(); i++)
 	{
 		if (y_truth[i] != y_pred[i])
 			loss += 1;
@@ -49,7 +49,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_NEAR(0.4, infer_met.get_energy(), 1E-10);
@@ -60,7 +60,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 
 TEST(BeliefPropagation, tree_max_product_random)
 {
-	SGVector<int32_t> assignment_expected; // expected assignment
+	SGVector<index_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
@@ -76,12 +76,12 @@ TEST(BeliefPropagation, tree_max_product_random)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
-	for (int32_t i = 0; i < assignment.size(); i++)
+	for (index_t i = 0; i < assignment.size(); i++)
 		EXPECT_EQ(assignment[i], assignment_expected[i]);
 
 	EXPECT_NEAR(min_energy_expected, infer_met.get_energy(), 1E-10);
@@ -92,7 +92,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 
 TEST(BeliefPropagation, loss_augmented_energies)
 {
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -104,20 +104,20 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> vc(3);
-	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	SGVector<index_t> vc(3);
+	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph* fg = new CFactorGraph(vc);
 	SG_REF(fg);
 
 	SGVector<float64_t> data(1);
 	data[0] = 1.0;
-	SGVector<int32_t> var_index1(2);
+	SGVector<index_t> var_index1(2);
 	var_index1[0] = 0;
 	var_index1[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index1, data);
 	fg->add_factor(fac1);
 
-	SGVector<int32_t> var_index2(2);
+	SGVector<index_t> var_index2(2);
 	var_index2[0] = 1;
 	var_index2[1] = 2;
 	CFactor* fac2 = new CFactor(factortype, var_index2, data);
@@ -126,18 +126,18 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	fg->connect_components();
 	fg->compute_energies();
 
-	SGVector<int32_t> y_truth(3);
+	SGVector<index_t> y_truth(3);
 	y_truth.zero();
 	fg->loss_augmentation(y_truth);
 
-	SGVector<int32_t> y_cand(3);
-	for (int i = 0; i < 2; i++)
+	SGVector<index_t> y_cand(3);
+	for (index_t i = 0; i < 2; i++)
 	{
 		y_cand[0] = i;
-		for (int j = 0; j < 2; j++)
+		for (index_t j = 0; j < 2; j++)
 		{
 			y_cand[1] = j;
-			for (int k = 0; k < 2; k++)
+			for (index_t k = 0; k < 2; k++)
 			{
 				y_cand[2] = k;
 				float64_t loss_eg = fg->evaluate_energy(y_cand);
@@ -161,7 +161,7 @@ TEST(BeliefPropagation, tree_max_product_multi_states)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	EXPECT_EQ(assignment[0],2);
 	EXPECT_EQ(assignment[1],0);
 	EXPECT_EQ(assignment[2],2);

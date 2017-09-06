@@ -506,7 +506,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	return output;
 }
 
-float64_t CScatterSVM::apply_one(int32_t num)
+float64_t CScatterSVM::apply_one(index_t num)
 {
 	ASSERT(m_machines->get_num_elements()>0)
 	float64_t* outputs=SG_MALLOC(float64_t, m_machines->get_num_elements());

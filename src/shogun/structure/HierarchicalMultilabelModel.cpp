@@ -17,19 +17,19 @@ using namespace shogun;
 CHierarchicalMultilabelModel::CHierarchicalMultilabelModel()
 	: CStructuredModel()
 {
-	init(SGVector<int32_t>(0), false);
+	init(SGVector<index_t>(0), false);
 }
 
-CHierarchicalMultilabelModel::CHierarchicalMultilabelModel(CFeatures * features,
-                CStructuredLabels * labels, SGVector<int32_t> taxonomy,
-                bool leaf_nodes_mandatory)
-	: CStructuredModel(features, labels)
+CHierarchicalMultilabelModel::CHierarchicalMultilabelModel(
+    CFeatures* features, CStructuredLabels* labels, SGVector<index_t> taxonomy,
+    bool leaf_nodes_mandatory)
+    : CStructuredModel(features, labels)
 {
 	init(taxonomy, leaf_nodes_mandatory);
 }
 
-CStructuredLabels * CHierarchicalMultilabelModel::structured_labels_factory(
-        int32_t num_labels)
+CStructuredLabels*
+CHierarchicalMultilabelModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMultilabelSOLabels(num_labels, m_num_classes);
 }
@@ -39,8 +39,8 @@ CHierarchicalMultilabelModel::~CHierarchicalMultilabelModel()
 	SG_FREE(m_children);
 }
 
-void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
-                                        bool leaf_nodes_mandatory)
+void CHierarchicalMultilabelModel::init(
+    SGVector<index_t> taxonomy, bool leaf_nodes_mandatory)
 {
 	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
 	       MS_NOT_AVAILABLE);
@@ -53,7 +53,7 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 	m_leaf_nodes_mandatory = leaf_nodes_mandatory;
 	m_num_classes = 0;
 
-	int32_t num_classes = 0;
+	index_t num_classes = 0;
 
 	if (m_labels)
 	{
@@ -63,10 +63,10 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 	REQUIRE(num_classes == taxonomy.vlen, "Number of classes must be equal to taxonomy vector = %d\n",
 	        taxonomy.vlen);
 
-	m_taxonomy = SGVector<int32_t>(num_classes);
+	m_taxonomy = SGVector<index_t>(num_classes);
 
 	m_root = -1;
-	int32_t root_node_count = 0;
+	index_t root_node_count = 0;
 
 	for (index_t i = 0; i < num_classes; i++)
 	{
@@ -89,39 +89,39 @@ void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
 	}
 
 	// storing all the children of all the nodes in form of array of vectors
-	m_children = SG_MALLOC(SGVector<int32_t>, num_classes);
+	m_children = SG_MALLOC(SGVector<index_t>, num_classes);
 
-	for (int32_t i = 0; i < num_classes; i++)
+	for (index_t i = 0; i < num_classes; i++)
 	{
-		SGVector<int32_t> child_id = m_taxonomy.find(i);
+		SGVector<index_t> child_id = m_taxonomy.find(i);
 		m_children[i] = child_id;
 	}
 
 }
 
-int32_t CHierarchicalMultilabelModel::get_dim() const
+index_t CHierarchicalMultilabelModel::get_dim() const
 {
-	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	int32_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return num_classes * feats_dim;
 }
 
-SGVector<int32_t> CHierarchicalMultilabelModel::get_label_vector(
-        SGVector<int32_t> sparse_label)
+SGVector<index_t>
+CHierarchicalMultilabelModel::get_label_vector(SGVector<index_t> sparse_label)
 {
-	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
 
-	SGVector<int32_t> label_vector(num_classes);
+	SGVector<index_t> label_vector(num_classes);
 	label_vector.zero();
 
 	for (index_t i = 0; i < sparse_label.vlen; i++)
 	{
-		int32_t node_id = sparse_label[i];
+		index_t node_id = sparse_label[i];
 		label_vector[node_id] = 1;
 
-		for (int32_t parent_id = m_taxonomy[node_id]; parent_id != -1;
-		                parent_id = m_taxonomy[parent_id])
+		for (index_t parent_id = m_taxonomy[node_id]; parent_id != -1;
+		     parent_id = m_taxonomy[parent_id])
 		{
 			label_vector[parent_id] = 1;
 		}
@@ -132,26 +132,26 @@ SGVector<int32_t> CHierarchicalMultilabelModel::get_label_vector(
 }
 
 SGVector<float64_t> CHierarchicalMultilabelModel::get_joint_feature_vector(
-        int32_t feat_idx, CStructuredData * y)
+    index_t feat_idx, CStructuredData* y)
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(y);
-	SGVector<int32_t> slabel_data = slabel->get_data();
-	SGVector<int32_t> label_vector = get_label_vector(slabel_data);
+	SGVector<index_t> slabel_data = slabel->get_data();
+	SGVector<index_t> label_vector = get_label_vector(slabel_data);
 
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
 
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
 	SGVector<float64_t> x = dot_feats->get_computed_dot_feature_vector(feat_idx);
-	int32_t feats_dim = dot_feats->get_dim_feature_space();
+	index_t feats_dim = dot_feats->get_dim_feature_space();
 
 	for (index_t i = 0; i < label_vector.vlen; i++)
 	{
-		int32_t label = label_vector[i];
+		index_t label = label_vector[i];
 
 		if (label)
 		{
-			int32_t offset = i * feats_dim;
+			index_t offset = i * feats_dim;
 
 			for (index_t j = 0; j < feats_dim; j++)
 			{
@@ -176,8 +176,8 @@ float64_t CHierarchicalMultilabelModel::delta_loss(CStructuredData * y1,
 	                  get_label_vector(y2_slabel->get_data()));
 }
 
-float64_t CHierarchicalMultilabelModel::delta_loss(SGVector<int32_t> y1,
-                SGVector<int32_t> y2)
+float64_t CHierarchicalMultilabelModel::delta_loss(
+    SGVector<index_t> y1, SGVector<index_t> y2)
 {
 	REQUIRE(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
 
@@ -191,7 +191,7 @@ float64_t CHierarchicalMultilabelModel::delta_loss(SGVector<int32_t> y1,
 	return loss;
 }
 
-float64_t CHierarchicalMultilabelModel::delta_loss(int32_t y1, int32_t y2)
+float64_t CHierarchicalMultilabelModel::delta_loss(index_t y1, index_t y2)
 {
 	return y1 != y2 ? 1 : 0;
 }
@@ -209,11 +209,11 @@ void CHierarchicalMultilabelModel::init_primal_opt(
 	C = SGMatrix<float64_t>::create_identity_matrix(get_dim(), regularization);
 }
 
-CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
-                int32_t feat_idx, bool const training)
+CResultSet* CHierarchicalMultilabelModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
-	int32_t feats_dim = dot_feats->get_dim_feature_space();
+	index_t feats_dim = dot_feats->get_dim_feature_space();
 
 	CMultilabelSOLabels * multi_labs = (CMultilabelSOLabels *)m_labels;
 
@@ -225,25 +225,25 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 	REQUIRE(m_num_classes > 0, "The model needs to be trained before using "
 	        "if for prediction\n");
 
-	int32_t dim = get_dim();
+	index_t dim = get_dim();
 	ASSERT(dim == w.vlen);
 
 	// nodes_to_traverse is a dynamic list which keep tracks of which nodes to
 	// traverse
-	CDynamicArray<int32_t> * nodes_to_traverse = new CDynamicArray<int32_t>();
+	CDynamicArray<index_t>* nodes_to_traverse = new CDynamicArray<index_t>();
 	SG_REF(nodes_to_traverse);
 
 	// start traversing with the root node
 	// insertion of node at the back end
 	nodes_to_traverse->push_back(m_root);
 
-	SGVector<int32_t> y_pred_sparse(m_num_classes);
-	int32_t count = 0;
+	SGVector<index_t> y_pred_sparse(m_num_classes);
+	index_t count = 0;
 
 	while (nodes_to_traverse->get_num_elements())
 	{
 		// extraction of the node at the front end
-		int32_t node = nodes_to_traverse->get_element(0);
+		index_t node = nodes_to_traverse->get_element(0);
 		nodes_to_traverse->delete_element(0);
 
 		float64_t score = dot_feats->dense_dot(feat_idx, w.vector + node * feats_dim,
@@ -253,7 +253,7 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 		// to be traversed next
 		if (score > 0)
 		{
-			SGVector<int32_t> child_id = m_children[node];
+			SGVector<index_t> child_id = m_children[node];
 
 			// inserting the children nodes at the back end
 			for (index_t i = 0; i < child_id.vlen; i++)

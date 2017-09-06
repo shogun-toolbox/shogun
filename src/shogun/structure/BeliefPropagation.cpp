@@ -33,7 +33,7 @@ CBeliefPropagation::~CBeliefPropagation()
 {
 }
 
-float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
+float64_t CBeliefPropagation::inference(SGVector<index_t> assignment)
 {
 	SG_ERROR("%s::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
 	return 0;
@@ -103,7 +103,7 @@ void CTreeMaxProduct::init()
 			std::vector<float64_t>());
 	m_bw_msgs = std::vector< std::vector<float64_t> >(m_msg_order.size(),
 			std::vector<float64_t>());
-	m_states = std::vector<int32_t>(m_fg->get_cardinalities().size(), 0);
+	m_states = std::vector<index_t>(m_fg->get_cardinalities().size(), 0);
 
 	m_msg_map_var = msg_map_type();
 	m_msg_map_fac = msg_map_type();
@@ -123,13 +123,13 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 		SG_ERROR("%s::get_root_indicators(): run connect_components() first!\n", get_name());
 	}
 
-	int32_t num_vars = m_fg->get_cardinalities().size();
+	index_t num_vars = m_fg->get_cardinalities().size();
 	if (is_root.size() != (uint32_t)num_vars)
 		is_root.resize(num_vars);
 
 	std::fill(is_root.begin(), is_root.end(), false);
 
-	for (int32_t vi = 0; vi < num_vars; vi++)
+	for (index_t vi = 0; vi < num_vars; vi++)
 		is_root[dset->find_set(vi)] = true;
 
 	SG_UNREF(dset);
@@ -140,11 +140,11 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	var_factor_map_type vf_map;
 	CDynamicObjectArray* facs = m_fg->get_factors();
 
-	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
+	for (index_t fi = 0; fi < facs->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(fi));
-		SGVector<int32_t> vars = fac->get_variables();
-		for (int32_t vi = 0; vi < vars.size(); vi++)
+		SGVector<index_t> vars = fac->get_variables();
+		for (index_t vi = 0; vi < vars.size(); vi++)
 			vf_map.insert(var_factor_map_type::value_type(vars[vi], fi));
 
 		SG_UNREF(fac);
@@ -165,7 +165,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 		order.resize(m_fg->get_num_edges());
 
 	// find reverse order
-	int32_t eid = m_fg->get_num_edges() - 1;
+	index_t eid = m_fg->get_num_edges() - 1;
 	while (!node_stack.empty())
 	{
 		GraphNode* node = node_stack.top();
@@ -177,7 +177,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 			std::pair<const_iter, const_iter> adj_factors = vf_map.equal_range(node->node_id);
 			for (const_iter mi = adj_factors.first; mi != adj_factors.second; ++mi)
 			{
-				int32_t adj_factor_id = mi->second;
+				index_t adj_factor_id = mi->second;
 				if (adj_factor_id == node->parent)
 					continue;
 
@@ -189,10 +189,10 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 		else // child: var -> parent: factor
 		{
 			CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(node->node_id));
-			SGVector<int32_t> vars = fac->get_variables();
+			SGVector<index_t> vars = fac->get_variables();
 			SG_UNREF(fac);
 
-			for (int32_t vi = 0; vi < vars.size(); vi++)
+			for (index_t vi = 0; vi < vars.size(); vi++)
 			{
 				if (vars[vi] == node->parent)
 					continue;
@@ -209,7 +209,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	SG_UNREF(facs);
 }
 
-float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
+float64_t CTreeMaxProduct::inference(SGVector<index_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
 		"%s::inference(): the output assignment should be prepared as"
@@ -218,7 +218,7 @@ float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 	bottom_up_pass();
 	top_down_pass();
 
-	for (int32_t vi = 0; vi < assignment.size(); vi++)
+	for (index_t vi = 0; vi < assignment.size(); vi++)
 		assignment[vi] = m_states[vi];
 
 	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
@@ -231,7 +231,7 @@ void CTreeMaxProduct::bottom_up_pass()
 {
 	SG_DEBUG("\n***enter bottom_up_pass().\n");
 	CDynamicObjectArray* facs = m_fg->get_factors();
-	SGVector<int32_t> cards = m_fg->get_cardinalities();
+	SGVector<index_t> cards = m_fg->get_cardinalities();
 
 	// init forward msgs to 0
 	m_fw_msgs.resize(m_msg_order.size());
@@ -271,19 +271,19 @@ void CTreeMaxProduct::bottom_up_pass()
 		}
 		else // factor -> var
 		{
-			int32_t fac_id = m_msg_order[mi]->child;
-			int32_t var_id = m_msg_order[mi]->parent;
+			index_t fac_id = m_msg_order[mi]->child;
+			index_t var_id = m_msg_order[mi]->parent;
 
 			CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(fac_id));
 			CTableFactorType* ftype = fac->get_factor_type();
-			SGVector<int32_t> fvars = fac->get_variables();
+			SGVector<index_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 			SG_UNREF(fac);
 
 			// find index of var_id in the factor
-			SGVector<int32_t> fvar_set = fvars.find(var_id);
+			SGVector<index_t> fvar_set = fvars.find(var_id);
 			ASSERT(fvar_set.vlen == 1);
-			int32_t var_id_index = fvar_set[0];
+			index_t var_id_index = fvar_set[0];
 
 			std::vector<float64_t> r_f2v(fenrgs.size(), 0);
 			std::vector<float64_t> r_f2v_max(cards[var_id],
@@ -292,29 +292,29 @@ void CTreeMaxProduct::bottom_up_pass()
 			// TODO: optimize with index_from_new_state()
 			// marginalization
 			// r_f2v = max(-fenrg + sum_{j!=var_id} q_v2f[adj_var_state])
-			for (int32_t ei = 0; ei < fenrgs.size(); ei++)
+			for (index_t ei = 0; ei < fenrgs.size(); ei++)
 			{
 				r_f2v[ei] = -fenrgs[ei];
 
-				for (int32_t vi = 0; vi < fvars.size(); vi++)
+				for (index_t vi = 0; vi < fvars.size(); vi++)
 				{
 					if (vi == var_id_index)
 						continue;
 
 					uint32_t adj_msg = m_msg_map_var[fvars[vi]];
-					int32_t adj_var_state = ftype->state_from_index(ei, vi);
+					index_t adj_var_state = ftype->state_from_index(ei, vi);
 
 					r_f2v[ei] += m_fw_msgs[adj_msg][adj_var_state];
 				}
 
 				// find max value for each state of var_id
-				int32_t var_state = ftype->state_from_index(ei, var_id_index);
+				index_t var_state = ftype->state_from_index(ei, var_id_index);
 				if (r_f2v[ei] > r_f2v_max[var_state])
 					r_f2v_max[var_state] = r_f2v[ei];
 			}
 
 			// in max-product, final r_f2v = r_f2v_max
-			for (int32_t si = 0; si < cards[var_id]; si++)
+			for (index_t si = 0; si < cards[var_id]; si++)
 				m_fw_msgs[mi][si] = r_f2v_max[si];
 
 			SG_UNREF(ftype);
@@ -347,9 +347,9 @@ void CTreeMaxProduct::bottom_up_pass()
 void CTreeMaxProduct::top_down_pass()
 {
 	SG_DEBUG("\n***enter top_down_pass().\n");
-	int32_t minf = std::numeric_limits<int32_t>::max();
+	index_t minf = std::numeric_limits<index_t>::max();
 	CDynamicObjectArray* facs = m_fg->get_factors();
-	SGVector<int32_t> cards = m_fg->get_cardinalities();
+	SGVector<index_t> cards = m_fg->get_cardinalities();
 
 	// init backward msgs to 0
 	m_bw_msgs.resize(m_msg_order.size());
@@ -383,9 +383,8 @@ void CTreeMaxProduct::top_down_pass()
 		}
 
 		// argmax
-		m_states[ri] = static_cast<int32_t>(
-			std::max_element(rmarg.begin(), rmarg.end())
-			- rmarg.begin());
+		m_states[ri] = static_cast<index_t>(
+		    std::max_element(rmarg.begin(), rmarg.end()) - rmarg.begin());
 	}
 
 	// pass msgs down to leaf
@@ -394,26 +393,26 @@ void CTreeMaxProduct::top_down_pass()
 	//   compute marginal of f
 	// else var <- factor edge
 	//   compute r_f2v
-	for (int32_t mi = (int32_t)(m_msg_order.size()-1); mi >= 0; --mi)
+	for (index_t mi = (index_t)(m_msg_order.size() - 1); mi >= 0; --mi)
 	{
 		SG_DEBUG("mi = %d, mtype: %d %d <- %d\n", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
 
 		if (m_msg_order[mi]->mtype == FAC_TO_VAR) // factor <- var
 		{
-			int32_t fac_id = m_msg_order[mi]->child;
-			int32_t var_id = m_msg_order[mi]->parent;
+			index_t fac_id = m_msg_order[mi]->child;
+			index_t var_id = m_msg_order[mi]->parent;
 
 			CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(fac_id));
 			CTableFactorType* ftype = fac->get_factor_type();
-			SGVector<int32_t> fvars = fac->get_variables();
+			SGVector<index_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 			SG_UNREF(fac);
 
 			// find index of var_id in the factor
-			SGVector<int32_t> fvar_set = fvars.find(var_id);
+			SGVector<index_t> fvar_set = fvars.find(var_id);
 			ASSERT(fvar_set.vlen == 1);
-			int32_t var_id_index = fvar_set[0];
+			index_t var_id_index = fvar_set[0];
 
 			// q_v2f = r_bw_parent2v + sum_{child!=f} r_fw_child2v
 			// make sure the state of var_id has been inferred (factor marginalization)
@@ -445,14 +444,16 @@ void CTreeMaxProduct::top_down_pass()
 			std::vector<float64_t> marg(fenrgs.size(), 0);
 			for (uint32_t ei = 0; ei < marg.size(); ei++)
 			{
-				int32_t nei = ftype->index_from_new_state(ei, var_id_index, m_states[var_id]);
+				index_t nei = ftype->index_from_new_state(
+				    ei, var_id_index, m_states[var_id]);
 				marg[ei] = -fenrgs[nei];
 
-				for (int32_t vi = 0; vi < fvars.size(); vi++)
+				for (index_t vi = 0; vi < fvars.size(); vi++)
 				{
 					if (vi == var_id_index)
 					{
-						int32_t var_id_state = ftype->state_from_index(ei, var_id_index);
+						index_t var_id_state =
+						    ftype->state_from_index(ei, var_id_index);
 						if (m_states[var_id] != minf)
 							var_id_state = m_states[var_id];
 
@@ -462,26 +463,25 @@ void CTreeMaxProduct::top_down_pass()
 					{
 						uint32_t adj_id = fvars[vi];
 						uint32_t adj_msg = m_msg_map_var[adj_id];
-						int32_t adj_id_state = ftype->state_from_index(ei, vi);
+						index_t adj_id_state = ftype->state_from_index(ei, vi);
 
 						marg[ei] += m_fw_msgs[adj_msg][adj_id_state];
 					}
 				}
 			}
 
-			int32_t ei_max = static_cast<int32_t>(
-				std::max_element(marg.begin(), marg.end())
-				- marg.begin());
+			index_t ei_max = static_cast<index_t>(
+			    std::max_element(marg.begin(), marg.end()) - marg.begin());
 
 			// infer states of neiboring vars of f
-			for (int32_t vi = 0; vi < fvars.size(); vi++)
+			for (index_t vi = 0; vi < fvars.size(); vi++)
 			{
-				int32_t nvar_id = fvars[vi];
+				index_t nvar_id = fvars[vi];
 				// usually parent node has been inferred
 				if (m_states[nvar_id] != minf)
 					continue;
 
-				int32_t nvar_id_state = ftype->state_from_index(ei_max, vi);
+				index_t nvar_id_state = ftype->state_from_index(ei_max, vi);
 				m_states[nvar_id] = nvar_id_state;
 			}
 
@@ -489,33 +489,33 @@ void CTreeMaxProduct::top_down_pass()
 		}
 		else // var <- factor
 		{
-			int32_t var_id = m_msg_order[mi]->child;
-			int32_t fac_id = m_msg_order[mi]->parent;
+			index_t var_id = m_msg_order[mi]->child;
+			index_t fac_id = m_msg_order[mi]->parent;
 
 			CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(fac_id));
 			CTableFactorType* ftype = fac->get_factor_type();
-			SGVector<int32_t> fvars = fac->get_variables();
+			SGVector<index_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
 			SG_UNREF(fac);
 
 			// find index of var_id in the factor
-			SGVector<int32_t> fvar_set = fvars.find(var_id);
+			SGVector<index_t> fvar_set = fvars.find(var_id);
 			ASSERT(fvar_set.vlen == 1);
-			int32_t var_id_index = fvar_set[0];
+			index_t var_id_index = fvar_set[0];
 
 			uint32_t msg_parent = m_msg_map_fac[fac_id];
-			int32_t var_parent = m_msg_order[msg_parent]->parent;
+			index_t var_parent = m_msg_order[msg_parent]->parent;
 
 			std::vector<float64_t> r_f2v(fenrgs.size());
 			std::vector<float64_t> r_f2v_max(cards[var_id],
 				-std::numeric_limits<float64_t>::infinity());
 
 			// r_f2v = max(-fenrg + sum_{j!=var_id} q_v2f[adj_var_state])
-			for (int32_t ei = 0; ei < fenrgs.size(); ei++)
+			for (index_t ei = 0; ei < fenrgs.size(); ei++)
 			{
 				r_f2v[ei] = -fenrgs[ei];
 
-				for (int32_t vi = 0; vi < fvars.size(); vi++)
+				for (index_t vi = 0; vi < fvars.size(); vi++)
 				{
 					if (vi == var_id_index)
 						continue;
@@ -527,9 +527,9 @@ void CTreeMaxProduct::top_down_pass()
 					}
 					else
 					{
-						int32_t adj_id = fvars[vi];
+						index_t adj_id = fvars[vi];
 						uint32_t adj_msg = m_msg_map_var[adj_id];
-						int32_t adj_var_state = ftype->state_from_index(ei, vi);
+						index_t adj_var_state = ftype->state_from_index(ei, vi);
 
 						if (m_states[adj_id] != minf)
 							adj_var_state = m_states[adj_id];
@@ -539,12 +539,13 @@ void CTreeMaxProduct::top_down_pass()
 				}
 
 				// max marginalization
-				int32_t var_id_state = ftype->state_from_index(ei, var_id_index);
+				index_t var_id_state =
+				    ftype->state_from_index(ei, var_id_index);
 				if (r_f2v[ei] > r_f2v_max[var_id_state])
 					r_f2v_max[var_id_state] = r_f2v[ei];
 			}
 
-			for (int32_t si = 0; si < cards[var_id]; si++)
+			for (index_t si = 0; si < cards[var_id]; si++)
 				m_bw_msgs[mi][si] = r_f2v_max[si];
 
 			SG_UNREF(ftype);

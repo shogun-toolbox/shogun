@@ -39,7 +39,7 @@ IGNORE_IN_CLASSLIST class CDirectorLatentModel : public CLatentModel
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		virtual index_t get_dim() const;
 
 		/** Calculate the PSI vectors for all features
 		 *

@@ -73,7 +73,7 @@ void CCSVFile::set_lines_to_skip(int32_t num_lines)
 	m_num_to_skip=num_lines;
 }
 
-int32_t CCSVFile::get_stats(int32_t& num_tokens)
+int32_t CCSVFile::get_stats(index_t& num_tokens)
 {
 	int32_t num_lines=0;
 	num_tokens=-1;
@@ -140,30 +140,30 @@ void CCSVFile::skip_lines(int32_t num_lines)
 		m_line_reader->skip_line();
 }
 
-#define GET_VECTOR(read_func, sg_type) \
-void CCSVFile::get_vector(sg_type*& vector, int32_t& len) \
-{ \
-	if (!m_line_reader->has_next()) \
-		return; \
-	\
-	int32_t num_feat=0; \
-	int32_t num_vec=0; \
-	get_matrix(vector, num_feat, num_vec); \
-	\
-	if (num_feat==1) \
-	{ \
-		len=num_vec; \
-		return; \
-	} \
-	\
-	if (num_vec==1) \
-	{ \
-		len=num_feat; \
-		return; \
-	} \
-	\
-	len=0; \
-}
+#define GET_VECTOR(read_func, sg_type)                                         \
+	void CCSVFile::get_vector(sg_type*& vector, index_t& len)                  \
+	{                                                                          \
+		if (!m_line_reader->has_next())                                        \
+			return;                                                            \
+                                                                               \
+		index_t num_feat = 0;                                                  \
+		index_t num_vec = 0;                                                   \
+		get_matrix(vector, num_feat, num_vec);                                 \
+                                                                               \
+		if (num_feat == 1)                                                     \
+		{                                                                      \
+			len = num_vec;                                                     \
+			return;                                                            \
+		}                                                                      \
+                                                                               \
+		if (num_vec == 1)                                                      \
+		{                                                                      \
+			len = num_feat;                                                    \
+			return;                                                            \
+		}                                                                      \
+                                                                               \
+		len = 0;                                                               \
+	}
 
 GET_VECTOR(read_char, int8_t)
 GET_VECTOR(read_byte, uint8_t)
@@ -179,52 +179,55 @@ GET_VECTOR(read_long, int64_t)
 GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
-#define GET_MATRIX(read_func, sg_type) \
-void CCSVFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{ \
-	int32_t num_lines=0; \
-	int32_t num_tokens=-1; \
-	int32_t current_line_idx=0; \
-	SGVector<char> line; \
-	\
-	skip_lines(m_num_to_skip); \
-	num_lines=get_stats(num_tokens); \
-	\
-	SG_SET_LOCALE_C; \
-	\
-	matrix=SG_MALLOC(sg_type, num_lines*num_tokens); \
-	skip_lines(m_num_to_skip); \
-	while (m_line_reader->has_next()) \
-	{ \
-		line=m_line_reader->read_line(); \
-		m_parser->set_text(line); \
-		\
-		for (int32_t i=0; i<num_tokens; i++) \
-		{ \
-			if (!m_parser->has_next()) \
-				return; \
-			\
-			if (!is_data_transposed) \
-				matrix[i+current_line_idx*num_tokens]=m_parser->read_func(); \
-			else \
-				matrix[current_line_idx+i*num_tokens]=m_parser->read_func(); \
-		} \
-		current_line_idx++; \
-	} \
-	\
-	SG_RESET_LOCALE; \
-	\
-	if (!is_data_transposed) \
-	{ \
-		num_feat=num_tokens; \
-		num_vec=num_lines; \
-	} \
-	else \
-	{ \
-		num_feat=num_lines; \
-		num_vec=num_tokens; \
-	} \
-}
+#define GET_MATRIX(read_func, sg_type)                                         \
+	void CCSVFile::get_matrix(                                                 \
+	    sg_type*& matrix, index_t& num_feat, index_t& num_vec)                 \
+	{                                                                          \
+		index_t num_lines = 0;                                                 \
+		index_t num_tokens = -1;                                               \
+		index_t current_line_idx = 0;                                          \
+		SGVector<char> line;                                                   \
+                                                                               \
+		skip_lines(m_num_to_skip);                                             \
+		num_lines = get_stats(num_tokens);                                     \
+                                                                               \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		matrix = SG_MALLOC(sg_type, num_lines * num_tokens);                   \
+		skip_lines(m_num_to_skip);                                             \
+		while (m_line_reader->has_next())                                      \
+		{                                                                      \
+			line = m_line_reader->read_line();                                 \
+			m_parser->set_text(line);                                          \
+                                                                               \
+			for (index_t i = 0; i < num_tokens; i++)                           \
+			{                                                                  \
+				if (!m_parser->has_next())                                     \
+					return;                                                    \
+                                                                               \
+				if (!is_data_transposed)                                       \
+					matrix[i + current_line_idx * num_tokens] =                \
+					    m_parser->read_func();                                 \
+				else                                                           \
+					matrix[current_line_idx + i * num_tokens] =                \
+					    m_parser->read_func();                                 \
+			}                                                                  \
+			current_line_idx++;                                                \
+		}                                                                      \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+                                                                               \
+		if (!is_data_transposed)                                               \
+		{                                                                      \
+			num_feat = num_tokens;                                             \
+			num_vec = num_lines;                                               \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			num_feat = num_lines;                                              \
+			num_vec = num_tokens;                                              \
+		}                                                                      \
+	}
 
 GET_MATRIX(read_char, int8_t)
 GET_MATRIX(read_byte, uint8_t)
@@ -255,12 +258,12 @@ GET_NDARRAY(read_short, int16_t)
 GET_NDARRAY(read_word, uint16_t)
 #undef GET_NDARRAY
 
-#define GET_SPARSE_MATRIX(read_func, sg_type) \
-void CCSVFile::get_sparse_matrix( \
-			SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{ \
-	SG_NOTIMPLEMENTED \
-}
+#define GET_SPARSE_MATRIX(read_func, sg_type)                                  \
+	void CCSVFile::get_sparse_matrix(                                          \
+	    SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec) \
+	{                                                                          \
+		SG_NOTIMPLEMENTED                                                      \
+	}
 
 GET_SPARSE_MATRIX(read_char, bool)
 GET_SPARSE_MATRIX(read_char, int8_t)
@@ -277,26 +280,26 @@ GET_SPARSE_MATRIX(read_long, int64_t)
 GET_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_SPARSE_MATRIX
 
-#define SET_VECTOR(format, sg_type) \
-void CCSVFile::set_vector(const sg_type* vector, int32_t len) \
-{ \
-	SG_SET_LOCALE_C; \
-	\
-	if (!is_data_transposed) \
-	{ \
-		for (int32_t i=0; i<len; i++) \
-			fprintf(file, "%" format "\n", vector[i]); \
-	} \
-	else \
-	{ \
-		int32_t i; \
-		for (i=0; i<len-1; i++) \
-			fprintf(file, "%" format "%c", vector[i], m_delimiter); \
-		fprintf(file, "%" format "\n", vector[i]); \
-	} \
-	\
-	SG_RESET_LOCALE; \
-}
+#define SET_VECTOR(format, sg_type)                                            \
+	void CCSVFile::set_vector(const sg_type* vector, index_t len)              \
+	{                                                                          \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		if (!is_data_transposed)                                               \
+		{                                                                      \
+			for (index_t i = 0; i < len; i++)                                  \
+				fprintf(file, "%" format "\n", vector[i]);                     \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			index_t i;                                                         \
+			for (i = 0; i < len - 1; i++)                                      \
+				fprintf(file, "%" format "%c", vector[i], m_delimiter);        \
+			fprintf(file, "%" format "\n", vector[i]);                         \
+		}                                                                      \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 SET_VECTOR(SCNi8, int8_t)
 SET_VECTOR(SCNu8, uint8_t)
@@ -312,34 +315,39 @@ SET_VECTOR(SCNi16, int16_t)
 SET_VECTOR(SCNu16, uint16_t)
 #undef SET_VECTOR
 
-#define SET_MATRIX(format, sg_type) \
-void CCSVFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
-{ \
-	SG_SET_LOCALE_C; \
-	\
-	if (!is_data_transposed) \
-	{ \
-		for (int32_t i=0; i<num_vec; i++) \
-		{ \
-			int32_t j; \
-			for (j=0; j<num_feat-1; j++) \
-				fprintf(file, "%" format "%c", matrix[j+i*num_feat], m_delimiter); \
-			fprintf(file, "%" format "\n", matrix[j+i*num_feat]); \
-		} \
-	} \
-	else \
-	{ \
-		for (int32_t i=0; i<num_feat; i++) \
-		{ \
-			int32_t j; \
-			for (j=0; j<num_vec-1; j++) \
-				fprintf(file, "%" format "%c", matrix[i+j*num_vec], m_delimiter); \
-			fprintf(file, "%" format "\n", matrix[i+j*num_vec]); \
-		} \
-	} \
-	\
-	SG_RESET_LOCALE; \
-}
+#define SET_MATRIX(format, sg_type)                                            \
+	void CCSVFile::set_matrix(                                                 \
+	    const sg_type* matrix, index_t num_feat, index_t num_vec)              \
+	{                                                                          \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		if (!is_data_transposed)                                               \
+		{                                                                      \
+			for (index_t i = 0; i < num_vec; i++)                              \
+			{                                                                  \
+				index_t j;                                                     \
+				for (j = 0; j < num_feat - 1; j++)                             \
+					fprintf(                                                   \
+					    file, "%" format "%c", matrix[j + i * num_feat],       \
+					    m_delimiter);                                          \
+				fprintf(file, "%" format "\n", matrix[j + i * num_feat]);      \
+			}                                                                  \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			for (index_t i = 0; i < num_feat; i++)                             \
+			{                                                                  \
+				index_t j;                                                     \
+				for (j = 0; j < num_vec - 1; j++)                              \
+					fprintf(                                                   \
+					    file, "%" format "%c", matrix[i + j * num_vec],        \
+					    m_delimiter);                                          \
+				fprintf(file, "%" format "\n", matrix[i + j * num_vec]);       \
+			}                                                                  \
+		}                                                                      \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 SET_MATRIX(SCNi8, int8_t)
 SET_MATRIX(SCNu8, uint8_t)
@@ -355,12 +363,13 @@ SET_MATRIX(SCNi16, int16_t)
 SET_MATRIX(SCNu16, uint16_t)
 #undef SET_MATRIX
 
-#define SET_SPARSE_MATRIX(format, sg_type) \
-void CCSVFile::set_sparse_matrix( \
-			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
-{ \
-	SG_NOTIMPLEMENTED \
-}
+#define SET_SPARSE_MATRIX(format, sg_type)                                     \
+	void CCSVFile::set_sparse_matrix(                                          \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec)                                                       \
+	{                                                                          \
+		SG_NOTIMPLEMENTED                                                      \
+	}
 
 SET_SPARSE_MATRIX(SCNi8, bool)
 SET_SPARSE_MATRIX(SCNi8, int8_t)
@@ -378,12 +387,11 @@ SET_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_SPARSE_MATRIX
 
 void CCSVFile::get_string_list(
-			SGString<char>*& strings, int32_t& num_str,
-			int32_t& max_string_len)
+    SGString<char>*& strings, index_t& num_str, index_t& max_string_len)
 {
 	SGVector<char> line;
-	int32_t current_line_idx=0;
-	int32_t num_tokens=0;
+	index_t current_line_idx = 0;
+	index_t num_tokens = 0;
 
 	max_string_len=0;
 	num_str=get_stats(num_tokens);
@@ -395,7 +403,7 @@ void CCSVFile::get_string_list(
 		line=m_line_reader->read_line();
 		strings[current_line_idx].slen=line.vlen;
 		strings[current_line_idx].string=SG_MALLOC(char, line.vlen);
-		for (int32_t i=0; i<line.vlen; i++)
+		for (index_t i = 0; i < line.vlen; i++)
 			strings[current_line_idx].string[i]=line[i];
 
 		if (line.vlen>max_string_len)
@@ -407,13 +415,13 @@ void CCSVFile::get_string_list(
 	num_str=current_line_idx;
 }
 
-#define GET_STRING_LIST(sg_type) \
-void CCSVFile::get_string_list( \
-			SGString<sg_type>*& strings, int32_t& num_str, \
-			int32_t& max_string_len) \
-{ \
-	SG_NOTIMPLEMENTED \
-}
+#define GET_STRING_LIST(sg_type)                                               \
+	void CCSVFile::get_string_list(                                            \
+	    SGString<sg_type>*& strings, index_t& num_str,                         \
+	    index_t& max_string_len)                                               \
+	{                                                                          \
+		SG_NOTIMPLEMENTED                                                      \
+	}
 
 GET_STRING_LIST(int8_t)
 GET_STRING_LIST(uint8_t)
@@ -428,8 +436,7 @@ GET_STRING_LIST(int16_t)
 GET_STRING_LIST(uint16_t)
 #undef GET_STRING_LIST
 
-void CCSVFile::set_string_list(
-			const SGString<char>* strings, int32_t num_str)
+void CCSVFile::set_string_list(const SGString<char>* strings, index_t num_str)
 {
 	for (int32_t i=0; i<num_str; i++)
 	{
@@ -439,12 +446,12 @@ void CCSVFile::set_string_list(
 	}
 }
 
-#define SET_STRING_LIST(sg_type) \
-void CCSVFile::set_string_list( \
-			const SGString<sg_type>* strings, int32_t num_str) \
-{ \
-	SG_NOTIMPLEMENTED \
-}
+#define SET_STRING_LIST(sg_type)                                               \
+	void CCSVFile::set_string_list(                                            \
+	    const SGString<sg_type>* strings, index_t num_str)                     \
+	{                                                                          \
+		SG_NOTIMPLEMENTED                                                      \
+	}
 
 SET_STRING_LIST(int8_t)
 SET_STRING_LIST(uint8_t)

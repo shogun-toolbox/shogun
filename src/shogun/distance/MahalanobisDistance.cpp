@@ -64,7 +64,7 @@ void CMahalanobisDistance::cleanup()
 {
 }
 
-float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CMahalanobisDistance::compute(index_t idx_a, index_t idx_b)
 {
 
 	SGVector<float64_t> bvec = ((CDenseFeatures<float64_t>*) rhs)->

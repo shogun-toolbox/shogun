@@ -62,7 +62,7 @@ public:
 		return CShiftInvariantKernel::distance(a, b);
 	}
 
-	MOCK_METHOD2(compute, float64_t(int32_t, int32_t));
+	MOCK_METHOD2(compute, float64_t(index_t, index_t));
 	MOCK_METHOD0(get_kernel_type, EKernelType());
 	MOCK_METHOD0(get_feature_type, EFeatureType());
 	MOCK_METHOD0(get_feature_class, EFeatureClass());

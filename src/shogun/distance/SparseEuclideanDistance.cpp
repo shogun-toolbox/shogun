@@ -65,7 +65,7 @@ void CSparseEuclideanDistance::cleanup()
 	sq_lhs = NULL;
 }
 
-float64_t CSparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSparseEuclideanDistance::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t result=((CSparseFeatures<float64_t>*) lhs)->compute_squared_norm(
 		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,

@@ -71,8 +71,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 	REQUIRE(lab->get_label_type()==LT_MULTICLASS,
 			"Labels must be type of CMulticlassLabels\n")
 
-	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
-	for (int32_t i=0;i<labels.vlen;i++)
+	SGVector<index_t> labels = ((CMulticlassLabels*)lab)->get_int_labels();
+	for (index_t i = 0; i < labels.vlen; i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.vlen/labels.vlen)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
 		"%d\n",func.vlen/labels.vlen,i,labels[i]);
@@ -92,7 +92,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 	SGVector<float64_t> ret=SGVector<float64_t>(labels.vlen);
 	Map<VectorXd> eigen_ret(ret.vector,ret.vlen);
 
-	for (int32_t i=0;i<labels.vlen;i++)
+	for (index_t i = 0; i < labels.vlen; i++)
 		eigen_ret(i)=eigen_f(i,labels[i]);
 
 	eigen_ret=eigen_ret-log_sum_exp;
@@ -124,8 +124,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 	REQUIRE(lab->get_num_labels()==func.num_rows, "Number of labels must match "
 			"number of vectors in function\n")
 
-	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
-	for (int32_t i=0;i<labels.vlen;i++)
+	SGVector<index_t> labels = ((CMulticlassLabels*)lab)->get_int_labels();
+	for (index_t i = 0; i < labels.vlen; i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.num_cols)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
 		"%d\n",func.num_cols,i,labels[i]);

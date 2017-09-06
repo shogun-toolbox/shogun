@@ -33,13 +33,13 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
 	                NUM_CLASSES);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	labels->set_sparse_label(0, lab_1);
+	labels->set_sparse_label(index_t(0), lab_1);
 	labels->set_sparse_label(1, lab_012);
 
 	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
@@ -82,14 +82,14 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
 	                NUM_CLASSES);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_012);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_012);
 
 	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
 	SG_REF(model);
@@ -132,16 +132,16 @@ TEST(MultilabelCLRModel, delta_loss)
 	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
 	SG_REF(model);
 
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	SGVector<int32_t> lab_01(2);
+	SGVector<index_t> lab_01(2);
 	lab_01[0] = 0;
 	lab_01[1] = 1;
-	SGVector<int32_t> lab_0(1);
+	SGVector<index_t> lab_0(1);
 	lab_0[0] = 0;
-	SGVector<int32_t> lab_nill(0);
+	SGVector<index_t> lab_nill(0);
 
 	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
 	SG_REF(slabel_012);
@@ -188,13 +188,13 @@ TEST(MultilabelCLRModel, argmax)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES,
 	                NUM_CLASSES);
 	SG_REF(labels);
-	SGVector<int32_t> lab_2(1);
+	SGVector<index_t> lab_2(1);
 	lab_2[0] = 2;
-	SGVector<int32_t> lab_01(2);
+	SGVector<index_t> lab_01(2);
 	lab_01[0] = 0;
 	lab_01[1] = 1;
-	labels->set_sparse_label(0, lab_2);
-	labels->set_sparse_label(1, lab_01);
+	labels->set_sparse_label(index_t(0), lab_2);
+	labels->set_sparse_label(index_t(1), lab_01);
 
 	CMultilabelCLRModel * model = new CMultilabelCLRModel(features, labels);
 	SG_REF(model);
@@ -210,7 +210,7 @@ TEST(MultilabelCLRModel, argmax)
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
-	SGVector<int32_t> slabel_1 = y_1->get_data();
+	SGVector<index_t> slabel_1 = y_1->get_data();
 
 	// calibrated/virtual label is considered to be last label
 	float64_t calibrated_score = ((CDotFeatures *)features)->dense_dot(0,
@@ -218,7 +218,7 @@ TEST(MultilabelCLRModel, argmax)
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
-		int32_t label = slabel_1[i];
+		index_t label = slabel_1[i];
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
 		                  w.vector + label * DIMS, DIMS) - calibrated_score;
 
@@ -239,7 +239,7 @@ TEST(MultilabelCLRModel, argmax)
 
 	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_2->argmax);
-	SGVector<int32_t> slabel_2 = y_2->get_data();
+	SGVector<index_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < labels->get_num_classes(); i++)
 	{

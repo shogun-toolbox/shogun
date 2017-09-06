@@ -228,15 +228,15 @@ SGNDArray<char>& SGNDArray<char>::operator-=(SGNDArray& ndarray)
 	return (*this);
 }
 
-template<class T>
-T SGNDArray<T>::max_element(int32_t &max_at)
+template <class T>
+T SGNDArray<T>::max_element(index_t& max_at)
 {
 	REQUIRE(len_array > 0, "Length of the array (%d) must be greater than 0.\n", len_array);
 
 	T m = array[0];
 	max_at = 0;
 
-	for (int32_t i = 1; i < len_array; i++)
+	for (index_t i = 1; i < len_array; i++)
 	{
 		if (array[i] >= m)
 		{
@@ -248,15 +248,15 @@ T SGNDArray<T>::max_element(int32_t &max_at)
 	return m;
 }
 
-template<>
-bool SGNDArray<bool>::max_element(int32_t &max_at)
+template <>
+bool SGNDArray<bool>::max_element(index_t& max_at)
 {
 	SG_SNOTIMPLEMENTED;
 	return false;
 }
 
-template<>
-char SGNDArray<char>::max_element(int32_t &max_at)
+template <>
+char SGNDArray<char>::max_element(index_t& max_at)
 {
 	SG_SNOTIMPLEMENTED;
 	return '\0';

@@ -147,7 +147,7 @@ struct svm_model
 	// for classification only
 
 	/** label of each class (label[n]) */
-	int32_t *label;
+	index_t* label;
 	/** number of SVs for each class (nSV[n])
 	 * nSV[0] + nSV[1] + ... + nSV[n-1] = l
 	 */

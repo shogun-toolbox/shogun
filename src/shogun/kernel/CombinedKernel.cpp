@@ -265,7 +265,7 @@ void CCombinedKernel::list_kernels()
 	SG_INFO("END COMBINED KERNEL LIST - ")
 }
 
-float64_t CCombinedKernel::compute(int32_t x, int32_t y)
+float64_t CCombinedKernel::compute(index_t x, index_t y)
 {
 	float64_t result=0;
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
@@ -280,7 +280,7 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 }
 
 bool CCombinedKernel::init_optimization(
-	int32_t count, int32_t *IDX, float64_t *weights)
+    index_t count, index_t* IDX, float64_t* weights)
 {
 	SG_DEBUG("initializing CCombinedKernel optimization\n")
 
@@ -353,8 +353,8 @@ bool CCombinedKernel::delete_optimization()
 }
 
 void CCombinedKernel::compute_batch(
-	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
-	int32_t* IDX, float64_t* weights, float64_t factor)
+    index_t num_vec, index_t* vec_idx, float64_t* result, index_t num_suppvec,
+    index_t* IDX, float64_t* weights, float64_t factor)
 {
 	ASSERT(num_vec<=get_num_vec_rhs())
 	ASSERT(num_vec>0)
@@ -384,8 +384,8 @@ void CCombinedKernel::compute_batch(
 }
 
 void CCombinedKernel::emulate_compute_batch(
-	CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
-	int32_t num_suppvec, int32_t* IDX, float64_t* weights)
+    CKernel* k, index_t num_vec, index_t* vec_idx, float64_t* result,
+    index_t num_suppvec, index_t* IDX, float64_t* weights)
 {
 	ASSERT(k)
 	ASSERT(result)
@@ -397,7 +397,7 @@ void CCombinedKernel::emulate_compute_batch(
 			k->init_optimization(num_suppvec, IDX, weights);
 
 			#pragma omp parallel for
-			for (int32_t i=0; i<num_vec; ++i)
+			for (index_t i = 0; i < num_vec; ++i)
 				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
 
 			k->delete_optimization();
@@ -411,10 +411,10 @@ void CCombinedKernel::emulate_compute_batch(
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
 			#pragma omp parallel for
-			for (int32_t i=0; i<num_vec; i++)
+			for (index_t i = 0; i < num_vec; i++)
 			{
 				float64_t sub_result=0;
-				for (int32_t j=0; j<num_suppvec; j++)
+				for (index_t j = 0; j < num_suppvec; j++)
 					sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]);
 
 				result[i] += k->get_combined_kernel_weight()*sub_result;
@@ -423,7 +423,7 @@ void CCombinedKernel::emulate_compute_batch(
 	}
 }
 
-float64_t CCombinedKernel::compute_optimized(int32_t idx)
+float64_t CCombinedKernel::compute_optimized(index_t idx)
 {
 	if (!get_is_initialized())
 	{
@@ -466,7 +466,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 	return result;
 }
 
-void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
+void CCombinedKernel::add_to_normal(index_t idx, float64_t weight)
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
@@ -489,11 +489,11 @@ void CCombinedKernel::clear_normal()
 }
 
 void CCombinedKernel::compute_by_subkernel(
-	int32_t idx, float64_t * subkernel_contrib)
+    index_t idx, float64_t* subkernel_contrib)
 {
 	if (append_subkernel_weights)
 	{
-		int32_t i=0 ;
+		index_t i = 0;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
 			CKernel* k = get_kernel(k_idx);
@@ -510,7 +510,7 @@ void CCombinedKernel::compute_by_subkernel(
 	}
 	else
 	{
-		int32_t i=0 ;
+		index_t i = 0;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
 			CKernel* k = get_kernel(k_idx);

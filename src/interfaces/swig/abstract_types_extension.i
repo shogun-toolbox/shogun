@@ -44,7 +44,7 @@
     CObjectDetector(CLatentFeatures* feat, CLatentLabels* labels)
       : CLatentModel(feat, labels) {};
       virtual ~CObjectDetector() {};
-      virtual int32_t get_dim() const { return HOG_SIZE; };
+      virtual index_t get_dim() const { return HOG_SIZE; };
       virtual CDotFeatures* get_psi_feature_vectors()
       {
 	int32_t num_examples = this->get_num_vectors();

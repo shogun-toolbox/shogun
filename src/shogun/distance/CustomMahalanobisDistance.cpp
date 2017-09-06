@@ -52,7 +52,7 @@ EDistanceType CCustomMahalanobisDistance::get_distance_type()
 	return D_CUSTOMMAHALANOBIS;
 }
 
-float64_t CCustomMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCustomMahalanobisDistance::compute(index_t idx_a, index_t idx_b)
 {
 	// Get feature vectors that will be used to compute the distance; casts
 	// are safe, features are checked to be dense in DenseDistance::init

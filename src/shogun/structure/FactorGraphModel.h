@@ -64,7 +64,7 @@ public:
 	 *
 	 * @param ftype_id factor type id
 	 */
-	void del_factor_type(const int32_t ftype_id);
+	void del_factor_type(const index_t ftype_id);
 
 	/** @return pointer to the array of factor types */
 	CDynamicObjectArray* get_factor_types() const;
@@ -73,16 +73,16 @@ public:
 	 *
 	 * @param ftype_id factor type id
 	 */
-	CFactorType* get_factor_type(const int32_t ftype_id) const;
+	CFactorType* get_factor_type(const index_t ftype_id) const;
 
 	/** @return parameter mapping for all factor types */
-	SGVector<int32_t> get_global_params_mapping() const;
+	SGVector<index_t> get_global_params_mapping() const;
 
 	/** get parameter mapping for a factor type
 	 *
 	 * @param ftype_id factor type id
 	 */
-	SGVector<int32_t> get_params_mapping(const int32_t ftype_id);
+	SGVector<index_t> get_params_mapping(const index_t ftype_id);
 
 	/** @return concatenated parameter vector from local parameters */
 	SGVector<float64_t> fparams_to_w();
@@ -105,7 +105,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/**
 	 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -120,7 +121,8 @@ public:
 	 *
 	 * @return structure with the predicted output
 	 */
-	virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -159,7 +161,7 @@ public:
 	 * return the dimensionality of the joint feature space, i.e.
 	 * the dimension of the weight vector \f$w\f$
 	 */
-	virtual int32_t get_dim() const;
+	virtual index_t get_dim() const;
 
 private:
 	/** register and initialize parameters */
@@ -170,7 +172,7 @@ protected:
 	CDynamicObjectArray* m_factor_types;
 
 	/** index of factor type */
-	SGVector<int32_t> m_w_map;
+	SGVector<index_t> m_w_map;
 
 	/** cache of global parameters */
 	SGVector<float64_t> m_w_cache;

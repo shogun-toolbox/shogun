@@ -115,13 +115,14 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED
 	case CT_VECTOR: case CT_SGVECTOR:
-		if (fscanf(m_file->m_fstream, "%" SCNi32 " ", len_read_y) != 1)
+		if (fscanf(m_file->m_fstream, "%li" SCNi32 " ", len_read_y) != 1)
 			return false;
 		*len_read_x = 1;
 		break;
 	case CT_MATRIX: case CT_SGMATRIX:
-		if (fscanf(m_file->m_fstream, "%" SCNi32 " %" SCNi32 " ",
-				   len_read_y, len_read_x) != 2)
+		if (fscanf(
+		        m_file->m_fstream, "%li" SCNi32 " %ll" SCNi32 " ", len_read_y,
+		        len_read_x) != 2)
 			return false;
 		break;
 	case CT_UNDEFINED:
@@ -149,7 +150,7 @@ bool
 SerializableAsciiReader00::read_string_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
-	if (fscanf(m_file->m_fstream, "%" PRIi32, length) != 1)
+	if (fscanf(m_file->m_fstream, "%li" PRIi32, length) != 1)
 		return false;
 	if (fgetc(m_file->m_fstream) != ' ') return false;
 	if (fgetc(m_file->m_fstream) != CHAR_STRING_BEGIN) return false;
@@ -188,7 +189,8 @@ bool
 SerializableAsciiReader00::read_sparse_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
-	if (fscanf(m_file->m_fstream, "%" PRIi32, length) != 1) return false;
+	if (fscanf(m_file->m_fstream, "%li" PRIi32, length) != 1)
+		return false;
 	if (fgetc(m_file->m_fstream) != ' ') return false;
 	if (fgetc(m_file->m_fstream) != CHAR_SPARSE_BEGIN) return false;
 
@@ -209,7 +211,7 @@ SerializableAsciiReader00::read_sparseentry_begin_wrapped(
 	const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
-	if (fscanf(m_file->m_fstream, "%" PRIi32, feat_index) != 1)
+	if (fscanf(m_file->m_fstream, "%li" PRIi32, feat_index) != 1)
 		return false;
 	if (fgetc(m_file->m_fstream) != ' ') return false;
 	if (fgetc(m_file->m_fstream) != CHAR_ITEM_BEGIN) return false;

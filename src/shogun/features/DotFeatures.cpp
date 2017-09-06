@@ -89,9 +89,11 @@ void CDotFeatures::dense_dot_range(float64_t* output, index_t start, index_t sto
 #ifdef WIN32
 		for (index_t i=t_start; i<t_stop; i++)
 #else
-
-		for (index_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)
@@ -134,8 +136,10 @@ void CDotFeatures::dense_dot_range_subset(index_t* sub_index, index_t num, float
 #ifdef WIN32
 		for (index_t i=t_start; i<t_stop; i++)
 #else
-		for (index_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)

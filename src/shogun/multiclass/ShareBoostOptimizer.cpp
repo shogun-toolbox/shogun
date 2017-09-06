@@ -43,8 +43,9 @@ void ShareBoostOptimizer::optimize()
 	SG_FREE(W);
 }
 
-float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W,
-		float64_t *grad, const int32_t n, const float64_t step)
+float64_t ShareBoostOptimizer::lbfgs_evaluate(
+    void* userdata, const float64_t* W, float64_t* grad, const index_t n,
+    const float64_t step)
 {
 	ShareBoostOptimizer *optimizer = static_cast<ShareBoostOptimizer *>(userdata);
 

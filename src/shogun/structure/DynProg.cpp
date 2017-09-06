@@ -30,18 +30,18 @@ using namespace shogun;
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
-int32_t CDynProg::word_degree_default[4]={3,4,5,6} ;
-int32_t CDynProg::cum_num_words_default[5]={0,64,320,1344,5440} ;
-int32_t CDynProg::frame_plifs[3]={4,5,6};
-int32_t CDynProg::num_words_default[4]=   {64,256,1024,4096} ;
-int32_t CDynProg::mod_words_default[32] = {1,1,1,1,1,1,1,1,
-									1,1,1,1,1,1,1,1,
-									0,0,0,0,0,0,0,0,
-									0,0,0,0,0,0,0,0} ;
+index_t CDynProg::word_degree_default[4] = {3, 4, 5, 6};
+index_t CDynProg::cum_num_words_default[5] = {0, 64, 320, 1344, 5440};
+index_t CDynProg::frame_plifs[3] = {4, 5, 6};
+index_t CDynProg::num_words_default[4] = {64, 256, 1024, 4096};
+index_t CDynProg::mod_words_default[32] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                           1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 bool CDynProg::sign_words_default[16] = {true,true,true,true,true,true,true,true,
 									  false,false,false,false,false,false,false,false} ; // whether to use counts or signum of counts
-int32_t CDynProg::string_words_default[16] = {0,0,0,0,0,0,0,0,
-									   1,1,1,1,1,1,1,1} ; // which string should be used
+index_t CDynProg::string_words_default[16] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1}; // which string should be used
 
 CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 : CSGObject(), m_transition_matrix_a_id(1,1), m_transition_matrix_a(1,1),
@@ -112,10 +112,10 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 
 	m_raw_intensities = NULL;
 	m_probe_pos = NULL;
-	m_num_probes_cum = SG_MALLOC(int32_t, 100);
+	m_num_probes_cum = SG_MALLOC(index_t, 100);
 	m_num_probes_cum[0] = 0;
 	//m_use_tiling=false;
-	m_num_lin_feat_plifs_cum = SG_MALLOC(int32_t, 100);
+	m_num_lin_feat_plifs_cum = SG_MALLOC(index_t, 100);
 	m_num_lin_feat_plifs_cum[0] = m_num_svms;
 	m_num_raw_data = 0;
 	m_seg_loss_obj = new CSegmentLoss();
@@ -127,7 +127,7 @@ CDynProg::~CDynProg()
 		SG_FREE(trans_list_forward_cnt);
 	if (trans_list_forward)
 	{
-		for (int32_t i=0; i<trans_list_len; i++)
+		for (index_t i = 0; i < trans_list_len; i++)
 		{
 			if (trans_list_forward[i])
 				SG_FREE(trans_list_forward[i]);
@@ -136,7 +136,7 @@ CDynProg::~CDynProg()
 	}
 	if (trans_list_forward_val)
 	{
-		for (int32_t i=0; i<trans_list_len; i++)
+		for (index_t i = 0; i < trans_list_len; i++)
 		{
 			if (trans_list_forward_val[i])
 				SG_FREE(trans_list_forward_val[i]);
@@ -145,7 +145,7 @@ CDynProg::~CDynProg()
 	}
 	if (trans_list_forward_id)
 	{
-		for (int32_t i=0; i<trans_list_len; i++)
+		for (index_t i = 0; i < trans_list_len; i++)
 		{
 			if (trans_list_forward_id[i])
 				SG_FREE(trans_list_forward_id[i]);
@@ -177,12 +177,12 @@ int32_t CDynProg::get_num_svms()
 
 void CDynProg::precompute_stop_codons()
 {
-	int32_t length=m_genestr.get_dim1();
+	index_t length = m_genestr.get_dim1();
 
 	m_genestr_stop.resize_array(length) ;
 	m_genestr_stop.set_const(0) ;
 	{
-		for (int32_t i=0; i<length-2; i++)
+		for (index_t i = 0; i < length - 2; i++)
 			if ((m_genestr[i]=='t' || m_genestr[i]=='T') &&
 					(((m_genestr[i+1]=='a' || m_genestr[i+1]=='A') &&
 					  (m_genestr[i+2]=='a' || m_genestr[i+2]=='g' || m_genestr[i+2]=='A' || m_genestr[i+2]=='G')) ||
@@ -197,7 +197,7 @@ void CDynProg::precompute_stop_codons()
 	}
 }
 
-void CDynProg::set_num_states(int32_t p_N)
+void CDynProg::set_num_states(index_t p_N)
 {
 	m_N=p_N ;
 
@@ -212,42 +212,46 @@ void CDynProg::set_num_states(int32_t p_N)
 	m_orf_info.resize_array(m_N,2) ;
 }
 
-int32_t CDynProg::get_num_states()
+index_t CDynProg::get_num_states()
 {
 	return m_N;
 }
 
 void CDynProg::init_tiling_data(
-	int32_t* probe_pos, float64_t* intensities, const int32_t num_probes)
+    index_t* probe_pos, float64_t* intensities, const index_t num_probes)
 {
 	m_num_raw_data++;
 	m_num_probes_cum[m_num_raw_data] = m_num_probes_cum[m_num_raw_data-1]+num_probes;
 
-	int32_t* tmp_probe_pos = SG_MALLOC(int32_t, m_num_probes_cum[m_num_raw_data]);
+	index_t* tmp_probe_pos =
+	    SG_MALLOC(index_t, m_num_probes_cum[m_num_raw_data]);
 	float64_t* tmp_raw_intensities = SG_MALLOC(float64_t, m_num_probes_cum[m_num_raw_data]);
 
 
 	if (m_num_raw_data==1){
-		sg_memcpy(tmp_probe_pos, probe_pos, num_probes*sizeof(int32_t));
+		sg_memcpy(tmp_probe_pos, probe_pos, num_probes * sizeof(index_t));
 		sg_memcpy(tmp_raw_intensities, intensities, num_probes*sizeof(float64_t));
 		//SG_PRINT("raw_intens:%f \n",*tmp_raw_intensities+2)
 	}else{
-		sg_memcpy(tmp_probe_pos, m_probe_pos, m_num_probes_cum[m_num_raw_data-1]*sizeof(int32_t));
+		sg_memcpy(
+		    tmp_probe_pos, m_probe_pos,
+		    m_num_probes_cum[m_num_raw_data - 1] * sizeof(index_t));
 		sg_memcpy(tmp_raw_intensities, m_raw_intensities, m_num_probes_cum[m_num_raw_data-1]*sizeof(float64_t));
-		sg_memcpy(tmp_probe_pos+m_num_probes_cum[m_num_raw_data-1], probe_pos, num_probes*sizeof(int32_t));
+		sg_memcpy(
+		    tmp_probe_pos + m_num_probes_cum[m_num_raw_data - 1], probe_pos,
+		    num_probes * sizeof(index_t));
 		sg_memcpy(tmp_raw_intensities+m_num_probes_cum[m_num_raw_data-1], intensities, num_probes*sizeof(float64_t));
 	}
 	SG_FREE(m_probe_pos);
 	SG_FREE(m_raw_intensities);
-	m_probe_pos = tmp_probe_pos; //SG_MALLOC(int32_t, num_probes);
+	m_probe_pos = tmp_probe_pos;            // SG_MALLOC(index_t, num_probes);
 	m_raw_intensities = tmp_raw_intensities;//SG_MALLOC(float64_t, num_probes);
 
-	//sg_memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
-	//sg_memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
-
+	// sg_memcpy(m_probe_pos, probe_pos, num_probes*sizeof(index_t));
+	// sg_memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
 }
 
-void CDynProg::init_content_svm_value_array(const int32_t p_num_svms)
+void CDynProg::init_content_svm_value_array(const index_t p_num_svms)
 {
 	m_lin_feat.resize_array(p_num_svms, m_seq_len);
 
@@ -257,9 +261,9 @@ void CDynProg::init_content_svm_value_array(const int32_t p_num_svms)
 	    m_lin_feat.set_element(0.0, s, p) ;
 }
 
-void CDynProg::resize_lin_feat(const int32_t num_new_feat)
+void CDynProg::resize_lin_feat(const index_t num_new_feat)
 {
-	int32_t dim1, dim2;
+	index_t dim1, dim2;
 	m_lin_feat.get_array_size(dim1, dim2);
 	ASSERT(dim1==m_num_lin_feat_plifs_cum[m_num_raw_data-1])
 	ASSERT(dim2==m_seq_len) // == number of candidate positions
@@ -269,20 +273,21 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 	float64_t* arr = m_lin_feat.get_array();
 	float64_t* tmp = SG_MALLOC(float64_t, (dim1+num_new_feat)*dim2);
 	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(float64_t)) ;
-	for(int32_t j=0;j<m_seq_len;j++)
-                for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data-1];k++)
+	for (index_t j = 0; j < m_seq_len; j++)
+		for (index_t k = 0; k < m_num_lin_feat_plifs_cum[m_num_raw_data - 1];
+		     k++)
 			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
 
 	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2, true, true);// copy array and free it later
 	SG_FREE(tmp);
 
-	/*for(int32_t j=0;j<5;j++)
+	/*for(index_t j=0;j<5;j++)
 	{
-		for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
-		{
-			SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j))
-		}
-		SG_PRINT("\n")
+	    for(index_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data];k++)
+	    {
+	        SG_PRINT("(%i,%i)%f ",k,j,m_lin_feat.get_element(k,j))
+	    }
+	    SG_PRINT("\n")
 	}
 	m_lin_feat.get_array_size(dim1,dim2);
 	SG_PRINT("resize_lin_feat: dim1:%i, dim2:%i\n",dim1,dim2)*/
@@ -291,15 +296,16 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 }
 
 void CDynProg::precompute_tiling_plifs(
-	CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs)
+    CPlif** PEN, const index_t* tiling_plif_ids, const index_t num_tiling_plifs)
 {
 	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
 	float64_t* tiling_plif = SG_MALLOC(float64_t, num_tiling_plifs);
 	float64_t* svm_value = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; i++)
+	for (index_t i = 0;
+	     i < m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs; i++)
 		svm_value[i]=0.0;
-	int32_t* tiling_rows = SG_MALLOC(int32_t, num_tiling_plifs);
-	for (int32_t i=0; i<num_tiling_plifs; i++)
+	index_t* tiling_rows = SG_MALLOC(index_t, num_tiling_plifs);
+	for (index_t i = 0; i < num_tiling_plifs; i++)
 	{
 		tiling_plif[i]=0.0;
 		CPlif * plif = PEN[tiling_plif_ids[i]];
@@ -309,29 +315,28 @@ void CDynProg::precompute_tiling_plifs(
 	}
 	resize_lin_feat(num_tiling_plifs);
 
-
-	int32_t* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[m_num_raw_data-1]];
+	index_t* p_tiling_pos = &m_probe_pos[m_num_probes_cum[m_num_raw_data - 1]];
 	float64_t* p_tiling_data = &m_raw_intensities[m_num_probes_cum[m_num_raw_data-1]];
-	int32_t num=m_num_probes_cum[m_num_raw_data-1];
+	index_t num = m_num_probes_cum[m_num_raw_data - 1];
 
-	for (int32_t pos_idx=0;pos_idx<m_seq_len;pos_idx++)
+	for (index_t pos_idx = 0; pos_idx < m_seq_len; pos_idx++)
 	{
 		while (num<m_num_probes_cum[m_num_raw_data]&&*p_tiling_pos<m_pos[pos_idx])
 		{
-			for (int32_t i=0; i<num_tiling_plifs; i++)
+			for (index_t i = 0; i < num_tiling_plifs; i++)
 			{
 				svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i]=*p_tiling_data;
 				CPlif * plif = PEN[tiling_plif_ids[i]];
 				ASSERT(m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i==plif->get_use_svm()-1)
 				plif->set_do_calc(true);
-				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
+				tiling_plif[i] += plif->lookup_penalty(index_t(0), svm_value);
 				plif->set_do_calc(false);
 			}
 			p_tiling_data++;
 			p_tiling_pos++;
 			num++;
 		}
-		for (int32_t i=0; i<num_tiling_plifs; i++)
+		for (index_t i = 0; i < num_tiling_plifs; i++)
 			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i]-1,pos_idx);
 	}
 	SG_FREE(svm_value);
@@ -343,16 +348,16 @@ void CDynProg::create_word_string()
 {
 	SG_FREE(m_wordstr);
 	m_wordstr=SG_MALLOC(uint16_t**, 5440);
-	int32_t k=0;
-	int32_t genestr_len=m_genestr.get_dim1();
+	index_t k = 0;
+	index_t genestr_len = m_genestr.get_dim1();
 
 	m_wordstr[k]=SG_MALLOC(uint16_t*, m_num_degrees);
-	for (int32_t j=0; j<m_num_degrees; j++)
+	for (index_t j = 0; j < m_num_degrees; j++)
 	{
 		m_wordstr[k][j]=NULL ;
 		{
 			m_wordstr[k][j]=SG_MALLOC(uint16_t, genestr_len);
-			for (int32_t i=0; i<genestr_len; i++)
+			for (index_t i = 0; i < genestr_len; i++)
 				switch (m_genestr[i])
 				{
 					case 'A':
@@ -372,28 +377,28 @@ void CDynProg::create_word_string()
 
 void CDynProg::precompute_content_values()
 {
-	for (int32_t s=0; s<m_num_svms; s++)
-	  m_lin_feat.set_element(0.0, s, 0);
+	for (index_t s = 0; s < m_num_svms; s++)
+		m_lin_feat.set_element(0.0, s, 0);
 
-	for (int32_t p=0 ; p<m_seq_len-1 ; p++)
+	for (index_t p = 0; p < m_seq_len - 1; p++)
 	{
-		int32_t from_pos = m_pos[p];
-		int32_t to_pos = m_pos[p+1];
+		index_t from_pos = m_pos[p];
+		index_t to_pos = m_pos[p + 1];
 		float64_t* my_svm_values_unnormalized = SG_MALLOC(float64_t, m_num_svms);
 		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos)
 
 	    ASSERT(from_pos<=m_genestr.get_dim1())
 	    ASSERT(to_pos<=m_genestr.get_dim1())
 
-	    for (int32_t s=0; s<m_num_svms; s++)
+		for (index_t s = 0; s < m_num_svms; s++)
 			my_svm_values_unnormalized[s]=0.0;//precomputed_svm_values.element(s,p);
 
-	    for (int32_t i=from_pos; i<to_pos; i++)
+		for (index_t i = from_pos; i < to_pos; i++)
 		{
-			for (int32_t j=0; j<m_num_degrees; j++)
+			for (index_t j = 0; j < m_num_degrees; j++)
 			{
 				uint16_t word = m_wordstr[0][j][i] ;
-				for (int32_t s=0; s<m_num_svms; s++)
+				for (index_t s = 0; s < m_num_svms; s++)
 				{
 					// check if this k-mer should be considered for this SVM
 					if (m_mod_words.get_element(s,0)==3 && i%3!=m_mod_words.get_element(s,1))
@@ -402,7 +407,7 @@ void CDynProg::precompute_content_values()
 				}
 			}
 		}
-	    for (int32_t s=0; s<m_num_svms; s++)
+		for (index_t s = 0; s < m_num_svms; s++)
 		{
 			float64_t prev = m_lin_feat.get_element(s, p);
 			//SG_PRINT("elem (%i, %i, %f)\n", s, p, prev)
@@ -415,9 +420,9 @@ void CDynProg::precompute_content_values()
 		}
 		SG_FREE(my_svm_values_unnormalized);
 	}
-	//for (int32_t j=0; j<m_num_degrees; j++)
+	// for (index_t j=0; j<m_num_degrees; j++)
 	//	SG_FREE(m_wordstr[0][j]);
-	//SG_FREE(m_wordstr[0]);
+	// SG_FREE(m_wordstr[0]);
 }
 
 void CDynProg::set_p_vector(SGVector<float64_t> p)
@@ -443,23 +448,23 @@ void CDynProg::set_a(SGMatrix<float64_t> a)
 	m_transition_matrix_a_deriv.resize_array(m_N, m_N);
 }
 
-void CDynProg::set_a_id(SGMatrix<int32_t> a)
+void CDynProg::set_a_id(SGMatrix<index_t> a)
 {
 	ASSERT(a.num_cols==m_N)
 	ASSERT(a.num_rows==m_N)
 	m_transition_matrix_a_id.set_array(a.matrix, m_N, m_N, true, true);
 	m_max_a_id = 0;
-	for (int32_t i=0; i<m_N; i++)
+	for (index_t i = 0; i < m_N; i++)
 	{
-		for (int32_t j=0; j<m_N; j++)
+		for (index_t j = 0; j < m_N; j++)
 			m_max_a_id=CMath::max(m_max_a_id, m_transition_matrix_a_id.element(i,j));
 	}
 }
 
 void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 {
-	int32_t num_trans=a_trans.num_rows;
-	int32_t num_cols=a_trans.num_cols;
+	index_t num_trans = a_trans.num_rows;
+	index_t num_cols = a_trans.num_cols;
 
 	//CMath::display_matrix(a_trans.matrix,num_trans, num_cols,"a_trans");
 
@@ -488,10 +493,10 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 	trans_list_forward_val = SG_MALLOC(float64_t*, m_N);
 	trans_list_forward_id = SG_MALLOC(int32_t*, m_N);
 
-	int32_t start_idx=0;
-	for (int32_t j=0; j<m_N; j++)
+	index_t start_idx = 0;
+	for (index_t j = 0; j < m_N; j++)
 	{
-		int32_t old_start_idx=start_idx;
+		index_t old_start_idx = start_idx;
 
 		while (start_idx<num_trans && a_trans.matrix[start_idx+num_trans]==j)
 		{
@@ -504,7 +509,7 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 		if (start_idx>1 && start_idx<num_trans)
 			ASSERT(a_trans.matrix[start_idx+num_trans-1] <= a_trans.matrix[start_idx+num_trans])
 
-		int32_t len=start_idx-old_start_idx;
+		index_t len = start_idx - old_start_idx;
 		ASSERT(len>=0)
 
 		trans_list_forward_cnt[j] = 0 ;
@@ -523,14 +528,14 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 		}
 	}
 
-	for (int32_t i=0; i<num_trans; i++)
+	for (index_t i = 0; i < num_trans; i++)
 	{
-		int32_t from_state   = (int32_t)a_trans.matrix[i] ;
-		int32_t to_state = (int32_t)a_trans.matrix[i+num_trans] ;
+		index_t from_state = (index_t)a_trans.matrix[i];
+		index_t to_state = (index_t)a_trans.matrix[i + num_trans];
 		float64_t val = a_trans.matrix[i+num_trans*2] ;
-		int32_t id = 0 ;
+		index_t id = 0;
 		if (num_cols==4)
-			id = (int32_t)a_trans.matrix[i+num_trans*3] ;
+			id = (index_t)a_trans.matrix[i + num_trans * 3];
 		//SG_DEBUG("id=%i\n", id)
 
 		ASSERT(to_state>=0 && to_state<m_N)
@@ -546,8 +551,8 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 	} ;
 
 	m_max_a_id = 0 ;
-	for (int32_t i=0; i<m_N; i++)
-		for (int32_t j=0; j<m_N; j++)
+	for (index_t i = 0; i < m_N; i++)
+		for (index_t j = 0; j < m_N; j++)
 		{
 			//if (m_transition_matrix_a_id.element(i,j))
 			//SG_DEBUG("(%i,%i)=%i\n", i,j, m_transition_matrix_a_id.element(i,j))
@@ -556,12 +561,11 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 	//SG_DEBUG("m_max_a_id=%i\n", m_max_a_id)
 }
 
-
-void CDynProg::init_mod_words_array(SGMatrix<int32_t> mod_words_input)
+void CDynProg::init_mod_words_array(SGMatrix<index_t> mod_words_input)
 {
-	//for (int32_t i=0; i<mod_words_input.num_cols; i++)
+	// for (index_t i=0; i<mod_words_input.num_cols; i++)
 	//{
-	//	for (int32_t j=0; j<mod_words_input.num_rows; j++)
+	//	for (index_t j=0; j<mod_words_input.num_rows; j++)
 	//		SG_PRINT("%i ",mod_words_input[i*mod_words_input.num_rows+j])
 	//	SG_PRINT("\n")
 	//}
@@ -574,9 +578,9 @@ void CDynProg::init_mod_words_array(SGMatrix<int32_t> mod_words_input)
 	m_mod_words_array = m_mod_words.get_array() ;
 
 	/*SG_DEBUG("m_mod_words=[")
-	for (int32_t i=0; i<mod_words_input.num_rows; i++)
-		SG_DEBUG("%i, ", p_mod_words_array[i])
-		SG_DEBUG("]\n") */
+	for (index_t i=0; i<mod_words_input.num_rows; i++)
+	    SG_DEBUG("%i, ", p_mod_words_array[i])
+	    SG_DEBUG("]\n") */
 }
 
 bool CDynProg::check_svm_arrays()
@@ -640,9 +644,9 @@ void CDynProg::set_observation_matrix(SGNDArray<float64_t> seq)
 	if (seq.num_dims!=3)
 		SG_ERROR("Expected 3-dimensional Matrix\n")
 
-	int32_t N=seq.dims[0];
-	int32_t cand_pos=seq.dims[1];
-	int32_t max_num_features=seq.dims[2];
+	index_t N = seq.dims[0];
+	index_t cand_pos = seq.dims[1];
+	index_t max_num_features = seq.dims[2];
 
 	if (!m_svm_arrays_clean)
 	{
@@ -657,7 +661,7 @@ void CDynProg::set_observation_matrix(SGNDArray<float64_t> seq)
 
 	m_observation_matrix.set_array(seq.array, N, m_seq_len, max_num_features, true, true) ;
 }
-int32_t CDynProg::get_num_positions()
+index_t CDynProg::get_num_positions()
 {
 	return m_seq_len;
 }
@@ -669,12 +673,12 @@ void CDynProg::set_content_type_array(SGMatrix<float64_t> seg_path)
 
 	if (seg_path.matrix!=NULL)
 	{
-		int32_t *segment_ids = SG_MALLOC(int32_t, m_seq_len);
+		index_t* segment_ids = SG_MALLOC(index_t, m_seq_len);
 		float64_t *segment_mask = SG_MALLOC(float64_t, m_seq_len);
-		for (int32_t i=0; i<m_seq_len; i++)
+		for (index_t i = 0; i < m_seq_len; i++)
 		{
-		        segment_ids[i] = (int32_t)seg_path.matrix[2*i] ;
-		        segment_mask[i] = seg_path.matrix[2*i+1] ;
+			segment_ids[i] = (index_t)seg_path.matrix[2 * i];
+			segment_mask[i] = seg_path.matrix[2 * i + 1];
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
 		SG_FREE(segment_ids);
@@ -682,9 +686,9 @@ void CDynProg::set_content_type_array(SGMatrix<float64_t> seg_path)
 	}
 	else
 	{
-		int32_t *izeros = SG_MALLOC(int32_t, m_seq_len);
+		index_t* izeros = SG_MALLOC(index_t, m_seq_len);
 		float64_t *dzeros = SG_MALLOC(float64_t, m_seq_len);
-		for (int32_t i=0; i<m_seq_len; i++)
+		for (index_t i = 0; i < m_seq_len; i++)
 		{
 			izeros[i]=0 ;
 			dzeros[i]=0.0 ;
@@ -695,13 +699,13 @@ void CDynProg::set_content_type_array(SGMatrix<float64_t> seg_path)
 	}
 }
 
-void CDynProg::set_pos(SGVector<int32_t> pos)
+void CDynProg::set_pos(SGVector<index_t> pos)
 {
 	m_pos.set_array(pos.vector, pos.vlen, true, true) ;
 	m_seq_len = pos.vlen;
 }
 
-void CDynProg::set_orf_info(SGMatrix<int32_t> orf_info)
+void CDynProg::set_orf_info(SGMatrix<index_t> orf_info)
 {
 	if (orf_info.num_cols!=2)
 		SG_ERROR("orf_info size incorrect %i!=2\n", orf_info.num_cols)
@@ -740,19 +744,19 @@ void CDynProg::set_gene_string(SGVector<char> genestr)
 	m_genestr.set_array(genestr.vector, genestr.vlen, true, true) ;
 }
 
-void CDynProg::set_my_state_seq(int32_t* my_state_seq)
+void CDynProg::set_my_state_seq(index_t* my_state_seq)
 {
 	ASSERT(my_state_seq && m_seq_len>0)
 	m_my_state_seq.resize_array(m_seq_len);
-	for (int32_t i=0; i<m_seq_len; i++)
+	for (index_t i = 0; i < m_seq_len; i++)
 		m_my_state_seq[i]=my_state_seq[i];
 }
 
-void CDynProg::set_my_pos_seq(int32_t* my_pos_seq)
+void CDynProg::set_my_pos_seq(index_t* my_pos_seq)
 {
 	ASSERT(my_pos_seq && m_seq_len>0)
 	m_my_pos_seq.resize_array(m_seq_len);
-	for (int32_t i=0; i<m_seq_len; i++)
+	for (index_t i = 0; i < m_seq_len; i++)
 		m_my_pos_seq[i]=my_pos_seq[i];
 }
 
@@ -777,8 +781,8 @@ void CDynProg::set_dict_weights(SGMatrix<float64_t> dictionary_weights)
 
 void CDynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
 {
-	int32_t m=segment_loss.num_rows;
-	int32_t n=segment_loss.num_cols;
+	index_t m = segment_loss.num_rows;
+	index_t n = segment_loss.num_cols;
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
 		SG_ERROR("segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n)
@@ -787,19 +791,19 @@ void CDynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
 		SG_ERROR("segment_loss size should match m_max_a_id: %i!=%i\n", m, m_max_a_id+1)
 
 	m_segment_loss.set_array(segment_loss.matrix, m, n/2, 2, true, true) ;
-	/*for (int32_t i=0; i<n; i++)
-		for (int32_t j=0; j<n; j++)
-		SG_DEBUG("loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) */
+	/*for (index_t i=0; i<n; i++)
+	    for (index_t j=0; j<n; j++)
+	    SG_DEBUG("loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) */
 }
 
 void CDynProg::best_path_set_segment_ids_mask(
-	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
+    index_t* segment_ids, float64_t* segment_mask, index_t m)
 {
 
 	if (m!=m_observation_matrix.get_dim2())
 		SG_ERROR("size of segment_ids or segment_mask (%i)  does not match the size of the feature matrix (%i)", m, m_observation_matrix.get_dim2())
-	int32_t max_id = 0;
-	for (int32_t i=1;i<m;i++)
+	index_t max_id = 0;
+	for (index_t i = 1; i < m; i++)
 		max_id = CMath::max(max_id,segment_ids[i]);
 	//SG_PRINT("max_id: %i, m:%i\n",max_id, m)
 	m_segment_ids.set_array(segment_ids, m, true, true) ;
@@ -818,33 +822,34 @@ SGVector<float64_t> CDynProg::get_scores()
 	return scores;
 }
 
-SGMatrix<int32_t> CDynProg::get_states()
+SGMatrix<index_t> CDynProg::get_states()
 {
-	SGMatrix<int32_t> states(m_states.get_dim1(), m_states.get_dim2());
+	SGMatrix<index_t> states(m_states.get_dim1(), m_states.get_dim2());
 
-	int32_t sz = sizeof(int32_t)*( m_states.get_dim1() * m_states.get_dim2() );
+	index_t sz = sizeof(index_t) * (m_states.get_dim1() * m_states.get_dim2());
 	sg_memcpy(states.matrix ,m_states.get_array(),sz);
 
 	return states;
 }
 
-SGMatrix<int32_t> CDynProg::get_positions()
+SGMatrix<index_t> CDynProg::get_positions()
 {
-   SGMatrix<int32_t> positions(m_positions.get_dim1(), m_positions.get_dim2());
+	SGMatrix<index_t> positions(m_positions.get_dim1(), m_positions.get_dim2());
 
-   int32_t sz = sizeof(int32_t)*(m_positions.get_dim1()*m_positions.get_dim2());
-   sg_memcpy(positions.matrix, m_positions.get_array(),sz);
+	index_t sz =
+	    sizeof(index_t) * (m_positions.get_dim1() * m_positions.get_dim2());
+	sg_memcpy(positions.matrix, m_positions.get_array(), sz);
 
-   return positions;
+	return positions;
 }
 
-void CDynProg::get_path_scores(float64_t** scores, int32_t* seq_len)
+void CDynProg::get_path_scores(float64_t** scores, index_t* seq_len)
 {
    ASSERT(scores && seq_len)
 
    *seq_len=m_my_scores.get_dim1();
 
-   int32_t sz = sizeof(float64_t)*(*seq_len);
+   index_t sz = sizeof(float64_t) * (*seq_len);
 
    *scores = SG_MALLOC(float64_t, *seq_len);
    ASSERT(*scores)
@@ -852,25 +857,25 @@ void CDynProg::get_path_scores(float64_t** scores, int32_t* seq_len)
    sg_memcpy(*scores,m_my_scores.get_array(),sz);
 }
 
-void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
+void CDynProg::get_path_losses(float64_t** losses, index_t* seq_len)
 {
 	ASSERT(losses && seq_len)
 
 	*seq_len=m_my_losses.get_dim1();
 
-   int32_t sz = sizeof(float64_t)*(*seq_len);
+	index_t sz = sizeof(float64_t) * (*seq_len);
 
-   *losses = SG_MALLOC(float64_t, *seq_len);
-   ASSERT(*losses)
+	*losses = SG_MALLOC(float64_t, *seq_len);
+	ASSERT(*losses)
 
-   sg_memcpy(*losses,m_my_losses.get_array(),sz);
+	sg_memcpy(*losses, m_my_losses.get_array(), sz);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool CDynProg::extend_orf(
-	int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
-	int32_t to)
+    index_t orf_from, index_t orf_to, index_t start, index_t& last_pos,
+    index_t to)
 {
 #ifdef DYNPROG_TIMING_DETAIL
 	MyTime.start() ;
@@ -881,10 +886,10 @@ bool CDynProg::extend_orf(
 	if (to<0)
 		to=0 ;
 
-	int32_t orf_target = orf_to-orf_from ;
+	index_t orf_target = orf_to - orf_from;
 	if (orf_target<0) orf_target+=3 ;
 
-	int32_t pos ;
+	index_t pos;
 	if (last_pos==to)
 		pos = to-orf_to-3 ;
 	else
@@ -919,9 +924,10 @@ bool CDynProg::extend_orf(
 	return true ;
 }
 
-void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
-		int16_t nbest, bool with_loss, bool with_multiple_sequences)
-	{
+void CDynProg::compute_nbest_paths(
+    index_t max_num_signals, bool use_orf, int16_t nbest, bool with_loss,
+    bool with_multiple_sequences)
+{
 
 	//FIXME we need checks here if all the fields are of right size
 	//SG_PRINT("m_seq_len: %i\n", m_seq_len)
@@ -935,18 +941,18 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 	m_states.resize_array(nbest, m_observation_matrix.get_dim2()) ;
 	m_positions.resize_array(nbest, m_observation_matrix.get_dim2()) ;
 
-	for (int32_t i=0; i<nbest; i++)
+	for (index_t i = 0; i < nbest; i++)
 	{
 		m_scores[i]=-1;
-		for (int32_t j=0; j<m_observation_matrix.get_dim2(); j++)
+		for (index_t j = 0; j < m_observation_matrix.get_dim2(); j++)
 		{
 			m_states.element(i,j)=-1;
 			m_positions.element(i,j)=-1;
 		}
 	}
 	float64_t* prob_nbest=m_scores.get_array();
-	int32_t* my_state_seq=m_states.get_array();
-	int32_t* my_pos_seq=m_positions.get_array();
+	index_t* my_state_seq = m_states.get_array();
+	index_t* my_pos_seq = m_positions.get_array();
 
 	CPlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
 	CPlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
@@ -985,20 +991,25 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//SG_PRINT("use_orf = %i\n", use_orf)
 #endif
 
-		int32_t max_look_back = 1000 ;
-		bool use_svm = false ;
+	index_t max_look_back = 1000;
+	bool use_svm = false;
 
-		SG_DEBUG("m_N:%i, m_seq_len:%i, max_num_signals:%i\n",m_N, m_seq_len, max_num_signals)
+	SG_DEBUG(
+	    "m_N:%i, m_seq_len:%i, max_num_signals:%i\n", m_N, m_seq_len,
+	    max_num_signals)
 
-		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
-      //   SG_PRINT("(%i)%0.2f ",i,seq_array[i])
+	// for (index_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
+	//   SG_PRINT("(%i)%0.2f ",i,seq_array[i])
 
-		CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
+	CDynamicObjectArray PEN(
+	    (CSGObject**)Plif_matrix, m_N, m_N, false, false); // 2d, CPlifBase*
 
-		CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  CPlifBase*
+	CDynamicObjectArray PEN_state_signals(
+	    (CSGObject**)Plif_state_signals, m_N, max_num_signals, false,
+	    false); // 2d,  CPlifBase*
 
-		CDynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
-		seq.set_const(0) ;
+	CDynamicArray<float64_t> seq(m_N, m_seq_len); // 2d
+	seq.set_const(0);
 
 #ifdef DYNPROG_DEBUG
 		SG_PRINT("m_num_raw_data: %i\n",m_num_raw_data)
@@ -1012,103 +1023,135 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 		float64_t* svm_value = SG_MALLOC(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 		{ // initialize svm_svalue
-			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
-				svm_value[s]=0 ;
-		}
+		    for (index_t s = 0; s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+		                                m_num_intron_plifs;
+		         s++)
+			    svm_value[s] = 0;
+	    }
 
-		{ // convert seq_input to seq
-			// this is independent of the svm values
+	    { // convert seq_input to seq
+		    // this is independent of the svm values
 
-			CDynamicArray<float64_t> *seq_input=NULL ; // 3d
-			if (seq_array!=NULL)
-			{
-				//SG_PRINT("using dense seq_array\n")
+		    CDynamicArray<float64_t>* seq_input = NULL; // 3d
+		    if (seq_array != NULL)
+		    {
+			    // SG_PRINT("using dense seq_array\n")
 
-				seq_input=new CDynamicArray<float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
-				//seq_input.display_array() ;
+			    seq_input = new CDynamicArray<float64_t>(
+			        seq_array, m_N, m_seq_len, max_num_signals);
+			    // seq_input.display_array() ;
 
-				ASSERT(m_seq_sparse1==NULL)
-				ASSERT(m_seq_sparse2==NULL)
-			} else
-			{
-				SG_PRINT("using sparse seq_array\n")
+			    ASSERT(m_seq_sparse1 == NULL)
+			    ASSERT(m_seq_sparse2 == NULL)
+		    }
+		    else
+		    {
+			    SG_PRINT("using sparse seq_array\n")
 
-				ASSERT(m_seq_sparse1!=NULL)
-				ASSERT(m_seq_sparse2!=NULL)
-				ASSERT(max_num_signals==2)
-			}
+			    ASSERT(m_seq_sparse1 != NULL)
+			    ASSERT(m_seq_sparse2 != NULL)
+			    ASSERT(max_num_signals == 2)
+		    }
 
-			for (int32_t i=0; i<m_N; i++)
-				for (int32_t j=0; j<m_seq_len; j++)
-					seq.element(i,j) = 0 ;
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < m_seq_len; j++)
+				    seq.element(i, j) = 0;
 
-			for (int32_t i=0; i<m_N; i++)
-				for (int32_t j=0; j<m_seq_len; j++)
-					for (int32_t k=0; k<max_num_signals; k++)
-					{
-						if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
-						{
-							// no plif
-							if (seq_input!=NULL)
-								seq.element(i,j) = seq_input->element(i,j,k) ;
-							else
-							{
-								if (k==0)
-									seq.element(i,j) = m_seq_sparse1->get_feature(i,j) ;
-								if (k==1)
-									seq.element(i,j) = m_seq_sparse2->get_feature(i,j) ;
-							}
-							break ;
-						}
-						if (PEN_state_signals.element(i,k)!=NULL)
-						{
-							if (seq_input!=NULL)
-							{
-								// just one plif
-								if (CMath::is_finite(seq_input->element(i,j,k)))
-									seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
-								else
-									// keep infinity values
-									seq.element(i,j) = seq_input->element(i, j, k) ;
-							}
-							else
-							{
-								if (k==0)
-								{
-									// just one plif
-									if (CMath::is_finite(m_seq_sparse1->get_feature(i,j)))
-										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
-									else
-										// keep infinity values
-										seq.element(i,j) = m_seq_sparse1->get_feature(i, j) ;
-								}
-								if (k==1)
-								{
-									// just one plif
-									if (CMath::is_finite(m_seq_sparse2->get_feature(i,j)))
-										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
-									else
-										// keep infinity values
-										seq.element(i,j) = m_seq_sparse2->get_feature(i, j) ;
-								}
-							}
-						}
-						else
-							break ;
-					}
-			delete seq_input;
-			SG_FREE(svm_value);
-		}
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < m_seq_len; j++)
+				    for (index_t k = 0; k < max_num_signals; k++)
+				    {
+					    if ((PEN_state_signals.element(i, k) == NULL) &&
+					        (k == 0))
+					    {
+						    // no plif
+						    if (seq_input != NULL)
+							    seq.element(i, j) = seq_input->element(i, j, k);
+						    else
+						    {
+							    if (k == 0)
+								    seq.element(i, j) =
+								        m_seq_sparse1->get_feature(i, j);
+							    if (k == 1)
+								    seq.element(i, j) =
+								        m_seq_sparse2->get_feature(i, j);
+						    }
+						    break;
+					    }
+					    if (PEN_state_signals.element(i, k) != NULL)
+					    {
+						    if (seq_input != NULL)
+						    {
+							    // just one plif
+							    if (CMath::is_finite(
+							            seq_input->element(i, j, k)))
+								    seq.element(i, j) +=
+								        ((CPlifBase*)PEN_state_signals.element(
+								             i, k))
+								            ->lookup_penalty(
+								                seq_input->element(i, j, k),
+								                svm_value);
+							    else
+								    // keep infinity values
+								    seq.element(i, j) =
+								        seq_input->element(i, j, k);
+						    }
+						    else
+						    {
+							    if (k == 0)
+							    {
+								    // just one plif
+								    if (CMath::is_finite(
+								            m_seq_sparse1->get_feature(i, j)))
+									    seq.element(i, j) +=
+									        ((CPlifBase*)PEN_state_signals
+									             .element(i, k))
+									            ->lookup_penalty(
+									                m_seq_sparse1->get_feature(
+									                    i, j),
+									                svm_value);
+								    else
+									    // keep infinity values
+									    seq.element(i, j) =
+									        m_seq_sparse1->get_feature(i, j);
+							    }
+							    if (k == 1)
+							    {
+								    // just one plif
+								    if (CMath::is_finite(
+								            m_seq_sparse2->get_feature(i, j)))
+									    seq.element(i, j) +=
+									        ((CPlifBase*)PEN_state_signals
+									             .element(i, k))
+									            ->lookup_penalty(
+									                m_seq_sparse2->get_feature(
+									                    i, j),
+									                svm_value);
+								    else
+									    // keep infinity values
+									    seq.element(i, j) =
+									        m_seq_sparse2->get_feature(i, j);
+							    }
+						    }
+					    }
+					    else
+						    break;
+				    }
+		    delete seq_input;
+		    SG_FREE(svm_value);
+	    }
 
-		// allow longer transitions than look_back
-		bool long_transitions = m_long_transitions ;
-		CDynamicArray<int32_t> long_transition_content_start_position(m_N,m_N) ; // 2d
+	    // allow longer transitions than look_back
+	    bool long_transitions = m_long_transitions;
+	    CDynamicArray<index_t> long_transition_content_start_position(
+	        m_N, m_N); // 2d
 #ifdef DYNPROG_DEBUG
-		CDynamicArray<int32_t> long_transition_content_end_position(m_N,m_N) ; // 2d
+	    CDynamicArray<index_t> long_transition_content_end_position(
+	        m_N, m_N); // 2d
 #endif
-		CDynamicArray<int32_t> long_transition_content_start(m_N,m_N) ; // 2d
+	    CDynamicArray<index_t> long_transition_content_start(m_N, m_N); // 2d
 
-		CDynamicArray<float64_t> long_transition_content_scores(m_N,m_N) ; // 2d
+	    CDynamicArray<float64_t> long_transition_content_scores(m_N, m_N); // 2d
 #ifdef DYNPROG_DEBUG
 
 		CDynamicArray<float64_t> long_transition_content_scores_pen(m_N,m_N) ; // 2d
@@ -1140,162 +1183,187 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 		svm_value = SG_MALLOC(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 		{ // initialize svm_svalue
-			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
-				svm_value[s]=0 ;
-		}
+		    for (index_t s = 0; s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+		                                m_num_intron_plifs;
+		         s++)
+			    svm_value[s] = 0;
+	    }
 
-		CDynamicArray<int32_t> look_back(m_N,m_N) ; // 2d
-		//CDynamicArray<int32_t> look_back_orig(m_N,m_N) ;
+	    CDynamicArray<index_t> look_back(m_N, m_N); // 2d
+	    // CDynamicArray<index_t> look_back_orig(m_N,m_N) ;
 
+	    { // determine maximal length of look-back
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < m_N; j++)
+			    {
+				    look_back.set_element(INT_MAX, i, j);
+				    // look_back_orig.set_element(INT_MAX, i, j) ;
+			    }
 
-		{ // determine maximal length of look-back
-			for (int32_t i=0; i<m_N; i++)
-				for (int32_t j=0; j<m_N; j++)
-				{
-					look_back.set_element(INT_MAX, i, j) ;
-					//look_back_orig.set_element(INT_MAX, i, j) ;
-				}
+		    for (index_t j = 0; j < m_N; j++)
+		    {
+			    // only consider transitions that are actually allowed
+			    const T_STATES num_elem = trans_list_forward_cnt[j];
+			    const T_STATES* elem_list = trans_list_forward[j];
 
-			for (int32_t j=0; j<m_N; j++)
-			{
-				// only consider transitions that are actually allowed
-				const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-				const T_STATES *elem_list = trans_list_forward[j] ;
+			    for (index_t i = 0; i < num_elem; i++)
+			    {
+				    T_STATES ii = elem_list[i];
 
-				for (int32_t i=0; i<num_elem; i++)
-				{
-					T_STATES ii = elem_list[i] ;
+				    CPlifBase* penij = (CPlifBase*)PEN.element(j, ii);
+				    if (penij == NULL)
+				    {
+					    if (long_transitions)
+					    {
+						    look_back.set_element(
+						        m_long_transition_threshold, j, ii);
+						    // look_back_orig.set_element(m_long_transition_max,
+						    // j, ii) ;
+					    }
+					    continue;
+				    }
 
-					CPlifBase *penij=(CPlifBase*) PEN.element(j, ii) ;
-					if (penij==NULL)
-					{
-						if (long_transitions)
-						{
-							look_back.set_element(m_long_transition_threshold, j, ii) ;
-							//look_back_orig.set_element(m_long_transition_max, j, ii) ;
-						}
-						continue ;
-					}
+				    /* if the transition is an ORF or we do computation with
+				     * loss, we have to disable long transitions */
+				    if ((m_orf_info.element(ii, 0) != -1) ||
+				        (m_orf_info.element(j, 1) != -1) || (!long_transitions))
+				    {
+					    look_back.set_element(
+					        CMath::ceil(penij->get_max_value()), j, ii);
+					    // look_back_orig.set_element(CMath::ceil(penij->get_max_value()),
+					    // j, ii) ;
+					    if (CMath::ceil(penij->get_max_value()) > max_look_back)
+					    {
+						    SG_DEBUG(
+						        "%d %d -> value: %f\n", ii, j,
+						        penij->get_max_value())
+						    max_look_back =
+						        (index_t)(CMath::ceil(penij->get_max_value()));
+					    }
+				    }
+				    else
+				    {
+					    look_back.set_element(
+					        CMath::min(
+					            (index_t)CMath::ceil(penij->get_max_value()),
+					            m_long_transition_threshold),
+					        j, ii);
+					    // look_back_orig.set_element(
+					    // (index_t)CMath::ceil(penij->get_max_value()), j, ii)
+					    // ;
+				    }
 
-					/* if the transition is an ORF or we do computation with loss, we have to disable long transitions */
-					if ((m_orf_info.element(ii,0)!=-1) || (m_orf_info.element(j,1)!=-1) || (!long_transitions))
-					{
-						look_back.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						//look_back_orig.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						if (CMath::ceil(penij->get_max_value()) > max_look_back)
-						{
-							SG_DEBUG("%d %d -> value: %f\n", ii,j,penij->get_max_value())
-							max_look_back = (int32_t) (CMath::ceil(penij->get_max_value()));
-						}
-					}
-					else
-					{
-						look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), m_long_transition_threshold ), j, ii) ;
-						//look_back_orig.set_element( (int32_t)CMath::ceil(penij->get_max_value()), j, ii) ;
-					}
+				    if (penij->uses_svm_values())
+					    use_svm = true;
+			    }
+		    }
+		    /* make sure max_look_back is at least as long as a long transition
+		     */
+		    if (long_transitions)
+			    max_look_back =
+			        CMath::max(m_long_transition_threshold, max_look_back);
 
-					if (penij->uses_svm_values())
-						use_svm=true ;
-				}
-			}
-			/* make sure max_look_back is at least as long as a long transition */
-			if (long_transitions)
-				max_look_back = CMath::max(m_long_transition_threshold, max_look_back) ;
+		    /* make sure max_look_back is not longer than the whole string */
+		    max_look_back = CMath::min(m_genestr.get_dim1(), max_look_back);
 
-			/* make sure max_look_back is not longer than the whole string */
-			max_look_back = CMath::min(m_genestr.get_dim1(), max_look_back) ;
+		    index_t num_long_transitions = 0;
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < m_N; j++)
+			    {
+				    if (look_back.get_element(i, j) ==
+				        m_long_transition_threshold)
+					    num_long_transitions++;
+				    if (look_back.get_element(i, j) == INT_MAX)
+				    {
+					    if (long_transitions)
+					    {
+						    look_back.set_element(
+						        m_long_transition_threshold, i, j);
+						    // look_back_orig.set_element(m_long_transition_max,
+						    // i, j) ;
+					    }
+					    else
+					    {
+						    look_back.set_element(max_look_back, i, j);
+						    // look_back_orig.set_element(m_long_transition_max,
+						    // i, j) ;
+					    }
+				    }
+			    }
+		    SG_DEBUG("Using %i long transitions\n", num_long_transitions)
+	    }
+	    // SG_PRINT("max_look_back: %i \n", max_look_back)
 
-			int32_t num_long_transitions = 0 ;
-			for (int32_t i=0; i<m_N; i++)
-				for (int32_t j=0; j<m_N; j++)
-				{
-					if (look_back.get_element(i,j)==m_long_transition_threshold)
-						num_long_transitions++ ;
-					if (look_back.get_element(i,j)==INT_MAX)
-					{
-						if (long_transitions)
-						{
-							look_back.set_element(m_long_transition_threshold, i, j) ;
-							//look_back_orig.set_element(m_long_transition_max, i, j) ;
-						}
-						else
-						{
-							look_back.set_element(max_look_back, i, j) ;
-							//look_back_orig.set_element(m_long_transition_max, i, j) ;
-						}
-					}
-				}
-			SG_DEBUG("Using %i long transitions\n", num_long_transitions)
-		}
-		//SG_PRINT("max_look_back: %i \n", max_look_back)
+	    // SG_PRINT("use_svm=%i, genestr_len: \n", use_svm,
+	    // m_genestr.get_dim1())
+	    SG_DEBUG("use_svm=%i\n", use_svm)
 
-		//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr.get_dim1())
-		SG_DEBUG("use_svm=%i\n", use_svm)
+	    SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest)
+	    const index_t look_back_buflen = (max_look_back * m_N + 1) * nbest;
+	    SG_DEBUG("look_back_buflen=%i\n", look_back_buflen)
+	    /*const float64_t mem_use =
+	      (float64_t)(m_seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(index_t))+
+	      look_back_buflen*(2*sizeof(float64_t)+sizeof(index_t))+
+	      m_seq_len*(sizeof(T_STATES)+sizeof(index_t))+
+	      m_genestr.get_dim1()*sizeof(bool))/(1024*1024);*/
 
-		SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest)
-		const int32_t look_back_buflen = (max_look_back*m_N+1)*nbest ;
-		SG_DEBUG("look_back_buflen=%i\n", look_back_buflen)
-		/*const float64_t mem_use = (float64_t)(m_seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
-		  look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
-		  m_seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-		  m_genestr.get_dim1()*sizeof(bool))/(1024*1024);*/
+	    // bool is_big = (mem_use>200) || (m_seq_len>5000) ;
 
-		//bool is_big = (mem_use>200) || (m_seq_len>5000) ;
+	    /*if (is_big)
+	      {
+	      SG_DEBUG("calling compute_nbest_paths: m_seq_len=%i, m_N=%i,
+	      lookback=%i nbest=%i\n",
+	      m_seq_len, m_N, max_look_back, nbest) ;
+	      SG_DEBUG("allocating %1.2fMB of memory\n",
+	      mem_use) ;
+	      }*/
+	    ASSERT(nbest < 32000)
 
-		/*if (is_big)
-		  {
-		  SG_DEBUG("calling compute_nbest_paths: m_seq_len=%i, m_N=%i, lookback=%i nbest=%i\n",
-		  m_seq_len, m_N, max_look_back, nbest) ;
-		  SG_DEBUG("allocating %1.2fMB of memory\n",
-		  mem_use) ;
-		  }*/
-		ASSERT(nbest<32000)
+	    CDynamicArray<float64_t> delta(m_seq_len, m_N, nbest); // 3d
+	    float64_t* delta_array = delta.get_array();
+	    // delta.set_const(0) ;
 
-		CDynamicArray<float64_t> delta(m_seq_len, m_N, nbest) ; // 3d
-		float64_t* delta_array = delta.get_array() ;
-		//delta.set_const(0) ;
+	    CDynamicArray<T_STATES> psi(m_seq_len, m_N, nbest); // 3d
+	    // psi.set_const(0) ;
 
-		CDynamicArray<T_STATES> psi(m_seq_len, m_N, nbest) ; // 3d
-		//psi.set_const(0) ;
+	    CDynamicArray<int16_t> ktable(m_seq_len, m_N, nbest); // 3d
+	    // ktable.set_const(0) ;
 
-		CDynamicArray<int16_t> ktable(m_seq_len, m_N, nbest) ; // 3d
-		//ktable.set_const(0) ;
+	    CDynamicArray<index_t> ptable(m_seq_len, m_N, nbest); // 3d
+	    // ptable.set_const(0) ;
 
-		CDynamicArray<int32_t> ptable(m_seq_len, m_N, nbest) ; // 3d
-		//ptable.set_const(0) ;
+	    CDynamicArray<float64_t> delta_end(nbest);
+	    // delta_end.set_const(0) ;
 
-		CDynamicArray<float64_t> delta_end(nbest) ;
-		//delta_end.set_const(0) ;
+	    CDynamicArray<T_STATES> path_ends(nbest);
+	    // path_ends.set_const(0) ;
 
-		CDynamicArray<T_STATES> path_ends(nbest) ;
-		//path_ends.set_const(0) ;
+	    CDynamicArray<int16_t> ktable_end(nbest);
+	    // ktable_end.set_const(0) ;
 
-		CDynamicArray<int16_t> ktable_end(nbest) ;
-		//ktable_end.set_const(0) ;
+	    float64_t* fixedtempvv = SG_MALLOC(float64_t, look_back_buflen);
+	    memset(fixedtempvv, 0, look_back_buflen * sizeof(float64_t));
+	    index_t* fixedtempii = SG_MALLOC(index_t, look_back_buflen);
+	    memset(fixedtempii, 0, look_back_buflen * sizeof(index_t));
 
-		float64_t * fixedtempvv=SG_MALLOC(float64_t, look_back_buflen);
-		memset(fixedtempvv, 0, look_back_buflen*sizeof(float64_t)) ;
-		int32_t * fixedtempii=SG_MALLOC(int32_t, look_back_buflen);
-		memset(fixedtempii, 0, look_back_buflen*sizeof(int32_t)) ;
+	    CDynamicArray<float64_t> oldtempvv(look_back_buflen);
 
-		CDynamicArray<float64_t> oldtempvv(look_back_buflen) ;
+	    CDynamicArray<float64_t> oldtempvv2(look_back_buflen);
+	    // oldtempvv.set_const(0) ;
+	    // oldtempvv.display_size() ;
 
-		CDynamicArray<float64_t> oldtempvv2(look_back_buflen) ;
-		//oldtempvv.set_const(0) ;
-		//oldtempvv.display_size() ;
+	    CDynamicArray<index_t> oldtempii(look_back_buflen);
 
-		CDynamicArray<int32_t> oldtempii(look_back_buflen) ;
+	    CDynamicArray<index_t> oldtempii2(look_back_buflen);
+	    // oldtempii.set_const(0) ;
 
-		CDynamicArray<int32_t> oldtempii2(look_back_buflen) ;
-		//oldtempii.set_const(0) ;
+	    CDynamicArray<T_STATES> state_seq(m_seq_len);
+	    // state_seq.set_const(0) ;
 
-		CDynamicArray<T_STATES> state_seq(m_seq_len) ;
-		//state_seq.set_const(0) ;
+	    CDynamicArray<index_t> pos_seq(m_seq_len);
+// pos_seq.set_const(0) ;
 
-		CDynamicArray<int32_t> pos_seq(m_seq_len) ;
-		//pos_seq.set_const(0) ;
-
-		////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNPROG_DEBUG
 		state_seq.display_size() ;
@@ -1344,166 +1412,199 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 
 		{
-			for (int32_t s=0; s<m_num_svms; s++)
-				ASSERT(m_string_words_array[s]<1)
-		}
+		    for (index_t s = 0; s < m_num_svms; s++)
+			    ASSERT(m_string_words_array[s] < 1)
+	    }
 
+	    // CDynamicArray<index_t*> trans_matrix_svms(m_N,m_N); // 2d
+	    // CDynamicArray<index_t> trans_matrix_num_svms(m_N,m_N); // 2d
 
-		//CDynamicArray<int32_t*> trans_matrix_svms(m_N,m_N); // 2d
-		//CDynamicArray<int32_t> trans_matrix_num_svms(m_N,m_N); // 2d
+	    { // initialization
 
-		{ // initialization
+		    for (T_STATES i = 0; i < m_N; i++)
+		    {
+			    // delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;
+			    // // get_p defined in HMM.h to be equiv to
+			    // initial_state_distribution
+			    delta.element(delta_array, 0, i, 0, m_seq_len, m_N) =
+			        get_p(i) + seq.element(i, 0); // get_p defined in HMM.h to
+			                                      // be equiv to
+			                                      // initial_state_distribution
+			    psi.element(index_t(0), i, index_t(0)) = 0;
+			    if (nbest > 1)
+				    ktable.element(index_t(0), i, index_t(0)) = 0;
+			    ptable.element(index_t(0), i, index_t(0)) = 0;
+			    for (index_t k = 1; k < nbest; k++)
+			    {
+				    index_t dim1, dim2, dim3;
+				    delta.get_array_size(dim1, dim2, dim3);
+				    // SG_DEBUG("i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2,
+				    // dim3)
+				    // delta.element(0, i, k)    = -CMath::INFTY ;
+				    delta.element(delta_array, 0, i, k, m_seq_len, m_N) =
+				        -CMath::INFTY;
+				    psi.element(index_t(0), i, index_t(0)) =
+				        0; // <--- what's this for?
+				    if (nbest > 1)
+					    ktable.element(index_t(0), i, k) = 0;
+				    ptable.element(index_t(0), i, k) = 0;
+			    }
+			    /*
+			       for (T_STATES j=0; j<m_N; j++)
+			       {
+			       CPlifBase * penalty = PEN.element(i,j) ;
+			       index_t num_current_svms=0;
+			       index_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
+			       if (penalty)
+			       {
+			       SG_PRINT("trans %i -> %i \n",i,j)
+			       penalty->get_used_svms(&num_current_svms, svm_ids);
+			       trans_matrix_svms.set_element(svm_ids,i,j);
+			       for (index_t l=0;l<num_current_svms;l++)
+			       SG_PRINT("svm_ids[%i]: %i \n",l,svm_ids[l])
+			       trans_matrix_num_svms.set_element(num_current_svms,i,j);
+			       }
+			       }
+			       */
+		    }
+	    }
 
-			for (T_STATES i=0; i<m_N; i++)
-			{
-				//delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-				delta.element(delta_array, 0, i, 0, m_seq_len, m_N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-				psi.element(0,i,0)   = 0 ;
-				if (nbest>1)
-					ktable.element(0,i,0)  = 0 ;
-				ptable.element(0,i,0)  = 0 ;
-				for (int16_t k=1; k<nbest; k++)
-				{
-					int32_t dim1, dim2, dim3 ;
-					delta.get_array_size(dim1, dim2, dim3) ;
-					//SG_DEBUG("i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3)
-					//delta.element(0, i, k)    = -CMath::INFTY ;
-					delta.element(delta_array, 0, i, k, m_seq_len, m_N)    = -CMath::INFTY ;
-					psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
-					if (nbest>1)
-						ktable.element(0,i,k)     = 0 ;
-					ptable.element(0,i,k)     = 0 ;
-				}
-				/*
-				   for (T_STATES j=0; j<m_N; j++)
-				   {
-				   CPlifBase * penalty = PEN.element(i,j) ;
-				   int32_t num_current_svms=0;
-				   int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
-				   if (penalty)
-				   {
-				   SG_PRINT("trans %i -> %i \n",i,j)
-				   penalty->get_used_svms(&num_current_svms, svm_ids);
-				   trans_matrix_svms.set_element(svm_ids,i,j);
-				   for (int32_t l=0;l<num_current_svms;l++)
-				   SG_PRINT("svm_ids[%i]: %i \n",l,svm_ids[l])
-				   trans_matrix_num_svms.set_element(num_current_svms,i,j);
-				   }
-				   }
-				   */
+	    SG_DEBUG("START_RECURSION \n\n")
 
-			}
-		}
+	    // recursion
+	    for (index_t t = 1; t < m_seq_len; t++)
+	    {
+		    for (T_STATES j = 0; j < m_N; j++)
+		    {
+			    if (seq.element(j, t) <= -1e20)
+			    { // if we cannot observe the symbol here, then we can omit the
+				    // rest
+				    for (int16_t k = 0; k < nbest; k++)
+				    {
+					    delta.element(delta_array, t, j, k, m_seq_len, m_N) =
+					        seq.element(j, t);
+					    psi.element(t, j, k) = 0;
+					    if (nbest > 1)
+						    ktable.element(t, j, k) = 0;
+					    ptable.element(t, j, k) = 0;
+				    }
+			    }
+			    else
+			    {
+				    const T_STATES num_elem = trans_list_forward_cnt[j];
+				    const T_STATES* elem_list = trans_list_forward[j];
+				    const float64_t* elem_val = trans_list_forward_val[j];
+				    const int32_t* elem_id = trans_list_forward_id[j];
 
-		SG_DEBUG("START_RECURSION \n\n")
+				    index_t fixed_list_len = 0;
+				    float64_t fixedtempvv_ = CMath::INFTY;
+				    index_t fixedtempii_ = 0;
+				    bool fixedtemplong = false;
 
-		// recursion
-		for (int32_t t=1; t<m_seq_len; t++)
-		{
-			for (T_STATES j=0; j<m_N; j++)
-			{
-				if (seq.element(j,t)<=-1e20)
-				{ // if we cannot observe the symbol here, then we can omit the rest
-					for (int16_t k=0; k<nbest; k++)
-					{
-						delta.element(delta_array, t, j, k, m_seq_len, m_N)    = seq.element(j,t) ;
-						psi.element(t,j,k)         = 0 ;
-						if (nbest>1)
-							ktable.element(t,j,k)  = 0 ;
-						ptable.element(t,j,k)      = 0 ;
-					}
-				}
-				else
-				{
-					const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-					const T_STATES *elem_list = trans_list_forward[j] ;
-					const float64_t *elem_val      = trans_list_forward_val[j] ;
-					const int32_t *elem_id      = trans_list_forward_id[j] ;
+				    for (index_t i = 0; i < num_elem; i++)
+				    {
+					    T_STATES ii = elem_list[i];
 
-					int32_t fixed_list_len = 0 ;
-					float64_t fixedtempvv_ = CMath::INFTY ;
-					int32_t fixedtempii_ = 0 ;
-					bool fixedtemplong = false ;
+					    const CPlifBase* penalty =
+					        (CPlifBase*)PEN.element(j, ii);
 
-					for (int32_t i=0; i<num_elem; i++)
-					{
-						T_STATES ii = elem_list[i] ;
+					    /*index_t look_back = max_look_back ;
+					      if (0)
+					      { // find lookback length
+					      CPlifBase *pen = (CPlifBase*) penalty ;
+					      if (pen!=NULL)
+					      look_back=(index_t)
+					      (CMath::ceil(pen->get_max_value()));
+					      if (look_back>=1e6)
+					      SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back,
+					      (long)pen)
+					      ASSERT(look_back<1e6)
+					      } */
 
-						const CPlifBase* penalty = (CPlifBase*) PEN.element(j,ii) ;
+					    index_t look_back_ = look_back.element(j, ii);
 
-						/*int32_t look_back = max_look_back ;
-						  if (0)
-						  { // find lookback length
-						  CPlifBase *pen = (CPlifBase*) penalty ;
-						  if (pen!=NULL)
-						  look_back=(int32_t) (CMath::ceil(pen->get_max_value()));
-						  if (look_back>=1e6)
-						  SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen)
-						  ASSERT(look_back<1e6)
-						  } */
+					    index_t orf_from = m_orf_info.element(ii, 0);
+					    index_t orf_to = m_orf_info.element(j, 1);
+					    if ((orf_from != -1) != (orf_to != -1))
+						    SG_DEBUG(
+						        "j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n",
+						        j, ii, orf_from, orf_to, elem_val[i])
+					    ASSERT((orf_from != -1) == (orf_to != -1))
 
-						int32_t look_back_ = look_back.element(j, ii) ;
+					    index_t orf_target = -1;
+					    if (orf_from != -1)
+					    {
+						    orf_target = orf_to - orf_from;
+						    if (orf_target < 0)
+							    orf_target += 3;
+						    ASSERT(orf_target >= 0 && orf_target < 3)
+					    }
 
-						int32_t orf_from = m_orf_info.element(ii,0) ;
-						int32_t orf_to   = m_orf_info.element(j,1) ;
-						if((orf_from!=-1)!=(orf_to!=-1))
-							SG_DEBUG("j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i])
-						ASSERT((orf_from!=-1)==(orf_to!=-1))
-
-						int32_t orf_target = -1 ;
-						if (orf_from!=-1)
-						{
-							orf_target=orf_to-orf_from ;
-							if (orf_target<0)
-								orf_target+=3 ;
-							ASSERT(orf_target>=0 && orf_target<3)
-						}
-
-						int32_t orf_last_pos = m_pos[t] ;
+					    index_t orf_last_pos = m_pos[t];
 #ifdef DYNPROG_TIMING
 						MyTime3.start() ;
 #endif
-						int32_t num_ok_pos = 0 ;
+					    index_t num_ok_pos = 0;
 
-						for (int32_t ts=t-1; ts>=0 && m_pos[t]-m_pos[ts]<=look_back_; ts--)
-						{
-							bool ok ;
-							//int32_t plen=t-ts;
+					    for (index_t ts = t - 1;
+					         ts >= 0 && m_pos[t] - m_pos[ts] <= look_back_;
+					         ts--)
+					    {
+						    bool ok;
+						    // index_t plen=t-ts;
 
-							/*for (int32_t s=0; s<m_num_svms; s++)
-							  if ((fabs(svs.svm_values[s*svs.seqlen+plen]-svs2.svm_values[s*svs.seqlen+plen])>1e-6) ||
-							  (fabs(svs.svm_values[s*svs.seqlen+plen]-svs3.svm_values[s*svs.seqlen+plen])>1e-6))
-							  {
-							  SG_DEBUG("s=%i, t=%i, ts=%i, %1.5e, %1.5e, %1.5e\n", s, t, ts, svs.svm_values[s*svs.seqlen+plen], svs2.svm_values[s*svs.seqlen+plen], svs3.svm_values[s*svs.seqlen+plen])
-							  }*/
+						    /*for (index_t s=0; s<m_num_svms; s++)
+						      if
+						      ((fabs(svs.svm_values[s*svs.seqlen+plen]-svs2.svm_values[s*svs.seqlen+plen])>1e-6)
+						      ||
+						      (fabs(svs.svm_values[s*svs.seqlen+plen]-svs3.svm_values[s*svs.seqlen+plen])>1e-6))
+						      {
+						      SG_DEBUG("s=%i, t=%i, ts=%i, %1.5e, %1.5e,
+						      %1.5e\n", s, t, ts,
+						      svs.svm_values[s*svs.seqlen+plen],
+						      svs2.svm_values[s*svs.seqlen+plen],
+						      svs3.svm_values[s*svs.seqlen+plen])
+						      }*/
 
-							if (orf_target==-1)
-								ok=true ;
-							else if (m_pos[ts]!=-1 && (m_pos[t]-m_pos[ts])%3==orf_target)
-								ok=(!use_orf) || extend_orf(orf_from, orf_to, m_pos[ts], orf_last_pos, m_pos[t]) ;
-							else
-								ok=false ;
+						    if (orf_target == -1)
+							    ok = true;
+						    else if (
+						        m_pos[ts] != -1 &&
+						        (m_pos[t] - m_pos[ts]) % 3 == orf_target)
+							    ok = (!use_orf) ||
+							         extend_orf(
+							             orf_from, orf_to, m_pos[ts],
+							             orf_last_pos, m_pos[t]);
+						    else
+							    ok = false;
 
-							if (ok)
-							{
+						    if (ok)
+						    {
 
-								float64_t segment_loss = 0.0 ;
-								if (with_loss)
-								{
-									segment_loss = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
-									//if (segment_loss!=segment_loss2)
-										//SG_PRINT("segment_loss:%f segment_loss2:%f\n", segment_loss, segment_loss2)
-								}
-								////////////////////////////////////////////////////////
-								// BEST_PATH_TRANS
-								////////////////////////////////////////////////////////
+							    float64_t segment_loss = 0.0;
+							    if (with_loss)
+							    {
+								    segment_loss =
+								        m_seg_loss_obj->get_segment_loss(
+								            ts, t, elem_id[i]);
+								    // if (segment_loss!=segment_loss2)
+								    // SG_PRINT("segment_loss:%f
+								    // segment_loss2:%f\n", segment_loss,
+								    // segment_loss2)
+							    }
+							    ////////////////////////////////////////////////////////
+							    // BEST_PATH_TRANS
+							    ////////////////////////////////////////////////////////
 
-								int32_t frame = orf_from;//m_orf_info.element(ii,0);
-								lookup_content_svm_values(ts, t, m_pos[ts], m_pos[t], svm_value, frame);
+							    index_t frame =
+							        orf_from; // m_orf_info.element(ii,0);
+							    lookup_content_svm_values(
+							        ts, t, m_pos[ts], m_pos[t], svm_value,
+							        frame);
 
-								float64_t pen_val = 0.0 ;
-								if (penalty)
-								{
+							    float64_t pen_val = 0.0;
+							    if (penalty)
+							    {
 #ifdef DYNPROG_TIMING_DETAIL
 									MyTime.start() ;
 #endif
@@ -1561,26 +1662,37 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 											}
 											else  // must have mval < fixedtempvv[fixed_list_len-1]
 											{
-												int32_t addhere = fixed_list_len;
-												while ((addhere > 0) && (mval < fixedtempvv[addhere-1]))
-													addhere--;
+											    index_t addhere =
+											        fixed_list_len;
+											    while (
+											        (addhere > 0) &&
+											        (mval <
+											         fixedtempvv[addhere - 1]))
+												    addhere--;
 
-												// move everything from addhere+1 one forward
-												for (int32_t jj=fixed_list_len-1; jj>addhere; jj--)
-												{
-													fixedtempvv[jj] = fixedtempvv[jj-1];
-													fixedtempii[jj] = fixedtempii[jj-1];
-												}
+											    // move everything from
+											    // addhere+1 one forward
+											    for (index_t jj =
+											             fixed_list_len - 1;
+											         jj > addhere; jj--)
+											    {
+												    fixedtempvv[jj] =
+												        fixedtempvv[jj - 1];
+												    fixedtempii[jj] =
+												        fixedtempii[jj - 1];
+											    }
 
-												fixedtempvv[addhere] = mval;
-												fixedtempii[addhere] = ii + diff*m_N + ts*m_N*nbest;
+											    fixedtempvv[addhere] = mval;
+											    fixedtempii[addhere] =
+											        ii + diff * m_N +
+											        ts * m_N * nbest;
 
-												if (fixed_list_len < nbest)
-													fixed_list_len++;
-											}
-										}
-									}
-								}
+											    if (fixed_list_len < nbest)
+												    fixed_list_len++;
+										    }
+									    }
+								    }
+							    }
 #ifdef DYNPROG_TIMING_DETAIL
 								MyTime.stop() ;
 								inner_loop_max_time += MyTime.time_diff_sec() ;
@@ -1592,43 +1704,49 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						inner_loop_time += MyTime3.time_diff_sec() ;
 #endif
 					}
-					for (int32_t i=0; i<num_elem; i++)
-					{
-						T_STATES ii = elem_list[i] ;
+				    for (index_t i = 0; i < num_elem; i++)
+				    {
+					    T_STATES ii = elem_list[i];
 
-						const CPlifBase* penalty = (CPlifBase*) PEN.element(j,ii) ;
+					    const CPlifBase* penalty =
+					        (CPlifBase*)PEN.element(j, ii);
 
-						/*int32_t look_back = max_look_back ;
-						  if (0)
-						  { // find lookback length
-						  CPlifBase *pen = (CPlifBase*) penalty ;
-						  if (pen!=NULL)
-						  look_back=(int32_t) (CMath::ceil(pen->get_max_value()));
-						  if (look_back>=1e6)
-						  SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back, (long)pen)
-						  ASSERT(look_back<1e6)
-						  } */
+					    /*index_t look_back = max_look_back ;
+					      if (0)
+					      { // find lookback length
+					      CPlifBase *pen = (CPlifBase*) penalty ;
+					      if (pen!=NULL)
+					      look_back=(index_t)
+					      (CMath::ceil(pen->get_max_value()));
+					      if (look_back>=1e6)
+					      SG_PRINT("%i,%i -> %d from %ld\n", j, ii, look_back,
+					      (long)pen)
+					      ASSERT(look_back<1e6)
+					      } */
 
-						int32_t look_back_ = look_back.element(j, ii) ;
-						//int32_t look_back_orig_ = look_back_orig.element(j, ii) ;
+					    index_t look_back_ = look_back.element(j, ii);
+					    // index_t look_back_orig_ = look_back_orig.element(j,
+					    // ii) ;
 
-						int32_t orf_from = m_orf_info.element(ii,0) ;
-						int32_t orf_to   = m_orf_info.element(j,1) ;
-						if((orf_from!=-1)!=(orf_to!=-1))
-							SG_DEBUG("j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i])
-						ASSERT((orf_from!=-1)==(orf_to!=-1))
+					    index_t orf_from = m_orf_info.element(ii, 0);
+					    index_t orf_to = m_orf_info.element(j, 1);
+					    if ((orf_from != -1) != (orf_to != -1))
+						    SG_DEBUG(
+						        "j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n",
+						        j, ii, orf_from, orf_to, elem_val[i])
+					    ASSERT((orf_from != -1) == (orf_to != -1))
 
-						int32_t orf_target = -1 ;
-						if (orf_from!=-1)
-						{
-							orf_target=orf_to-orf_from ;
-							if (orf_target<0)
-								orf_target+=3 ;
-							ASSERT(orf_target>=0 && orf_target<3)
-						}
+					    index_t orf_target = -1;
+					    if (orf_from != -1)
+					    {
+						    orf_target = orf_to - orf_from;
+						    if (orf_target < 0)
+							    orf_target += 3;
+						    ASSERT(orf_target >= 0 && orf_target < 3)
+					    }
 
-						//int32_t loss_last_pos = t ;
-						//float64_t last_loss = 0.0 ;
+// index_t loss_last_pos = t ;
+// float64_t last_loss = 0.0 ;
 
 #ifdef DYNPROG_TIMING
 						MyTime3.start() ;
@@ -1650,55 +1768,103 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 							// update table for 5' part  of the long segment
 
-							int32_t start = long_transition_content_start.get_element(ii, j) ;
-							int32_t end_5p_part = start ;
-							for (int32_t start_5p_part=start; m_pos[t]-m_pos[start_5p_part] > m_long_transition_threshold ; start_5p_part++)
-							{
-								// find end_5p_part, which is greater than start_5p_part and at least m_long_transition_threshold away
-								while (end_5p_part<=t && m_pos[end_5p_part+1]-m_pos[start_5p_part]<=m_long_transition_threshold)
-									end_5p_part++ ;
+						    index_t start =
+						        long_transition_content_start.get_element(
+						            ii, j);
+						    index_t end_5p_part = start;
+						    for (index_t start_5p_part = start;
+						         m_pos[t] - m_pos[start_5p_part] >
+						         m_long_transition_threshold;
+						         start_5p_part++)
+						    {
+							    // find end_5p_part, which is greater than
+							    // start_5p_part and at least
+							    // m_long_transition_threshold away
+							    while (end_5p_part <= t &&
+							           m_pos[end_5p_part + 1] -
+							                   m_pos[start_5p_part] <=
+							               m_long_transition_threshold)
+								    end_5p_part++;
 
-								ASSERT(m_pos[end_5p_part+1]-m_pos[start_5p_part] > m_long_transition_threshold || end_5p_part==t)
-								ASSERT(m_pos[end_5p_part]-m_pos[start_5p_part] <= m_long_transition_threshold)
+							    ASSERT(
+							        m_pos[end_5p_part + 1] -
+							                m_pos[start_5p_part] >
+							            m_long_transition_threshold ||
+							        end_5p_part == t)
+							    ASSERT(
+							        m_pos[end_5p_part] - m_pos[start_5p_part] <=
+							        m_long_transition_threshold)
 
-								float64_t pen_val = 0.0;
-								/* recompute penalty, if necessary */
-								if (penalty)
-								{
-									int32_t frame = m_orf_info.element(ii,0);
-									lookup_content_svm_values(start_5p_part, end_5p_part, m_pos[start_5p_part], m_pos[end_5p_part], svm_value, frame); // * t -> end_5p_part
-									pen_val = penalty->lookup_penalty(m_pos[end_5p_part]-m_pos[start_5p_part], svm_value) ;
-								}
+							    float64_t pen_val = 0.0;
+							    /* recompute penalty, if necessary */
+							    if (penalty)
+							    {
+								    index_t frame = m_orf_info.element(ii, 0);
+								    lookup_content_svm_values(
+								        start_5p_part, end_5p_part,
+								        m_pos[start_5p_part],
+								        m_pos[end_5p_part], svm_value,
+								        frame); // * t -> end_5p_part
+								    pen_val = penalty->lookup_penalty(
+								        m_pos[end_5p_part] -
+								            m_pos[start_5p_part],
+								        svm_value);
+							    }
 
-								/*if (m_pos[start_5p_part]==1003)
-								  {
-								  SG_PRINT("Part1: %i - %i   vs  %i - %i\n", m_pos[t], m_pos[ts], m_pos[end_5p_part], m_pos[start_5p_part])
-								  SG_PRINT("Part1: ts=%i  t=%i  start_5p_part=%i  m_seq_len=%i\n", m_pos[ts], m_pos[t], m_pos[start_5p_part], m_seq_len)
-								  }*/
+							    /*if (m_pos[start_5p_part]==1003)
+							      {
+							      SG_PRINT("Part1: %i - %i   vs  %i - %i\n",
+							      m_pos[t], m_pos[ts], m_pos[end_5p_part],
+							      m_pos[start_5p_part])
+							      SG_PRINT("Part1: ts=%i  t=%i  start_5p_part=%i
+							      m_seq_len=%i\n", m_pos[ts], m_pos[t],
+							      m_pos[start_5p_part], m_seq_len)
+							      }*/
 
-								float64_t mval_trans = -( elem_val[i] + pen_val*0.5 + delta.element(delta_array, start_5p_part, ii, 0, m_seq_len, m_N) ) ;
-								//float64_t mval_trans = -( elem_val[i] + delta.element(delta_array, ts, ii, 0, m_seq_len, m_N) ) ; // enable this for the incomplete extra check
+							    float64_t mval_trans =
+							        -(elem_val[i] + pen_val * 0.5 +
+							          delta.element(
+							              delta_array, start_5p_part, ii, 0,
+							              m_seq_len, m_N));
+							    // float64_t mval_trans = -( elem_val[i] +
+							    // delta.element(delta_array, ts, ii, 0,
+							    // m_seq_len, m_N) ) ; // enable this for the
+							    // incomplete extra check
 
-								float64_t segment_loss_part1=0.0 ;
-								if (with_loss)
-								{  // this is the loss from the start of the long segment (5' part + middle section)
+							    float64_t segment_loss_part1 = 0.0;
+							    if (with_loss)
+							    { // this is the loss from the start of the long
+								    // segment (5' part + middle section)
 
-									segment_loss_part1 = m_seg_loss_obj->get_segment_loss(start_5p_part /*long_transition_content_start_position.get_element(ii,j)*/, end_5p_part, elem_id[i]); // * unsure
+								    segment_loss_part1 =
+								        m_seg_loss_obj->get_segment_loss(
+								            start_5p_part /*long_transition_content_start_position.get_element(ii,j)*/,
+								            end_5p_part,
+								            elem_id[i]); // * unsure
 
-									mval_trans -= segment_loss_part1 ;
-								}
+								    mval_trans -= segment_loss_part1;
+							    }
 
-
-								if (0)//m_pos[end_5p_part] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/)
-								{
-									// this restricts the maximal length of segments,
-									// but the current implementation is not valid since the
-									// long transition is discarded without loocking if there
-									// is a second best long transition in between
-									long_transition_content_scores.set_element(-CMath::INFTY, ii, j) ;
-									long_transition_content_start_position.set_element(0, ii, j) ;
-									if (with_loss)
-										long_transition_content_scores_loss.set_element(0.0, ii, j) ;
+							    if (0) // m_pos[end_5p_part] -
+							    // m_pos[long_transition_content_start_position.get_element(ii,
+							    // j)] >
+							    // look_back_orig_/*m_long_transition_max*/)
+							    {
+								    // this restricts the maximal length of
+								    // segments,
+								    // but the current implementation is not
+								    // valid since the
+								    // long transition is discarded without
+								    // loocking if there
+								    // is a second best long transition in
+								    // between
+								    long_transition_content_scores.set_element(
+								        -CMath::INFTY, ii, j);
+								    long_transition_content_start_position
+								        .set_element(0, ii, j);
+								    if (with_loss)
+									    long_transition_content_scores_loss
+									        .set_element(0.0, ii, j);
 #ifdef DYNPROG_DEBUG
 									long_transition_content_scores_pen.set_element(0.0, ii, j) ;
 									long_transition_content_scores_elem.set_element(0.0, ii, j) ;
@@ -1761,14 +1927,21 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								float pen_val_3p = 0.0 ;
 								if (penalty)
 								{
-									int32_t frame = orf_from ; //m_orf_info.element(ii, 0);
-									lookup_content_svm_values(ts, t, m_pos[ts], m_pos[t], svm_value, frame);
-									pen_val_3p = penalty->lookup_penalty(m_pos[t]-m_pos[ts], svm_value) ;
-								}
+								    index_t frame =
+								        orf_from; // m_orf_info.element(ii, 0);
+								    lookup_content_svm_values(
+								        ts, t, m_pos[ts], m_pos[t], svm_value,
+								        frame);
+								    pen_val_3p = penalty->lookup_penalty(
+								        m_pos[t] - m_pos[ts], svm_value);
+							    }
 
-								float64_t mval = -(long_transition_content_scores.get_element(ii, j) + pen_val_3p*0.5) ;
+							    float64_t mval = -(
+							        long_transition_content_scores.get_element(
+							            ii, j) +
+							        pen_val_3p * 0.5);
 
-								{
+							    {
 #ifdef DYNPROG_DEBUG
 									float64_t segment_loss_part2=0.0 ;
 									float64_t segment_loss_part1=0.0 ;
@@ -1825,131 +1998,167 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								if (mval < fixedtempvv_)
 								{
 									/* then the long transition is better than the short one => replace it */
-									int32_t fromtjk =  fixedtempii_ ;
-									/*SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to m_pos %i better than short transition (%1.5f,%i) to m_pos %i \n",
-									  m_pos[t], j,
-									  mval, pen_val_3p*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii,
-									  m_pos[long_transition_content_position.get_element(ii, j)],
-									  fixedtempvv_, (fromtjk%m_N), m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]) ;*/
-									ASSERT((fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)==0 || m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)]>=m_pos[long_transition_content_start_position.get_element(ii, j)] || fixedtemplong)
+								    index_t fromtjk = fixedtempii_;
+								    /*SG_PRINT("%i,%i: Long transition
+								      (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to
+								      m_pos %i better than short transition
+								      (%1.5f,%i) to m_pos %i \n",
+								      m_pos[t], j,
+								      mval, pen_val_3p*0.5,
+								      long_transition_content_scores_pen.get_element(ii,
+								      j),
+								      long_transition_content_scores_elem.get_element(ii,
+								      j),
+								      long_transition_content_scores_prev.get_element(ii,
+								      j), ii,
+								      m_pos[long_transition_content_position.get_element(ii,
+								      j)],
+								      fixedtempvv_, (fromtjk%m_N),
+								      m_pos[(fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest)])
+								      ;*/
+								    ASSERT(
+								        (fromtjk - (fromtjk % (m_N * nbest))) /
+								                (m_N * nbest) ==
+								            0 ||
+								        m_pos[(fromtjk -
+								               (fromtjk % (m_N * nbest))) /
+								              (m_N * nbest)] >=
+								            m_pos
+								                [long_transition_content_start_position
+								                     .get_element(ii, j)] ||
+								        fixedtemplong)
 
-									fixedtempvv_ = mval ;
-									fixedtempii_ = ii + m_N*long_transition_content_start_position.get_element(ii, j) ;
-									fixed_list_len = 1 ;
-									fixedtemplong = true ;
-								}
-							}
+								    fixedtempvv_ = mval;
+								    fixedtempii_ =
+								        ii +
+								        m_N *
+								            long_transition_content_start_position
+								                .get_element(ii, j);
+								    fixed_list_len = 1;
+								    fixedtemplong = true;
+							    }
 						}
 					}
+				}
 #ifdef DYNPROG_TIMING
 					MyTime3.stop() ;
 					long_transition_time += MyTime3.time_diff_sec() ;
 #endif
 
+				    index_t numEnt = fixed_list_len;
 
-					int32_t numEnt = fixed_list_len;
+				    float64_t minusscore;
+				    int64_t fromtjk;
 
-					float64_t minusscore;
-					int64_t fromtjk;
+				    for (int16_t k = 0; k < nbest; k++)
+				    {
+					    if (k < numEnt)
+					    {
+						    if (nbest == 1)
+						    {
+							    minusscore = fixedtempvv_;
+							    fromtjk = fixedtempii_;
+						    }
+						    else
+						    {
+							    minusscore = fixedtempvv[k];
+							    fromtjk = fixedtempii[k];
+						    }
 
-					for (int16_t k=0; k<nbest; k++)
-					{
-						if (k<numEnt)
-						{
-							if (nbest==1)
-							{
-								minusscore = fixedtempvv_ ;
-								fromtjk = fixedtempii_ ;
-							}
-							else
-							{
-								minusscore = fixedtempvv[k];
-								fromtjk = fixedtempii[k];
-							}
-
-							delta.element(delta_array, t, j, k, m_seq_len, m_N)    = -minusscore + seq.element(j,t);
-							psi.element(t,j,k)      = (fromtjk%m_N) ;
-							if (nbest>1)
-								ktable.element(t,j,k)   = (fromtjk%(m_N*nbest)-psi.element(t,j,k))/m_N ;
-							ptable.element(t,j,k)   = (fromtjk-(fromtjk%(m_N*nbest)))/(m_N*nbest) ;
-						}
-						else
-						{
-							delta.element(delta_array, t, j, k, m_seq_len, m_N)    = -CMath::INFTY ;
-							psi.element(t,j,k)      = 0 ;
-							if (nbest>1)
-								ktable.element(t,j,k)     = 0 ;
-							ptable.element(t,j,k)     = 0 ;
-						}
-					}
-				}
+						    delta.element(
+						        delta_array, t, j, k, m_seq_len, m_N) =
+						        -minusscore + seq.element(j, t);
+						    psi.element(t, j, k) = (fromtjk % m_N);
+						    if (nbest > 1)
+							    ktable.element(t, j, k) =
+							        (fromtjk % (m_N * nbest) -
+							         psi.element(t, j, k)) /
+							        m_N;
+						    ptable.element(t, j, k) =
+						        (fromtjk - (fromtjk % (m_N * nbest))) /
+						        (m_N * nbest);
+					    }
+					    else
+					    {
+						    delta.element(
+						        delta_array, t, j, k, m_seq_len, m_N) =
+						        -CMath::INFTY;
+						    psi.element(t, j, k) = 0;
+						    if (nbest > 1)
+							    ktable.element(t, j, k) = 0;
+						    ptable.element(t, j, k) = 0;
+					    }
+				    }
 			}
 		}
-		{ //termination
-			int32_t list_len = 0 ;
-			for (int16_t diff=0; diff<nbest; diff++)
+	}
+	{ // termination
+		index_t list_len = 0;
+		for (int16_t diff = 0; diff < nbest; diff++)
+		{
+			for (T_STATES i = 0; i < m_N; i++)
 			{
-				for (T_STATES i=0; i<m_N; i++)
-				{
-					oldtempvv[list_len] = -(delta.element(delta_array, (m_seq_len-1), i, diff, m_seq_len, m_N)+get_q(i)) ;
-					oldtempii[list_len] = i + diff*m_N ;
-					list_len++ ;
-				}
-			}
-
-			CMath::nmin(oldtempvv.get_array(), oldtempii.get_array(), list_len, nbest) ;
-
-			for (int16_t k=0; k<nbest; k++)
-			{
-				delta_end.element(k) = -oldtempvv[k] ;
-				path_ends.element(k) = (oldtempii[k]%m_N) ;
-				if (nbest>1)
-					ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/m_N ;
-			}
-
-
-		}
-
-		{ //state sequence backtracking
-			for (int16_t k=0; k<nbest; k++)
-			{
-				prob_nbest[k]= delta_end.element(k) ;
-
-				int32_t i         = 0 ;
-				state_seq[i]  = path_ends.element(k) ;
-				int16_t q   = 0 ;
-				if (nbest>1)
-					q=ktable_end.element(k) ;
-				pos_seq[i]    = m_seq_len-1 ;
-
-				while (pos_seq[i]>0)
-				{
-					ASSERT(i+1<m_seq_len)
-					//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q)
-					state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
-					pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
-					if (nbest>1)
-						q              = ktable.element(pos_seq[i], state_seq[i], q) ;
-					i++ ;
-				}
-				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q)
-				int32_t num_states = i+1 ;
-				for (i=0; i<num_states;i++)
-				{
-					my_state_seq[i+k*m_seq_len] = state_seq[num_states-i-1] ;
-					my_pos_seq[i+k*m_seq_len]   = pos_seq[num_states-i-1] ;
-				}
-				if (num_states<m_seq_len)
-				{
-					my_state_seq[num_states+k*m_seq_len]=-1 ;
-					my_pos_seq[num_states+k*m_seq_len]=-1 ;
-				}
+				oldtempvv[list_len] = -(
+				    delta.element(
+				        delta_array, (m_seq_len - 1), i, diff, m_seq_len, m_N) +
+				    get_q(i));
+				oldtempii[list_len] = i + diff * m_N;
+				list_len++;
 			}
 		}
 
-		//if (is_big)
-		//	SG_PRINT("DONE.     \n")
+		CMath::nmin(
+		    oldtempvv.get_array(), oldtempii.get_array(), list_len, nbest);
 
+		for (int16_t k = 0; k < nbest; k++)
+		{
+			delta_end.element(k) = -oldtempvv[k];
+			path_ends.element(k) = (oldtempii[k] % m_N);
+			if (nbest > 1)
+				ktable_end.element(k) =
+				    (oldtempii[k] - path_ends.element(k)) / m_N;
+		}
+	}
+
+	{ // state sequence backtracking
+		for (int16_t k = 0; k < nbest; k++)
+		{
+			prob_nbest[k] = delta_end.element(k);
+
+			index_t i = 0;
+			state_seq[i] = path_ends.element(k);
+			int16_t q = 0;
+			if (nbest > 1)
+				q = ktable_end.element(k);
+			pos_seq[i] = m_seq_len - 1;
+
+			while (pos_seq[i] > 0)
+			{
+				ASSERT(i + 1 < m_seq_len)
+				// SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q)
+				state_seq[i + 1] = psi.element(pos_seq[i], state_seq[i], q);
+				pos_seq[i + 1] = ptable.element(pos_seq[i], state_seq[i], q);
+				if (nbest > 1)
+					q = ktable.element(pos_seq[i], state_seq[i], q);
+				i++;
+			}
+			// SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q)
+			index_t num_states = i + 1;
+			for (i = 0; i < num_states; i++)
+			{
+				my_state_seq[i + k * m_seq_len] = state_seq[num_states - i - 1];
+				my_pos_seq[i + k * m_seq_len] = pos_seq[num_states - i - 1];
+			}
+			if (num_states < m_seq_len)
+			{
+				my_state_seq[num_states + k * m_seq_len] = -1;
+				my_pos_seq[num_states + k * m_seq_len] = -1;
+			}
+		}
+	}
+
+// if (is_big)
+//	SG_PRINT("DONE.     \n")
 
 #ifdef DYNPROG_TIMING
 		MyTime2.stop() ;
@@ -1962,129 +2171,146 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		SG_FREE(fixedtempii);
 	}
 
+    void CDynProg::best_path_trans_deriv(
+        index_t* my_state_seq, index_t* my_pos_seq, index_t my_seq_len,
+        const float64_t* seq_array, index_t max_num_signals)
+    {
+	    m_initial_state_distribution_p_deriv.resize_array(m_N);
+	    m_end_state_distribution_q_deriv.resize_array(m_N);
+	    m_transition_matrix_a_deriv.resize_array(m_N, m_N);
+	    // m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
+	    // m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
+	    m_my_scores.resize_array(my_seq_len);
+	    m_my_losses.resize_array(my_seq_len);
+	    float64_t* my_scores = m_my_scores.get_array();
+	    float64_t* my_losses = m_my_losses.get_array();
+	    CPlifBase** Plif_matrix = m_plif_matrices->get_plif_matrix();
+	    CPlifBase** Plif_state_signals = m_plif_matrices->get_state_signals();
 
-void CDynProg::best_path_trans_deriv(
-	int32_t *my_state_seq, int32_t *my_pos_seq,
-	int32_t my_seq_len, const float64_t *seq_array, int32_t max_num_signals)
-{
-	m_initial_state_distribution_p_deriv.resize_array(m_N) ;
-	m_end_state_distribution_q_deriv.resize_array(m_N) ;
-	m_transition_matrix_a_deriv.resize_array(m_N,m_N) ;
-	//m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
-	//m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
-	m_my_scores.resize_array(my_seq_len);
-	m_my_losses.resize_array(my_seq_len);
-	float64_t* my_scores=m_my_scores.get_array();
-	float64_t* my_losses=m_my_losses.get_array();
-	CPlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
-	CPlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
+	    if (!m_svm_arrays_clean)
+	    {
+		    SG_ERROR("SVM arrays not clean")
+		    return;
+	    };
+	    // SG_PRINT("genestr_len=%i, genestr_num=%i\n", genestr_len,
+	    // genestr_num)
+	    // m_mod_words.display() ;
+	    // m_sign_words.display() ;
+	    // m_string_words.display() ;
 
-	if (!m_svm_arrays_clean)
-	{
-		SG_ERROR("SVM arrays not clean")
-		return ;
-	} ;
-	//SG_PRINT("genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num)
-	//m_mod_words.display() ;
-	//m_sign_words.display() ;
-	//m_string_words.display() ;
+	    bool use_svm = false;
 
-	bool use_svm = false ;
+	    CDynamicObjectArray PEN(
+	        (CSGObject**)Plif_matrix, m_N, m_N, false, false); // 2d, CPlifBase*
 
-	CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
+	    CDynamicObjectArray PEN_state_signals(
+	        (CSGObject**)Plif_state_signals, m_N, max_num_signals, false,
+	        false); // 2d, CPlifBase*
 
-	CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, CPlifBase*
+	    CDynamicArray<float64_t> seq_input(
+	        seq_array, m_N, m_seq_len, max_num_signals);
 
-	CDynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
+	    { // determine whether to use svm outputs and clear derivatives
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < m_N; j++)
+			    {
+				    CPlifBase* penij = (CPlifBase*)PEN.element(i, j);
+				    if (penij == NULL)
+					    continue;
 
-	{ // determine whether to use svm outputs and clear derivatives
-		for (int32_t i=0; i<m_N; i++)
-			for (int32_t j=0; j<m_N; j++)
-			{
-				CPlifBase* penij=(CPlifBase*) PEN.element(i,j) ;
-				if (penij==NULL)
-					continue ;
+				    if (penij->uses_svm_values())
+					    use_svm = true;
+				    penij->penalty_clear_derivative();
+			    }
+		    for (index_t i = 0; i < m_N; i++)
+			    for (index_t j = 0; j < max_num_signals; j++)
+			    {
+				    CPlifBase* penij =
+				        (CPlifBase*)PEN_state_signals.element(i, j);
+				    if (penij == NULL)
+					    continue;
+				    if (penij->uses_svm_values())
+					    use_svm = true;
+				    penij->penalty_clear_derivative();
+			    }
+	    }
 
-				if (penij->uses_svm_values())
-					use_svm=true ;
-				penij->penalty_clear_derivative() ;
-			}
-		for (int32_t i=0; i<m_N; i++)
-			for (int32_t j=0; j<max_num_signals; j++)
-			{
-				CPlifBase* penij=(CPlifBase*) PEN_state_signals.element(i,j) ;
-				if (penij==NULL)
-					continue ;
-				if (penij->uses_svm_values())
-					use_svm=true ;
-				penij->penalty_clear_derivative() ;
-			}
-	}
+	    { // set derivatives of p, q and a to zero
 
-	{ // set derivatives of p, q and a to zero
+		    for (index_t i = 0; i < m_N; i++)
+		    {
+			    m_initial_state_distribution_p_deriv.element(i) = 0;
+			    m_end_state_distribution_q_deriv.element(i) = 0;
+			    for (index_t j = 0; j < m_N; j++)
+				    m_transition_matrix_a_deriv.element(i, j) = 0;
+		    }
+	    }
 
-		for (int32_t i=0; i<m_N; i++)
-		{
-			m_initial_state_distribution_p_deriv.element(i)=0 ;
-			m_end_state_distribution_q_deriv.element(i)=0 ;
-			for (int32_t j=0; j<m_N; j++)
-				m_transition_matrix_a_deriv.element(i,j)=0 ;
-		}
-	}
+	    { // clear score vector
+		    for (index_t i = 0; i < my_seq_len; i++)
+		    {
+			    my_scores[i] = 0.0;
+			    my_losses[i] = 0.0;
+		    }
+	    }
 
-	{ // clear score vector
-		for (int32_t i=0; i<my_seq_len; i++)
-		{
-			my_scores[i]=0.0 ;
-			my_losses[i]=0.0 ;
-		}
-	}
+	    // index_t total_len = 0 ;
 
-	//int32_t total_len = 0 ;
+	    // m_transition_matrix_a.display_array() ;
+	    // m_transition_matrix_a_id.display_array() ;
 
-	//m_transition_matrix_a.display_array() ;
-	//m_transition_matrix_a_id.display_array() ;
+	    // compute derivatives for given path
+	    float64_t* svm_value = SG_MALLOC(
+	        float64_t,
+	        m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs);
+	    float64_t* svm_value_part1 = SG_MALLOC(
+	        float64_t,
+	        m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs);
+	    float64_t* svm_value_part2 = SG_MALLOC(
+	        float64_t,
+	        m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs);
+	    for (index_t s = 0;
+	         s < m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs;
+	         s++)
+	    {
+		    svm_value[s] = 0;
+		    svm_value_part1[s] = 0;
+		    svm_value_part2[s] = 0;
+	    }
 
-	// compute derivatives for given path
-	float64_t* svm_value = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	float64_t* svm_value_part1 = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	float64_t* svm_value_part2 = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
-	{
-		svm_value[s]=0 ;
-		svm_value_part1[s]=0 ;
-		svm_value_part2[s]=0 ;
-	}
+	    //#ifdef DYNPROG_DEBUG
+	    float64_t total_score = 0.0;
+	    float64_t total_loss = 0.0;
+	    //#endif
 
-	//#ifdef DYNPROG_DEBUG
-	float64_t total_score = 0.0 ;
-	float64_t total_loss = 0.0 ;
-	//#endif
+	    ASSERT(my_state_seq[0] >= 0)
+	    m_initial_state_distribution_p_deriv.element(my_state_seq[0])++;
+	    my_scores[0] += m_initial_state_distribution_p.element(my_state_seq[0]);
 
-	ASSERT(my_state_seq[0]>=0)
-	m_initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
-	my_scores[0] += m_initial_state_distribution_p.element(my_state_seq[0]) ;
+	    ASSERT(my_state_seq[my_seq_len - 1] >= 0)
+	    m_end_state_distribution_q_deriv.element(
+	        my_state_seq[my_seq_len - 1])++;
+	    my_scores[my_seq_len - 1] +=
+	        m_end_state_distribution_q.element(my_state_seq[my_seq_len - 1]);
 
-	ASSERT(my_state_seq[my_seq_len-1]>=0)
-	m_end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
-	my_scores[my_seq_len-1] += m_end_state_distribution_q.element(my_state_seq[my_seq_len-1]);
+	    //#ifdef DYNPROG_DEBUG
+	    total_score += my_scores[0] + my_scores[my_seq_len - 1];
+	    //#endif
 
-	//#ifdef DYNPROG_DEBUG
-	total_score += my_scores[0] + my_scores[my_seq_len-1] ;
-	//#endif
+	    SG_DEBUG("m_seq_len=%i\n", my_seq_len)
+	    for (index_t i = 0; i < my_seq_len - 1; i++)
+	    {
+		    if (my_state_seq[i + 1] == -1)
+			    break;
+		    index_t from_state = my_state_seq[i];
+		    index_t to_state = my_state_seq[i + 1];
+		    index_t from_pos = my_pos_seq[i];
+		    index_t to_pos = my_pos_seq[i + 1];
 
-	SG_DEBUG("m_seq_len=%i\n", my_seq_len)
-	for (int32_t i=0; i<my_seq_len-1; i++)
-	{
-		if (my_state_seq[i+1]==-1)
-			break ;
-		int32_t from_state = my_state_seq[i] ;
-		int32_t to_state   = my_state_seq[i+1] ;
-		int32_t from_pos   = my_pos_seq[i] ;
-		int32_t to_pos     = my_pos_seq[i+1] ;
-
-		int32_t elem_id = m_transition_matrix_a_id.element(from_state, to_state) ;
-		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
+		    index_t elem_id =
+		        m_transition_matrix_a_id.element(from_state, to_state);
+		    my_losses[i] =
+		        m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
 
 #ifdef DYNPROG_DEBUG
 
@@ -2111,8 +2337,8 @@ void CDynProg::best_path_trans_deriv(
 		SG_DEBUG("%i. scores[i]=%f\n", i, my_scores[i])
 #endif
 
-		/*int32_t last_svm_pos[m_num_degrees] ;
-		  for (int32_t qq=0; qq<m_num_degrees; qq++)
+		/*index_t last_svm_pos[m_num_degrees] ;
+		  for (index_t qq=0; qq<m_num_degrees; qq++)
 		  last_svm_pos[qq]=-1 ;*/
 
 		bool is_long_transition = false ;
@@ -2124,8 +2350,8 @@ void CDynProg::best_path_trans_deriv(
 				is_long_transition = false ;
 		}
 
-		int32_t from_pos_thresh = from_pos ;
-		int32_t to_pos_thresh = to_pos ;
+		index_t from_pos_thresh = from_pos;
+		index_t to_pos_thresh = to_pos;
 
 		if (use_svm)
 		{
@@ -2138,12 +2364,15 @@ void CDynProg::best_path_trans_deriv(
 				ASSERT(m_pos[from_pos_thresh] - m_pos[from_pos] <= m_long_transition_threshold) // *
 				ASSERT(m_pos[from_pos_thresh+1] - m_pos[from_pos] > m_long_transition_threshold)// *
 
-				int32_t frame = m_orf_info.element(from_state,0);
+				index_t frame = m_orf_info.element(from_state, 0);
 				lookup_content_svm_values(from_pos, from_pos_thresh, m_pos[from_pos], m_pos[from_pos_thresh], svm_value_part1, frame);
 
 #ifdef DYNPROG_DEBUG
 				SG_PRINT("part1: pos1: %i  pos2: %i   pos3: %i  \nsvm_value_part1: ", m_pos[from_pos], m_pos[from_pos_thresh], m_pos[from_pos_thresh+1])
-				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+				for (index_t s = 0;
+				     s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+				             m_num_intron_plifs;
+				     s++)
 					SG_PRINT("%1.4f  ", svm_value_part1[s])
 				SG_PRINT("\n")
 #endif
@@ -2158,7 +2387,10 @@ void CDynProg::best_path_trans_deriv(
 
 #ifdef DYNPROG_DEBUG
 				SG_PRINT("part2: pos1: %i  pos2: %i   pos3: %i  \nsvm_value_part2: ", m_pos[to_pos], m_pos[to_pos_thresh], m_pos[to_pos_thresh+1])
-				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+				for (index_t s = 0;
+				     s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+				             m_num_intron_plifs;
+				     s++)
 					SG_PRINT("%1.4f  ", svm_value_part2[s])
 				SG_PRINT("\n")
 #endif
@@ -2168,11 +2400,11 @@ void CDynProg::best_path_trans_deriv(
 				/* normal case */
 
 				//SG_PRINT("from_pos: %i; to_pos: %i; m_pos[to_pos]-m_pos[from_pos]: %i \n",from_pos, to_pos, m_pos[to_pos]-m_pos[from_pos])
-				int32_t frame = m_orf_info.element(from_state,0);
+				index_t frame = m_orf_info.element(from_state, 0);
 				if (false)//(frame>=0)
 				{
 					int32_t num_current_svms=0;
-					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
+					index_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
 					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame)
 					((CPlifBase*) PEN.element(to_state, from_state))->get_used_svms(&num_current_svms, svm_ids);
 					SG_PRINT("\n")
@@ -2181,7 +2413,10 @@ void CDynProg::best_path_trans_deriv(
 				lookup_content_svm_values(from_pos, to_pos, m_pos[from_pos],m_pos[to_pos], svm_value, frame);
 #ifdef DYNPROG_DEBUG
 				SG_PRINT("part2: pos1: %i  pos2: %i   \nsvm_values: ", m_pos[from_pos], m_pos[to_pos])
-				for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
+				for (index_t s = 0;
+				     s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+				             m_num_intron_plifs;
+				     s++)
 					SG_PRINT("%1.4f  ", svm_value[s])
 				SG_PRINT("\n")
 #endif
@@ -2206,7 +2441,10 @@ void CDynProg::best_path_trans_deriv(
 
 			my_scores[i] += nscore ;
 
-			for (int32_t s=m_num_svms;s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
+			for (index_t s = m_num_svms;
+			     s < m_num_lin_feat_plifs_cum[m_num_raw_data];
+			     s++) /*set tiling plif values to neutral values (that do not
+			             influence derivative calculation)*/
 			{
 				svm_value[s]=-CMath::INFTY;
 				svm_value_part1[s]=-CMath::INFTY;
@@ -2248,24 +2486,31 @@ void CDynProg::best_path_trans_deriv(
 			// instead of d=0
 			if (is_long_transition)
 			{
-				for (int32_t d=1; d<=m_num_raw_data; d++)
+				for (index_t d = 1; d <= m_num_raw_data; d++)
 				{
-					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
+					for (index_t s = 0;
+					     s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+					             m_num_intron_plifs;
+					     s++)
 						svm_value[s]=-CMath::INFTY;
 					float64_t* intensities = SG_MALLOC(float64_t, m_num_probes_cum[d]);
-					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[from_pos_thresh],intensities, d);
-					for (int32_t k=0;k<num_intensities;k++)
+					index_t num_intensities = raw_intensities_interval_query(
+					    m_pos[from_pos], m_pos[from_pos_thresh], intensities,
+					    d);
+					for (index_t k = 0; k < num_intensities; k++)
 					{
-						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+						for (index_t j = m_num_lin_feat_plifs_cum[d - 1];
+						     j < m_num_lin_feat_plifs_cum[d]; j++)
 							svm_value[j]=intensities[k];
 
 						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
 
 					}
 					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
-					for (int32_t k=0;k<num_intensities;k++)
+					for (index_t k = 0; k < num_intensities; k++)
 					{
-						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+						for (index_t j = m_num_lin_feat_plifs_cum[d - 1];
+						     j < m_num_lin_feat_plifs_cum[d]; j++)
 							svm_value[j]=intensities[k];
 
 						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
@@ -2277,16 +2522,21 @@ void CDynProg::best_path_trans_deriv(
 			}
 			else
 			{
-				for (int32_t d=1; d<=m_num_raw_data; d++)
+				for (index_t d = 1; d <= m_num_raw_data; d++)
 				{
-					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
+					for (index_t s = 0;
+					     s < m_num_lin_feat_plifs_cum[m_num_raw_data] +
+					             m_num_intron_plifs;
+					     s++)
 						svm_value[s]=-CMath::INFTY;
 					float64_t* intensities = SG_MALLOC(float64_t, m_num_probes_cum[d]);
-					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[to_pos],intensities, d);
+					index_t num_intensities = raw_intensities_interval_query(
+					    m_pos[from_pos], m_pos[to_pos], intensities, d);
 					//SG_PRINT("m_pos[from_pos]:%i, m_pos[to_pos]:%i, num_intensities:%i\n",m_pos[from_pos],m_pos[to_pos], num_intensities)
-					for (int32_t k=0;k<num_intensities;k++)
+					for (index_t k = 0; k < num_intensities; k++)
 					{
-						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
+						for (index_t j = m_num_lin_feat_plifs_cum[d - 1];
+						     j < m_num_lin_feat_plifs_cum[d]; j++)
 							svm_value[j]=intensities[k];
 
 						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;
@@ -2302,7 +2552,7 @@ void CDynProg::best_path_trans_deriv(
 #endif
 
 		//SG_DEBUG("emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0)
-		for (int32_t k=0; k<max_num_signals; k++)
+		for (index_t k = 0; k < max_num_signals; k++)
 		{
 			if ((PEN_state_signals.element(to_state,k)==NULL)&&(k==0))
 			{
@@ -2333,13 +2583,16 @@ void CDynProg::best_path_trans_deriv(
 				}
 #endif
 				//break ;
-				//int32_t num_current_svms=0;
-				//int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
-				//SG_PRINT("PEN_state_signals->id: ")
-				//PEN_state_signals.element(to_state, k)->get_used_svms(&num_current_svms, svm_ids);
-				//SG_PRINT("\n")
-				//if (nscore != 0)
-				//SG_PRINT("%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k)
+    // index_t num_current_svms=0;
+    // index_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
+    // SG_PRINT("PEN_state_signals->id: ")
+    // PEN_state_signals.element(to_state, k)->get_used_svms(&num_current_svms,
+    // svm_ids);
+    // SG_PRINT("\n")
+    // if (nscore != 0)
+    // SG_PRINT("%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f
+    // score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state,
+    // to_pos, k), nscore, k)
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG("%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k)
 #endif
@@ -2364,14 +2617,16 @@ void CDynProg::best_path_trans_deriv(
 	SG_FREE(svm_value_part2);
 }
 
-int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)
+index_t CDynProg::raw_intensities_interval_query(
+    const index_t from_pos, const index_t to_pos, float64_t* intensities,
+    index_t type)
 {
 	ASSERT(from_pos<to_pos)
-	int32_t num_intensities = 0;
-	int32_t* p_tiling_pos  = &m_probe_pos[m_num_probes_cum[type-1]];
+	index_t num_intensities = 0;
+	index_t* p_tiling_pos = &m_probe_pos[m_num_probes_cum[type - 1]];
 	float64_t* p_tiling_data = &m_raw_intensities[m_num_probes_cum[type-1]];
-	int32_t last_pos;
-	int32_t num = m_num_probes_cum[type-1];
+	index_t last_pos;
+	index_t num = m_num_probes_cum[type - 1];
 	while (*p_tiling_pos<to_pos)
 	{
 		if (*p_tiling_pos>=from_pos)
@@ -2390,7 +2645,9 @@ int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const i
 	return num_intensities;
 }
 
-void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t to_state, const int32_t from_pos, const int32_t to_pos, float64_t* svm_values, int32_t frame)
+void CDynProg::lookup_content_svm_values(
+    const index_t from_state, const index_t to_state, const index_t from_pos,
+    const index_t to_pos, float64_t* svm_values, index_t frame)
 {
 #ifdef DYNPROG_TIMING_DETAIL
 	MyTime.start() ;
@@ -2398,13 +2655,14 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 //	ASSERT(from_state<to_state)
 //	if (!(from_pos<to_pos))
 //		SG_ERROR("from_pos!<to_pos, from_pos: %i to_pos: %i \n",from_pos,to_pos)
-	for (int32_t i=0;i<m_num_svms;i++)
+	for (index_t i = 0; i < m_num_svms; i++)
 	{
 		float64_t to_val   = m_lin_feat.get_element(i, to_state);
 		float64_t from_val = m_lin_feat.get_element(i, from_state);
 		svm_values[i] = (to_val-from_val)/(to_pos-from_pos);
 	}
-	for (int32_t i=m_num_svms;i<m_num_lin_feat_plifs_cum[m_num_raw_data];i++)
+	for (index_t i = m_num_svms; i < m_num_lin_feat_plifs_cum[m_num_raw_data];
+	     i++)
 	{
 		float64_t to_val   = m_lin_feat.get_element(i, to_state);
 		float64_t from_val = m_lin_feat.get_element(i, from_state);
@@ -2412,12 +2670,13 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 	}
 	if (m_intron_list)
 	{
-		int32_t* support = SG_MALLOC(int32_t, m_num_intron_plifs);
+		index_t* support = SG_MALLOC(index_t, m_num_intron_plifs);
 		m_intron_list->get_intron_support(support, from_state, to_state);
-		int32_t intron_list_start = m_num_lin_feat_plifs_cum[m_num_raw_data];
-		int32_t intron_list_end = m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;
-		int32_t cnt = 0;
-		for (int32_t i=intron_list_start; i<intron_list_end;i++)
+		index_t intron_list_start = m_num_lin_feat_plifs_cum[m_num_raw_data];
+		index_t intron_list_end =
+		    m_num_lin_feat_plifs_cum[m_num_raw_data] + m_num_intron_plifs;
+		index_t cnt = 0;
+		for (index_t i = intron_list_start; i < intron_list_end; i++)
 		{
 			svm_values[i] = (float64_t) (support[cnt]);
 			cnt++;
@@ -2432,8 +2691,8 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 		svm_values[frame_plifs[0]] = 1e10;
 		svm_values[frame_plifs[1]] = 1e10;
 		svm_values[frame_plifs[2]] = 1e10;
-		int32_t global_frame = from_pos%3;
-		int32_t row = ((global_frame+frame)%3)+4;
+		index_t global_frame = from_pos % 3;
+		index_t row = ((global_frame + frame) % 3) + 4;
 		float64_t to_val   = m_lin_feat.get_element(row, to_state);
 		float64_t from_val = m_lin_feat.get_element(row, from_state);
 		svm_values[frame+frame_plifs[0]] = (to_val-from_val)/(to_pos-from_pos);
@@ -2443,7 +2702,7 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 	content_svm_values_time += MyTime.time_diff_sec() ;
 #endif
 }
-void CDynProg::set_intron_list(CIntronList* intron_list, int32_t num_plifs)
+void CDynProg::set_intron_list(CIntronList* intron_list, index_t num_plifs)
 {
 	m_intron_list = intron_list;
 	m_num_intron_plifs = num_plifs;

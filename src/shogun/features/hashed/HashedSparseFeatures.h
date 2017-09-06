@@ -84,7 +84,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	virtual index_t get_dim_feature_space() const;
 
 	/** compute dot product between vector1 and vector2,
 	 * appointed by their indices
@@ -95,8 +95,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
-			int32_t vec_idx2);
+	virtual float64_t dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2);
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -106,8 +105,8 @@ public:
 	 * @param vec2 pointer to real valued vector
 	 * @param vec2_len length of real valued vector
 	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2,
-			int32_t vec2_len);
+	virtual float64_t
+	dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len);
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -119,15 +118,16 @@ public:
 	 * @param vec2_len length of real valued vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-			float64_t* vec2, int32_t vec2_len, bool abs_val = false);
+	virtual void add_to_dense_vec(
+		float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+		bool abs_val = false);
 
 	/** get number of non-zero features in vector
 	 *
 	 * @param num which vector
 	 * @return number of non-zero features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector(int32_t num);
+	virtual index_t get_nnz_features_for_vector(index_t num);
 
 	/** iterate over the non-zero features
 	 *
@@ -140,7 +140,7 @@ public:
 	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
-	virtual void* get_feature_iterator(int32_t vector_index);
+	virtual void* get_feature_iterator(index_t vector_index);
 
 	/** iterate over the non-zero features
 	 *
@@ -154,8 +154,8 @@ public:
 	 * @param iterator as returned by get_first_feature
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float64_t& value,
-			void* iterator);
+	virtual bool
+	get_next_feature(index_t& index, float64_t& value, void* iterator);
 
 	/** clean up iterator
 	 * call this function with the iterator returned by get_first_feature
@@ -183,7 +183,7 @@ public:
 	 *
 	 * @return number of feature vectors
 	 */
-	virtual int32_t get_num_vectors() const;
+	virtual index_t get_num_vectors() const;
 
 	/** Get the hashed representation of the specified vector
 	 *

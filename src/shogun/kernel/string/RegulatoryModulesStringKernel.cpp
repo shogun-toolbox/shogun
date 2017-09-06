@@ -100,36 +100,35 @@ void CRegulatoryModulesStringKernel::set_motif_positions(
 	SG_REF(positions_rhs);
 }
 
-float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CRegulatoryModulesStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	ASSERT(motif_positions_lhs)
 	ASSERT(motif_positions_rhs)
 
 	bool free_avec, free_bvec;
-	int32_t alen=0;
-	int32_t blen=0;
+	index_t alen = 0;
+	index_t blen = 0;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
-	int32_t alen_pos, blen_pos;
+	index_t alen_pos, blen_pos;
 	bool afree_pos, bfree_pos;
 	uint16_t* positions_a = motif_positions_lhs->get_feature_vector(idx_a, alen_pos, afree_pos);
 	uint16_t* positions_b = motif_positions_rhs->get_feature_vector(idx_b, blen_pos, bfree_pos);
 	ASSERT(alen_pos==blen_pos)
-	int32_t num_pos=alen_pos;
-
+	index_t num_pos = alen_pos;
 
 	float64_t result_rbf=0;
 	float64_t result_wds=0;
 
-	for (int32_t p=0; p<num_pos; p++)
+	for (index_t p = 0; p < num_pos; p++)
 	{
 		result_rbf+=CMath::sq(positions_a[p]-positions_b[p]);
 
-		for (int32_t p2=0; p2<num_pos; p2++) //p+1 and below * 2
+		for (index_t p2 = 0; p2 < num_pos; p2++) // p+1 and below * 2
 			result_rbf+=CMath::sq( (positions_a[p]-positions_a[p2]) - (positions_b[p]-positions_b[p2]) );
 
-		int32_t limit = window;
+		index_t limit = window;
 		if (window + positions_a[p] > alen)
 			limit = alen - positions_a[p];
 
@@ -150,22 +149,22 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-float64_t CRegulatoryModulesStringKernel::compute_wds(
-	char* avec, char* bvec, int32_t len)
+float64_t
+CRegulatoryModulesStringKernel::compute_wds(char* avec, char* bvec, index_t len)
 {
 	float64_t* max_shift_vec = SG_MALLOC(float64_t, shift);
 	float64_t sum0=0 ;
-	for (int32_t i=0; i<shift; i++)
+	for (index_t i = 0; i < shift; i++)
 		max_shift_vec[i]=0 ;
 
 	// no shift
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 	{
 		if ((position_weights.vector!=NULL) && (position_weights[i]==0.0))
 			continue ;
 
 		float64_t sumi = 0.0 ;
-		for (int32_t j=0; (j<degree) && (i+j<len); j++)
+		for (index_t j = 0; (j < degree) && (i + j < len); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break ;
@@ -177,16 +176,16 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 			sum0 += sumi ;
 	} ;
 
-	for (int32_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 	{
-		for (int32_t k=1; (k<=shift) && (i+k<len); k++)
+		for (index_t k = 1; (k <= shift) && (i + k < len); k++)
 		{
 			if ((position_weights.vector!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			float64_t sumi1 = 0.0 ;
 			// shift in sequence a
-			for (int32_t j=0; (j<degree) && (i+j+k<len); j++)
+			for (index_t j = 0; (j < degree) && (i + j + k < len); j++)
 			{
 				if (avec[i+j+k]!=bvec[i+j])
 					break ;
@@ -194,7 +193,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 			}
 			float64_t sumi2 = 0.0 ;
 			// shift in sequence b
-			for (int32_t j=0; (j<degree) && (i+j+k<len); j++)
+			for (index_t j = 0; (j < degree) && (i + j + k < len); j++)
 			{
 				if (avec[i+j]!=bvec[i+j+k])
 					break ;
@@ -208,7 +207,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 	}
 
 	float64_t result = sum0 ;
-	for (int32_t i=0; i<shift; i++)
+	for (index_t i = 0; i < shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
 	SG_FREE(max_shift_vec);
@@ -221,7 +220,7 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 
 	weights=SGVector<float64_t>(degree);
 
-	int32_t i;
+	index_t i;
 	float64_t sum=0;
 	for (i=0; i<degree; i++)
 	{

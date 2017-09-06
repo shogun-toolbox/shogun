@@ -75,19 +75,21 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	 *
 	 * @return line (NOT ZERO TERMINATED)
 	 */
-	ST* get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length);
+		ST* get_line(
+		    uint64_t& len, uint64_t& offs, index_t& line_nr,
+		    uint64_t file_length);
 
-	/** cleanup string features */
-	virtual void cleanup();
+		/** cleanup string features */
+		virtual void cleanup();
 
-    /** cleanup a single feature vector */
-    virtual void cleanup_feature_vector(int32_t num);
+		/** cleanup a single feature vector */
+		virtual void cleanup_feature_vector(index_t num);
 
-	/** obtain meta information from file
-	 *
-	 * i.e., determine number of strings and their lengths
-	 */
-	void fetch_meta_info_from_file(int32_t granularity=1048576);
+		/** obtain meta information from file
+		 *
+		 * i.e., determine number of strings and their lengths
+		 */
+		void fetch_meta_info_from_file(int32_t granularity = 1048576);
 
 	protected:
 	/** memory mapped file*/

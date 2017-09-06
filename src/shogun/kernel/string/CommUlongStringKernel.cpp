@@ -79,9 +79,9 @@ void CCommUlongStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCommUlongStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
@@ -144,13 +144,13 @@ float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
+void CCommUlongStringKernel::add_to_normal(index_t vec_idx, float64_t weight)
 {
 	int32_t t=0;
 	int32_t j=0;
 	int32_t k=0;
 	int32_t last_j=0;
-	int32_t len=-1;
+	index_t len = -1;
 	bool free_vec;
 	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len, free_vec);
 
@@ -220,7 +220,7 @@ void CCommUlongStringKernel::clear_normal()
 }
 
 bool CCommUlongStringKernel::init_optimization(
-	int32_t count, int32_t *IDX, float64_t * weights)
+    index_t count, index_t* IDX, float64_t* weights)
 {
 	clear_normal();
 
@@ -233,7 +233,7 @@ bool CCommUlongStringKernel::init_optimization(
 
 	SG_DEBUG("initializing CCommUlongStringKernel optimization\n")
 
-	for (auto i : progress(range(0, count), *this->io))
+	for (auto i : progress(range(index_t(0), count), *this->io))
 	{
 		add_to_normal(IDX[i], weights[i]);
 	}
@@ -253,11 +253,11 @@ bool CCommUlongStringKernel::delete_optimization()
 
 // binary search for each feature. trick: as features are sorted save last found idx in old_idx and
 // only search in the remainder of the dictionary
-float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
+float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 {
 	float64_t result = 0;
 	int32_t j, last_j=0;
-	int32_t old_idx = 0;
+	index_t old_idx = 0;
 
 	if (!get_is_initialized())
 	{
@@ -265,9 +265,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 		return 0 ;
 	}
 
-
-
-	int32_t alen = -1;
+	index_t alen = -1;
 	bool free_avec;
 	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
 		get_feature_vector(i, alen, free_avec);
@@ -281,7 +279,9 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				index_t idx = CMath::binary_search_max_lower_equal(
+				    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+				    avec[j - 1]);
 
 				if (idx!=-1)
 				{
@@ -292,7 +292,9 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				}
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			index_t idx = CMath::binary_search(
+			    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+			    avec[alen - 1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx];
 		}
@@ -303,7 +305,9 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				index_t idx = CMath::binary_search_max_lower_equal(
+				    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+				    avec[j - 1]);
 
 				if (idx!=-1)
 				{
@@ -316,7 +320,9 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				last_j = j;
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			index_t idx = CMath::binary_search(
+			    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+			    avec[alen - 1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}

@@ -210,8 +210,9 @@ lbfgs_parameter_t inti_lbfgs_parameters()
 }
 
 //This function is similar to the Matlab code, simpleVariational.m
-float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
-	const int dim, const float64_t step)
+float64_t evaluate(
+    void* obj, const float64_t* variable, float64_t* gradient,
+    const index_t dim, const float64_t step)
 {
 	Shared * obj_prt = static_cast<Shared *>(obj);
 
@@ -376,10 +377,12 @@ void test_datasets()
 
 	for (index_t i = 4; i <= 6; i++)
 	{
-		snprintf(x_path_buffer, buff_size, "%s/X_dataset%d", data_path, i);
-		snprintf(y_path_buffer, buff_size, "%s/y_dataset%d", data_path, i);
-		snprintf(m_path_buffer, buff_size, "%s/m_dataset%d", data_path, i);
-		snprintf(loglik_path_buffer, buff_size, "%s/logLik_dataset%d", data_path, i);
+		snprintf(x_path_buffer, buff_size, "%s/X_dataset%lld", data_path, i);
+		snprintf(y_path_buffer, buff_size, "%s/y_dataset%lld", data_path, i);
+		snprintf(m_path_buffer, buff_size, "%s/m_dataset%lld", data_path, i);
+		snprintf(
+		    loglik_path_buffer, buff_size, "%s/logLik_dataset%lld", data_path,
+		    i);
 		SG_SPRINT("\nDataset %d\n", i);
 		run(x_path_buffer, y_path_buffer, bound_path_buffer, m_path_buffer, loglik_path_buffer);
 	}

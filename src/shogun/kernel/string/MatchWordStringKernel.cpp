@@ -49,9 +49,9 @@ bool CMatchWordStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-float64_t CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CMatchWordStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
@@ -60,7 +60,7 @@ float64_t CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen==blen)
 
 	float64_t sum=0;
-	for (int32_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);

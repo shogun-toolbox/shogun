@@ -44,7 +44,7 @@ struct GCNode;
 struct GCEdge
 {
 	/** edge id */
-	int32_t id;
+	index_t id;
 	/** node the edge point to */
 	GCNode* head;
 	/** next edge with the same originated node */
@@ -61,7 +61,7 @@ struct GCEdge
 struct GCNode
 {
 	/** node id */
-	int32_t id;
+	index_t id;
 	/** first outcoming edge */
 	GCEdge* first;
 	/** node's parent */
@@ -124,7 +124,7 @@ public:
 	 * @param num_nodes number of nodes in the s-t graph (SOURCE and SINK nodes are not included)
 	 * @param num_edges number of edges in the s-t graph (the edges connecting to the SOURCE and SINK are not included)
 	 */
-	CGraphCut(int32_t num_nodes, int32_t num_edges);
+	CGraphCut(index_t num_nodes, index_t num_edges);
 
 	/** Destructor */
 	virtual ~CGraphCut();
@@ -140,7 +140,7 @@ public:
 	 * @param assignment the assignment
 	 * @return the total energy after doing inference
 	 */
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	virtual float64_t inference(SGVector<index_t> assignment);
 
 	/** @return the total flow in the s-t graph */
 	float64_t get_flow()
@@ -153,7 +153,7 @@ public:
 	 * @param num_nodes number of nodes in the s-t graph (SOURCE and SINK nodes are not included)
 	 * @param num_edges number of edges in the s-t graph (the edges connecting to the SOURCE and SINK are not included)
 	 */
-	void build_st_graph(int32_t num_nodes, int32_t num_edges);
+	void build_st_graph(index_t num_nodes, index_t num_edges);
 
 	/** Adds a bidirectional edge between 'i' and 'j' with the weights 'cap' and 'rev_cap'.
 	 *
@@ -162,7 +162,8 @@ public:
 	 * @param capacity edge capacity
 	 * @param reverse_capacity reverse edge capacity
 	 */
-	void add_edge(int32_t i, int32_t j, float64_t capacity, float64_t reverse_capacity);
+	void add_edge(
+		index_t i, index_t j, float64_t capacity, float64_t reverse_capacity);
 
 	/** Adds new edges 'SOURCE->i' and 'i->SINK' with corresponding weights.
 	 * Can be called multiple times for each node. Weights can be negative.
@@ -173,7 +174,7 @@ public:
 	 * @param cap_source SOURCE->i capacity
 	 * @param cap_sink i->SINK capacity
 	 */
-	void add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink);
+	void add_tweights(index_t i, float64_t cap_source, float64_t cap_sink);
 
 	/** Initialize max flow, call this function after adding nodes and edges */
 	void init_maxflow();
@@ -217,7 +218,8 @@ public:
 	 *
 	 * @return terminal that the node belongs to
 	 */
-	ETerminalType get_assignment(int32_t i, ETerminalType default_terminal = SOURCE);
+	ETerminalType
+	get_assignment(index_t i, ETerminalType default_terminal = SOURCE);
 
 	/** Print the s-t graph */
 	void print_graph();
@@ -243,7 +245,7 @@ private:
 	 * @param triple triple is a vector contains the id of three nodes
 	 * @return the id of triple node in the s-t graph
 	 */
-	int32_t get_tripleId(SGVector<int32_t> triple);
+	index_t get_tripleId(SGVector<index_t> triple);
 
 	/** Add a node to the active list
 	 *
@@ -308,22 +310,22 @@ protected:
 
 private:
 	/** number of variables in the factor graph */
-	int32_t m_num_variables;
+	index_t m_num_variables;
 	/** statistic of the number of the factors at order [1, 2, 3] */
-	SGVector<int32_t> m_num_factors_at_order;
+	SGVector<index_t> m_num_factors_at_order;
 	/** list of triple nodes, for order-3 factors */
-	DynArray< SGVector<int32_t> > m_triple_list;
+	DynArray<SGVector<index_t>> m_triple_list;
 
 	/** nodes in the st graph */
 	GCNode*		m_nodes;
 	/** number of nodes */
-	int32_t		m_num_nodes;
+	index_t m_num_nodes;
 	/** edges in the st graph */
 	GCEdge*		m_edges;
 	/** point to the end of the added edges */
 	GCEdge*		m_edges_last;
 	/** number of edges */
-	int32_t		m_num_edges;
+	index_t m_num_edges;
 
 	/** total flow */
 	float64_t	m_flow;

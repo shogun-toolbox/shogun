@@ -53,14 +53,14 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return dimensions of feature space
 		 */
-		virtual int32_t get_dim_feature_space() const;
+		virtual index_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num);
+		virtual index_t get_nnz_features_for_vector(index_t num);
 
 		/** get feature type
 		 *
@@ -78,7 +78,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return number of vectors
 		 */
-		virtual int32_t get_num_vectors() const;
+		virtual index_t get_num_vectors() const;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -87,9 +87,10 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+		virtual float64_t
+		dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2);
 
-		#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct sparse_poly_feature_iterator
 		{
@@ -116,7 +117,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index);
+		virtual void* get_feature_iterator(index_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -128,7 +129,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
+		bool get_next_feature(index_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
@@ -156,7 +157,8 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t
+		dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len);
 
 		/** compute alpha*x+vec2
 		 *
@@ -166,7 +168,9 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(
+		    float64_t alpha, index_t vec_idx1, float64_t* vec2,
+		    index_t vec2_len, bool abs_val = false);
 
 	protected:
 		/** store the norm of each training example */
@@ -195,7 +199,7 @@ class CSparsePolyFeatures : public CDotFeatures
 
 	private:
 		/**length of norm for each traning example*/
-		int32_t m_normalization_values_len;
+		index_t m_normalization_values_len;
 };
 }
 #endif // _SPARSEPOLYFEATURES__H__

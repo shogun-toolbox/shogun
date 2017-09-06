@@ -71,7 +71,7 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 	}
 
 	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
-	int32_t s_len=CMath::random(1, min_len);
+	index_t s_len = CMath::random(index_t(1), min_len);
 	float64_t lambda=CMath::random(0.0, 1.0);
 	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
 

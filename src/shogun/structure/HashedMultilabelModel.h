@@ -37,19 +37,20 @@ public:
 	 * @param labels structured labels
 	 * @param dim new joint feature space dimension
 	 */
-	CHashedMultilabelModel(CFeatures * features, CStructuredLabels * labels,
-	                       int32_t dim);
+	CHashedMultilabelModel(
+		CFeatures* features, CStructuredLabels* labels, index_t dim);
 
 	/** destructor */
 	virtual ~CHashedMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(int32_t num_examples = 0);
+	virtual CStructuredLabels*
+	structured_labels_factory(index_t num_examples = 0);
 
 	/** @return the dimensionality of the joint features space, i.e, the
 	 *          dimension of the weight vector \f$w\f$.
 	 */
-	virtual int32_t get_dim() const;
+	virtual index_t get_dim() const;
 
 	/** get joint feature vector
 	 *
@@ -62,8 +63,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** get joint feature vector
 	 *
@@ -76,8 +77,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGSparseVector<float64_t> get_sparse_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	virtual SGSparseVector<float64_t>
+	get_sparse_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** obtain the argmax of
 	 *
@@ -93,8 +94,8 @@ public:
 	 *
 	 * @return structure with the predicted results
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
-	                            bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** compute
 	 *
@@ -153,12 +154,12 @@ public:
 private:
 	float64_t m_false_positive;
 	float64_t m_false_negative;
-	int32_t m_num_classes;
-	int32_t m_dim;
+	index_t m_num_classes;
+	index_t m_dim;
 	SGVector<uint32_t> m_seeds;
 
 private:
-	void init(int32_t dim);
+	void init(index_t dim);
 
 	/** different versions of delta loss function */
 	float64_t delta_loss(SGVector<float64_t> y1, SGVector<float64_t> y2);
@@ -173,16 +174,16 @@ private:
 	 *     Feature Hashing for Large Scale Multitask Learning
 	 *     http://alex.smola.org/papers/2009/Weinbergeretal09.pdf
 	 */
-	SGSparseVector<float64_t> get_hashed_feature_vector(int32_t feat_idx,
-	                uint32_t seed);
+	SGSparseVector<float64_t>
+	get_hashed_feature_vector(index_t feat_idx, uint32_t seed);
 
 	/** convert dense vector to sparse
 	 * dense vector would be in the form of {d_true, d_false}^dense_dim
 	 * sparse vector would contain the indices where the value of
 	 * dense_vector is d_true
 	 */
-	SGVector<int32_t> to_sparse(SGVector<float64_t> dense_vector,
-	                            float64_t d_true, float64_t d_false);
+	SGVector<index_t> to_sparse(
+		SGVector<float64_t> dense_vector, float64_t d_true, float64_t d_false);
 
 }; /** class CHashedMultilabelModel */
 

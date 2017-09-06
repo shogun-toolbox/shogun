@@ -92,44 +92,47 @@ CMLDataHDF5File::~CMLDataHDF5File()
 	SG_FREE(mldata_url);
 }
 
-#define GET_VECTOR(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
-{																					\
-	if (!h5file)																	\
-		SG_ERROR("File invalid.\n")												\
-																					\
-	int32_t* dims;																	\
-	int32_t ndims;																	\
-	int64_t nelements;																\
-	hid_t dataset=H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
-	if (dataset<0)																	\
-		SG_ERROR("Error opening data set\n")										\
-	hid_t dtype=H5Dget_type(dataset);												\
-	H5T_class_t t_class=H5Tget_class(dtype);										\
-	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);         \
-	if (h5_type==-1)																\
-	{																				\
-		H5Dclose(dataset);															\
-		SG_INFO("No compatible datatype found\n")									\
-	}																				\
-	get_dims(dataset, dims, ndims, nelements);										\
-	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
-			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
-			(ndims==1 && dims[0]==nelements)))										\
-		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
-	vec=SG_MALLOC(sg_type, nelements);														\
-	len=nelements;																	\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
-			H5S_ALL, H5P_DEFAULT, vec);												\
-	H5Dclose(dataset);																\
-	H5Tclose(dtype);																\
-	SG_FREE(dims);																	\
-	if (status<0)																	\
-	{																				\
-		SG_FREE(vec);																\
-		SG_ERROR("Error reading dataset\n")										\
-	}																				\
-}
+#define GET_VECTOR(fname, sg_type, datatype)                                   \
+	void CMLDataHDF5File::fname(sg_type*& vec, index_t& len)                   \
+	{                                                                          \
+		if (!h5file)                                                           \
+			SG_ERROR("File invalid.\n")                                        \
+                                                                               \
+		int32_t* dims;                                                         \
+		int32_t ndims;                                                         \
+		int64_t nelements;                                                     \
+		hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);          \
+		if (dataset < 0)                                                       \
+			SG_ERROR("Error opening data set\n")                               \
+		hid_t dtype = H5Dget_type(dataset);                                    \
+		H5T_class_t t_class = H5Tget_class(dtype);                             \
+		TSGDataType t datatype;                                                \
+		hid_t h5_type = get_compatible_type(t_class, &t);                      \
+		if (h5_type == -1)                                                     \
+		{                                                                      \
+			H5Dclose(dataset);                                                 \
+			SG_INFO("No compatible datatype found\n")                          \
+		}                                                                      \
+		get_dims(dataset, dims, ndims, nelements);                             \
+		if (!((ndims == 2 && dims[0] == nelements && dims[1] == 1) ||          \
+		      (ndims == 2 && dims[0] == 1 && dims[1] == nelements) ||          \
+		      (ndims == 1 && dims[0] == nelements)))                           \
+			SG_ERROR(                                                          \
+			    "Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n",   \
+			    ndims, dims[0])                                                \
+		vec = SG_MALLOC(sg_type, nelements);                                   \
+		len = nelements;                                                       \
+		herr_t status =                                                        \
+		    H5Dread(dataset, h5_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec);     \
+		H5Dclose(dataset);                                                     \
+		H5Tclose(dtype);                                                       \
+		SG_FREE(dims);                                                         \
+		if (status < 0)                                                        \
+		{                                                                      \
+			SG_FREE(vec);                                                      \
+			SG_ERROR("Error reading dataset\n")                                \
+		}                                                                      \
+	}
 
 GET_VECTOR(get_vector, bool, (CT_VECTOR, ST_NONE, PT_BOOL))
 GET_VECTOR(get_vector, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
@@ -146,43 +149,45 @@ GET_VECTOR(get_vector, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
 GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
-#define GET_MATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
-{																					\
-	if (!h5file)																	\
-		SG_ERROR("File invalid.\n")												\
-																					\
-	int32_t* dims;																	\
-	int32_t ndims;																	\
-	int64_t nelements;																\
-	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
-	if (dataset<0)																	\
-		SG_ERROR("Error opening data set\n")										\
-	hid_t dtype = H5Dget_type(dataset);												\
-	H5T_class_t t_class=H5Tget_class(dtype);										\
-	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);	        \
-	if (h5_type==-1)																\
-	{																				\
-		H5Dclose(dataset);															\
-		SG_INFO("No compatible datatype found\n")									\
-	}																				\
-	get_dims(dataset, dims, ndims, nelements);										\
-	if (ndims!=2)																	\
-		SG_ERROR("Error not a 2-dimensional matrix\n")								\
-	matrix=SG_MALLOC(sg_type, nelements);													\
-	num_feat=dims[0];																\
-	num_vec=dims[1];																\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
-			H5S_ALL, H5P_DEFAULT, matrix);											\
-	H5Dclose(dataset);																\
-	H5Tclose(dtype);																\
-	SG_FREE(dims);																	\
-	if (status<0)																	\
-	{																				\
-		SG_FREE(matrix);															\
-		SG_ERROR("Error reading dataset\n")										\
-	}																				\
-}
+#define GET_MATRIX(fname, sg_type, datatype)                                   \
+	void CMLDataHDF5File::fname(                                               \
+	    sg_type*& matrix, index_t& num_feat, index_t& num_vec)                 \
+	{                                                                          \
+		if (!h5file)                                                           \
+			SG_ERROR("File invalid.\n")                                        \
+                                                                               \
+		int32_t* dims;                                                         \
+		int32_t ndims;                                                         \
+		int64_t nelements;                                                     \
+		hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);          \
+		if (dataset < 0)                                                       \
+			SG_ERROR("Error opening data set\n")                               \
+		hid_t dtype = H5Dget_type(dataset);                                    \
+		H5T_class_t t_class = H5Tget_class(dtype);                             \
+		TSGDataType t datatype;                                                \
+		hid_t h5_type = get_compatible_type(t_class, &t);                      \
+		if (h5_type == -1)                                                     \
+		{                                                                      \
+			H5Dclose(dataset);                                                 \
+			SG_INFO("No compatible datatype found\n")                          \
+		}                                                                      \
+		get_dims(dataset, dims, ndims, nelements);                             \
+		if (ndims != 2)                                                        \
+			SG_ERROR("Error not a 2-dimensional matrix\n")                     \
+		matrix = SG_MALLOC(sg_type, nelements);                                \
+		num_feat = dims[0];                                                    \
+		num_vec = dims[1];                                                     \
+		herr_t status =                                                        \
+		    H5Dread(dataset, h5_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, matrix);  \
+		H5Dclose(dataset);                                                     \
+		H5Tclose(dtype);                                                       \
+		SG_FREE(dims);                                                         \
+		if (status < 0)                                                        \
+		{                                                                      \
+			SG_FREE(matrix);                                                   \
+			SG_ERROR("Error reading dataset\n")                                \
+		}                                                                      \
+	}
 
 GET_MATRIX(get_matrix, bool, (CT_MATRIX, ST_NONE, PT_BOOL))
 GET_MATRIX(get_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
@@ -198,12 +203,13 @@ GET_MATRIX(get_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
 GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
-#define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
-{																						\
-	if (!(file))																		\
-		SG_ERROR("File invalid.\n")													\
-}
+#define GET_SPARSEMATRIX(fname, sg_type, datatype)                             \
+	void CMLDataHDF5File::fname(                                               \
+	    SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec) \
+	{                                                                          \
+		if (!(file))                                                           \
+			SG_ERROR("File invalid.\n")                                        \
+	}
 GET_SPARSEMATRIX(get_sparse_matrix, bool, DT_SPARSE_BOOL)
 GET_SPARSEMATRIX(get_sparse_matrix, char, DT_SPARSE_CHAR)
 GET_SPARSEMATRIX(get_sparse_matrix, int8_t, DT_SPARSE_INT8)
@@ -219,11 +225,12 @@ GET_SPARSEMATRIX(get_sparse_matrix, float64_t, DT_SPARSE_REAL)
 GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef GET_SPARSEMATRIX
 
-
-#define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CMLDataHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
-{																								\
-}
+#define GET_STRING_LIST(fname, sg_type, datatype)                              \
+	void CMLDataHDF5File::fname(                                               \
+	    SGString<sg_type>*& strings, index_t& num_str,                         \
+	    index_t& max_string_len)                                               \
+	{                                                                          \
+	}
 
 GET_STRING_LIST(get_string_list, bool, DT_STRING_BOOL)
 GET_STRING_LIST(get_string_list, char, DT_STRING_CHAR)

@@ -61,9 +61,9 @@ void CHammingWordDistance::cleanup()
 {
 }
 
-float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CHammingWordDistance::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->

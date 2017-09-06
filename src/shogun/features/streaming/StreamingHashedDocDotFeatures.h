@@ -94,7 +94,7 @@ public:
 	 * @param vec2 real valued vector
 	 * @param vec2_len length of vector
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	virtual float32_t dense_dot(const float32_t* vec2, index_t vec2_len);
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
@@ -103,8 +103,9 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			int32_t vec2_len, bool abs_val=false);
+	virtual void add_to_dense_vec(
+		float32_t alpha, float32_t* vec2, index_t vec2_len,
+		bool abs_val = false);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -113,7 +114,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	virtual index_t get_dim_feature_space() const;
 
 	/**
 	 * Return the name.
@@ -127,7 +128,7 @@ public:
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	virtual index_t get_num_vectors() const;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -204,7 +205,7 @@ public:
 	 *
 	 * @return number of features in current example
 	 */
-	virtual int32_t get_num_features();
+	virtual index_t get_num_features();
 
 	/** Get the current example
 	 *
@@ -234,7 +235,7 @@ private:
 protected:
 
 	/** number of bits for the target dimension */
-	int32_t num_bits;
+	index_t num_bits;
 
 	/** Current example */
 	SGSparseVector<float64_t> current_vector;

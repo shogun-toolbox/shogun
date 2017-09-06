@@ -102,7 +102,7 @@ public:
 	/** prepare for the next training phase.
 	 * @return The subset that should be applied. Return NULL when no subset is needed.
 	 */
-	virtual SGVector<int32_t> train_prepare_next();
+	virtual SGVector<index_t> train_prepare_next();
 
 	/** finish training, release resources */
 	virtual void train_stop();

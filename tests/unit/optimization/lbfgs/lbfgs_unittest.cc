@@ -68,8 +68,9 @@ lbfgs_parameter_t init_lbfgs_parameters()
 	return tmp;
 }
 
-float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
-	const int dim, const float64_t step)
+float64_t evaluate(
+    void* obj, const float64_t* variable, float64_t* gradient,
+    const index_t dim, const float64_t step)
 {
 	float64_t * non_const_variable=const_cast<float64_t *>(variable);
 	const Map<VectorXd> eigen_x(non_const_variable, dim);
@@ -109,8 +110,9 @@ float64_t adjust_step_bounded(void *obj, const float64_t *parameters,
 	return min_step;
 }
 
-float64_t evaluate_bounded(void *obj, const float64_t *variable, float64_t *gradient,
-	const int dim, const float64_t step)
+float64_t evaluate_bounded(
+    void* obj, const float64_t* variable, float64_t* gradient,
+    const index_t dim, const float64_t step)
 {
 	bool is_valid=true;
 
@@ -135,8 +137,9 @@ float64_t evaluate_bounded(void *obj, const float64_t *variable, float64_t *grad
 	return f;
 }
 
-float64_t evaluate_strict_bounded(void *obj, const float64_t *variable, float64_t *gradient,
-	const int dim, const float64_t step)
+float64_t evaluate_strict_bounded(
+    void* obj, const float64_t* variable, float64_t* gradient,
+    const index_t dim, const float64_t step)
 {
 	bool is_valid=true;
 

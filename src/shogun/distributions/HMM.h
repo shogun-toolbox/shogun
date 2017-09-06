@@ -507,10 +507,14 @@ class CHMM : public CDistribution
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL);
-		virtual int32_t get_num_model_parameters() { return N*(N+M+2); }
-		virtual float64_t get_log_model_parameter(int32_t num_param);
-		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
-		virtual float64_t get_log_likelihood_example(int32_t num_example)
+		virtual index_t get_num_model_parameters()
+		{
+			return N * (N + M + 2);
+		}
+		virtual float64_t get_log_model_parameter(index_t num_param);
+		virtual float64_t
+		get_log_derivative(index_t num_param, index_t num_example);
+		virtual float64_t get_log_likelihood_example(index_t num_example)
 		{
 			return model_probability(num_example);
 		}
@@ -590,10 +594,10 @@ class CHMM : public CDistribution
 		 * @param dimension dimension for which probability is calculated
 		 * @return model probability
 		 */
-		inline float64_t linear_model_probability(int32_t dimension)
+		inline float64_t linear_model_probability(index_t dimension)
 		{
 			float64_t lik=0;
-			int32_t len=0;
+			index_t len = 0;
 			bool free_vec;
 			uint16_t* o=p_observations->get_feature_vector(dimension, len, free_vec);
 			float64_t* obs_b=observation_matrix_b;
@@ -670,7 +674,7 @@ class CHMM : public CDistribution
 		bool linear_train(bool right_align=false);
 
 		/// compute permutation entropy
-		bool permutation_entropy(int32_t window_width, int32_t sequence_number);
+		bool permutation_entropy(int32_t window_width, index_t sequence_number);
 
 		/**@name output functions.*/
 		//@{

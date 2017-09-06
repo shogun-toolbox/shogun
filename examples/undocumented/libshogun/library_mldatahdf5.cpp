@@ -24,8 +24,8 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	float64_t* mat=NULL;
-	int32_t num_feat;
-	int32_t num_vec;
+	index_t num_feat;
+	index_t num_vec;
 	try
 	{
 		hdf->get_matrix(mat, num_feat, num_vec);

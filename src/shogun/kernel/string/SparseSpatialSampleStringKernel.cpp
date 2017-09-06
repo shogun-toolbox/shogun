@@ -367,7 +367,8 @@ int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 	return regroup;
 }
 
-float64_t CSparseSpatialSampleStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t
+CSparseSpatialSampleStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	if (t==2)
 		compute_double(idx_a, idx_b);

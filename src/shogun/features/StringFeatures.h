@@ -664,7 +664,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param len length of vector
 		 * @return feature vector
 		 */
-		virtual ST* compute_feature_vector(int32_t num, int32_t& len);
+		virtual ST* compute_feature_vector(index_t num, index_t& len);
 
 	private:
 		void init();
@@ -683,7 +683,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		ST* single_string;
 
 		/// length of prior single string
-		int32_t length_of_single_string;
+		index_t length_of_single_string;
 
 		/** length of longest string (for subset, is updated) */
 		index_t max_string_length;
@@ -701,7 +701,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		ST* symbol_mask_table;
 
 		/// order used in higher order mapping
-		int32_t symbol_mask_table_len;
+		index_t symbol_mask_table_len;
 
 		/// preprocess on-the-fly?
 		bool preprocess_on_get;

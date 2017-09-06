@@ -20,10 +20,11 @@
 using namespace shogun;
 using namespace std;
 
-int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+index_t CClusteringEvaluation::find_match_count(
+    SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2)
 {
-	int32_t match_count=0;
-	for (int32_t i=l1.vlen-1; i >= 0; --i)
+	index_t match_count = 0;
+	for (index_t i = l1.vlen - 1; i >= 0; --i)
 	{
 		if (l1[i] == m1 && l2[i] == m2)
 			match_count++;
@@ -32,7 +33,8 @@ int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1
 	return match_count;
 }
 
-int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+index_t CClusteringEvaluation::find_mismatch_count(
+    SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2)
 {
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
@@ -46,19 +48,22 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
 	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
 
-	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
-	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();
+	SGVector<index_t> predicted_ilabels =
+	    ((CMulticlassLabels*)predicted)->get_int_labels();
+	SGVector<index_t> groundtruth_ilabels =
+	    ((CMulticlassLabels*)ground_truth)->get_int_labels();
 
 	int32_t n_class=max(label_p.vlen, label_g.vlen);
 	SGMatrix<float64_t> G(n_class, n_class);
 	G.zero();
 
-	for (int32_t i=0; i < label_g.vlen; ++i)
+	for (index_t i = 0; i < label_g.vlen; ++i)
 	{
-		for (int32_t j=0; j < label_p.vlen; ++j)
+		for (index_t j = 0; j < label_p.vlen; ++j)
 		{
-			G(i, j)=find_mismatch_count(groundtruth_ilabels, static_cast<int32_t>(label_g[i]),
-				predicted_ilabels, static_cast<int32_t>(label_p[j]));
+			G(i, j) = find_mismatch_count(
+			    groundtruth_ilabels, static_cast<index_t>(label_g[i]),
+			    predicted_ilabels, static_cast<index_t>(label_p[j]));
 		}
 	}
 

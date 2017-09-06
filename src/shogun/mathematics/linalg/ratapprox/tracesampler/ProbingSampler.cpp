@@ -171,7 +171,8 @@ void CProbingSampler::precompute()
 	for (std::vector<int32_t>::iterator it=vi_VertexColors.begin();
 		it!=vi_VertexColors.end(); it++)
 	{
-		index_t i=static_cast<index_t>(std::distance(vi_VertexColors.begin(), it));
+		auto i =
+			static_cast<index_t>(std::distance(vi_VertexColors.begin(), it));
 		m_coloring_vector[i]=*it;
 	}
 

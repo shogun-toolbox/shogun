@@ -25,7 +25,7 @@ CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(EProbHeuristicType pr
 {
 }
 
-SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
+SGVector<index_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 {
 	for (index_t i=0; i < m_orig_labels->get_num_labels(); ++i)
 	{
@@ -38,7 +38,7 @@ SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 	// increase m_train_iter *after* setting labels
 	CMulticlassStrategy::train_prepare_next();
 
-	return SGVector<int32_t>();
+	return SGVector<index_t>();
 }
 
 int32_t CMulticlassOneVsRestStrategy::decide_label(SGVector<float64_t> outputs)
@@ -49,18 +49,19 @@ int32_t CMulticlassOneVsRestStrategy::decide_label(SGVector<float64_t> outputs)
 	return CMath::arg_max(outputs.vector, 1, outputs.vlen);
 }
 
-SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
+SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(
+    SGVector<float64_t> outputs, index_t n_outputs)
 {
 	float64_t* outputs_ = SG_MALLOC(float64_t, outputs.vlen);
-	int32_t* indices_ = SG_MALLOC(int32_t, outputs.vlen);
-	for (int32_t i=0; i<outputs.vlen; i++)
+	index_t* indices_ = SG_MALLOC(index_t, outputs.vlen);
+	for (index_t i = 0; i < outputs.vlen; i++)
 	{
 		outputs_[i] = outputs[i];
 		indices_[i] = i;
 	}
 	CMath::qsort_backward_index(outputs_,indices_,outputs.vlen);
 	SGVector<index_t> result(n_outputs);
-	for (int32_t i=0; i<n_outputs; i++)
+	for (index_t i = 0; i < n_outputs; i++)
 		result[i] = indices_[i];
 	SG_FREE(outputs_);
 	SG_FREE(indices_);

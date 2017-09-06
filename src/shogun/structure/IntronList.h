@@ -34,7 +34,7 @@ class CIntronList : public CSGObject
 		 * @param all_pos list of candidate positions
 		 * @param len number of candidate positions
 		 */
-		void init_list(int32_t* all_pos, int32_t len);
+		void init_list(index_t* all_pos, index_t len);
 
 		/** read introns
 		 *
@@ -43,7 +43,9 @@ class CIntronList : public CSGObject
 		 * @param quality quality scores for introns in list
 		 * @param len number of items in all three previous arguments
 		 */
-		void read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* quality, int32_t len);
+		void read_introns(
+		    index_t* start_pos, index_t* end_pos, index_t* quality,
+		    index_t len);
 
 		/** get coverage and quality score
 		 *
@@ -51,7 +53,8 @@ class CIntronList : public CSGObject
 		 * @param from_pos start position of intron
 		 * @param to_pos end position of intron
 		 */
-		void get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos);
+		void
+		get_intron_support(index_t* values, index_t from_pos, index_t to_pos);
 
 		/**
 		 * @return object name
@@ -59,21 +62,21 @@ class CIntronList : public CSGObject
 		virtual const char* get_name() const { return "IntronList"; }
 	protected:
 		/** number of positions */
-		int32_t m_length;
+		index_t m_length;
 
 		/** index of positions in the DNA sequence*/
-		int32_t* m_all_pos;
+		index_t* m_all_pos;
 
 		/** data structure storing the introns;
 		 *  for all posible end positions there is a
 		 *  list of start positions stored
 		 */
-		int32_t** m_intron_list;
+		index_t** m_intron_list;
 
 		/** data structure storing the intron quality scores;
 		 *  the shape is exactly the same as for the introns
 		 */
-		int32_t** m_quality_list;
+		index_t** m_quality_list;
 };
 }
 #endif

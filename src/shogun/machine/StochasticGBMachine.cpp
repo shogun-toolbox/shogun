@@ -310,8 +310,9 @@ float64_t CStochasticGBMachine::get_gamma(void* instance)
 	return gamma;
 }
 
-float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim,
-												const float64_t step)
+float64_t CStochasticGBMachine::lbfgs_evaluate(
+    void* obj, const float64_t* parameters, float64_t* gradient,
+    const index_t dim, const float64_t step)
 {
 	REQUIRE(obj,"object cannot be NULL\n")
 	CDynamicObjectArray* objects=static_cast<CDynamicObjectArray*>(obj);

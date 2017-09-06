@@ -91,14 +91,14 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(index_t idx);
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		virtual void add_to_normal(index_t idx, float64_t weight);
 
 		/** merge normal */
 		void merge_normal();
@@ -147,9 +147,9 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @return computed score
 		 */
 		virtual float64_t* compute_scoring(
-			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			float64_t* target, int32_t num_suppvec, int32_t* IDX,
-			float64_t* alphas, bool do_init=true);
+		    int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+		    float64_t* target, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas, bool do_init = true);
 
 	protected:
 		/** helper for compute
@@ -158,15 +158,15 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param idx_b index b
 		 * @param do_sort if sorting shall be performed
 		 */
-		virtual float64_t compute_helper(
-			int32_t idx_a, int32_t idx_b, bool do_sort);
+		virtual float64_t
+		compute_helper(index_t idx_a, index_t idx_b, bool do_sort);
 
 	private:
 		void init();
 
 	protected:
 		/** degree */
-		int32_t degree;
+		index_t degree;
 
 		/** weights for each of the subkernels of degree 1...d */
 		float64_t* weights;

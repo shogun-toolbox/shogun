@@ -17,25 +17,28 @@ CSequenceLabels::CSequenceLabels()
 {
 }
 
-CSequenceLabels::CSequenceLabels(int32_t num_labels, int32_t num_states)
-: CStructuredLabels(num_labels), m_num_states(num_states)
+CSequenceLabels::CSequenceLabels(index_t num_labels, index_t num_states)
+    : CStructuredLabels(num_labels), m_num_states(num_states)
 {
 	init();
 }
 
-CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_length,
-		int32_t num_labels, int32_t num_states)
-: CStructuredLabels(num_labels), m_num_states(num_states)
+CSequenceLabels::CSequenceLabels(
+    SGVector<index_t> labels, index_t label_length, index_t num_labels,
+    index_t num_states)
+    : CStructuredLabels(num_labels), m_num_states(num_states)
 {
 	REQUIRE(labels.vlen == label_length*num_labels, "The length of the labels must be "
 			"equal to label_length times num_labels\n");
 	init();
 
-	for ( int32_t i = 0 ; i < labels.vlen ; i += label_length )
+	for (index_t i = 0; i < labels.vlen; i += label_length)
 	{
-		add_vector_label(SGVector< int32_t >(
-			SGVector< int32_t >::clone_vector(labels.vector+i, label_length),
-			label_length));
+		add_vector_label(
+		    SGVector<index_t>(
+		        SGVector<index_t>::clone_vector(
+		            labels.vector + i, label_length),
+		        label_length));
 	}
 }
 
@@ -43,7 +46,7 @@ CSequenceLabels::~CSequenceLabels()
 {
 }
 
-void CSequenceLabels::add_vector_label(SGVector< int32_t > label)
+void CSequenceLabels::add_vector_label(SGVector<index_t> label)
 {
 	CStructuredLabels::add_label( new CSequence(label) );
 }

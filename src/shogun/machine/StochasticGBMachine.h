@@ -195,7 +195,9 @@ protected:
 	 * @param dim dimensions
 	 * @param step step in linesearch
 	 */
-	static float64_t lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim, const float64_t step);
+	static float64_t lbfgs_evaluate(
+		void* obj, const float64_t* parameters, float64_t* gradient,
+		const index_t dim, const float64_t step);
 
 	/** initialize */
 	void init();

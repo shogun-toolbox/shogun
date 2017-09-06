@@ -65,7 +65,7 @@ TEST(GraphCut, graph_cut_chain)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_NEAR(0.4, infer_met.get_energy(), 1E-10);
@@ -78,7 +78,7 @@ TEST(GraphCut, graph_cut_chain)
 // potentials are randomly generated
 TEST(GraphCut, graph_cut_random)
 {
-	SGVector<int32_t> assignment_expected; // expected assignment
+	SGVector<index_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
@@ -89,12 +89,12 @@ TEST(GraphCut, graph_cut_random)
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
-	SGVector<int32_t> assignment = fg_observ->get_data();
+	SGVector<index_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
-	for (int32_t i = 0; i < assignment.size(); i++)
+	for (index_t i = 0; i < assignment.size(); i++)
 		EXPECT_EQ(assignment[i], assignment_expected[i]);
 
 	EXPECT_NEAR(min_energy_expected, infer_met.get_energy(), 1E-10);

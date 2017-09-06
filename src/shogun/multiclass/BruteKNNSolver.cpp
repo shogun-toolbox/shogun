@@ -8,14 +8,19 @@
 
 using namespace shogun;
 
-CBruteKNNSolver::CBruteKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const SGMatrix<index_t> NN):
-CKNNSolver(k, q, num_classes, min_label, train_labels)
+CBruteKNNSolver::CBruteKNNSolver(
+    const index_t k, const float64_t q, const index_t num_classes,
+    const index_t min_label, const SGVector<index_t> train_labels,
+    const SGMatrix<index_t> NN)
+    : CKNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	init();
 	nn=NN;
 }
 
-CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+CMulticlassLabels* CBruteKNNSolver::classify_objects(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 	//get the k nearest neighbors of each example
@@ -37,9 +42,11 @@ CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, co
 	return output;
 }
 
-SGVector<int32_t> CBruteKNNSolver::classify_objects_k(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<index_t> CBruteKNNSolver::classify_objects_k(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<index_t>& classes) const
 {
-	SGVector<int32_t> output(m_k*num_lab);
+	SGVector<index_t> output(m_k * num_lab);
 
 	//get the k nearest neighbors of each example
 	SGMatrix<index_t> NN = this->nn;

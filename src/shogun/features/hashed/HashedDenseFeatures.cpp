@@ -101,14 +101,14 @@ CFeatures* CHashedDenseFeatures<ST>::duplicate() const
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_dim_feature_space() const
+index_t CHashedDenseFeatures<ST>::get_dim_feature_space() const
 {
 	return dim;
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
-	int32_t vec_idx2)
+float64_t CHashedDenseFeatures<ST>::dot(
+	index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -128,8 +128,8 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2,
-	int32_t vec2_len)
+float64_t CHashedDenseFeatures<ST>::dense_dot(
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == dim)
 
@@ -154,7 +154,7 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t*
 	{
 		for (index_t i=0; i<vec.size(); i++)
 		{
-			int32_t n_idx = i * vec.size() + i;
+			index_t n_idx = i * vec.size() + i;
 			uint32_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx) % dim;
 			result += vec2[idx] * vec[i] * vec[i];
 
@@ -171,8 +171,9 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t*
 }
 
 template <class ST>
-void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-	float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CHashedDenseFeatures<ST>::add_to_dense_vec(
+	float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+	bool abs_val)
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
@@ -197,7 +198,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 	{
 		for (index_t i=0; i<vec.size(); i++)
 		{
-			int32_t n_idx = i * vec.size() + i;
+			index_t n_idx = i * vec.size() + i;
 			uint32_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx) % dim;
 			vec2[idx] += val * vec[i] * vec[i];
 
@@ -212,20 +213,20 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+index_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(index_t num)
 {
 	return dim;
 }
 
 template <class ST>
-void* CHashedDenseFeatures<ST>::get_feature_iterator(int32_t vector_index)
+void* CHashedDenseFeatures<ST>::get_feature_iterator(index_t vector_index)
 {
 	SG_NOTIMPLEMENTED;
 	return NULL;
 }
 template <class ST>
-bool CHashedDenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
-	void* iterator)
+bool CHashedDenseFeatures<ST>::get_next_feature(
+	index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
 	return false;
@@ -255,7 +256,7 @@ EFeatureClass CHashedDenseFeatures<ST>::get_feature_class() const
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_num_vectors() const
+index_t CHashedDenseFeatures<ST>::get_num_vectors() const
 {
 	return dense_feats->get_num_vectors();
 }

@@ -31,7 +31,8 @@ CResultSet::~CResultSet()
 	SG_UNREF(argmax)
 }
 
-CStructuredLabels* CStructuredModel::structured_labels_factory(int32_t num_labels)
+CStructuredLabels*
+CStructuredModel::structured_labels_factory(index_t num_labels)
 {
 	return new CStructuredLabels(num_labels);
 }
@@ -102,9 +103,8 @@ CFeatures* CStructuredModel::get_features()
 	return m_features;
 }
 
-SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx,
-		int32_t lab_idx)
+SGVector<float64_t>
+CStructuredModel::get_joint_feature_vector(index_t feat_idx, index_t lab_idx)
 {
 	CStructuredData* label = m_labels->get_label(lab_idx);
 	SGVector< float64_t > ret = get_joint_feature_vector(feat_idx, label);
@@ -113,19 +113,19 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 	return ret;
 }
 
-SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx,
-		CStructuredData* y)
+SGVector<float64_t>
+CStructuredModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
 {
-	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
-			"implemented for %s!\n", get_name());
+	SG_ERROR(
+	    "compute_joint_feature(index_t, CStructuredData*) is not "
+	    "implemented for %s!\n",
+	    get_name());
 
 	return SGVector< float64_t >();
 }
 
-SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
-		int32_t feat_idx,
-		int32_t lab_idx)
+SGSparseVector<float64_t> CStructuredModel::get_sparse_joint_feature_vector(
+    index_t feat_idx, index_t lab_idx)
 {
 	CStructuredData* label = m_labels->get_label(lab_idx);
 	SGSparseVector< float64_t > ret = get_sparse_joint_feature_vector(feat_idx, label);
@@ -134,17 +134,19 @@ SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 	return ret;
 }
 
-SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
-		int32_t feat_idx,
-		CStructuredData* y)
+SGSparseVector<float64_t> CStructuredModel::get_sparse_joint_feature_vector(
+    index_t feat_idx, CStructuredData* y)
 {
-	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
-			"implemented for %s!\n", get_name());
+	SG_ERROR(
+	    "compute_sparse_joint_feature(index_t, CStructuredData*) is not "
+	    "implemented for %s!\n",
+	    get_name());
 
 	return SGSparseVector< float64_t >();
 }
 
-float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+float64_t
+CStructuredModel::delta_loss(index_t ytrue_idx, CStructuredData* ypred)
 {
 	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");
@@ -186,12 +188,12 @@ bool CStructuredModel::check_training_setup() const
 	return true;
 }
 
-int32_t CStructuredModel::get_num_aux() const
+index_t CStructuredModel::get_num_aux() const
 {
 	return 0;
 }
 
-int32_t CStructuredModel::get_num_aux_con() const
+index_t CStructuredModel::get_num_aux_con() const
 {
 	return 0;
 }

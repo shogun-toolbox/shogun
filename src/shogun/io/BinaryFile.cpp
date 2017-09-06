@@ -35,21 +35,22 @@ CBinaryFile::~CBinaryFile()
 {
 }
 
-#define GET_VECTOR(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
-{																					\
-	if (!file)																		\
-		SG_ERROR("File invalid.\n")												\
-	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL); read_header(&dtype);			            \
-	if (dtype!=datatype)															\
-		SG_ERROR("Datatype mismatch\n")											\
-																					\
-	if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
-		SG_ERROR("Failed to read vector length\n")									\
-	vec=SG_MALLOC(sg_type, len);															\
-	if (fread(vec, sizeof(sg_type), len, file)!=(size_t) len)						\
-		SG_ERROR("Failed to read Matrix\n")										\
-}
+#define GET_VECTOR(fname, sg_type, datatype)                                   \
+	void CBinaryFile::fname(sg_type*& vec, index_t& len)                       \
+	{                                                                          \
+		if (!file)                                                             \
+			SG_ERROR("File invalid.\n")                                        \
+		TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);                        \
+		read_header(&dtype);                                                   \
+		if (dtype != datatype)                                                 \
+			SG_ERROR("Datatype mismatch\n")                                    \
+                                                                               \
+		if (fread(&len, sizeof(int32_t), 1, file) != 1)                        \
+			SG_ERROR("Failed to read vector length\n")                         \
+		vec = SG_MALLOC(sg_type, len);                                         \
+		if (fread(vec, sizeof(sg_type), len, file) != (size_t)len)             \
+			SG_ERROR("Failed to read Matrix\n")                                \
+	}
 
 GET_VECTOR(get_vector, int8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT8))
 GET_VECTOR(get_vector, uint8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT8))
@@ -65,22 +66,25 @@ GET_VECTOR(get_vector, int64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
 GET_VECTOR(get_vector, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
-#define GET_MATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
-{																					\
-	if (!file)																		\
-		SG_ERROR("File invalid.\n")												\
-	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL); read_header(&dtype);			            \
-	if (dtype!=datatype)															\
-		SG_ERROR("Datatype mismatch\n")											\
-																					\
-	if (fread(&num_feat, sizeof(int32_t), 1, file)!=1 ||							\
-			fread(&num_vec, sizeof(int32_t), 1, file)!=1)							\
-		SG_ERROR("Failed to read Matrix dimensions\n")								\
-	matrix=SG_MALLOC(sg_type, int64_t(num_feat)*num_vec);									\
-	if (fread(matrix, sizeof(sg_type)*num_feat, num_vec, file)!=(size_t) num_vec)	\
-		SG_ERROR("Failed to read Matrix\n")										\
-}
+#define GET_MATRIX(fname, sg_type, datatype)                                   \
+	void CBinaryFile::fname(                                                   \
+	    sg_type*& matrix, index_t& num_feat, index_t& num_vec)                 \
+	{                                                                          \
+		if (!file)                                                             \
+			SG_ERROR("File invalid.\n")                                        \
+		TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);                        \
+		read_header(&dtype);                                                   \
+		if (dtype != datatype)                                                 \
+			SG_ERROR("Datatype mismatch\n")                                    \
+                                                                               \
+		if (fread(&num_feat, sizeof(int32_t), 1, file) != 1 ||                 \
+		    fread(&num_vec, sizeof(int32_t), 1, file) != 1)                    \
+			SG_ERROR("Failed to read Matrix dimensions\n")                     \
+		matrix = SG_MALLOC(sg_type, int64_t(num_feat) * num_vec);              \
+		if (fread(matrix, sizeof(sg_type) * num_feat, num_vec, file) !=        \
+		    (size_t)num_vec)                                                   \
+			SG_ERROR("Failed to read Matrix\n")                                \
+	}
 
 GET_MATRIX(get_matrix, char, TSGDataType(CT_MATRIX, ST_NONE, PT_CHAR))
 GET_MATRIX(get_matrix, uint8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_UINT8))
@@ -134,35 +138,41 @@ GET_NDARRAY(get_ndarray,float32_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT32));
 GET_NDARRAY(get_ndarray,float64_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef GET_NDARRAY
 
-#define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
-{																						\
-	if (!(file))																		\
-		SG_ERROR("File invalid.\n")													\
-																						\
-	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL); read_header(&dtype);			                \
-	if (dtype!=datatype)																\
-		SG_ERROR("Datatype mismatch\n")												\
-																						\
-	if (fread(&num_vec, sizeof(int32_t), 1, file)!=1)									\
-		SG_ERROR("Failed to read number of vectors\n")									\
-																						\
-	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);												\
-																						\
-	for (int32_t i=0; i<num_vec; i++)													\
-	{																					\
-		new (&matrix[i]) SGSparseVector<sg_type>();										\
-		int32_t len=0;																	\
-		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
-			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i)		\
-		matrix[i].num_feat_entries=len;													\
-		SGSparseVectorEntry<sg_type>* vec = SG_MALLOC(SGSparseVectorEntry<sg_type>, len);					\
-		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
-			SG_ERROR("Failed to read sparse vector %d\n", i)							\
-		matrix[i].features=vec;															\
-		num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions()); \
-	}																					\
-}
+#define GET_SPARSEMATRIX(fname, sg_type, datatype)                             \
+	void CBinaryFile::fname(                                                   \
+	    SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec) \
+	{                                                                          \
+		if (!(file))                                                           \
+			SG_ERROR("File invalid.\n")                                        \
+                                                                               \
+		TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);                        \
+		read_header(&dtype);                                                   \
+		if (dtype != datatype)                                                 \
+			SG_ERROR("Datatype mismatch\n")                                    \
+                                                                               \
+		if (fread(&num_vec, sizeof(int32_t), 1, file) != 1)                    \
+			SG_ERROR("Failed to read number of vectors\n")                     \
+                                                                               \
+		matrix = SG_MALLOC(SGSparseVector<sg_type>, num_vec);                  \
+                                                                               \
+		for (index_t i = 0; i < num_vec; i++)                                  \
+		{                                                                      \
+			new (&matrix[i]) SGSparseVector<sg_type>();                        \
+			index_t len = 0;                                                   \
+			if (fread(&len, sizeof(int32_t), 1, file) != 1)                    \
+				SG_ERROR(                                                      \
+				    "Failed to read sparse vector length of vector idx=%d\n",  \
+				    i)                                                         \
+			matrix[i].num_feat_entries = len;                                  \
+			SGSparseVectorEntry<sg_type>* vec =                                \
+			    SG_MALLOC(SGSparseVectorEntry<sg_type>, len);                  \
+			if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file) != \
+			    (size_t)len)                                                   \
+				SG_ERROR("Failed to read sparse vector %d\n", i)               \
+			matrix[i].features = vec;                                          \
+			num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions());   \
+		}                                                                      \
+	}
 GET_SPARSEMATRIX(get_sparse_matrix, bool, TSGDataType(CT_MATRIX, ST_NONE, PT_BOOL))
 GET_SPARSEMATRIX(get_sparse_matrix, char, TSGDataType(CT_MATRIX, ST_NONE, PT_CHAR))
 GET_SPARSEMATRIX(get_sparse_matrix, uint8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_UINT8))
@@ -178,38 +188,41 @@ GET_SPARSEMATRIX(get_sparse_matrix, float64_t, TSGDataType(CT_MATRIX, ST_NONE, P
 GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_SPARSEMATRIX
 
-
-#define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
-{																								\
-	strings=NULL;																				\
-	num_str=0;																					\
-	max_string_len=0;																			\
-																								\
-	if (!file)																					\
-		SG_ERROR("File invalid.\n")															\
-																								\
-	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL); read_header(&dtype);			                        \
-	if (dtype!=datatype)																		\
-		SG_ERROR("Datatype mismatch\n")														\
-																								\
-	if (fread(&num_str, sizeof(int32_t), 1, file)!=1)											\
-		SG_ERROR("Failed to read number of strings\n")											\
-																								\
-	strings=SG_MALLOC(SGString<sg_type>, num_str);														\
-																								\
-	for (int32_t i=0; i<num_str; i++)															\
-	{																							\
-		int32_t len=0;																			\
-		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
-			SG_ERROR("Failed to read string length of string with idx=%d\n", i)				\
-		strings[i].slen=len;																	\
-		sg_type* str = SG_MALLOC(sg_type, len);														\
-		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
-			SG_ERROR("Failed to read string %d\n", i)											\
-		strings[i].string=str;																	\
-	}																							\
-}
+#define GET_STRING_LIST(fname, sg_type, datatype)                              \
+	void CBinaryFile::fname(                                                   \
+	    SGString<sg_type>*& strings, index_t& num_str,                         \
+	    index_t& max_string_len)                                               \
+	{                                                                          \
+		strings = NULL;                                                        \
+		num_str = 0;                                                           \
+		max_string_len = 0;                                                    \
+                                                                               \
+		if (!file)                                                             \
+			SG_ERROR("File invalid.\n")                                        \
+                                                                               \
+		TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);                        \
+		read_header(&dtype);                                                   \
+		if (dtype != datatype)                                                 \
+			SG_ERROR("Datatype mismatch\n")                                    \
+                                                                               \
+		if (fread(&num_str, sizeof(int32_t), 1, file) != 1)                    \
+			SG_ERROR("Failed to read number of strings\n")                     \
+                                                                               \
+		strings = SG_MALLOC(SGString<sg_type>, num_str);                       \
+                                                                               \
+		for (index_t i = 0; i < num_str; i++)                                  \
+		{                                                                      \
+			index_t len = 0;                                                   \
+			if (fread(&len, sizeof(int32_t), 1, file) != 1)                    \
+				SG_ERROR(                                                      \
+				    "Failed to read string length of string with idx=%d\n", i) \
+			strings[i].slen = len;                                             \
+			sg_type* str = SG_MALLOC(sg_type, len);                            \
+			if (fread(str, sizeof(sg_type), len, file) != (size_t)len)         \
+				SG_ERROR("Failed to read string %d\n", i)                      \
+			strings[i].string = str;                                           \
+		}                                                                      \
+	}
 
 GET_STRING_LIST(get_string_list, char, TSGDataType(CT_VECTOR, ST_NONE, PT_CHAR))
 GET_STRING_LIST(get_string_list, uint8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT8))
@@ -227,18 +240,19 @@ GET_STRING_LIST(get_string_list, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_
 
 /** set functions - to pass data from shogun to the target interface */
 
-#define SET_VECTOR(fname, sg_type, dtype)							\
-void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
-{																	\
-	if (!(file && vec))												\
-		SG_ERROR("File or vector invalid.\n")						\
-																	\
-	TSGDataType t dtype; write_header(&t);						    \
-																	\
-	if (fwrite(&len, sizeof(int32_t), 1, file)!=1 ||				\
-			fwrite(vec, sizeof(sg_type), len, file)!=(size_t) len)	\
-		SG_ERROR("Failed to write vector\n")						\
-}
+#define SET_VECTOR(fname, sg_type, dtype)                                      \
+	void CBinaryFile::fname(const sg_type* vec, index_t len)                   \
+	{                                                                          \
+		if (!(file && vec))                                                    \
+			SG_ERROR("File or vector invalid.\n")                              \
+                                                                               \
+		TSGDataType t dtype;                                                   \
+		write_header(&t);                                                      \
+                                                                               \
+		if (fwrite(&len, sizeof(int32_t), 1, file) != 1 ||                     \
+		    fwrite(vec, sizeof(sg_type), len, file) != (size_t)len)            \
+			SG_ERROR("Failed to write vector\n")                               \
+	}
 SET_VECTOR(set_vector, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
 SET_VECTOR(set_vector, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
 SET_VECTOR(set_vector, char, (CT_VECTOR, ST_NONE, PT_CHAR))
@@ -253,19 +267,22 @@ SET_VECTOR(set_vector, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
 SET_VECTOR(set_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef SET_VECTOR
 
-#define SET_MATRIX(fname, sg_type, dtype) \
-void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
-{																					\
-	if (!(file && matrix))															\
-		SG_ERROR("File or matrix invalid.\n")										\
-																					\
-	TSGDataType t dtype; write_header(&t);						                    \
-																					\
-	if (fwrite(&num_feat, sizeof(int32_t), 1, file)!=1 ||							\
-			fwrite(&num_vec, sizeof(int32_t), 1, file)!=1 ||						\
-			fwrite(matrix, sizeof(sg_type)*num_feat, num_vec, file)!=(size_t) num_vec)	\
-		SG_ERROR("Failed to write Matrix\n")										\
-}
+#define SET_MATRIX(fname, sg_type, dtype)                                      \
+	void CBinaryFile::fname(                                                   \
+	    const sg_type* matrix, index_t num_feat, index_t num_vec)              \
+	{                                                                          \
+		if (!(file && matrix))                                                 \
+			SG_ERROR("File or matrix invalid.\n")                              \
+                                                                               \
+		TSGDataType t dtype;                                                   \
+		write_header(&t);                                                      \
+                                                                               \
+		if (fwrite(&num_feat, sizeof(int32_t), 1, file) != 1 ||                \
+		    fwrite(&num_vec, sizeof(int32_t), 1, file) != 1 ||                 \
+		    fwrite(matrix, sizeof(sg_type) * num_feat, num_vec, file) !=       \
+		        (size_t)num_vec)                                               \
+			SG_ERROR("Failed to write Matrix\n")                               \
+	}
 SET_MATRIX(set_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
 SET_MATRIX(set_matrix, uint8_t, (CT_MATRIX, ST_NONE, PT_UINT8))
 SET_MATRIX(set_matrix, int8_t, (CT_MATRIX, ST_NONE, PT_INT8))
@@ -316,27 +333,31 @@ SET_NDARRAY(set_ndarray,float32_t,(CT_NDARRAY, ST_NONE, PT_FLOAT32));
 SET_NDARRAY(set_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef SET_NDARRAY
 
-#define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
-void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
-		int32_t num_feat, int32_t num_vec)					\
-{															\
-	if (!(file && matrix))									\
-		SG_ERROR("File or matrix invalid.\n")				\
-															\
-	TSGDataType t dtype; write_header(&t);					\
-															\
-	if (fwrite(&num_vec, sizeof(int32_t), 1, file)!=1)		\
-		SG_ERROR("Failed to write Sparse Matrix\n")		\
-															\
-	for (int32_t i=0; i<num_vec; i++)						\
-	{														\
-		SGSparseVectorEntry<sg_type>* vec = matrix[i].features;	\
-		int32_t len=matrix[i].num_feat_entries;				\
-		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||	\
-				(fwrite(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len))		\
-			SG_ERROR("Failed to write Sparse Matrix\n")	\
-	}														\
-}
+#define SET_SPARSEMATRIX(fname, sg_type, dtype)                                \
+	void CBinaryFile::fname(                                                   \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec)                                                       \
+	{                                                                          \
+		if (!(file && matrix))                                                 \
+			SG_ERROR("File or matrix invalid.\n")                              \
+                                                                               \
+		TSGDataType t dtype;                                                   \
+		write_header(&t);                                                      \
+                                                                               \
+		if (fwrite(&num_vec, sizeof(int32_t), 1, file) != 1)                   \
+			SG_ERROR("Failed to write Sparse Matrix\n")                        \
+                                                                               \
+		for (index_t i = 0; i < num_vec; i++)                                  \
+		{                                                                      \
+			SGSparseVectorEntry<sg_type>* vec = matrix[i].features;            \
+			int32_t len = matrix[i].num_feat_entries;                          \
+			if ((fwrite(&len, sizeof(int32_t), 1, file) != 1) ||               \
+			    (fwrite(                                                       \
+			         vec, sizeof(SGSparseVectorEntry<sg_type>), len, file) !=  \
+			     (size_t)len))                                                 \
+				SG_ERROR("Failed to write Sparse Matrix\n")                    \
+		}                                                                      \
+	}
 SET_SPARSEMATRIX(set_sparse_matrix, bool, (CT_MATRIX, ST_NONE, PT_BOOL))
 SET_SPARSEMATRIX(set_sparse_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
 SET_SPARSEMATRIX(set_sparse_matrix, uint8_t, (CT_MATRIX, ST_NONE, PT_UINT8))
@@ -352,21 +373,23 @@ SET_SPARSEMATRIX(set_sparse_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
 SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_SPARSEMATRIX
 
-#define SET_STRING_LIST(fname, sg_type, dtype) \
-void CBinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
-{																						\
-	if (!(file && strings))																\
-		SG_ERROR("File or strings invalid.\n")											\
-																						\
-	TSGDataType t dtype; write_header(&t);								                \
-	for (int32_t i=0; i<num_str; i++)													\
-	{																					\
-		int32_t len = strings[i].slen;												\
-		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||								\
-				(fwrite(strings[i].string, sizeof(sg_type), len, file)!= (size_t) len))	\
-			SG_ERROR("Failed to write Sparse Matrix\n")								\
-	}																					\
-}
+#define SET_STRING_LIST(fname, sg_type, dtype)                                 \
+	void CBinaryFile::fname(const SGString<sg_type>* strings, index_t num_str) \
+	{                                                                          \
+		if (!(file && strings))                                                \
+			SG_ERROR("File or strings invalid.\n")                             \
+                                                                               \
+		TSGDataType t dtype;                                                   \
+		write_header(&t);                                                      \
+		for (index_t i = 0; i < num_str; i++)                                  \
+		{                                                                      \
+			int32_t len = strings[i].slen;                                     \
+			if ((fwrite(&len, sizeof(int32_t), 1, file) != 1) ||               \
+			    (fwrite(strings[i].string, sizeof(sg_type), len, file) !=      \
+			     (size_t)len))                                                 \
+				SG_ERROR("Failed to write Sparse Matrix\n")                    \
+		}                                                                      \
+	}
 SET_STRING_LIST(set_string_list, char, (CT_VECTOR, ST_NONE, PT_CHAR))
 SET_STRING_LIST(set_string_list, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
 SET_STRING_LIST(set_string_list, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))

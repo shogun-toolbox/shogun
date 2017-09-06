@@ -32,21 +32,23 @@ CMulticlassModel::~CMulticlassModel()
 {
 }
 
-CStructuredLabels* CMulticlassModel::structured_labels_factory(int32_t num_labels)
+CStructuredLabels*
+CMulticlassModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMulticlassSOLabels(num_labels);
 }
 
-int32_t CMulticlassModel::get_dim() const
+index_t CMulticlassModel::get_dim() const
 {
 	// TODO make the casts safe!
-	int32_t num_classes = ((CMulticlassSOLabels*) m_labels)->get_num_classes();
-	int32_t feats_dim   = ((CDotFeatures*) m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMulticlassSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return feats_dim*num_classes;
 }
 
-SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector<float64_t>
+CMulticlassModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
 {
 	SGVector< float64_t > psi( get_dim() );
 	psi.zero();
@@ -64,12 +66,10 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 }
 
 CResultSet* CMulticlassModel::argmax(
-		SGVector< float64_t > w,
-		int32_t feat_idx,
-		bool const training)
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures* df = (CDotFeatures*) m_features;
-	int32_t feats_dim   = df->get_dim_feature_space();
+	index_t feats_dim = df->get_dim_feature_space();
 
 	if ( training )
 	{
@@ -82,7 +82,7 @@ CResultSet* CMulticlassModel::argmax(
 				"using it for prediction\n");
 	}
 
-	int32_t dim = get_dim();
+	index_t dim = get_dim();
 	ASSERT(dim == w.vlen)
 
 	// Find the class that gives the maximum score
@@ -90,7 +90,7 @@ CResultSet* CMulticlassModel::argmax(
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = -CMath::INFTY;
 
-	for ( int32_t c = 0 ; c < m_num_classes ; ++c )
+	for (index_t c = 0; c < m_num_classes; ++c)
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 		if ( training )
@@ -135,7 +135,7 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 	return delta_loss(rn1->value, rn2->value);
 }
 
-float64_t CMulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
+float64_t CMulticlassModel::delta_loss(index_t y1_idx, float64_t y2)
 {
 	REQUIRE(y1_idx >= 0 || y1_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");

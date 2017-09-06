@@ -130,8 +130,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t* alphas)
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* alphas)
 		{
 			return init_optimization(count, IDX, alphas, -1);
 		}
@@ -147,7 +147,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return if initializing was successful
 		 */
 		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t* alphas, int32_t tree_num);
+		    index_t count, index_t* IDX, float64_t* alphas, index_t tree_num);
 
 		/** delete optimization
 		 *
@@ -160,7 +160,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx)
+		virtual float64_t compute_optimized(index_t idx)
 		{
 			if (get_is_initialized())
 				return compute_by_tree(idx);
@@ -186,9 +186,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param factor factor
 		 */
 		virtual void compute_batch(
-			int32_t num_vec, int32_t* vec_idx, float64_t* target,
-			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** clear normal
 		 * subkernel functionality
@@ -211,7 +211,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight)
+		virtual void add_to_normal(index_t idx, float64_t weight)
 		{
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
@@ -229,7 +229,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels()
+		virtual index_t get_num_subkernels()
 		{
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				return ((CMultitaskKernelMklNormalizer*)normalizer)->get_num_betas();
@@ -245,8 +245,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		inline void compute_by_subkernel(
-			int32_t idx, float64_t * subkernel_contrib)
+		inline void
+		compute_by_subkernel(index_t idx, float64_t* subkernel_contrib)
 		{
 
 			if (get_is_initialized())
@@ -374,7 +374,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param LevelContrib level contribution
 		 * @return computed value
 		 */
-		void compute_by_tree(int32_t idx, float64_t *LevelContrib);
+		void compute_by_tree(index_t idx, float64_t* LevelContrib);
 
 		/** check if tree is initialized
 		 *
@@ -613,7 +613,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param weight weight
 		 */
-		void add_example_to_tree(int32_t idx, float64_t weight);
+		void add_example_to_tree(index_t idx, float64_t weight);
 
 		/** add example to single tree
 		 *
@@ -622,14 +622,14 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 */
 		void add_example_to_single_tree(
-			int32_t idx, float64_t weight, int32_t tree_num);
+		    index_t idx, float64_t weight, index_t tree_num);
 
 		/** add example to tree mismatch
 		 *
 		 * @param idx index
 		 * @param weight weight
 		 */
-		void add_example_to_tree_mismatch(int32_t idx, float64_t weight);
+		void add_example_to_tree_mismatch(index_t idx, float64_t weight);
 
 		/** add example to single tree mismatch
 		 *
@@ -638,14 +638,14 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 */
 		void add_example_to_single_tree_mismatch(
-			int32_t idx, float64_t weight, int32_t tree_num);
+		    index_t idx, float64_t weight, index_t tree_num);
 
 		/** compute by tree
 		 *
 		 * @param idx index
 		 * @return computed value
 		 */
-		float64_t compute_by_tree(int32_t idx);
+		float64_t compute_by_tree(index_t idx);
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -655,7 +655,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(index_t idx_a, index_t idx_b);
 
 		/** compute with mismatch
 		 *
@@ -666,7 +666,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_with_mismatch(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute without mismatch
 		 *
@@ -677,7 +677,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -688,7 +688,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch_matrix(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute using block
 		 *
@@ -698,8 +698,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		float64_t compute_using_block(char* avec, int32_t alen,
-			char* bvec, int32_t blen);
+		float64_t
+		compute_using_block(char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
@@ -715,15 +715,14 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		float64_t* weights;
 		/** degree */
-		int32_t weights_degree;
+		index_t weights_degree;
 		/** length */
-		int32_t weights_length;
-
+		index_t weights_length;
 
 		/** position weights */
 		float64_t* position_weights;
 		/** position weights */
-		int32_t position_weights_len;
+		index_t position_weights_len;
 		/** weights buffer */
 		float64_t* weights_buffer;
 		/** MKL step size */

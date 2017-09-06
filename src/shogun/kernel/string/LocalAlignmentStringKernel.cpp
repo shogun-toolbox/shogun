@@ -360,11 +360,11 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
 
 /* Return the log-probability of two sequences x and y under a pair HMM model */
 /* x and y are strings of aminoacid letters, e.g., "AABRS" */
-float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
+float64_t CLocalAlignmentStringKernel::compute(index_t idx_x, index_t idx_y)
 {
 	int32_t *aax, *aay;  /* to convert x and y into sequences of amino-acid indexes */
-	int32_t lx=0, ly=0;       /* lengths of x and y */
-	int32_t i, j;
+	index_t lx = 0, ly = 0; /* lengths of x and y */
+	index_t i, j;
 
 	bool free_x, free_y;
 	char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);

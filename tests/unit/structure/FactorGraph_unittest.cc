@@ -24,7 +24,7 @@ inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
 TEST(FactorGraph, compute_energies_data_indep)
 {
 	// Create one simple pairwise factor type
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -32,12 +32,12 @@ TEST(FactorGraph, compute_energies_data_indep)
 	w[1] = 0.2;
 	w[2] = -0.2;
 	w[3] = 1.0;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
 	// Create a factor graph from the model: 3 binary variables
-	SGVector<int32_t> vc(3);
+	SGVector<index_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
@@ -45,7 +45,7 @@ TEST(FactorGraph, compute_energies_data_indep)
 
 	// Add factors
 	SGVector<float64_t> data;
-	SGVector<int32_t> var_index(2);
+	SGVector<index_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -67,13 +67,13 @@ TEST(FactorGraph, compute_energies_data_indep)
 	fg.compute_energies();
 
 	CDynamicObjectArray* allfac = fg.get_factors();
-	for (int32_t fi = 0; fi < 3; fi++)
+	for (index_t fi = 0; fi < 3; fi++)
 	{
 		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
 		SGVector<float64_t> energies = ft->get_energies();
 		SG_UNREF(ft);
 
-		for (int32_t ei = 0; ei < energies.size(); ei++)
+		for (index_t ei = 0; ei < energies.size(); ei++)
 			EXPECT_NEAR(w[ei], energies[ei], 1E-10);
 	}
 
@@ -87,7 +87,7 @@ TEST(FactorGraph, compute_energies_data_indep)
 TEST(FactorGraph, evaluate_energy_data_indep)
 {
 	// Create one simple pairwise factor type
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -95,48 +95,48 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	w[1] = 0.3;
 	w[2] = 0.2;
 	w[3] = 0.0;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> card1(1);
+	SGVector<index_t> card1(1);
 	card1[0] = 2;
 	SGVector<float64_t> w1(2);
 	w1[0] = 0.1;
 	w1[1] = 0.7;
-	int32_t tid1 = 1;
+	index_t tid1 = 1;
 	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w1);
 	SG_REF(factortype1a);
 
 	SGVector<float64_t> w2(2);
 	w2[0] = 0.3;
 	w2[1] = 0.6;
-	int32_t tid2 = 2;
+	index_t tid2 = 2;
 	CTableFactorType* factortype1b = new CTableFactorType(tid2, card1, w2);
 	SG_REF(factortype1b);
 
 	// Create a factor graph from the model: 2 binary variables
-	SGVector<int32_t> vc(2);
+	SGVector<index_t> vc(2);
 	vc[0] = 2;
 	vc[1] = 2;
 	CFactorGraph fg(vc);
 
 	// Add factors
 	SGVector<float64_t> data;
-	SGVector<int32_t> var_index(2);
+	SGVector<index_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index, data);
 	SG_REF(fac1);
 	fg.add_factor(fac1);
 
-	SGVector<int32_t> var_index1(1);
+	SGVector<index_t> var_index1(1);
 	var_index1[0] = 0;
 	CFactor* fac1a = new CFactor(factortype1a, var_index1, data);
 	SG_REF(fac1a);
 	fg.add_factor(fac1a);
 
-	SGVector<int32_t> var_index2(1);
+	SGVector<index_t> var_index2(1);
 	var_index2[0] = 1;
 	CFactor* fac1b = new CFactor(factortype1b, var_index2, data);
 	SG_REF(fac1b);
@@ -144,7 +144,7 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 
 	fg.compute_energies();
 
-	SGVector<int32_t> state(2);
+	SGVector<index_t> state(2);
 	state[0] = 0;
 	state[1] = 0;
 	EXPECT_NEAR(0.4, fg.evaluate_energy(state), 1E-10);
@@ -173,21 +173,21 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 {
 	// Create one simple pairwise factor type
 	SGVector<float64_t> w;
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> card1(1);
+	SGVector<index_t> card1(1);
 	card1[0] = 2;
-	int32_t tid1 = 1;
+	index_t tid1 = 1;
 	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w);
 	SG_REF(factortype1a);
 
 	// Create a factor graph from the model: 2 binary variables
-	SGVector<int32_t> vc(2);
+	SGVector<index_t> vc(2);
 	vc[0] = 2;
 	vc[1] = 2;
 	CFactorGraph fg(vc);
@@ -198,7 +198,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	data1[1] = 0.3;
 	data1[2] = 0.2;
 	data1[3] = 0.0;
-	SGVector<int32_t> var_index(2);
+	SGVector<index_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index, data1);
@@ -208,7 +208,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SGVector<float64_t> data2(2);
 	data2[0] = 0.1;
 	data2[1] = 0.7;
-	SGVector<int32_t> var_index1(1);
+	SGVector<index_t> var_index1(1);
 	var_index1[0] = 0;
 	CFactor* fac1a = new CFactor(factortype1a, var_index1, data2);
 	SG_REF(fac1a);
@@ -217,7 +217,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SGVector<float64_t> data3(2);
 	data3[0] = 0.3;
 	data3[1] = 0.6;
-	SGVector<int32_t> var_index2(1);
+	SGVector<index_t> var_index2(1);
 	var_index2[0] = 1;
 	CFactor* fac1b = new CFactor(factortype1a, var_index2, data3);
 	SG_REF(fac1b);
@@ -226,7 +226,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	fg.compute_energies();
 
 	// Evaluation
-	SGVector<int32_t> state(2);
+	SGVector<index_t> state(2);
 	state[0] = 0;
 	state[1] = 0;
 	EXPECT_NEAR(0.4, fg.evaluate_energy(state), 1E-10);
@@ -253,7 +253,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 TEST(FactorGraph, evaluate_energy_param_data)
 {
 	// Create one simple pairwise factor type
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(8);
@@ -265,12 +265,12 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	w[5] = 0.6;
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
 	// Create a factor graph from the model: 3 binary variables
-	SGVector<int32_t> vc(3);
+	SGVector<index_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
@@ -280,7 +280,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<float64_t> data(2);
 	data[0] = 0.1;
 	data[1] = 0.2;
-	SGVector<int32_t> var_index(2);
+	SGVector<index_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -290,7 +290,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<float64_t> data1(2);
 	data1[0] = 0.3;
 	data1[1] = 0.4;
-	SGVector<int32_t> var_index1(2);
+	SGVector<index_t> var_index1(2);
 	var_index1[0] = 1;
 	var_index1[1] = 2;
 	CFactor* fac1a = new CFactor(factortype, var_index1, data1);
@@ -300,7 +300,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SGVector<float64_t> data2(2);
 	data2[0] = 0.5;
 	data2[1] = 0.6;
-	SGVector<int32_t> var_index2(2);
+	SGVector<index_t> var_index2(2);
 	var_index2[0] = 0;
 	var_index2[1] = 2;
 	CFactor* fac1b = new CFactor(factortype, var_index2, data2);
@@ -319,7 +319,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	gradients.zero();
 	CDynamicObjectArray* allfac = fg.get_factors();
 	//for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
-	int32_t fi = 0;
+	index_t fi = 0;
 	{
 		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
 		ft->compute_gradients(marginals, gradients);
@@ -345,7 +345,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 TEST(FactorGraph, evaluate_energy_param_data_sparse)
 {
 	// Create one simple pairwise factor type
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(8);
@@ -357,12 +357,12 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	w[5] = 0.6;
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
 	// Create a factor graph from the model: 3 binary variables
-	SGVector<int32_t> vc(3);
+	SGVector<index_t> vc(3);
 	vc[0] = 2;
 	vc[1] = 2;
 	vc[2] = 2;
@@ -376,7 +376,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 
 	// Add factors
 	SGSparseVector<float64_t> data(sdata, 2);
-	SGVector<int32_t> var_index(2);
+	SGVector<index_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
 	CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -390,7 +390,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	sdata1[1].entry = 0.4;
 
 	SGSparseVector<float64_t> data1(sdata1, 2);
-	SGVector<int32_t> var_index1(2);
+	SGVector<index_t> var_index1(2);
 	var_index1[0] = 1;
 	var_index1[1] = 2;
 	CFactor* fac1a = new CFactor(factortype, var_index1, data1);
@@ -404,7 +404,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	sdata2[1].entry = 0.6;
 
 	SGSparseVector<float64_t> data2(sdata2, 2);
-	SGVector<int32_t> var_index2(2);
+	SGVector<index_t> var_index2(2);
 	var_index2[0] = 0;
 	var_index2[1] = 2;
 	CFactor* fac1b = new CFactor(factortype, var_index2, data2);
@@ -422,7 +422,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SGVector<float64_t> gradients(8);
 	gradients.zero();
 	CDynamicObjectArray* allfac = fg.get_factors();
-	for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
+	for (index_t fi = 0; fi < allfac->get_num_elements(); fi++)
 	{
 		CFactor* ft = dynamic_cast<CFactor*>(allfac->get_element(fi));
 		ft->compute_gradients(marginals, gradients);
@@ -451,7 +451,7 @@ TEST(FactorGraph, structure_analysis)
 	int hh = 3;
 	int ww = 3;
 
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -459,23 +459,23 @@ TEST(FactorGraph, structure_analysis)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> vc(hh*ww);
-	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	SGVector<index_t> vc(hh * ww);
+	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
 	// Add factors
-	for (int32_t x = 0; x < ww; x++)
+	for (index_t x = 0; x < ww; x++)
 	{
-		for (int32_t y = 0; y < hh; y++)
+		for (index_t y = 0; y < hh; y++)
 		{
 			if (x > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -485,7 +485,7 @@ TEST(FactorGraph, structure_analysis)
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -508,7 +508,7 @@ TEST(FactorGraph, structure_analysis_loopy)
 	int hh = 3;
 	int ww = 3;
 
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -516,23 +516,23 @@ TEST(FactorGraph, structure_analysis_loopy)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> vc(hh*ww);
-	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	SGVector<index_t> vc(hh * ww);
+	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
 	// Add factors
-	for (int32_t x = 0; x < ww; x++)
+	for (index_t x = 0; x < ww; x++)
 	{
-		for (int32_t y = 0; y < hh; y++)
+		for (index_t y = 0; y < hh; y++)
 		{
 			if (x > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -542,7 +542,7 @@ TEST(FactorGraph, structure_analysis_loopy)
 			if (y > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
@@ -565,7 +565,7 @@ TEST(FactorGraph, structure_analysis_disconnected)
 	int hh = 3;
 	int ww = 3;
 
-	SGVector<int32_t> card(2);
+	SGVector<index_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	SGVector<float64_t> w(4);
@@ -573,23 +573,23 @@ TEST(FactorGraph, structure_analysis_disconnected)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	int32_t tid = 0;
+	index_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<int32_t> vc(hh*ww);
-	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	SGVector<index_t> vc(hh * ww);
+	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
 	// Add factors
-	for (int32_t x = 0; x < ww; x++)
+	for (index_t x = 0; x < ww; x++)
 	{
-		for (int32_t y = 0; y < hh; y++)
+		for (index_t y = 0; y < hh; y++)
 		{
 			if (x > 0)
 			{
 				SGVector<float64_t> data;
-				SGVector<int32_t> var_index(2);
+				SGVector<index_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);

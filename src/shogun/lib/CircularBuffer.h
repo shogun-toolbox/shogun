@@ -124,8 +124,9 @@ private:
 					bool from_buffer_begin);
 
 	/** detach memory block from buffer */
-	void detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes,
-					bool from_buffer_begin);
+	void detach_chunk(
+		char** dest, index_t* dest_size, index_t dest_offset, int32_t num_bytes,
+		bool from_buffer_begin);
 
 	/** returns true or false based on whether
 	 * there exists another token in the text

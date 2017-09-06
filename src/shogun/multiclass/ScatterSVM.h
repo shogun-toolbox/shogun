@@ -80,7 +80,7 @@ class CScatterSVM : public CMulticlassSVM
 		 * @param num number of example to classify
 		 * @return resulting classification
 		 */
-		virtual float64_t apply_one(int32_t num);
+		virtual float64_t apply_one(index_t num);
 
 		/** classify one vs rest
 		 *
@@ -118,11 +118,11 @@ class CScatterSVM : public CMulticlassSVM
 
 		/** norm of w_c */
 		float64_t* norm_wc;
-		int32_t norm_wc_len;
+		index_t norm_wc_len;
 
 		/** norm of w_cw */
 		float64_t* norm_wcw;
-		int32_t norm_wcw_len;
+		index_t norm_wcw_len;
 
 		/** ScatterSVM rho */
 		float64_t rho;

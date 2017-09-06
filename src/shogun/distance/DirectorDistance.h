@@ -109,7 +109,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return CDistance::get_num_vec_lhs();
 		}
@@ -118,7 +118,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return CDistance::get_num_vec_rhs();
 		}
@@ -209,7 +209,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t x, int32_t y)
+		virtual float64_t compute(index_t x, index_t y)
 		{
 			return distance_function(x, y);
 		}

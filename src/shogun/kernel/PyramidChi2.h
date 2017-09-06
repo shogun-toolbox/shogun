@@ -47,10 +47,9 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	CPyramidChi2(int32_t size, int32_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		int32_t width_computation_type2,
-		float64_t width2);
+	CPyramidChi2(
+		index_t size, index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 	/** constructor
 	 *
@@ -72,10 +71,8 @@ public:
 	 */
 	CPyramidChi2(
 		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
-		int32_t size, int32_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		int32_t width_computation_type2,
-		float64_t width2 );
+		index_t size, index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 	/** init
 	 *
@@ -113,10 +110,9 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	virtual void setparams_pychi2(int32_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		int32_t width_computation_type2,
-		float64_t width2);
+	virtual void setparams_pychi2(
+		index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 protected:
 	/** compute kernel function for features a and b
@@ -125,26 +121,22 @@ protected:
 	 * @param idx_b index of feature vector b
 	 * @return computed kernel function
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 protected:
 
 	/** number of pyramidcells across all pyramidlevel */
-	int32_t num_cells;
+	index_t num_cells;
 
 	/** vector of weights for each pyramid cell*/
 	float64_t* weights;
 
 	/** width_computation_type */
-	int32_t width_computation_type;
-		/** width */
+	index_t width_computation_type;
+	/** width */
 	float64_t width;
 	/** in case of adaptive width computation: how many features to use */
-	int32_t num_randfeats_forwidthcomputation;
-
-
-
-
+	index_t num_randfeats_forwidthcomputation;
 };
 }
 #endif /*PYRAMIDCHI2_H_*/

@@ -48,16 +48,16 @@ public:
     /** prepare for the next training phase.
      * @return The subset that should be applied. Return NULL when no subset is needed.
      */
-    virtual SGVector<int32_t> train_prepare_next();
+	virtual SGVector<index_t> train_prepare_next();
 
-    /** decide the final label.
-     * @param outputs a vector of output from each machine (in that order)
-     */
-    virtual int32_t decide_label(SGVector<float64_t> outputs);
+	/** decide the final label.
+	 * @param outputs a vector of output from each machine (in that order)
+	 */
+	virtual int32_t decide_label(SGVector<float64_t> outputs);
 
-    /** get number of machines used in this strategy.
-     */
-    virtual int32_t get_num_machines();
+	/** get number of machines used in this strategy.
+	 */
+	virtual int32_t get_num_machines();
 
 protected:
     /** ECOC encoder */

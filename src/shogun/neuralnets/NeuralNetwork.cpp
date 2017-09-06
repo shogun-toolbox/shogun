@@ -712,7 +712,7 @@ void CNeuralNetwork::set_labels(CLabels* lab)
 	CMachine::set_labels(lab);
 }
 
-SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(int32_t i)
+SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(index_t i)
 {
 	REQUIRE(i<m_num_layers && i >= 0, "Layer index (%i) out of range\n", i);
 

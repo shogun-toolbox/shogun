@@ -29,8 +29,7 @@ CGraphCut::CGraphCut(CFactorGraph* fg)
 	init();
 }
 
-CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
-	: CMAPInferImpl()
+CGraphCut::CGraphCut(index_t num_nodes, index_t num_edges) : CMAPInferImpl()
 {
 	init();
 
@@ -72,9 +71,9 @@ void CGraphCut::init()
 
 	CDynamicObjectArray* facs = m_fg->get_factors();
 
-	SGVector<int32_t> cards = m_fg->get_cardinalities();
+	SGVector<index_t> cards = m_fg->get_cardinalities();
 
-	for (int32_t i = 0; i < cards.size(); i++)
+	for (index_t i = 0; i < cards.size(); i++)
 	{
 		if (cards[i] != 2)
 		{
@@ -82,14 +81,14 @@ void CGraphCut::init()
 		}
 	}
 
-	m_num_factors_at_order = SGVector<int32_t> (4);
+	m_num_factors_at_order = SGVector<index_t>(4);
 	m_num_factors_at_order.zero();
 
-	for (int32_t i = 0; i < facs->get_num_elements(); i++)
+	for (index_t i = 0; i < facs->get_num_elements(); i++)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
 
-		int32_t num_vars = fac->get_num_vars();
+		index_t num_vars = fac->get_num_vars();
 
 		SG_UNREF(fac);
 
@@ -103,13 +102,14 @@ void CGraphCut::init()
 	}
 
 	m_num_variables = m_fg->get_num_vars();
-	int32_t max_num_edges = m_num_factors_at_order[2] + 3 * m_num_factors_at_order[3];
+	index_t max_num_edges =
+	    m_num_factors_at_order[2] + 3 * m_num_factors_at_order[3];
 	m_num_nodes = m_num_variables + m_num_factors_at_order[3];
 
 	// build s-t graph
 	build_st_graph(m_num_nodes, max_num_edges);
 
-	for (int32_t j = 0; j < m_fg->get_num_factors(); j++)
+	for (index_t j = 0; j < m_fg->get_num_factors(); j++)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(j));
 		add_factor(fac);
@@ -119,7 +119,7 @@ void CGraphCut::init()
 	SG_UNREF(facs);
 }
 
-void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
+void CGraphCut::build_st_graph(index_t num_nodes, index_t num_edges)
 {
 	m_num_nodes = num_nodes;
 
@@ -128,7 +128,7 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 	m_edges = SG_MALLOC(GCEdge, 2 * num_edges);
 	m_edges_last = m_edges;
 
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		m_nodes[i].id = i;
 		m_nodes[i].tree_cap = 0;
@@ -161,7 +161,7 @@ void CGraphCut::init_maxflow()
 
 	m_timestamp = 0;
 
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		node_i = m_nodes + i;
 		node_i->next = NULL;
@@ -190,7 +190,7 @@ void CGraphCut::init_maxflow()
 	}
 }
 
-float64_t CGraphCut::inference(SGVector<int32_t> assignment)
+float64_t CGraphCut::inference(SGVector<index_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
 	        "%s::inference(): the output assignment should be prepared as"
@@ -200,7 +200,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	init_maxflow();
 	compute_maxflow();
 
-	for (int32_t vi = 0; vi < assignment.size(); vi++)
+	for (index_t vi = 0; vi < assignment.size(); vi++)
 	{
 		assignment[vi] = get_assignment(vi) == SOURCE ? 0 : 1;
 	}
@@ -214,14 +214,14 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 
 void CGraphCut::add_factor(CFactor* factor)
 {
-	SGVector<int32_t> fcards = factor->get_cardinalities();
+	SGVector<index_t> fcards = factor->get_cardinalities();
 
-	for (int32_t i = 0; i < fcards.size(); i++)
+	for (index_t i = 0; i < fcards.size(); i++)
 	{
 		ASSERT(fcards[i] == 2);
 	}
 
-	int32_t f_order = factor->get_num_vars();
+	index_t f_order = factor->get_num_vars();
 
 	switch (f_order)
 	{
@@ -229,10 +229,10 @@ void CGraphCut::add_factor(CFactor* factor)
 		break;
 	case 1:
 	{
-		SGVector<int32_t> fvars = factor->get_variables();
+		SGVector<index_t> fvars = factor->get_variables();
 		SGVector<float64_t> fenrgs = factor->get_energies();
 		ASSERT(fenrgs.size() == 2);
-		int32_t var = fvars[0];
+		index_t var = fvars[0];
 		float64_t v0 = fenrgs[0];
 		float64_t v1 = fenrgs[1];
 
@@ -248,10 +248,10 @@ void CGraphCut::add_factor(CFactor* factor)
 	break;
 	case 2:
 	{
-		SGVector<int32_t> fvars = factor->get_variables();
+		SGVector<index_t> fvars = factor->get_variables();
 		SGVector<float64_t> fenrgs = factor->get_energies();
-		int32_t var0 = fvars[0];
-		int32_t var1 = fvars[1];
+		index_t var0 = fvars[0];
+		index_t var1 = fvars[1];
 		float64_t A = fenrgs[0]; //E{0,0} = {y_var0, y_var1}
 		float64_t B = fenrgs[2]; //E{0,1}
 		float64_t C = fenrgs[1]; //E{1,0}
@@ -303,11 +303,11 @@ void CGraphCut::add_factor(CFactor* factor)
 	break;
 	case 3:
 	{
-		SGVector<int32_t> fvars = factor->get_variables();
+		SGVector<index_t> fvars = factor->get_variables();
 		SGVector<float64_t> fenrgs = factor->get_energies();
-		int32_t var0 = fvars[0];
-		int32_t var1 = fvars[1];
-		int32_t var2 = fvars[2];
+		index_t var0 = fvars[0];
+		index_t var1 = fvars[1];
+		index_t var2 = fvars[2];
 		float64_t A = fenrgs[0]; //{0,0,0}
 		float64_t E = fenrgs[1]; //{1,0,0}
 		float64_t C = fenrgs[2]; //{0,1,0}
@@ -317,7 +317,7 @@ void CGraphCut::add_factor(CFactor* factor)
 		float64_t D = fenrgs[6]; //{0,1,1}
 		float64_t H = fenrgs[7]; //{1,1,1}
 
-		int32_t id = get_tripleId(fvars);
+		index_t id = get_tripleId(fvars);
 		float64_t P = (A + D + F + G) - (B + C + E + H);
 
 		if (P >= 0.0)
@@ -404,14 +404,14 @@ void CGraphCut::add_factor(CFactor* factor)
 	}
 }
 
-int32_t CGraphCut::get_tripleId(SGVector<int32_t> triple)
+index_t CGraphCut::get_tripleId(SGVector<index_t> triple)
 {
 	// search for triple in list
-	int32_t counter = m_num_variables;
+	index_t counter = m_num_variables;
 
-	for (int32_t i = 0; i < m_triple_list.get_num_elements(); i++)
+	for (index_t i = 0; i < m_triple_list.get_num_elements(); i++)
 	{
-		SGVector<int32_t> vec = m_triple_list[i];
+		SGVector<index_t> vec = m_triple_list[i];
 
 		if (triple[0] == vec[0] && triple[1] == vec[1] && triple[2] == vec[2])
 		{
@@ -428,7 +428,8 @@ int32_t CGraphCut::get_tripleId(SGVector<int32_t> triple)
 	return counter;
 }
 
-void CGraphCut::add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink)
+void CGraphCut::add_tweights(
+    index_t i, float64_t cap_source, float64_t cap_sink)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 
@@ -448,7 +449,8 @@ void CGraphCut::add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink
 	m_nodes[i].tree_cap = cap_source - cap_sink;
 }
 
-void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t reverse_capacity)
+void CGraphCut::add_edge(
+    index_t i, index_t j, float64_t capacity, float64_t reverse_capacity)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 	ASSERT(j >= 0 && j < m_num_nodes);
@@ -849,8 +851,8 @@ void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 	GCEdge* edge0;
 	GCEdge* edge0_min = NULL;
 	GCEdge* edge;
-	int32_t d;
-	int32_t d_min = INFINITE_D;
+	index_t d;
+	index_t d_min = INFINITE_D;
 
 	// trying to find a new parent
 	for (edge0 = node_i->first; edge0 != NULL; edge0 = edge0->next)
@@ -941,7 +943,8 @@ void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 	}
 }
 
-ETerminalType CGraphCut::get_assignment(int32_t i, ETerminalType default_terminal)
+ETerminalType
+CGraphCut::get_assignment(index_t i, ETerminalType default_terminal)
 {
 	if (m_nodes[i].parent != NULL)
 	{
@@ -956,7 +959,7 @@ ETerminalType CGraphCut::get_assignment(int32_t i, ETerminalType default_termina
 void CGraphCut::print_graph()
 {
 	// print SOURCE-node_i and node_i->SINK edges
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		GCNode* node_i = m_nodes + i;
 		if (node_i->parent == TERMINAL_EDGE)
@@ -973,7 +976,7 @@ void CGraphCut::print_graph()
 	}
 
 	// print node_i->node_j edges
-	for (int32_t i = 0; i < m_num_edges; i++)
+	for (index_t i = 0; i < m_num_edges; i++)
 	{
 		GCEdge* edge = m_edges + i;
 		SG_SPRINT("\n %d -> %d, cost = %f", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
@@ -983,7 +986,7 @@ void CGraphCut::print_graph()
 
 void CGraphCut::print_assignment()
 {
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		GCNode* node_i = m_nodes + i;
 
@@ -1002,11 +1005,11 @@ void CGraphCut::test_consistency(GCNode* current_node)
 {
 	GCNode* node_i;
 	GCEdge* edge;
-	int32_t num1 = 0;
-	int32_t num2 = 0;
+	index_t num1 = 0;
+	index_t num2 = 0;
 
 	// test whether all nodes i with i->next!=NULL are indeed in the queue
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		node_i = m_nodes + i;
 		if (node_i->next || node_i == current_node)
@@ -1015,7 +1018,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 		}
 	}
 
-	for (int32_t r = 0; r < 3; r++)
+	for (index_t r = 0; r < 3; r++)
 	{
 		node_i = (r == 2) ? current_node : m_active_first[r];
 
@@ -1040,7 +1043,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 
 	ASSERT(num1 == num2);
 
-	for (int32_t i = 0; i < m_num_nodes; i++)
+	for (index_t i = 0; i < m_num_nodes; i++)
 	{
 		node_i = m_nodes + i;
 
