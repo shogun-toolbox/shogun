@@ -315,13 +315,12 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec= SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
     float64_t sum0=0 ;
-    for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
 
     // no shift
-    for (int32_t i=0; i<alen; i++)
+    for (auto i=0; i<alen; i++)
     {
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
@@ -378,27 +377,25 @@ float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
 				sumi2 += weights[j+degree*mismatches];
 			}
 			if (position_weights!=NULL)
-				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+				max_shift_vec.vector[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
-				max_shift_vec[k-1] += sumi1 + sumi2 ;
+				max_shift_vec.vector[k-1] += sumi1 + sumi2 ;
 		} ;
     }
 
     float64_t result = sum0 ;
     for (int32_t i=0; i<max_shift; i++)
-		result += max_shift_vec[i]/(2*(i+1)) ;
+		result += max_shift_vec.vector[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
     return result ;
 }
 
 float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
 	float64_t sum0=0 ;
-	for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
 
 	// no shift
 	for (int32_t i=0; i<alen; i++)
@@ -443,17 +440,15 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 				sumi2 += weights[j];
 			}
 			if (position_weights!=NULL)
-				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+				max_shift_vec.vector[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
-				max_shift_vec[k-1] += sumi1 + sumi2 ;
+				max_shift_vec.vector[k-1] += sumi1 + sumi2 ;
 		} ;
 	}
 
 	float64_t result = sum0 ;
 	for (int32_t i=0; i<max_shift; i++)
-		result += max_shift_vec[i]/(2*(i+1)) ;
-
-	SG_FREE(max_shift_vec);
+		result += max_shift_vec.vector[i]/(2*(i+1)) ;
 
 	return result ;
 }
@@ -461,10 +456,9 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
 	float64_t sum0=0 ;
-	for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
 
 	// no shift
 	for (int32_t i=0; i<alen; i++)
@@ -508,17 +502,16 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 				sumi2 += weights[i*degree+j];
 			}
 			if (position_weights!=NULL)
-				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+				max_shift_vec.vector[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
-				max_shift_vec[k-1] += sumi1 + sumi2 ;
+				max_shift_vec.vector[k-1] += sumi1 + sumi2 ;
 		} ;
 	}
 
 	float64_t result = sum0 ;
 	for (int32_t i=0; i<max_shift; i++)
-		result += max_shift_vec[i]/(2*(i+1)) ;
+		result += max_shift_vec.vector[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -526,10 +519,9 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 	char* avec, float64_t* pos_weights_lhs, int32_t alen, char* bvec,
 	float64_t* pos_weights_rhs, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
 	float64_t sum0=0 ;
-	for (index_t i = 0; i < max_shift; i++)
-		max_shift_vec[i]=0 ;
 
 	// no shift
 	for (index_t i = 0; i < alen; i++)
@@ -587,17 +579,16 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 				sumi2 += weights[j]*(posweight_lhs/(j+1))*(posweight_rhs/(j+1)) ;
 			}
 			if (position_weights!=NULL)
-				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+				max_shift_vec.vector[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
-				max_shift_vec[k-1] += sumi1 + sumi2 ;
+				max_shift_vec.vector[k-1] += sumi1 + sumi2 ;
 		} ;
 	}
 
 	float64_t result = sum0 ;
 	for (index_t i = 0; i < max_shift; i++)
-		result += max_shift_vec[i]/(2*(i+1)) ;
+		result += max_shift_vec.vector[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -1241,7 +1232,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	ASSERT(result)
 	create_empty_tries();
 
-	int32_t num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
+	auto num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0)
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
@@ -1258,7 +1249,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	   auto pb = progress(range(num_feat), *this->io);
 	   // TODO: replace with the new signal
 	   // for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-	   for (int32_t j = 0; j < num_feat; j++)
+	   for (auto j = 0; j < num_feat; j++)
 	   {
 		   init_optimization(num_suppvec, IDX, alphas, j);
 		   S_THREAD_PARAM_WDS<DNATrie> params;
@@ -1348,7 +1339,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 }
 
 float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
-    int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* result,
+    int32_t max_degree, index_t& num_feat, int32_t& num_sym, float64_t* result,
     index_t num_suppvec, index_t* IDX, float64_t* alphas)
 {
 	ASSERT(position_weights_lhs==NULL)

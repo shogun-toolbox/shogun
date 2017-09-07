@@ -528,7 +528,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return computed scores
 		 */
 		float64_t* compute_scoring(
-		    int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+		    int32_t max_degree, index_t& num_feat, int32_t& num_sym,
 		    float64_t* target, index_t num_suppvec, index_t* IDX,
 		    float64_t* weights);
 
