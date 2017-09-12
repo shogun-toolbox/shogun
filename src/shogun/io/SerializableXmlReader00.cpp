@@ -233,7 +233,7 @@ SerializableXmlReader00::read_sparseentry_begin_wrapped(
 
 	if ((buf = xmlGetProp(m_file->m_stack_stream.back(), BAD_CAST
 						  STR_PROP_FEATINDEX)) == NULL) return false;
-	if (sscanf((const char*) buf, "%" PRIi32, feat_index) != 1)
+	if (sscanf((const char*) buf, "%" PRIi64, feat_index) != 1)
 		result = false;
 	xmlFree(buf); if (!result) return false;
 
@@ -267,7 +267,7 @@ SerializableXmlReader00::read_item_begin_wrapped(
 		{
 			if (x != 0) { m_file->pop_node(); m_file->pop_node(); }
 
-			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi32, x);
+			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi64, x);
 			if (!m_file->join_node(BAD_CAST buf_x)) return false;
 			if (!m_file->join_node(BAD_CAST STR_ITEM)) return false;
 			return true;

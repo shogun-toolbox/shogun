@@ -309,7 +309,7 @@ CSerializableXmlFile::write_sparseentry_begin_wrapped(
 	push_node(BAD_CAST STR_SPARSE);
 
 	string_t buf;
-	snprintf(buf, STRING_LEN, "%" PRIi32, feat_index);
+	snprintf(buf, STRING_LEN, "%" PRIi64, feat_index);
 	if (xmlNewProp(m_stack_stream.back(), BAD_CAST STR_PROP_FEATINDEX,
 				   BAD_CAST buf) == NULL) return false;
 	return true;
@@ -334,7 +334,7 @@ CSerializableXmlFile::write_item_begin_wrapped(
 		{
 			if (x != 0) pop_node();
 
-			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi32, x);
+			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi64, x);
 			if (!push_node(BAD_CAST buf_x)) return false;
 		}
 	}
