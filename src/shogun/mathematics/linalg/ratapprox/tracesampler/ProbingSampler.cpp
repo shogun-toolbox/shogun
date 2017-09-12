@@ -16,6 +16,7 @@
 #include <cstring>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGString.h>
+#include <shogun/lib/memory.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Random.h>
@@ -167,14 +168,7 @@ void CProbingSampler::precompute()
 		"dimension mismatch, %d vs %d!\n", vi_VertexColors.size(), m_dimension);
 
 	m_coloring_vector=SGVector<int32_t>(vi_VertexColors.size());
-
-	for (std::vector<int32_t>::iterator it=vi_VertexColors.begin();
-		it!=vi_VertexColors.end(); it++)
-	{
-		auto i =
-			static_cast<index_t>(std::distance(vi_VertexColors.begin(), it));
-		m_coloring_vector[i]=*it;
-	}
+	sg_memcpy(m_coloring_vector.vector, vi_VertexColors.data(), m_coloring_vector.vlen*sizeof(int32_t));
 
 	Map<VectorXi> colors(m_coloring_vector.vector, m_coloring_vector.vlen);
 	m_num_samples=colors.maxCoeff()+1;
@@ -198,7 +192,7 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 	SGVector<float64_t> s(m_dimension);
 	s.set_const(0.0);
 
-	for (index_t i=0; i<m_dimension; ++i)
+	for (auto i=0; i<m_dimension; ++i)
 	{
 		if (m_coloring_vector[i]==idx)
 		{

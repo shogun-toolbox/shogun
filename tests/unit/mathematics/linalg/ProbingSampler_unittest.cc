@@ -125,14 +125,14 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 TEST(ProbingSampler, mean_variance)
 {
-	const int32_t size = 1000;
+	const index_t size = 1000;
 	SGSparseMatrix<float64_t> m(size, size);
 
-	for (int32_t i = 0; i < size; ++i)
+	for (auto i = 0; i < size; ++i)
 		m(i,i)=1;
-	for (int32_t i = 0; i < size - 1; ++i)
+	for (auto i = 0; i < size - 1; ++i)
 		m(i,i+1)=1;
-	for (int32_t i = 0; i < size - 1; ++i)
+	for (auto i = 0; i < size - 1; ++i)
 		m(i+1,i)=1;
 
 	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(m);
@@ -141,8 +141,8 @@ TEST(ProbingSampler, mean_variance)
 	CProbingSampler* trace_sampler=new CProbingSampler(A);
 	trace_sampler->precompute();
 
-	int32_t num_samples = trace_sampler->get_num_samples();
-	for (int32_t i = 0; i < num_samples; ++i)
+	auto num_samples = trace_sampler->get_num_samples();
+	for (auto i = 0; i < num_samples; ++i)
 	{
 		const SGVector<float64_t>& sample=trace_sampler->sample(i);
 		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);
