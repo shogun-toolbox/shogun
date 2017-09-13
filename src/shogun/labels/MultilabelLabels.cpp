@@ -253,6 +253,10 @@ template
 SGVector <float64_t> CMultilabelLabels::to_dense <int32_t, float64_t>
 (SGVector <int32_t> *, index_t, float64_t, float64_t);
 
+template
+SGVector <float64_t> CMultilabelLabels::to_dense <index_t, float64_t>
+(SGVector <index_t> *, index_t, float64_t, float64_t);
+
 void CMultilabelLabels::set_label(index_t j, SGVector<index_t> label)
 {
 	REQUIRE(j < get_num_labels(),
