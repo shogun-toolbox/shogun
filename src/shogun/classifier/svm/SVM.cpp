@@ -159,7 +159,7 @@ bool CSVM::load(FILE* modelfl)
 		line_number++;
 	}
 
-	for (int32_t i=0; i<get_num_support_vectors(); i++)
+	for (auto i=0; i<get_num_support_vectors(); i++)
 	{
 		double_buffer=0;
 		int_buffer=0;
@@ -207,15 +207,15 @@ bool CSVM::save(FILE* modelfl)
 
 	SG_INFO("Writing model file...")
 	fprintf(modelfl,"%%SVM\n");
-	fprintf(modelfl, "numsv=%ld;\n", get_num_support_vectors());
+	fprintf(modelfl, "numsv=%" PRIi64 ";\n", get_num_support_vectors());
 	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
 	fprintf(modelfl,"b=%+10.16e;\n",get_bias());
 
 	fprintf(modelfl, "alphas=\[\n");
 
-	for(int32_t i=0; i<get_num_support_vectors(); i++)
+	for(auto i=0; i<get_num_support_vectors(); i++)
 		fprintf(
-		    modelfl, "\t[%+10.16e,%ld];\n", CSVM::get_alpha(i),
+		    modelfl, "\t[%+10.16e,%" PRIi64 "];\n", CSVM::get_alpha(i),
 		    get_support_vector(i));
 
 	fprintf(modelfl, "];\n");
@@ -237,19 +237,19 @@ void CSVM::set_callback_function(CMKL* m, bool (*cb)
 
 float64_t CSVM::compute_svm_dual_objective()
 {
-	int32_t n=get_num_support_vectors();
+	auto n=get_num_support_vectors();
 
 	if (m_labels && kernel)
 	{
 		objective=0;
-		for (int32_t i=0; i<n; i++)
+		for (index_t i=0; i<n; i++)
 		{
-			int32_t ii=get_support_vector(i);
+			auto ii=get_support_vector(i);
 			objective-=get_alpha(i)*((CBinaryLabels*) m_labels)->get_label(ii);
 
-			for (int32_t j=0; j<n; j++)
+			for (index_t j=0; j<n; j++)
 			{
-				int32_t jj=get_support_vector(j);
+				auto jj=get_support_vector(j);
 				objective+=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 		}
@@ -262,7 +262,7 @@ float64_t CSVM::compute_svm_dual_objective()
 
 float64_t CSVM::compute_svm_primal_objective()
 {
-	int32_t n=get_num_support_vectors();
+	auto n=get_num_support_vectors();
 	float64_t regularizer=0;
 	float64_t loss=0;
 
@@ -276,12 +276,12 @@ float64_t CSVM::compute_svm_primal_objective()
 			C2_tmp=get_C2();
 		}
 
-		for (int32_t i=0; i<n; i++)
+		for (index_t i=0; i<n; i++)
 		{
-			int32_t ii=get_support_vector(i);
-			for (int32_t j=0; j<n; j++)
+			auto ii=get_support_vector(i);
+			for (index_t j=0; j<n; j++)
 			{
-				int32_t jj=get_support_vector(j);
+				auto jj=get_support_vector(j);
 				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 
@@ -314,7 +314,7 @@ void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
 	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n")
 
-	int32_t num_labels=m_labels->get_num_labels();
+	auto num_labels=m_labels->get_num_labels();
 
 	if (num_labels != linear_term.vlen)
 	{
