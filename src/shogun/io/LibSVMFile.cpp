@@ -369,7 +369,7 @@ SET_LABELED_SPARSE_MATRIX(SCNu16, uint16_t)
 			for (index_t j = 0; j < matrix[i].num_feat_entries; j++)           \
 			{                                                                  \
 				fprintf(                                                       \
-				    file, "%ld%c%" format " ",                                \
+				    file, "%" PRIi64 "%c%" format " ",                                \
 				    matrix[i].features[j].feat_index + 1, m_delimiter_feat,    \
 				    matrix[i].features[j].entry);                              \
 			}                                                                  \
