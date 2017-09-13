@@ -269,24 +269,24 @@ bool CMulticlassSVM::save(FILE* modelfl)
 	SG_INFO("Writing model file...")
 	fprintf(modelfl,"%%MultiClassSVM\n");
 	fprintf(modelfl,"num_classes=%d;\n", m_multiclass_strategy->get_num_classes());
-	fprintf(modelfl, "num_svms=%lld;\n", m_machines->get_num_elements());
+	fprintf(modelfl, "num_svms=%" PRIi64 ";\n", m_machines->get_num_elements());
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (index_t i=0; i<m_machines->get_num_elements(); i++)
 	{
 		CSVM* svm=get_svm(i);
 		ASSERT(svm)
 		fprintf(
-		    modelfl, "\n%%SVM %d of %lld\n", i,
+		    modelfl, "\n%%SVM % " PRIi64 " of %" PRIi64 "\n", i,
 		    m_machines->get_num_elements() - 1);
-		fprintf(modelfl, "numsv%d=%lld;\n", i, svm->get_num_support_vectors());
-		fprintf(modelfl,"b%d=%+10.16e;\n",i,svm->get_bias());
+		fprintf(modelfl, "numsv%" PRIi64 "=%" PRIi64 ";\n", i, svm->get_num_support_vectors());
+		fprintf(modelfl,"b%" PRIi64 "=%+10.16e;\n",i,svm->get_bias());
 
-		fprintf(modelfl, "alphas%d=[\n", i);
+		fprintf(modelfl, "alphas%" PRIi64 "=[\n", i);
 
-		for(int32_t j=0; j<svm->get_num_support_vectors(); j++)
+		for(index_t j=0; j<svm->get_num_support_vectors(); j++)
 		{
-			fprintf(modelfl,"\t[%+10.16e,%d];\n",
+			fprintf(modelfl,"\t[%+10.16e,%" PRIi64 "];\n",
 					svm->get_alpha(j), svm->get_support_vector(j));
 		}
 
