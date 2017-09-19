@@ -114,7 +114,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 				array = SG_MALLOC(SGTYPE, rows * cols);
 			}
 			for (j = 0; j < cols; j++) {
-				array[i * cols + j] = R2SG(rb_ary_entry(vec, j));
+				array[j * rows + i] = R2SG(rb_ary_entry(vec, j));
 			}
 		}
 	}
@@ -136,7 +136,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 	for (i = 0; i < rows; i++) {
 		VALUE vec = rb_ary_new2(cols);
 		for (j = 0; j < cols; j++) {
-			rb_ary_push(vec, SG2R($1.matrix[i * cols + j]));
+			rb_ary_push(vec, SG2R($1.matrix[j * rows + i]));
 		}
 		rb_ary_push(arr, vec);
 	}
