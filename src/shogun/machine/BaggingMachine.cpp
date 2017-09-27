@@ -374,7 +374,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		SG_UNREF(l);
 	}
 
-	DynArray<index_t> idx;
+	std::vector<index_t> idx;
 	for (index_t i = 0; i < m_features->get_num_vectors(); i++)
 	{
 		if (m_all_oob_idx[i])
@@ -382,9 +382,9 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 	}
 
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
-	SGVector<float64_t> lab(idx.get_num_elements());
+	SGVector<float64_t> lab(idx.size());
 	for (int32_t i=0;i<lab.vlen;i++)
-		lab[i]=combined[idx.get_element(i)];
+		lab[i]=combined[idx[i]];
 
 	CLabels* predicted = NULL;
 	switch (m_labels->get_label_type())
@@ -405,7 +405,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 			SG_ERROR("Unsupported label type\n");
 	}
 
-	m_labels->add_subset(SGVector<index_t>(idx.get_array(), idx.get_num_elements(), false));
+	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
 	float64_t res = eval->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
@@ -425,7 +425,7 @@ CDynamicArray<index_t>* CBaggingMachine::get_oob_indices(const SGVector<index_t>
 		if (out_of_bag[in_bag[i]])
 		{
 			out_of_bag[in_bag[i]] = false;
-			oob_count--;
+			--oob_count;
 		}
 	}
 
