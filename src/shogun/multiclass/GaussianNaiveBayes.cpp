@@ -17,6 +17,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/GaussianNaiveBayes.h>
 
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
 using namespace shogun;
 
 CGaussianNaiveBayes::CGaussianNaiveBayes() : CNativeMulticlassMachine(), m_features(NULL),
@@ -78,21 +80,13 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	SGVector<int32_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
-	// init min_label, max_label and loop variables
-	int32_t min_label = train_labels.vector[0];
-	int32_t max_label = train_labels.vector[0];
+	// find minimal and maximal label
+	auto min_label = CMath::min(train_labels.vector, train_labels.vlen);
+	auto max_label = CMath::max(train_labels.vector, train_labels.vlen);
 	int i,j;
 
-	// find minimal and maximal label
-	for (i=1; i<train_labels.vlen; i++)
-	{
-		min_label = CMath::min(min_label, train_labels.vector[i]);
-		max_label = CMath::max(max_label, train_labels.vector[i]);
-	}
-
 	// subtract minimal label from all labels
-	for (i=0; i<train_labels.vlen; i++)
-		train_labels.vector[i]-= min_label;
+	linalg::add_scalar(train_labels, -min_label);
 
 	// get number of classes, minimal label and dimensionality
 	m_num_classes = max_label-min_label+1;

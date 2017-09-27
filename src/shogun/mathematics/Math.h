@@ -152,7 +152,7 @@ class CMath : public CSGObject
 		template <class T>
 			static inline T min(T a, T b)
 			{
-				return (a<=b) ? a : b;
+				return std::min(a, b);
 			}
 
 		/** Returns the greatest element amongst two input values
@@ -163,7 +163,7 @@ class CMath : public CSGObject
 		template <class T>
 			static inline T max(T a, T b)
 			{
-				return (a>=b) ? a : b;
+				return std::max(a, b);
 			}
 
 		/** Returns the absolute value of a number, that is
@@ -205,12 +205,7 @@ class CMath : public CSGObject
 			static T min(T* vec, int32_t len)
 			{
 				ASSERT(len>0)
-				T minv=vec[0];
-
-				for (int32_t i=1; i<len; i++)
-					minv=min(vec[i], minv);
-
-				return minv;
+				return *std::min_element(vec, vec+len);
 			}
 
 		/** Returns the greatest element in the vector
@@ -222,12 +217,7 @@ class CMath : public CSGObject
 			static T max(T* vec, int32_t len)
 			{
 				ASSERT(len>0)
-				T maxv=vec[0];
-
-				for (int32_t i=1; i<len; i++)
-					maxv=max(vec[i], maxv);
-
-				return maxv;
+				return *std::max_element(vec, vec+len);
 			}
 
 		/** Returns the value clamped to interval [lb,ub]
