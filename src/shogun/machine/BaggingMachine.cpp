@@ -419,15 +419,8 @@ CDynamicArray<index_t>* CBaggingMachine::get_oob_indices(const SGVector<index_t>
 	out_of_bag.set_const(true);
 
 	// mark the ones that are in_bag
-	index_t oob_count = m_features->get_num_vectors();
 	for (index_t i = 0; i < in_bag.vlen; i++)
-	{
-		if (out_of_bag[in_bag[i]])
-		{
-			out_of_bag[in_bag[i]] = false;
-			--oob_count;
-		}
-	}
+		out_of_bag[in_bag[i]] &= false;
 
 	CDynamicArray<index_t>* oob = new CDynamicArray<index_t>();
 	// store the indicies of vectors that are out of the bag
