@@ -68,12 +68,12 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	    apply_outputs_without_combination(data);
 
 	REQUIRE(m_labels, "Labels not set.\n");
-
-	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
 	REQUIRE(
-	    labels_multiclass, "Labels (%s) are not compatible with multiclass.\n",
+	    m_labels->get_label_type() == LT_MULTICLASS,
+	    "Labels (%s) are not compatible with multiclass.\n",
 	    m_labels->get_name());
 
+	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
 	auto num_samples = bagged_outputs.size() / m_num_bags;
 	auto num_classes = labels_multiclass->get_num_classes();
 
