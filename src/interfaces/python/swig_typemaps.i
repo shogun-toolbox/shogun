@@ -329,15 +329,15 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
     if (!array)
         return false;
 
-    int32_t ndim = PyArray_NDIM(array);
+    index_t ndim = PyArray_NDIM(array);
     if (ndim <= 0)
       return false;
 
-    int32_t* temp_dims = SG_MALLOC(int32_t, ndim);
+    index_t* temp_dims = SG_MALLOC(index_t, ndim);
 
     npy_intp* py_dims = PyArray_DIMS(array);
 
-    for (int32_t i=0; i<ndim; i++)
+    for (index_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
 
     sg_array = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
