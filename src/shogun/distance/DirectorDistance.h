@@ -51,7 +51,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		virtual float64_t distance(int32_t idx_a, int32_t idx_b)
+		virtual float64_t distance(index_t idx_a, index_t idx_b)
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -75,7 +75,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *  halts
 		 *  @return distance value or upper_bound
 		 */
-		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+		virtual float64_t distance_upper_bounded(index_t idx_a, index_t idx_b, float64_t upper_bound)
 		{
 			return CDistance::distance(idx_a, idx_b);
 		}
@@ -127,7 +127,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual void set_num_vec_lhs(int32_t num)
+		virtual void set_num_vec_lhs(index_t num)
 		{
 			num_lhs=num;
 		}
@@ -136,7 +136,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual void set_num_vec_rhs(int32_t num)
+		virtual void set_num_vec_rhs(index_t num)
 		{
 			num_rhs=num;
 		}

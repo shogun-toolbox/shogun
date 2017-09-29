@@ -42,7 +42,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** constructor
 		 *
 		 */
-		CDirectorKernel(int32_t size, bool is_external_features)
+		CDirectorKernel(index_t size, bool is_external_features)
 		: CKernel(size), external_features(is_external_features)
 		{
 		}
@@ -108,7 +108,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			CKernel::cleanup();
 		}
 
-		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
+		virtual float64_t kernel_function(index_t idx_a, index_t idx_b)
 		{
 			SG_ERROR("Kernel function of Director Kernel needs to be overridden.\n")
 			return 0;
@@ -119,7 +119,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return the jth column of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_col(int32_t j)
+		virtual SGVector<float64_t> get_kernel_col(index_t j)
 		{
 			return CKernel::get_kernel_col(j);
 		}
@@ -129,7 +129,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return the ith row of the kernel matrix
 		 */
-		virtual SGVector<float64_t> get_kernel_row(int32_t i)
+		virtual SGVector<float64_t> get_kernel_row(index_t i)
 		{
 			return CKernel::get_kernel_row(i);
 		}
@@ -156,7 +156,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual void set_num_vec_lhs(int32_t num)
+		virtual void set_num_vec_lhs(index_t num)
 		{
 			num_lhs=num;
 		}
@@ -165,7 +165,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual void set_num_vec_rhs(int32_t num)
+		virtual void set_num_vec_rhs(index_t num)
 		{
 			num_rhs=num;
 		}
@@ -292,8 +292,8 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * and weights
 		 */
 		virtual void compute_batch(
-			int32_t num_vec, int32_t* vec_idx, float64_t* target,
-			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			index_t num_vec, index_t* vec_idx, float64_t* target,
+			index_t num_suppvec, index_t* IDX, float64_t* alphas,
 			float64_t factor=1.0)
 		{
 			CKernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
@@ -314,7 +314,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param subkernel_contrib subkernel contribution
 		 */
 		virtual void compute_by_subkernel(
-			int32_t vector_idx, float64_t * subkernel_contrib)
+			index_t vector_idx, float64_t * subkernel_contrib)
 		{
 			CKernel::compute_by_subkernel(vector_idx, subkernel_contrib);
 		}

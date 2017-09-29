@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CDirectorKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
+		CDirectorKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<index_t> svs, float64_t b)
 		: CKernelMachine(k, alphas, svs, b)
 		{
 		}
@@ -191,7 +191,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 			return CKernelMachine::apply_locked_get_output(indices);
 		}
 #endif // SWIG // SWIG should skip this part
-		
+
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called
 		 *
