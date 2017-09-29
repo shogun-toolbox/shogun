@@ -80,7 +80,7 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* pred = new CMulticlassLabels(num_samples);
 	pred->allocate_confidences_for(num_classes);
 
-	SGMatrix<float64_t> class_probabilities(num_samples, num_classes);
+	SGMatrix<float64_t> class_probabilities(num_classes, num_samples);
 	class_probabilities.zero();
 
 	for (auto i = 0; i < num_samples; ++i)
@@ -88,32 +88,24 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 		for (auto j = 0; j < m_num_bags; ++j)
 		{
 			int32_t class_idx = bagged_outputs(i, j);
-			class_probabilities(i, class_idx) += 1;
+			class_probabilities(class_idx, i) += 1;
 		}
 	}
 
-	float64_t alpha = 1.0 / m_num_bags;
-	class_probabilities = linalg::scale(class_probabilities, alpha);
+	class_probabilities = linalg::scale(class_probabilities, 1.0 / m_num_bags);
 
 	for (auto i = 0; i < num_samples; ++i)
-	{
-		auto confidences = class_probabilities.get_row_vector(i);
-		auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
+		pred->set_multiclass_confidences(i, class_probabilities.get_column(i));
 
-		pred->set_label(i, y_pred);
-		pred->set_multiclass_confidences(i, confidences);
-	}
+	SGVector<float64_t> combined = m_combination_rule->combine(bagged_outputs);
+	pred->set_labels(combined);
 
 	return pred;
 }
 
 CRegressionLabels* CBaggingMachine::apply_regression(CFeatures* data)
 {
-	SGVector<float64_t> combined_vector = apply_get_outputs(data);
-
-	CRegressionLabels* pred = new CRegressionLabels(combined_vector);
-
-	return pred;
+	return new CRegressionLabels(apply_get_outputs(data));
 }
 
 SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)

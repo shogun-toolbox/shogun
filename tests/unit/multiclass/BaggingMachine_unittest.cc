@@ -188,8 +188,8 @@ TEST_F(BaggingMachine, output_binary)
 TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 {
 
-	CCARTree* cart = new CCARTree();
-	CMeanRule* cv = new CMeanRule();
+	auto cart = new CCARTree();
+	auto cv = new CMajorityVote();
 
 	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train, labels_train);
@@ -202,7 +202,6 @@ TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 	CMulticlassLabels* result = c->apply_multiclass(features_test);
 
 	SGVector<float64_t> res_vector = result->get_labels();
-	SGVector<float64_t> values_vector = result->get_values();
 
 	EXPECT_EQ(1.0, res_vector[0]);
 	EXPECT_EQ(0.0, res_vector[1]);
