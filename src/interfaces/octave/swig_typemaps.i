@@ -75,7 +75,7 @@ TYPEMAP_IN_SGVECTOR(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
 %typemap(out) shogun::SGVector<sg_type>
 {
     sg_type* vec = $1.vector;
-    int32_t len = $1.vlen;
+    index_t len = $1.vlen;
 
     dim_vector vdims = dim_vector::alloc(2);
     vdims(0) = 1;
@@ -86,7 +86,7 @@ TYPEMAP_IN_SGVECTOR(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
     if (mat.cols() != len)
         SWIG_fail;
 
-    for (int32_t i=0; i<len; i++)
+    for (index_t i=0; i<len; i++)
         mat(i) = (if_type) vec[i];
 
     $result=mat;
@@ -148,8 +148,8 @@ TYPEMAP_IN_SGMATRIX(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
 %typemap(out) shogun::SGMatrix<sg_type>
 {
     sg_type* matrix = $1.matrix;
-    int32_t num_feat = $1.num_rows;
-    int32_t num_vec = $1.num_cols;
+    index_t num_feat = $1.num_rows;
+    index_t num_vec = $1.num_cols;
 
     dim_vector vdims = dim_vector::alloc(2);
     vdims(0) = num_feat;
@@ -160,9 +160,9 @@ TYPEMAP_IN_SGMATRIX(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
     if (mat.rows() != num_feat || mat.cols() != num_vec)
         SWIG_fail;
 
-    for (int32_t i=0; i<num_vec; i++)
+    for (index_t i=0; i<num_vec; i++)
     {
-        for (int32_t j=0; j<num_feat; j++)
+        for (index_t j=0; j<num_feat; j++)
             mat(j,i) = (if_type) matrix[j+i*num_feat];
     }
 
@@ -231,21 +231,21 @@ TYPEMAP_INND(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16
 %typemap(out) shogun::SGNDArray<sg_type>
 {
     sg_type* array = $1.array;
-    int32_t* dims = $1.dims;
-    int32_t num_dims = $1.num_dims;
+    index_t* dims = $1.dims;
+    index_t num_dims = $1.num_dims;
 
     dim_vector vdims = dim_vector::alloc(num_dims);
 
-    int32_t n = 1;
-    for (int32_t i = 0; i < num_dims; i++)
+    index_t n = 1;
+    for (index_t i = 0; i < num_dims; i++)
     {
         n *= dims[i];
-        vdims(i) = (int32_t)dims[i];
+        vdims(i) = dims[i];
     }
 
     oct_type mat = oct_type(vdims);
 
-    for (int32_t i=0; i<n; i++)
+    for (index_t i=0; i<n; i++)
         mat(i) = (if_type) array[i];
 
     $result=mat;
