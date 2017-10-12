@@ -3,6 +3,9 @@
 
         * Add conda-forge packages, to get prebuilt binaries via the cross-platform conda package manager [Dougal Sutherland]
 
+	* Bugfixes:
+		- Fix transpose bug in Ruby typemap for matrices [Elias Saalmann]
+
 2016-11-05 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
 	* SHOGUN Release version 6.0.0 (libshogun 18.0, data 0.11, parameter 1)
