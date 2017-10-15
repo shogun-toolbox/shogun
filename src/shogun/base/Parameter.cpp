@@ -3084,7 +3084,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy, bool tolerant)
 				if (m_datatype.m_stype==ST_SPARSE)
 					x=x+(m_datatype.sizeof_stype());
 				else
-					x=x+(m_datatype.sizeof_stype());
+					x=x+(m_datatype.sizeof_ptype());
 			}
 
 			break;
