@@ -11,7 +11,7 @@
 
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 #include <shogun/mathematics/Math.h>
-#include <cmath>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <vector>
 #include <algorithm>
 
@@ -358,14 +358,14 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 	}
 
 	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
-	float64_t *res = SG_MALLOC(float64_t, cur_dim_feature_space);
+	SGVector<float64_t> res(cur_dim_feature_space);
 
 	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
-		res[od] = val * cos(randomcoeff_additive[od] + CMath::dot(vector.vector,
-				randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space));
+		SGVector<float64_t> wrapper(randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space, false);
+		res[od] = val * cos(randomcoeff_additive[od] + linalg::dot(vector, wrapper));
 	}
 
-	return SGVector<float64_t>(res,cur_dim_feature_space);
+	return res;
 }
 
 SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures* features)
@@ -396,11 +396,11 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 		{
 			for (int32_t od = 0; od < cur_dim_feature_space; ++od)
 			{
+				SGVector<float64_t> a(m+vec * num_features, cur_dim_input_space, false);
+				SGVector<float64_t> b(randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space, false);
 				res.matrix[od + vec * cur_dim_feature_space] = val * cos(
 						randomcoeff_additive[od]
-								+ CMath::dot(m+vec * num_features,
-										randomcoeff_multiplicative+od*cur_dim_input_space,
-										cur_dim_input_space));
+								+ linalg::dot(a, b));
 			}
 		}
 		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(res);

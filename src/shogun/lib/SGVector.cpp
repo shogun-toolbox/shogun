@@ -21,7 +21,7 @@
 #include <shogun/io/File.h>
 
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/lapack.h>
 #include <algorithm>
 
@@ -731,13 +731,12 @@ float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 template <>
 float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 {
-	float64_t norm = 0.0;
 #ifdef HAVE_LAPACK
-	norm = cblas_dnrm2(n, v, 1);
+	return cblas_dnrm2(n, v, 1);
 #else
-	norm = CMath::sqrt(CMath::dot(v, v, n));
+	SGVector<float64_t> wrapper(const_cast<float64_t*>(v), n, false);
+	return CMath::sqrt(linalg::dot(wrapper, wrapper));
 #endif
-	return norm;
 }
 
 template <>

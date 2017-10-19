@@ -14,6 +14,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/Plif.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -339,7 +340,7 @@ CResultSet* CHMSVMModel::argmax(
 	{
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
-		ret->score    -= CMath::dot(w.vector, ret->psi_truth.vector, dim);
+		ret->score    -= linalg::dot(w, ret->psi_truth);
 	}
 
 	return ret;

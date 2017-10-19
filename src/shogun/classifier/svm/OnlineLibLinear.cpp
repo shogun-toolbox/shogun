@@ -15,17 +15,19 @@
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
 
 COnlineLibLinear::COnlineLibLinear()
-		: COnlineLinearMachine()
+	: COnlineLinearMachine()
 {
 		init();
 }
 
 COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
+	: COnlineLinearMachine()
 {
 		init();
 		C1=C_reg;
@@ -35,6 +37,7 @@ COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
 
 COnlineLibLinear::COnlineLibLinear(
 		float64_t C_reg, CStreamingDotFeatures* traindat)
+	: COnlineLinearMachine()
 {
 		init();
 		C1=C_reg;
@@ -45,6 +48,7 @@ COnlineLibLinear::COnlineLibLinear(
 }
 
 COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
+	: COnlineLinearMachine()
 {
 	init();
 	C1 = mch->C1;
@@ -52,17 +56,7 @@ COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
 	use_bias = mch->use_bias;
 
 	set_features(mch->features);
-
-	w_dim = mch->w_dim;
-	if (w_dim > 0)
-	{
-		w = SG_MALLOC(float32_t, w_dim);
-		sg_memcpy(w, mch->w, w_dim*sizeof(float32_t));
-	}
-	else
-	{
-		w = NULL;
-	}
+	m_w = mch->m_w.clone();
 	bias = mch->bias;
 }
 
@@ -129,8 +123,7 @@ void COnlineLibLinear::stop_train()
 	SG_INFO("Optimization finished.\n")
 
 	// calculate objective value
-	for (int32_t i=0; i<w_dim; i++)
-		v += w[i]*w[i];
+	v = linalg::dot(m_w, m_w);
 	v += bias*bias;
 
 	SG_INFO("Objective value = %lf\n", v/2)
@@ -149,10 +142,10 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 
 	QD = diag[y_current + 1];
 	// Dot product of vector with itself
-	QD += CMath::dot(ex.vector, ex.vector, ex.vlen);
+	QD += linalg::dot(ex, ex);
 
 	// Dot product of vector with learned weights
-	G = CMath::dot(ex.vector, w, w_dim);
+	G = linalg::dot(ex, m_w);
 
 	if (use_bias)
 		G += bias;
@@ -193,9 +186,7 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
 		d = (alpha_current - alpha_old) * y_current;
 
-		for (int32_t i=0; i < w_dim; ++i)
-			w[i] += d*ex[i];
-
+		linalg::add(m_w, ex, m_w, 1.0f, (float32_t)d);
 
 		if (use_bias)
 			bias += d;
@@ -220,7 +211,7 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 	QD += SGSparseVector<float32_t>::sparse_dot(ex, ex);
 
 	// Dot product of vector with learned weights
-	G = ex.dense_dot(1.0,w,w_dim,0.0);
+	G = ex.dense_dot(1.0,m_w.vector,m_w.vlen,0.0);
 
 	if (use_bias)
 		G += bias;
@@ -262,7 +253,7 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 		d = (alpha_current - alpha_old) * y_current;
 
 		for (int32_t i=0; i < ex.num_feat_entries; i++)
-			w[ex.features[i].feat_index] += d*ex.features[i].entry;
+			m_w[ex.features[i].feat_index] += d*ex.features[i].entry;
 
 
 		if (use_bias)
@@ -276,9 +267,9 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 
 void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
 {
-	features->expand_if_required(w, w_dim);
+	feature->expand_if_required(m_w.vector, m_w.vlen);
 
-	if (features->get_feature_class() == C_STREAMING_DENSE) {
+	if (feature->get_feature_class() == C_STREAMING_DENSE) {
 		CStreamingDenseFeatures<float32_t> *feat =
 			dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
 		if (feat == NULL)
@@ -286,7 +277,7 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 
 		train_one(feat->get_vector(), label);
 	}
-	else if (features->get_feature_class() == C_STREAMING_SPARSE) {
+	else if (feature->get_feature_class() == C_STREAMING_SPARSE) {
 		CStreamingSparseFeatures<float32_t> *feat =
 			dynamic_cast<CStreamingSparseFeatures<float32_t> *>(feature);
 		if (feat == NULL)

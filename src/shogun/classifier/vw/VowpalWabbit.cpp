@@ -59,10 +59,9 @@ CVowpalWabbit::CVowpalWabbit(CVowpalWabbit *vw)
 	save_predictions = vw->save_predictions;
 	prediction_fd = vw->prediction_fd;
 
-	w = reg->weight_vectors[0];
+	m_w.vector = reg->weight_vectors[0];
 	reg->weight_vectors[0] = NULL;
-	copy(vw->w, vw->w+vw->w_dim, w);
-	w_dim = vw->w_dim;
+	copy(vw->m_w.vector, vw->m_w.vector+vw->m_w.vlen, m_w.vector);
 	bias = vw->bias;
 }
 
@@ -83,7 +82,7 @@ void CVowpalWabbit::reinitialize_weights()
 	}
 
 	reg->init(env);
-	w = reg->weight_vectors[0];
+	m_w.vector = reg->weight_vectors[0];
 	reg->weight_vectors[0] = NULL;
 }
 
@@ -114,9 +113,8 @@ void CVowpalWabbit::set_exact_adaptive_norm(bool exact_adaptive)
 void CVowpalWabbit::load_regressor(char* file_name)
 {
 	reg->load_regressor(file_name);
-	w = reg->weight_vectors[0];
+	m_w = SGVector<float32_t>(reg->weight_vectors[0], 1 << env->num_bits);
 	reg->weight_vectors[0] = NULL;
-	w_dim = 1 << env->num_bits;
 }
 
 void CVowpalWabbit::set_regressor_out(char* file_name, bool is_text)
@@ -270,9 +268,8 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	save_predictions = false;
 	prediction_fd = -1;
 
-	w = reg->weight_vectors[0];
+	m_w = SGVector<float32_t>(reg->weight_vectors[0], 1 << env->num_bits);
 	reg->weight_vectors[0] = NULL;
-	w_dim = 1 << env->num_bits;
 	bias = 0.;
 }
 

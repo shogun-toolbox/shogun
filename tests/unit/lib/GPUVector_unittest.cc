@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUVector.h>
 #include <shogun/mathematics/Math.h>
@@ -110,8 +109,7 @@ TEST(GPUVector, dot_product_with_offset)
 
 	float c = viennacl::linalg::inner_prod(A.vcl_vector(), B.vcl_vector());
 
-	float c_sg = CMath::dot(
-		((SGVector<float64_t>)A).vector, ((SGVector<float64_t>)B).vector, 12);
+	auto c_sg = linalg::dot(A, B);
 
 	EXPECT_NEAR(c_sg, c, 1e-15);
 }
@@ -200,5 +198,4 @@ TEST(GPUVector, from_eigen3_row_vector)
 		EXPECT_EQ(eigen_vec[i], gpu_vec[i]);
 }
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL
