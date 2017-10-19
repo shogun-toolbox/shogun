@@ -81,24 +81,6 @@ CMath::~CMath()
 #endif
 }
 
-float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
-{
-	float64_t r=0;
-	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
-	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
-	r = ev1.dot(ev2);
-	return r;
-}
-
-float32_t CMath::dot(const float32_t* v1, const float32_t* v2, int32_t n)
-{
-	float32_t r=0;
-	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
-	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
-	r = ev1.dot(ev2);
-	return r;
-}
-
 #ifdef USE_LOGCACHE
 int32_t CMath::determine_logrange()
 {

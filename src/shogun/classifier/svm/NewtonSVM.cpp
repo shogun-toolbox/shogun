@@ -12,6 +12,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/classifier/svm/NewtonSVM.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
@@ -234,20 +235,19 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 		out, float64_t* tx)
 {
 	SGVector<float64_t> Y=((CBinaryLabels*) m_labels)->get_labels();
-	float64_t* outz=SG_MALLOC(float64_t, x_n);
-	float64_t* temp1=SG_MALLOC(float64_t, x_n);
-	float64_t* temp1forout=SG_MALLOC(float64_t, x_n);
-	float64_t* outzsv=SG_MALLOC(float64_t, x_n);
-	float64_t* Ysv=SG_MALLOC(float64_t, x_n);
-	float64_t* Xsv=SG_MALLOC(float64_t, x_n);
-	float64_t* temp2=SG_MALLOC(float64_t, x_d);
+	SGVector<float64_t> outz(x_n);
+	SGVector<float64_t> temp1(x_n);
+	SGVector<float64_t> temp1forout(x_n);
+	SGVector<float64_t> outzsv(x_n);
+	SGVector<float64_t> Ysv(x_n);
+	SGVector<float64_t> Xsv(x_n);
 	float64_t t=0.0;
-	float64_t* Xd=SG_MALLOC(float64_t, x_n);
+	SGVector<float64_t> Xd(x_n);
 
 	for (int32_t i=0; i<x_n; i++)
 		Xd[i]=features->dense_dot(i, d, x_d);
 
-	SGVector<float64_t>::add_scalar(d[x_d], Xd, x_n);
+	linalg::add_scalar(Xd, d[x_d]);
 
 #ifdef DEBUG_NEWTON
 	CMath::display_vector(d, x_d+1, "Weight vector");
@@ -261,19 +261,22 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 	float64_t wd;
 	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d, lambda,
 			weights, x_d, d, x_d, 0.0, &wd, 1);
-	float64_t tempg, dd;
+	float64_t dd;
 	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d, lambda, d,
 			x_d, d, x_d, 0.0, &dd, 1);
 
 	float64_t g, h;
-	int32_t sv_len=0, *sv=SG_MALLOC(int32_t, x_n);
+	int32_t sv_len=0;
+	SGVector<int32_t> sv(x_n);
 
+	SGVector<float64_t> sg_out(out, x_n, false);
 	do
 	{
-		SGVector<float64_t>::vector_multiply(temp1, Y.vector, Xd, x_n);
-		sg_memcpy(temp1forout, temp1, sizeof(float64_t)*x_n);
-		SGVector<float64_t>::scale_vector(t, temp1forout, x_n);
-		SGVector<float64_t>::add(outz, 1.0, out, -1.0, temp1forout, x_n);
+		// FIXME:: port it to linalg::
+		SGVector<float64_t>::vector_multiply(temp1.vector, Y.vector, Xd.vector, x_n);
+		sg_memcpy(temp1forout.vector, temp1.vector, sizeof(float64_t)*x_n);
+		linalg::scale(temp1forout, temp1forout, t);
+		linalg::add(sg_out, temp1forout, outz, 1.0, -1.0);
 
 		// Calculation of sv
 		sv_len=0;
@@ -288,19 +291,22 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 		for (int32_t i=0; i<sv_len; i++)
 		{
 			outzsv[i]=outz[sv[i]];
-			Ysv[i]=Y.vector[sv[i]];
+			Ysv[i]=Y[sv[i]];
 			Xsv[i]=Xd[sv[i]];
 		}
 
-		memset(temp1, 0, sizeof(float64_t)*sv_len);
-		SGVector<float64_t>::vector_multiply(temp1, outzsv, Ysv, sv_len);
-		tempg=CMath::dot(temp1, Xsv, sv_len);
+		memset(temp1.vector, 0, sizeof(float64_t)*sv_len);
+		SGVector<float64_t>::vector_multiply(temp1.vector, outzsv.vector, Ysv.vector, sv_len);
+		// in case sv_len < x_n tempg != dot(temp1, Xsv);
+		float64_t tempg = 0.0;
+		for (auto i = 0; i < sv_len; ++i)
+			tempg += temp1[i]*Xsv[i];
 		g=wd+(t*dd);
 		g-=tempg;
 
 		// Calculation of second derivative 'h'
 		cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, sv_len, 1.0,
-				Xsv, sv_len, Xsv, sv_len, 0.0, &h, 1);
+				Xsv.vector, sv_len, Xsv.vector, sv_len, 0.0, &h, 1);
 		h+=dd;
 
 		// Calculation of 1D Newton step 'd'
@@ -311,19 +317,8 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 
 	} while(1);
 
-	for (int32_t i=0; i<x_n; i++)
-		out[i]=outz[i];
+	sg_memcpy(out, outz.vector, sizeof(float64_t)*x_n);
 	*tx=t;
-
-	SG_FREE(sv);
-	SG_FREE(temp1);
-	SG_FREE(temp2);
-	SG_FREE(temp1forout);
-	SG_FREE(outz);
-	SG_FREE(outzsv);
-	SG_FREE(Ysv);
-	SG_FREE(Xsv);
-	SG_FREE(Xd);
 }
 
 void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,

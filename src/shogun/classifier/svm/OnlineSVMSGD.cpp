@@ -22,6 +22,7 @@
 
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/loss/HingeLoss.h>
@@ -79,10 +80,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(features)
 	ASSERT(features->get_has_labels())
-	if (w)
-		SG_FREE(w);
-	w_dim=1;
-	w=new float32_t;
+	m_w = SGVector<float32_t>(1);
 	bias=0;
 
 	// Shift t in order to have a
@@ -114,16 +112,16 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		{
 			vec_count++;
 			// Expand w vector if more features are seen in this example
-			features->expand_if_required(w, w_dim);
+			features->expand_if_required(m_w.vector, m_w.vlen);
 
 			float64_t eta = 1.0 / (lambda * t);
 			float64_t y = features->get_label();
-			float64_t z = y * (features->dense_dot(w, w_dim) + bias);
+			float64_t z = y * (features->dense_dot(m_w.vector, m_w.vlen) + bias);
 
 			if (z < 1 || is_log_loss)
 			{
 				float64_t etd = -eta * loss->first_derivative(z,1);
-				features->add_to_dense_vec(etd * y / wscale, w, w_dim);
+				features->add_to_dense_vec(etd * y / wscale, m_w.vector, m_w.vlen);
 
 				if (use_bias)
 				{
@@ -138,7 +136,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 				float32_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
-				SGVector<float32_t>::scale_vector(r, w, w_dim);
+				linalg::scale(m_w, m_w, r);
 				count = skip;
 			}
 			t++;
@@ -156,7 +154,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	}
 
 	features->end_parser();
-	float64_t wnorm =  CMath::dot(w,w, w_dim);
+	float64_t wnorm = linalg::dot(m_w, m_w);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
 
 	return true;

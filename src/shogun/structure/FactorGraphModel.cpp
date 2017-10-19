@@ -12,6 +12,7 @@
 #include <shogun/structure/Factor.h>
 #include <shogun/features/FactorGraphFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <unordered_map>
 typedef std::unordered_map<int32_t, int32_t> factor_counts_type;
@@ -349,8 +350,8 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 	if (m_verbose)
 	{
-		float64_t dot_pred = CMath::dot(w.vector, ret->psi_pred.vector, w.vlen);
-		float64_t dot_truth = CMath::dot(w.vector, ret->psi_truth.vector, w.vlen);
+		float64_t dot_pred = linalg::dot(w, ret->psi_pred);
+		float64_t dot_truth = linalg::dot(w, ret->psi_truth);
 		float64_t slack =  dot_pred + ret->delta - dot_truth;
 
 		SG_SPRINT("\n");
