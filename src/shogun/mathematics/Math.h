@@ -140,6 +140,7 @@ class CMath : public CSGObject
 		virtual ~CMath();
 		//@}
 
+#ifndef SWIG // SWIG should skip this part
 		/**@name min/max/abs functions.
 		*/
 		//@{
@@ -165,6 +166,7 @@ class CMath : public CSGObject
 			{
 				return std::max(a, b);
 			}
+#endif
 
 		/** Returns the absolute value of a number, that is
 		 * if a>0, output is a; if a<0 ,output is -a
@@ -220,6 +222,7 @@ class CMath : public CSGObject
 				return *std::max_element(vec, vec+len);
 			}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Returns the value clamped to interval [lb,ub]
 		 * @param value input value
 		 * @param lb lower bound
@@ -350,6 +353,7 @@ class CMath : public CSGObject
 					return (check < eps);
 				}
 			}
+#endif
 
 		/* Get the corresponding absolute tolerance for unit test given a relative tolerance
 		 *
@@ -1078,6 +1082,7 @@ class CMath : public CSGObject
 		 */
 		static void linspace(float64_t* output, float64_t start, float64_t end, int32_t n = 100);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Returns an array with n linearly spaced elements between start and end.
 		 * @param start beginning of the interval to divide
 		 * @param end upper bound of the interval to divide
@@ -1092,6 +1097,7 @@ class CMath : public CSGObject
 
 				return output;
 			}
+#endif
 
 		/** Returns a vector with n linearly spaced elements between start and end.
 		 * @param start beginning of the interval to divide
@@ -1176,6 +1182,7 @@ class CMath : public CSGObject
 		 */
 		static void sort(float64_t *a, int32_t*idx, int32_t N);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Performs a quicksort on an array output of length size
 		 * it is sorted from in ascending (for type T)
 		 * @param output array to be sorted
@@ -1251,6 +1258,7 @@ class CMath : public CSGObject
 			{
 				radix_sort_helper(array,size,0);
 			}
+#endif
 
 		/** Extract the byte at position p (from left)
 		 * of a 64 bit integer. The function is somewhat identical to
@@ -1382,6 +1390,7 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::radix_sort_helper():: Not supported for complex128_t\n");
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Performs a quicksort on an array of pointers.
 		 * It is sorted from in ascending (for type T)
 		 * Every element is dereferenced once before being compared
@@ -1435,6 +1444,7 @@ class CMath : public CSGObject
 			{
 				qsort<T>(vector, vector.size());
 			}
+#endif
 
 		/** Helper functor for the function argsort */
 		template<class T>
@@ -1454,6 +1464,7 @@ class CMath : public CSGObject
 				const T* data;
 			};
 
+#ifndef SWIG // SWIG should skip this part
 		/** Get sorted index.
 		 *
 		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
@@ -1493,6 +1504,7 @@ class CMath : public CSGObject
 
 				return true;
 			}
+#endif
 
 		/** Display bits (useful for debugging)
 		 * @param word input to be displayed as bits
