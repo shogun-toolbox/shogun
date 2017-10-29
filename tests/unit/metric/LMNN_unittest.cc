@@ -6,11 +6,11 @@
  *
  * Written (W) 2013 Fernando J. Iglesias Garcia
  */
+#include <gtest/gtest.h>
 
 #include <shogun/metric/LMNN.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

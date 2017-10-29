@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
+
 #include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -42,7 +44,6 @@
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/CrossValidationMMD.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

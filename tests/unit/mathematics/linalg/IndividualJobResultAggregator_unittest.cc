@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
-
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/SGMatrix.h>
@@ -15,7 +15,6 @@
 #include <shogun/lib/computation/jobresult/VectorResult.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

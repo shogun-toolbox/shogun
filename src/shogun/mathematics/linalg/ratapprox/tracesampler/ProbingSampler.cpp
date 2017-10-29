@@ -10,6 +10,7 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_COLPACK
+#include <ColPack/ColPackHeaders.h>
 
 #include <vector>
 #include <string>
@@ -21,7 +22,6 @@
 #include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
-#include <ColPack/ColPackHeaders.h>
 
 using namespace Eigen;
 using namespace ColPack;

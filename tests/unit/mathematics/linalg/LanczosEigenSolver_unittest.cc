@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -20,7 +21,6 @@
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

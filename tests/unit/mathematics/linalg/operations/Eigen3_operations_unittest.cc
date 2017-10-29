@@ -1,8 +1,9 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/ShogunException.h>
 
 using namespace shogun;

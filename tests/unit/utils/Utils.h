@@ -37,6 +37,7 @@
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -54,5 +55,22 @@ void generate_temp_filename(char* file_name);
 void generate_toy_data_weather(
     SGMatrix<float64_t>& data, SGVector<float64_t>& labels,
     bool load_train_data = true);
+
+/** Check eigenvector equality
+ * This expects that the input vectors are normalised
+ *
+ * @param gt eigenvector
+ * @param gt length of the eigenvector
+ * @param calc_ev calculated eigenvector
+ * @return 1.0 if the eigen vectors are pointing to the same director, -1.0
+ * pointing to the opposite direction.
+ */
+template<class T>
+inline T check_eigenvector_eq(const SGVector<T>& a, const SGVector<T>& b, float64_t epsilon = 10E-8)
+{
+	T sign = linalg::dot(a, b);
+	EXPECT_NEAR(1.0, CMath::abs(sign), epsilon);
+	return (sign < 0.0) ? -1.0 : 1.0;
+}
 
 #endif

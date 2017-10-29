@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace linalg;

@@ -33,8 +33,11 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/preprocessor/PCA.h>
+
+#include "utils/Utils.h"
 
 using namespace shogun;
 
@@ -73,31 +76,36 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	EXPECT_NEAR(0.291219269837891,eigvec[1],epsilon);
 	EXPECT_NEAR(5.077526030285309,eigvec[2],epsilon);
 
-	EXPECT_NEAR(0.238820512479407,transmat(0,0),epsilon);
-	EXPECT_NEAR(-0.304406370622002,transmat(0,1),epsilon);
-	EXPECT_NEAR(0.922117955764778,transmat(0,2),epsilon);
-	EXPECT_NEAR(0.502124514814308,transmat(1,0),epsilon);
-	EXPECT_NEAR(0.851501730295596,transmat(1,1),epsilon);
-	EXPECT_NEAR(0.151048915673366,transmat(1,2),epsilon);
-	EXPECT_NEAR(-0.831165287076865,transmat(2,0),epsilon);
-	EXPECT_NEAR(0.426944451689378,transmat(2,1),epsilon);
-	EXPECT_NEAR(0.356205980761254,transmat(2,2),epsilon);
+	SGMatrix<float64_t> evs(3,3);
+	evs(0,0)=0.238820512479407;
+	evs(0,1)=-0.304406370622002;
+	evs(0,2)=0.922117955764778;
+	evs(1,0)=0.502124514814308;
+	evs(1,1)=0.851501730295596;
+	evs(1,2)=0.151048915673366;
+	evs(2,0)=-0.831165287076865;
+	evs(2,1)=0.426944451689378;
+	evs(2,2)=0.356205980761254;
 
-	EXPECT_NEAR(0.182350122017013,finalmat(0,0),epsilon);
-	EXPECT_NEAR(-0.041902251203685,finalmat(0,1),epsilon);
-	EXPECT_NEAR(-0.240647729898028,finalmat(0,2),epsilon);
-	EXPECT_NEAR(0.236493108746648,finalmat(0,3),epsilon);
-	EXPECT_NEAR(-0.136293249661948,finalmat(0,4),epsilon);
-	EXPECT_NEAR(0.216971008375464,finalmat(1,0),epsilon);
-	EXPECT_NEAR(-0.382472041452699,finalmat(1,1),epsilon);
-	EXPECT_NEAR(-0.460689222275080,finalmat(1,2),epsilon);
-	EXPECT_NEAR(-0.217576202298234,finalmat(1,3),epsilon);
-	EXPECT_NEAR(0.843766457650550,finalmat(1,4),epsilon);
-	EXPECT_NEAR(3.325638119909419,finalmat(2,0),epsilon);
-	EXPECT_NEAR(-1.115340910605008,finalmat(2,1),epsilon);
-	EXPECT_NEAR(1.249063286478502,finalmat(2,2),epsilon);
-	EXPECT_NEAR(-2.210566542225781,finalmat(2,3),epsilon);
-	EXPECT_NEAR(-1.248793953557132,finalmat(2,4),epsilon);
+	auto s0 = check_eigenvector_eq(evs.get_column(0), transmat.get_column(0), epsilon);
+	auto s1 = check_eigenvector_eq(evs.get_column(1), transmat.get_column(1), epsilon);
+	auto s2 = check_eigenvector_eq(evs.get_column(2), transmat.get_column(2), epsilon);
+
+	EXPECT_NEAR(0.182350122017013, s0*finalmat(0,0),epsilon);
+	EXPECT_NEAR(-0.041902251203685, s0*finalmat(0,1),epsilon);
+	EXPECT_NEAR(-0.240647729898028, s0*finalmat(0,2),epsilon);
+	EXPECT_NEAR(0.236493108746648, s0*finalmat(0,3),epsilon);
+	EXPECT_NEAR(-0.136293249661948, s0*finalmat(0,4),epsilon);
+	EXPECT_NEAR(0.216971008375464, s1*finalmat(1,0),epsilon);
+	EXPECT_NEAR(-0.382472041452699, s1*finalmat(1,1),epsilon);
+	EXPECT_NEAR(-0.460689222275080, s1*finalmat(1,2),epsilon);
+	EXPECT_NEAR(-0.217576202298234, s1*finalmat(1,3),epsilon);
+	EXPECT_NEAR(0.843766457650550, s1*finalmat(1,4),epsilon);
+	EXPECT_NEAR(3.325638119909419, s2*finalmat(2,0),epsilon);
+	EXPECT_NEAR(-1.115340910605008, s2*finalmat(2,1),epsilon);
+	EXPECT_NEAR(1.249063286478502, s2*finalmat(2,2),epsilon);
+	EXPECT_NEAR(-2.210566542225781, s2*finalmat(2,3),epsilon);
+	EXPECT_NEAR(-1.248793953557132, s2*finalmat(2,4),epsilon);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
@@ -132,25 +140,30 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
 	EXPECT_NEAR(5.03495863,eigvec[2],epsilon);
 
-	EXPECT_NEAR(0.41770275,transmat(0,0),epsilon);
-	EXPECT_NEAR(0.20781429,transmat(0,1),epsilon);
-	EXPECT_NEAR(0.88449852,transmat(0,2),epsilon);
-	EXPECT_NEAR(-0.13328384,transmat(1,0),epsilon);
-	EXPECT_NEAR(-0.94894524,transmat(1,1),epsilon);
-	EXPECT_NEAR(0.28589918,transmat(1,2),epsilon);
-	EXPECT_NEAR(-0.8987546,transmat(2,0),epsilon);
-	EXPECT_NEAR(0.23731023,transmat(2,1),epsilon);
-	EXPECT_NEAR(0.36867875,transmat(2,2),epsilon);
+	SGMatrix<float64_t> evs(3,3);
+	evs(0,0)=0.41770275;
+	evs(0,1)=0.20781429;
+	evs(0,2)=0.88449852;
+	evs(1,0)=-0.13328384;
+	evs(1,1)=-0.94894524;
+	evs(1,2)=0.28589918;
+	evs(2,0)=-0.8987546;
+	evs(2,1)=0.23731023;
+	evs(2,2)=0.36867875;
 
-	EXPECT_NEAR(0.0,finalmat(0,0),epsilon);
-	EXPECT_NEAR(0.0,finalmat(0,1),epsilon);
-	EXPECT_NEAR(0.0,finalmat(0,2),epsilon);
-	EXPECT_NEAR(-0.173865951,finalmat(1,0),epsilon);
-	EXPECT_NEAR(-0.162222411,finalmat(1,1),epsilon);
-	EXPECT_NEAR(0.336088362,finalmat(1,2),epsilon);
-	EXPECT_NEAR(2.21751537,finalmat(2,0),epsilon);
-	EXPECT_NEAR(-2.26932988,finalmat(2,1),epsilon);
-	EXPECT_NEAR(0.0518145101,finalmat(2,2),epsilon);
+	auto s0 = check_eigenvector_eq(evs.get_column(0), transmat.get_column(0));
+	auto s1 = check_eigenvector_eq(evs.get_column(1), transmat.get_column(1));
+	auto s2 = check_eigenvector_eq(evs.get_column(2), transmat.get_column(2));
+
+	EXPECT_NEAR(0.0, s0*finalmat(0,0),epsilon);
+	EXPECT_NEAR(0.0, s0*finalmat(0,1),epsilon);
+	EXPECT_NEAR(0.0, s0*finalmat(0,2),epsilon);
+	EXPECT_NEAR(-0.173865951, s1*finalmat(1,0),epsilon);
+	EXPECT_NEAR(-0.162222411, s1*finalmat(1,1),epsilon);
+	EXPECT_NEAR(0.336088362, s1*finalmat(1,2),epsilon);
+	EXPECT_NEAR(2.21751537, s2*finalmat(2,0),epsilon);
+	EXPECT_NEAR(-2.26932988, s2*finalmat(2,1),epsilon);
+	EXPECT_NEAR(0.0518145101, s2*finalmat(2,2),epsilon);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
@@ -191,23 +204,27 @@ TEST(PCA, PCA_N_less_D_EVD)
 	EXPECT_NEAR(2.327794822241147,std::abs(eigvec[1]),epsilon);
 	EXPECT_NEAR(2.759160840481412,std::abs(eigvec[2]),epsilon);
 
-	EXPECT_NEAR(0.258049566055304,std::abs(transmat(0,0)),epsilon);
-	EXPECT_NEAR(0.257746561935451,std::abs(transmat(0,1)),epsilon);
-	EXPECT_NEAR(0.349092719192590,std::abs(transmat(1,0)),epsilon);
-	EXPECT_NEAR(0.129544636386834,std::abs(transmat(1,1)),epsilon);
-	EXPECT_NEAR(0.630860251575450,std::abs(transmat(2,0)),epsilon);
-	EXPECT_NEAR(0.648487498866225,std::abs(transmat(2,1)),epsilon);
-	EXPECT_NEAR(0.374280965623520,std::abs(transmat(3,0)),epsilon);
-	EXPECT_NEAR(0.647067522254220,std::abs(transmat(3,1)),epsilon);
-	EXPECT_NEAR(0.522947221638548,std::abs(transmat(4,0)),epsilon);
-	EXPECT_NEAR(0.278482463454826,std::abs(transmat(4,1)),epsilon);
+	SGMatrix<float64_t> evs(5,2);
+	evs(0,0) = 0.258049566055304;
+	evs(0,1) = 0.257746561935451;
+	evs(1,0) = 0.349092719192590;
+	evs(1,1) = -0.129544636386834;
+	evs(2,0) = -0.630860251575450;
+	evs(2,1) = 0.648487498866225;
+	evs(3,0) = 0.374280965623520;
+	evs(3,1) = 0.647067522254220;
+	evs(4,0) = -0.522947221638548;
+	evs(4,1) = -0.278482463454826;
 
-	EXPECT_NEAR(0.511467003751085,std::abs(finalmat(0,0)),epsilon);
-	EXPECT_NEAR(1.715732114990145,std::abs(finalmat(0,1)),epsilon);
-	EXPECT_NEAR(1.204265111239059,std::abs(finalmat(0,2)),epsilon);
-	EXPECT_NEAR(1.835430614937060,std::abs(finalmat(1,0)),epsilon);
-	EXPECT_NEAR(0.435473994643473,std::abs(finalmat(1,1)),epsilon);
-	EXPECT_NEAR(1.39995662029358,std::abs(finalmat(1,2)),epsilon);
+	auto s0 = check_eigenvector_eq(evs.get_column(0), transmat.get_column(0), epsilon);
+	auto s1 = check_eigenvector_eq(evs.get_column(1), transmat.get_column(1), epsilon);
+
+	EXPECT_NEAR(-0.511467003751085, s0*finalmat(0,0),epsilon);
+	EXPECT_NEAR(1.715732114990145, s0*finalmat(0,1),epsilon);
+	EXPECT_NEAR(-1.204265111239059, s0*finalmat(0,2),epsilon);
+	EXPECT_NEAR(1.835430614937060, s1*finalmat(1,0),epsilon);
+	EXPECT_NEAR(-0.435473994643473, s1*finalmat(1,1),epsilon);
+	EXPECT_NEAR(-1.39995662029358, s1*finalmat(1,2),epsilon);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);

@@ -159,7 +159,7 @@ namespace shogun
 
 /** Implementation of @see LinalgBackendBase::identity */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
-	virtual void identity(Container<Type>& I) const;
+	virtual void identity(Container<Type>& identity_matrix) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
 #undef BACKEND_GENERIC_IDENTITY
 
@@ -470,7 +470,7 @@ namespace shogun
 
 		/** Eigen3 set matrix to identity method */
 		template <typename T>
-		void identity_impl(SGMatrix<T>& I) const;
+		void identity_impl(SGMatrix<T>& identity_matrix) const;
 
 		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>

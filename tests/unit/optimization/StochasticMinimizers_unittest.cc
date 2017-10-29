@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
 
 #include "StochasticMinimizers_unittest.h"
 
@@ -38,7 +39,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/SVRGMinimizer.h>
 #include <shogun/base/Parameter.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/StandardMomentumCorrection.h>
 #include <shogun/optimization/AdaDeltaUpdater.h>
