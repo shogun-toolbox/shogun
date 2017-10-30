@@ -23,16 +23,27 @@ ELSE ()
 	)
 ENDIF()
 
-ExternalProject_Add(
-	GoogleMock
-	URL https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-	URL_MD5 16877098823401d1bf2ed7891d7dce36
-    TIMEOUT 10
-	PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
-	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock
-	INSTALL_COMMAND ""
-	CMAKE_ARGS ${CUSTOM_CMAKE_ARGS}
-)
+IF(EXISTS /usr/src/googletest)
+	ExternalProject_Add(
+		GoogleMock
+		DOWNLOAD_COMMAND ""
+		SOURCE_DIR /usr/src/googletest
+		PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
+		INSTALL_COMMAND ""
+		CMAKE_ARGS ${CUSTOM_CMAKE_ARGS}
+	)
+ELSE()
+	ExternalProject_Add(
+		GoogleMock
+		URL https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+		URL_MD5 16877098823401d1bf2ed7891d7dce36
+		TIMEOUT 10
+		PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
+		DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock
+		INSTALL_COMMAND ""
+		CMAKE_ARGS ${CUSTOM_CMAKE_ARGS}
+	)
+ENDIF()
 
 UNSET(C_COMPILER)
 UNSET(CXX_COMPILER)
