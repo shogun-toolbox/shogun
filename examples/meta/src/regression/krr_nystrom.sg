@@ -27,12 +27,12 @@ RegressionLabels labels_predict = nystrom.apply_regression(features_test)
 #![train_and_apply]
 
 #![extract_alpha]
-RealVector alpha = nystrom.get_alphas()
+nystrom.get_alphas()
 #![extract_alpha]
 
 #![evaluate_error]
 MeanSquaredError eval()
-real mse = eval.evaluate(labels_predict, labels_test)
+eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
