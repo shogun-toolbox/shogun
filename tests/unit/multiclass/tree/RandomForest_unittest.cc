@@ -28,8 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include "utils/Utils.h"
 #include <gtest/gtest.h>
+#include "utils/Utils.h"
 #include <shogun/ensemble/MajorityVote.h>
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
