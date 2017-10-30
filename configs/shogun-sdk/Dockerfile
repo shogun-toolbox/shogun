@@ -18,11 +18,10 @@ RUN gem install narray
 RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig
 
 ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.19.tar.gz /tmp/
-RUN cd /tmp;\
-    tar zxpf arprec-2.2.19.tar.gz;\
-    cd arprec-2.2.19;\
-    ./configure --enable-shared;\
-    make install; ldconfig
+RUN cd /tmp && \
+    tar zxpf arprec-2.2.19.tar.gz && \
+    cd arprec && ./configure --enable-shared && \
+    make install && ldconfig
 
 ADD http://dl.bintray.com/sbt/debian/sbt-0.13.6.deb /tmp/sbt.deb
 RUN dpkg -i /tmp/sbt.deb
