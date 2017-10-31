@@ -4,7 +4,7 @@ MAINTAINER shogun@shogun-toolbox.org
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
-    libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke cmake \
+    libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev cmake \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
