@@ -32,6 +32,8 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <gtest/gtest.h>
+
 #include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
@@ -43,7 +45,6 @@
 #include <shogun/regression/KernelRidgeRegression.h>
 
 #include "environments/RegressionTestEnvironment.h"
-#include <gtest/gtest.h>
 #include <memory>
 
 using namespace shogun;

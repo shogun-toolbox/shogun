@@ -28,8 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#include <shogun/lib/StringMap.h>
 #include <gtest/gtest.h>
+#include <shogun/lib/StringMap.h>
 #include <shogun/lib/config.h>
 
 using namespace shogun;
