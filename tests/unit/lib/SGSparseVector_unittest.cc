@@ -7,10 +7,10 @@
  * Written (W) 2013 Soumyajit De
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <gtest/gtest.h>
 
 #include <vector>
 

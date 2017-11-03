@@ -32,10 +32,11 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <gtest/gtest.h>
 #include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
 #include <vector>
 

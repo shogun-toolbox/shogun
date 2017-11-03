@@ -30,6 +30,7 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/config.h>
 
@@ -39,7 +40,6 @@
 #include <shogun/lib/GPUMatrix.h>
 #include <viennacl/matrix.hpp>
 #include <viennacl/linalg/prod.hpp>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
 
 #include <shogun/lib/SGMatrix.h>
