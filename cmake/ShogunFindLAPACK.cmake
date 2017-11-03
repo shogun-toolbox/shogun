@@ -24,7 +24,7 @@ IF (LAPACK_FOUND)
         LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
       endif()
     endif()
-  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/libmkl_.*")
+  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_.*")
     # in case MKL is available enable Eigen to use it.
     # for more fine grained control and details see:
     # https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html
