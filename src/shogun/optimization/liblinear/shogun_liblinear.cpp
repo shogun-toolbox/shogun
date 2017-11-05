@@ -39,6 +39,7 @@
 #include <stdarg.h>
 
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Time.h>
@@ -81,7 +82,8 @@ double l2r_lr_fun::fun(double *w)
 		else
 			f += C[i]*(-yz+log(1 + exp(yz)));
 	}
-	f += 0.5 *CMath::dot(w,w,n);
+	SGVector<float64_t> w_wrap(w, n, false);
+	f += 0.5 *linalg::dot(w_wrap, w_wrap);
 
 	return(f);
 }
@@ -197,7 +199,8 @@ double l2r_l2_svc_fun::fun(double *w)
 		if (d > 0)
 			f += C[i]*d*d;
 	}
-	f += 0.5*CMath::dot(w, w, w_size);
+	SGVector<float64_t> w_wrap(w, w_size, false);
+	f += 0.5*linalg::dot(w_wrap, w_wrap);
 
 	return(f);
 }

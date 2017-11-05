@@ -6,10 +6,10 @@
  *
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/CircularBuffer.h>
 #include <shogun/lib/DelimiterTokenizer.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

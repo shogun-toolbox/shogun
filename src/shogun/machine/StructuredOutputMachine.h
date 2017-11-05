@@ -119,7 +119,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param rtype The type of structured risk
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk(float64_t* subgrad, float64_t* W,
+		virtual float64_t risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
 				TMultipleCPinfo* info=0, EStructRiskType rtype = N_SLACK_MARGIN_RESCALING);
 
 		/** @return training progress helper */
@@ -167,7 +167,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param info Helper info for multiple cutting plane models algorithm
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk_nslack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual float64_t risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info=0);
 
 		/** n-slack formulation and slack rescaling
 		 *
@@ -176,7 +176,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param info Helper info for multiple cutting plane models algorithm
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk_nslack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual float64_t risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info=0);
 
 		/** 1-slack formulation and margin rescaling
 		 *
@@ -185,7 +185,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param info Helper info for multiple cutting plane models algorithm
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk_1slack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual float64_t risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info=0);
 
 		/** 1-slack formulation and slack rescaling
 		 *
@@ -194,7 +194,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param info Helper info for multiple cutting plane models algorithm
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk_1slack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual float64_t risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info=0);
 
 		/** customized risk type
 		 *
@@ -203,7 +203,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @param info Helper info for multiple cutting plane models algorithm
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk_customized_formulation(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual float64_t risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info=0);
 
 	private:
 		/** register class members */

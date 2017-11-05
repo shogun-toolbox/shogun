@@ -1,6 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

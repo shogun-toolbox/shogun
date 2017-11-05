@@ -1,7 +1,8 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/mathematics/eigen3.h>

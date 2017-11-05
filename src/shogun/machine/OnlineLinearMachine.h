@@ -57,18 +57,6 @@ class COnlineLinearMachine : public CMachine
 		COnlineLinearMachine();
 		virtual ~COnlineLinearMachine();
 
-		/** get w
-		 *
-		 * @param dst_w store w in this argument
-		 * @param dst_dims dimension of w
-		 */
-		virtual void get_w(float32_t*& dst_w, int32_t& dst_dims)
-		{
-			ASSERT(w && w_dim>0)
-			dst_w=w;
-			dst_dims=w_dim;
-		}
-
 		/**
 		 * Get w as a _new_ float64_t array
 		 *
@@ -77,23 +65,20 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void get_w(float64_t*& dst_w, int32_t& dst_dims)
 		{
-			ASSERT(w && w_dim>0)
-			dst_w=SG_MALLOC(float64_t, w_dim);
-			for (int32_t i=0; i<w_dim; i++)
-				dst_w[i]=w[i];
-			dst_dims=w_dim;
+			ASSERT(m_w.vector && m_w.vlen > 0)
+			dst_w=SG_MALLOC(float64_t, m_w.vlen);
+			for (int32_t i=0; i<m_w.vlen; i++)
+				dst_w[i]=m_w[i];
+			dst_dims=m_w.vlen;
 		}
 
 		/** get w
 		 *
 		 * @return weight vector
 		 */
-		virtual SGVector<float32_t> get_w()
+		virtual SGVector<float32_t> get_w() const
 		{
-			float32_t * dst_w = SG_MALLOC(float32_t, w_dim);
-			for (int32_t i=0; i<w_dim; i++)
-				dst_w[i]=w[i];
-			return SGVector<float32_t>(dst_w, w_dim);
+			return m_w;
 		}
 
 		/** set w
@@ -101,12 +86,9 @@ class COnlineLinearMachine : public CMachine
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		virtual void set_w(float32_t* src_w, int32_t src_w_dim)
+		virtual void set_w(const SGVector<float32_t> w)
 		{
-			SG_FREE(w);
-			w=SG_MALLOC(float32_t, src_w_dim);
-			sg_memcpy(w, src_w, size_t(src_w_dim)*sizeof(float32_t));
-			w_dim=src_w_dim;
+			m_w = w;
 		}
 
 		/**
@@ -117,11 +99,9 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
-			SG_FREE(w);
-			w=SG_MALLOC(float32_t, src_w_dim);
+			m_w = SGVector<float32_t>(src_w_dim);
 			for (int32_t i=0; i<src_w_dim; i++)
-				w[i] = src_w[i];
-			w_dim=src_w_dim;
+				m_w[i] = src_w[i];
 		}
 
 		/** set bias
@@ -249,10 +229,8 @@ class COnlineLinearMachine : public CMachine
 		virtual bool train_require_labels() const { return false; }
 
 	protected:
-		/** dimension of w */
-		int32_t w_dim;
 		/** w */
-		float32_t* w;
+		SGVector<float32_t> m_w;
 		/** bias */
 		float32_t bias;
 		/** features */
