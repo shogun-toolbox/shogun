@@ -102,15 +102,21 @@ TEST(GPUVector, element_access_with_offset)
 TEST(GPUVector, dot_product_with_offset)
 {
 	CGPUVector<float64_t> data(24);
-	for (int32_t i=0; i<24; i++)
+	SGVector<float64_t> cpu_data(24);
+	for (int32_t i=0; i<24; i++) {
 		data[i] = i;
+		cpu_data[i] = i;
+	}
 
 	CGPUVector<float64_t> A(data.vector, 12, 0);
 	CGPUVector<float64_t> B(data.vector, 12, 12);
 
 	float c = viennacl::linalg::inner_prod(A.vcl_vector(), B.vcl_vector());
 
-	auto c_sg = linalg::dot(A, B);
+
+	SGVector<float64_t> sg_A(cpu_data.vector, 12, false);
+	SGVector<float64_t> sg_B(cpu_data.vector+12, 12, false);
+	auto c_sg = linalg::dot(sg_A, sg_B);
 
 	EXPECT_NEAR(c_sg, c, 1e-15);
 }
