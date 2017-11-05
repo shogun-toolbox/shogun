@@ -155,6 +155,10 @@ if (LIBSHOGUN_BUILD_STATIC)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib)
+    # make sure that we build the static library when building shogun
+    # as the rest of the project depends on the shogun::shogun target
+    # that needs shogun-static built already.
+    add_dependencies(shogun shogun-static)
   endif()
 ENDIF()
 
@@ -354,10 +358,14 @@ SHOGUN_DEPENDENCIES(
   SCOPE PUBLIC
   CONFIG_FLAG HAVE_XML)
 
-SHOGUN_DEPENDENCIES(
-  LIBRARY HDF5
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_HDF5)
+if (NOT WIN32)
+  # FIXME: HDF5 linking on WIN32 is broken.
+  # at least with the hdf5 supplied in anaconda
+  SHOGUN_DEPENDENCIES(
+    LIBRARY HDF5
+    SCOPE PUBLIC
+    CONFIG_FLAG HAVE_HDF5)
+endif ()
 
 SHOGUN_DEPENDENCIES(
   LIBRARY CURL
