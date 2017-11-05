@@ -42,6 +42,7 @@
 #include <viennacl/linalg/inner_prod.hpp>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/lib/SGVector.h>
 
