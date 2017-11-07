@@ -159,7 +159,7 @@ if (LIBSHOGUN_BUILD_STATIC)
     $<INSTALL_INTERFACE:include/shogun>
   )
   IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+    target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
   ENDIF()
 
   if(MSVC)
