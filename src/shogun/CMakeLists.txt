@@ -158,6 +158,9 @@ if (LIBSHOGUN_BUILD_STATIC)
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
     $<INSTALL_INTERFACE:include/shogun>
   )
+  IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  ENDIF()
 
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib)
