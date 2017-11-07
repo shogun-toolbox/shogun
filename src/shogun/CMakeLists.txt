@@ -153,12 +153,14 @@ endif()
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
+  target_include_directories(shogun-static PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+    $<INSTALL_INTERFACE:include/shogun>
+  )
+
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib)
-    # make sure that we build the static library when building shogun
-    # as the rest of the project depends on the shogun::shogun target
-    # that needs shogun-static built already.
-    add_dependencies(shogun shogun-static)
   endif()
 ENDIF()
 
