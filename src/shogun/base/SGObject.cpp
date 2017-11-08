@@ -1052,8 +1052,3 @@ namespace shogun
 	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float32_t)
 	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float64_t)
 };
-
-void CSGObject::set_seed(int32_t seed)
-{
-	m_rng->set_seed(seed);
-}

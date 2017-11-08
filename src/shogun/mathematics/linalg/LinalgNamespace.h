@@ -1469,7 +1469,7 @@ namespace shogun
 		 * @param value The value to set the vector or matrix
 		 */
 		template <typename T, template <typename> class Container>
-		void set_const(Container<T>& a, T value)
+		void set_const(Container<T>& a, const T value)
 		{
 			infer_backend(a)->set_const(a, value);
 		}

@@ -80,7 +80,7 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
 	SG_SDEBUG("Entering!\n");
 
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
-	CMath::permute(permuted_inds);
+	CMath::permute(permuted_inds, get_prng());
 	for (int i=0; i<permuted_inds.vlen; ++i)
 		inverted_permuted_inds[permuted_inds[i]]=i;
 

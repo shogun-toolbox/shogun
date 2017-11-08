@@ -12,6 +12,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
@@ -191,8 +192,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	for(i=0; i<l; i++)
 		beta[i] = 0;
 
-	for(i=0; i<w_size; i++)
-		w[i] = 0;
+	linalg::zero(w);
 	for(i=0; i<l; i++)
 	{
 		QD[i] = prob->x->dot(i, prob->x,i);
@@ -333,8 +333,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	// calculate objective value
 	double v = 0;
 	int nSV = 0;
-	for(i=0; i<w_size; i++)
-		v += w[i]*w[i];
+	v = linalg::dot(w, w);
 	v = 0.5*v;
 	for(i=0; i<l; i++)
 	{

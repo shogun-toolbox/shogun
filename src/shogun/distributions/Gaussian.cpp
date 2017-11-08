@@ -44,7 +44,7 @@ CGaussian::CGaussian(
 void CGaussian::init()
 {
 	m_constant=CMath::log(2*M_PI)*m_mean.vlen;
-	m_rng = get_prng<std::mt19937_64>();
+	m_rng = get_prng();
 	switch (m_cov_type)
 	{
 		case FULL:

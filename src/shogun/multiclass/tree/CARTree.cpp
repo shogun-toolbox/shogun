@@ -572,7 +572,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	if (subset_size)
 	{
 		num_feats=subset_size;
-		CMath::permute(idx);
+		CMath::permute(idx, get_prng());
 	}
 
 	float64_t max_gain=MIN_SPLIT_GAIN;

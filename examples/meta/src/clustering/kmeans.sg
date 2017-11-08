@@ -1,5 +1,4 @@
 CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
-set_global_seed(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)
@@ -11,6 +10,7 @@ EuclideanDistance distance(features_train, features_train)
 
 #![create_instance_lloyd]
 KMeans kmeans(2, distance)
+kmeans.set_seed(1)
 #![create_instance_lloyd]
 
 #![train_dataset]

@@ -11,6 +11,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -62,9 +63,9 @@ void CKMeansBase::set_random_centers()
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	int32_t lhs_size=lhs->get_num_vectors();
 
-	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
-	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
-	CMath::permute(temp);
+	SGVector<int32_t> temp(lhs_size);
+	linalg::range_fill(temp, 0);
+	CMath::permute(temp, get_prng());
 
 	for (int32_t i=0; i<k; i++)
 	{

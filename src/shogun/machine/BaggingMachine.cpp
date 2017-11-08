@@ -174,11 +174,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	SG_UNREF(m_oob_indices);
 	m_oob_indices = new CDynamicObjectArray();
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
+	std::uniform_int_distribution<index_t> dist(0, m_bag_size - 1);
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-	{
-		std::uniform_int_distribution<index_t> dist(0, m_bag_size - 1);
 		rnd_indicies.matrix[i] = dist(prng);
-	}
 
 #pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)

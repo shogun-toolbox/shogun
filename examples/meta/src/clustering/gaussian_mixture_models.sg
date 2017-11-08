@@ -1,7 +1,5 @@
 CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
 
-set_global_seed(1)
-
 #![create_features]
 RealFeatures features_train(f_feats_train)
 #![create_features]
@@ -9,6 +7,7 @@ RealFeatures features_train(f_feats_train)
 #![create_gmm_instance]
 int num_components = 3
 GMM gmm(num_components)
+gmm.set_seed(1)
 #![create_gmm_instance]
 
 #![train_sample]

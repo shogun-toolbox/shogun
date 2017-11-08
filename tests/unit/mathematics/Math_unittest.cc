@@ -388,7 +388,6 @@ TEST(CMath, permute)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	set_global_seed(2);
 	CMath::permute(v);
 	EXPECT_EQ(v[0], 3);
 	EXPECT_EQ(v[1], 0);
@@ -400,7 +399,6 @@ TEST(CMath, permute_with_random)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	set_global_seed(2);
 	auto prng = get_prng();
 	CMath::permute(v, prng);
 
@@ -412,7 +410,6 @@ TEST(CMath, permute_with_random)
 
 TEST(CMath,misc)
 {
-	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 

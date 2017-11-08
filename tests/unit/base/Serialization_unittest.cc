@@ -77,7 +77,6 @@ TEST(Serialization,multiclass_labels)
 TEST(Serialization, liblinear)
 {
 	index_t num_samples = 50;
-	set_global_seed(13);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);

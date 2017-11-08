@@ -118,7 +118,7 @@ void DataFetcher::shuffle_features()
 			shuffle_subset=SGVector<index_t>(size);
 		}
 		std::iota(shuffle_subset.data(), shuffle_subset.data()+shuffle_subset.size(), 0);
-		CMath::permute(shuffle_subset);
+		CMath::permute(shuffle_subset, get_prng());
 		// shuffle_subset.display_vector("shuffle_subset");
 
 		SG_SDEBUG("Shuffling %d feature vectors\n", size);

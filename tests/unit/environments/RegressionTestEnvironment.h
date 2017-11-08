@@ -54,8 +54,6 @@ private:
 public:
 	virtual void SetUp()
 	{
-		set_global_seed(57);
-
 		SGMatrix<float64_t> feat_train_data =
 		    CDataGenerator::generate_gaussians(n_train, 1, n_dim);
 

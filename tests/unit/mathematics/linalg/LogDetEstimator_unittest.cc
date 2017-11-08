@@ -119,8 +119,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	set_global_seed(1);
-
 	float64_t accuracy=1E-5;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
@@ -164,7 +162,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 #ifdef HAVE_LAPACK
 TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
-	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
@@ -254,7 +251,6 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 {
-	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
@@ -340,7 +336,6 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 
 TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 {
-	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
@@ -402,7 +397,6 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 
 TEST(LogDetEstimator, sample_ratapp_big_matrix)
 {
-	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 

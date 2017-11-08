@@ -94,7 +94,6 @@ TEST(SGVectorTest,setget)
 
 TEST(SGVectorTest,add)
 {
-	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	SGVector<float64_t> b(10);
 	a.random(0.0, 1024.0);
@@ -114,7 +113,6 @@ TEST(SGVectorTest,add)
 
 TEST(SGVectorTest,norm)
 {
-	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-50.0, 1024.0);
 
@@ -138,7 +136,6 @@ TEST(SGVectorTest,norm)
 
 TEST(SGVectorTest,misc)
 {
-	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 

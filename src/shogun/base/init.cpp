@@ -41,7 +41,6 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
-	uint32_t sg_random_seed = generate_seed();
 
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
@@ -243,7 +242,6 @@ namespace shogun
 				linalg->set_linalg_warnings(false);
 		}
 
-#ifdef HAVE_CXX11
 		char* env_thread_val = NULL;
 		Parallel* parallel = get_global_parallel();
 		env_thread_val = getenv("SHOGUN_NUM_THREADS");
@@ -251,28 +249,12 @@ namespace shogun
 		{
 
 			try {
-				int32_t num_threads = std::stoi(std::string(env_thread_val));
+				auto num_threads = std::stoi(std::string(env_thread_val));
 				parallel->set_num_threads(num_threads);
 			} catch (...) {
 				SG_WARNING("The specified SHOGUN_NUM_THREADS environment (%s)"
 				"variable could not be parsed as integer!\n", env_thread_val);
 			}
 		}
-#endif
-	}
-
-	uint32_t generate_seed()
-	{
-		return std::random_device()();
-	}
-
-	void set_global_seed(uint32_t seed)
-	{
-		sg_random_seed = seed;
-	}
-
-	uint32_t get_global_seed()
-	{
-		return sg_random_seed;
 	}
 }

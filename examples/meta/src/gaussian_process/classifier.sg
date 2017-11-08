@@ -2,7 +2,6 @@ CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat
 CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
 CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
-set_global_seed(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)
@@ -20,6 +19,7 @@ ConstMean mean_function()
 SoftMaxLikelihood gauss_likelihood()
 MultiLaplaceInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood)
 GaussianProcessClassification gp_classifier(inference_method)
+gp_classifier.set_seed(1)
 #![create_instance]
 
 #![train_and_apply]

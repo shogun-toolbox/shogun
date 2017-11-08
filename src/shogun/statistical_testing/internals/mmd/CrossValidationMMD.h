@@ -40,6 +40,7 @@
 #include <shogun/features/SubsetStack.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using std::unique_ptr;
 
@@ -117,7 +118,7 @@ struct CrossValidationMMD : PermutationMMD
 					auto prng = get_prng();
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
-						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
+						linalg::range_fill(m_permuted_inds, 0);
 						CMath::permute(m_permuted_inds, prng);
 
 						m_stack->add_subset(m_permuted_inds);

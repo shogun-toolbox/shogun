@@ -15,7 +15,6 @@ extern LinearTestEnvironment* linear_test_env;
 #ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
-	set_global_seed(5);
 	std::shared_ptr<GaussianCheckerboard> mockData =
 	    linear_test_env->getBinaryLabelData();
 

@@ -811,29 +811,16 @@ class CMath : public CSGObject
 			return 0 == a ? b : a;
 		}
 
-		template <
-			class T,
-			class RandomGenerator = std::uniform_int_distribution<index_t>>
+		template <class T>
 		static void permute(SGVector<T> v)
 		{
-			auto prng = get_prng();
-			for (index_t i = 0; i < v.vlen; ++i)
-			{
-				RandomGenerator dist(i, v.vlen - 1);
-				swap(v[i], v[dist(prng)]);
-			}
+			std::shuffle(v.begin(), v.end(), get_prng());
 		}
 
-		template <
-			class T, class RandomGenerator,
-			class Distribution = std::uniform_int_distribution<index_t>>
-		static void permute(SGVector<T> v, RandomGenerator prng)
+		template <class T, class RandomGenerator>
+		static void permute(SGVector<T> v, RandomGenerator&& prng)
 		{
-			for (index_t i = 0; i < v.vlen; ++i)
-			{
-				Distribution dist(i, v.vlen - 1);
-				swap(v[i], v[dist(prng)]);
-			}
+			std::shuffle(v.begin(), v.end(), prng);
 		}
 
 		/** Computes sum of non-zero elements

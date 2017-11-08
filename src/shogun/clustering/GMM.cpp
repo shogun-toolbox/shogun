@@ -22,7 +22,7 @@ using namespace std;
 
 CGMM::CGMM() : CDistribution(), m_components(),	m_coefficients()
 {
-	m_rng = get_prng<std::mt19937_64>();
+	m_rng = get_prng();
 	register_params();
 }
 

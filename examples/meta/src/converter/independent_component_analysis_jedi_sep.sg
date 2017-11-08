@@ -1,13 +1,12 @@
 CSVFile f_feats("../../data/ica_2_sources.dat")
 
-set_global_seed(1)
-
 #![create_features]
 RealFeatures features(f_feats)
 #![create_features]
 
 #![set_parameters]
 JediSep ica()
+ica.set_seed(1)
 ica.set_max_iter(200)
 ica.set_tol(0.00001)
 #![set_parameters]

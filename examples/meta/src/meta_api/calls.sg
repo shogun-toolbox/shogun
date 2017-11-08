@@ -1,10 +1,5 @@
-# static call
-# Math:init_random(1)
-
 # global function call
 get_global_io()
-
-set_global_seed(1)
 
 # member function call
 GaussianKernel k()

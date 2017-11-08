@@ -55,7 +55,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
 	void LinalgBackendEigen::set_const(Container<Type>& a, const Type value)   \
 	    const                                                                  \
 	{                                                                          \
-		set_const_impl(a, value);                                              \
+		set_const_impl(a.begin(), a.end(), value);                             \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
@@ -124,11 +124,10 @@ void LinalgBackendEigen::range_fill_impl(Container<T>& a, const T start) const
 		a[i] = start + T(i);
 }
 
-template <typename T, template <typename> class Container>
-void LinalgBackendEigen::set_const_impl(Container<T>& a, T value) const
+template <typename T, class ForwardIt>
+void LinalgBackendEigen::set_const_impl(ForwardIt begin, ForwardIt end, const T value) const
 {
-	for (decltype(a.size()) i = 0; i < a.size(); ++i)
-		a[i] = value;
+	std::fill(begin, end, value);
 }
 
 template <typename T>

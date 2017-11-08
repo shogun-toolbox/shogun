@@ -34,6 +34,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -65,8 +66,8 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 {
 	int32_t n=kernel->get_num_vec_lhs();
 	SGVector<int32_t> temp(n);
-	temp.range_fill();
-	CMath::permute(temp);
+	linalg::range_fill(temp, 0);
+	CMath::permute(temp, get_prng());
 	SGVector<int32_t> col(m_num_rkhs_basis);
 	for (index_t i=0; i<m_num_rkhs_basis; ++i)
 		col[i]=temp[i];

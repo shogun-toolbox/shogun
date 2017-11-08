@@ -7,6 +7,7 @@
 
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -29,7 +30,7 @@ void CCrossValidationSplitting::build_subsets()
 
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
-	indices.range_fill();
+	linalg::range_fill(indices, 0);
 	auto prng = get_prng();
 	CMath::permute(indices, prng);
 

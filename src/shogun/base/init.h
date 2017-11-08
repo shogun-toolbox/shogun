@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 
@@ -11,6 +11,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
+#include <algorithm>
 #include <functional>
 #include <random>
 #include <stdio.h>
@@ -23,7 +24,6 @@ namespace shogun
 	class Parallel;
 	class SGLinalg;
 	class CSignal;
-	extern uint32_t sg_random_seed;
 
 	/** This function must be called before libshogun is used. Usually shogun
 	 * does
@@ -122,27 +122,15 @@ namespace shogun
 	 */
 	CMath* get_global_math();
 
-	/** Set global random seed
-	 * @param seed seed for random generator
-	 */
-	void set_global_seed(uint32_t seed);
-
-	/** get global random seed
-	 * @return random seed
-	 */
-	uint32_t get_global_seed();
-
-	/**
-	 * Generate a seed for PRNG
-	 *
-	 * @return entropy for PRNG
-	 */
-	uint32_t generate_seed();
-
-	template <typename T = std::mt19937_64>
-	T get_prng()
+	template<class T = std::mt19937_64, std::size_t N = T::state_size>
+	auto get_prng () -> typename std::enable_if<!!N, T>::type
 	{
-		return T(sg_random_seed);
+		typename T::result_type random_data[N];
+		std::random_device source;
+		std::generate(std::begin(random_data), std::end(random_data), std::ref(source));
+		std::seed_seq seeds(std::begin(random_data), std::end(random_data));
+		T seeded_engine(seeds);
+		return seeded_engine;
 	}
 
 #ifndef SWIG // SWIG should skip this part

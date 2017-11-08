@@ -605,8 +605,8 @@ namespace shogun
 		scale_impl(const SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
 
 		/** Eigen3 set const method */
-		template <typename T, template <typename> class Container>
-		void set_const_impl(Container<T>& a, T value) const;
+		template <typename T, class ForwardIt>
+		void set_const_impl(ForwardIt begin, ForwardIt end, const T value) const;
 
 		/** Eigen3 softmax method */
 		template <typename T, template <typename> class Container>

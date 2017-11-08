@@ -1,5 +1,3 @@
-set_global_seed(1)
-
 CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
 CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
@@ -24,6 +22,7 @@ ECOCStrategy rnd_dense_strategy(encoder, decoder)
 
 #![create_instance]
 LinearMulticlassMachine mc_classifier(rnd_dense_strategy, features_train, classifier, labels_train)
+mc_classifier.set_seed(1)
 #![create_instance]
 
 #![train_and_apply]

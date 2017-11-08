@@ -40,7 +40,6 @@ using namespace shogun;
 
 TEST(MixtureModel,gaussian_mixture_model)
 {
-	set_global_seed(2);
 	auto prng = get_prng();
 	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> data(1,400);

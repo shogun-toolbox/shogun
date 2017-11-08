@@ -2,7 +2,6 @@ CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat
 CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
 CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
-set_global_seed(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)
@@ -17,6 +16,7 @@ MajorityVote m_vote()
 
 #![create_instance]
 RandomForest rand_forest(features_train, labels_train, 100)
+rand_forest.set_seed(1)
 rand_forest.set_combination_rule(m_vote)
 #![create_instance]
 
