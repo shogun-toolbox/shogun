@@ -114,6 +114,12 @@ SGVector<T>::SGVector(GPUMemoryBase<T>* gpu_vector, index_t len)
 	m_on_gpu.store(true, std::memory_order_release);
 }
 
+template <class T>
+SGVector<T>::SGVector(std::initializer_list<T> il):
+	SGVector(il.begin(), il.end())
+{
+}
+
 template<class T>
 SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 {

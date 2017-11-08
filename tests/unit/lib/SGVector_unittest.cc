@@ -6,7 +6,6 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-
 using namespace shogun;
 
 TEST(SGVectorTest,ctor)
@@ -37,6 +36,21 @@ TEST(SGVectorTest,ctor)
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(b[i], c[i]);
 
+	/* test iterator */
+	std::vector<float64_t> src({1.0, 2.0, 3.0, 4.0, 5.0});
+	SGVector<float64_t> d(src.begin(), src.end());
+	EXPECT_EQ(src.size(), d.vlen);
+	for (int i=0; i < c.vlen; ++i)
+		EXPECT_EQ(b[i], c[i]);
+
+	/* test initializer list */
+	SGVector<float64_t> e({1.0, 2.0, 3.0, 4.0, 5.0});
+	EXPECT_EQ(5, e.vlen);
+	EXPECT_EQ(1.0, e[0]);
+	EXPECT_EQ(2.0, e[1]);
+	EXPECT_EQ(3.0, e[2]);
+	EXPECT_EQ(4.0, e[3]);
+	EXPECT_EQ(5.0, e[4]);
 }
 
 TEST(SGVectorTest, ctor_from_matrix)

@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <atomic>
+#include <initializer_list>
 
 namespace Eigen
 {
@@ -89,12 +90,24 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 #ifndef SWIG // SWIG should skip this part
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 
 		/** The container type for a given template argument */
 		template <typename ST> using container_type = SGVector<ST>;
 
-#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+		/** Construct SGVector from InputIterator list */
+		template<typename InputIt>
+		SGVector(InputIt begin, InputIt end):
+			SGReferencedData(true),
+			vlen(std::distance(begin, end)),
+			gpu_ptr(nullptr)
+		{
+			vector = SG_MALLOC(T, vlen);
+			std::copy(begin, end, vector);
+			m_on_gpu.store(false, std::memory_order_release);
+		}
+
+		/** Construct SGVector from initializer list */
+		SGVector(std::initializer_list<T> il);
 
 		/** Wraps a matrix around the data of an Eigen3 column vector */
 		SGVector(EigenVectorXt& vec);
