@@ -666,3 +666,32 @@ TEST(SGMatrixTest, set_column)
 	for (index_t i = 0; i < n_rows; ++i)
 		EXPECT_EQ(mat(i, col), vec[i]);
 }
+
+TEST(SGMatrixTest,iterator)
+{
+	constexpr index_t size=5;
+	SGMatrix<float64_t> mat(size, size);
+	linalg::range_fill(mat, 1.0);
+
+	auto begin = mat.begin();
+	auto end = mat.end();
+	EXPECT_EQ(mat.size(), std::distance(begin, end));
+	EXPECT_EQ(1.0, *begin++);
+	++begin;
+	EXPECT_EQ(3.0, *begin);
+	--begin;
+	EXPECT_EQ(2.0, *begin);
+	EXPECT_TRUE(begin != end);
+	begin += 2;
+	EXPECT_EQ(4.0, *begin);
+	begin -= 1;
+	EXPECT_EQ(3.0, *begin);
+	EXPECT_EQ(4.0, begin[1]);
+	auto new_begin = begin + 2;
+	EXPECT_EQ(5.0, *new_begin);
+
+	// range-based loop should work as well
+	auto index = 0;
+	for (auto v: mat)
+		EXPECT_EQ(mat[index++], v);
+}

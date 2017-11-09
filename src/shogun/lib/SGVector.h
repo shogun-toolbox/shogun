@@ -19,6 +19,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/util/iterators.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 #include <memory>
@@ -43,6 +44,9 @@ namespace shogun
 template<class T> class SGVector : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
+
+	public:
+		typedef RandomIterator<T> iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
@@ -157,6 +161,12 @@ template<class T> class SGVector : public SGReferencedData
 			assert_on_cpu();
 			return vector;
 		}
+
+		/** Returns an iterator to the first element of the container. */
+		iterator begin() noexcept { return iterator(vector); }
+
+		/** Returns an iterator to the element following the last element of the container. */
+		iterator end() noexcept { return iterator(vector + vlen); }
 
 		SGVector<T>& operator=(const SGVector<T>&);
 
