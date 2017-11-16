@@ -31,6 +31,26 @@ IF (LAPACK_FOUND)
     # this is supported since Eigen version 3.1 and later
     MESSAGE(STATUS "Found MKL using as BLAS/LAPACK backend.")
     SET(HAVE_MKL 1)
+
+    # trying to use the new Single Dynamic Library of MKL
+    # https://software.intel.com/en-us/articles/a-new-linking-model-single-dynamic-library-mkl_rt-since-intel-mkl-103
+    IF (NOT "${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_rt.*")
+      # just use the mkl_rt and let the user specify/decide all the MKL specific
+      # optimisation runtime
+      SET(MKL_LIBRARIES ${LAPACK_LIBRARIES})
+      LIST(FILTER MKL_LIBRARIES INCLUDE REGEX ".*/.*mkl_core.*")
+      get_filename_component(MKL_PATH ${MKL_LIBRARIES} DIRECTORY)
+      find_library(MKL_RT mkl_rt PATHS ${MKL_PATH})
+      IF (MKL_RT)
+        IF (MSVC)
+          SET(LAPACK_LIBRARIES ${MKL_RT})
+        ELSEIF(CMAKE_USE_PTHREADS_INIT)
+          SET(LAPACK_LIBRARIES ${MKL_RT})
+          LIST(APPEND LAPACK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} -lm)
+        ENDIF()
+      ENDIF()
+    ENDIF()
+
     IF (ENABLE_EIGEN_LAPACK)
       FIND_PATH(MKL_INCLUDE_DIR mkl.h)
       IF(NOT MKL_INCLUDE_DIR)
