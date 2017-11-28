@@ -28,9 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <stdexcept>
 
@@ -111,4 +112,11 @@ TEST(Any, mixing_policies)
 	auto non_owning_any = erase_type_non_owning(&integer);
 	EXPECT_THROW(owning_any = non_owning_any, std::logic_error);
 	EXPECT_THROW(non_owning_any = owning_any, std::logic_error);
+}
+
+TEST(Any, type_info)
+{
+	int32_t integer = 10;
+	auto any = erase_type(integer);
+	EXPECT_EQ(any.type_info().hash_code(), typeid(integer).hash_code());
 }

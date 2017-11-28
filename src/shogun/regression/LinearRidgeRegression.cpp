@@ -10,10 +10,10 @@
 
 #ifdef HAVE_LAPACK
 #include <shogun/regression/LinearRidgeRegression.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

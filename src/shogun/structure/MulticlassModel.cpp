@@ -11,6 +11,7 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/MulticlassSOLabels.h>
 
@@ -118,8 +119,7 @@ CResultSet* CMulticlassModel::argmax(
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
 					feat_idx, feat_idx);
-		ret->score    -= CMath::dot(w.vector,
-					ret->psi_truth.vector, dim);
+		ret->score    -= linalg::dot(w, ret->psi_truth);
 	}
 
 	return ret;

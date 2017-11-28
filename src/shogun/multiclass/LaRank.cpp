@@ -46,6 +46,7 @@
  * $Id: kcache.c,v 1.9 2007/01/25 22:42:09 leonb Exp $
  **********************************************************************/
 
+#include <shogun/base/progress.h>
 #include <shogun/lib/config.h>
 
 #include <vector>
@@ -60,6 +61,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/LaRank.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/kernel/Kernel.h>
@@ -408,9 +410,8 @@ void LaRankOutput::initialize (CKernel* kfunc, int64_t cache)
 {
 	kernel = larank_kcache_create (kfunc);
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
-	beta = SG_MALLOC(float32_t, 1);
+	m_beta = SGVector<float32_t>(1);
 	g = SG_MALLOC(float32_t, 1);
-	*beta=0;
 	*g=0;
 	l = 0;
 }
@@ -420,9 +421,7 @@ void LaRankOutput::destroy ()
 {
 	larank_kcache_destroy (kernel);
 	kernel=NULL;
-	SG_FREE(beta);
 	SG_FREE(g);
-	beta=NULL;
 	g=NULL;
 }
 
@@ -433,8 +432,8 @@ float64_t LaRankOutput::computeScore (int32_t x_id)
 		return 0;
 	else
 	{
-		float32_t *row = larank_kcache_query_row (kernel, x_id, l);
-		return CMath::dot (beta, row, l);
+		SGVector<float32_t> row(larank_kcache_query_row (kernel, x_id, l), l, false);
+		return linalg::dot (m_beta, row);
 	}
 }
 
@@ -459,15 +458,15 @@ void LaRankOutput::update (int32_t x_id, float64_t lambda, float64_t gp)
 	// updates the cache order and the beta coefficient
 	if (xr < l)
 	{
-		beta[xr]+=lambda;
+		m_beta[xr]+=lambda;
 	}
 	else
 	{
 		larank_kcache_swap_ri (kernel, l, x_id);
 		g = SG_REALLOC(float32_t, g, l, l+1);
-		beta = SG_REALLOC(float32_t, beta, l, l+1);
+		m_beta.resize_vector(l+1);
 		g[l]=gp;
-		beta[l]=lambda;
+		m_beta[l]=lambda;
 		l++;
 	}
 
@@ -494,7 +493,7 @@ int32_t LaRankOutput::cleanup ()
 	std::vector < int32_t >idx;
 	for (int32_t x = 0; x < l; x++)
 	{
-		if ((beta[x] < FLT_EPSILON) && (beta[x] > -FLT_EPSILON))
+		if ((m_beta[x] < FLT_EPSILON) && (m_beta[x] > -FLT_EPSILON))
 		{
 			idx.push_back (x);
 			count++;
@@ -507,13 +506,13 @@ int32_t LaRankOutput::cleanup ()
 		for (int32_t r = i; r < (l - 1); r++)
 		{
 			larank_kcache_swap_rr (kernel, r, int64_t(r) + 1);
-			beta[r]=beta[r + 1];
+			m_beta[r]=m_beta[r + 1];
 			g[r]=g[r + 1];
 		}
 	}
-	beta = SG_REALLOC(float32_t, beta, l, new_l+1);
+	m_beta.resize_vector(new_l+1);
 	g = SG_REALLOC(float32_t, g, l, new_l+1);
-	beta[new_l]=0;
+	m_beta[new_l]=0;
 	g[new_l]=0;
 	l = new_l;
 	return count;
@@ -527,8 +526,8 @@ float64_t LaRankOutput::getW2 ()
 	int32_t *r2i = larank_kcache_r2i (kernel, l + 1);
 	for (int32_t r = 0; r < l; r++)
 	{
-		float32_t *row_r = larank_kcache_query_row (kernel, r2i[r], l);
-		sum += beta[r] * CMath::dot (beta, row_r, l);
+		SGVector<float32_t> row_r(larank_kcache_query_row (kernel, r2i[r], l), l, false);
+		sum += m_beta[r] * linalg::dot (m_beta, row_r);
 	}
 	return sum;
 }
@@ -549,7 +548,7 @@ float64_t LaRankOutput::getBeta (int32_t x_id)
 			xr = r;
 			break;
 		}
-	return (xr < 0 ? 0 : beta[xr]);
+	return (xr < 0 ? 0 : m_beta[xr]);
 }
 
 //
@@ -618,8 +617,6 @@ bool CLaRank::train_machine(CFeatures* data)
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
-	CSignal::clear_cancel();
-
 	if (data)
 	{
 		if (data->get_num_vectors() != m_labels->get_num_labels())
@@ -638,9 +635,10 @@ bool CLaRank::train_machine(CFeatures* data)
 	int32_t n_it = 1;
 	float64_t gap = DBL_MAX;
 
+	auto pb = progress(range(0, 10), *this->io);
 	SG_INFO("Training on %d examples\n", nb_train)
-	while (gap > get_C() && (!CSignal::cancel_computations()) &&
-            n_it < max_iteration)      // stopping criteria
+	while (gap > get_C() && (!cancel_computation()) &&
+	       n_it < max_iteration) // stopping criteria
 	{
 		float64_t tr_err = 0;
 		int32_t ind = step;
@@ -661,19 +659,21 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("End of iteration %d\n", n_it)
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
-		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6)
+		pb.print_absolute(
+		    gap, -CMath::log10(gap), -CMath::log10(DBL_MAX),
+		    -CMath::log10(get_C()));
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
                 n_it++;
 	}
-	SG_DONE()
+	pb.complete_absolute();
 
-        if (n_it >= max_iteration && gap > get_C())
-        {
-            SG_WARNING("LaRank did not converge after %d iterations.\n",
-                       max_iteration)
-        }
+	if (n_it >= max_iteration && gap > get_C())
+	{
+		SG_WARNING(
+		    "LaRank did not converge after %d iterations.\n", max_iteration)
+	}
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);
@@ -687,7 +687,7 @@ bool CLaRank::train_machine(CFeatures* data)
 
 		larank_kcache_t* k=o->getKernel();
 		int32_t l=o->get_l();
-		float32_t* beta=o->getBetas();
+		SGVector<float32_t> beta=o->getBetas();
 		int32_t *r2i = larank_kcache_r2i (k, l);
 
 		ASSERT(l>0)
@@ -855,7 +855,7 @@ void CLaRank::set_max_iteration(int32_t max_iter)
     REQUIRE(max_iter > 0,
             "Max iteration (given: %d) must be positive.\n",
             max_iter);
-    max_iteration = max_iter; 
+    max_iteration = max_iter;
 }
 
 // Number of Support Vectors

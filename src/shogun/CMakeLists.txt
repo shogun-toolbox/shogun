@@ -29,6 +29,32 @@ if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
     CACHE BOOL "Build libshogun static library" FORCE)
 endif()
 
+# Allow to hide non-bsd compatible codes
+OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
+SET(USE_GPL_SHOGUN 0)
+IF (LICENSE_GPL_SHOGUN)
+        SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
+        IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}/shogun")
+            SET(USE_GPL_SHOGUN 1)
+
+            FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
+            FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_HEADER})
+
+            LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
+            LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
+            INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
+
+            SET(USE_GPL_SHOGUN 1)
+        ELSE()
+            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download or disable.\n")
+        ENDIF()
+ENDIF()
+
+OPTION(USE_SVMLIGHT "SVMLight" ON)
+IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
+	MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included")
+ENDIF()
+
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
@@ -56,27 +82,17 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
-  IF(MSVC)
-    FOREACH(h ${LIBSHOGUN_HEADERS})
-      FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
-    ENDFOREACH()
+  FOREACH(h ${LIBSHOGUN_HEADERS})
+    FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
+  ENDFOREACH()
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating ${generated_cpp}"
-    )
-  ELSE()
-    ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${LIBSHOGUN_HEADERS}
-        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating ${generated_cpp}"
-    )
-  ENDIF()
+  ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
+      COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+      DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating ${generated_cpp}"
+  )
 
   ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
   add_dependencies(libshogun ${generated_target})
@@ -97,6 +113,14 @@ target_include_directories(shogun PUBLIC
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
   $<INSTALL_INTERFACE:include/shogun>
 )
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "dir='${dir}'")
+endforeach()
 
 # create shogun_deps meta target to store all the
 # dependencies of shogun itself, this is used in unit test
@@ -106,6 +130,9 @@ target_include_directories(shogun_deps INTERFACE
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
 )
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
 
 # add bundled libraries to dependency
 if(SHOGUN_DEPENDS)
@@ -116,6 +143,15 @@ endif()
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
+  target_include_directories(shogun-static PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+    $<INSTALL_INTERFACE:include/shogun>
+  )
+  IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  ENDIF()
+
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib)
   endif()
@@ -157,11 +193,6 @@ if (OPENMP_FOUND)
   endif()
 endif()
 
-FIND_PACKAGE(Spinlock)
-IF (SPINLOCK_FOUND)
-  SET(USE_SPINLOCKS 1)
-ENDIF()
-
 FIND_PACKAGE(CxaDemangle)
 
 # check SSE and SSE2 intrinsics header
@@ -172,8 +203,6 @@ ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 
 FIND_PACKAGE(CxaDemangle)
 ############################ std lib functions
-CHECK_INCLUDE_FILE_CXX("unordered_map" HAVE_STD_UNORDERED_MAP)
-
 include (CheckCXXSymbolExists)
 CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
 CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
@@ -231,63 +260,29 @@ SHOGUN_DEPENDENCIES(
   VERSION ${VIENNACL_VERSION_MINIMUM}
   CONFIG_FLAG HAVE_VIENNACL)
 
-# Linear algebra default global backend setups
-SET_LINALG_BACKEND(LINALG_DEFAULT_BACKEND GLOBAL)
-
-# Linear algebra default module specific backend setup
-# Linear solver module
-SET_LINALG_BACKEND(LINALG_LINEAR_SOLVER_LIB LINSLV)
-
-# Eigen solver module
-SET_LINALG_BACKEND(LINALG_EIGENSOLVER_LIB EIGSLV)
-
 ####### /LINALG
 
-# prefer original LAPACK, if needed
-OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
-FIND_PACKAGE(LAPACK)
-IF (LAPACK_FOUND)
-  # find out whether it is Accelerate.framework we found for LaPack/BLAS
-  IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
-    SET(HAVE_MVEC 1)
-    SET(HAVE_CATLAS 1)
-    SET(HAVE_LAPACK 1)
-    SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/mkl_.*")
-    SET(HAVE_LAPACK 1)
-    SET(HAVE_MKL 1)
-    SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-  ELSE()
-    FIND_PACKAGE(Atlas)
-    IF(Atlas_FOUND)
-      SET(HAVE_ATLAS 1)
-      SET(HAVE_LAPACK 1)
-      SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
-      IF(USE_ORIGINAL_LAPACK)
-        SET(ATLAS_CLAPACK_LIBRARY)
-        FOREACH(ITR ${Atlas_LIBRARIES})
-          IF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-            STRING(REGEX REPLACE "lapack" "clapack" ITR ${ITR})
-            LIST(APPEND ATLAS_CLAPACK_LIBRARY ${ITR})
-          ENDIF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-        ENDFOREACH(ITR ${ATLAS_LIBRARIES})
-        MESSAGE(STATUS "using ATLAS-CLAPACK from: ${ATLAS_CLAPACK_LIBRARY}")
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${ATLAS_CLAPACK_LIBRARY} ${Atlas_LIBRARIES})
-      ELSE(USE_ORIGINAL_LAPACK)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${Atlas_LIBRARIES})
-      ENDIF(USE_ORIGINAL_LAPACK)
-    ELSE()
-      FIND_PACKAGE(CBLAS)
-      if(CBLAS_LIBRARY)
-        SET(HAVE_LAPACK 1)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${CBLAS_LIBRARY})
-      else()
-        SET(HAVE_LAPACK 1)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-        endif()
-    ENDIF()
-  ENDIF()
+FIND_PACKAGE(rxcpp)
+IF(NOT rxcpp_FOUND)
+    include(external/rxcpp)
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+            $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include/shogun/lib/external/rxcpp>
+            )
+ELSE()
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
 ENDIF()
+
+# TFLogger package
+FIND_PACKAGE(TFLogger 0.1.0 CONFIG)
+IF (TFLogger_FOUND)
+    SET(HAVE_TFLOGGER 1)
+    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
+    target_link_libraries(shogun PRIVATE tflogger::tflogger)
+ENDIF()
+
+#### LAPACK
+include(ShogunFindLAPACK)
 
 SHOGUN_DEPENDENCIES(
   LIBRARY GLPK
@@ -358,10 +353,14 @@ SHOGUN_DEPENDENCIES(
   SCOPE PUBLIC
   CONFIG_FLAG HAVE_XML)
 
-SHOGUN_DEPENDENCIES(
-  LIBRARY HDF5
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_HDF5)
+if (NOT WIN32)
+  # FIXME: HDF5 linking on WIN32 is broken.
+  # at least with the hdf5 supplied in anaconda
+  SHOGUN_DEPENDENCIES(
+    LIBRARY HDF5
+    SCOPE PUBLIC
+    CONFIG_FLAG HAVE_HDF5)
+endif ()
 
 SHOGUN_DEPENDENCIES(
   LIBRARY CURL
@@ -434,9 +433,6 @@ SHOGUN_DEPENDENCIES(
   SCOPE PRIVATE
   CONFIG_FLAG HAVE_COLPACK)
 
-IF(USE_ARPREC AND NOT LICENSE_GPL_SHOGUN)
-  MESSAGE(FATAL_ERROR "ARPREC can only be used if USE_GPL_SHOGUN is enabled ")
-ENDIF()
 SHOGUN_DEPENDENCIES(
   LIBRARY ARPREC
   SCOPE PRIVATE
@@ -482,8 +478,10 @@ IF (CTAGS_FOUND)
     ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
         COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
         # functions, classes, macroses, enumerations, enumerators, typedefs
-        --c++-kinds=fcdget
-        -R ${CMAKE_CURRENT_SOURCE_DIR})
+        --c++-kinds=fcdgetp
+        --fields=+im
+        -R ${CMAKE_SOURCE_DIR})
+
     ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
     SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
 ENDIF()

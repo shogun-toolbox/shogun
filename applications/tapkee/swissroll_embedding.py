@@ -5,12 +5,12 @@ X = numpy.genfromtxt('../../data/toy/swissroll.dat',unpack=True).T
 N = X.shape[1]
 converters = []
 
-from shogun.Converter import LocallyLinearEmbedding
+from shogun import LocallyLinearEmbedding
 lle = LocallyLinearEmbedding()
 lle.set_k(9)
 converters.append((lle, "LLE with k=%d" % lle.get_k()))
 
-from shogun.Converter import MultidimensionalScaling
+from shogun import MultidimensionalScaling
 mds = MultidimensionalScaling()
 converters.append((mds, "Classic MDS"))
 
@@ -19,29 +19,29 @@ lmds.set_landmark(True)
 lmds.set_landmark_number(20)
 converters.append((lmds,"Landmark MDS with %d landmarks" % lmds.get_landmark_number()))
 
-from shogun.Converter import Isomap
+from shogun import Isomap
 cisomap = Isomap()
 cisomap.set_k(9)
 converters.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 
-from shogun.Converter import DiffusionMaps
-from shogun.Kernel import GaussianKernel
+from shogun import DiffusionMaps
+from shogun import GaussianKernel
 dm = DiffusionMaps()
 dm.set_t(2)
 dm.set_width(1000.0)
 converters.append((dm,"Diffusion Maps with t=%d, sigma=%.1f" % (dm.get_t(),dm.get_width())))
 
-from shogun.Converter import HessianLocallyLinearEmbedding
+from shogun import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
 hlle.set_k(6)
 converters.append((hlle,"Hessian LLE with k=%d" % (hlle.get_k())))
 
-from shogun.Converter import LocalTangentSpaceAlignment
+from shogun import LocalTangentSpaceAlignment
 ltsa = LocalTangentSpaceAlignment()
 ltsa.set_k(6)
 converters.append((ltsa,"LTSA with k=%d" % (ltsa.get_k())))
 
-from shogun.Converter import LaplacianEigenmaps
+from shogun import LaplacianEigenmaps
 le = LaplacianEigenmaps()
 le.set_k(20)
 le.set_tau(100.0)
@@ -67,7 +67,7 @@ swiss_roll_fig._axis3don = False
 plt.suptitle('Swissroll embedding',fontsize=9)
 plt.subplots_adjust(hspace=0.4)
 
-from shogun.Features import RealFeatures
+from shogun import RealFeatures
 
 for (i, (converter, label)) in enumerate(converters):
 	X = numpy.genfromtxt('../../data/toy/swissroll.dat',unpack=True).T

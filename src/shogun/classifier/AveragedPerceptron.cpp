@@ -52,6 +52,7 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen)
 	SGVector<float64_t> w(num_feat);
 	float64_t* tmp_w=SG_MALLOC(float64_t, num_feat);
+	memset(tmp_w, 0, sizeof(float64_t)*num_feat);
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
 	//start with uniform w, bias=0, tmp_bias=0
@@ -60,15 +61,13 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0/num_feat;
 
-	CSignal::clear_cancel();
-
 	//loop till we either get everything classified right or reach max_iter
 
-	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
+	while (!(cancel_computation()) && (!converged && iter < max_iter))
 	{
 		converged=true;
 		SG_INFO("Iteration Number : %d of max %d\n", iter, max_iter);
-		
+
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			output[i] = features->dense_dot(i, w.vector, w.vlen) + bias;

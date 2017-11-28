@@ -13,6 +13,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/base/range.h>
 
 using namespace shogun;
 
@@ -64,21 +65,23 @@ bool CPerceptron::train_machine(CFeatures* data)
 			w.vector[i]=1.0/num_feat;
 	}
 
-	CSignal::clear_cancel();
 
 	//loop till we either get everything classified right or reach max_iter
-	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
+	while (!(cancel_computation()) && (!converged && iter < max_iter))
 	{
 		converged=true;
-		for (int32_t i=0; i<num_vec; i++)
+		for (auto example_idx : features->index_iterator())
 		{
-			output[i] = features->dense_dot(i, w.vector, w.vlen) + bias;
+			const auto predicted_label = features->dense_dot(example_idx, w.vector, w.vlen) + bias;
+			const auto true_label = train_labels[example_idx];
+			output[example_idx] = predicted_label;
 
-			if (CMath::sign<float64_t>(output[i]) != train_labels.vector[i])
+			if (CMath::sign<float64_t>(predicted_label) != true_label)
 			{
-				converged=false;
-				bias+=learn_rate*train_labels.vector[i];
-				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w.vector, w.vlen);
+				converged = false;
+				const auto gradient = learn_rate * train_labels[example_idx];
+				bias += gradient;
+				features->add_to_dense_vec(gradient, example_idx, w.vector, w.vlen);
 			}
 		}
 

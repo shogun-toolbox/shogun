@@ -24,10 +24,11 @@
 
 #ifdef USE_SVMLIGHT
 
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
 #include <shogun/classifier/svm/SVMLight.h>
@@ -52,6 +53,7 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+
 #endif
 
 using namespace shogun;
@@ -640,12 +642,16 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   CTime start_time;
   mkl_converged=false;
 
-
+  auto pb = progress(range(10), *this->io);
 #ifdef CYGWIN
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else
-	  CSignal::clear_cancel();
-	  for (;((!CSignal::cancel_computations()) && ((iteration<3 || (!mkl_converged && callback) ) || (retrain && (!terminate)))); iteration++){
+
+  for (; ((!cancel_computation()) &&
+	      ((iteration < 3 || (!mkl_converged && callback)) ||
+	       (retrain && (!terminate))));
+	   iteration++)
+  {
 #endif
 
 	  if(use_kernel_cache)
@@ -901,7 +907,9 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	  if (bestmaxdiff>worstmaxdiff)
 		  worstmaxdiff=bestmaxdiff;
 
-	  SG_ABS_PROGRESS(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6)
+	  pb.print_absolute(
+		  bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff),
+		  -CMath::log10(epsilon));
 
 	  /* Terminate loop */
 	  if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time) {
@@ -910,6 +918,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	  }
 
   } /* end of loop */
+  pb.complete_absolute();
 
   SG_DEBUG("inactive:%d\n", inactivenum)
 

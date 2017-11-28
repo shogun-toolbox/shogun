@@ -1,9 +1,9 @@
 {
-    "Program": "require 'modshogun'\n\n$program",
+    "Program": "require 'shogun'\n\n$program",
     "Statement": "$statement\n",
     "Comment": "--$comment\n",
     "Init": {
-        "Construct": "$name = modshogun.$typeName($arguments)",
+        "Construct": "$name = shogun.$typeName($arguments)",
         "Copy": "$name = $expr"
     },
     "Assign": "$identifier = $expr",
@@ -22,8 +22,9 @@
         "FloatLiteral": "$number",
         "MethodCall": "$object:$method($arguments)",
         "StaticCall": "$typeName:$method($arguments)",
+        "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"modshogun.$value"
+        "Enum":"shogun.$value"
     },
     "Element": {
         "Access": {

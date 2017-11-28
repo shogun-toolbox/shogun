@@ -44,7 +44,7 @@ void CLinearMachine::init()
 	features = NULL;
 	m_compute_bias = true;
 
-	SG_ADD(&w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &features, "features", "Feature object.",
 	    MS_NOT_AVAILABLE);
@@ -58,7 +58,7 @@ CLinearMachine::~CLinearMachine()
 
 float64_t CLinearMachine::apply_one(int32_t vec_idx)
 {
-	return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
+	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;
 }
 
 CRegressionLabels* CLinearMachine::apply_regression(CFeatures* data)
@@ -88,21 +88,21 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 
 	int32_t num=features->get_num_vectors();
 	ASSERT(num>0)
-	ASSERT(w.vlen==features->get_dim_feature_space())
+	ASSERT(m_w.vlen==features->get_dim_feature_space())
 
 	float64_t* out=SG_MALLOC(float64_t, num);
-	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
+	features->dense_dot_range(out, 0, num, NULL, m_w.vector, m_w.vlen, bias);
 	return SGVector<float64_t>(out,num);
 }
 
 SGVector<float64_t> CLinearMachine::get_w() const
 {
-	return w;
+	return m_w;
 }
 
-void CLinearMachine::set_w(const SGVector<float64_t> src_w)
+void CLinearMachine::set_w(const SGVector<float64_t> w)
 {
-	w = src_w;
+	m_w = w;
 }
 
 void CLinearMachine::set_bias(float64_t b)

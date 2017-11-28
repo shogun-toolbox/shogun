@@ -16,6 +16,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(StudentsTLikelihood,get_predictive_log_probabilities)
 {
 	// create some easy data:
@@ -59,6 +60,7 @@ TEST(StudentsTLikelihood,get_predictive_log_probabilities)
 	SG_UNREF(likelihood);
 	SG_UNREF(labels);
 }
+#endif //USE_GPL_SHOGUN
 
 TEST(StudentsTLikelihood,get_predictive_means)
 {
@@ -406,6 +408,7 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	SG_UNREF(labels);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(StudentsTLikelihood,get_first_moments)
 {
 	// create some easy data:
@@ -493,4 +496,4 @@ TEST(StudentsTLikelihood,get_second_moments)
 	SG_UNREF(likelihood);
 	SG_UNREF(labels);
 }
-
+#endif //USE_GPL_SHOGUN

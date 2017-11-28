@@ -96,6 +96,9 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
+private:
+	void init();
+
 protected:
 
 	/// features for training or classifying

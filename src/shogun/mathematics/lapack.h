@@ -32,7 +32,11 @@ extern "C" {
 #ifdef HAVE_CXX11
 #define __VFORCE_H 1
 #endif
+#if !(defined(EIGEN_USE_LAPACKE) || defined(EIGEN_USE_LAPACKE_STRICT))
 #include <Accelerate/Accelerate.h>
+#else
+#include <vecLib/cblas.h>
+#endif
 #else
 #include <cblas.h>
 #endif
@@ -44,7 +48,7 @@ extern "C" {
 #ifdef HAVE_ATLAS
 #include <clapack.h>
 #else
-// ACML and MKL do not provide clapack_* routines
+// ACML, MKL and Mac OS vecLib do not provide clapack_* routines
 // double precision
 int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int lda);
@@ -87,7 +91,7 @@ void wrap_dstemr(char jobz, char range, int n, double* d__, double *e, double vl
 }
 
 // only MKL, ACML and Mac OS vector library provide a header file for the lapack routines
-#if !defined(HAVE_ACML) && !defined(HAVE_MKL) && !defined(HAVE_MVEC)
+#if !defined(HAVE_ACML) && !defined(HAVE_MKL) && !defined(HAVE_MVEC) && !(defined(EIGEN_USE_LAPACKE) || defined(EIGEN_USE_LAPACKE_STRICT))
 // double precision
 int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
 int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,

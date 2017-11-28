@@ -136,22 +136,8 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_GPL_ONLY { io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_DEPRECATED { io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-
-#define SG_PROGRESS(...) {						\
-	if (SG_UNLIKELY(io->get_show_progress()))	\
-		io->progress(__VA_ARGS__);				\
-}
-
-#define SG_OBJ_PROGRESS(o, ...) {				\
-	if (SG_UNLIKELY(o->io->get_show_progress()))\
-		o->io->progress(__VA_ARGS__);			\
-}
-
-#define SG_ABS_PROGRESS(...) {					\
-	if (SG_UNLIKELY(io->get_show_progress()))	\
-		io->absolute_progress(__VA_ARGS__);		\
-}
 
 #define SG_DONE() {								\
 	if (SG_UNLIKELY(io->get_show_progress()))	\
@@ -178,23 +164,13 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_SERROR(...) { sg_io->message(MSG_ERROR,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 
-
-#define SG_SPROGRESS(...) {							\
-	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
-		sg_io->progress(__VA_ARGS__);				\
-}
-
-#define SG_SABS_PROGRESS(...) {						\
-	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
-		sg_io->absolute_progress(__VA_ARGS__);		\
-}
-
 #define SG_SDONE() {								\
 	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
 		sg_io->done();								\
 }
 
 #define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SGPL_ONLY { sg_io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define ASSERT(x) {																	\
@@ -288,12 +264,6 @@ class SGIO
 			return location_info;
 		}
 
-		/** @return last progress as a percentage */
-		inline float64_t get_last_progress() const
-		{
-			return last_progress;
-		}
-
 		/** get syntax highlight
 		 *
 		 * @return if syntax highlighting is enabled
@@ -317,33 +287,6 @@ class SGIO
 		void message(EMessageType prio, const char* function, const char* file,
 				int32_t line, const char *fmt, ... ) const;
 
-		/** print progress bar
-		 *
-		 * @param current_val current value
-		 * @param min_val minimum value
-		 * @param max_val maximum value
-		 * @param decimals decimals
-		 * @param prefix message prefix
-		 */
-		void progress(
-			float64_t current_val,
-			float64_t min_val=0.0, float64_t max_val=1.0, int32_t decimals=1,
-			const char* prefix="PROGRESS:\t");
-
-		/** print absolute progress bar
-		 *
-		 * @param current_val current value
-		 * @param val value
-		 * @param min_val minimum value
-		 * @param max_val maximum value
-		 * @param decimals decimals
-		 * @param prefix message prefix
-		 */
-		void absolute_progress(
-			float64_t current_val, float64_t val,
-			float64_t min_val=0.0, float64_t max_val=1.0, int32_t decimals=1,
-			const char* prefix="PROGRESS:\t");
-
 		/** print 'done' with priority INFO,
 		 * but only if progress bar is enabled
 		 *
@@ -354,6 +297,12 @@ class SGIO
 		inline void not_implemented(const char* function, const char* file, int32_t line) const
 		{
 			message(MSG_ERROR, function, file, line, "Sorry, not yet implemented .\n");
+		}
+
+		/** print error message 'Only available with GPL parts.' */
+		inline void gpl_only(const char* function, const char* file, int32_t line) const
+		{
+			message(MSG_ERROR, function, file, line, "This feature is only available if Shogun is built with GPL codes.\n");
 		}
 
 		/** print warning message 'function deprecated' */
@@ -567,12 +516,6 @@ class SGIO
 	protected:
 		/** target file */
 		FILE* target;
-		/** last progress time */
-		float64_t last_progress_time;
-		/** progress start time */
-		float64_t progress_start_time;
-		/** last progress */
-		float64_t last_progress;
 		/** if progress bar shall be shown */
 		bool show_progress;
 		/** if each print function should append filename and linenumber of

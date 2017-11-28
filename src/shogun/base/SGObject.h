@@ -13,15 +13,19 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/tag.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/RxCppHeader.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
+#include <shogun/lib/tag.h>
+
+#include <utility>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -33,6 +37,7 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
+class ParameterObserverInterface;
 
 template <class T, class K> class CMap;
 
@@ -44,15 +49,9 @@ template <class T> class SGStringList;
  * define reference counter macros
  ******************************************************************************/
 
-#ifdef USE_REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
 #define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
-#else
-#define SG_REF(x)
-#define SG_UNREF(x)
-#define SG_UNREF_NO_NULL(x)
-#endif
 
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
@@ -125,6 +124,14 @@ enum EGradientAvailability
 class CSGObject
 {
 public:
+	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::observable<ObservedValue,
+		                      rxcpp::dynamic_observable<ObservedValue>>
+		SGObservable;
+	typedef rxcpp::subscriber<
+		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
+		SGSubscriber;
+
 	/** default constructor */
 	CSGObject();
 
@@ -134,7 +141,6 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
-#ifdef USE_REFERENCE_COUNTING
 	/** increase reference counter
 	 *
 	 * @return reference count
@@ -153,7 +159,6 @@ public:
 	 * @return reference count
 	 */
 	int32_t unref();
-#endif //USE_REFERENCE_COUNTING
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs();
@@ -402,6 +407,23 @@ public:
 		return get(tag);
 	}
 
+#ifndef SWIG
+	/**
+	  * Get parameters observable
+	  * @return RxCpp observable
+	  */
+	SGObservable* get_parameters_observable()
+	{
+		return m_observable_params;
+	};
+#endif
+
+	/** Subscribe a parameter observer to watch over params */
+	void subscribe_to_parameters(ParameterObserverInterface* obs);
+
+	/** Print to stdout a list of observable parameters */
+	void list_observable_parameters();
+
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -553,6 +575,26 @@ private:
 	class Self;
 	Unique<Self> self;
 
+	class ParameterObserverList;
+	Unique<ParameterObserverList> param_obs_list;
+
+protected:
+	/**
+	 * Observe a parameter value and emit them to observer.
+	 * @param value Observed parameter's value
+	 */
+	void observe(const ObservedValue value);
+
+	/**
+	 * Register which params this object can emit.
+	 * @param name the param name
+	 * @param type the param type
+	 * @param description a user oriented description
+	 */
+	void register_observable_param(
+		const std::string& name, const SG_OBS_VALUE_TYPE type,
+		const std::string& description);
+
 public:
 	/** io */
 	SGIO* io;
@@ -584,6 +626,15 @@ private:
 	bool m_save_post_called;
 
 	RefCount* m_refcount;
+
+	/** Subject used to create the params observer */
+	SGSubject* m_subject_params;
+
+	/** Parameter Observable */
+	SGObservable* m_observable_params;
+
+	/** Subscriber used to call onNext, onComplete etc.*/
+	SGSubscriber* m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__

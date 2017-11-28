@@ -81,7 +81,7 @@ TEST(TwoDistributionTest, compute_distance_dense)
 
 	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
 	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
-	for (size_t i=0; i<distance_mat1.size(); ++i)
+	for (int64_t i=0; i<distance_mat1.size(); ++i)
 		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
 }
 
@@ -118,7 +118,7 @@ TEST(TwoDistributionTest, compute_joint_distance_dense)
 
 	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
 	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
-	for (size_t i=0; i<distance_mat1.size(); ++i)
+	for (int64_t i=0; i<distance_mat1.size(); ++i)
 		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
 
 	SG_UNREF(distance);
@@ -153,7 +153,7 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 
 	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
 	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
-	for (size_t i=0; i<distance_mat1.size(); ++i)
+	for (int64_t i=0; i<distance_mat1.size(); ++i)
 		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
 
 	SG_UNREF(distance);
@@ -198,7 +198,7 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 
 	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
 	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
-	for (size_t i=0; i<distance_mat1.size(); ++i)
+	for (int64_t i=0; i<distance_mat1.size(); ++i)
 		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
 
 	SG_UNREF(distance);

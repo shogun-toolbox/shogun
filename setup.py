@@ -141,7 +141,7 @@ def shogun_cmake(arguments=None):
     print("Running CMake")
 
     if arguments is None:
-        arguments='-DPythonModular=ON -DENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=install'
+        arguments='-DINTERFACE_PYTHON=ON -DENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=install'
 
     if distutils.spawn.find_executable('cmake') is not None:
         print('CMake arguments: %s ' % arguments)
@@ -243,12 +243,12 @@ def shogun_package_directories():
 def shogun_data_files():
     data_files = list()
     libshogun_files = glob.glob(os.path.join(shogun_generated_install, 'lib/libshogun*'))
-    modshogun_so_destination = os.path.join('lib', python_package_path(shogun_python_packages_location))
-    modshogun_so_file = glob.glob(os.path.join(shogun_python_packages_location, '_modshogun.so'))[0]
+    shogun_so_destination = os.path.join('lib', python_package_path(shogun_python_packages_location))
+    shogun_so_file = glob.glob(os.path.join(shogun_python_packages_location, '_shogun.so'))[0]
     
     # appending data files
     data_files.append(('lib', libshogun_files))
-    data_files.append((modshogun_so_destination, [modshogun_so_file]))
+    data_files.append((shogun_so_destination, [shogun_so_file]))
     
     if show_debug_information: 
         print('Shogun Python package data files:')
@@ -335,7 +335,7 @@ shogun_setup(
     # Shogun package content
     packages = shogun_packages(),
     package_dir = shogun_package_directories(),
-    py_modules =['modshogun'],
+    py_modules =['shogun'],
     data_files = shogun_data_files(),
     
     # Shogun dependencies

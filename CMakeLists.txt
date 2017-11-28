@@ -35,12 +35,21 @@ SET(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+if (MSVC)
+	if (MSVC_VERSION VERSION_LESS 1900)
+		message(FATAL_ERROR "C++11 is required to use Shogun, but the version of Visual Studio you are using is too old and doesn't support C++11. You need Visual Studio 2015 or newer. ")
+	else()
+		include(CheckCXXCompilerFlag)
+		CHECK_CXX_COMPILER_FLAG("/std:c++14" _cpp_latest_flag_supported)
+		if (_cpp_latest_flag_supported)
+			add_compile_options("/std:c++14")
+		endif()
+	endif()
+endif()
 
 ### FIXME: remove these flags when the codebase
 # is cleared up
 set(HAVE_CXX11 ON)
-set(HAVE_CXX11_ATOMIC ON)
-set(HAVE_STD_UNORDERED_MAP ON)
 
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
@@ -85,18 +94,19 @@ SET(EXT_SRC_TEST_TMP "${EXT_SRC_TEST}.jinja2")
 
 SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
-SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
+SET(COMMON_INTERFACE_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/swig/)
 
-SET(AVAILABLE_INTERFACES PythonModular;OctaveModular;JavaModular;PerlModular;RubyModular;CSharpModular;RModular;LuaModular;ScalaModular)
-SET(PythonModularDescription "Python")
-SET(OctaveModularDescription "Octave")
-SET(JavaModularDescription "Java")
-SET(PerlModularDescription "Perl")
-SET(RubyModularDescription "Ruby")
-SET(CSharpModularDescription "C#")
-SET(RModularDescription "R")
-SET(LuaModularDescription "Lua")
-SET(ScalaModularDescription "Scala")
+SET(AVAILABLE_INTERFACES
+    INTERFACE_PYTHON;INTERFACE_OCTAVE;INTERFACE_JAVA;INTERFACE_PERL;INTERFACE_RUBY;INTERFACE_CSHARP;INTERFACE_R;INTERFACE_LUA;INTERFACE_SCALA)
+SET(INTERFACE_PYTHON_DESCRIPTION "Python")
+SET(INTERFACE_OCTAVE_DESCRIPTION "Octave")
+SET(INTERFACE_JAVA_DESCRIPTION "Java")
+SET(INTERFACE_PERL_DESCRIPTION "Perl")
+SET(INTERFACE_RUBY_DESCRIPTION "Ruby")
+SET(INTERFACE_CSHARP_DESCRIPTION "C#")
+SET(INTERFACE_R_DESCRIPTION "R")
+SET(INTERFACE_LUA_DESCRIPTION "Lua")
+SET(INTERFACE_SCALA_DESCRIPTION "Scala")
 SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
 IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
@@ -104,7 +114,7 @@ IF (${ANY_INTERFACE_ENABLED})
 	# SWIG3 is the minimum requirement because of C++11 support
 	SET(SWIG_VERSION_MINIMUM 3.0.0)
 
-	IF(CSharpModular)
+	IF(INTERFACE_CSHARP)
 		# We require SWIG 3.0.7 to support functions with a few SGVector or
 		# SGMatrix arguments. The required SWIG feature is called
 		# "Support for special variable expansion in typemap attributes."
@@ -115,7 +125,7 @@ IF (${ANY_INTERFACE_ENABLED})
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(PythonModular)
+	ELSEIF(INTERFACE_PYTHON)
 		# SWIG was broken for combining -builtin and -modernargs
 		# from v3.0.0 and until 3.0.4.  This bug was fixed in
 		# v3.0.5.  Make CMake emit an error and fail to configure.
@@ -128,7 +138,7 @@ IF (${ANY_INTERFACE_ENABLED})
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)
 		SET(CCACHE_SWIG_EXECUTABLE ${CCACHE_SWIG})
 	ENDIF()
-	SET(COMPILE_MODULAR_INTERFACE 1)
+	SET(COMPILE_INTERFACE 1)
 ENDIF()
 
 # Detect OS
@@ -137,18 +147,14 @@ DetectSystemName()
 # Get processor type, sets MACHINE macro
 SET(MACHINE ${CMAKE_SYSTEM_PROCESSOR})
 
-SET(EXT_LIB_SWIG_RUBY_MODULAR ".so")
+SET(EXT_LIB_SWIG_RUBY ".so")
 if(DARWIN)
-	SET(EXT_LIB_SWIG_RUBY_MODULAR ".bundle")
+	SET(EXT_LIB_SWIG_RUBY ".bundle")
 ENDIF()
 
 ################ COMPILER #######################
 # g++ version needs to be => 4.3
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	# in order to support cmake 2.8.7 and older
-	IF(NOT CMAKE_CXX_COMPILER_VERSION)
-		include(CheckCompiler)
-	ENDIF()
 	IF("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.3.0")
 		MESSAGE(FATAL_ERROR "g++ version is too old")
 	ENDIF()
@@ -184,6 +190,7 @@ IF(MSVC)
 	SET(CMAKE_CXX_FLAGS_DISTRIBUTION "/Ot")
 	SET(CMAKE_C_FLAGS_DEBUG "/DEBUG /Od /Zi")
 	SET(CMAKE_CXX_FLAGS_DEBUG "/DEBUG /Od /Zi")
+	add_compile_options("/bigobj")
 ELSE()
 	SET(CMAKE_C_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
 	SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
@@ -308,7 +315,7 @@ OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 # note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
-IF(COMPILE_MODULAR_INTERFACE)
+IF(COMPILE_INTERFACE)
 	OPTION(USE_CHAR "Support for char datatype" ON)
 	OPTION(USE_BOOL "Support for bool datatype" ON)
 	OPTION(USE_UINT8 "Support for uint8_t datatype" ON)
@@ -323,10 +330,10 @@ IF(COMPILE_MODULAR_INTERFACE)
 	OPTION(USE_FLOAT64 "Support for float64_t datatype" ON)
 	OPTION(USE_COMPLEX128 "Support for complex128_t datatype" ON)
 	OPTION(USE_FLOATMAX "Support for floatmax_t datatype" OFF)
-ENDIF(COMPILE_MODULAR_INTERFACE)
+ENDIF(COMPILE_INTERFACE)
 
 # detect word size
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT (DARWIN OR WIN32))
 	SET(SWIGWORDSIZE64 TRUE)
 ENDIF()
 
@@ -338,19 +345,6 @@ EndForEach(Interface)
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
 
-# Allow to hide non-bsd compatible codes
-OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
-IF (LICENSE_GPL_SHOGUN)
-	SET(USE_GPL_SHOGUN 1)
-ELSE()
-	SET(USE_GPL_SHOGUN 0)
-ENDIF()
-
-# SVMLight
-OPTION(USE_SVMLIGHT "SVMLight" ON)
-IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
-	MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included")
-ENDIF()
 SET(SVMLightWarning "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 SET(SVMLightWarning "${SVMLightWarning}\nWARNING: SHOGUN is built using SVMlight which was written")
 SET(SVMLightWarning "${SVMLightWarning}\nby Thorsten Joachims and uses a different non GPL compatible license.")
@@ -379,9 +373,6 @@ OPTION(USE_PATHDEBUG "Viterbi path debugging" OFF)
 # big states
 OPTION(USE_BIGSTATES "Big (16bit) state" ON)
 
-# Large file
-OPTION(HAVE_LARGEFILE "Large file support" ON)
-
 #kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
 OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
 
@@ -389,9 +380,6 @@ OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point value
 SET(MEXP "19937" CACHE STRING "PRNG Mersenne exponent")
 SET(SFMT_MEXP ${MEXP})
 SET(DSFMT_MEXP ${MEXP})
-
-# Reference counting
-OPTION(USE_REFERENCE_COUNTING "Reference Counting" ON)
 
 OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
 
@@ -417,6 +405,9 @@ IF (LIBSHOGUN)
 	MergeCFLAGS()
 	add_subdirectory(${CMAKE_SOURCE_DIR}/src/shogun)
 	add_library(shogun::shogun ALIAS shogun)
+	if(LIBSHOGUN_BUILD_STATIC)
+		add_library(shogun::shogun-static ALIAS shogun-static)
+	endif()
 	set(shogun_INCLUDE_DIR ${CMAKE_BINARY_DIR}/src)
 ELSE()
 	find_package(Shogun ${VERSION} CONFIG REQUIRED)
@@ -427,9 +418,9 @@ ForEach(SwigFlag "-w473" "-w454" "-w312" "-w325" "-fvirtual")
     LIST(APPEND CMAKE_SWIG_FLAGS ${SwigFlag})
 EndForEach()
 
-OPTION(SWIG_SINGLE_THREADED "Build modular interfaces single-threaded to reduce memory usage" OFF)
+OPTION(SWIG_SINGLE_THREADED "Build interfaces single-threaded to reduce memory usage" OFF)
 
-OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
+OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" ON)
 
 # Respect system's or distribution's C[XX]FLAGS.
 OPTION(SWIG_WITH_SYSTEM_CFLAGS "Enable system's C[XX]FLAGS for compilation of swig-binaries" ON)
@@ -448,71 +439,71 @@ IF(REDUCE_SWIG_DEBUG)
 	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -g1")
 ENDIF(REDUCE_SWIG_DEBUG)
 
-# python modular
-IF (PythonModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+# python
+IF (INTERFACE_PYTHON)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python)
 	ENDIF()
 ENDIF()
 
-# lua modular
-IF (LuaModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
+# lua
+IF (INTERFACE_LUA)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua)
 	ENDIF()
 ENDIF()
 
-# scala modular
-IF (ScalaModular)
+# scala
+IF (INTERFACE_SCALA)
 	# Java needed because Scala extends Java Classes and uses the executable generated from Java example for Integration testing
-	set(JavaModular "ON")
+	set(INTERFACE_JAVA "ON")
 	FIND_PACKAGE(Scala REQUIRED)
-	IF(NOT JavaModular)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+	IF(NOT INTERFACE_JAVA)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java)
 		ENDIF()
 	ENDIF()
 ENDIF()
 
-# java modular
-IF (JavaModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+# java
+IF (INTERFACE_JAVA)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java)
 	ENDIF()
 ENDIF()
 
-# ruby modular
-IF (RubyModular)
-	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
+# ruby
+IF (INTERFACE_RUBY)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby)
 ENDIF()
 
-# octave modular
-IF (OctaveModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
+# octave
+IF (INTERFACE_OCTAVE)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave)
 	ENDIF()
 ENDIF()
 
-# csharp modular
-IF (CSharpModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
+# csharp
+IF (INTERFACE_CSHARP)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp)
 	ENDIF()
 ENDIF()
 
-# r modular
-IF (RModular)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
+# R
+IF (INTERFACE_R)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r)
 	ENDIF()
 ENDIF()
 
-# perl modular
-IF (PerlModular)
+# perl
+IF (INTERFACE_PERL)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
-		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl)
+		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl)
 	ENDIF()
 ENDIF()
 
@@ -565,6 +556,11 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 
+    # always build minimal example(s)
+    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/minimal)
+        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/minimal)
+    ENDIF()
+
 	IF(BUILD_META_EXAMPLES)
         # allow meta examples without adding examples dir itself
         add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
@@ -583,7 +579,7 @@ include(FeatureSummary)
 feature_summary(WHAT ALL)
 
 PrintLine()
-PrintStatus("Integration")
+PrintStatus("Integrations")
 
 PrintInterfaceStatus("OpenCV Integration" OpenCV)
 
@@ -591,7 +587,7 @@ PrintLine()
 PrintStatus("Interfaces")
 
 ForEach(Interface ${AVAILABLE_INTERFACES})
-    PrintInterfaceStatus("${${Interface}Description} interface" ${Interface})
+    PrintInterfaceStatus("${${Interface}_DESCRIPTION}" ${Interface})
 EndForEach(Interface)
 
 PrintLine()

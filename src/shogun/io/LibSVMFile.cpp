@@ -10,12 +10,13 @@
 
 #include <shogun/io/LibSVMFile.h>
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
 #include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -119,7 +120,8 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t&
 	for (int32_t i=0; i<num_vec; i++) \
 	{ \
 		REQUIRE(multilabel[i].size()==1, \
-			"%s a multilabel file. You are trying to read it with a single-label reader.", filename); \
+			"%s is a multilabel (%d) file. You are trying to read it with a single-label reader.", \
+			multilabel[i].size(), filename); \
 	} \
 	labels=SG_MALLOC(float64_t, num_vec); \
 	\
@@ -143,113 +145,120 @@ GET_LABELED_SPARSE_MATRIX(read_long, int64_t)
 GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_LABELED_SPARSE_MATRIX
 
-#define GET_MULTI_LABELED_SPARSE_MATRIX(read_func, sg_type) \
-void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec, \
-					SGVector<float64_t>*& multilabel, int32_t& num_classes, bool load_labels) \
-{ \
-	num_feat=0; \
-	\
-	SG_INFO("counting line numbers in file %s\n", filename) \
-	num_vec=get_num_lines(); \
-	\
-	int32_t current_line_ind=0; \
-	SGVector<char> line; \
-	\
-	int32_t num_feat_entries=0; \
-	DynArray<SGVector<char> > entries_feat; \
-	DynArray<float64_t > entries_label; \
-	DynArray<float64_t> classes; \
-	\
-	mat_feat=SG_MALLOC(SGSparseVector<sg_type>, num_vec); \
-	multilabel=SG_MALLOC(SGVector<float64_t>, num_vec); \
-	\
-	num_classes=0; \
-	SG_SET_LOCALE_C; \
-	\
-	while (m_line_reader->has_next()) \
-	{ \
-		num_feat_entries=0; \
-		entries_feat.reset(SGVector<char>(false)); \
-		line=m_line_reader->read_line(); \
-		\
-		m_parser->set_tokenizer(m_whitespace_tokenizer); \
-		m_parser->set_text(line); \
-		\
-		SGVector<char> entry_label; \
-		if (load_labels && m_parser->has_next()) \
-		{ \
-			entry_label=m_parser->read_string(); \
-			if (is_feat_entry(entry_label)) \
-			{ \
-				entries_feat.push_back(entry_label); \
-				num_feat_entries++; \
-				entry_label=SGVector<char>(0); \
-			} \
-		} \
-		\
-		while (m_parser->has_next()) \
-		{ \
-			entries_feat.push_back(m_parser->read_string()); \
-			num_feat_entries++; \
-		} \
-		\
-		mat_feat[current_line_ind]=SGSparseVector<sg_type>(num_feat_entries); \
-		for (int32_t i=0; i<num_feat_entries; i++) \
-		{ \
-			m_parser->set_tokenizer(m_delimiter_feat_tokenizer); \
-			m_parser->set_text(entries_feat[i]); \
-			\
-			int32_t feat_index=0; \
-			\
-			if (m_parser->has_next()) \
-				feat_index=m_parser->read_int(); \
-			\
-			sg_type entry=0; \
-			\
-			if (m_parser->has_next()) \
-				entry=m_parser->read_func(); \
-			\
-			if (feat_index>num_feat) \
-				num_feat=feat_index; \
-			\
-			mat_feat[current_line_ind].features[i].feat_index=feat_index-1; \
-			mat_feat[current_line_ind].features[i].entry=entry; \
-		} \
-		\
-		if (load_labels) \
-		{ \
-			m_parser->set_tokenizer(m_delimiter_label_tokenizer); \
-			m_parser->set_text(entry_label); \
-			\
-			int32_t num_label_entries=0; \
-			entries_label.reset(0); \
-			\
-			while (m_parser->has_next()) \
-			{ \
-				num_label_entries++; \
-				float64_t label_val=m_parser->read_real(); \
-				\
-				if (classes.find_element(label_val)==-1) \
-					classes.push_back(label_val); \
-				\
-				entries_label.push_back(label_val); \
-			} \
-			multilabel[current_line_ind]=SGVector<float64_t>(num_label_entries); \
-			\
-			for (int32_t j=0; j < num_label_entries; j++) \
-				multilabel[current_line_ind][j]=entries_label[j]; \
-			\
-		} \
-		\
-		current_line_ind++; \
-		SG_PROGRESS(current_line_ind, 0, num_vec, 1, "LOADING:\t") \
-	} \
-	num_classes=classes.get_num_elements(); \
-	\
-	SG_RESET_LOCALE; \
-	\
-	SG_INFO("file successfully read\n") \
-}
+#define GET_MULTI_LABELED_SPARSE_MATRIX(read_func, sg_type)                    \
+	void CLibSVMFile::get_sparse_matrix(                                       \
+	    SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat,                 \
+	    int32_t& num_vec, SGVector<float64_t>*& multilabel,                    \
+	    int32_t& num_classes, bool load_labels)                                \
+	{                                                                          \
+		num_feat = 0;                                                          \
+                                                                               \
+		SG_INFO("counting line numbers in file %s.\n", filename)               \
+		num_vec = get_num_lines();                                             \
+		SG_INFO("File %s has %d lines.\n", filename, num_vec)                  \
+                                                                               \
+		int32_t current_line_ind = 0;                                          \
+		SGVector<char> line;                                                   \
+                                                                               \
+		int32_t num_feat_entries = 0;                                          \
+		DynArray<SGVector<char>> entries_feat;                                 \
+		DynArray<float64_t> entries_label;                                     \
+		DynArray<float64_t> classes;                                           \
+                                                                               \
+		mat_feat = SG_MALLOC(SGSparseVector<sg_type>, num_vec);                \
+		multilabel = SG_MALLOC(SGVector<float64_t>, num_vec);                  \
+                                                                               \
+		auto pb = progress(range(0, num_vec), *this->io, "LOADING: ");         \
+		num_classes = 0;                                                       \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		while (m_line_reader->has_next())                                      \
+		{                                                                      \
+			num_feat_entries = 0;                                              \
+			entries_feat.reset(SGVector<char>(false));                         \
+			line = m_line_reader->read_line();                                 \
+                                                                               \
+			m_parser->set_tokenizer(m_whitespace_tokenizer);                   \
+			m_parser->set_text(line);                                          \
+                                                                               \
+			SGVector<char> entry_label;                                        \
+			if (load_labels && m_parser->has_next())                           \
+			{                                                                  \
+				entry_label = m_parser->read_string();                         \
+				if (is_feat_entry(entry_label))                                \
+				{                                                              \
+					entries_feat.push_back(entry_label);                       \
+					num_feat_entries++;                                        \
+					entry_label = SGVector<char>(0);                           \
+				}                                                              \
+			}                                                                  \
+                                                                               \
+			while (m_parser->has_next())                                       \
+			{                                                                  \
+				entries_feat.push_back(m_parser->read_string());               \
+				num_feat_entries++;                                            \
+			}                                                                  \
+                                                                               \
+			mat_feat[current_line_ind] =                                       \
+			    SGSparseVector<sg_type>(num_feat_entries);                     \
+			for (int32_t i = 0; i < num_feat_entries; i++)                     \
+			{                                                                  \
+				m_parser->set_tokenizer(m_delimiter_feat_tokenizer);           \
+				m_parser->set_text(entries_feat[i]);                           \
+                                                                               \
+				int32_t feat_index = 0;                                        \
+                                                                               \
+				if (m_parser->has_next())                                      \
+					feat_index = m_parser->read_int();                         \
+                                                                               \
+				sg_type entry = 0;                                             \
+                                                                               \
+				if (m_parser->has_next())                                      \
+					entry = m_parser->read_func();                             \
+                                                                               \
+				if (feat_index > num_feat)                                     \
+					num_feat = feat_index;                                     \
+                                                                               \
+				mat_feat[current_line_ind].features[i].feat_index =            \
+				    feat_index - 1;                                            \
+				mat_feat[current_line_ind].features[i].entry = entry;          \
+			}                                                                  \
+                                                                               \
+			if (load_labels)                                                   \
+			{                                                                  \
+				m_parser->set_tokenizer(m_delimiter_label_tokenizer);          \
+				m_parser->set_text(entry_label);                               \
+                                                                               \
+				int32_t num_label_entries = 0;                                 \
+				entries_label.reset(0);                                        \
+                                                                               \
+				while (m_parser->has_next())                                   \
+				{                                                              \
+					num_label_entries++;                                       \
+					float64_t label_val = m_parser->read_real();               \
+                                                                               \
+					if (classes.find_element(label_val) == -1)                 \
+						classes.push_back(label_val);                          \
+                                                                               \
+					entries_label.push_back(label_val);                        \
+				}                                                              \
+				multilabel[current_line_ind] =                                 \
+				    SGVector<float64_t>(num_label_entries);                    \
+                                                                               \
+				for (int32_t j = 0; j < num_label_entries; j++)                \
+					multilabel[current_line_ind][j] = entries_label[j];        \
+			}                                                                  \
+                                                                               \
+			current_line_ind++;                                                \
+			pb.print_progress();                                               \
+		}                                                                      \
+		pb.complete();                                                         \
+		num_classes = classes.get_num_elements();                              \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+                                                                               \
+		SG_INFO("file successfully read\n")                                    \
+	}
 
 GET_MULTI_LABELED_SPARSE_MATRIX(read_bool, bool)
 GET_MULTI_LABELED_SPARSE_MATRIX(read_char, int8_t)

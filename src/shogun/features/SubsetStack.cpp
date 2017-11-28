@@ -45,9 +45,12 @@ CSubsetStack::CSubsetStack(const CSubsetStack& other)
 
 	for (int32_t i=0; i < other.m_active_subsets_stack->get_num_elements(); ++i)
 	{
-		m_active_subset=(CSubset*)other.m_active_subsets_stack->get_element(i);
-		m_active_subsets_stack->append_element(m_active_subset);
+		auto subset = other.m_active_subsets_stack->get_element(i);
+		m_active_subsets_stack->append_element(subset);
+		SG_UNREF(subset)
 	}
+	m_active_subset = other.m_active_subset;
+	SG_REF(m_active_subset)
 }
 
 CSubsetStack::~CSubsetStack()
@@ -63,6 +66,7 @@ void CSubsetStack::remove_all_subsets()
 		m_active_subsets_stack->delete_element(i);
 
 	SG_UNREF(m_active_subset);
+	m_active_subset = nullptr;
 }
 
 void CSubsetStack::init()

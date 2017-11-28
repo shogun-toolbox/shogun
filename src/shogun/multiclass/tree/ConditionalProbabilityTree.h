@@ -93,20 +93,20 @@ protected:
 	 * @param ex the example being trained
 	 * @param label the label of this training example
 	 */
-	void train_example(SGVector<float32_t> ex, int32_t label);
+	void train_example(CStreamingDenseFeatures<float32_t>* ex, int32_t label);
 
 	/** train on a path from a node up to the root
 	 * @param ex the instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(SGVector<float32_t> ex, bnode_t *node);
+	void train_path(CStreamingDenseFeatures<float32_t>* ex, bnode_t *node);
 
 	/** train a single node
 	 * @param ex the example being trained
 	 * @param label label
 	 * @param node the node
 	 */
-	void train_node(SGVector<float32_t> ex, float64_t label, bnode_t *node);
+	void train_node(CStreamingDenseFeatures<float32_t>* ex, float64_t label, bnode_t *node);
 
 	/** predict a single node
 	 * @param ex the example being predicted
@@ -117,7 +117,7 @@ protected:
 	/** create a new OnlineLinear machine for a node
 	 * @param ex the Example instance for training the new machine
 	 */
-	int32_t create_machine(SGVector<float32_t> ex);
+	int32_t create_machine(CStreamingDenseFeatures<float32_t>* ex);
 
 	/** decide which subtree to go, when training the tree structure.
 	 * @param node the node being decided

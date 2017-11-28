@@ -7,7 +7,7 @@
  */
 
 #include <shogun/features/DotFeatures.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/structure/HierarchicalMultilabelModel.h>
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/lib/DynamicArray.h>
@@ -286,7 +286,7 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 	SG_REF(y_pred);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y_pred);
-	ret->score = CMath::dot(w.vector, ret->psi_pred.vector, dim);
+	ret->score = linalg::dot(w, ret->psi_pred);
 	ret->argmax = y_pred;
 
 	if (training)
@@ -294,8 +294,7 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 		ret->delta = CStructuredModel::delta_loss(feat_idx, y_pred);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx,
 		                 feat_idx);
-		ret->score += (ret->delta - CMath::dot(w.vector,
-		                ret->psi_truth.vector, dim));
+		ret->score += (ret->delta - linalg::dot(w, ret->psi_truth));
 	}
 
 	SG_UNREF(nodes_to_traverse);

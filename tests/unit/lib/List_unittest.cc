@@ -27,13 +27,12 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/List.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
-#ifdef USE_REFERENCE_COUNTING
 TEST(ListTest, contructor_ref_count_append_delete_data_true)
 {
 	// test reference counting of list
@@ -218,4 +217,3 @@ TEST(ListTest, get_first_element_ref_count_delete_data_false)
 	ASSERT_TRUE(data!=NULL); // dead pointer
 	ASSERT_TRUE(from_list==NULL);
 }
-#endif //USE_REFERENCE_COUNTING

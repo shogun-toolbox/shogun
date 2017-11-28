@@ -41,6 +41,13 @@ class CMKLClassification : public CMKL
 		 */
 		virtual float64_t compute_sum_alpha();
 
+		/**
+		 * Helper method used to specialize a base class instance.
+		 * @param machine the machine we want to cast
+		 * @return a MKLClassification machine (already SGREF'ed)
+		 */
+		static CMKLClassification* obtain_from_generic(CMachine* machine);
+
 		/** @return object name */
 		virtual const char* get_name() const { return "MKLClassification"; }
 

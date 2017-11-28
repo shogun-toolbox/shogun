@@ -1,8 +1,9 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/ShogunException.h>
 
 using namespace shogun;
@@ -93,6 +94,176 @@ TEST(LinalgBackendEigen, SGMatrix_add_in_place)
 		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_add_col_vec_allocated)
+{
+	const float64_t alpha = 0.7;
+	const float64_t beta = -1.2;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+	SGVector<float64_t> result(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, result, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(result[i], alpha*A.get_element(i, col)+beta*b[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_add_col_vec_in_place)
+{
+	const float64_t alpha = 0.6;
+	const float64_t beta = -1.3;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, b, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(b[i], alpha*A.get_element(i, col)+beta*0.5*i, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_col_vec_allocated)
+{
+	const float64_t alpha = 0.8;
+	const float64_t beta = -1.4;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+	SGMatrix<float64_t> result(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, result, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(
+		    result.get_element(i, col),
+		    alpha * A.get_element(i, col) + beta * b[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
+{
+	const float64_t alpha = 0.9;
+	const float64_t beta = -1.7;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, A, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		for (index_t j = 0; j < ncols; ++j)
+		{
+			float64_t a = i+j*nrows;
+			if (j == col)
+				EXPECT_NEAR(A.get_element(i, j), alpha*a+beta*b[i], 1e-15);
+			else
+				EXPECT_EQ(A.get_element(i,j), a);
+		}
+}
+
+TEST(LinalgBackendEigen, add_vector)
+{
+	const float64_t alpha = 0.7;
+	const float64_t beta = -1.2;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGMatrix<float64_t> result(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5 * i;
+	for (index_t j = 0; j < ncols; ++j)
+		for (index_t i = 0; i < nrows; ++i)
+		{
+			A(i, j) = i + j * ncols;
+			result(i, j) = alpha * A(i, j) + beta * b[i];
+		}
+
+	add_vector(A, b, A, alpha, beta);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		EXPECT_NEAR(A[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_add_scalar)
+{
+	const index_t n = 4;
+	float64_t s = -0.3;
+
+	SGVector<float64_t> a(n);
+	for (index_t i = 0; i < (index_t)a.size(); ++i)
+		a[i] = i;
+	SGVector<float64_t> orig = a.clone();
+
+	add_scalar(a, s);
+
+	for (index_t i = 0; i < (index_t)a.size(); ++i)
+		EXPECT_NEAR(a[i], orig[i] + s, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_scalar)
+{
+	const index_t r = 4, c = 3;
+	float64_t s = 0.4;
+
+	SGMatrix<float64_t> a(r, c);
+	for (index_t i = 0; i < (index_t)a.size(); ++i)
+		a[i] = i;
+	SGMatrix<float64_t> orig = a.clone();
+
+	add_scalar(a, s);
+
+	for (index_t i = 0; i < (index_t)a.size(); ++i)
+		EXPECT_NEAR(a[i], orig[i] + s, 1e-15);
+}
+
+TEST(LinalgBackendEigen, center_matrix)
+{
+	const index_t n = 3;
+	float64_t data[] = {0.8192343,  0.13191962, 0.50888604,
+	                    0.16857468, 0.24107738, 0.89455301,
+	                    0.40657379, 0.07902286, 0.24319651};
+	float64_t result[] = {0.25587541,  -0.1173183, -0.13855711,
+	                      -0.34283925, 0.04378442, 0.29905482,
+	                      0.08696383,  0.07353387, -0.16049771};
+
+	SGMatrix<float64_t> m(data, n, n, false);
+
+	center_matrix(m);
+
+	for (index_t i = 0; i < (index_t)m.size(); ++i)
+		EXPECT_NEAR(m[i], result[i], 1e-8);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_lower)
 {
 	const index_t size=2;
@@ -160,6 +331,27 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_cross_entropy)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> B(4, 3);
+
+	int32_t size = A.num_rows * A.num_cols;
+	for (float64_t i = 0; i < size; ++i)
+	{
+		A[i] = i / size;
+		B[i] = (i / size) * 0.5;
+	}
+
+	float64_t ref = 0;
+	for (int32_t i = 0; i < size; i++)
+		ref += A[i] * CMath::log(B[i] + 1e-30);
+	ref *= -1;
+
+	auto result = linalg::cross_entropy(A, B);
+	EXPECT_NEAR(ref, result, 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;
@@ -170,6 +362,78 @@ TEST(LinalgBackendEigen, SGVector_dot)
 	auto result = dot(a, b);
 
 	EXPECT_NEAR(result, 5, 1E-15);
+}
+
+TEST(LinalgBackendEigen, eigensolver)
+{
+	const index_t n = 4;
+	float64_t data[] = {0.09987322, 0.80575314, 0.79068641, 0.69989667,
+	                    0.62323516, 0.16837367, 0.85027625, 0.60165948,
+	                    0.04898732, 0.96701123, 0.51683275, 0.51116495,
+	                    0.18277926, 0.6179262,  0.43745891, 0.63685464};
+	float64_t result_eigenvectors[] = {
+	    -0.63494074, 0.75831593,  -0.14014031, 0.04656076,
+	    0.82257205,  -0.28671857, -0.44196422, -0.21409185,
+	    -0.005932,   -0.20233724, -0.52285555, 0.82803776,
+	    -0.23930111, -0.56199714, -0.57298901, -0.54642272};
+	float64_t result_eigenvalues[] = {-0.6470538, -0.19125664, 0.16205101,
+	                                  2.0981937};
+
+	SGMatrix<float64_t> m(data, n, n, false);
+	SGMatrix<float64_t> eigenvectors(n, n);
+	SGVector<float64_t> eigenvalues(n);
+
+	eigen_solver(m, eigenvalues, eigenvectors);
+
+	auto args = CMath::argsort(eigenvalues);
+	for (index_t i = 0; i < n; ++i)
+	{
+		index_t idx = args[i];
+		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-7);
+
+		auto s =
+		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		for (index_t j = 0; j < n; ++j)
+			EXPECT_NEAR(
+			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
+			    1e-7);
+	}
+}
+
+TEST(LinalgBackendEigen, eigensolver_symmetric)
+{
+	const index_t n = 4;
+	float64_t data[] = {0.09987322, 0.80575314, 0.04898732, 0.69989667,
+	                    0.80575314, 0.16837367, 0.96701123, 0.6179262,
+	                    0.04898732, 0.96701123, 0.51683275, 0.43745891,
+	                    0.69989667, 0.6179262,  0.43745891, 0.63685464};
+	float64_t result_eigenvectors[] = {
+	    -0.54618542, 0.69935447,  -0.45219663, 0.09001671,
+	    -0.56171388, -0.41397154, 0.17642953,  0.69424612,
+	    -0.46818396, 0.16780603,  0.73247599,  -0.46489119,
+	    0.40861077,  0.55800718,  0.47735703,  0.542029037};
+	float64_t result_eigenvalues[] = {-1.00663298, -0.18672196, 0.42940933,
+	                                  2.18587989};
+
+	SGMatrix<float64_t> m(data, n, n, false);
+	SGMatrix<float64_t> eigenvectors(n, n);
+	SGVector<float64_t> eigenvalues(n);
+
+	eigen_solver(m, eigenvalues, eigenvectors);
+
+	auto args = CMath::argsort(eigenvalues);
+	for (index_t i = 0; i < n; ++i)
+	{
+		index_t idx = args[i];
+		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-7);
+
+		auto s =
+		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		for (index_t j = 0; j < n; ++j)
+			EXPECT_NEAR(
+			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
+			    1e-7);
+	}
 }
 
 TEST(LinalgBackendEigen, SGMatrix_elementwise_product)
@@ -237,6 +501,49 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 	for (index_t i = 0; i < 2; ++i)
 		for (index_t j = 0; j < 2; ++j)
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_exponent)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	a[0] = -2.4;
+	a[1] = 0;
+	a[2] = 0.5;
+	a[3] = 3.9;
+	auto result = exponent(a);
+
+	EXPECT_NEAR(result[0], 0.090717953289413, 1E-15);
+	EXPECT_NEAR(result[1], 1.0, 1E-15);
+	EXPECT_NEAR(result[2], 1.648721270700128, 1E-15);
+	EXPECT_NEAR(result[3], 49.40244910553017, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_exponent)
+{
+	const index_t n = 2;
+	SGMatrix<float64_t> a(n, n);
+	a[0] = -2.4;
+	a[1] = 0;
+	a[2] = 0.5;
+	a[3] = 3.9;
+	auto result = exponent(a);
+
+	EXPECT_NEAR(result[0], 0.090717953289413, 1E-15);
+	EXPECT_NEAR(result[1], 1.0, 1E-15);
+	EXPECT_NEAR(result[2], 1.648721270700128, 1E-15);
+	EXPECT_NEAR(result[3], 49.40244910553017, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_identity)
+{
+	const index_t n = 4;
+	SGMatrix<float64_t> A(n, n);
+	identity(A);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = 0; j < n; ++j)
+			EXPECT_EQ(A.get_element(i, j), (i==j));
 }
 
 TEST(LinalgBackendEigen, logistic)
@@ -573,6 +880,95 @@ TEST(LinalgBackendEigen, SGMatrix_mean)
 	EXPECT_NEAR(result, 2.5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_multiply_by_logistic_derivative)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	for (float64_t i = 0; i < 9; ++i)
+	{
+		A[i] = i / 9;
+		B[i] = i;
+	}
+
+	linalg::multiply_by_logistic_derivative(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(i * A[i] * (1.0 - A[i]), B[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_multiply_by_rectified_linear_derivative)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	for (float64_t i = 0; i < 9; ++i)
+	{
+		A[i] = i * 0.5 - 0.5;
+		B[i] = i;
+	}
+
+	multiply_by_rectified_linear_derivative(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(i * (A[i] != 0), B[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_norm)
+{
+	const index_t n = 5;
+	SGVector<float64_t> v(n);
+	float64_t gt = 0;
+	for (index_t i = 0; i < n; ++i)
+	{
+		v[i] = i;
+		gt += i * i;
+	}
+	gt = CMath::sqrt(gt);
+
+	auto result = norm(v);
+
+	EXPECT_NEAR(result, gt, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_qr_solver)
+{
+	const index_t n = 3;
+	float64_t data_A[] = {0.02800922, 0.99326012, 0.15204902,
+	                      0.30492837, 0.39708534, 0.40466969,
+	                      0.36415317, 0.04407589, 0.9095746};
+	float64_t data_b[] = {0.39461571, 0.6816856, 0.43323709};
+	float64_t result[] = {0.07135206, 1.56393127, -0.23141312};
+
+	SGMatrix<float64_t> A(data_A, n, n, false);
+	SGVector<float64_t> b(data_b, n, false);
+
+	auto x = qr_solver(A, b);
+
+	for (index_t i = 0; i < x.size(); ++i)
+		EXPECT_NEAR(x[i], result[i], 1E-7);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_qr_solver)
+{
+	const index_t n = 3, m = 2;
+	float64_t data_A[] = {0.02800922, 0.99326012, 0.15204902,
+	                      0.30492837, 0.39708534, 0.40466969,
+	                      0.36415317, 0.04407589, 0.9095746};
+	float64_t data_B[] = {0.76775073, 0.88471312, 0.34795225,
+	                      0.94311546, 0.59630347, 0.65820143};
+	float64_t result[] = {-0.73834587, 4.22750496, -1.37484721,
+	                      -1.14718091, 4.49142548, -1.08282992};
+
+	SGMatrix<float64_t> A(data_A, n, n, false);
+	SGMatrix<float64_t> B(data_B, n, m, false);
+
+	auto X = qr_solver(A, B);
+
+	for (index_t i = 0; i < (index_t)X.size(); ++i)
+		EXPECT_NEAR(X[i], result[i], 1E-7);
+}
+
 TEST(LinalgBackendEigen, SGVector_range_fill)
 {
 	const index_t size = 5;
@@ -591,6 +987,19 @@ TEST(LinalgBackendEigen, SGMatrix_range_fill)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(mat[i], i + 1, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_rectified_linear)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	range_fill(A, -5.0);
+
+	linalg::rectified_linear(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(CMath::max(0.0, A[i]), B[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_scale)
@@ -672,6 +1081,54 @@ TEST(LinalgBackendEigen, SGMatrix_set_const)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(a[i], value, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_softmax)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> ref(4, 3);
+
+	for (float64_t i = 0; i < 12; ++i)
+		A[i] = i / 12;
+
+	for (index_t i = 0; i < 12; ++i)
+		ref[i] = CMath::exp(A[i]);
+
+	for (index_t j = 0; j < ref.num_cols; ++j)
+	{
+		float64_t sum = 0;
+		for (index_t i = 0; i < ref.num_rows; ++i)
+			sum += ref(i, j);
+
+		for (index_t i = 0; i < ref.num_rows; ++i)
+			ref(i, j) /= sum;
+	}
+
+	linalg::softmax(A);
+
+	for (index_t i = 0; i < 12; ++i)
+		EXPECT_NEAR(ref[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_squared_error)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> B(4, 3);
+
+	int32_t size = A.num_rows * A.num_cols;
+	for (float64_t i = 0; i < size; ++i)
+	{
+		A[i] = i / size;
+		B[i] = (i / size) * 0.5;
+	}
+
+	float64_t ref = 0;
+	for (index_t i = 0; i < size; i++)
+		ref += CMath::pow(A[i] - B[i], 2);
+	ref *= 0.5;
+
+	auto result = linalg::squared_error(A, B);
+	EXPECT_NEAR(ref, result, 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_sum)
@@ -928,4 +1385,254 @@ TEST(LinalgBackendEigen, SGMatrix_block_rowwise_sum)
 			sum += mat(i, j);
 		EXPECT_NEAR(sum, result[i], 1E-15);
 	}
+}
+
+TEST(LinalgBackendEigen, SGMatrix_svd_jacobi_thinU)
+{
+	const index_t m = 5, n = 3;
+	float64_t data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
+	                    0.30786772, 0.25503552, 0.34367041, 0.66491478,
+	                    0.20488809, 0.5734351,  0.87179189, 0.07139643,
+	                    0.28540373, 0.06264684, 0.56204061};
+	float64_t result_s[] = {1.75382524, 0.56351367, 0.41124883};
+	float64_t result_U[] = {-0.60700926, -0.16647013, -0.56501385, -0.26696629,
+	                        -0.46186125, -0.69145782, 0.29548428,  0.5718984,
+	                        0.31771648,  -0.08101592, -0.27461424, 0.37170223,
+	                        -0.12681555, -0.53830325, 0.69323293};
+
+	SGMatrix<float64_t> A(data, m, n, false);
+	SGMatrix<float64_t> U(m, n);
+	SGVector<float64_t> s(n);
+
+	svd(A, s, U, true, SVDAlgorithm::Jacobi);
+
+	for (index_t i = 0; i < n; ++i)
+	{
+		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		for (index_t j = 0; j < m; ++j)
+			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-7);
+	}
+	for (index_t i = 0; i < (index_t)s.size(); ++i)
+		EXPECT_NEAR(s[i], result_s[i], 1e-7);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_svd_jacobi_fullU)
+{
+	const index_t m = 5, n = 3;
+	float64_t data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
+	                    0.30786772, 0.25503552, 0.34367041, 0.66491478,
+	                    0.20488809, 0.5734351,  0.87179189, 0.07139643,
+	                    0.28540373, 0.06264684, 0.56204061};
+	float64_t result_s[] = {1.75382524, 0.56351367, 0.41124883};
+	float64_t result_U[] = {
+	    -0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
+	    -0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
+	    -0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
+	    -0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
+	    0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
+
+	SGMatrix<float64_t> A(data, m, n, false);
+	SGMatrix<float64_t> U(m, m);
+	SGVector<float64_t> s(n);
+
+	svd(A, s, U, false, SVDAlgorithm::Jacobi);
+
+	for (index_t i = 0; i < n; ++i)
+	{
+		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		for (index_t j = 0; j < m; ++j)
+			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-7);
+	}
+	for (index_t i = 0; i < (index_t)s.size(); ++i)
+		EXPECT_NEAR(s[i], result_s[i], 1e-7);
+}
+
+#if EIGEN_VERSION_AT_LEAST(3, 3, 0)
+TEST(LinalgBackendEigen, SGMatrix_svd_bdc_thinU)
+{
+	const index_t m = 5, n = 3;
+	float64_t data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
+	                    0.30786772, 0.25503552, 0.34367041, 0.66491478,
+	                    0.20488809, 0.5734351,  0.87179189, 0.07139643,
+	                    0.28540373, 0.06264684, 0.56204061};
+	float64_t result_s[] = {1.75382524, 0.56351367, 0.41124883};
+	float64_t result_U[] = {-0.60700926, -0.16647013, -0.56501385, -0.26696629,
+	                        -0.46186125, -0.69145782, 0.29548428,  0.5718984,
+	                        0.31771648,  -0.08101592, -0.27461424, 0.37170223,
+	                        -0.12681555, -0.53830325, 0.69323293};
+
+	SGMatrix<float64_t> A(data, m, n, false);
+	SGMatrix<float64_t> U(m, n);
+	SGVector<float64_t> s(n);
+
+	svd(A, s, U, true, SVDAlgorithm::BidiagonalDivideConquer);
+
+	for (index_t i = 0; i < n; ++i)
+	{
+		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		for (index_t j = 0; j < m; ++j)
+			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-7);
+	}
+	for (index_t i = 0; i < (index_t)s.size(); ++i)
+		EXPECT_NEAR(s[i], result_s[i], 1e-7);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_svd_bdc_fullU)
+{
+	const index_t m = 5, n = 3;
+	float64_t data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
+	                    0.30786772, 0.25503552, 0.34367041, 0.66491478,
+	                    0.20488809, 0.5734351,  0.87179189, 0.07139643,
+	                    0.28540373, 0.06264684, 0.56204061};
+	float64_t result_s[] = {1.75382524, 0.56351367, 0.41124883};
+	float64_t result_U[] = {
+	    -0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
+	    -0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
+	    -0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
+	    -0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
+	    0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
+
+	SGMatrix<float64_t> A(data, m, n, false);
+	SGMatrix<float64_t> U(m, m);
+	SGVector<float64_t> s(n);
+
+	svd(A, s, U, false, SVDAlgorithm::BidiagonalDivideConquer);
+
+	for (index_t i = 0; i < n; ++i)
+	{
+		auto c = CMath::sign(U[i * m] * result_U[i * m]);
+		for (index_t j = 0; j < m; ++j)
+			EXPECT_NEAR(U[i * m + j], c * result_U[i * m + j], 1e-7);
+	}
+	for (index_t i = 0; i < (index_t)s.size(); ++i)
+		EXPECT_NEAR(s[i], result_s[i], 1e-7);
+}
+#endif
+
+TEST(LinalgBackendEigen, SGMatrix_trace)
+{
+	const index_t n = 4;
+
+	SGMatrix<float64_t> A(n, n);
+	for (index_t i = 0; i < n*n; ++i)
+		A[i] = i;
+
+	float64_t tr = 0;
+	for (index_t i = 0; i < n; ++i)
+		tr += A.get_element(i, i);
+
+	EXPECT_NEAR(trace(A), tr, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_transpose_matrix)
+{
+	const index_t m = 5, n = 3;
+	float64_t data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
+	                    0.30786772, 0.25503552, 0.34367041, 0.66491478,
+	                    0.20488809, 0.5734351,  0.87179189, 0.07139643,
+	                    0.28540373, 0.06264684, 0.56204061};
+
+	SGMatrix<float64_t> A(data, m, n, false);
+
+	auto T = transpose_matrix(A);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			EXPECT_NEAR(A.get_element(i, j), T.get_element(j, i), 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_triangular_solver_lower)
+{
+	const index_t n = 3;
+	float64_t data_L[] = {-0.92947874, -1.1432887,  -0.87119086,
+	                      0.,          -0.27048649, -0.05919915,
+	                      0.,          0.,          0.11869106};
+	float64_t data_b[] = {0.39461571, 0.6816856, 0.43323709};
+	float64_t result[] = {-0.42455592, -0.72571316, 0.17192745};
+
+	SGMatrix<float64_t> L(data_L, n, n, false);
+	SGVector<float64_t> b(data_b, n, false);
+
+	auto x = triangular_solver(L, b, true);
+
+	for (index_t i = 0; i < (index_t)x.size(); ++i)
+		EXPECT_NEAR(x[i], result[i], 1E-6);
+}
+
+TEST(LinalgBackendEigen, SGVector_triangular_solver_upper)
+{
+	const index_t n = 3;
+	float64_t data_U[] = {-0.92947874, 0.,          0.,
+	                      -1.1432887,  -0.27048649, 0.,
+	                      -0.87119086, -0.05919915, 0.11869106};
+	float64_t data_b[] = {0.39461571, 0.6816856, 0.43323709};
+	float64_t result[] = {0.23681135, -3.31909306, 3.65012412};
+
+	SGMatrix<float64_t> U(data_U, n, n, false);
+	SGVector<float64_t> b(data_b, n, false);
+
+	auto x = triangular_solver(U, b, false);
+
+	for (index_t i = 0; i < (index_t)x.size(); ++i)
+		EXPECT_NEAR(x[i], result[i], 1E-6);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_triangular_solver_lower)
+{
+	const index_t n = 3, m = 2;
+	float64_t data_L[] = {-0.92947874, -1.1432887,  -0.87119086,
+	                      0.,          -0.27048649, -0.05919915,
+	                      0.,          0.,          0.11869106};
+	float64_t data_B[] = {0.76775073, 0.88471312, 0.34795225,
+	                      0.94311546, 0.59630347, 0.65820143};
+	float64_t result[] = {-0.82600139, 0.22050986, -3.02127745,
+	                      -1.01467136, 2.08424024, -0.86262387};
+
+	SGMatrix<float64_t> L(data_L, n, n, false);
+	SGMatrix<float64_t> B(data_B, n, m, false);
+
+	auto X = triangular_solver(L, B, true);
+
+	for (index_t i = 0; i < (index_t)X.size(); ++i)
+		EXPECT_NEAR(X[i], result[i], 1E-6);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_triangular_solver_upper)
+{
+	const index_t n = 3, m = 2;
+	float64_t data_U[] = {-0.92947874, 0.,          0.,
+	                      -1.1432887,  -0.27048649, 0.,
+	                      -0.87119086, -0.05919915, 0.11869106};
+	float64_t data_B[] = {0.76775073, 0.88471312, 0.34795225,
+	                      0.94311546, 0.59630347, 0.65820143};
+	float64_t result[] = {1.238677,    -3.91243241, 2.9315793,
+	                      -2.00784647, -3.41825732, 5.54550138};
+
+	SGMatrix<float64_t> L(data_U, n, n, false);
+	SGMatrix<float64_t> B(data_B, n, m, false);
+
+	auto X = triangular_solver(L, B, false);
+
+	for (index_t i = 0; i < (index_t)X.size(); ++i)
+		EXPECT_NEAR(X[i], result[i], 1E-6);
+}
+
+TEST(LinalgBackendEigen, SGVector_zero)
+{
+	const index_t n = 16;
+	SGVector<float64_t> a(n);
+	zero(a);
+
+	for (index_t i = 0; i < n; ++i)
+		EXPECT_EQ(a[i], 0);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_zero)
+{
+	const index_t nrows = 3, ncols = 4;
+	SGMatrix<float64_t> A(nrows, ncols);
+	zero(A);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_EQ(A[i], 0);
 }

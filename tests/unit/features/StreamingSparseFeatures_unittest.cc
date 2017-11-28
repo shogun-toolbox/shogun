@@ -21,8 +21,8 @@ using namespace shogun;
 
 TEST(StreamingSparseFeaturesTest, parse_file)
 {
-  std::string tmp_name = "StreamingSparseFeatures_parse_file.XXXXXX";
-  const char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
+  char fname[] = "StreamingSparseFeatures_parse_file.XXXXXX";
+  generate_temp_filename(fname);
 
   int32_t max_num_entries=20;
   int32_t max_label_value=1;

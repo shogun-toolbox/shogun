@@ -10,14 +10,15 @@
  */
 #include <shogun/lib/config.h>
 
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
+#include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/optimization/liblinear/tron.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -77,7 +78,7 @@ CLibLinear::~CLibLinear()
 
 bool CLibLinear::train_machine(CFeatures* data)
 {
-	CSignal::clear_cancel();
+
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
@@ -313,9 +314,9 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		index[i] = i;
 	}
 
-
+	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -392,7 +393,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
-		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6)
+		pb.print_absolute(
+		    gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
 
 		if(gap <= eps)
 		{
@@ -414,7 +416,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			PGmin_old = -CMath::INFTY;
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("optimization finished, #iter = %d\n",iter)
 	if (iter >= max_iterations)
 	{
@@ -522,9 +524,9 @@ void CLibLinear::solve_l1r_l2_svc(
 		}
 	}
 
-
+	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -742,8 +744,9 @@ void CLibLinear::solve_l1r_l2_svc(
 			Gmax_init = Gmax_new;
 		iter++;
 
-		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new),
-				-CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
+		pb.print_absolute(
+		    Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init),
+		    -CMath::log10(eps * Gmax_init));
 
 		if(Gmax_new <= eps*Gmax_init)
 		{
@@ -760,7 +763,7 @@ void CLibLinear::solve_l1r_l2_svc(
 		Gmax_old = Gmax_new;
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("optimization finished, #iter = %d\n", iter)
 	if(iter >= max_iterations)
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
@@ -893,8 +896,9 @@ void CLibLinear::solve_l1r_lr(
 		}
 	}
 
+	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -1105,7 +1109,9 @@ void CLibLinear::solve_l1r_lr(
 		if(iter == 0)
 			Gmax_init = Gmax_new;
 		iter++;
-		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6)
+		pb.print_absolute(
+		    Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init),
+		    -CMath::log10(eps * Gmax_init));
 
 		if(Gmax_new <= eps*Gmax_init)
 		{
@@ -1122,7 +1128,7 @@ void CLibLinear::solve_l1r_lr(
 		Gmax_old = Gmax_new;
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("optimization finished, #iter = %d\n", iter)
 	if(iter >= max_iterations)
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
@@ -1230,6 +1236,7 @@ void CLibLinear::solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_probl
 		index[i] = i;
 	}
 
+	auto pb = progress(range(10));
 	while (iter < max_iter)
 	{
 		for (i=0; i<l; i++)
@@ -1304,7 +1311,9 @@ void CLibLinear::solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_probl
 			Gmax_init = Gmax;
 		iter++;
 
-		SG_SABS_PROGRESS(Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6)
+		pb.print_absolute(
+		    Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init),
+		    -CMath::log10(eps * Gmax_init));
 
 		if(Gmax < eps)
 			break;
@@ -1314,7 +1323,7 @@ void CLibLinear::solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_probl
 
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("optimization finished, #iter = %d\n",iter)
 	if (iter >= max_iter)
 		SG_WARNING("reaching max number of iterations\nUsing -s 0 may be faster (also see FAQ)\n\n")

@@ -7,37 +7,77 @@
 using ::testing::Test;
 using namespace shogun;
 
-#ifdef HAVE_LAPACK
-TEST(KernelPCA, DISABLED_apply_to_feature_matrix_input)
+// Results compared with sklearn
+// https://gist.github.com/micmn/f93f723b74db2a1eb5875f63d841bdc1
+const index_t num_vectors = 5;
+const index_t num_features = 3;
+const index_t target_dim = 2;
+
+const float64_t train_data[] = {1, 1, 1, 1, 2, 3, 5, 6, 1, 2, 2, 2, 1, 1, 1};
+const float64_t test_data[] = {3, 3, 3, 7, 4, 1};
+const float64_t resdata[] = {-0.17645841, 0.013962, -0.16082441, 0.03640145};
+
+template <template <typename> class Container>
+void load_data(SGMatrix<float64_t>& train, Container<float64_t>& test)
 {
-	float64_t data[] = {1, 1, 1,
-                      1, 2, 3,
-                      5, 6, 1,
-                      2, 2, 2,
-                      1, 1, 1};
-	float64_t resdata[] = {-1.526879008202007e-02,  6.902776989923266e-01,
-                         -4.032822763552926e-01, -5.151523890814317e-01,
-                         8.444041004961732e-01, -4.318711485273607e-01,
-                         -4.105842439768400e-01, -4.335318603758601e-01,
-                         -1.526879008202015e-02, 6.902776989923268e-01
-	                        };// column-wise
-	int32_t num_vectors = 5;
-	int32_t num_features = 3;
-	SGMatrix<float64_t> orig(data, num_features, num_vectors, false);
-	SGMatrix<float64_t> m = orig.clone();
-	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
+	for (auto i = 0; i < train.size(); ++i)
+		train[i] = train_data[i];
+
+	for (auto i = 0; i < test.size(); ++i)
+		test[i] = test_data[i];
+}
+
+TEST(KernelPCA, apply_to_feature_matrix)
+{
+	index_t num_test_vectors = 2;
+
+	SGMatrix<float64_t> train_matrix(num_features, num_vectors);
+	SGMatrix<float64_t> test_matrix(num_features, num_test_vectors);
+	load_data(train_matrix, test_matrix);
+
+	CDenseFeatures<float64_t>* train_feats =
+	    new CDenseFeatures<float64_t>(train_matrix);
+
+	CDenseFeatures<float64_t>* test_feats =
+	    new CDenseFeatures<float64_t>(test_matrix);
+
 	CGaussianKernel* kernel = new CGaussianKernel();
 	kernel->set_width(1);
-	CKernelPCA kpca(kernel);
-	kpca.set_target_dim(2);
-	kpca.init(feats);
-	SGMatrix<float64_t> embedding = kpca.apply_to_feature_matrix(feats);
 
-	float64_t s;
+	CKernelPCA* kpca = new CKernelPCA(kernel);
+	kpca->set_target_dim(target_dim);
+	kpca->init(train_feats);
+
+	SGMatrix<float64_t> embedding = kpca->apply_to_feature_matrix(test_feats);
+
 	// allow embedding with opposite sign
-	if ( embedding.matrix[0] > 0)
-		s = -1;
-	for (index_t i = 0; i < num_features * num_vectors; ++i)
-		EXPECT_LE(CMath::abs(embedding.matrix[i] - s * resdata[i]), 1E-6);
+	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
+		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
+
+	SG_FREE(kpca);
 }
-#endif // HAVE_LAPACK
+
+TEST(KernelPCA, apply_to_feature_vector)
+{
+	SGMatrix<float64_t> train_matrix(num_features, num_vectors);
+	SGVector<float64_t> test_vector(num_features);
+	load_data(train_matrix, test_vector);
+
+	CDenseFeatures<float64_t>* train_feats =
+	    new CDenseFeatures<float64_t>(train_matrix);
+
+	CGaussianKernel* kernel = new CGaussianKernel();
+	kernel->set_width(1);
+
+	CKernelPCA* kpca = new CKernelPCA(kernel);
+	kpca->set_target_dim(target_dim);
+	kpca->init(train_feats);
+
+	SGVector<float64_t> embedding = kpca->apply_to_feature_vector(test_vector);
+
+	// allow embedding with opposite sign
+	for (index_t i = 0; i < target_dim; ++i)
+		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
+
+	SG_FREE(kpca);
+}

@@ -3,12 +3,12 @@
  * CORRESPONDING TEMPLATE FILE, PLEASE!
  */
 
+#include <gtest/gtest.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/class_list.h>
 #include <shogun/io/SerializableJsonFile.h>
 #include <unistd.h>
 #include "utils/Utils.h"
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
@@ -25,21 +25,21 @@ TEST(SerializationJSON, {{class}})
 {% endif %}
 {
 	std::string class_name("{{class}}");
-	std::string file_template = "/tmp/shogun-unittest-serialization-json-" + class_name + ".XXXXXX";
-	char* filename = mktemp_cst(const_cast<char*>(file_template.c_str()));
-	CSGObject* object = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	std::string filename = "shogun-unittest-serialization-json-" + class_name + ".XXXXXX";
+	generate_temp_filename(const_cast<char*>(filename.c_str()));
+	CSGObject* object = create(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
 
 	// save object to an ascii file
-	CSerializableJsonFile *file=new CSerializableJsonFile(filename, 'w');
+	CSerializableJsonFile *file=new CSerializableJsonFile(filename.c_str(), 'w');
 	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
 	ASSERT_TRUE(save_success);
 
 	// load parameter from an ascii file
-	file=new CSerializableJsonFile(filename, 'r');
-	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	file=new CSerializableJsonFile(filename.c_str(), 'r');
+	CSGObject* deserializedObject = create(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(deserializedObject != NULL);
 	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
@@ -53,7 +53,7 @@ TEST(SerializationJSON, {{class}})
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
-	int delete_success = unlink(filename);
+	int delete_success = unlink(filename.c_str());
 	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}
@@ -67,21 +67,21 @@ TEST(SerializationJSON,{{class}}_{{type}})
 {% endif %}
 {
 	std::string class_name("{{class}}");
-	std::string file_template = "/tmp/shogun-unittest-serialization-json-" + class_name + "_{{type}}" + ".XXXXXX";
-	char* filename = mktemp_cst(const_cast<char*>(file_template.c_str()));
-	CSGObject* object = new_sgserializable(class_name.c_str(), {{type}});
+	std::string filename = "shogun-unittest-serialization-json-" + class_name + "_{{type}}" + ".XXXXXX";
+	generate_temp_filename(const_cast<char*>(filename.c_str()));
+	CSGObject* object = create(class_name.c_str(), {{type}});
 	ASSERT_TRUE(object != NULL);
 
 	// save object to an ascii file
-	CSerializableJsonFile *file=new CSerializableJsonFile(filename, 'w');
+	CSerializableJsonFile *file=new CSerializableJsonFile(filename.c_str(), 'w');
 	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
 	ASSERT_TRUE(save_success);
 
 	// load parameter from an ascii file
-	file=new CSerializableJsonFile(filename, 'r');
-	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), {{type}});
+	file=new CSerializableJsonFile(filename.c_str(), 'r');
+	CSGObject* deserializedObject = create(class_name.c_str(), {{type}});
 	ASSERT_TRUE(deserializedObject != NULL);
 	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
@@ -95,7 +95,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
-	int delete_success = unlink(filename);
+	int delete_success = unlink(filename.c_str());
 	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}

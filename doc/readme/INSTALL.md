@@ -7,6 +7,7 @@ For other cases, we describe how to build Shogun from source code.
 
 # Quicklinks
  * [Ready-to-install packages](#binaries)
+   - [Anaconda](#anaconda)
    - [Ubuntu](#ubuntu)
    - [Debian](#debian)
    - [Fedora](#fedora)
@@ -23,9 +24,21 @@ For other cases, we describe how to build Shogun from source code.
    - [Problems](#manual-problems)
    - [CMake tips](#manual-cmake)
    - [Customized Python](#manual-python)
-   - [Winows](#manual-windows)
+   - [Windows](#manual-windows)
 
 ## Ready-to-install packages <a name="binaries"></a>
+
+### Anaconda packages <a name="anaconda"></a>
+The base shogun library and its Python interface are available through the conda package manager, via <a href="https://conda-forge.org">conda-forge</a>.
+To install both:
+
+    conda install -c conda-forge shogun
+
+or to get just the library:
+
+    conda install -c conda-forge shogun-cpp
+
+These packages include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
 
 ### Ubuntu ppa <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
@@ -38,7 +51,7 @@ Add this to your system as
 
 Then, install as
 
-    sudo apt-get install libshogun17
+    sudo apt-get install libshogun18
 
 The Python (2) bindings can be installed as
 
@@ -47,19 +60,19 @@ The Python (2) bindings can be installed as
 In addition to the latest stable release, we offer [nightly builds](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/nightly) of our development branch.
 
 ### Debian <a name="debian"></a>
-Latest packages for Debian jessie are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
-We provide both the stable and nightly packages, currenlty only for amd64 architecture.
+Latest packages for Debian `jessie` and `stretch` are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
+We provide both the stable and nightly packages, currently only for amd64 architecture.
 In order to add the stable packages to your system, simply run the following commands
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3DD2174ACAB30365
-    echo "deb http://apt.shogun.ml/ jessie main" | sudo tee /etc/apt/sources.list.d/shogun-toolbox.list  > /dev/null
+    echo "deb http://apt.shogun.ml/ stretch main" | sudo tee /etc/apt/sources.list.d/shogun-toolbox.list  > /dev/null
     sudo apt-get update
 
 After this just simply install the shogun library
 
-    sudo apt-get install libshogun17
+    sudo apt-get install libshogun18
 
-The nightly packages are available in the `nightly` component, i.e. `deb http://apt.shogun.ml/ jessie nightly`
+The nightly packages are available in the `nightly` component, i.e. `deb http://apt.shogun.ml/ stretch nightly`
 
 ### Fedora <a name="fedora"></a>
 Shogun is part of [Fedora 25](https://admin.fedoraproject.org/pkgdb/package/rpms/shogun/).
@@ -72,10 +85,7 @@ Install as
 Shogun is part of [homebrew-science](https://github.com/Homebrew/homebrew-science).
 Install the latest stable version as
 
-    sudo brew install shogun
-
-Note: Shogun in homebrew is outdated.
-Contact us if this changed or if you want to help changing it.
+    sudo brew install homebrew/science/shogun
 
 ### Windows <a name="windows"></a>
 Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows)
@@ -89,11 +99,9 @@ You can run Shogun in [our own cloud](cloud.shogun.ml) or set up your own using 
     sudo docker pull shogun/shogun:master
     sudo docker run -it shogun/shogun:master bash
 
-We offer images for both the latest release and nightly development builds.
+The docker image follows both the `master` and the `develop` branch of the repository, just specify the desired branch name as tag for the image. For example in order to use the develop version of shogun simply pull the `shogun/shogun:develop` docker image.
 
-For the [developer version](https://hub.docker.com/r/shogun/shogun-dev/), replace `shogun/shogun:master` with `shogun/shogun-dev`.
-
-Check the "details" tab before downloading to check if the latest build was successful (otherwise you might run into errors when running the docker image)."
+There's an [SDK docker image](https://hub.docker.com/r/shogun/shogun-dev/) for shogun development as well, which we use to run our [Travis CI](https://travis-ci.org/shogun-toolbox/shogun/) jobs.
 
 Sometimes mounting a local folder into the docker image is useful.
 You can do this via passing an additional option
@@ -178,10 +186,10 @@ In both cases, it is necessary to set a number of system libraries for using Sho
 
 ## Interfaces <a name="manual-interfaces"></a>
 The native C++ interface is always included.
-The cmake options for building interfaces are `-DPythonModular -DOctaveModular -DRModular -DJavaModular -DRubyModular -DLuaModular -DCSharpModular` etc.
+The cmake options for building interfaces are `-DINTERFACE_PYTHON=ON -DINTERFACE_R ..` etc.
 For example, replace the cmake step above by
 ```
-cmake -DPythonModular=ON [potentially more options] ..
+cmake -DINTERFACE_PYTHON=ON [potentially more options] ..
 ```
 
 The required packages (here debian/Ubuntu package names) for each interface are
@@ -228,10 +236,6 @@ Make sure to read the [docs](https://cmake.org/documentation/) and [CMake_Useful
 Make sure to understand the concept of [out of source builds](https://cmake.org/Wiki/CMake_FAQ#Out-of-source_build_trees).
 Here are some tips on common options that are useful
 
-Getting a list of possible interfaces to enable:
-
-    grep -E "OPTION.*(Modular)" CMakeLists.txt
-
 Specify a different swig executable:
 
     cmake -DSWIG_EXECUTABLE=/usr/bin/swig_custom
@@ -256,16 +260,16 @@ For that, you need to do something similar to
 
 For example, for `brew` installed Python under MacOS, use something like:
 
-    cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DPythonModular=ON ..
+    cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DINTERFACE_PYTHON=ON ..
 
 Under Linux, where you want to use Python 3, which is not the system's default:
 
-    cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DPythonModular=ON ..
+    cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DINTERFACE_PYTHON=ON ..
 
 On a Linux cluster without root access, using [Anaconda](https://www.continuum.io/downloads) (note you will need to activate your environment everytime you want to run Shogun):
 
     source path/to/anaconda/bin/activate
-    cmake -DCMAKE_INSTALL_PREFIX=path/to/shogun/install/dir -DPYTHON_INCLUDE_DIR=path/to/anaconda/include/python2.7/ -DPYTHON_LIBRARY=path/to/anaconda/lib/libpython2.7.so  -DPYTHON_EXECUTABLE=path/to/anaconda/bin/python -DPythonModular=On ..
+    cmake -DCMAKE_INSTALL_PREFIX=path/to/shogun/install/dir -DPYTHON_INCLUDE_DIR=path/to/anaconda/include/python2.7/ -DPYTHON_LIBRARY=path/to/anaconda/lib/libpython2.7.so  -DPYTHON_EXECUTABLE=path/to/anaconda/bin/python -DINTERFACE_PYTHON=ON ..
 
 ## Windows build <a name="manual-windows"></a>
 
@@ -273,7 +277,7 @@ Please see our [AppVeyor](https://ci.appveyor.com/project/vigsterkr/shogun) buil
 It is recommended to use "Visual Studio 14 2015" or "MSBuild".
 You will need to adjust all path names to the Windows style, e.g.
 
-    git clone https://github.com/shogun-toolbox/shogun.git C:\projects\shogun 
+    git clone https://github.com/shogun-toolbox/shogun.git C:\projects\shogun
     git submodule -q update --init
     cd C:\projects\shogun
     md build && cd build

@@ -121,8 +121,6 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_vectors; i++)
 		C[i] = m_C;
 
-	CSignal::clear_cancel();
-
 	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve();

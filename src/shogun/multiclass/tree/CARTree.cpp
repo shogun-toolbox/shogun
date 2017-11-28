@@ -30,7 +30,6 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/tree/CARTree.h>
-#include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;

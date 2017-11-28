@@ -39,7 +39,9 @@
 #include <shogun/lib/config.h>
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/mathematics/Math.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
+#endif //USE_GPL_SHOGUN
 
 using namespace shogun;
 
@@ -117,10 +119,14 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 	{
 		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
 		{
+#ifdef USE_GPL_SHOGUN
 			CSingleFITCLaplaceInferenceMethod* fitc_method=
 				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
 			data=fitc_method->get_inducing_features();
 			SG_UNREF(fitc_method);
+#else
+			SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 		}
 		else
 			data=m_method->get_features();
@@ -149,10 +155,14 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 		// set inducing features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
 		{
+#ifdef USE_GPL_SHOGUN
 			CSingleFITCLaplaceInferenceMethod* fitc_method=
 				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
 			fitc_method->set_inducing_features(data);
 			SG_UNREF(fitc_method);
+#else
+			SG_ERROR("Single FITC Laplace inference only supported under GPL.\n")
+#endif //USE_GPL_SHOGUN
 		}
 		else
 			m_method->set_features(data);

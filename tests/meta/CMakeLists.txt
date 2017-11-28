@@ -25,9 +25,9 @@ ENDIF()
 # Add tester to the dependencies of modular interfaces to make sure
 # nothing will infer with them being build single-threaded.
 IF(SWIG_SINGLE_THREADED)
-	FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
-		ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} meta_example_integration_tester)
-	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+	FOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
+		ADD_DEPENDENCIES(${SG_INTERFACE_TARGET} meta_example_integration_tester)
+	ENDFOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
 ENDIF(SWIG_SINGLE_THREADED)
 
 # get list of meta examples that can be built and skip test if if cannot
@@ -57,16 +57,16 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 		    IF (NOT ${TRAVIS_DISABLE_META_CPP} AND NOT ${DISABLE_META_INTEGRATION_TESTS})
 	            AddMetaIntegrationTest(cpp 1)
 	        ENDIF()
-	        IF (NOT ${DISABLE_META_INTEGRATION_TESTS})
-	            AddMetaIntegrationTest(python PythonModular)
-	            AddMetaIntegrationTest(java JavaModular)
-	            #AddMetaIntegrationTest(r RModular) # currently we have the r meta examples disabled, so no generated results that can be tested
-	            AddMetaIntegrationTest(octave OctaveModular)
-	            AddMetaIntegrationTest(csharp CSharpModular)
-	            AddMetaIntegrationTest(ruby RubyModular)
-	            AddMetaIntegrationTest(scala ScalaModular)
-	            #AddMetaIntegrationTest(lua LuaModular) # currently doesn't have meta examples
-	        ENDIF()
+			IF (NOT ${DISABLE_META_INTEGRATION_TESTS})
+				AddMetaIntegrationTest(python INTERFACE_PYTHON)
+				AddMetaIntegrationTest(java INTERFACE_JAVA)
+				#AddMetaIntegrationTest(r INTERFACE_R) # currently we have the r meta examples disabled, so no generated results that can be tested
+				AddMetaIntegrationTest(octave INTERFACE_OCTAVE)
+				AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
+				AddMetaIntegrationTest(ruby INTERFACE_RUBY)
+				AddMetaIntegrationTest(scala INTERFACE_SCALA)
+				#AddMetaIntegrationTest(lua INTERFACE_LUA) # currently doesn't have meta examples
+			ENDIF()
 		ELSE()
 			MESSAGE(WARNING "Skipping C++ meta integration tests; requires a c++11 compatible compiler.")
 		ENDIF()

@@ -34,14 +34,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
 
 class CKernel;
 class CMMD;
-template <typename T> class SGVector;
-template <typename T> class SGMatrix;
 
 namespace internal
 {

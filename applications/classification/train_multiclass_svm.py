@@ -32,7 +32,7 @@
 import argparse
 import logging
 from contextlib import contextmanager, closing
-from modshogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
+from shogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
 																SerializableHdf5File, LinearKernel)
 from utils import get_features_and_labels, track_execution
 

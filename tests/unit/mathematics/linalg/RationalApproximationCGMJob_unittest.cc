@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
@@ -16,7 +17,6 @@
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationCGMJob.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

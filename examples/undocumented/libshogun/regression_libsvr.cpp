@@ -18,7 +18,6 @@ using namespace shogun;
 
 void test_libsvr()
 {
-	const int32_t kernel_cache=0;
 	const float64_t rbf_width=10;
 	const float64_t svm_C=10;
 	const float64_t svm_nu=0.01;
@@ -48,7 +47,7 @@ void test_libsvr()
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, rbf_width);
+	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
 	kernel->init(features_train, features_train);
 
 	// also epsilon svr possible here

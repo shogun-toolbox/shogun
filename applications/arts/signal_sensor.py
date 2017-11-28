@@ -12,11 +12,11 @@ import sys
 
 from util import *
 
-from shogun.Features import StringCharFeatures, StringWordFeatures, CombinedFeatures, DNA
-from shogun.Kernel import CombinedKernel, WeightedDegreePositionStringKernel
-from shogun.Kernel import K_COMMWORDSTRING, CommWordStringKernel, IdentityKernelNormalizer
-from shogun.Preprocessor import SortWordString
-from shogun.Classifier import KernelMachine
+from shogun import StringCharFeatures, StringWordFeatures, CombinedFeatures, DNA
+from shogun import CombinedKernel, WeightedDegreePositionStringKernel
+from shogun import K_COMMWORDSTRING, CommWordStringKernel, IdentityKernelNormalizer
+from shogun import SortWordString
+from shogun import KernelMachine
 
 
 class Sensor(object):

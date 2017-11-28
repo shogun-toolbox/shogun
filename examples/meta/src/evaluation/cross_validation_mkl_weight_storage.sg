@@ -1,0 +1,62 @@
+CSVFile f_feats("../../data/fm_train_real.dat")
+CSVFile f_labels("../../data/label_train_twoclass.dat")
+
+#![create_features]
+RealFeatures features(f_feats)
+CombinedFeatures combined_features()
+combined_features.append_feature_obj(features)
+combined_features.append_feature_obj(features)
+combined_features.append_feature_obj(features)
+BinaryLabels labels(f_labels)
+#![create_features]
+
+#![create_kernels]
+CombinedKernel kernel()
+GaussianKernel k_1(10, 0.1)
+GaussianKernel k_2(10, 1)
+GaussianKernel k_3(10, 2)
+kernel.append_kernel(k_1)
+kernel.append_kernel(k_2)
+kernel.append_kernel(k_3)
+#![create_kernels]
+
+#![create_classifier]
+LibSVM libsvm()
+MKLClassification svm(libsvm)
+svm.set_interleaved_optimization_enabled(False)
+svm.set_kernel(kernel)
+#![create_classifier]
+
+#![create_cross_validation]
+StratifiedCrossValidationSplitting splitting_strategy(labels, 5)
+AccuracyMeasure evaluation_criterium()
+CrossValidation cross(svm, combined_features, labels, splitting_strategy, evaluation_criterium)
+cross.set_autolock(False)
+cross.set_num_runs(2)
+#![create_cross_validation]
+
+#![create_observer]
+ParameterObserverCV mkl_obs(True)
+cross.subscribe_to_parameters(mkl_obs)
+#[!create_observer]
+
+#![evaluate_and_get_result]
+CrossValidationResult result()
+result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+#![evaluate_and_get_result]
+
+#![get_results]
+real mean = result.get_mean()
+real stddev = result.get_std_dev()
+#![get_results]
+
+#![get_fold_machine]
+CrossValidationStorage obs = mkl_obs.get_observation(0)
+CrossValidationFoldStorage fold = obs.get_fold(0)
+MKLClassification machine = MKLClassification:obtain_from_generic(fold.get_trained_machine())
+#![get_fold_machine]
+
+#![get_weights]
+CombinedKernel k = CombinedKernel:obtain_from_generic(machine.get_kernel())
+RealVector w = k.get_subkernel_weights()
+#![get_weights]

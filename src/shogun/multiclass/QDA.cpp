@@ -90,8 +90,10 @@ void CQDA::init()
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_means, "m_means", "Mean vectors list", MS_NOT_AVAILABLE);
 	SG_ADD(&m_slog, "m_slog", "Vector used in classification", MS_NOT_AVAILABLE);
-
-	//TODO include SGNDArray objects for serialization
+	SG_ADD(&m_dim, "m_dim", "dimension of feature space", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
+	SG_ADD(&m_M, "m_M", "Matrices used in classification", MS_NOT_AVAILABLE);
 
 	m_features  = NULL;
 }
@@ -144,7 +146,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			rf->free_feature_vector(vec, i);
 		}
 
-		Map< MatrixXd > Em_M(m_M.get_matrix(k), m_dim, m_dim);
+		Map<MatrixXd> Em_M(m_M.submatrix(m_dim * k, m_dim * (k + 1)));
 		A = X*Em_M;
 
 		for (int i = 0; i < num_vecs; i++)
@@ -302,12 +304,8 @@ bool CQDA::train_machine(CFeatures* data)
 	/* Computation of terms required for classification */
 	SGVector< float32_t > sinvsqrt(m_dim);
 
-	// M_dims will be freed in m_M.destroy_ndarray()
-	index_t* M_dims = SG_MALLOC(index_t, 3);
-	M_dims[0] = m_dim;
-	M_dims[1] = m_dim;
-	M_dims[2] = m_num_classes;
-	m_M = SGNDArray< float64_t >(M_dims, 3);
+	// m_num_classes matrices of dimension (m_dim, m_dim) stacked horizontally
+	m_M = SGMatrix<float64_t>(m_dim, m_dim * m_num_classes);
 
 	m_slog = SGVector< float32_t >(m_num_classes);
 	m_slog.zero();

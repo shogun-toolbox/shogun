@@ -1,11 +1,12 @@
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/io/MemoryMappedFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/SGStringList.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/preprocessor/StringPreprocessor.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,6 +19,7 @@
 #include <vector>
 #else
 #include <unistd.h>
+
 #endif
 
 namespace shogun
@@ -488,6 +490,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 
 		SG_DEBUG("block_size=%ld file_size=%ld\n", blocksize, fsize)
 
+		auto pb = progress(range(fsize), *this->io, "COUNTING: ");
 		size_t sz=blocksize;
 		while (sz == blocksize)
 		{
@@ -502,8 +505,9 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 					old_block_offs=block_offs;
 				}
 			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
+			pb.print_progress();
 		}
+		pb.complete();
 
 		SG_INFO("found %d strings\n", num_vectors)
 		SG_FREE(dummy);
@@ -512,6 +516,10 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 		overflow=SG_MALLOC(uint8_t, blocksize);
 		features=SG_MALLOC(SGString<ST>, num_vectors);
 
+		auto pb2 =
+			PRange<int>(range(num_vectors), *this->io, "LOADING: ", UTF8, []() {
+				return true;
+			});
 		rewind(f);
 		sz=blocksize;
 		int32_t lines=0;
@@ -556,9 +564,11 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 					//CMath::display_vector(features[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					SG_PROGRESS(lines, 0, num_vectors, 1, "LOADING:\t")
+					pb2.print_progress();
 				}
 			}
+			pb2.complete();
+
 			for (size_t i=old_sz; i<sz; i++)
 				overflow[i-old_sz]=dummy[i];
 

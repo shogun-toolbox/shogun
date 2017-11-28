@@ -427,7 +427,6 @@ bool CMKL::train_machine(CFeatures* data)
 #endif
 
 	mkl_iterations = 0;
-	CSignal::clear_cancel();
 
 	training_time_clock.start();
 
@@ -449,17 +448,13 @@ bool CMKL::train_machine(CFeatures* data)
 		//but if we don't actually unref() the object we might leak memory...
 		//So as a workaround we only unref when the reference count was >1
 		//before.
-#ifdef USE_REFERENCE_COUNTING
 		int32_t refs=this->ref();
-#endif
 		svm->set_callback_function(this, perform_mkl_step_helper);
 		svm->train();
 		SG_DONE()
 		svm->set_callback_function(NULL, NULL);
-#ifdef USE_REFERENCE_COUNTING
 		if (refs>1)
 			this->unref();
-#endif
 	}
 	else
 	{
@@ -482,7 +477,7 @@ bool CMKL::train_machine(CFeatures* data)
 
 
 			mkl_iterations++;
-			if (perform_mkl_step(sumw, suma) || CSignal::cancel_computations())
+			if (perform_mkl_step(sumw, suma) || cancel_computation())
 				break;
 		}
 

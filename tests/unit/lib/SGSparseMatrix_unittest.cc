@@ -133,20 +133,17 @@ TEST(SGSparseMatrix, access_by_index)
 
 TEST(SGSparseMatrix, io_libsvm)
 {
+	// Number of vectors and feature dimension.
 	const int32_t size=10;
-	const int32_t num_feat=size/2;
-
-	CLibSVMFile* fin;
-	CLibSVMFile* fout;
+	const int32_t num_nonzero_feat=size/2;
 
 	SGSparseMatrix<float64_t> m(size, size);
-	SGSparseMatrix<float64_t> m_from_file;
 	SGVector<float64_t> labels(size);
 	for (index_t i=0; i<size; ++i)
 	{
-		m.sparse_matrix[i]=SGSparseVector<float64_t>(num_feat);
+		m.sparse_matrix[i]=SGSparseVector<float64_t>(num_nonzero_feat);
 		labels.vector[i]=(float64_t) (i%2);
-		for (index_t j=0; j<num_feat; ++j)
+		for (index_t j=0; j<num_nonzero_feat; ++j)
 		{
 			SGSparseVectorEntry<float64_t> entry;
 			entry.feat_index=(j+1)*2 - 1;
@@ -155,18 +152,19 @@ TEST(SGSparseMatrix, io_libsvm)
 		}
 	}
 
-	fout=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'w', NULL);
+	CLibSVMFile* fout=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'w', NULL);
 	m.save_with_labels(fout, labels);
 	SG_UNREF(fout);
 
-	fin=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'r', NULL);
+	CLibSVMFile* fin=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'r', NULL);
+	SGSparseMatrix<float64_t> m_from_file;
 	SGVector<float64_t> labels_from_file=m_from_file.load_with_labels(fin, false);
 	SG_UNREF(fin);
 
 	for (int32_t i=0; i<size; i++)
 	{
 		EXPECT_EQ(labels[i], labels_from_file[i]);
-		for (index_t j=0; j<num_feat; ++j)
+		for (index_t j=0; j<num_nonzero_feat; ++j)
 		{
 			EXPECT_EQ(m[i].features[j].feat_index, m_from_file[i].features[j].feat_index);
 			EXPECT_NEAR(m[i].features[j].entry, m_from_file[i].features[j].entry, 1E-14);

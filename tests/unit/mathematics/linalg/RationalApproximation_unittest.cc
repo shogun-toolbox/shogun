@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -28,11 +29,11 @@
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 #include <unsupported/Eigen/MatrixFunctions>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;
 
+#ifdef USE_GPL_SHOGUN
 TEST(RationalApproximation, precompute)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
@@ -391,3 +392,4 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	SG_UNREF(e);
 	SG_UNREF(op);
 }
+#endif //USE_GPL_SHOGUN

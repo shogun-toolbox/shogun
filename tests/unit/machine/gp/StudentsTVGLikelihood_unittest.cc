@@ -44,6 +44,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(StudentsTVGLikelihood,get_variational_expection)
 {
 	float64_t rel_tolerance = 1e-2;
@@ -289,4 +290,4 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_mu)
 	SG_UNREF(lab);
 	SG_UNREF(lik);
 }
-
+#endif //USE_GPL_SHOGUN

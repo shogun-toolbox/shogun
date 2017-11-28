@@ -1,0 +1,9 @@
+# static call
+Math:init_random(1)
+
+# global function call
+get_global_io()
+
+# member function call
+GaussianKernel k()
+k.set_width(1)

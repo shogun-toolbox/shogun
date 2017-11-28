@@ -1,9 +1,10 @@
-#include <shogun/base/some.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <gtest/gtest.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/some.h>
+#include <shogun/classifier/AveragedPerceptron.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 #ifdef HAVE_CXX11
-#ifdef USE_REFERENCE_COUNTING
 using namespace shogun;
 
 TEST(Some,basic)
@@ -22,10 +23,11 @@ TEST(Some,basic)
         // reference is held
         EXPECT_EQ(2, kernel->ref_count());
     }
-    EXPECT_TRUE(raw);
-    // last references now
-    EXPECT_EQ(1, raw->ref_count());
-    SG_UNREF(raw);
+
+	EXPECT_TRUE(raw);
+	// last references now
+	EXPECT_EQ(1, raw->ref_count());
+	SG_UNREF(raw);
 }
 
 TEST(Some,reassignment)
@@ -56,5 +58,33 @@ TEST(Some,get)
     SG_UNREF(raw);
     EXPECT_EQ(1, raw->ref_count());
 }
-#endif
-#endif
+
+TEST(Some, get_method)
+{
+	auto raw = new CGaussianKernel();
+	SG_REF(raw);
+	auto kernel = Some<CGaussianKernel>(raw);
+	EXPECT_TRUE(raw == kernel.get());
+	EXPECT_EQ(2, raw->ref_count());
+	SG_UNREF(raw);
+	EXPECT_EQ(1, raw->ref_count());
+}
+
+TEST(Some, constructor_new_type)
+{
+	auto kernel = some<CGaussianKernel>();
+	EXPECT_EQ(1, kernel->ref_count());
+	auto object = Some<CSGObject>(kernel);
+	EXPECT_EQ(2, kernel->ref_count());
+}
+
+TEST(Some, constructor_new_type_wrong_casting)
+{
+	auto kernel = some<CGaussianKernel>();
+	auto object = Some<CAveragedPerceptron>(kernel);
+	EXPECT_EQ(1, kernel->ref_count());
+	EXPECT_TRUE(object.get() == nullptr);
+	EXPECT_TRUE(kernel.get() != nullptr);
+}
+
+#endif  // HAVE_CXX11

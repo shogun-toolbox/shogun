@@ -43,7 +43,7 @@ public:
 	static const char* get_version_release();
 
 	/** get version revision */
-	static int32_t get_version_revision();
+	static int64_t get_version_revision();
 
 	/** get version year */
 	static int32_t get_version_year();
@@ -88,7 +88,7 @@ protected:
 	static const char version_extra[128];
 
 	/** version revision */
-	static const int32_t version_revision;
+	static const int64_t version_revision;
 	/** version year */
 	static const int32_t version_year;
 	/** version month */

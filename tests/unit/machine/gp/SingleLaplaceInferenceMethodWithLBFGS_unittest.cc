@@ -49,6 +49,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 {
 	float64_t rel_tolerance = 1e-2;
@@ -1752,3 +1753,4 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN

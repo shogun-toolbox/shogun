@@ -9,14 +9,19 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/machine/KernelMachine.h>
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/labels/Labels.h>
+
+#ifdef HAVE_OPENMP
+#include <omp.h>
+
+#endif
 
 using namespace shogun;
 
@@ -292,8 +297,6 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	{
 		SG_DEBUG("computing output on %d test examples\n", num_vectors)
 
-		CSignal::clear_cancel();
-
 		if (io->get_show_progress())
 			io->enable_progress();
 		else
@@ -333,126 +336,70 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 		else
 		{
-			// TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-			int32_t num_threads=parallel->get_num_threads();
-#else
-			int32_t num_threads=1;
-#endif
-			ASSERT(num_threads>0)
-
-			if (num_threads < 2)
+			auto pb = progress(range(num_vectors));
+			int32_t num_threads;
+			int64_t step;
+#pragma omp parallel shared(num_threads, step)
 			{
-				S_THREAD_PARAM_KERNEL_MACHINE params;
-				params.kernel_machine=this;
-				params.result = output.vector;
-				params.start=0;
-				params.end=num_vectors;
-				params.verbose=true;
-				params.indices = NULL;
-				params.indices_len = 0;
-				apply_helper((void*) &params);
-			}
-#ifdef HAVE_PTHREAD
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM_KERNEL_MACHINE* params = SG_MALLOC(S_THREAD_PARAM_KERNEL_MACHINE, num_threads);
-				int32_t step= num_vectors/num_threads;
 
-				int32_t t;
-
-				for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+#pragma omp single
 				{
-					params[t].kernel_machine = this;
-					params[t].result = output.vector;
-					params[t].start = t*step;
-					params[t].end = (t+1)*step;
-					params[t].verbose = false;
-					params[t].indices = NULL;
-					params[t].indices_len = 0;
-					pthread_create(&threads[t], NULL,
-							CKernelMachine::apply_helper, (void*)&params[t]);
+					num_threads = omp_get_num_threads();
+					step = num_vectors / num_threads;
+					num_threads--;
 				}
-
-				params[t].kernel_machine = this;
-				params[t].result = output.vector;
-				params[t].start = t*step;
-				params[t].end = num_vectors;
-				params[t].verbose = true;
-				params[t].indices = NULL;
-				params[t].indices_len = 0;
-				apply_helper((void*) &params[t]);
-
-				for (t=0; t<num_threads-1; t++)
-					pthread_join(threads[t], NULL);
-
-				SG_FREE(params);
-				SG_FREE(threads);
-			}
+				int32_t thread_num = omp_get_thread_num();
+#else
+				num_threads = 0;
+				step = num_vectors;
+				int32_t thread_num = 0;
 #endif
+				int32_t start = thread_num * step;
+				int32_t end = (thread_num == num_threads)
+				                  ? num_vectors
+				                  : (thread_num + 1) * step;
+
+#ifdef WIN32
+				for (int32_t vec = start; vec < end; vec++)
+#else
+				for (int32_t vec = start; vec < end && !cancel_computation();
+				     vec++)
+#endif
+				{
+					pb.print_progress();
+
+					ASSERT(kernel)
+					if (kernel->has_property(KP_LINADD) &&
+					    (kernel->get_is_initialized()))
+					{
+						float64_t score = kernel->compute_optimized(vec);
+						output[vec] = score + get_bias();
+					}
+					else
+					{
+						float64_t score = 0;
+						for (int32_t i = 0; i < get_num_support_vectors(); i++)
+							score +=
+							    kernel->kernel(get_support_vector(i), vec) *
+							    get_alpha(i);
+						output[vec] = score + get_bias();
+					}
+				}
+			}
+			pb.complete();
 		}
 
 #ifndef WIN32
-		if ( CSignal::cancel_computations() )
+		if (cancel_computation())
 			SG_INFO("prematurely stopped.           \n")
-		else
 #endif
-			SG_DONE()
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
 			get_name(), data ? data->get_name() : "NULL", data);
 
 	return output;
-}
-
-float64_t CKernelMachine::apply_one(int32_t num)
-{
-	ASSERT(kernel)
-
-	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
-	{
-		float64_t score = kernel->compute_optimized(num);
-		return score+get_bias();
-	}
-	else
-	{
-		float64_t score=0;
-		for(int32_t i=0; i<get_num_support_vectors(); i++)
-			score+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
-
-		return score+get_bias();
-	}
-}
-
-void* CKernelMachine::apply_helper(void* p)
-{
-	S_THREAD_PARAM_KERNEL_MACHINE* params = (S_THREAD_PARAM_KERNEL_MACHINE*) p;
-	float64_t* result = params->result;
-	CKernelMachine* kernel_machine = params->kernel_machine;
-
-#ifdef WIN32
-	for (int32_t vec=params->start; vec<params->end; vec++)
-#else
-	for (int32_t vec=params->start; vec<params->end &&
-			!CSignal::cancel_computations(); vec++)
-#endif
-	{
-		if (params->verbose)
-		{
-			int32_t num_vectors=params->end - params->start;
-			int32_t v=vec-params->start;
-			if ( (v% (num_vectors/100+1))== 0)
-				SG_SPROGRESS(v, 0.0, num_vectors-1)
-		}
-
-		/* eventually use index mapping if exists */
-		index_t idx=params->indices ? params->indices[vec] : vec;
-		result[vec] = kernel_machine->apply_one(idx);
-	}
-
-	return NULL;
 }
 
 void CKernelMachine::store_model_features()
@@ -545,89 +492,87 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	int32_t num_inds=indices.vlen;
 	SGVector<float64_t> output(num_inds);
 
-	CSignal::clear_cancel();
-
 	if (io->get_show_progress())
 		io->enable_progress();
 	else
 		io->disable_progress();
 
 	/* custom kernel never has batch evaluation property so dont do this here */
-	// TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
-#else
-	int32_t num_threads=1;
-#endif
-	ASSERT(num_threads>0)
-
-	if (num_threads<2)
+	auto pb = progress(range(0, num_inds));
+	int32_t num_threads;
+	int64_t step;
+#pragma omp parallel shared(num_threads, step)
 	{
-		S_THREAD_PARAM_KERNEL_MACHINE params;
-		params.kernel_machine=this;
-		params.result=output.vector;
-
-		/* use the parameter index vector */
-		params.start=0;
-		params.end=num_inds;
-		params.indices=indices.vector;
-		params.indices_len=indices.vlen;
-
-		params.verbose=true;
-		apply_helper((void*) &params);
-	}
-#ifdef HAVE_PTHREAD
-	else
-	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		S_THREAD_PARAM_KERNEL_MACHINE* params=SG_MALLOC(S_THREAD_PARAM_KERNEL_MACHINE, num_threads);
-		int32_t step= num_inds/num_threads;
-
-		int32_t t;
-		for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+#pragma omp single
 		{
-			params[t].kernel_machine=this;
-			params[t].result=output.vector;
-
-			/* use the parameter index vector */
-			params[t].start=t*step;
-			params[t].end=(t+1)*step;
-			params[t].indices=indices.vector;
-			params[t].indices_len=indices.vlen;
-
-			params[t].verbose=false;
-			pthread_create(&threads[t], NULL, CKernelMachine::apply_helper,
-					(void*)&params[t]);
+			num_threads = omp_get_num_threads();
+			step = num_inds / num_threads;
+			num_threads--;
 		}
-
-		params[t].kernel_machine=this;
-		params[t].result=output.vector;
-
-		/* use the parameter index vector */
-		params[t].start=t*step;
-		params[t].end=num_inds;
-		params[t].indices=indices.vector;
-		params[t].indices_len=indices.vlen;
-
-		params[t].verbose=true;
-		apply_helper((void*) &params[t]);
-
-		for (t=0; t<num_threads-1; t++)
-			pthread_join(threads[t], NULL);
-
-		SG_FREE(params);
-		SG_FREE(threads);
-	}
+		int32_t thread_num = omp_get_thread_num();
+#else
+		num_threads = 0;
+		step = num_inds;
+		int32_t thread_num = 0;
 #endif
+		int32_t start = thread_num * step;
+		int32_t end =
+		    (thread_num == num_threads) ? num_inds : (thread_num + 1) * step;
+#ifdef WIN32
+		for (int32_t vec = start; vec < end; vec++)
+#else
+		for (int32_t vec = start; vec < end && !cancel_computation(); vec++)
+#endif
+		{
+			pb.print_progress();
+			index_t index = indices[vec];
+			ASSERT(kernel)
+			if (kernel->has_property(KP_LINADD) &&
+			    (kernel->get_is_initialized()))
+			{
+				float64_t score = kernel->compute_optimized(index);
+				output[vec] = score + get_bias();
+			}
+			else
+			{
+				float64_t score = 0;
+				for (int32_t i = 0; i < get_num_support_vectors(); i++)
+					score += kernel->kernel(get_support_vector(i), index) *
+					         get_alpha(i);
+
+				output[vec] = score + get_bias();
+			}
+		}
+	}
 
 #ifndef WIN32
-	if ( CSignal::cancel_computations() )
+	if (cancel_computation())
 		SG_INFO("prematurely stopped.\n")
 	else
 #endif
-		SG_DONE()
+		pb.complete();
 
 	return output;
+}
+
+float64_t CKernelMachine::apply_one(int32_t num)
+{
+	ASSERT(kernel)
+
+	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
+	{
+		float64_t score = kernel->compute_optimized(num);
+		return score + get_bias();
+	}
+	else
+	{
+		float64_t score = 0;
+		for (int32_t i = 0; i < get_num_support_vectors(); i++)
+			score += kernel->kernel(get_support_vector(i), num) * get_alpha(i);
+
+		return score + get_bias();
+	}
 }
 
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
@@ -710,4 +655,3 @@ bool CKernelMachine::supports_locking() const
 {
 	return true;
 }
-

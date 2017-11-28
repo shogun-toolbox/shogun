@@ -56,15 +56,15 @@ Statistical Testing
 
    examples/statistical_testing/**
 
-Kernels
--------
+Converter
+---------
 
 .. toctree::
    :maxdepth: 1
    :glob:
-   :caption: Kernels
+   :caption: Converter
 
-   examples/kernel/**
+   examples/converter/**
 
 Gaussian Processes
 ------------------
@@ -105,3 +105,13 @@ Neural Networks
    :caption: Neural Netwroks
 
    examples/neural_nets/**
+
+Evaluation
+----------
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+    :caption: Evaluation
+
+    examples/evaluation/**

@@ -32,7 +32,7 @@
 import argparse
 import logging
 import numpy as np
-from modshogun import (LibSVMFile, MulticlassLabels, MulticlassAccuracy)
+from shogun import (LibSVMFile, MulticlassLabels, MulticlassAccuracy)
 from utils import get_features_and_labels
 
 LOGGER = logging.getLogger(__file__)

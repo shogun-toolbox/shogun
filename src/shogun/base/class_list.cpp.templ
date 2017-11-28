@@ -1,11 +1,33 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Copyright (c) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (w) 2009 Soeren Sonnenburg
+ * Written (w) 2016 - 2017 Heiko Strathmann
+ * All rights reserved.
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <shogun/lib/common.h>
@@ -22,12 +44,12 @@ REPLACE template_definitions THIS
 
 REPLACE complex_template_definitions THIS
 
-typedef CSGObject* (*new_sgserializable_t)(EPrimitiveType generic);
+typedef CSGObject* (*create_function)(EPrimitiveType generic);
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 typedef struct
 {
 	const char* m_class_name;
-	new_sgserializable_t m_new_sgserializable;
+	create_function m_create_function;
 } class_list_entry_t;
 #endif
 
@@ -36,14 +58,13 @@ REPLACE struct THIS
 	{NULL, NULL}
 };
 
-CSGObject* shogun::new_sgserializable(const char* sgserializable_name,
-						   EPrimitiveType generic)
+CSGObject* shogun::create(const char* classname, EPrimitiveType generic)
 {
 	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
 		 i++)
 	{
-		if (strncmp(i->m_class_name, sgserializable_name, STRING_LEN) == 0)
-			return i->m_new_sgserializable(generic);
+		if (strncmp(i->m_class_name, classname, STRING_LEN) == 0)
+			return i->m_create_function(generic);
 	}
 
 	return NULL;

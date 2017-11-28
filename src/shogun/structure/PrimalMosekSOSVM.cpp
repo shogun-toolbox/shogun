@@ -14,6 +14,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/List.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/loss/HingeLoss.h>
 
@@ -232,9 +233,9 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 
 	if(result->psi_computed)
 	{
-		return	CMath::dot(m_w.vector, result->psi_pred.vector, M) +
+		return linalg::dot(m_w, result->psi_pred) +
 			result->delta -
-			CMath::dot(m_w.vector, result->psi_truth.vector, M);
+			linalg::dot(m_w, result->psi_truth);
 	}
 	else if(result->psi_computed_sparse)
 	{

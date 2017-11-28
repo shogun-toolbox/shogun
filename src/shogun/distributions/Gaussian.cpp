@@ -10,22 +10,24 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
+#include <shogun/base/Parameter.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
+using namespace linalg;
 
 CGaussian::CGaussian() : CDistribution(), m_constant(0), m_d(), m_u(), m_mean(), m_cov_type(FULL)
 {
 	register_params();
 }
 
-CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type)
- : CDistribution()
+CGaussian::CGaussian(
+    const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type)
+    : CDistribution()
 {
 	ASSERT(mean.vlen==cov.num_rows)
 	ASSERT(cov.num_rows==cov.num_cols)
@@ -118,102 +120,115 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 {
 	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
-	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL\n")
+	REQUIRE(
+	    dotdata, "dynamic cast from CFeatures to CDotFeatures returned NULL\n");
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	// compute mean
 
 	float64_t alpha_k_sum=0;
 	SGVector<float64_t> mean(num_dim);
-	mean.fill_vector(mean.vector,mean.vlen,0);
-	for (int32_t i=0;i<len;i++)
+	mean.fill_vector(mean.vector, mean.vlen, 0);
+	for (int32_t i = 0; i < len; i++)
 	{
 		alpha_k_sum+=alpha_k[i];
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
-		SGVector<float64_t>::add(mean.vector, alpha_k[i], v.vector, 1, mean.vector, v.vlen);
+		linalg::add(v, mean, mean, alpha_k[i], 1.0);
 	}
 
-	for (int32_t i=0; i<num_dim; i++)
-		mean[i]/=alpha_k_sum;
+	linalg::scale(mean, mean, 1.0 / alpha_k_sum);
 
 	set_mean(mean);
 
 	// compute covariance matrix
 
-	float64_t* cov_sum=NULL;
+	SGMatrix<float64_t> cov_sum;
 	ECovType cov_type=get_cov_type();
 	if (cov_type==FULL)
 	{
-		cov_sum=SG_MALLOC(float64_t, num_dim*num_dim);
-		memset(cov_sum, 0, num_dim*num_dim*sizeof(float64_t));
+		cov_sum = SGMatrix<float64_t>(num_dim, num_dim);
+		cov_sum.zero();
 	}
 	else if(cov_type==DIAG)
 	{
-		cov_sum=SG_MALLOC(float64_t,num_dim);
-		memset(cov_sum, 0, num_dim*sizeof(float64_t));
+		cov_sum = SGMatrix<float64_t>(1, num_dim);
+		cov_sum.zero();
 	}
 	else if(cov_type==SPHERICAL)
 	{
-		cov_sum=SG_MALLOC(float64_t,1);
-		cov_sum[0]=0;
+		cov_sum = SGMatrix<float64_t>(1, 1);
+		cov_sum.zero();
 	}
 
 	for (int32_t j=0; j<len; j++)
 	{
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
-		SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+		linalg::add(v, mean, v, -1.0, 1.0);
 
 		switch (cov_type)
 		{
-			case FULL:
-				cblas_dger(CblasRowMajor, num_dim, num_dim, alpha_k[j], v.vector, 1, v.vector,
-							 1, (double*) cov_sum, num_dim);
+		case FULL:
+#ifdef HAVE_LAPACK
+			cblas_dger(
+			    CblasRowMajor, num_dim, num_dim, alpha_k[j], v.vector, 1,
+			    v.vector, 1, (double*)cov_sum.matrix, num_dim);
+#else
+			linalg::dger<float64_t>(alpha_k[j], v, v, cov_sum);
+#endif
+			break;
+		case DIAG:
+			for (int32_t k = 0; k < num_dim; k++)
+				cov_sum(1, k) += v.vector[k] * v.vector[k] * alpha_k[j];
 
-				break;
-			case DIAG:
-				for (int32_t k=0; k<num_dim; k++)
-					cov_sum[k]+=v.vector[k]*v.vector[k]*alpha_k[j];
+			break;
+		case SPHERICAL:
+			float64_t temp = 0;
 
-				break;
-			case SPHERICAL:
-				float64_t temp=0;
+			temp = linalg::dot(v, v);
 
-				for (int32_t k=0; k<num_dim; k++)
-					temp+=v.vector[k]*v.vector[k];
-
-				cov_sum[0]+=temp*alpha_k[j];
-				break;
+			cov_sum(0, 0) += temp * alpha_k[j];
+			break;
 		}
 	}
 
 	switch (cov_type)
 	{
-		case FULL:
-			for (int32_t j=0; j<num_dim*num_dim; j++)
-				cov_sum[j]/=alpha_k_sum;
+	case FULL:
+	{
+		linalg::scale(cov_sum, cov_sum, 1 / alpha_k_sum);
 
-			float64_t* d0;
-			d0=SGMatrix<float64_t>::compute_eigenvectors(cov_sum, num_dim, num_dim);
+		SGVector<float64_t> d0(num_dim);
+#ifdef HAVE_LAPACK
+		d0.vector = SGMatrix<float64_t>::compute_eigenvectors(
+		    cov_sum.matrix, num_dim, num_dim);
+#else
+		// FIXME use eigenvectors computeation warpper by micmn
+		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = cov_sum;
+		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = d0;
 
-			set_d(SGVector<float64_t>(d0, num_dim));
-			set_u(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
+		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
+		    eig);
+		eigenvalues_eig = solver.eigenvalues().real();
+#endif
 
-			break;
+		set_d(d0);
+		set_u(cov_sum);
 
-		case DIAG:
-			for (int32_t j=0; j<num_dim; j++)
-				cov_sum[j]/=alpha_k_sum;
+		break;
+	}
+	case DIAG:
+		linalg::scale(cov_sum, cov_sum, 1 / alpha_k_sum);
 
-			set_d(SGVector<float64_t>(cov_sum,num_dim));
+		set_d(cov_sum.get_row_vector(0));
 
-			break;
+		break;
 
-		case SPHERICAL:
-			cov_sum[0]/=alpha_k_sum*num_dim;
+	case SPHERICAL:
+		cov_sum[0] /= alpha_k_sum * num_dim;
 
-			set_d(SGVector<float64_t>(cov_sum,1));
+		set_d(cov_sum.get_row_vector(0));
 
-			break;
+		break;
 	}
 
 	return alpha_k_sum;
@@ -223,24 +238,26 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 {
 	ASSERT(m_mean.vector && m_d.vector)
 	ASSERT(point.vlen == m_mean.vlen)
-	float64_t* difference=SG_MALLOC(float64_t, m_mean.vlen);
-	sg_memcpy(difference, point.vector, sizeof(float64_t)*m_mean.vlen);
+	SGVector<float64_t> difference = point.clone();
 
-	for (int32_t i = 0; i < m_mean.vlen; i++)
-		difference[i] -= m_mean.vector[i];
+	linalg::add(difference, m_mean, difference, -1.0, 1.0);
 
 	float64_t answer=m_constant;
 
 	if (m_cov_type==FULL)
 	{
-		float64_t* temp_holder=SG_MALLOC(float64_t, m_d.vlen);
-		cblas_dgemv(CblasRowMajor, CblasNoTrans, m_d.vlen, m_d.vlen,
-					1, m_u.matrix, m_d.vlen, difference, 1, 0, temp_holder, 1);
+		SGVector<float64_t> temp_holder(m_d.vlen);
+		temp_holder.zero();
+#ifdef HAVE_LAPACK
+		cblas_dgemv(
+		    CblasRowMajor, CblasNoTrans, m_d.vlen, m_d.vlen, 1, m_u.matrix,
+		    m_d.vlen, difference, 1, 0, temp_holder, 1);
+#else
+		linalg::dgemv<float64_t>(1, m_u, false, difference, 0, temp_holder);
+#endif
 
 		for (int32_t i=0; i<m_d.vlen; i++)
 			answer+=temp_holder[i]*temp_holder[i]/m_d.vector[i];
-
-		SG_FREE(temp_holder);
 	}
 	else if (m_cov_type==DIAG)
 	{
@@ -250,12 +267,10 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 	else
 	{
 		for (int32_t i=0; i<m_mean.vlen; i++)
-			answer+=difference[i]*difference[i]/m_d.vector[0];
+			answer += difference[i] * difference[i] / m_d.vector[0];
 	}
 
-	SG_FREE(difference);
-
-	return -0.5*answer;
+	return -0.5 * answer;
 }
 
 SGVector<float64_t> CGaussian::get_mean()
@@ -287,41 +302,45 @@ void CGaussian::set_d(const SGVector<float64_t> d)
 
 SGMatrix<float64_t> CGaussian::get_cov()
 {
-	float64_t* cov=SG_MALLOC(float64_t, m_mean.vlen*m_mean.vlen);
-	memset(cov, 0, sizeof(float64_t)*m_mean.vlen*m_mean.vlen);
+	SGMatrix<float64_t> cov(m_mean.vlen, m_mean.vlen);
+	cov.zero();
 
 	if (m_cov_type==FULL)
 	{
 		if (!m_u.matrix)
 			SG_ERROR("Unitary matrix not set\n")
 
-		float64_t* temp_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
-		float64_t* diag_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
-		memset(diag_holder, 0, sizeof(float64_t)*m_d.vlen*m_d.vlen);
-		for(int32_t i=0; i<m_d.vlen; i++)
-			diag_holder[i*m_d.vlen+i]=m_d.vector[i];
-
-		cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,
-					m_d.vlen, m_d.vlen, m_d.vlen, 1, m_u.matrix, m_d.vlen,
-					diag_holder, m_d.vlen, 0, temp_holder, m_d.vlen);
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-					m_d.vlen, m_d.vlen, m_d.vlen, 1, temp_holder, m_d.vlen,
-					m_u.matrix, m_d.vlen, 0, cov, m_d.vlen);
-
-		SG_FREE(diag_holder);
-		SG_FREE(temp_holder);
+		SGMatrix<float64_t> temp_holder(m_mean.vlen, m_mean.vlen);
+		SGMatrix<float64_t> diag_holder(m_mean.vlen, m_mean.vlen);
+		diag_holder.zero();
+		for (int32_t i = 0; i < m_d.vlen; i++)
+			diag_holder(i, i) = m_d.vector[i];
+#ifdef HAVE_LAPACK
+		cblas_dgemm(
+		    CblasRowMajor, CblasTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
+		    m_d.vlen, 1, m_u.matrix, m_d.vlen, diag_holder.matrix, m_d.vlen, 0,
+		    temp_holder.matrix, m_d.vlen);
+		cblas_dgemm(
+		    CblasRowMajor, CblasNoTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
+		    m_d.vlen, 1, temp_holder.matrix, m_d.vlen, m_u.matrix, m_d.vlen, 0,
+		    cov.matrix, m_d.vlen);
+#else
+		linalg::dgemm<float64_t>(
+		    1, m_u, diag_holder, true, false, 0, temp_holder);
+		linalg::dgemm<float64_t>(1, temp_holder, m_u, false, false, 0, cov);
+#endif
 	}
-	else if (m_cov_type==DIAG)
+	else if (m_cov_type == DIAG)
 	{
-		for (int32_t i=0; i<m_d.vlen; i++)
-			cov[i*m_d.vlen+i]=m_d.vector[i];
+		for (int32_t i = 0; i < m_d.vlen; i++)
+			cov(i, i) = m_d.vector[i];
 	}
 	else
 	{
-		for (int32_t i=0; i<m_mean.vlen; i++)
-			cov[i*m_mean.vlen+i]=m_d.vector[0];
+		for (int32_t i = 0; i < m_mean.vlen; i++)
+			cov(i, i) = m_d.vector[0];
 	}
-	return SGMatrix<float64_t>(cov, m_mean.vlen, m_mean.vlen, false);//fix needed
+	return cov;
 }
 
 void CGaussian::register_params()
@@ -337,77 +356,94 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 {
 	switch (m_cov_type)
 	{
-		case FULL:
-			m_u=SGMatrix<float64_t>(cov.num_rows,cov.num_rows);
-			sg_memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
+	case FULL:
+	{
+		m_u = SGMatrix<float64_t>(cov.num_rows, cov.num_rows);
+		m_u = cov.clone();
+		m_d = SGVector<float64_t>(cov.num_rows);
+#ifdef HAVE_LAPACK
+		m_d.vector = SGMatrix<float64_t>::compute_eigenvectors(
+		    m_u.matrix, cov.num_rows, cov.num_rows);
+#else
+		// FIXME use eigenvectors computeation warpper by micmn
+		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = m_u;
+		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = m_d;
 
-			m_d.vector=SGMatrix<float64_t>::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
-			m_d.vlen=cov.num_rows;
-			m_u.num_rows=cov.num_rows;
-			m_u.num_cols=cov.num_rows;
-			break;
-		case DIAG:
-			m_d=SGVector<float64_t>(cov.num_rows);
-			for (int32_t i=0; i<cov.num_rows; i++)
-				m_d[i]=cov.matrix[i*cov.num_rows+i];
+		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
+		    eig);
+		eigenvalues_eig = solver.eigenvalues().real();
+#endif
+		break;
+	}
+	case DIAG:
+		m_d = SGVector<float64_t>(cov.num_rows);
+		for (int32_t i = 0; i < cov.num_rows; i++)
+			m_d[i] = cov.matrix[i * cov.num_rows + i];
 
-			break;
-		case SPHERICAL:
-			m_d=SGVector<float64_t>(1);
-			m_d.vector[0]=cov.matrix[0];
-			break;
+		break;
+	case SPHERICAL:
+		m_d = SGVector<float64_t>(1);
+		m_d.vector[0] = cov.matrix[0];
+		break;
 	}
 }
 
 SGVector<float64_t> CGaussian::sample()
 {
 	SG_DEBUG("Entering\n");
-	float64_t* r_matrix=SG_MALLOC(float64_t, m_mean.vlen*m_mean.vlen);
-	memset(r_matrix, 0, m_mean.vlen*m_mean.vlen*sizeof(float64_t));
+	SGMatrix<float64_t> r_matrix(m_mean.vlen, m_mean.vlen);
+	r_matrix.zero();
 
 	switch (m_cov_type)
 	{
-		case FULL:
-		case DIAG:
-			for (int32_t i=0; i<m_mean.vlen; i++)
-				r_matrix[i*m_mean.vlen+i]=CMath::sqrt(m_d.vector[i]);
+	case FULL:
+	case DIAG:
+		for (int32_t i = 0; i < m_mean.vlen; i++)
+			r_matrix(i, i) = CMath::sqrt(m_d.vector[i]);
 
-			break;
-		case SPHERICAL:
-			for (int32_t i=0; i<m_mean.vlen; i++)
-				r_matrix[i*m_mean.vlen+i]=CMath::sqrt(m_d.vector[0]);
+		break;
+	case SPHERICAL:
+		for (int32_t i = 0; i < m_mean.vlen; i++)
+			r_matrix(i, i) = CMath::sqrt(m_d.vector[0]);
 
-			break;
+		break;
 	}
 
-	float64_t* random_vec=SG_MALLOC(float64_t, m_mean.vlen);
+	SGVector<float64_t> random_vec(m_mean.vlen);
 
-	for (int32_t i=0; i<m_mean.vlen; i++)
-		random_vec[i]=CMath::randn_double();
+	for (int32_t i = 0; i < m_mean.vlen; i++)
+		random_vec.vector[i] = CMath::randn_double();
 
-	if (m_cov_type==FULL)
+	if (m_cov_type == FULL)
 	{
-		float64_t* temp_matrix=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-					m_d.vlen, m_d.vlen, m_d.vlen, 1, m_u.matrix, m_d.vlen,
-					r_matrix, m_d.vlen, 0, temp_matrix, m_d.vlen);
-		SG_FREE(r_matrix);
-		r_matrix=temp_matrix;
+		SGMatrix<float64_t> temp_matrix(m_d.vlen, m_d.vlen);
+		temp_matrix.zero();
+#ifdef HAVE_LAPACK
+		cblas_dgemm(
+		    CblasRowMajor, CblasNoTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
+		    m_d.vlen, 1, m_u.matrix, m_d.vlen, r_matrix.matrix, m_d.vlen, 0,
+		    temp_matrix.matrix, m_d.vlen);
+#else
+		linalg::dgemm<float64_t>(
+		    1, m_u, r_matrix, false, false, 0, temp_matrix);
+#endif
+		r_matrix = temp_matrix;
 	}
 
-	float64_t* samp=SG_MALLOC(float64_t, m_mean.vlen);
+	SGVector<float64_t> samp(m_mean.vlen);
 
-	cblas_dgemv(CblasRowMajor, CblasNoTrans, m_mean.vlen, m_mean.vlen,
-				1, r_matrix, m_mean.vlen, random_vec, 1, 0, samp, 1);
-
-	for (int32_t i=0; i<m_mean.vlen; i++)
-		samp[i]+=m_mean.vector[i];
-
-	SG_FREE(random_vec);
-	SG_FREE(r_matrix);
+#ifdef HAVE_LAPACK
+	cblas_dgemv(
+	    CblasRowMajor, CblasNoTrans, m_mean.vlen, m_mean.vlen, 1,
+	    r_matrix.matrix, m_mean.vlen, random_vec.vector, 1, 0, samp.vector, 1);
+#else
+	linalg::dgemv<float64_t>(1.0, r_matrix, false, random_vec, 0.0, samp);
+#endif
+	for (int32_t i = 0; i < m_mean.vlen; i++)
+		samp.vector[i] += m_mean.vector[i];
 
 	SG_DEBUG("Leaving\n");
-	return SGVector<float64_t>(samp, m_mean.vlen, false);//fix needed
+	return samp;
 }
 
 CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
@@ -423,5 +459,3 @@ CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
 	SG_REF(casted);
 	return casted;
 }
-
-#endif // HAVE_LAPACK

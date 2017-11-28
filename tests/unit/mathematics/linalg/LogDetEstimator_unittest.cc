@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -30,7 +31,6 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -108,6 +108,7 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 #endif //HAVE_LAPACK
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
+#ifdef USE_GPL_SHOGUN
 TEST(LogDetEstimator, sample_ratapp_dense)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
@@ -459,3 +460,4 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 }
 #endif // HAVE_LAPACK
 #endif // HAVE_COLPACK
+#endif //USE_GPL_SHOGUN

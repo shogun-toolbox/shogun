@@ -1,12 +1,36 @@
 #!/usr/bin/env python
 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
+# Copyright (c) The Shogun Machine Learning Toolbox
+# Copyright (c) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+# Written (w) 2008-2009 Soeren Sonnenburg
+# Written (w) 2016 - 2017 Heiko Strathmann
+# All rights reserved.
 #
-# Written (W) 2008-2009 Soeren Sonnenburg
-# Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies,
+# either expressed or implied, of the Shogun Development Team.
+
+import os
 
 class_str = 'class'
 types = ["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
@@ -81,24 +105,31 @@ def extract_class_name(lines, line_nr, line, blacklist):
     return c[1:]
 
 
-def get_includes(classes, basedir="."):
-    class_headers = []
-    for c, t in classes:
-        class_headers.append(c+".h")
-
-    import os
-    result = []
-    for root, dirs, files in os.walk(basedir):
-        for f in files:
-            if f in class_headers:
-                result.append(os.path.join(os.path.relpath(root, basedir), f))
-
+def get_includes(classes, headers_absolute_fnames):
     includes = []
-    result.sort()
-    for o in result:
-        includes.append('#include <shogun/%s>' % o.strip().lstrip('./'))
-    return includes
+    for c in classes:
+        for h in headers_absolute_fnames:
+            class_from_header = os.path.splitext(os.path.basename(h))[0]
 
+            # build relative include path from absolute header filename
+            if class_from_header in c:
+                # find *last* occurence of "shogun" dir in header
+                shogun_dir = "shogun"
+                assert shogun_dir in h
+                tails = []
+                head, tail = os.path.split(h)
+                while tail != shogun_dir and len(head)>0:
+                    tails += [tail]
+                    head, tail = os.path.split(head)
+                
+                # construct include path from collected tails
+                tails.reverse()
+                include = os.path.join(*([shogun_dir] + tails))
+
+                # thats your include header
+                includes.append("#include <%s>" % include)
+
+    return includes
 
 def get_definitions(classes):
     definitions = []
@@ -287,12 +318,6 @@ def get_blacklist():
             blacklist[cfg] = 1
     return blacklist
 
-
-def get_base_src_dir(headers):
-    import os.path
-    return os.path.commonprefix(headers)
-
-
 if __name__ == '__main__':
     import sys
     TEMPL_FILE = sys.argv[1]
@@ -307,11 +332,10 @@ if __name__ == '__main__':
 
     blacklist = get_blacklist()
 
-    base_src_dir = get_base_src_dir(HEADERS)
     classes = extract_classes(HEADERS, False, blacklist, False)
     template_classes = extract_classes(HEADERS, True, blacklist, False)
     complex_template_classes = extract_classes(HEADERS, True, blacklist, True)
-    includes = get_includes(classes+template_classes+complex_template_classes, basedir=base_src_dir)
+    includes = get_includes(classes+template_classes+complex_template_classes, HEADERS)
     definitions = get_definitions(classes)
     template_definitions = get_template_definitions(template_classes, False)
     complex_template_definitions = get_template_definitions(complex_template_classes, True)

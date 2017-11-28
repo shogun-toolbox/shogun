@@ -61,3 +61,11 @@ TEST(CFastICA, blind_source_separation)
 	SG_UNREF(signals);
 }
 
+TEST(CFastICA, with_empty_feature)
+{
+	CDenseFeatures<float64_t>* empty_feat = new CDenseFeatures<float64_t>();
+	CFastICA* ica = new CFastICA();
+	EXPECT_THROW(ica->apply(empty_feat), ShogunException);
+	SG_UNREF(ica);
+	SG_UNREF(empty_feat);
+}

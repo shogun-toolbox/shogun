@@ -102,160 +102,21 @@ bool CPCA::init(CFeatures* features)
 
 		// center data
 		Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+
 		m_mean_vector = SGVector<float64_t>(num_features);
 		Map<VectorXd> data_mean(m_mean_vector.vector, num_features);
  		data_mean = fmatrix.rowwise().sum()/(float64_t) num_vectors;
 		fmatrix = fmatrix.colwise()-data_mean;
 
 		m_eigenvalues_vector = SGVector<float64_t>(max_dim_allowed);
-		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, max_dim_allowed);
 
 		if (m_method == AUTO)
 			m_method = (num_vectors>num_features) ? EVD : SVD;
 
 		if (m_method == EVD)
-		{
-			// covariance matrix
-			MatrixXd cov_mat(num_features, num_features);
-			cov_mat = fmatrix*fmatrix.transpose();
-			cov_mat /= (num_vectors-1);
-
-			SG_INFO("Computing Eigenvalues ... ")
-			// eigen value computed
-			SelfAdjointEigenSolver<MatrixXd> eigenSolve =
-					SelfAdjointEigenSolver<MatrixXd>(cov_mat);
-			eigenValues = eigenSolve.eigenvalues().tail(max_dim_allowed);
-
-			// target dimension
-			switch (m_mode)
-			{
-				case FIXED_NUMBER :
-					num_dim = m_target_dim;
-					break;
-
-				case VARIANCE_EXPLAINED :
-					{
-						float64_t eig_sum = eigenValues.sum();
-						float64_t com_sum = 0;
-						for (int32_t i=num_features-1; i<-1; i++)
-						{
-							num_dim++;
-							com_sum += m_eigenvalues_vector.vector[i];
-							if (com_sum/eig_sum>=m_thresh)
-								break;
-						}
-					}
-					break;
-
-				case THRESHOLD :
-					for (int32_t i=num_features-1; i<-1; i++)
-					{
-						if (m_eigenvalues_vector.vector[i]>m_thresh)
-							num_dim++;
-						else
-							break;
-					}
-					break;
-			};
-			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
-
-			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
-			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
-								 num_features, num_dim);
-			num_old_dim = num_features;
-
-			// eigenvector matrix
-			transformMatrix = eigenSolve.eigenvectors().block(0,
-						num_features-num_dim, num_features,num_dim);
-			if (m_whitening)
-			{
-				for (int32_t i=0; i<num_dim; i++)
-				{
-					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
-											m_eigenvalue_zero_tolerance))
-					{
-						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
-							"Eigenvalue within a tolerance of %E around 0) at "
-							"dimension %d. Consider reducing its dimension.",
-							m_eigenvalue_zero_tolerance, i+max_dim_allowed-num_dim+1)
-
-						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
-						continue;
-					}
-
-					transformMatrix.col(i) /=
-					CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
-				}
-			}
-		}
-
+		    init_with_evd(feature_matrix,  max_dim_allowed);
 		else
-		{
-			// compute SVD of data matrix
-			JacobiSVD<MatrixXd> svd(fmatrix.transpose(), ComputeThinU | ComputeThinV);
-
-			// compute non-negative eigen values from singular values
-			eigenValues = svd.singularValues();
-			eigenValues = eigenValues.cwiseProduct(eigenValues)/(num_vectors-1);
-
-			// target dimension
-			switch (m_mode)
-			{
-				case FIXED_NUMBER :
-					num_dim = m_target_dim;
-					break;
-
-				case VARIANCE_EXPLAINED :
-					{
-						float64_t eig_sum = eigenValues.sum();
-						float64_t com_sum = 0;
-						for (int32_t i=0; i<num_features; i++)
-						{
-							num_dim++;
-							com_sum += m_eigenvalues_vector.vector[i];
-							if (com_sum/eig_sum>=m_thresh)
-								break;
-						}
-					}
-					break;
-
-				case THRESHOLD :
-					for (int32_t i=0; i<num_features; i++)
-					{
-						if (m_eigenvalues_vector.vector[i]>m_thresh)
-							num_dim++;
-						else
-							break;
-					}
-					break;
-			};
-			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
-
-			// right singular vectors form eigenvectors
-			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
-			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
-			num_old_dim = num_features;
-			transformMatrix = svd.matrixV().block(0, 0, num_features, num_dim);
-			if (m_whitening)
-			{
-				for (int32_t i=0; i<num_dim; i++)
-				{
-					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i],
-								m_eigenvalue_zero_tolerance))
-					{
-						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
-							"Eigenvalue within a tolerance of %E around 0) at "
-							"dimension %d. Consider reducing its dimension.",
-							m_eigenvalue_zero_tolerance, i+1)
-
-						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
-						continue;
-					}
-
-					transformMatrix.col(i) /= CMath::sqrt(eigenValues[i]*(num_vectors-1));
-				}
-			}
-		}
+		    init_with_svd(feature_matrix, max_dim_allowed);
 
 		// restore feature matrix
 		fmatrix = fmatrix.colwise()+data_mean;
@@ -264,6 +125,160 @@ bool CPCA::init(CFeatures* features)
 	}
 
 	return false;
+}
+
+void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)
+{
+	int32_t num_vectors = feature_matrix.num_cols;
+	int32_t num_features = feature_matrix.num_rows;
+
+	Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+	Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, max_dim_allowed);
+
+	// covariance matrix
+	MatrixXd cov_mat(num_features, num_features);
+	cov_mat = fmatrix*fmatrix.transpose();
+	cov_mat /= (num_vectors-1);
+
+	SG_INFO("Computing Eigenvalues ... ")
+	// eigen value computed
+	SelfAdjointEigenSolver<MatrixXd> eigenSolve =
+			SelfAdjointEigenSolver<MatrixXd>(cov_mat);
+	eigenValues = eigenSolve.eigenvalues().tail(max_dim_allowed);
+
+	// target dimension
+	switch (m_mode)
+	{
+		case FIXED_NUMBER :
+			num_dim = m_target_dim;
+			break;
+
+		case VARIANCE_EXPLAINED :
+			{
+				float64_t eig_sum = eigenValues.sum();
+				float64_t com_sum = 0;
+				for (int32_t i=num_features-1; i<-1; i++)
+				{
+					num_dim++;
+					com_sum += m_eigenvalues_vector.vector[i];
+					if (com_sum/eig_sum>=m_thresh)
+						break;
+				}
+			}
+			break;
+
+		case THRESHOLD :
+			for (int32_t i=num_features-1; i<-1; i++)
+			{
+				if (m_eigenvalues_vector.vector[i]>m_thresh)
+					num_dim++;
+				else
+					break;
+			}
+			break;
+	};
+	SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+
+	m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
+	Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
+						 num_features, num_dim);
+	num_old_dim = num_features;
+
+	// eigenvector matrix
+	transformMatrix = eigenSolve.eigenvectors().block(0,
+				num_features-num_dim, num_features,num_dim);
+	if (m_whitening)
+	{
+		for (int32_t i=0; i<num_dim; i++)
+		{
+			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
+									m_eigenvalue_zero_tolerance))
+			{
+				SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
+					"Eigenvalue within a tolerance of %E around 0) at "
+					"dimension %d. Consider reducing its dimension.",
+					m_eigenvalue_zero_tolerance, i+max_dim_allowed-num_dim+1)
+
+				transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
+				continue;
+			}
+
+			transformMatrix.col(i) /=
+			CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
+		}
+	}
+}
+
+void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_dim_allowed)
+{
+	int32_t num_vectors = feature_matrix.num_cols;
+	int32_t num_features = feature_matrix.num_rows;
+
+	Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+	Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, max_dim_allowed);
+
+	// compute SVD of data matrix
+	JacobiSVD<MatrixXd> svd(fmatrix.transpose(), ComputeThinU | ComputeThinV);
+
+	// compute non-negative eigen values from singular values
+	eigenValues = svd.singularValues();
+	eigenValues = eigenValues.cwiseProduct(eigenValues) / (num_vectors - 1);
+
+	// target dimension
+	switch (m_mode)
+	{
+		case FIXED_NUMBER:
+			num_dim = m_target_dim;
+        	break;
+
+		case VARIANCE_EXPLAINED:
+		{
+			float64_t eig_sum = eigenValues.sum();
+			float64_t com_sum = 0;
+			for (int32_t i = 0; i < num_features; i++) {
+				num_dim++;
+				com_sum += m_eigenvalues_vector.vector[i];
+				if (com_sum / eig_sum >= m_thresh)
+					break;
+			}
+		} break;
+
+		case THRESHOLD:
+			for (int32_t i = 0; i < num_features; i++) {
+				if (m_eigenvalues_vector.vector[i] > m_thresh)
+					num_dim++;
+				else
+					break;
+			}
+			break;
+	};
+	SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+
+	// right singular vectors form eigenvectors
+	m_transformation_matrix = SGMatrix<float64_t>(num_features, num_dim);
+	Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
+	num_old_dim = num_features;
+	transformMatrix = svd.matrixV().block(0, 0, num_features, num_dim);
+
+	if (m_whitening)
+	{
+		for (int32_t i = 0; i < num_dim; i++)
+		{
+			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
+			{
+
+				SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
+					"Eigenvalue within a tolerance of %E around 0) at "
+					"dimension %d. Consider reducing its dimension.",
+					m_eigenvalue_zero_tolerance, i + 1)
+
+				transformMatrix.col(i) = MatrixXd::Zero(num_features, 1);
+				continue;
+			}
+
+			transformMatrix.col(i) /= CMath::sqrt(eigenValues[i] * (num_vectors - 1));
+		}
+	}
 }
 
 void CPCA::cleanup()
@@ -380,4 +395,3 @@ float64_t CPCA::get_eigenvalue_zero_tolerance() const
 {
 	return m_eigenvalue_zero_tolerance;
 }
-

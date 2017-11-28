@@ -28,28 +28,28 @@ import utils
 from poim import compute_poims
 
 import shogun
-from shogun.Kernel import GaussianKernel, WeightedDegreePositionStringKernel
-from shogun.Kernel import WeightedDegreeStringKernel
-from shogun.Kernel import LinearKernel, PolyKernel, LocalAlignmentStringKernel
-from shogun.Kernel import LocalityImprovedStringKernel
-from shogun.Kernel import CommWordStringKernel, WeightedCommWordStringKernel, CommUlongStringKernel
-from shogun.Kernel import CombinedKernel
-from shogun.Kernel import SLOWBUTMEMEFFICIENT
-from shogun.Kernel import AvgDiagKernelNormalizer
-from shogun.Features import RealFeatures, Labels, StringCharFeatures, DNA, StringWordFeatures, StringUlongFeatures, PROTEIN
-from shogun.Features import CombinedFeatures
-from shogun.Classifier import LibSVM,GPBTSVM
+from shogun import GaussianKernel, WeightedDegreePositionStringKernel
+from shogun import WeightedDegreeStringKernel
+from shogun import LinearKernel, PolyKernel, LocalAlignmentStringKernel
+from shogun import LocalityImprovedStringKernel
+from shogun import CommWordStringKernel, WeightedCommWordStringKernel, CommUlongStringKernel
+from shogun import CombinedKernel
+from shogun import SLOWBUTMEMEFFICIENT
+from shogun import AvgDiagKernelNormalizer
+from shogun import RealFeatures, Labels, StringCharFeatures, DNA, StringWordFeatures, StringUlongFeatures, PROTEIN
+from shogun import CombinedFeatures
+from shogun import LibSVM,GPBTSVM
 
 DefaultSVM = LibSVM
 try:
-    from shogun.Classifier import SVMLight
+    from shogun import SVMLight
     LinAddSVM = SVMLight
     LinearSVM = SVMLight
 except:
     LinAddSVM = GPBTSVM
     LinearSVM = LibSVM
 
-from shogun.Preprocessor import SortWordString, SortUlongString
+from shogun import SortWordString, SortUlongString
 
 from utils import calcprc, calcroc, accuracy
 from utils import getPartitionedSet, getCurrentSplit

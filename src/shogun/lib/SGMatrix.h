@@ -16,6 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
+#include <shogun/util/iterators.h>
 #include <shogun/lib/SGReferencedData.h>
 
 #include <memory>
@@ -38,6 +39,9 @@ namespace shogun
 template<class T> class SGMatrix : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
+
+	public:
+		typedef RandomIterator<T> iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
@@ -132,7 +136,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Empty destructor */
 		virtual ~SGMatrix();
 
-#ifndef SWIG // SWIG should skip this part
+#ifndef SWIG // SWIG should skip this parts
 		/** Get a column vector
 		 * @param col column index
 		 * @return the column vector for index col
@@ -143,6 +147,28 @@ template<class T> class SGMatrix : public SGReferencedData
 			const int64_t c = col;
 			return &matrix[c*num_rows];
 		}
+
+		/** Given a range of columns (start, end), return a view
+		 * of the matrix from column start to end excluded.
+		 * \warning The returned SGMatrix is non-owning!
+		 * @param col_start column index (inclusive)
+		 * @param col_end column index (excluded)
+		 * @return the submatrix
+		 */
+		SGMatrix<T> submatrix(index_t col_start, index_t col_end) const;
+
+		/** Map a column to a SGVector
+		 * \warning The returned SGVector is non-owning!
+		 * @param col column index
+		 * @return the column vector for index col
+		 */
+		SGVector<T> get_column(index_t col) const;
+
+		/** Copy the content of a vector into a column
+		 * @param col column index
+		 * @param vec vector
+		 */
+		void set_column(index_t col, const SGVector<T> vec);
 
 		/** Get a row vector
 		 *
@@ -197,6 +223,12 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
+		/** Returns an iterator to the first element of the container. */
+		iterator begin() noexcept { return iterator(matrix); }
+
+		/** Returns an iterator to the element following the last element of the container. */
+		iterator end() noexcept { return iterator(matrix + (num_rows * num_cols)); }
+
 #endif // SWIG should skip this part
 
 		/** Get element at index
@@ -240,9 +272,9 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** The size */
-		inline uint64_t size() const
+		inline int64_t size() const
 		{
-			const uint64_t c=num_cols;
+			const int64_t c=num_cols;
 			return num_rows*c;
 		}
 

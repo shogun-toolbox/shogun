@@ -149,13 +149,11 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 
 		/** get dictionary
 		 *
-		 * @param dsize dictionary size will be stored in here
-		 * @param dweights dictionary weights will be stored in here
+		 * @return dictionary weights
 		 */
-		void get_dictionary(int32_t& dsize, float64_t*& dweights)
+		SGVector<float64_t> get_dictionary() const
 		{
-			dsize=dictionary_size;
-			dweights = dictionary_weights;
+			return dictionary_weights;
 		}
 
 		/** compute scoring
@@ -240,11 +238,9 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		void init();
 
 	protected:
-		/** size of dictionary (number of possible strings) */
-		int32_t dictionary_size;
 		/** dictionary weights - array to hold counters for all possible
 		 * strings */
-		float64_t* dictionary_weights;
+		SGVector<float64_t> dictionary_weights;
 
 		/** if sign shall be used */
 		bool use_sign;

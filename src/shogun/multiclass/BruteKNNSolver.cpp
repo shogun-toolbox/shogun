@@ -22,7 +22,7 @@ CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, co
 	SGMatrix<index_t> NN = this->nn;
 
 	//from the indices to the nearest neighbors, compute the class labels
-	for (index_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)
@@ -44,7 +44,7 @@ SGVector<int32_t> CBruteKNNSolver::classify_objects_k(CDistance* knn_distance, c
 	//get the k nearest neighbors of each example
 	SGMatrix<index_t> NN = this->nn;
 
-	for (index_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)

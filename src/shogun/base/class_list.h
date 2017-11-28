@@ -18,12 +18,11 @@
 namespace shogun {
 	class CSGObject;
 
-	/** new shogun serializable
+	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	CSGObject* new_sgserializable(const char* sgserializable_name,
-										EPrimitiveType generic);
+	CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

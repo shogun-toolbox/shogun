@@ -1,8 +1,9 @@
 {
-    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.modshogun;\n$dependencies\n\npublic class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
+    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.shogun;\n$dependencies\n\npublic class $programName {\nstatic {\nSystem.loadLibrary(\"shogun\");\n}\n\npublic static void main(String argv[]) {\nshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
     "Dependencies": {
         "IncludeAllClasses": true, 
         "IncludeEnums": true,
+        "IncludeGlobalFunctions": false,
         "DependencyListElement": "import org.shogun.$typeName;",
         "DependencyListSeparator": "\n"
     },
@@ -75,6 +76,7 @@
         "FloatLiteral": "${number}f",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
+        "GlobalCall": "shogun.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$typeName.$value"
     },

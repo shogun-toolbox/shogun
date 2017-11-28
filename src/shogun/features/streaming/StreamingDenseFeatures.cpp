@@ -10,6 +10,7 @@
  */
 
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
 
@@ -264,7 +265,7 @@ float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
 
 	SGVector<T> other_vector=sf->get_vector();
 
-	return CMath::dot(current_vector.vector, other_vector.vector, current_vector.vlen);
+	return linalg::dot(current_vector, other_vector);
 }
 
 template<class T>
@@ -277,7 +278,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 		SG_ERROR(
 				"Lengths %d and %d not equal while computing dot product!\n", len1, current_vector.vlen);
 
-	return CMath::dot(current_vector.vector, sgvec1.vector, len1);
+	return linalg::dot(current_vector, sgvec1);
 }
 
 template<class T>

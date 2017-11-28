@@ -43,8 +43,12 @@
 #include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 #include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
+
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
+#endif //USE_GPL_SHOGUN
 
 using namespace shogun;
 using namespace internal;
@@ -102,7 +106,11 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	case KSM_MAXIMIZE_MMD:
 	{
 		if (weighted)
+			#ifdef USE_GPL_SHOGUN
 			policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(kernel_mgr, estimator));
+			#else
+			SG_SGPL_ONLY
+			#endif // USE_GPL_SHOGUN
 		else
 			policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(kernel_mgr, estimator));
 	}
@@ -111,9 +119,13 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	{
 		if (weighted)
 		{
+			#ifdef USE_GPL_SHOGUN
 			auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
 			REQUIRE(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!\n");
 			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
+			#else
+			SG_SGPL_ONLY
+			#endif // USE_GPL_SHOGUN
 		}
 		else
 			policy=std::unique_ptr<MaxTestPower>(new MaxTestPower(kernel_mgr, estimator));

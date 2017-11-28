@@ -36,24 +36,23 @@
 namespace shogun
 {
 
-/** @brief Interface for GPU memory libraries */
-template <typename T>
-struct GPUMemoryBase
-{
-	/** Default constructor */
-	GPUMemoryBase()
+	/** @brief Interface for GPU memory libraries */
+	template <typename T>
+	struct GPUMemoryBase
 	{
-	}
+		/** Default constructor */
+		GPUMemoryBase()
+		{
+		}
 
-	/** Clone GPU memory, i.e. vector or matrix
-	 *
-	 * @param GPUMemoryBase structure pointer
-	 * @return A deep-copy of GPUMemoryBase structure pointer
-	 */
-	virtual GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* gpu_ptr,
-		index_t vlen) const = 0;
-};
-
+		/** Clone GPU memory, i.e. vector or matrix
+		 *
+		 * @param gpu_ptr GPUMemoryBase structure pointer
+		 * @return A deep-copy of GPUMemoryBase structure pointer
+		 */
+		virtual GPUMemoryBase<T>*
+		clone_vector(GPUMemoryBase<T>* gpu_ptr, index_t vlen) const = 0;
+	};
 }
 
-#endif //GPU_MEMORY_BASE_H__
+#endif // GPU_MEMORY_BASE_H__

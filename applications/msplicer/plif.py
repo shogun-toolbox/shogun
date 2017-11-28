@@ -10,9 +10,9 @@
 #
 
 from numpy import array
-from shogun.Structure import Plif
-from shogun.Structure import PlifArray
-from shogun.Library import DynamicPlifArray
+from shogun import Plif
+from shogun import PlifArray
+from shogun import DynamicPlifArray
 
 class plif:
 	def __init__(self, model):

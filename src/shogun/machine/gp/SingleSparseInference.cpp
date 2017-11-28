@@ -363,10 +363,8 @@ void CSingleSparseInference::optimize_inducing_features()
 	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
 	cost_fun->set_target(this);
 	bool cleanup=false;
-#ifdef USE_REFERENCE_COUNTING
 	if(this->ref_count()>1)
 		cleanup=true;
-#endif
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT

@@ -19,7 +19,9 @@
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
@@ -29,6 +31,7 @@ using namespace Eigen;
 namespace shogun
 {
 
+#ifdef USE_GPL_SHOGUN
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Wrapper class used for the Brent minimizer */
 class PsiLine : public func_base
@@ -68,6 +71,7 @@ public:
 		return result;
 	}
 };
+#endif //USE_GPL_SHOGUN
 
 class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
@@ -236,6 +240,7 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 		VectorXd dalpha=b-eigen_sW.cwiseProduct(
 			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::exp((m_obj->m_log_scale)*2.0))))-eigen_alpha;
 
+#ifdef USE_GPL_SHOGUN
 		// perform Brent's optimization
 		PsiLine func;
 
@@ -253,6 +258,9 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	}
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
@@ -506,10 +514,8 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 	if (opt)
 	{
 		opt->set_target(this);
-#ifdef USE_REFERENCE_COUNTING
 		if(this->ref_count()>1)
 			cleanup=true;
-#endif
 		opt->minimize();
 		opt->unset_target(cleanup);
 	}
@@ -517,18 +523,19 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 	{
 		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
-
+#ifdef USE_GPL_SHOGUN
 		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
 		cost_fun->set_target(this);
-#ifdef USE_REFERENCE_COUNTING
 		if(this->ref_count()>1)
 			cleanup=true;
-#endif
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function(false);
 		cost_fun->unset_target(cleanup);
 		SG_UNREF(cost_fun);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	}
 	// get mean vector and create eigen representation of it
 	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);

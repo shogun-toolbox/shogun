@@ -179,7 +179,6 @@ public:
 	 */
 	virtual float64_t get_second_moment(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
-
 	/** return whether logit likelihood function supports binary classification
 	 *
 	 * @return true

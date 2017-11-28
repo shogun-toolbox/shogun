@@ -21,10 +21,9 @@
 #include <shogun/io/File.h>
 
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/lapack.h>
 #include <algorithm>
-
-#include <shogun/mathematics/eigen3.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -97,12 +96,28 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
-template<class T>
+template <class T>
+SGVector<T>::SGVector(SGMatrix<T> matrix)
+	: SGReferencedData(matrix), vlen(matrix.num_cols * matrix.num_rows),
+	  gpu_ptr(NULL)
+{
+	ASSERT(!matrix.on_gpu())
+	vector = matrix.data();
+	m_on_gpu.store(false, std::memory_order_release);
+}
+
+template <class T>
 SGVector<T>::SGVector(GPUMemoryBase<T>* gpu_vector, index_t len)
- : SGReferencedData(true), vector(NULL), vlen(len),
-   gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
+	: SGReferencedData(true), vector(NULL), vlen(len),
+	  gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
 {
 	m_on_gpu.store(true, std::memory_order_release);
+}
+
+template <class T>
+SGVector<T>::SGVector(std::initializer_list<T> il):
+	SGVector(il.begin(), il.end())
+{
 }
 
 template<class T>
@@ -722,13 +737,12 @@ float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 template <>
 float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 {
-	float64_t norm = 0.0;
 #ifdef HAVE_LAPACK
-	norm = cblas_dnrm2(n, v, 1);
+	return cblas_dnrm2(n, v, 1);
 #else
-	norm = CMath::sqrt(CMath::dot(v, v, n));
+	SGVector<float64_t> wrapper(const_cast<float64_t*>(v), n, false);
+	return CMath::sqrt(linalg::dot(wrapper, wrapper));
 #endif
-	return norm;
 }
 
 template <>

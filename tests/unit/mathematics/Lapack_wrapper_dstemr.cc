@@ -7,6 +7,8 @@
  * Written (W) 2013 Soumyajit De
  */
 
+#include <gtest/gtest.h>
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_LAPACK
@@ -14,7 +16,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/eigen3.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

@@ -32,7 +32,9 @@
 
 
 #include <shogun/mathematics/Function.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Integration.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -388,8 +390,12 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 		g->set_a(y[i]);
 
 		// evaluate integral on (-inf, inf)
+#ifdef USE_GPL_SHOGUN
 		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	}
 
 	SG_UNREF(h);
@@ -430,15 +436,18 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	// create an object of k(x)=x*N(x|mu,sigma^2)*sigmoid(x)
 	CProductFunction* k=new CProductFunction(l, h);
 	SG_REF(k);
-
+	float64_t Ex=0;
+#ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
 	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
-
+#else
+	SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	SG_UNREF(k);
 
 	return Ex;
@@ -482,18 +491,23 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	CProductFunction* p=new CProductFunction(q, h);
 	SG_REF(p);
 
+	float64_t Ex=0;
+	float64_t Ex2=0;
+#ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
 	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
 
 	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*sigmoid(a*x)dx
-	float64_t Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
+	Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(p, mu[i], CMath::INFTY))/Z;
-
+#else
+	SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	SG_UNREF(k);
 	SG_UNREF(p);
 

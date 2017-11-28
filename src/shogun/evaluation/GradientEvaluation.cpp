@@ -49,7 +49,7 @@ void CGradientEvaluation::update_parameter_dictionary()
 	SG_REF(m_parameter_dictionary);
 }
 
-CEvaluationResult* CGradientEvaluation::evaluate()
+CEvaluationResult* CGradientEvaluation::evaluate_impl()
 {
 	if (parameter_hash_changed())
 		update_parameter_dictionary();
