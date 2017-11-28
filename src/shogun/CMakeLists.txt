@@ -33,7 +33,7 @@ endif()
 OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
 SET(USE_GPL_SHOGUN 0)
 IF (LICENSE_GPL_SHOGUN)
-        SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
+        SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl/shogun)
         IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}")
             SET(USE_GPL_SHOGUN 1)
 
