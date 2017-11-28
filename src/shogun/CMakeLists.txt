@@ -24,7 +24,7 @@ OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 set(INCLUDE_INSTALL_DIR include)
 set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib/external)
 
-if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
+if (MSVC)
   SET(LIBSHOGUN_BUILD_STATIC ON
     CACHE BOOL "Build libshogun static library" FORCE)
 endif()
