@@ -1,5 +1,14 @@
 2017-11-28 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
+	* SHOGUN Release version 6.1.1 (libshogun 18.0, data 0.11, parameter 1)
+
+	* Bugfixes:
+                - Install headers of GPL models when LICENSE_GPL_SHOGUN is enabled [Viktor Gal]
+		- Always turn on LIBSHOGUN_BUILD_STATIC when compiling with MSVC [Viktor Gal]
+		- Fix ipython notebook errors [Viktor Gal]
+
+2017-11-28 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
 	* SHOGUN Release version 6.1.0 (libshogun 18.0, data 0.11, parameter 1)
 
 	* This release is dedicated for Heiko's successful PhD defense
