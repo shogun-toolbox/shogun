@@ -1,3 +1,10 @@
+2017-11-29 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
+	* SHOGUN Release version 6.1.2 (libshogun 18.0, data 0.11, parameter 1)
+
+	* Bugfixes:
+		- Fix installation of examples on WIN32 [Viktor Gal]
+
 2017-11-28 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
 	* SHOGUN Release version 6.1.1 (libshogun 18.0, data 0.11, parameter 1)
