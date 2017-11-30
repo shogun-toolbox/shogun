@@ -1,3 +1,10 @@
+2017-12-05 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
+	* SHOGUN Release version 6.1.3 (libshogun 18.0, data 0.11, parameter 1)
+
+	* Bugfixes:
+		- Port ipython notebooks to be python3 compatible [Viktor Gal]
+
 2017-11-29 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
 	* SHOGUN Release version 6.1.2 (libshogun 18.0, data 0.11, parameter 1)
