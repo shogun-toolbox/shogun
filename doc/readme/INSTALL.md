@@ -85,7 +85,7 @@ Install as
 Shogun is part of [homebrew-science](https://github.com/Homebrew/homebrew-science).
 Install the latest stable version as
 
-    sudo brew install homebrew/science/shogun
+    brew install homebrew/science/shogun
 
 ### Windows <a name="windows"></a>
 Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows)
