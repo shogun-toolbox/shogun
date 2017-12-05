@@ -145,8 +145,13 @@ You need at least 1GB free disk space. If you compile any interface, roughly 4 G
 Shogun uses [CMake](https://cmake.org/) for its build. The general workflow is now explained.
 For further details on testing etc, see [DEVELOPING.md](DEVELOPING.md).
 
-Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest develop code.
-Potentially update submodules
+Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest developer code.
+
+If you are running from behind a proxy server, you might need to add the following before you clone the developer code
+
+    git config --global url.https://github.com/.insteadOf git://github.com/
+
+Cloning the developer code and potentially update submodules
 
     git clone https://github.com/shogun-toolbox/shogun.git
     git submodule update --init
