@@ -23,8 +23,18 @@ LIST(APPEND GENERATOR_DEPENDENCIES ${CMAKE_SOURCE_DIR}/examples/meta/generator/t
 FILE(GLOB TARGET_LANGUAGES ${CMAKE_SOURCE_DIR}/examples/meta/generator/targets/*.json)
 LIST(APPEND GENERATOR_DEPENDENCIES ${TARGET_LANGUAGES})
 
-# parser output
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser_files)
+# parser generation
+set(GENERATED_PARSER_FILES)
+LIST(APPEND GENERATED_PARSER_FILES ${CMAKE_CURRENT_BINARY_DIR}/parser_files/parsetab.py)
+LIST(APPEND GENERATED_PARSER_FILES ${CMAKE_CURRENT_BINARY_DIR}/parser_files/lextab.py)
+add_custom_command(
+    OUTPUT ${GENERATED_PARSER_FILES}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/generator/parse.py
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/parser_files
+    COMMAND ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/generator/parse.py
+        --parser_files_dir ${CMAKE_CURRENT_BINARY_DIR}/parser_files
+        --only_generate_parser_files)
 
 # list of interfaces for which we dont generate meta examples
 SET(DISABLED_INTERFACES INTERFACE_PERL)
@@ -69,7 +79,8 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
         COMMAND ${PYTHON_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py ${GENERATOR_FLAGS}
 		COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
-        DEPENDS ctags ${META_EXAMPLE} ${GENERATOR_DEPENDENCIES})
+        DEPENDS ctags ${META_EXAMPLE} ${GENERATOR_DEPENDENCIES}
+            ${GENERATED_PARSER_FILES})
 
     LIST(APPEND TRANSLATED_META_EXAMPLES ${EXAMPLE_LISTINGS})
 ENDFOREACH()
