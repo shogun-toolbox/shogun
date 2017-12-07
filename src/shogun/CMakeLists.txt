@@ -229,13 +229,13 @@ CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
 CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
 
 CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
+  "#include <cmath>\nint main() { return std::isinf( 0.0 ); }\n"
   HAVE_STD_ISINF )
 CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
+  "#include <cmath>\nint main() { return std::isfinite( 0.0 ); }\n"
   HAVE_STD_ISFINITE )
 CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
+  "#include <cmath>\nint main() { return std::isnan( 0.0 ); }\n"
   HAVE_STD_ISNAN )
 
 ############################ external dependencies
