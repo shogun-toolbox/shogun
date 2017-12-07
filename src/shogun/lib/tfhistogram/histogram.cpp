@@ -18,7 +18,8 @@ limitations under the License.
 #ifdef HAVE_TFLOGGER
 
 #include "histogram.h"
-#include <limits>
+#include <float.h>
+#include <math.h>
 #include <vector>
 #include <algorithm>
 #include <tflogger/summary.pb.h>
@@ -36,8 +37,8 @@ static std::vector<double>* InitDefaultBucketsInner() {
     neg_buckets.push_back(-v);
     v *= 1.1;
   }
-  buckets.push_back(std::numeric_limits<double>::max());
-  neg_buckets.push_back(-std::numeric_limits<double>::max());
+  buckets.push_back(DBL_MAX);
+  neg_buckets.push_back(-DBL_MAX);
   std::reverse(neg_buckets.begin(), neg_buckets.end());
   std::vector<double>* result = new std::vector<double>;
   result->insert(result->end(), neg_buckets.begin(), neg_buckets.end());
@@ -84,7 +85,7 @@ bool Histogram::DecodeFromProto(const HistogramProto& proto) {
 
 void Histogram::Clear() {
   min_ = bucket_limits_[bucket_limits_.size() - 1];
-  max_ = -std::numeric_limits<double>::max();
+  max_ = -DBL_MAX;
   num_ = 0;
   sum_ = 0;
   sum_squares_ = 0;
@@ -177,7 +178,7 @@ std::string Histogram::ToString() const {
     if (buckets_[b] <= 0.0) continue;
     sum += buckets_[b];
     snprintf(buf, sizeof(buf), "[ %10.2g, %10.2g ) %7.0f %7.3f%% %7.3f%% ",
-             ((b == 0) ? -std::numeric_limits<double>::max() : bucket_limits_[b - 1]),  // left
+             ((b == 0) ? -DBL_MAX : bucket_limits_[b - 1]),  // left
              bucket_limits_[b],                              // right
              buckets_[b],                                    // count
              mult * buckets_[b],                             // percentage
@@ -217,7 +218,7 @@ void Histogram::EncodeToProto(HistogramProto* proto,
   }
   if (proto->bucket_size() == 0.0) {
     // It's easier when we restore if we always have at least one bucket entry
-    proto->add_bucket_limit(std::numeric_limits<double>::max());
+    proto->add_bucket_limit(DBL_MAX);
     proto->add_bucket(0.0);
   }
 }
