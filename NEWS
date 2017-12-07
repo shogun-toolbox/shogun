@@ -3,8 +3,8 @@
 	* SHOGUN Release version 6.1.3 (libshogun 18.0, data 0.11, parameter 1)
 
 	* Features:
-                - Drop all <math.h> function calls [Viktor Gal]
-                - Use c++11 std::isnan, std:isfinite, std::isinf [Viktor Gal]
+		- Drop all <math.h> function calls [Viktor Gal]
+		- Use c++11 std::isnan, std:isfinite, std::isinf [Viktor Gal]
 	* Bugfixes:
 		- Port ipython notebooks to be python3 compatible [Viktor Gal]
 		- Use the shogun-static library on Windows when linking the interface library [Viktor Gal]
