@@ -207,9 +207,6 @@ ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 FIND_PACKAGE(CxaDemangle)
 ############################ std lib functions
 include (CheckCXXSymbolExists)
-CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
-CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
-CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
 CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
 CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
 
@@ -218,22 +215,6 @@ IF(UNIX)
   SET(CMAKE_REQUIRED_LIBRARIES m)
 ENDIF()
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
-
-CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
-CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
-CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
-
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isinf( 0.0 ); }\n"
-  HAVE_STD_ISINF )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isfinite( 0.0 ); }\n"
-  HAVE_STD_ISFINITE )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isnan( 0.0 ); }\n"
-  HAVE_STD_ISNAN )
 
 ############################ external dependencies
 

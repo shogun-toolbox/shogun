@@ -46,25 +46,9 @@
 #include <ieeefp.h>
 #endif
 
-/// workaround for log2 being a define on cygwin
-#ifdef log2
-#define cygwin_log2 log2
-#undef log2
-#endif
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-#ifdef _WIN32
-#ifndef isnan
-#define isnan _isnan
-#endif
-
-#ifndef isfinite
-#define isfinite _isfinite
-#endif
-#endif //_WIN32
 
 /* Size of RNG seed */
 #define RNG_SEED_SIZE 256
