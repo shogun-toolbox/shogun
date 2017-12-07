@@ -32,10 +32,7 @@
 #cmakedefine HAVE_ARPREC 1
 #cmakedefine USE_META_INTEGRATION_TESTS
 
-#cmakedefine HAVE_POWL 1
 #cmakedefine HAVE_LGAMMAL 1
-#cmakedefine HAVE_SQRTL 1
-#cmakedefine HAVE_LOG2 1
 #cmakedefine USE_LOGCACHE 1
 #cmakedefine USE_LOGSUMARRAY 1
 
