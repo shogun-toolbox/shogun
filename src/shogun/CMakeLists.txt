@@ -82,6 +82,9 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
+  IF (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
+  ENDIF()
   FOREACH(h ${LIBSHOGUN_HEADERS})
     FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
   ENDFOREACH()
@@ -499,6 +502,9 @@ INSTALL(
   COMPONENT headers
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
   PATTERN "CMakeFiles*" EXCLUDE
+  PATTERN "*.dir" EXCLUDE
+  PATTERN "*Debug*" EXCLUDE
+  PATTERN "*Release*" EXCLUDE
   PATTERN ".settings" EXCLUDE)
 
 IF (LIB_INSTALL_DIR)
@@ -521,7 +527,7 @@ INSTALL(
   INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
-set(CONFIG_PACKAGE_DIR ${SHOGUN_LIB_INSTALL}/cmake/shogun)
+file(TO_CMAKE_PATH ${SHOGUN_LIB_INSTALL}/cmake/shogun CONFIG_PACKAGE_DIR)
 configure_package_config_file(
   ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
   INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun
