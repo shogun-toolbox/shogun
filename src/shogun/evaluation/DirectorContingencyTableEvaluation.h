@@ -41,7 +41,7 @@ public:
 	/** Evaluate */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
 	{
-		CContingencyTableEvaluation::evaluate(predicted, ground_truth);
+		return CContingencyTableEvaluation::evaluate(predicted, ground_truth);
 	}
 
 	/** Computes custom score, not implemented

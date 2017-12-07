@@ -31,7 +31,7 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 #include <cfloat>
 
 #ifndef _WIN32
@@ -46,25 +46,9 @@
 #include <ieeefp.h>
 #endif
 
-/// workaround for log2 being a define on cygwin
-#ifdef log2
-#define cygwin_log2 log2
-#undef log2
-#endif
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-#ifdef _WIN32
-#ifndef isnan
-#define isnan _isnan
-#endif
-
-#ifndef isfinite
-#define isfinite _isfinite
-#endif
-#endif //_WIN32
 
 /* Size of RNG seed */
 #define RNG_SEED_SIZE 256
@@ -381,7 +365,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t round(float64_t d)
 		{
-			return ::floor(d+0.5);
+			return std::floor(d+0.5);
 		}
 
 		/** The value of x rounded downward (as a floating-point value)
@@ -390,7 +374,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t floor(float64_t d)
 		{
-			return ::floor(d);
+			return std::floor(d);
 		}
 
 		/** The value of x rounded upward (as a floating-point value)
@@ -399,7 +383,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t ceil(float64_t d)
 		{
-			return ::ceil(d);
+			return std::ceil(d);
 		}
 
 		/** Signum of input value
@@ -440,34 +424,11 @@ class CMath : public CSGObject
 		 * @param x input value
 		 * @return x^0.5
 		 */
-		static inline float32_t sqrt(float32_t x)
-		{
-			return ::sqrtf(x);
-		}
-
-		/** Computes square-root of the input
-		 * @param x input value
-		 * @return x^0.5
-		 */
-		static inline float64_t sqrt(float64_t x)
-		{
-			return ::sqrt(x);
-		}
-
-		/** Computes square-root of the input
-		 * @param x input value
-		 * @return x^0.5
-		 */
-		static inline floatmax_t sqrt(floatmax_t x)
-		{
-			//fall back to double precision sqrt if sqrtl is not
-			//available
-#ifdef HAVE_SQRTL
-			return ::sqrtl(x);
-#else
-			return ::sqrt(x);
-#endif
-		}
+		template <class T>
+			static inline T sqrt(T x)
+			{
+				return std::sqrt(x);
+			}
 
 		/// x^0.5, x being a complex128_t
 		COMPLEX128_STDMATH(sqrt)
@@ -507,13 +468,7 @@ class CMath : public CSGObject
 		 */
 		static inline floatmax_t powl(floatmax_t x, floatmax_t n)
 		{
-			//fall back to double precision pow if powl is not
-			//available
-#ifdef HAVE_POWL
-			return ::powl((long double) x, (long double) n);
-#else
-			return ::pow((double) x, (double) n);
-#endif
+			return std::pow(x, n);
 		}
 
 		static inline int32_t pow(bool x, int32_t n)
@@ -541,16 +496,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t pow(float64_t x, int32_t n)
 		{
-			if (n>=0)
-			{
-				float64_t result=1;
-				while (n--)
-					result*=x;
-
-				return result;
-			}
-			else
-				return ::pow((double)x, (double)n);
+			return std::pow(x, n);
 		}
 
 		/**
@@ -559,7 +505,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t pow(float64_t x, float64_t n)
 		{
-			return ::pow((double) x, (double) n);
+			return std::pow(x, n);
 		}
 
 		/**
@@ -604,7 +550,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t exp(float64_t x)
 		{
-			return ::exp((double) x);
+			return std::exp(x);
 		}
 
 		/// exp(x), x being a complex128_t
@@ -620,7 +566,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t tan(float64_t x)
 		{
-			return ::tan((double) x);
+			return std::tan(x);
 		}
 
 		/// tan(x), x being a complex128_t
@@ -632,7 +578,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t atan(float64_t x)
 		{
-			return ::atan((double) x);
+			return std::atan(x);
 		}
 
 		/// atan(x), x being a complex128_t not implemented
@@ -645,7 +591,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t atan2(float64_t y, float64_t x)
 		{
-			return ::atan2((double) y, (double) x);
+			return std::atan2(y, x);
 		}
 
 		/// atan2(x), x being a complex128_t not implemented
@@ -657,7 +603,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t tanh(float64_t x)
 		{
-			return ::tanh((double) x);
+			return std::tanh(x);
 		}
 
 		/// tanh(x), x being a complex128_t
@@ -669,7 +615,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t sin(float64_t x)
 		{
-			return ::sin(x);
+			return std::sin(x);
 		}
 
 		/// sin(x), x being a complex128_t
@@ -681,7 +627,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t asin(float64_t x)
 		{
-			return ::asin(x);
+			return std::asin(x);
 		}
 
 		/// asin(x), x being a complex128_t not implemented
@@ -693,7 +639,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t sinh(float64_t x)
 		{
-			return ::sinh(x);
+			return std::sinh(x);
 		}
 
 		/// sinh(x), x being a complex128_t
@@ -705,7 +651,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t cos(float64_t x)
 		{
-			return ::cos(x);
+			return std::cos(x);
 		}
 
 		/// cos(x), x being a complex128_t
@@ -717,7 +663,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t acos(float64_t x)
 		{
-			return ::acos(x);
+			return std::acos(x);
 		}
 
 		/// acos(x), x being a complex128_t not implemented
@@ -729,7 +675,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t cosh(float64_t x)
 		{
-			return ::cosh(x);
+			return std::cosh(x);
 		}
 
 		/// cosh(x), x being a complex128_t
@@ -746,7 +692,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t log10(float64_t v)
 		{
-			return ::log(v)/::log(10.0);
+			return std::log10(v);
 		}
 
 		/// log10(x), x being a complex128_t
@@ -758,11 +704,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t log2(float64_t v)
 		{
-#ifdef HAVE_LOG2
-			return ::log2(v);
-#else
-			return ::log(v)/::log(2.0);
-#endif //HAVE_LOG2
+			return std::log2(v);
 		}
 
 		/** Computes natural logarithm input
@@ -771,7 +713,7 @@ class CMath : public CSGObject
 		 */
 		static inline float64_t log(float64_t v)
 		{
-			return ::log(v);
+			return std::log(v);
 		}
 
 		/// log(x), x being a complex128_t

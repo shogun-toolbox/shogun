@@ -38,7 +38,7 @@ or to get just the library:
 
     conda install -c conda-forge shogun-cpp
 
-These packages include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
+These packages include most of the optional dependencies and are currently available for Linux, MacOS and Windows.
 
 ### Ubuntu ppa <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
@@ -85,11 +85,10 @@ Install as
 Shogun is part of [homebrew-science](https://github.com/Homebrew/homebrew-science).
 Install the latest stable version as
 
-    sudo brew install homebrew/science/shogun
+    brew install homebrew/science/shogun
 
 ### Windows <a name="windows"></a>
-Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows)
-We currently do not support a binary installer.
+Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows). We currently only support binary packages via conda.
 If you are interested in packaging, documenting, or contributing otherwise, please contact us.
 
 ## Docker images <a name="docker"></a>

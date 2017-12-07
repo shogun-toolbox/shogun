@@ -82,6 +82,9 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
+  IF (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
+  ENDIF()
   FOREACH(h ${LIBSHOGUN_HEADERS})
     FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
   ENDFOREACH()
@@ -204,9 +207,6 @@ ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 FIND_PACKAGE(CxaDemangle)
 ############################ std lib functions
 include (CheckCXXSymbolExists)
-CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
-CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
-CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
 CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
 CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
 
@@ -214,26 +214,7 @@ CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
 IF(UNIX)
   SET(CMAKE_REQUIRED_LIBRARIES m)
 ENDIF()
-CHECK_FUNCTION_EXISTS(log2 HAVE_LOG2)
-CHECK_FUNCTION_EXISTS(powl HAVE_POWL)
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
-CHECK_FUNCTION_EXISTS(sqrtl HAVE_SQRTL)
-
-CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
-CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
-CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
-
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
-  HAVE_STD_ISINF )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
-  HAVE_STD_ISFINITE )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
-  HAVE_STD_ISNAN )
 
 ############################ external dependencies
 
@@ -499,6 +480,9 @@ INSTALL(
   COMPONENT headers
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
   PATTERN "CMakeFiles*" EXCLUDE
+  PATTERN "*.dir" EXCLUDE
+  PATTERN "*Debug*" EXCLUDE
+  PATTERN "*Release*" EXCLUDE
   PATTERN ".settings" EXCLUDE)
 
 IF (LIB_INSTALL_DIR)
@@ -517,11 +501,12 @@ INSTALL(
   TARGETS ${INSTALL_TARGETS}
   EXPORT ShogunTargets
   ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
+  RUNTIME DESTINATION ${SHOGUN_LIB_INSTALL}
   LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
   INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
-set(CONFIG_PACKAGE_DIR ${SHOGUN_LIB_INSTALL}/cmake/shogun)
+file(TO_CMAKE_PATH ${SHOGUN_LIB_INSTALL}/cmake/shogun CONFIG_PACKAGE_DIR)
 configure_package_config_file(
   ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
   INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun

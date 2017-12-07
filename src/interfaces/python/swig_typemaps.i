@@ -352,7 +352,11 @@ template <class type>
 static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecode)
 {
 	int n = 1;
+#ifdef _MSC_VER
+    npy_intp* dims = new npy_intp[sg_array.num_dims];
+#else
 	npy_intp dims[sg_array.num_dims];
+#endif
 	for (int i = 0; i < sg_array.num_dims; i++)
 	{
 		dims[i] = (npy_intp)sg_array.dims[i];
@@ -368,6 +372,9 @@ static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecod
 		    descr, sg_array.num_dims, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
 		((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
 	}
+#ifdef _MSC_VER
+    delete[] dims;
+#endif
 
 	return descr!=NULL;
 }
