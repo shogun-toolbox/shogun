@@ -100,13 +100,13 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Construct SGVector from InputIterator list */
 		template<typename InputIt>
-		SGVector(InputIt begin, InputIt end):
+		SGVector(InputIt beginIt, InputIt endIt):
 			SGReferencedData(true),
-			vlen(std::distance(begin, end)),
+			vlen(std::distance(beginIt, endIt)),
 			gpu_ptr(nullptr)
 		{
 			vector = SG_MALLOC(T, vlen);
-			std::copy(begin, end, vector);
+			std::copy(beginIt, endIt, vector);
 			m_on_gpu.store(false, std::memory_order_release);
 		}
 
