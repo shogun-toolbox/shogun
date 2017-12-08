@@ -67,11 +67,11 @@ TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
 %typemap(out) shogun::SGVector<sg_type>
 {
     sg_type* vec = $1.vector;
-    int32_t len = $1.vlen;
+    auto len = $1.vlen;
 
     Rf_protect( $result = Rf_allocVector(r_type, len) );
 
-    for (int32_t i=0; i<len; i++)
+    for (auto i=0; i<len; i++)
         r_cast($result)[i]=(if_type) vec[i];
 
     Rf_unprotect(1);
@@ -124,14 +124,14 @@ TYPEMAP_IN_SGMATRIX(REALSXP, REAL, float64_t, "Double Precision")
 %typemap(out) shogun::SGMatrix<sg_type>
 {
     sg_type* matrix = $1.matrix;
-    int32_t num_feat = $1.num_rows;
-    int32_t num_vec = $1.num_cols;
+    auto num_feat = $1.num_rows;
+    auto num_vec = $1.num_cols;
 
     Rf_protect( $result = Rf_allocMatrix(r_type, num_feat, num_vec) );
 
-    for (int32_t i=0; i<num_vec; i++)
+    for (auto i=0; i<num_vec; i++)
     {
-        for (int32_t j=0; j<num_feat; j++)
+        for (auto j=0; j<num_feat; j++)
             r_cast($result)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];
     }
 
@@ -159,8 +159,8 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 %define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
 %typemap(in) shogun::SGStringList<sg_type>
 {
-    int32_t max_len=0;
-    int32_t num_strings=0;
+    auto max_len=0;
+    auto num_strings=0;
     shogun::SGString<sg_type>* strs=NULL;
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
@@ -173,11 +173,11 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
     ASSERT(num_strings>=1);
     strs=SG_MALLOC(shogun::SGString<sg_type>, num_strings);
 
-    for (int32_t i=0; i<num_strings; i++)
+    for (auto i=0; i<num_strings; i++)
     {
         SEXPREC* s= STRING_ELT($input,i);
         sg_type* c= (sg_type*) if_type(s);
-        int32_t len=LENGTH(s);
+        auto len=LENGTH(s);
 
         if (len>0)
         {
