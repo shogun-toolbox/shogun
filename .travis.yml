@@ -69,6 +69,12 @@ matrix:
 #        - CMAKE_OPTIONS="-DScala=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
 #        - CC=clang
 #        - CXX=clang++
+  allow_failures:
+    - compiler: gcc
+      services: docker
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DENABLE_CCACHE=OFF"
+        - CODE_COVERAGE=1
 before_install:
   - docker pull shogun/shogun-dev
   - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/travis.env.in > travis.env
