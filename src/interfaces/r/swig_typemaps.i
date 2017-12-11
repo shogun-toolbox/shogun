@@ -42,6 +42,9 @@ extern "C" {
     $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
 }
 
+%typemap("rtypecheck") shogun::SGVector<sg_type>
+    %{ is.numeric($arg) %}
+
 %typemap(in) shogun::SGVector<sg_type>
 {
     SEXP rvec=$input;
@@ -100,6 +103,9 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint16_t, int, "Word")
 
     $1 = (TYPEOF($input) == r_type) ? 1 : 0;
 }
+
+%typemap("rtypecheck") shogun::SGMatrix<sg_type>
+    %{ is.numeric($arg) %}
 
 %typemap(in) shogun::SGMatrix<sg_type>
 {
