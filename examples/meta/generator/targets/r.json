@@ -27,7 +27,7 @@
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
         "MethodCall": "$object$$$method($arguments)",
-        "StaticCall": "$typeName$$$method($arguments)",
+        "StaticCall": "${typeName}_$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"\"$value\""
