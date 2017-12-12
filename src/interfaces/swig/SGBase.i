@@ -319,9 +319,7 @@ namespace std {
     %template(StringStdVector) vector<string>;
 }
 
-#ifndef SWIGR
 %include <shogun/base/init.h>
-#endif
 %include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
