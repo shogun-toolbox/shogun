@@ -91,14 +91,14 @@ IF (LAPACK_FOUND)
       ENDIF()
     ENDIF()
 
-    IF(FOUND_CBLAS_DGEMV AND NOT HAVE_ATLAS )
+    IF(FOUND_CBLAS_DGEMV AND NOT HAVE_ATLAS)
       #check is detected BLAS/LAPACK is OpenBLAS by looking for an OpenBLAS specific function 
-      check_library_exists("${LAPACK_LIBRARIES}" openblas_set_num_threads "" FOUND_OPENBLAS)
-      IF(FOUND_OPENBLAS)
+      check_library_exists("${LAPACK_LIBRARIES}" openblas_set_num_threads "" OpenBLAS_FOUND)
+      IF(OpenBLAS_FOUND)
         #check if cblas.h exists
         FIND_PATH(CBLAS_INCLUDE_DIR cblas.h)
           IF(NOT CBLAS_INCLUDE_DIR)
-	    MESSAGE(STATUS "Found OPENBLAS, but not cblas.h. Make sure that cblas headers are available in order to use OPENBLAS as BLAS/Lapack backend")
+	    MESSAGE(STATUS "Make sure that cblas.h header is available within the header search path in order to use OpenBLAS as BLAS/Lapack backend")
 	    UNSET(LAPACK_FOUND CACHE)
 	    UNSET(LAPACK_LIBRARIES)
 	    UNSET(HAVE_LAPACK)
