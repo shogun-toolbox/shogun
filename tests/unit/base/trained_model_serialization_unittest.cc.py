@@ -16,11 +16,13 @@ IGNORE = [
     'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
     'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
     'CLatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear',
+    'CLinearLatentMachine',
 
     # KernelMachines
     'CDomainAdaptationSVM', 'CMKLRegression',
     'CMKLClassification', 'CMKLOneClass',
     'CSVM', # doesn't implement a solver
+    'CMKL',
 
     # LinearMulticlassMachines
     'CDomainAdaptationMulticlassLibLinear',
