@@ -126,8 +126,7 @@ TEST_F(TrainedModelSerializationTest, {{class}})
 	machine->set_features(train_feats);
 	machine->set_labels(train_labels);
 
-	bool train_success=machine->train();
-	ASSERT_TRUE(train_success);
+	machine->train();
 
 	/* to avoid serialization of the data */
 //	machine->set_features(NULL);
@@ -163,8 +162,7 @@ TEST_F(TrainedModelSerializationTest, {{test_name}})
 	machine->set_kernel(kernel);
 	machine->set_labels(train_labels);
 
-	bool train_success=machine->train();
-	ASSERT_TRUE(train_success);
+	machine->train();
 
 	auto predictions=Some<CLabels>(machine->apply(test_feats));
 
