@@ -122,7 +122,7 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	{
 		while (m_feats->get_next_example())
 		{
-			train_example(m_feats->get_vector(), static_cast<int32_t>(m_feats->get_label()));
+			train_example(m_feats, static_cast<int32_t>(m_feats->get_label()));
 			m_feats->release_example();
 		}
 
@@ -149,7 +149,7 @@ void CConditionalProbabilityTree::print_tree()
 		printf("Empty Tree\n");
 }
 
-void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t label)
+void CConditionalProbabilityTree::train_example(CStreamingDenseFeatures<float32_t>* ex, int32_t label)
 {
 	if (m_root == NULL)
 	{
@@ -170,7 +170,7 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 		while (node->left() != NULL)
 		{
 			// not a leaf
-			bool is_left = which_subtree(node, ex);
+			bool is_left = which_subtree(node, ex->get_vector());
 			float64_t node_label;
 			if (is_left)
 				node_label = 0;
@@ -206,7 +206,7 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 	}
 }
 
-void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, bnode_t *node)
+void CConditionalProbabilityTree::train_path(CStreamingDenseFeatures<float32_t>* ex, bnode_t *node)
 {
 	float64_t node_label = 0;
 	train_node(ex, node_label, node);
@@ -225,12 +225,12 @@ void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, bnode_t *no
 	}
 }
 
-void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, bnode_t *node)
+void CConditionalProbabilityTree::train_node(CStreamingDenseFeatures<float32_t>* ex, float64_t label, bnode_t *node)
 {
 	REQUIRE(node, "Node must not be NULL\n");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
 	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
-	mch->train_one(ex, label);
+	mch->train_example(ex, label);
 	SG_UNREF(mch);
 }
 
@@ -245,11 +245,11 @@ float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnod
 	return 1.0/(1+CMath::exp(-pred));
 }
 
-int32_t CConditionalProbabilityTree::create_machine(SGVector<float32_t> ex)
+int32_t CConditionalProbabilityTree::create_machine(CStreamingDenseFeatures<float32_t>* ex)
 {
 	COnlineLibLinear *mch = new COnlineLibLinear();
 	mch->start_train();
-	mch->train_one(ex, 0);
+	mch->train_example(ex, 0);
 	m_machines->push_back(mch);
 	return m_machines->get_num_elements()-1;
 }

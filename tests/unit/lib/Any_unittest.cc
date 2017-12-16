@@ -28,9 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <stdexcept>
 

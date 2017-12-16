@@ -15,6 +15,8 @@
 #include <shogun/loss/LossFunction.h>
 #include <shogun/structure/StructuredModel.h>
 
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
 using namespace shogun;
 
 CStructuredOutputMachine::CStructuredOutputMachine()
@@ -94,7 +96,7 @@ CLossFunction* CStructuredOutputMachine::get_surrogate_loss() const
 	return m_surrogate_loss;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	int32_t dim = m_model->get_dim();
 
@@ -113,16 +115,15 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgra
 	SG_UNREF(features);
 
 	float64_t R = 0.0;
-	for (int32_t i=0; i<dim; i++)
-		subgrad[i] = 0;
+	linalg::zero(subgrad);
 
 	for (int32_t i=from; i<to; i++)
 	{
-		CResultSet* result = m_model->argmax(SGVector<float64_t>(W,dim,false), i, true);
+		CResultSet* result = m_model->argmax(SGVector<float64_t>(W.vector,dim,false), i, true);
 		SGVector<float64_t> psi_pred = result->psi_pred;
 		SGVector<float64_t> psi_truth = result->psi_truth;
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad.vector, 1.0, psi_pred.vector, dim);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad.vector, -1.0, psi_truth.vector, dim);
 		R += result->score;
 		SG_UNREF(result);
 	}
@@ -130,31 +131,31 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgra
 	return R;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_customized_formulation(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+float64_t CStructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_customized_formulation() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk(float64_t* subgrad, float64_t* W,
+float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
 		TMultipleCPinfo* info, EStructRiskType rtype)
 {
 	float64_t ret = 0.0;

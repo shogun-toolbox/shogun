@@ -333,7 +333,7 @@ IF(COMPILE_INTERFACE)
 ENDIF(COMPILE_INTERFACE)
 
 # detect word size
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT (DARWIN OR WIN32))
 	SET(SWIGWORDSIZE64 TRUE)
 ENDIF()
 
@@ -405,6 +405,9 @@ IF (LIBSHOGUN)
 	MergeCFLAGS()
 	add_subdirectory(${CMAKE_SOURCE_DIR}/src/shogun)
 	add_library(shogun::shogun ALIAS shogun)
+	if(LIBSHOGUN_BUILD_STATIC)
+		add_library(shogun::shogun-static ALIAS shogun-static)
+	endif()
 	set(shogun_INCLUDE_DIR ${CMAKE_BINARY_DIR}/src)
 ELSE()
 	find_package(Shogun ${VERSION} CONFIG REQUIRED)

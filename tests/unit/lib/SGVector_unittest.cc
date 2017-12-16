@@ -1,10 +1,10 @@
+#include <gtest/gtest.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/mathematics/eigen3.h>
-
 
 using namespace shogun;
 
@@ -36,6 +36,21 @@ TEST(SGVectorTest,ctor)
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(b[i], c[i]);
 
+	/* test iterator */
+	std::vector<float64_t> src {1.0, 2.0, 3.0, 4.0, 5.0};
+	SGVector<float64_t> d(src.begin(), src.end());
+	EXPECT_EQ(src.size(), d.vlen);
+	for (int i=0; i < c.vlen; ++i)
+		EXPECT_EQ(b[i], c[i]);
+
+	/* test initializer list */
+	SGVector<float64_t> e {1.0, 2.0, 3.0, 4.0, 5.0};
+	EXPECT_EQ(5, e.vlen);
+	EXPECT_EQ(1.0, e[0]);
+	EXPECT_EQ(2.0, e[1]);
+	EXPECT_EQ(3.0, e[2]);
+	EXPECT_EQ(4.0, e[3]);
+	EXPECT_EQ(5.0, e[4]);
 }
 
 TEST(SGVectorTest, ctor_from_matrix)
@@ -103,7 +118,7 @@ TEST(SGVectorTest,norm)
 	a.random(-50.0, 1024.0);
 
 	/* check l-2 norm */
-	float64_t l2_norm = CMath::sqrt(CMath::dot(a.vector,a.vector, a.vlen));
+	float64_t l2_norm = CMath::sqrt(linalg::dot(a,a));
 	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
 
 	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);
@@ -364,4 +379,32 @@ TEST(SGVectorTest, resize_vector_larger)
 	// check zero padding of added elements
 	for (index_t i=len; i<new_len; i++)
 		EXPECT_EQ(m[i], 0);
+}
+
+TEST(SGVectorTest,iterator)
+{
+	SGVector<float64_t> t {1.0, 2.0, 3.0, 4.0, 5.0};
+
+	auto begin = t.begin();
+	auto end = t.end();
+	EXPECT_EQ(t.vlen, std::distance(begin, end));
+	EXPECT_EQ(1.0, *begin++);
+	++begin;
+	EXPECT_EQ(3.0, *begin);
+	--begin;
+	EXPECT_EQ(2.0, *begin);
+	EXPECT_TRUE(begin != end);
+	begin += 2;
+	EXPECT_EQ(4.0, *begin);
+	begin -= 1;
+	EXPECT_EQ(3.0, *begin);
+	EXPECT_EQ(4.0, begin[1]);
+	auto new_begin = begin + 2;
+	EXPECT_EQ(5.0, *new_begin);
+	EXPECT_TRUE(++new_begin == end);
+
+	// range-based loop should work as well
+	auto index = 0;
+	for (auto v: t)
+		EXPECT_EQ(t[index++], v);
 }

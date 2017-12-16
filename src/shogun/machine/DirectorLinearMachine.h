@@ -73,7 +73,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		 */
 		virtual CDotFeatures* get_features()
 		{
-			CLinearMachine::get_features();
+			return CLinearMachine::get_features();
 		}
 
 		/** apply machine to data

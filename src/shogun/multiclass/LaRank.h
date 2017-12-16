@@ -95,7 +95,7 @@ namespace shogun
 	class LaRankOutput
 	{
 		public:
-			LaRankOutput () : beta(NULL), g(NULL), kernel(NULL), l(0)
+			LaRankOutput () : g(NULL), kernel(NULL), l(0)
 		{
 		}
 			virtual ~LaRankOutput ()
@@ -149,9 +149,9 @@ namespace shogun
 			float64_t getBeta (int32_t x_id);
 
 			//
-			inline float32_t* getBetas () const
+			inline SGVector<float32_t> getBetas () const
 			{
-				return beta;
+				return m_beta;
 			}
 
 			//
@@ -166,7 +166,7 @@ namespace shogun
 		private:
 			// the solution of LaRank relative to the actual class is stored in
 			// this parameters
-			float32_t* beta;		// Beta coefficiens
+			SGVector<float32_t> m_beta;		// Beta coefficiens
 			float32_t* g;		// Strored gradient derivatives
 			larank_kcache_t *kernel;	// Cache for kernel values
 			int32_t l;			// Number of support vectors
@@ -301,7 +301,7 @@ namespace shogun
 
 
 	/** @brief the LaRank multiclass SVM machine
-	 This implementation uses LaRank algorithm from 
+	 This implementation uses LaRank algorithm from
 	 Bordes, Antoine, et al., 2007.
 	 "Solving multiclass support vector machines with LaRank."
 

@@ -7,8 +7,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
 #include <gtest/gtest.h>
+
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_ARPREC
 #include <arprec/mp_real.h>

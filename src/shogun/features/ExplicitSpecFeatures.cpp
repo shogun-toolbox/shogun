@@ -10,6 +10,7 @@
 
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -68,21 +69,21 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->num_strings)
-	float64_t* vec1=k_spectrum[vec_idx1];
-	float64_t* vec2=sf->k_spectrum[vec_idx2];
+	SGVector<float64_t> vec1(k_spectrum[vec_idx1], spec_size, false);
+	SGVector<float64_t> vec2(sf->k_spectrum[vec_idx2], spec_size, false);
 
-	return CMath::dot(vec1, vec2, spec_size);
+	return linalg::dot(vec1, vec2);
 }
 
 float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
-	float64_t* vec1=k_spectrum[vec_idx1];
+	SGVector<float64_t> vec1(k_spectrum[vec_idx1], spec_size, false);
+	SGVector<float64_t> vec2_wrapper(const_cast<float64_t*>(vec2), vec2_len, false);
 	float64_t result=0;
 
-	for (int32_t i=0; i<spec_size; i++)
-		result+=vec1[i]*vec2[i];
+	linalg::dot(vec1, vec2_wrapper);
 
 	return result;
 }

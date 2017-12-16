@@ -33,12 +33,12 @@ The base shogun library and its Python interface are available through the conda
 To install both:
 
     conda install -c conda-forge shogun
-    
+
 or to get just the library:
 
     conda install -c conda-forge shogun-cpp
 
-These packages include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
+These packages include most of the optional dependencies and are currently available for Linux, MacOS and Windows.
 
 ### Ubuntu ppa <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
@@ -51,7 +51,7 @@ Add this to your system as
 
 Then, install as
 
-    sudo apt-get install libshogun17
+    sudo apt-get install libshogun18
 
 The Python (2) bindings can be installed as
 
@@ -60,19 +60,19 @@ The Python (2) bindings can be installed as
 In addition to the latest stable release, we offer [nightly builds](https://launchpad.net/~shogun-toolbox/+archive/ubuntu/nightly) of our development branch.
 
 ### Debian <a name="debian"></a>
-Latest packages for Debian jessie are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
+Latest packages for Debian `jessie` and `stretch` are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
 We provide both the stable and nightly packages, currently only for amd64 architecture.
 In order to add the stable packages to your system, simply run the following commands
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3DD2174ACAB30365
-    echo "deb http://apt.shogun.ml/ jessie main" | sudo tee /etc/apt/sources.list.d/shogun-toolbox.list  > /dev/null
+    echo "deb http://apt.shogun.ml/ stretch main" | sudo tee /etc/apt/sources.list.d/shogun-toolbox.list  > /dev/null
     sudo apt-get update
 
 After this just simply install the shogun library
 
-    sudo apt-get install libshogun17
+    sudo apt-get install libshogun18
 
-The nightly packages are available in the `nightly` component, i.e. `deb http://apt.shogun.ml/ jessie nightly`
+The nightly packages are available in the `nightly` component, i.e. `deb http://apt.shogun.ml/ stretch nightly`
 
 ### Fedora <a name="fedora"></a>
 Shogun is part of [Fedora 25](https://admin.fedoraproject.org/pkgdb/package/rpms/shogun/).
@@ -85,11 +85,10 @@ Install as
 Shogun is part of [homebrew-science](https://github.com/Homebrew/homebrew-science).
 Install the latest stable version as
 
-    sudo brew install homebrew/science/shogun
+    brew install homebrew/science/shogun
 
 ### Windows <a name="windows"></a>
-Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows)
-We currently do not support a binary installer.
+Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows). We currently only support binary packages via conda.
 If you are interested in packaging, documenting, or contributing otherwise, please contact us.
 
 ## Docker images <a name="docker"></a>
@@ -99,11 +98,9 @@ You can run Shogun in [our own cloud](cloud.shogun.ml) or set up your own using 
     sudo docker pull shogun/shogun:master
     sudo docker run -it shogun/shogun:master bash
 
-We offer images for both the latest release and nightly development builds.
+The docker image follows both the `master` and the `develop` branch of the repository, just specify the desired branch name as tag for the image. For example in order to use the develop version of shogun simply pull the `shogun/shogun:develop` docker image.
 
-For the [developer version](https://hub.docker.com/r/shogun/shogun-dev/), replace `shogun/shogun:master` with `shogun/shogun-dev`.
-
-Check the "details" tab before downloading to check if the latest build was successful (otherwise you might run into errors when running the docker image)."
+There's an [SDK docker image](https://hub.docker.com/r/shogun/shogun-dev/) for shogun development as well, which we use to run our [Travis CI](https://travis-ci.org/shogun-toolbox/shogun/) jobs.
 
 Sometimes mounting a local folder into the docker image is useful.
 You can do this via passing an additional option
@@ -279,7 +276,7 @@ Please see our [AppVeyor](https://ci.appveyor.com/project/vigsterkr/shogun) buil
 It is recommended to use "Visual Studio 14 2015" or "MSBuild".
 You will need to adjust all path names to the Windows style, e.g.
 
-    git clone https://github.com/shogun-toolbox/shogun.git C:\projects\shogun 
+    git clone https://github.com/shogun-toolbox/shogun.git C:\projects\shogun
     git submodule -q update --init
     cd C:\projects\shogun
     md build && cd build

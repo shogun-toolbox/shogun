@@ -19,6 +19,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <algorithm>
 #include <string.h>
 
@@ -503,8 +504,10 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 
 	ST* vec1 = get_feature_vector(vec_idx1, len1, free1);
 	ST* vec2 = sf->get_feature_vector(vec_idx2, len2, free2);
+	SGVector<ST> sg_vec1(vec1, len1, false);
+	SGVector<ST> sg_vec2(vec2, len2, false);
 
-	float64_t result = CMath::dot(vec1, vec2, len1);
+	float64_t result = linalg::dot(sg_vec1, sg_vec2);
 
 	free_feature_vector(vec1, vec_idx1, free1);
 	sf->free_feature_vector(vec2, vec_idx2, free2);
@@ -942,9 +945,11 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	int32_t vlen;
 	bool vfree;
 	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
+	SGVector<float64_t> sg_vec1(vec1, vlen, false);
 
 	ASSERT(vlen == num_features)
-	float64_t result = CMath::dot(vec1, vec2, num_features);
+	SGVector<float64_t> tmp(const_cast<float64_t*>(vec2), vec2_len, false);
+	float64_t result = linalg::dot(sg_vec1, tmp);
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 

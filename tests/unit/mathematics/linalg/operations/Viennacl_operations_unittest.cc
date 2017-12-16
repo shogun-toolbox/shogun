@@ -1,9 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-#include <gtest/gtest.h>
 
 #ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>

@@ -122,14 +122,6 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
 
-		/** sets multiclass confidences and labels from confidence score matrix
-		 *
-		 * @param confidences matrix that contains scores for each class and
-		 * sample
-		 */
-		void
-		set_multiclass_confidences_from_matrix(SGMatrix<float64_t> confidences);
-
 		/** allocates matrix to store confidences. should always
 		 * be called before setting confidences with
 		 * @ref set_multiclass_confidences
@@ -143,6 +135,12 @@ class CMulticlassLabels : public CDenseLabels
 #ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy();
 #endif
+		/**
+		 * Cast a generic label object to a multiclass one
+		 * @param labels generic CLabels instance
+		 * @return the casted pointer (already SG_REF'ed)
+		 */
+		static CMulticlassLabels* obtain_from_generic(CLabels* labels);
 
 	private:
 		/** initialises and register parameters */

@@ -42,7 +42,7 @@
 
 namespace shogun
 {
-
+#undef I
 #ifdef __cplusplus
 extern "C" {
 #endif

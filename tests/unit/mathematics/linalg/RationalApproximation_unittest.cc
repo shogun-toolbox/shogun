@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -28,7 +29,6 @@
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 #include <unsupported/Eigen/MatrixFunctions>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

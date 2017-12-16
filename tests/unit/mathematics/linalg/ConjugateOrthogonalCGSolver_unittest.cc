@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -15,7 +16,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/ConjugateOrthogonalCGSolver.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

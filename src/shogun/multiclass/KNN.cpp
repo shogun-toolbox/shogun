@@ -19,6 +19,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/KNN.h>
 
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
 //#define DEBUG_KNN
 
 using namespace shogun;
@@ -91,17 +93,11 @@ bool CKNN::train_machine(CFeatures* data)
 	m_train_labels=lab.clone();
 	ASSERT(m_train_labels.vlen>0)
 
-	int32_t max_class=m_train_labels[0];
-	int32_t min_class=m_train_labels[0];
+	// find minimal and maximal class
+	auto min_class = CMath::min(m_train_labels.vector, m_train_labels.vlen);
+	auto max_class = CMath::max(m_train_labels.vector, m_train_labels.vlen);
 
-	for (int32_t i=1; i<m_train_labels.vlen; i++)
-	{
-		max_class=CMath::max(max_class, m_train_labels[i]);
-		min_class=CMath::min(min_class, m_train_labels[i]);
-	}
-
-	for (int32_t i=0; i<m_train_labels.vlen; i++)
-		m_train_labels[i]-=min_class;
+	linalg::add_scalar(m_train_labels, -min_class);
 
 	m_min_label=min_class;
 	m_num_classes=max_class-min_class+1;
@@ -258,7 +254,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	//histogram of classes and returned output
 	SGVector<int32_t> classes(m_num_classes);
-	
+
 	SG_INFO("%d test examples\n", num_lab)
 
 	init_solver(m_knn_solver);

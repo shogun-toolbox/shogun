@@ -24,7 +24,7 @@ OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 set(INCLUDE_INSTALL_DIR include)
 set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib/external)
 
-if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
+if (MSVC)
   SET(LIBSHOGUN_BUILD_STATIC ON
     CACHE BOOL "Build libshogun static library" FORCE)
 endif()
@@ -34,7 +34,7 @@ OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in b
 SET(USE_GPL_SHOGUN 0)
 IF (LICENSE_GPL_SHOGUN)
         SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
-        IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}")
+        IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}/shogun")
             SET(USE_GPL_SHOGUN 1)
 
             FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
@@ -82,27 +82,20 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
-  IF(MSVC)
-    FOREACH(h ${LIBSHOGUN_HEADERS})
-      FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
-    ENDFOREACH()
-
-    ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating ${generated_cpp}"
-    )
-  ELSE()
-    ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${LIBSHOGUN_HEADERS}
-        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating ${generated_cpp}"
-    )
+  IF (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
+    FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt)
   ENDIF()
+  FOREACH(h ${LIBSHOGUN_HEADERS})
+    FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
+  ENDFOREACH()
+
+  ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
+      COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+      DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Generating ${generated_cpp}"
+  )
 
   ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
   add_dependencies(libshogun ${generated_target})
@@ -153,6 +146,15 @@ endif()
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
+  target_include_directories(shogun-static PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+    $<INSTALL_INTERFACE:include/shogun>
+  )
+  IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  ENDIF()
+
   if(MSVC)
     target_link_libraries(shogun-static PUBLIC winmm.lib)
   endif()
@@ -205,9 +207,6 @@ ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 FIND_PACKAGE(CxaDemangle)
 ############################ std lib functions
 include (CheckCXXSymbolExists)
-CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
-CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
-CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
 CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
 CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
 
@@ -215,26 +214,7 @@ CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
 IF(UNIX)
   SET(CMAKE_REQUIRED_LIBRARIES m)
 ENDIF()
-CHECK_FUNCTION_EXISTS(log2 HAVE_LOG2)
-CHECK_FUNCTION_EXISTS(powl HAVE_POWL)
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
-CHECK_FUNCTION_EXISTS(sqrtl HAVE_SQRTL)
-
-CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
-CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
-CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
-
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
-  HAVE_STD_ISINF )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
-  HAVE_STD_ISFINITE )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
-  HAVE_STD_ISNAN )
 
 ############################ external dependencies
 
@@ -354,10 +334,14 @@ SHOGUN_DEPENDENCIES(
   SCOPE PUBLIC
   CONFIG_FLAG HAVE_XML)
 
-SHOGUN_DEPENDENCIES(
-  LIBRARY HDF5
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_HDF5)
+if (NOT WIN32)
+  # FIXME: HDF5 linking on WIN32 is broken.
+  # at least with the hdf5 supplied in anaconda
+  SHOGUN_DEPENDENCIES(
+    LIBRARY HDF5
+    SCOPE PUBLIC
+    CONFIG_FLAG HAVE_HDF5)
+endif ()
 
 SHOGUN_DEPENDENCIES(
   LIBRARY CURL
@@ -485,12 +469,20 @@ ENDIF()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h @ONLY)
 
+LIST(APPEND INCLUDE_HEADERS_DIR_LIST ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+IF (LICENSE_GPL_SHOGUN)
+  LIST(APPEND INCLUDE_HEADERS_DIR_LIST ${SHOGUN_GPL_INCLUDE_DIR}/shogun)
+ENDIF()
+
 INSTALL(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+  DIRECTORY ${INCLUDE_HEADERS_DIR_LIST}
   DESTINATION ${INCLUDE_INSTALL_DIR}
   COMPONENT headers
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
   PATTERN "CMakeFiles*" EXCLUDE
+  PATTERN "*.dir" EXCLUDE
+  PATTERN "*Debug*" EXCLUDE
+  PATTERN "*Release*" EXCLUDE
   PATTERN ".settings" EXCLUDE)
 
 IF (LIB_INSTALL_DIR)
@@ -509,11 +501,12 @@ INSTALL(
   TARGETS ${INSTALL_TARGETS}
   EXPORT ShogunTargets
   ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
+  RUNTIME DESTINATION ${SHOGUN_LIB_INSTALL}
   LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
   INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
-set(CONFIG_PACKAGE_DIR ${SHOGUN_LIB_INSTALL}/cmake/shogun)
+file(TO_CMAKE_PATH ${SHOGUN_LIB_INSTALL}/cmake/shogun CONFIG_PACKAGE_DIR)
 configure_package_config_file(
   ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
   INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun

@@ -16,6 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
+#include <shogun/util/iterators.h>
 #include <shogun/lib/SGReferencedData.h>
 
 #include <memory>
@@ -38,6 +39,9 @@ namespace shogun
 template<class T> class SGMatrix : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
+
+	public:
+		typedef RandomIterator<T> iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
@@ -218,6 +222,12 @@ template<class T> class SGMatrix : public SGReferencedData
 			assert_on_cpu();
 			return matrix[index];
 		}
+
+		/** Returns an iterator to the first element of the container. */
+		iterator begin() noexcept { return iterator(matrix); }
+
+		/** Returns an iterator to the element following the last element of the container. */
+		iterator end() noexcept { return iterator(matrix + (num_rows * num_cols)); }
 
 #endif // SWIG should skip this part
 

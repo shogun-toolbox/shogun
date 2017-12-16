@@ -1,6 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGNDArray.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

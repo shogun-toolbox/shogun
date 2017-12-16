@@ -68,19 +68,19 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	    apply_outputs_without_combination(data);
 
 	REQUIRE(m_labels, "Labels not set.\n");
-
-	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
 	REQUIRE(
-	    labels_multiclass, "Labels (%s) are not compatible with multiclass.\n",
+	    m_labels->get_label_type() == LT_MULTICLASS,
+	    "Labels (%s) are not compatible with multiclass.\n",
 	    m_labels->get_name());
 
+	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
 	auto num_samples = bagged_outputs.size() / m_num_bags;
 	auto num_classes = labels_multiclass->get_num_classes();
 
 	CMulticlassLabels* pred = new CMulticlassLabels(num_samples);
 	pred->allocate_confidences_for(num_classes);
 
-	SGMatrix<float64_t> class_probabilities(num_samples, num_classes);
+	SGMatrix<float64_t> class_probabilities(num_classes, num_samples);
 	class_probabilities.zero();
 
 	for (auto i = 0; i < num_samples; ++i)
@@ -88,32 +88,24 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 		for (auto j = 0; j < m_num_bags; ++j)
 		{
 			int32_t class_idx = bagged_outputs(i, j);
-			class_probabilities(i, class_idx) += 1;
+			class_probabilities(class_idx, i) += 1;
 		}
 	}
 
-	float64_t alpha = 1.0 / m_num_bags;
-	class_probabilities = linalg::scale(class_probabilities, alpha);
+	class_probabilities = linalg::scale(class_probabilities, 1.0 / m_num_bags);
 
 	for (auto i = 0; i < num_samples; ++i)
-	{
-		auto confidences = class_probabilities.get_row_vector(i);
-		auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
+		pred->set_multiclass_confidences(i, class_probabilities.get_column(i));
 
-		pred->set_label(i, y_pred);
-		pred->set_multiclass_confidences(i, confidences);
-	}
+	SGVector<float64_t> combined = m_combination_rule->combine(bagged_outputs);
+	pred->set_labels(combined);
 
 	return pred;
 }
 
 CRegressionLabels* CBaggingMachine::apply_regression(CFeatures* data)
 {
-	SGVector<float64_t> combined_vector = apply_get_outputs(data);
-
-	CRegressionLabels* pred = new CRegressionLabels(combined_vector);
-
-	return pred;
+	return new CRegressionLabels(apply_get_outputs(data));
 }
 
 SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
@@ -374,7 +366,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		SG_UNREF(l);
 	}
 
-	DynArray<index_t> idx;
+	std::vector<index_t> idx;
 	for (index_t i = 0; i < m_features->get_num_vectors(); i++)
 	{
 		if (m_all_oob_idx[i])
@@ -382,9 +374,9 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 	}
 
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
-	SGVector<float64_t> lab(idx.get_num_elements());
+	SGVector<float64_t> lab(idx.size());
 	for (int32_t i=0;i<lab.vlen;i++)
-		lab[i]=combined[idx.get_element(i)];
+		lab[i]=combined[idx[i]];
 
 	CLabels* predicted = NULL;
 	switch (m_labels->get_label_type())
@@ -405,7 +397,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 			SG_ERROR("Unsupported label type\n");
 	}
 
-	m_labels->add_subset(SGVector<index_t>(idx.get_array(), idx.get_num_elements(), false));
+	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
 	float64_t res = eval->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
@@ -419,15 +411,8 @@ CDynamicArray<index_t>* CBaggingMachine::get_oob_indices(const SGVector<index_t>
 	out_of_bag.set_const(true);
 
 	// mark the ones that are in_bag
-	index_t oob_count = m_features->get_num_vectors();
 	for (index_t i = 0; i < in_bag.vlen; i++)
-	{
-		if (out_of_bag[in_bag[i]])
-		{
-			out_of_bag[in_bag[i]] = false;
-			oob_count--;
-		}
-	}
+		out_of_bag[in_bag[i]] &= false;
 
 	CDynamicArray<index_t>* oob = new CDynamicArray<index_t>();
 	// store the indicies of vectors that are out of the bag

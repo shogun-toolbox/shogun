@@ -295,8 +295,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGVector<T>& a, SGVector<T>& b, SGVector<T>& result, T alpha = 1,
-		    T beta = 1)
+		add(const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result,
+		    T alpha = 1, T beta = 1)
 		{
 			REQUIRE(
 			    a.vlen == b.vlen,
@@ -335,8 +335,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, T alpha = 1,
-		    T beta = 1)
+		add(const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+		    T alpha = 1, T beta = 1)
 		{
 			REQUIRE(
 			    (a.num_rows == b.num_rows),
@@ -373,7 +373,8 @@ namespace shogun
 		 */
 		template <typename T, template <typename> class Container>
 		Container<T>
-		add(Container<T>& a, Container<T>& b, T alpha = 1, T beta = 1)
+		add(const Container<T>& a, const Container<T>& b, T alpha = 1,
+		    T beta = 1)
 		{
 			auto result = a.clone();
 			add(a, b, result, alpha, beta);
@@ -796,6 +797,52 @@ namespace shogun
 			return result;
 		}
 
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		void element_prod(
+		    const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
+		{
+			REQUIRE(
+			    a.vlen == b.vlen, "Dimension mismatch! A(%d) vs B(%d)\n",
+			    a.vlen, b.vlen);
+			REQUIRE(
+			    a.vlen == result.vlen,
+			    "Dimension mismatch! A(%d) vs result(%d)\n", a.vlen,
+			    result.vlen);
+
+			infer_backend(a, b)->element_prod(a, b, result);
+		}
+
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGVector<T> element_prod(const SGVector<T>& a, const SGVector<T>& b)
+		{
+			REQUIRE(
+			    a.vlen == b.vlen, "Dimension mismatch! A(%d) vs B(%d)\n",
+			    a.vlen, b.vlen);
+
+			SGVector<T> result = a.clone();
+			element_prod(a, b, result);
+
+			return result;
+		}
+
 		/** Performs the operation B = exp(A)
 		 *
 		 * This version returns the result in a newly created vector or matrix.
@@ -820,10 +867,10 @@ namespace shogun
 		 * @param a The square matrix to be set
 		 */
 		template <typename T>
-		void identity(SGMatrix<T>& I)
+		void identity(SGMatrix<T>& identity_matrix)
 		{
-			REQUIRE(I.num_rows == I.num_cols, "Matrix is not square!\n");
-			infer_backend(I)->identity(I);
+			REQUIRE(identity_matrix.num_rows == identity_matrix.num_cols, "Matrix is not square!\n");
+			infer_backend(identity_matrix)->identity(identity_matrix);
 		}
 
 		/** Performs the operation of a matrix multiplies a vector \f$x = Ab\f$.

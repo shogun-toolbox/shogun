@@ -14,11 +14,12 @@
 #include <limits>
 #include <algorithm>
 
+#include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/regression/LeastAngleRegression.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/regression/LeastAngleRegression.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -185,8 +186,12 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	// main loop
 	//========================================
 	int32_t nloop=0;
+	auto pb =
+	    progress(range(0, max_active_allowed), "LEAST ANGLE REGRESSION: ");
 	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
 	{
+		COMPUTATION_CONTROLLERS
+
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		typename SGVector<ST>::EigenVectorXtMap map_corr(&corr[0], n_fea);
 		typename SGVector<ST>::EigenVectorXtMap map_mu(&mu[0], n_vec);
@@ -343,7 +348,10 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 		if (get_max_non_zero() > 0 && m_num_active >= get_max_non_zero())
 			stop_cond = true;
 		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
+
+		pb.print_progress();
 	}
+	pb.complete();
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
 	for(size_t i = 0; i < m_beta_path_t.size(); ++i)
@@ -358,7 +366,15 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	// assign default estimator
 	set_w(SGVector<float64_t>(n_fea));
 	switch_w(get_path_size()-1);
-	
+
+	if (max_corr / n_vec > get_epsilon())
+	{
+		SG_WARNING(
+		    "Convergence level (%f) not below tolerance (%f) after %d "
+		    "iterations.\n",
+		    max_corr / n_vec, get_epsilon(), nloop);
+	}
+
 	return true;
 }
 

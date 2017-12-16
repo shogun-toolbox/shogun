@@ -47,10 +47,6 @@
 %rename(GradientEvaluation) CGradientEvaluation;
 %rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
 %rename(CrossValidationResult) CCrossValidationResult;
-%rename(CrossValidationOutput) CCrossValidationOutput;
-%rename(CrossValidationPrintOutput) CCrossValidationPrintOutput;
-%rename(CrossValidationMKLStorage) CCrossValidationMKLStorage;
-%rename(CrossValidationMulticlassStorage) CCrossValidationMulticlassStorage;
 %rename(StructuredAccuracy) CStructuredAccuracy;
 %rename(DirectorContingencyTableEvaluation) CDirectorContingencyTableEvaluation;
 
@@ -70,6 +66,7 @@
 %include <shogun/evaluation/PRCEvaluation.h>
 %include <shogun/evaluation/MachineEvaluation.h>
 %include <shogun/evaluation/CrossValidation.h>
+%include <shogun/evaluation/CrossValidationStorage.h>
 %include <shogun/evaluation/SplittingStrategy.h>
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/evaluation/GradientCriterion.h>
@@ -78,9 +75,5 @@
 %include <shogun/evaluation/MulticlassOVREvaluation.h>
 %include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationSplitting.h>
-%include <shogun/evaluation/CrossValidationOutput.h>
-%include <shogun/evaluation/CrossValidationPrintOutput.h>
-%include <shogun/evaluation/CrossValidationMKLStorage.h>
-%include <shogun/evaluation/CrossValidationMulticlassStorage.h>
 %include <shogun/evaluation/StructuredAccuracy.h>
 %include <shogun/evaluation/DirectorContingencyTableEvaluation.h>

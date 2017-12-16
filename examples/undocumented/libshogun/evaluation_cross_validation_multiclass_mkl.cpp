@@ -97,11 +97,12 @@ void test_multiclass_mkl_cv()
 
 	/* perform x-val and print result */
 	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
-	SG_SPRINT("mean of %d %d-fold x-val runs: %f\n", n_runs, n_folds,
-			result->mean);
+	SG_SPRINT(
+	    "mean of %d %d-fold x-val runs: %f\n", n_runs, n_folds,
+	    result->get_mean());
 
 	/* assert high accuracy */
-	ASSERT(result->mean>0.81);
+	ASSERT(result->get_mean() > 0.81);
 
 	/* clean up */
 	SG_UNREF(features);

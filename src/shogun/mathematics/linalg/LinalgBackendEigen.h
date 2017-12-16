@@ -50,8 +50,8 @@ namespace shogun
 /** Implementation of @see LinalgBackendBase::add */
 #define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
 	virtual void add(                                                          \
-	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
-	    Container<Type>& result) const;
+	    const Container<Type>& a, const Container<Type>& b, Type alpha,        \
+	    Type beta, Container<Type>& result) const;
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_ADD
@@ -135,16 +135,18 @@ namespace shogun
 /** Implementation of @see LinalgBackendBase::element_prod */
 #define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
 	virtual void element_prod(                                                 \
-	    Container<Type>& a, Container<Type>& b, Container<Type>& result)       \
-	    const;
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
 #undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
 /** Implementation of @see LinalgBackendBase::element_prod */
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
-	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
-	    Container<Type>& result) const;
+	    const linalg::Block<Container<Type>>& a,                               \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result)      \
+	    const;
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
@@ -159,7 +161,7 @@ namespace shogun
 
 /** Implementation of @see LinalgBackendBase::identity */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
-	virtual void identity(Container<Type>& I) const;
+	virtual void identity(Container<Type>& identity_matrix) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
 #undef BACKEND_GENERIC_IDENTITY
 
@@ -368,13 +370,13 @@ namespace shogun
 		/** Eigen3 vector result = alpha*A + beta*B method */
 		template <typename T>
 		void add_impl(
-		    SGVector<T>& a, SGVector<T>& b, T alpha, T beta,
+		    const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta,
 		    SGVector<T>& result) const;
 
 		/** Eigen3 matrix result = alpha*A + beta*B method */
 		template <typename T>
 		void add_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta,
 		    SGMatrix<T>& result) const;
 
 		/** Eigen3 add column vector method */
@@ -452,13 +454,20 @@ namespace shogun
 		/** Eigen3 matrix in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, const SGMatrix<T>& b,
+		    SGMatrix<T>& result) const;
 
 		/** Eigen3 matrix block in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
-		    SGMatrix<T>& result) const;
+		    const linalg::Block<SGMatrix<T>>& a,
+		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result) const;
+
+		/** Eigen3 vector in-place elementwise product method */
+		template <typename T>
+		void element_prod_impl(
+		    const SGVector<T>& a, const SGVector<T>& b,
+		    SGVector<T>& result) const;
 
 		/** Eigen3 vector exponent method */
 		template <typename T>
@@ -470,7 +479,7 @@ namespace shogun
 
 		/** Eigen3 set matrix to identity method */
 		template <typename T>
-		void identity_impl(SGMatrix<T>& I) const;
+		void identity_impl(SGMatrix<T>& identity_matrix) const;
 
 		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>

@@ -9,10 +9,9 @@
  */
 
 #include <shogun/io/SGIO.h>
-#include <shogun/preprocessor/HomogeneousKernelMap.h>
 
-#include <math.h>
-#include <iostream>
+#include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/HomogeneousKernelMap.h>
 
 using namespace shogun;
 
@@ -144,7 +143,7 @@ void CHomogeneousKernelMap::init()
 
 		for (i = 0 ; i < m_numSubdivisions;
 				++i, mantissa += m_subdivision) {
-			x = ldexp (mantissa, exponent);
+			x = std::ldexp (mantissa, exponent);
 			xgamma = CMath::pow (x, m_gamma);
 			Lxgamma = L * xgamma;
 			Llogx = L * CMath::log (x);
@@ -309,7 +308,7 @@ SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float6
 		/* break value into exponent and mantissa */
 		int exponent;
 		int unsigned j;
-		float64_t mantissa = frexp (in_v[k], &exponent);
+		float64_t mantissa = std::frexp (in_v[k], &exponent);
 		float64_t sign = (mantissa >= 0.0) ? +1.0 : -1.0;
 		mantissa *= 2*sign;
 		exponent -- ;

@@ -75,25 +75,3 @@ TEST_F(MulticlassLabelsTest, confidences)
 	}
 	SG_UNREF(labels);
 }
-
-TEST_F(MulticlassLabelsTest, confidences_matrix_label_initialization)
-{
-	CMulticlassLabels* labels = new CMulticlassLabels(3);
-	labels->set_multiclass_confidences_from_matrix(probabilities);
-	int32_t n_classes = probabilities.num_cols;
-	int32_t n_labels = probabilities.num_rows;
-
-	auto labels_vector = labels->get_labels();
-	for (int i = 0; i < n_labels; i++)
-	{
-		SGVector<float64_t> obtained_confs =
-		    labels->get_multiclass_confidences(i);
-		for (int j = 0; j < n_classes; j++)
-		{
-			EXPECT_FLOAT_EQ(probabilities(i, j), obtained_confs[j]);
-		}
-		EXPECT_FLOAT_EQ(labels_true[i], labels_vector[i]);
-	}
-
-	SG_UNREF(labels);
-}

@@ -12,8 +12,8 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/base/Parameter.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>

@@ -32,10 +32,7 @@
 #cmakedefine HAVE_ARPREC 1
 #cmakedefine USE_META_INTEGRATION_TESTS
 
-#cmakedefine HAVE_POWL 1
 #cmakedefine HAVE_LGAMMAL 1
-#cmakedefine HAVE_SQRTL 1
-#cmakedefine HAVE_LOG2 1
 #cmakedefine USE_LOGCACHE 1
 #cmakedefine USE_LOGSUMARRAY 1
 
@@ -58,40 +55,6 @@
 
 #cmakedefine USE_EIGEN3_EIGSLV 1
 #cmakedefine USE_VIENNACL_EIGSLV 1
-
-/* Define to 1 if you have the declaration of `isfinite', and to 0 if you
-   don't. */
-#cmakedefine HAVE_DECL_ISFINITE 1
-
-/* Define to 1 if you have the declaration of `isinf', and to 0 if you don't. */
-#cmakedefine HAVE_DECL_ISINF 1
-
-/* Define to 1 if you have the declaration of `isnan', and to 0 if you don't. */
-#cmakedefine HAVE_DECL_ISNAN 1
-
-/* Define to 1 if you have the `finite' function. */
-#cmakedefine HAVE_FINITE 1
-
-/* Define to 1 if you have the `fpclass' function. */
-#cmakedefine HAVE_FPCLASS 1
-
-/* Define to 1 if you have the `isfinite' function. */
-#cmakedefine HAVE_ISFINITE 1
-
-/* Define to 1 if you have the `isinf' function. */
-#cmakedefine HAVE_ISINF 1
-
-/* Define to 1 if you have the `isnan' function. */
-#cmakedefine HAVE_ISNAN 1
-
-/* Define to 1 if you have the `std::isfinite' function. */
-#cmakedefine HAVE_STD_ISFINITE 1
-
-/* Define to 1 if you have the `std::isinf' function. */
-#cmakedefine HAVE_STD_ISINF 1
-
-/* Define to 1 if you have the `std::isnan' function. */
-#cmakedefine HAVE_STD_ISNAN 1
 
 #cmakedefine HAVE_DECL_SIGNGAM 1
 
