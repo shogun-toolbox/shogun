@@ -153,7 +153,7 @@ class CDistance : public CSGObject
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)
 		 */
-		SGMatrix<float64_t> get_distance_matrix()
+		virtual SGMatrix<float64_t> get_distance_matrix()
 		{
 			return get_distance_matrix<float64_t>();
 		}

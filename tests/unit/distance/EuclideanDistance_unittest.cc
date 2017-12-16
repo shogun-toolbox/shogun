@@ -85,13 +85,61 @@ TEST(EuclideanDistance, distance_precomputed_norms)
 	SG_UNREF(euclidean);
 }
 
-TEST(EuclideanDistance,get_distance_matrix)
+TEST(EuclideanDistance,get_distance_matrix_double)
 {
 	CDenseFeatures<float64_t>* features_lhs=create_lhs();
 	CDenseFeatures<float64_t>* features_rhs=create_rhs();
 
 	// put features into distance object to compute squared Euclidean distances
 	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
+	euclidean->set_disable_sqrt(true);
+	euclidean->parallel->set_num_threads(1);
+
+	SGMatrix<float64_t> distance_matrix=euclidean->get_distance_matrix();
+
+	// check distance matrix
+	EXPECT_EQ(distance_matrix(0,0), euclidean->distance(0,0));
+	EXPECT_EQ(distance_matrix(0,1), euclidean->distance(0,1));
+	EXPECT_EQ(distance_matrix(1,0), euclidean->distance(1,0));
+	EXPECT_EQ(distance_matrix(1,1), euclidean->distance(1,1));
+
+	SG_UNREF(euclidean);
+}
+
+TEST(EuclideanDistance,get_distance_matrix_float)
+{
+	CDenseFeatures<float64_t>* features_lhs=create_lhs();
+	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+
+	CDenseFeatures<float32_t>* casted_lhs = (CDenseFeatures<float32_t>*) (features_lhs);
+	CDenseFeatures<float32_t>* casted_rhs = (CDenseFeatures<float32_t>*) (features_rhs);
+
+	// put features into distance object to compute squared Euclidean distances
+	CEuclideanDistance* euclidean=new CEuclideanDistance(casted_lhs, casted_rhs);
+	euclidean->set_disable_sqrt(true);
+	euclidean->parallel->set_num_threads(1);
+
+	SGMatrix<float64_t> distance_matrix=euclidean->get_distance_matrix();
+
+	// check distance matrix
+	EXPECT_EQ(distance_matrix(0,0), euclidean->distance(0,0));
+	EXPECT_EQ(distance_matrix(0,1), euclidean->distance(0,1));
+	EXPECT_EQ(distance_matrix(1,0), euclidean->distance(1,0));
+	EXPECT_EQ(distance_matrix(1,1), euclidean->distance(1,1));
+
+	SG_UNREF(euclidean);
+}
+
+TEST(EuclideanDistance,get_distance_matrix_int)
+{
+	CDenseFeatures<float64_t>* features_lhs=create_lhs();
+	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+
+	CDenseFeatures<int32_t>* casted_lhs = (CDenseFeatures<int32_t>*) (features_lhs);
+	CDenseFeatures<int32_t>* casted_rhs = (CDenseFeatures<int32_t>*) (features_rhs);
+
+	// put features into distance object to compute squared Euclidean distances
+	CEuclideanDistance* euclidean=new CEuclideanDistance(casted_lhs, casted_rhs);
 	euclidean->set_disable_sqrt(true);
 	euclidean->parallel->set_num_threads(1);
 

@@ -15,8 +15,10 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CEuclideanDistance::CEuclideanDistance() : CDistance()
 {
@@ -174,6 +176,62 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 
 	if (!disable_sqrt)
 		result=CMath::sqrt(result);
+
+	return result;
+}
+
+SGMatrix<float64_t> CEuclideanDistance::get_distance_matrix()
+{
+	if (lhs->get_feature_class()==C_DENSE && rhs->get_feature_class()==C_DENSE)
+	{
+		if (lhs->get_feature_type()==F_DREAL && rhs->get_feature_type()==F_DREAL)
+		{
+			CDenseFeatures<float64_t>* casted_lhs=static_cast<CDenseFeatures<float64_t>*>(lhs);
+			CDenseFeatures<float64_t>* casted_rhs=static_cast<CDenseFeatures<float64_t>*>(rhs);
+			return compute_distance_matrix(casted_lhs, casted_rhs);
+		}
+		else if (lhs->get_feature_type()==F_SHORTREAL && rhs->get_feature_type()==F_SHORTREAL)
+		{
+
+			CDenseFeatures<float32_t>* casted_lhs=static_cast<CDenseFeatures<float32_t>*>(lhs);
+			CDenseFeatures<float32_t>* casted_rhs=static_cast<CDenseFeatures<float32_t>*>(rhs);
+			return compute_distance_matrix(casted_lhs, casted_rhs);
+		}
+		else
+			return CDistance::get_distance_matrix();
+	}
+	else
+		return CDistance::get_distance_matrix();
+}
+
+template <typename T>
+SGMatrix<float64_t> CEuclideanDistance::compute_distance_matrix(CDenseFeatures<T>* casted_lhs, CDenseFeatures<T>* casted_rhs)
+{
+	int32_t n = casted_lhs->get_num_vectors();
+	int32_t m = casted_rhs->get_num_vectors();
+
+	SGMatrix<float64_t> result(n, m);
+	Map<MatrixXd> map_result(result.matrix, n, m);
+
+	SGMatrix<T> l_matrix = casted_lhs->get_feature_matrix();
+	SGMatrix<T> r_matrix = casted_rhs->get_feature_matrix();
+	typename SGMatrix<T>::EigenMatrixXtMap map_l(l_matrix.matrix, l_matrix.num_rows, l_matrix.num_cols);
+	typename SGMatrix<T>::EigenMatrixXtMap map_r(r_matrix.matrix, r_matrix.num_rows, r_matrix.num_cols);
+
+	Map<VectorXd> map_lhs_norms(m_lhs_squared_norms.vector, n);
+	Map<VectorXd> map_rhs_norms(m_rhs_squared_norms.vector, m);
+
+	map_result = (map_l.transpose()*map_r).template cast<double>();
+	map_result *= -2;
+	map_result.colwise() += map_lhs_norms;
+	map_result.rowwise() += map_rhs_norms.transpose();
+
+	// Set distances with self to zero, to remove rounding errors.
+	if (lhs==rhs)
+		map_result.diagonal().setZero();
+
+	if (!disable_sqrt)
+		map_result = map_result.array().sqrt();
 
 	return result;
 }

@@ -272,8 +272,8 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 	REQUIRE(has_features(), "no features assigned to distance\n")
 
-	int32_t m=get_num_vec_lhs();
-	int32_t n=get_num_vec_rhs();
+	int32_t m=lhs->get_num_vectors();
+	int32_t n=rhs->get_num_vectors();
 
 	int64_t total_num = int64_t(m)*n;
 	int64_t total=0;
