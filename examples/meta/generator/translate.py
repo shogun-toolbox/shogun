@@ -483,7 +483,7 @@ class Translator:
             method = expr[key][0]["Identifier"]
             argsList = None
             try:
-                argsList = expr[key][2]
+                argsList = expr[key][1]
             except IndexError:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
