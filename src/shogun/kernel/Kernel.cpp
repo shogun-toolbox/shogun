@@ -19,6 +19,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/base/class_list.h>
 
 #include <shogun/base/Parallel.h>
 
@@ -1379,3 +1380,8 @@ template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
 
 template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
 template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
+
+CKernel* shogun::kernel(const char* name)
+{
+	return create_object<CKernel>(name);
+}
