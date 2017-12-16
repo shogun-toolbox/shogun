@@ -1,5 +1,6 @@
 #include <shogun/base/class_list.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/Machine.h>
 
 #include <gtest/gtest.h>
@@ -35,4 +36,12 @@ TEST(CreateObject,create_kernel)
     EXPECT_TRUE(obj != nullptr);
     EXPECT_TRUE(dynamic_cast<CKernel*>(obj) != nullptr);
     delete obj;
+}
+
+TEST(CreateObject, create_kernel_machine)
+{
+	auto* obj = kernel_machine("LibSVM");
+	EXPECT_TRUE(obj != nullptr);
+	EXPECT_TRUE(dynamic_cast<CKernelMachine*>(obj) != nullptr);
+	delete obj;
 }
