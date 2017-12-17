@@ -92,7 +92,7 @@ template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
-	vector=SG_MALLOC(T, len);
+	vector=SG_CALLOC(T, len);
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
