@@ -80,7 +80,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	float64_t evaluate_roc(CLabels* predicted, CLabels* ground_truth);
+	float64_t evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth);
 
 protected:
 
