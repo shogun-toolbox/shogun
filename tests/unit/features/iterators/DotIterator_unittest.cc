@@ -41,26 +41,22 @@
 
 using namespace shogun;
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> get_data()
+void get_data(SGMatrix<float64_t>& mat, SGVector<float64_t>& vec)
 {
-	const index_t n_rows = 6, n_cols = 8;
-
-	SGMatrix<float64_t> mat(n_rows, n_cols);
-	for (index_t i = 0; i < n_rows * n_cols; ++i)
+	for (index_t i = 0; i < mat.size(); ++i)
 		mat[i] = CMath::randn_double();
 
-	SGVector<float64_t> vec(n_rows);
-	for (index_t i = 0; i < n_rows; ++i)
+	for (index_t i = 0; i < vec.size(); ++i)
 		vec[i] = CMath::randn_double();
-
-	return std::make_pair(mat, vec);
 }
 
 TEST(DotIterator, dot)
 {
-	auto data = get_data();
-	auto mat = data.first;
-	auto vec = data.second;
+	const index_t n_rows = 6, n_cols = 8;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	SGVector<float64_t> vec(n_rows);
+	get_data(mat, vec);
 
 	auto feats = some<CDenseFeatures<float64_t>>(mat);
 
@@ -76,9 +72,11 @@ TEST(DotIterator, dot)
 
 TEST(DotIterator, add)
 {
-	auto data = get_data();
-	auto mat = data.first;
-	auto alphas = data.second;
+	const index_t n_rows = 6, n_cols = 8;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	SGVector<float64_t> alphas(n_cols);
+	get_data(mat, alphas);
 
 	auto vec = SGVector<float64_t>(mat.num_rows);
 	auto res = SGVector<float64_t>(mat.num_rows);
