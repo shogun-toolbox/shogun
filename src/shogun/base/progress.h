@@ -84,7 +84,9 @@ namespace shogun
 		    const SGIO& io, float64_t max_value, float64_t min_value,
 		    const std::string& prefix, const SG_PRG_MODE mode)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
-		      m_prefix(prefix), m_mode(mode), m_last_progress(0),
+		      m_prefix(prefix), m_mode(mode), m_columns_num(0),
+			  m_rows_num(0),
+			  m_last_progress(0),
 		      m_last_progress_time(0),
 		      m_progress_start_time(CTime::get_curtime()),
 		      m_current_value(min_value)
@@ -397,6 +399,8 @@ namespace shogun
 			m_rows_num = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 #else
 			struct winsize wind;
+			wind.ws_col = 0;
+			wind.ws_row = 0;
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &wind);
 			m_columns_num = wind.ws_col;
 			m_rows_num = wind.ws_row;
