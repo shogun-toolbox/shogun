@@ -149,7 +149,7 @@ void test()
 int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
-	sg_io->set_loglevel(MSG_DEBUG);
+	sg_io->set_loglevel(MSG_INFO);
 
 	test();
 
