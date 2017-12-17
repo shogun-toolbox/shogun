@@ -108,7 +108,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::element_prod */
 	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
-	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
+	virtual void element_prod(const Container<Type>& a, const Container<Type>& b,\
 		Container<Type>& result) const \
 	{  \
 		element_prod_impl(a, b, result); \
@@ -364,7 +364,7 @@ namespace shogun
 		/** ViennaCL matrix in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
