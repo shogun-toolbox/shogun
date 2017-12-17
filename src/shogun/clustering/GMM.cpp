@@ -320,6 +320,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						}
 
 						better_found=true;
+						delete candidate;
 						break;
 					}
 					else
