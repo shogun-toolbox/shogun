@@ -1,4 +1,7 @@
 SET(CSHARP_FLAGS "/lib:${INTERFACE_CSHARP_BUILD_DIR};/r:shogun")
+IF (NOT ENABLE_TESTING)
+    LIST(APPEND CSHARP_FLAGS -nowarn:0219)
+ENDIF()
 
 # add test case for each generated example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
