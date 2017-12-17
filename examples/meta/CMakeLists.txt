@@ -96,6 +96,11 @@ INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cpp
     PATTERN "CMakeFiles*" EXCLUDE
     )
 
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/data/toy/
+    DESTINATION share/shogun/examples/data
+    COMPONENT ${DIRECTORY}-examples
+    )
+
 IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
     # copy data symlink to cmake binary dir so that we can execute meta examples in there
     CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
