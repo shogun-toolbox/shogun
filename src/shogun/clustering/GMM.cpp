@@ -320,6 +320,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						}
 
 						better_found=true;
+						delete candidate;
 						break;
 					}
 					else
@@ -780,6 +781,8 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 		alpha[i * m_components.size() + init_labels->get_int_label(i)] = 1;
 
 	SG_UNREF(init_labels);
+
+	delete knn;
 
 	return alpha;
 }
