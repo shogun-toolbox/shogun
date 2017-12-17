@@ -43,6 +43,7 @@ namespace shogun {
 		auto* cast = dynamic_cast<T*>(object);
 		if (!cast)
 		{
+			delete object;
 			SG_SERROR("Type mismatch");
 		}
 		return cast;
