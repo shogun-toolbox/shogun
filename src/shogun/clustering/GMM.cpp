@@ -781,6 +781,8 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 	SG_UNREF(init_labels);
 
+	delete knn;
+
 	return alpha;
 }
 
