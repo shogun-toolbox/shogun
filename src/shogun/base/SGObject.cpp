@@ -18,8 +18,8 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
-#include <shogun/io/SerializableFile.h>
 #include <shogun/base/some.h>
+#include <shogun/io/SerializableFile.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
@@ -151,7 +151,7 @@ namespace shogun
 using namespace shogun;
 
 CSGObject::CSGObject()
-: self(),param_obs_list(), io(nullptr), parallel(nullptr), version(nullptr)
+    : self(), param_obs_list(), io(nullptr), parallel(nullptr), version(nullptr)
 {
 	init();
 	set_global_objects();
@@ -712,7 +712,8 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	Some<CSGObject> copy = Some<CSGObject>::from_raw(create(get_name(), this->m_generic));
+	Some<CSGObject> copy =
+	    Some<CSGObject>::from_raw(create(get_name(), this->m_generic));
 
 	// Increase copy reference counter
 	if (copy)
