@@ -339,12 +339,12 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T>
-	void set(const Tag<T>& _tag, const T& value)
+	void put(const Tag<T>& _tag, const T& value)
 	{
 		if(type_erased_has(_tag))
 		{
 			if(has<T>(_tag.name()))
-				type_erased_set(_tag, erase_type(value));
+				type_erased_put(_tag, erase_type(value));
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -364,11 +364,11 @@ public:
 	 * @param name name of the parameter
 	 * @param value value of the parameter along with type information
 	 */
-	template <typename T, typename U=void>
-	void set(const std::string& name, const T& value)
+	template <typename T, typename U = void>
+	void put(const std::string& name, const T& value)
 	{
 		Tag<T> tag(name);
-		set(tag, value);
+		put(tag, value);
 	}
 
 	/** Getter for a class parameter, identified by a Tag.
@@ -462,7 +462,8 @@ protected:
 	virtual void save_serializable_post() throw (ShogunException);
 
 	/** Registers a class parameter which is identified by a tag.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param _tag name and type information of parameter
@@ -471,11 +472,12 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		type_erased_set(_tag, erase_type(value));
+		type_erased_put(_tag, erase_type(value));
 	}
 
 	/** Registers a class parameter which is identified by a name.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param name name of the parameter
@@ -485,7 +487,7 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		type_erased_set(tag, erase_type(value));
+		type_erased_put(tag, erase_type(value));
 	}
 
 public:
@@ -551,7 +553,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param any value without type information of the parameter
 	 */
-	void type_erased_set(const BaseTag& _tag, const Any& any);
+	void type_erased_put(const BaseTag& _tag, const Any& any);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
