@@ -461,6 +461,7 @@ IF (CTAGS_FOUND)
         # functions, classes, macroses, enumerations, enumerators, typedefs
         --c++-kinds=fcdgetp
         --fields=+im
+        -h "h.hpp"
         -R ${CMAKE_SOURCE_DIR})
 
     ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
