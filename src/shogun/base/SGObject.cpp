@@ -44,7 +44,7 @@ namespace shogun
 	class CSGObject::Self
 	{
 	public:
-		void set(const BaseTag& tag, const Any& any)
+		void put(const BaseTag& tag, const Any& any)
 		{
 			map[tag] = any;
 		}
@@ -787,9 +787,9 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::type_erased_set(const BaseTag& _tag, const Any& any)
+void CSGObject::type_erased_put(const BaseTag& _tag, const Any& any)
 {
-	self->set(_tag, any);
+	self->put(_tag, any);
 }
 
 Any CSGObject::type_erased_get(const BaseTag& _tag) const
