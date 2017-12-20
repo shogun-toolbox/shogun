@@ -119,7 +119,16 @@ protected:
 					labels_vector[i*num+j]=i;
 		labels=new CMulticlassLabels(labels_vector);
 
+		SG_REF(dense_feat);
+		SG_REF(labels);
 	}
+
+	~FLDATest()
+	{
+		SG_UNREF(dense_feat);
+		SG_UNREF(labels);
+	}
+
 	CDenseFeatures<float64_t>* dense_feat;
 	CMulticlassLabels* labels;
 };
