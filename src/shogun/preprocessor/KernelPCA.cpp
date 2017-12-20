@@ -149,11 +149,13 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 {
 	ASSERT(m_initialized)
 
-	std::unique_ptr<CFeatures> features(
-	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector)));
+	CFeatures * features =
+	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector));
+	SG_REF(features)
 
-	SGMatrix<float64_t> result_matrix = apply_to_feature_matrix(features.get());
+	SGMatrix<float64_t> result_matrix = apply_to_feature_matrix(features);
 
+	SG_UNREF(features)
 	return SGVector<float64_t>(result_matrix);
 }
 
