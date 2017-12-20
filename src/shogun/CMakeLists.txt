@@ -458,10 +458,11 @@ IF (CTAGS_FOUND)
     SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
     ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
         COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
-        # functions, classes, macroses, enumerations, enumerators, typedefs
-        --c++-kinds=fcdgetp
+        # classes, enums, functions
+        --c++-kinds=cgp
         --fields=+im
-        -h "h.hpp"
+        --exclude=*.cpp
+        --languages=c++
         -R ${CMAKE_SOURCE_DIR})
 
     ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
