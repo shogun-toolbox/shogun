@@ -75,27 +75,26 @@ bool CLDA::train_machine(CFeatures *data)
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	else
+	else if (!features)
 	{
-		data = get_features();
 		REQUIRE(data, "Features have not been provided.\n")
 	}
 
 	REQUIRE(
-	    data->get_num_vectors() == m_labels->get_num_labels(),
+	    features->get_num_vectors() == m_labels->get_num_labels(),
 	    "Number of training examples(%d) should be equal to number of labels "
 	    "(%d)!\n",
-	    data->get_num_vectors(), m_labels->get_num_labels());
+	    features->get_num_vectors(), m_labels->get_num_labels());
 
 	REQUIRE(
 	    features->get_feature_class() == C_DENSE,
 	    "LDA only works with dense features")
 
-	if(data->get_feature_type() == F_SHORTREAL)
+	if (features->get_feature_type() == F_SHORTREAL)
 		return CLDA::train_machine_templated<float32_t>();
-	else if(data->get_feature_type() == F_DREAL)
+	else if (features->get_feature_type() == F_DREAL)
 		return CLDA::train_machine_templated<float64_t>();
-	else if(data->get_feature_type() == F_LONGREAL)
+	else if (features->get_feature_type() == F_LONGREAL)
 		return CLDA::train_machine_templated<floatmax_t>();
 
 	return false;
