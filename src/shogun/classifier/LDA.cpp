@@ -90,11 +90,11 @@ bool CLDA::train_machine(CFeatures *data)
 	    features->get_feature_class() == C_DENSE,
 	    "LDA only works with dense features")
 
-	if(features->get_feature_type() == F_SHORTREAL)
+	if (features->get_feature_type() == F_SHORTREAL)
 		return CLDA::train_machine_templated<float32_t>();
-	else if(features->get_feature_type() == F_DREAL)
+	else if (features->get_feature_type() == F_DREAL)
 		return CLDA::train_machine_templated<float64_t>();
-	else if(features->get_feature_type() == F_LONGREAL)
+	else if (features->get_feature_type() == F_LONGREAL)
 		return CLDA::train_machine_templated<floatmax_t>();
 
 	return false;

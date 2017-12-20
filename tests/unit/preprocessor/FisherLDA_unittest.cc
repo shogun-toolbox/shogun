@@ -121,7 +121,6 @@ protected:
 
 		SG_REF(dense_feat);
 		SG_REF(labels);
-
 	}
 
 	~FLDATest()

@@ -91,12 +91,13 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(alphas[i], alphas_krr[i], 1E-1);
 
-	auto result =Some<CRegressionLabels>::from_raw(nystrom->apply_regression(test_features));
-	auto result_krr=Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
+	auto result = Some<CRegressionLabels>::from_raw(
+	    nystrom->apply_regression(test_features));
+	auto result_krr =
+	    Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
 
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(result->get_label(i), result_krr->get_label(i), 1E-5);
-
 }
 
 /**
@@ -148,8 +149,10 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	nystrom->train();
 	krr->train();
 
-	auto result=Some<CRegressionLabels>::from_raw(nystrom->apply_regression(test_features));
-	auto result_krr=Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
+	auto result = Some<CRegressionLabels>::from_raw(
+	    nystrom->apply_regression(test_features));
+	auto result_krr =
+	    Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
 
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(result->get_label(i), result_krr->get_label(i), 1E-1);

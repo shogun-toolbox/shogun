@@ -149,7 +149,7 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 {
 	ASSERT(m_initialized)
 
-	CFeatures * features =
+	CFeatures* features =
 	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector));
 	SG_REF(features)
 
