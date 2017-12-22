@@ -57,7 +57,7 @@
 %rename(DirectorDotFeatures) CDirectorDotFeatures;
 %rename(BinnedDotFeatures) CBinnedDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
-%rename(StreamingVwFeatures) CStreamingVwFeatures;
+
 %rename(DummyFeatures) CDummyFeatures;
 %rename(IndexFeatures) CIndexFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;
@@ -110,7 +110,7 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %include <shogun/features/BinnedDotFeatures.h>
 %include <shogun/features/streaming/StreamingFeatures.h>
 %include <shogun/features/streaming/StreamingDotFeatures.h>
-%include <shogun/features/streaming/StreamingVwFeatures.h>
+
 %include <shogun/features/DataGenerator.h>
 
 /* Templated Class StringFeatures */
