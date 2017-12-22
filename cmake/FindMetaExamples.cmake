@@ -47,7 +47,9 @@ function(get_excluded_meta_examples)
 
 	IF(NOT USE_SVMLIGHT)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
-			regression/multiple_kernel_learning.sg)
+			regression/multiple_kernel_learning.sg
+			binary_classifier/multiple_kernel_learning.sg
+		)
 	ENDIF()
 
     SET(EXCLUDED_META_EXAMPLES ${EXCLUDED_META_EXAMPLES} PARENT_SCOPE)
