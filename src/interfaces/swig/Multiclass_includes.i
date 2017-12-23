@@ -8,7 +8,7 @@
  #include <shogun/multiclass/tree/RelaxedTree.h>
  #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
  #include <shogun/multiclass/tree/TreeMachineNode.h>
- #include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+ 
  #include <shogun/multiclass/tree/ID3TreeNodeData.h>
  #include <shogun/multiclass/tree/ID3ClassifierTree.h>
  #include <shogun/multiclass/tree/C45TreeNodeData.h>

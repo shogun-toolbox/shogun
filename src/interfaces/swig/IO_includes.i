@@ -10,9 +10,7 @@
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/classifier/vw/VwParser.h>
-#include <shogun/io/streaming/StreamingVwFile.h>
-#include <shogun/io/streaming/StreamingVwCacheFile.h>
+
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
 #include <shogun/io/SerializableFile.h>
@@ -24,4 +22,3 @@
 #include <shogun/io/SimpleFile.h>
 #include <shogun/io/MemoryMappedFile.h>
 %}
-

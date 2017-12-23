@@ -77,8 +77,7 @@
 %ignore shogun::SGSparseVector::features;
 %ignore shogun::SGSparseVectorEntry;
 %ignore shogun::CParameter;
-%ignore shogun::CVwFeature;
-%ignore shogun::CVwExample;
+
 %ignore shogun::SGString;
 %ignore sparse_dot;
 %ignore dense_dot;

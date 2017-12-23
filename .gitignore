@@ -74,7 +74,7 @@ cpplint.py
 /tests/unit/combined_kernel.weights
 Testing/
 examples/undocumented/python/serialized_svm.bz2
-examples/undocumented/python/vw_cache.dat.cache
+
 
 # cmake
 /CMakeFiles/

@@ -526,9 +526,7 @@ fail:
                         FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingStringFeatures, feats_type)
                             break;
                     }
-                case C_STREAMING_VW:
-                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::CStreamingVwFeatures*), SWIG_POINTER_EXCEPTION);
-                    break;
+                
                 case C_BINNED_DOT:
                     $result=SWIG_NewPointerObj($1, $descriptor(shogun::CBinnedDotFeatures*), SWIG_POINTER_EXCEPTION);
                     break;

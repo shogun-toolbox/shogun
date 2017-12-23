@@ -14,7 +14,6 @@
 %rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
 %rename(RelaxedTree) CRelaxedTree;
 %rename(TreeMachineNode) CTreeMachineNode;
-%rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
 %rename(ID3ClassifierTree) CID3ClassifierTree;
 %rename(C45ClassifierTree) CC45ClassifierTree;
 %rename(CARTree) CCARTree;
@@ -90,7 +89,7 @@ namespace shogun
 %include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RelaxedTree.h>
 %include <shogun/multiclass/tree/TreeMachineNode.h>
-%include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+
 %include <shogun/multiclass/tree/ID3ClassifierTree.h>
 %include <shogun/multiclass/tree/C45ClassifierTree.h>
 %include <shogun/multiclass/tree/CARTree.h>
