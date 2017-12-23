@@ -19,7 +19,7 @@
 namespace shogun
 {
 template <class ST> struct SGSparseVectorEntry;
-class VwExample;
+
 
 /** @brief A Streaming File access class.
  *
@@ -265,22 +265,6 @@ class VwExample;
 
 		//@}
 
-		/**
-		 * Function to read VW examples without labels
-		 *
-		 * @param ex example
-		 * @param len length of feature vector
-		 */
-		virtual void get_vector(VwExample*& ex, int32_t& len);
-
-		/**
-		 * Function to read VW examples with labels
-		 *
-		 * @param ex example
-		 * @param len length of feature vector
-		 * @param label label
-		 */
-		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
 #endif // #ifndef SWIG // SWIG should skip this
 
 
