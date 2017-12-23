@@ -19,10 +19,12 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/util/iterators.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 #include <memory>
 #include <atomic>
+#include <initializer_list>
 
 namespace Eigen
 {
@@ -42,6 +44,9 @@ namespace shogun
 template<class T> class SGVector : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
+
+	public:
+		typedef RandomIterator<T> iterator;
 
 	public:
 		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
@@ -65,6 +70,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
 
+		/** Constructor to create new vector from a SGMatrix */
+		SGVector(SGMatrix<T> matrix);
+
 		/** Construct SGVector from GPU memory.
 		 *
 		 * @param vector GPUMemoryBase pointer
@@ -86,12 +94,24 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 #ifndef SWIG // SWIG should skip this part
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 
 		/** The container type for a given template argument */
 		template <typename ST> using container_type = SGVector<ST>;
 
-#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+		/** Construct SGVector from InputIterator list */
+		template<typename InputIt>
+		SGVector(InputIt beginIt, InputIt endIt):
+			SGReferencedData(true),
+			vlen(std::distance(beginIt, endIt)),
+			gpu_ptr(nullptr)
+		{
+			vector = SG_MALLOC(T, vlen);
+			std::copy(beginIt, endIt, vector);
+			m_on_gpu.store(false, std::memory_order_release);
+		}
+
+		/** Construct SGVector from initializer list */
+		SGVector(std::initializer_list<T> il);
 
 		/** Wraps a matrix around the data of an Eigen3 column vector */
 		SGVector(EigenVectorXt& vec);
@@ -141,6 +161,12 @@ template<class T> class SGVector : public SGReferencedData
 			assert_on_cpu();
 			return vector;
 		}
+
+		/** Returns an iterator to the first element of the container. */
+		iterator begin() noexcept { return iterator(vector); }
+
+		/** Returns an iterator to the element following the last element of the container. */
+		iterator end() noexcept { return iterator(vector + vlen); }
 
 		SGVector<T>& operator=(const SGVector<T>&);
 

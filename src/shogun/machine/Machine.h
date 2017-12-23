@@ -23,6 +23,9 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/Features.h>
 
+#include <condition_variable>
+#include <mutex>
+
 namespace shogun
 {
 
@@ -122,6 +125,11 @@ enum EProblemType
 	 * @return problem type\
 	 */ \
 	virtual EProblemType get_machine_problem_type() const { return PT; }
+
+#define COMPUTATION_CONTROLLERS                                                \
+	if (cancel_computation())                                                  \
+		continue;                                                              \
+	pause_computation();
 
 /** @brief A generic learning machine interface.
  *
@@ -306,6 +314,37 @@ class CMachine : public CSGObject
 			return PT_BINARY;
 		}
 
+#ifndef SWIG
+		/** @return whether the algorithm needs to be stopped */
+		SG_FORCED_INLINE bool cancel_computation() const
+		{
+			return m_cancel_computation.load();
+		}
+#endif
+
+#ifndef SWIG
+		/** Pause the algorithm if the flag is set */
+		SG_FORCED_INLINE void pause_computation()
+		{
+			if (m_pause_computation_flag.load())
+			{
+				std::unique_lock<std::mutex> lck(m_mutex);
+				while (m_pause_computation_flag.load())
+					m_pause_computation.wait(lck);
+			}
+		}
+#endif
+
+#ifndef SWIG
+		/** Resume current computation (sets the flag) */
+		SG_FORCED_INLINE void resume_computation()
+		{
+			std::unique_lock<std::mutex> lck(m_mutex);
+			m_pause_computation_flag = false;
+			m_pause_computation.notify_all();
+		}
+#endif
+
 		virtual const char* get_name() const { return "Machine"; }
 
 	protected:
@@ -357,6 +396,38 @@ class CMachine : public CSGObject
 		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const { return true; }
 
+		/** connect the machine instance to the signal handler */
+		rxcpp::subscription connect_to_signal_handler();
+
+		/** reset the computation variables */
+		void reset_computation_variables()
+		{
+			m_cancel_computation = false;
+			m_pause_computation_flag = false;
+		}
+
+		/** The action which will be done when the user decides to
+		* premature stop the CMachine execution */
+		virtual void on_next()
+		{
+			m_cancel_computation.store(true);
+		}
+
+		/** The action which will be done when the user decides to
+		* pause the CMachine execution */
+		virtual void on_pause()
+		{
+			m_pause_computation_flag.store(true);
+			/* Here there should be the actual code*/
+			resume_computation();
+		}
+
+		/** The action which will be done when the user decides to
+		* return to prompt and terminate the program execution */
+		virtual void on_complete()
+		{
+		}
+
 	protected:
 		/** maximum training time */
 		float64_t m_max_train_time;
@@ -372,6 +443,18 @@ class CMachine : public CSGObject
 
 		/** whether data is locked */
 		bool m_data_locked;
+
+		/** Cancel computation */
+		std::atomic<bool> m_cancel_computation;
+
+		/** Pause computation flag */
+		std::atomic<bool> m_pause_computation_flag;
+
+		/** Conditional variable to make threads wait */
+		std::condition_variable m_pause_computation;
+
+		/** Mutex used to pause threads */
+		std::mutex m_mutex;
 };
 }
 #endif // _MACHINE_H__

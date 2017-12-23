@@ -13,10 +13,10 @@ import sys
 import numpy
 import seqdict
 
-from shogun.Classifier import LibSVM
-from shogun.Features import StringCharFeatures,DNA
-from shogun.Kernel import WeightedDegreeStringKernel
-from shogun.Library import DynamicIntArray
+from shogun import LibSVM
+from shogun import StringCharFeatures,DNA
+from shogun import WeightedDegreeStringKernel
+from shogun import DynamicIntArray
 
 class svm_splice_model(object):
 	def __init__(self, order, traindat, alphas, b, (window_left,offset,window_right), consensus):

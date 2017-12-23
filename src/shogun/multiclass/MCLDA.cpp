@@ -64,6 +64,9 @@ void CMCLDA::init()
 	SG_ADD(&m_xbar, "m_xbar", "total mean", MS_NOT_AVAILABLE);
 	SG_ADD(&m_scalings, "m_scalings", "scalings", MS_NOT_AVAILABLE);
 	SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
+	SG_ADD(&m_dim, "m_dim", "dimension of feature space", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
 	SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
 	SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
 

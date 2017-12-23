@@ -4,6 +4,16 @@ IF (NOT USE_MOSEK)
 	LIST(REMOVE_ITEM EXAMPLES_CPP "so_fg_model.cpp" "so_multiclass.cpp" "so_multilabel.cpp")
 ENDIF ()
 
+IF (NOT USE_GPL_SHOGUN)
+	LIST(REMOVE_ITEM EXAMPLES_CPP
+	"modelselection_model_selection_parameters_test.cpp"
+	"modelselection_parameter_tree.cpp"
+	"modelselection_grid_search_string_kernel.cpp"
+	"parameter_modsel_parameters.cpp"
+	"classifier_svmlight_string_features_precomputed_kernel.cpp"
+	)
+ENDIF()
+
 LIST(REMOVE_ITEM EXAMPLES_CPP
 	"classifier_bagging_liblinear.cpp"
 	"classifier_larank.cpp"
@@ -37,25 +47,10 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 
 FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 	STRING(REGEX REPLACE ".cpp\$" "" EXAMPLE "${EXAMPLE_CPP}")
-
-	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
-	target_link_libraries(${EXAMPLE} shogun::shogun ${SANITIZER_LIBRARY})
-	IF(SANITIZER_FLAGS)
-		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
-	ENDIF()
-	add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-	
-	# Add examples to the dependencies of modular interfaces to make sure
-	# nothing will infer with them being build single-threaded.
-	IF(SWIG_SINGLE_THREADED)
-		FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
-			ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} ${EXAMPLE})
-		ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
-	ENDIF(SWIG_SINGLE_THREADED)
-
+    AddLibShogunExample(${EXAMPLE_CPP})
+    LIST(APPEND EXAMPLE_TARGETS ${EXAMPLE})
 ENDFOREACH()
 
-INSTALL(PROGRAMS ${INSTALL_EXAMPLES}
+INSTALL(TARGETS ${EXAMPLE_TARGETS}
 	DESTINATION share/shogun/examples/libshogun
 	COMPONENT libshogun-examples)

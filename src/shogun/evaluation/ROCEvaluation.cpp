@@ -19,15 +19,16 @@ CROCEvaluation::~CROCEvaluation()
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	return evaluate_roc(predicted,ground_truth);
+	REQUIRE(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+	REQUIRE(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+
+	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 }
 
-float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth)
+float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
-	ASSERT(predicted->get_label_type()==LT_BINARY)
-	ASSERT(ground_truth->get_label_type()==LT_BINARY)
 	ground_truth->ensure_valid();
 
 	// assume threshold as negative infinity
@@ -76,7 +77,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
 	{
-		if (ground_truth->get_value(i) >= 0)
+		if (ground_truth->get_label(i) >= 0)
 			pos_count++;
 		else
 			neg_count++;
@@ -106,7 +107,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 
 		m_thresholds[i]=threshold;
 
-		if (ground_truth->get_value(idxs[i]) > 0)
+		if (ground_truth->get_label(idxs[i]) > 0)
 			tp+=1.0;
 		else
 			fp+=1.0;

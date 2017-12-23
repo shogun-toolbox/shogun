@@ -7,11 +7,11 @@
  * Written (W) 2013 Thoralf Klein
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
@@ -498,20 +498,6 @@ TEST(CMath,is_sorted_2)
 	CMath::qsort(v);
 
 	EXPECT_EQ(CMath::is_sorted(v), true);
-}
-
-TEST(CMath, dot)
-{
-	CMath::init_random(17);
-	SGVector<float64_t> a(10);
-	a.random(0.0, 1024.0);
-	float64_t dot_val = 0.0;
-
-	for (int32_t i = 0; i < a.vlen; ++i)
-		dot_val += a[i]*a[i];
-
-	float64_t sgdot_val = CMath::dot(a.vector,a.vector, a.vlen);
-	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
 }
 
 TEST(CMath, gcd)

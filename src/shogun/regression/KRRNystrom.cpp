@@ -58,7 +58,7 @@ less than number of data points (%d)\n", m_num_rkhs_basis, n);
 
 void CKRRNystrom::init()
 {
-	m_num_rkhs_basis=100;
+	m_num_rkhs_basis=0;
 }
 
 SGVector<int32_t> CKRRNystrom::subsample_indices()
@@ -78,6 +78,13 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 bool CKRRNystrom::solve_krr_system()
 {
 	int32_t n=kernel->get_num_vec_lhs();
+
+	if (m_num_rkhs_basis == 0)
+	{
+		set_num_rkhs_basis((int32_t)CMath::ceil(n/2.0));
+		SG_SWARNING("Number of sampled rows not set, default is half (%d) "
+					"of the number of data points (%d)\n", m_num_rkhs_basis, n);
+	}
 
 	SGVector<float64_t> y=((CRegressionLabels*)m_labels)->get_labels();
 	if (y==NULL)

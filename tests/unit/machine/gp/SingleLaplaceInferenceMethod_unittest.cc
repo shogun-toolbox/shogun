@@ -23,6 +23,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(SingleLaplaceInferenceMethod,get_cholesky_gaussian_likelihood)
 {
 	// create some easy regression data:
@@ -1273,3 +1274,4 @@ TEST(SingleLaplaceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	// clean up
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN

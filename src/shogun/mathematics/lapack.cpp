@@ -20,7 +20,10 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/io/SGIO.h>
 
-#include <pthread.h>
+#if defined(EIGEN_USE_LAPACKE) || defined(EIGEN_USE_LAPACKE_STRICT)
+// Eigen's lapacke.h will take care of the declaration of the lapacke functions
+#include <shogun/mathematics/eigen3.h>
+#endif
 
 using namespace shogun;
 
@@ -310,17 +313,17 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	int m;
 	double vl,vu;
 	double abstol = 0.0;
-	char I = 'I';
-	int* isuppz = SG_MALLOC(int, n);
+	char range = 'I';
+	int* isuppz = SG_MALLOC(int, 2 * (iu - il + 1));
 #ifdef HAVE_ACML
-	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,iu,abstol,m,
+	DSYEVR(jobz,range,uplo,n,a,lda,vl,vu,il,iu,abstol,m,
 	       eigenvalues,eigenvectors,n,isuppz,info);
 #else
 	int lwork = -1;
 	int liwork = -1;
 	double work1 = 0;
 	int work2 = 0;
-	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
+	DSYEVR(&jobz,&range,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                &work1,&lwork,&work2,&liwork,info);
 	ASSERT(*info==0)
@@ -328,7 +331,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	liwork = work2;
 	double* work = SG_MALLOC(double, lwork);
 	int* iwork = SG_MALLOC(int, liwork);
-	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
+	DSYEVR(&jobz,&range,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                work,&lwork,iwork,&liwork,info);
 	ASSERT(*info==0)
@@ -346,21 +349,21 @@ void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, dou
 	double abstol = 0.0;
 	double vl,vu;
 	int* ifail = SG_MALLOC(int, n);
-	char I = 'I';
+	char range = 'I';
 #ifdef HAVE_ACML
-	DSYGVX(itype,jobz,I,uplo,n,a,lda,b,ldb,vl,vu,
+	DSYGVX(itype,jobz,range,uplo,n,a,lda,b,ldb,vl,vu,
                il,iu,abstol,m,eigenvalues,
                eigenvectors,n,ifail,info);
 #else
 	int lwork = -1;
 	double work1 = 0;
 	int* iwork = SG_MALLOC(int, 5*n);
-	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
+	DSYGVX(&itype,&jobz,&range,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
                &n,&work1,&lwork,iwork,ifail,info);
 	lwork = (int)work1;
 	double* work = SG_MALLOC(double, lwork);
-	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
+	DSYGVX(&itype,&jobz,&range,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
                &n,work,&lwork,iwork,ifail,info);
 	SG_FREE(work);

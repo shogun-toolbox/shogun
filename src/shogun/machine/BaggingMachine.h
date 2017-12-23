@@ -139,20 +139,30 @@ namespace shogun
 			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
-			/** Register paramaters */
-			void register_parameters();
+		    /** helper function for the apply_{binary,..} functions that
+		     * computes the output probabilities without combination rules
+		     *
+		     * @param data the data to compute the output for
+		     * @return predictions
+		     */
+		    SGMatrix<float64_t>
+		    apply_outputs_without_combination(CFeatures* data);
 
-			/** Initialize the members with default values */
-			void init();
+		    /** Register paramaters */
+		    void register_parameters();
 
-			/**
-			 * get the vector of indices for feature vectors that are out of bag
-			 *
-			 * @param in_bag vector of indices that are in bag.
-			 * NOTE: in_bag is a randomly generated with replacement
-			 * @return the vector of indices
-			 */
-			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
+		    /** Initialize the members with default values */
+		    void init();
+
+		    /**
+		     * get the vector of indices for feature vectors that are out of bag
+		     *
+		     * @param in_bag vector of indices that are in bag.
+		     * NOTE: in_bag is a randomly generated with replacement
+		     * @return the vector of indices
+		     */
+		    CDynamicArray<index_t>*
+		    get_oob_indices(const SGVector<index_t>& in_bag);
 
 		protected:
 			/** bags array */

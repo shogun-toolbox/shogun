@@ -66,7 +66,7 @@ int32_t CCircularBuffer::push(SGVector<char> source)
 	// determine which part of the memory block is free to read
 	if (m_end_pos>=m_begin_pos)
 	{
-		int32_t bytes_to_memory_end=m_buffer.vlen-(m_end_pos-m_buffer.vector);
+		auto bytes_to_memory_end=m_buffer.vlen-std::distance(m_buffer.vector, m_end_pos);
 		if (bytes_to_memory_end<bytes_to_write)
 		{
 			// we need write as at end of memory block and at begin
@@ -110,7 +110,7 @@ int32_t CCircularBuffer::push(FILE* source, int32_t source_size)
 	// determine which part of the memory block is free to read
 	if (m_end_pos>=m_begin_pos)
 	{
-		int32_t bytes_to_memory_end=m_buffer.vlen-(m_end_pos-m_buffer.vector);
+		int32_t bytes_to_memory_end=m_buffer.vlen-std::distance(m_buffer.vector, m_end_pos);
 		if (bytes_to_memory_end<bytes_to_write)
 		{
 			// we need write as at end of memory block and at begin
@@ -184,7 +184,7 @@ bool CCircularBuffer::has_next()
 	if (m_bytes_count==0)
 		return false;
 
-	int32_t head_length=m_buffer_end-m_begin_pos;
+	auto head_length=std::distance(m_begin_pos, m_buffer_end);
 
 	// determine position of finder pointer in memory block
 	if (m_last_idx<head_length)
@@ -197,11 +197,9 @@ bool CCircularBuffer::has_next()
 		{
 			bool temp=false;
 			temp=has_next_locally(m_begin_pos+m_last_idx, m_buffer_end);
-
-			if (temp)
-				return temp;
-
-			return has_next_locally(m_buffer.vector+m_last_idx-head_length, m_end_pos);
+			return (temp > 0)
+				? temp
+				: has_next_locally(m_buffer.vector+m_last_idx-head_length, m_end_pos);
 		}
 	}
 	else
@@ -225,8 +223,8 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 	if (m_bytes_count==0)
 		return m_bytes_count;
 
-	int32_t tail_length=m_end_pos-m_buffer.vector;
-	int32_t head_length=m_buffer_end-m_begin_pos;
+	auto tail_length=std::distance(m_buffer.vector, m_end_pos);
+	auto head_length=std::distance(m_begin_pos, m_buffer_end);
 
 	// determine position of finder pointer in memory block
 	if (m_last_idx<head_length)
@@ -269,7 +267,11 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 
 void CCircularBuffer::skip_characters(int32_t num_chars)
 {
-	move_pointer(&m_begin_pos, m_begin_pos+num_chars);
+	auto head_length = std::distance(m_begin_pos, m_buffer_end);
+	if (head_length >= num_chars)
+		move_pointer(&m_begin_pos, m_begin_pos+num_chars);
+	else
+		move_pointer(&m_begin_pos, m_buffer.vector+num_chars-head_length);
 
 	m_last_idx-=num_chars;
 	if (m_last_idx<0)
@@ -377,7 +379,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 
 bool CCircularBuffer::has_next_locally(char* part_begin, char* part_end)
 {
-	int32_t num_bytes_to_search=part_end-part_begin;
+	auto num_bytes_to_search=std::distance(part_begin, part_end);
 
 	SGVector<char> buffer_part(part_begin, num_bytes_to_search, false);
 	m_tokenizer->set_text(buffer_part);
@@ -388,7 +390,7 @@ bool CCircularBuffer::has_next_locally(char* part_begin, char* part_end)
 index_t CCircularBuffer::next_token_idx_locally(index_t &start, char* part_begin, char* part_end)
 {
 	index_t end=0;
-	int32_t num_bytes_to_search=part_end-part_begin;
+	auto num_bytes_to_search=std::distance(part_begin, part_end);
 	if (num_bytes_to_search<=0)
 	{
 		start=0;
@@ -411,7 +413,7 @@ index_t CCircularBuffer::next_token_idx_locally(index_t &start, char* part_begin
 
 void CCircularBuffer::move_pointer(char** pointer, char* new_position)
 {
-	*pointer=new_position;
-	if (*pointer>=m_buffer.vector+m_buffer.vlen)
-		*pointer=m_buffer.vector;
+	*pointer = (new_position >= m_buffer_end)
+		? m_buffer.vector
+		: new_position;
 }

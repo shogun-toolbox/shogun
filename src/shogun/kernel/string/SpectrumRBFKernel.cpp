@@ -26,7 +26,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <cmath>
 
 #include <assert.h>
 

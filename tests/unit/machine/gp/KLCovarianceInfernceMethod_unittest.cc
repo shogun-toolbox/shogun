@@ -46,6 +46,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(KLCovarianceInferenceMethod,get_cholesky_t_likelihood)
 {
 	// create some easy regression data:
@@ -1354,4 +1355,4 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
-
+#endif //USE_GPL_SHOGUN

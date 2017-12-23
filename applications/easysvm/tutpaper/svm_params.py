@@ -14,9 +14,9 @@ import sys,os
 
 import numpy
 import shogun
-from shogun.Kernel import GaussianKernel, LinearKernel, PolyKernel
-from shogun.Features import RealFeatures, BinaryLabels
-from shogun.Classifier import LibSVM
+from shogun import GaussianKernel, LinearKernel, PolyKernel
+from shogun import RealFeatures, BinaryLabels
+from shogun import LibSVM
 
 from numpy import arange
 import matplotlib

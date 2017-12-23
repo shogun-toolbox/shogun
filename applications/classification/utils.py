@@ -30,7 +30,7 @@
 
 import logging
 from contextlib import contextmanager
-from modshogun import MulticlassLabels, SparseRealFeatures, Time
+from shogun import MulticlassLabels, SparseRealFeatures, Time
 
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')

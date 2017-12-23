@@ -18,11 +18,11 @@
 #include <shogun/io/File.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <limits>
 #include <algorithm>
-#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {
@@ -388,8 +388,31 @@ void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 }
 
 template <class T>
-float64_t SGMatrix<T>::trace(
-	float64_t* mat, int32_t cols, int32_t rows)
+SGMatrix<T> SGMatrix<T>::submatrix(index_t col_start, index_t col_end) const
+{
+	assert_on_cpu();
+	return SGMatrix<T>(
+		get_column_vector(col_start), num_rows, col_end - col_start, false);
+}
+
+template <class T>
+SGVector<T> SGMatrix<T>::get_column(index_t col) const
+{
+	assert_on_cpu();
+	return SGVector<T>(get_column_vector(col), num_rows, false);
+}
+
+template <class T>
+void SGMatrix<T>::set_column(index_t col, const SGVector<T> vec)
+{
+	assert_on_cpu();
+	ASSERT(!vec.on_gpu())
+	ASSERT(vec.vlen == num_rows)
+	sg_memcpy(&matrix[num_rows * col], vec.vector, sizeof(T) * num_rows);
+}
+
+template <class T>
+float64_t SGMatrix<T>::trace(float64_t* mat, int32_t cols, int32_t rows)
 {
 	float64_t trace=0;
 	for (int64_t i=0; i<rows; i++)
@@ -753,170 +776,170 @@ SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 template <>
 SGMatrix<int8_t> SGMatrix<int8_t>::create_identity_matrix(index_t size, int8_t scale)
 {
-	SGMatrix<int8_t> I(size, size);
+	SGMatrix<int8_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<uint8_t> SGMatrix<uint8_t>::create_identity_matrix(index_t size, uint8_t scale)
 {
-	SGMatrix<uint8_t> I(size, size);
+	SGMatrix<uint8_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<bool> SGMatrix<bool>::create_identity_matrix(index_t size, bool scale)
 {
-	SGMatrix<bool> I(size, size);
+	SGMatrix<bool> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : (!scale);
+			identity_matrix(i,j)=i==j ? scale : (!scale);
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<int16_t> SGMatrix<int16_t>::create_identity_matrix(index_t size, int16_t scale)
 {
-	SGMatrix<int16_t> I(size, size);
+	SGMatrix<int16_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<uint16_t> SGMatrix<uint16_t>::create_identity_matrix(index_t size, uint16_t scale)
 {
-	SGMatrix<uint16_t> I(size, size);
+	SGMatrix<uint16_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<int32_t> SGMatrix<int32_t>::create_identity_matrix(index_t size, int32_t scale)
 {
-	SGMatrix<int32_t> I(size, size);
+	SGMatrix<int32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<uint32_t> SGMatrix<uint32_t>::create_identity_matrix(index_t size, uint32_t scale)
 {
-	SGMatrix<uint32_t> I(size, size);
+	SGMatrix<uint32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<int64_t> SGMatrix<int64_t>::create_identity_matrix(index_t size, int64_t scale)
 {
-	SGMatrix<int64_t> I(size, size);
+	SGMatrix<int64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<uint64_t> SGMatrix<uint64_t>::create_identity_matrix(index_t size, uint64_t scale)
 {
-	SGMatrix<uint64_t> I(size, size);
+	SGMatrix<uint64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<float32_t> SGMatrix<float32_t>::create_identity_matrix(index_t size, float32_t scale)
 {
-	SGMatrix<float32_t> I(size, size);
+	SGMatrix<float32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<float64_t> SGMatrix<float64_t>::create_identity_matrix(index_t size, float64_t scale)
 {
-	SGMatrix<float64_t> I(size, size);
+	SGMatrix<float64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, floatmax_t scale)
 {
-	SGMatrix<floatmax_t> I(size, size);
+	SGMatrix<floatmax_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : 0.0;
+			identity_matrix(i,j)=i==j ? scale : 0.0;
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 template <>
 SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t size, complex128_t scale)
 {
-	SGMatrix<complex128_t> I(size, size);
+	SGMatrix<complex128_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : complex128_t(0.0);
+			identity_matrix(i,j)=i==j ? scale : complex128_t(0.0);
 	}
 
-	return I;
+	return identity_matrix;
 }
 
 //Howto construct the pseudo inverse (from "The Matrix Cookbook")

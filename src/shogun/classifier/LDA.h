@@ -32,7 +32,7 @@ enum ELDAMethod
 	/** Singular Value Decomposition based LDA.
 	*/
 	SVD_LDA = 20,
-	/** Fisher two class discrimiant based LDA.
+	/** Fisher two class discriminant based LDA.
 	*/
 	FLD_LDA = 30
 };
@@ -55,7 +55,8 @@ template <class ST> class CDenseFeatures;
  * is maximized, where
  * \f[S_b := ({\bf m_{+1}} - {\bf m_{-1}})({\bf m_{+1}} - {\bf m_{-1}})^T \f]
  * is the between class scatter matrix and
- * \f[S_w := \sum_{c\in\{-1,+1\}}\sum_{{\bf x}\in X_{c}}({\bf x} - {\bf m_c})({\bf x} - {\bf m_c})^T \f]
+ * \f[S_w := \sum_{c\in\{-1,+1\}}\sum_{{\bf x}\in X_{c}}({\bf x} - {\bf
+ * m_c})({\bf x} - {\bf m_c})^T \f]
  * is the within class scatter matrix with mean \f${\bf m_c} :=
  * \frac{1}{N}\sum_{j=1}^N {\bf x_j^c}\f$ and \f$X_c:=\{x_1^c, \dots, x_N^c\}\f$
  * the set of examples of class c.
@@ -66,10 +67,14 @@ template <class ST> class CDenseFeatures;
  *
  * <em>::SVD_LDA</em> : Singular Valued decomposition method.
  * The above derivation of Fisher's LDA requires the invertibility of the within
- * class matrix. However, this condition gets void when there are fewer data-points
- * than dimensions. A solution is to require that \f${\bf W}\f$ lies only in the subspace
- * spanned by the data. A basis of the data \f${\bf X}\f$ is found using the thin-SVD technique
- * which returns an orthonormal non-square basis matrix \f${\bf Q}\f$. We then require the
+ * class matrix. However, this condition gets void when there are fewer
+ * data-points
+ * than dimensions. A solution is to require that \f${\bf W}\f$ lies only in the
+ * subspace
+ * spanned by the data. A basis of the data \f${\bf X}\f$ is found using the
+ * thin-SVD technique
+ * which returns an orthonormal non-square basis matrix \f${\bf Q}\f$. We then
+ * require the
  * solution \f${\bf w}\f$ to be expressed in this basis.
  * \f[{\bf W} := {\bf Q} {\bf{W^\prime}}\f]
  * The between class Matrix is replaced with:
@@ -80,8 +85,13 @@ template <class ST> class CDenseFeatures;
  * been projected down to the basis that spans the data.
  * see: Bayesian Reasoning and Machine Learning, section 16.3.1.
  *
- * <em>::AUTO_LDA</em> : This mode automagically chooses one of the above modes for
- * the users based on whether N > D (chooses ::FLD_LDA) or N < D(chooses ::SVD_LDA)
+ * <em>::AUTO_LDA</em> : This mode automagically chooses one of the above modes
+ * for
+ * the users based on whether N > D (chooses ::FLD_LDA) or N < D(chooses
+ * ::SVD_LDA)
+ * Note that even if N > D FLD_LDA may fail being the covariance matrix not
+ * invertible,
+ * in such case one should use SVD_LDA.
  * \sa CLinearMachine
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
@@ -94,19 +104,33 @@ class CLDA : public CLinearMachine
 		/** constructor
 		 *
 		 * @param gamma gamma
-		 * @param method LDA using Fisher's algorithm or Singular Value Decomposition : ::FLD_LDA/::SVD_LDA/::AUTO_LDA[default]
+		 * @param method LDA using Fisher's algorithm or Singular Value
+		 * Decomposition : ::FLD_LDA/::SVD_LDA/::AUTO_LDA[default]
+		 * @param bdc_svd when using SVD solver switch between
+		 * Bidiagonal Divide and Conquer algorithm (BDC) and
+		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
+		 * [default = BDC-SVD]
 		 */
-		CLDA(float64_t gamma=0, ELDAMethod method=AUTO_LDA);
+		CLDA(
+		    float64_t gamma = 0, ELDAMethod method = AUTO_LDA,
+		    bool bdc_svd = true);
 
 		/** constructor
 		 *
 		 * @param gamma gamma
 		 * @param traindat training features
 		 * @param trainlab labels for training features
-		 * @param method LDA using Fisher's algorithm or Singular Value Decomposition : ::FLD_LDA/::SVD_LDA/::AUTO_LDA[default]
-
+		 * @param method LDA using Fisher's algorithm or Singular Value
+		 * Decomposition : ::FLD_LDA/::SVD_LDA/::AUTO_LDA[default]
+		 * @param bdc_svd when using SVD solver switch between
+		 * Bidiagonal Divide and Conquer algorithm (BDC-SVD) and
+		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
+		 * [default = BDC-SVD]
 		 */
-		CLDA(float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab, ELDAMethod method=AUTO_LDA);
+		CLDA(
+		    float64_t gamma, CDenseFeatures<float64_t>* traindat,
+		    CLabels* trainlab, ELDAMethod method = AUTO_LDA,
+		    bool bdc_svd = true);
 		virtual ~CLDA();
 
 		/** set gamma
@@ -170,7 +194,24 @@ class CLDA : public CLinearMachine
 		 * @see train_machine
 		 */
 		template <typename ST>
-		bool train_machine_templated(SGVector<int32_t> train_labels, CFeatures * features);
+		bool train_machine_templated();
+
+		/**
+		 * Train the machine with the svd-based solver (@see CFisherLDA).
+		 * @param features training data
+		 * @param labels labels for training data
+		 */
+		template <typename ST>
+		bool solver_svd();
+
+		/**
+		 * Train the machine with the classic method based on the cholesky
+		 * decomposition of the covariance matrix.
+		 * @param features training data
+		 * @param labels labels for training data
+		 */
+		template <typename ST>
+		bool solver_classic();
 
 	protected:
 
@@ -180,6 +221,8 @@ class CLDA : public CLinearMachine
 		float64_t m_gamma;
 		/** LDA mode */
 		ELDAMethod m_method;
+		/** use bdc-svd algorithm */
+		bool m_bdc_svd;
 };
 }
 #endif//ifndef

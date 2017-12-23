@@ -427,7 +427,6 @@ bool CMKL::train_machine(CFeatures* data)
 #endif
 
 	mkl_iterations = 0;
-	CSignal::clear_cancel();
 
 	training_time_clock.start();
 
@@ -478,7 +477,7 @@ bool CMKL::train_machine(CFeatures* data)
 
 
 			mkl_iterations++;
-			if (perform_mkl_step(sumw, suma) || CSignal::cancel_computations())
+			if (perform_mkl_step(sumw, suma) || cancel_computation())
 				break;
 		}
 

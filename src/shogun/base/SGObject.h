@@ -13,15 +13,19 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/tag.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/RxCppHeader.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
+#include <shogun/lib/tag.h>
+
+#include <utility>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -33,6 +37,7 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
+class ParameterObserverInterface;
 
 template <class T, class K> class CMap;
 
@@ -119,6 +124,14 @@ enum EGradientAvailability
 class CSGObject
 {
 public:
+	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::observable<ObservedValue,
+		                      rxcpp::dynamic_observable<ObservedValue>>
+		SGObservable;
+	typedef rxcpp::subscriber<
+		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
+		SGSubscriber;
+
 	/** default constructor */
 	CSGObject();
 
@@ -326,12 +339,12 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T>
-	void set(const Tag<T>& _tag, const T& value)
+	void put(const Tag<T>& _tag, const T& value)
 	{
 		if(type_erased_has(_tag))
 		{
 			if(has<T>(_tag.name()))
-				type_erased_set(_tag, erase_type(value));
+				type_erased_put(_tag, erase_type(value));
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -351,11 +364,11 @@ public:
 	 * @param name name of the parameter
 	 * @param value value of the parameter along with type information
 	 */
-	template <typename T, typename U=void>
-	void set(const std::string& name, const T& value)
+	template <typename T, typename U = void>
+	void put(const std::string& name, const T& value)
 	{
 		Tag<T> tag(name);
-		set(tag, value);
+		put(tag, value);
 	}
 
 	/** Getter for a class parameter, identified by a Tag.
@@ -393,6 +406,23 @@ public:
 		Tag<T> tag(name);
 		return get(tag);
 	}
+
+#ifndef SWIG
+	/**
+	  * Get parameters observable
+	  * @return RxCpp observable
+	  */
+	SGObservable* get_parameters_observable()
+	{
+		return m_observable_params;
+	};
+#endif
+
+	/** Subscribe a parameter observer to watch over params */
+	void subscribe_to_parameters(ParameterObserverInterface* obs);
+
+	/** Print to stdout a list of observable parameters */
+	void list_observable_parameters();
 
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
@@ -432,7 +462,8 @@ protected:
 	virtual void save_serializable_post() throw (ShogunException);
 
 	/** Registers a class parameter which is identified by a tag.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param _tag name and type information of parameter
@@ -441,11 +472,12 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		type_erased_set(_tag, erase_type(value));
+		type_erased_put(_tag, erase_type(value));
 	}
 
 	/** Registers a class parameter which is identified by a name.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param name name of the parameter
@@ -455,7 +487,7 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		type_erased_set(tag, erase_type(value));
+		type_erased_put(tag, erase_type(value));
 	}
 
 public:
@@ -521,7 +553,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param any value without type information of the parameter
 	 */
-	void type_erased_set(const BaseTag& _tag, const Any& any);
+	void type_erased_put(const BaseTag& _tag, const Any& any);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -544,6 +576,26 @@ private:
 
 	class Self;
 	Unique<Self> self;
+
+	class ParameterObserverList;
+	Unique<ParameterObserverList> param_obs_list;
+
+protected:
+	/**
+	 * Observe a parameter value and emit them to observer.
+	 * @param value Observed parameter's value
+	 */
+	void observe(const ObservedValue value);
+
+	/**
+	 * Register which params this object can emit.
+	 * @param name the param name
+	 * @param type the param type
+	 * @param description a user oriented description
+	 */
+	void register_observable_param(
+		const std::string& name, const SG_OBS_VALUE_TYPE type,
+		const std::string& description);
 
 public:
 	/** io */
@@ -576,6 +628,15 @@ private:
 	bool m_save_post_called;
 
 	RefCount* m_refcount;
+
+	/** Subject used to create the params observer */
+	SGSubject* m_subject_params;
+
+	/** Parameter Observable */
+	SGObservable* m_observable_params;
+
+	/** Subscriber used to call onNext, onComplete etc.*/
+	SGSubscriber* m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__

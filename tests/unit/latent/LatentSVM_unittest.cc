@@ -1,8 +1,8 @@
 #include "MockLatentModel.h"
 #include <shogun/lib/config.h>
-#include <shogun/latent/LatentSVM.h>
 
 #ifdef USE_GPL_SHOGUN
+#include <shogun/latent/LatentSVM.h>
 
 using namespace shogun;
 using ::testing::Return;

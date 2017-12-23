@@ -76,6 +76,7 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	SG_REF(features);
 
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	REQUIRE(X.data(), "Features have not been provided.\n");
 
 	int n = X.num_rows;
 	int p = X.num_cols;

@@ -51,11 +51,20 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(SGVector<float64_t> src);
 
+
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
 		CMulticlassLabels(CFile* loader);
+
+		/**
+		 * Convert binary labels to multiclass labels,
+		 * namely -1 is mapped to 0 and 1 to 1.
+		 *
+		 * @param labels Binary labels
+		 */
+		CMulticlassLabels(CBinaryLabels* labels);
 
 		/** destructor */
 		~CMulticlassLabels();
@@ -126,6 +135,12 @@ class CMulticlassLabels : public CDenseLabels
 #ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy();
 #endif
+		/**
+		 * Cast a generic label object to a multiclass one
+		 * @param labels generic CLabels instance
+		 * @return the casted pointer (already SG_REF'ed)
+		 */
+		static CMulticlassLabels* obtain_from_generic(CLabels* labels);
 
 	private:
 		/** initialises and register parameters */

@@ -213,6 +213,10 @@ class FastParser:
         "staticCall : type COLON identifier LPAREN argumentList RPAREN"
         p[0] = {"StaticCall": [p[1], p[3], p[5]]}
 
+    def p_globalCall(self, p):
+        "globalCall : identifier LPAREN argumentList RPAREN"
+        p[0] = {"GlobalCall": [p[1], p[3]]}
+
     def p_indexList(self, p):
         """
         indexList : int
@@ -262,6 +266,7 @@ class FastParser:
         expr : enum
              | methodCall
              | staticCall
+             | globalCall
              | elementAccess
              | string
              | char
@@ -323,7 +328,12 @@ if __name__ == "__main__":
     argparser.add_argument("--pretty", action="store_true", help="If specified, output is pretty printed")
     argparser.add_argument("path", nargs='?', help="Path to input file. If not specified input is read from stdin")
     argparser.add_argument("--parser_files_dir", nargs='?', help='Path to directory where generated parser and lexer files should be stored.')
+    argparser.add_argument('--only_generate_parser_files', action="store_true", help="If specified, generate the parser files and quit without parsing stdin or the file at 'path'")
     args = argparser.parse_args()
+
+    if args.only_generate_parser_files:
+        FastParser(args.parser_files_dir)
+        exit(0)
 
     programString = ""
     filePath = ""

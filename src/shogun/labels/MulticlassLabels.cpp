@@ -25,6 +25,15 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 	init();
 }
 
+CMulticlassLabels::CMulticlassLabels(CBinaryLabels* labels)
+    : CDenseLabels(labels->get_num_labels())
+{
+	init();
+
+	for (index_t i = 0; i < labels->get_num_labels(); ++i)
+		m_labels[i] = (labels->get_label(i) == 1 ? 1 : 0);
+}
+
 CMulticlassLabels::~CMulticlassLabels()
 {
 }
@@ -41,8 +50,7 @@ void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 			"%s::set_multiclass_confidences(): Length of confidences should "
 			"match size of the matrix", get_name());
 
-	for (index_t j=0; j<confidences.size(); j++)
-		m_multiclass_confidences(j,i) = confidences[j];
+	m_multiclass_confidences.set_column(i, confidences);
 }
 
 SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
@@ -146,4 +154,20 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
 	return shallow_copy_labels;
+}
+
+CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
+{
+	if (labels == NULL)
+		return NULL;
+
+	if (labels->get_label_type() != LT_MULTICLASS)
+	{
+		SG_SERROR("The Labels passed cannot be casted to CMulticlassLabels!")
+		return NULL;
+	}
+
+	CMulticlassLabels* casted = dynamic_cast<CMulticlassLabels*>(labels);
+	SG_REF(casted)
+	return casted;
 }

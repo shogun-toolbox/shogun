@@ -1,6 +1,6 @@
 string( REGEX REPLACE "/scala$" "/java" CMAKE_JAVA_DIR "${CMAKE_CURRENT_BINARY_DIR}" )
 SET(CLASSPATH "${JBLAS}:${SHOGUN_JAR}:${Scala_JAR_EXECUTABLE}:${CMAKE_CURRENT_BINARY_DIR}")
-SET(JAVA_LIB_PATH "${JAVA_MODULAR_BUILD_DIR}")
+SET(JAVA_LIB_PATH "${INTERFACE_JAVA_BUILD_DIR}")
 
 # add test case for each generated example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)

@@ -48,12 +48,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "GradientEvaluation"; }
 
-	/** evaluates differentiable function for value and derivative.
-	 *
-	 * @return GradientResult containing value and gradient
-	 */
-	virtual CEvaluationResult* evaluate();
-
 	/** set differentiable function
 	*
 	* @param diff differentiable function
@@ -78,6 +72,12 @@ public:
 private:
 	/** initialses and registers parameters */
 	void init();
+
+	/** evaluates differentiable function for value and derivative.
+	 *
+	 * @return GradientResult containing value and gradient
+	 */
+	virtual CEvaluationResult* evaluate_impl();
 
 	/** updates parameter dictionary of differentiable function */
 	void update_parameter_dictionary();

@@ -8,13 +8,15 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -61,11 +63,10 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
 
-	CSignal::clear_cancel();
-
 	int32_t num_threads;
 	int32_t step;
-	#pragma omp parallel shared(num_threads, step)
+	auto pb = progress(range(num_vectors), *this->io);
+#pragma omp parallel shared(num_threads, step)
 	{
 #ifdef HAVE_OPENMP
 		#pragma omp single
@@ -80,7 +81,6 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		step=num_vectors;
 		int32_t thread_num=0;
 #endif
-		bool progress=false; // (thread_num == 0);
 
 		int32_t t_start=thread_num*step;
 		int32_t t_stop=(thread_num==num_threads) ? stop : (thread_num+1)*step;
@@ -88,23 +88,20 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
 #else
-		for (int32_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)
 				output[i]=alphas[i]*this->dense_dot(i, vec, dim)+b;
 			else
 				output[i]=this->dense_dot(i, vec, dim)+b;
-			if (progress)
-				this->display_progress(t_start, t_stop, i);
+			pb.print_progress();
 		}
 	}
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
+	pb.complete();
 }
 
 void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
@@ -112,8 +109,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	ASSERT(sub_index)
 	ASSERT(output)
 
-	CSignal::clear_cancel();
-
+	auto pb = progress(range(num), *this->io);
 	int32_t num_threads;
 	int32_t step;
 	#pragma omp parallel shared(num_threads, step)
@@ -131,7 +127,6 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		step = num;
 		int32_t thread_num=0;
 #endif
-		bool progress=false; // (thread_num == 0);
 
 		int32_t t_start=thread_num*step;
 		int32_t t_stop=(thread_num==num_threads) ? num : (thread_num+1)*step;
@@ -139,23 +134,20 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
 #else
-		for (int32_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)
 				output[i]=alphas[sub_index[i]]*this->dense_dot(sub_index[i], vec, dim)+b;
 			else
 				output[i]=this->dense_dot(sub_index[i], vec, dim)+b;
-			if (progress)
-				this->display_progress(t_start, t_stop, i);
+			pb.print_progress();
 		}
 	}
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
+	pb.complete();
 }
 
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
@@ -266,17 +258,18 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	linalg::zero(mean);
 
-	for (int i = 0; i < num; i++)
+	for (int32_t i = 0; i < num; ++i)
 		add_to_dense_vec(1, i, mean.vector, dim);
-	for (int j = 0; j < dim; j++)
-		mean.vector[j] /= num;
+
+	linalg::scale(mean, mean, 1.0 / num);
 
 	return mean;
 }
 
-SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
+SGVector<float64_t>
+CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 {
 	ASSERT(lhs && rhs)
 	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space())
@@ -289,19 +282,20 @@ SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	linalg::zero(mean);
 
 	for (int i = 0; i < num_lhs; i++)
 		lhs->add_to_dense_vec(1, i, mean.vector, dim);
+
 	for (int i = 0; i < num_rhs; i++)
 		rhs->add_to_dense_vec(1, i, mean.vector, dim);
-	for (int j = 0; j < dim; j++)
-		mean.vector[j] /= (num_lhs+num_rhs);
+
+	linalg::scale(mean, mean, 1.0 / (num_lhs + num_rhs));
 
 	return mean;
 }
 
-SGMatrix<float64_t> CDotFeatures::get_cov()
+SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed)
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -309,41 +303,44 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 	ASSERT(dim>0)
 
 	SGMatrix<float64_t> cov(dim, dim);
-
-	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
-
 	SGVector<float64_t> mean = get_mean();
 
-	for (int i = 0; i < num; i++)
+	if (copy_data_for_speed)
 	{
-		SGVector<float64_t> v = get_computed_dot_feature_vector(i);
-		SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
-		for (int m = 0; m < v.vlen; m++)
+		SGMatrix<float64_t> centered_data(dim, num);
+		for (int i = 0; i < num; i++)
 		{
-			for (int n = 0; n <= m ; n++)
+			SGVector<float64_t> v = get_computed_dot_feature_vector(i);
+			centered_data.set_column(i, linalg::add(v, mean, 1.0, -1.0));
+		}
+
+		cov = linalg::matrix_prod(centered_data, centered_data, false, true);
+	}
+	else
+	{
+		linalg::zero(cov);
+		for (int i = 0; i < num; i++)
+		{
+			SGVector<float64_t> v = get_computed_dot_feature_vector(i);
+			linalg::add(v, mean, v, 1.0, -1.0);
+			for (int m = 0; m < v.vlen; m++)
+				linalg::add_col_vec(cov, m, v, cov, 1.0, v.vector[m]);
+		}
+		for (int m = 0; m < dim - 1; m++)
+		{
+			for (int n = m + 1; n < dim; n++)
 			{
-				(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
+				(cov.matrix)[m * dim + n] = (cov.matrix)[n * dim + m];
 			}
 		}
 	}
-	for (int m = 0; m < dim; m++)
-	{
-		for (int n = 0; n <= m ; n++)
-		{
-			(cov.matrix)[m*dim+n] /= num;
-		}
-	}
-	for (int m = 0; m < dim-1; m++)
-	{
-		for (int n = m+1; n < dim; n++)
-		{
-			(cov.matrix)[m*dim+n] = (cov.matrix)[n*dim+m];
-		}
-	}
+	linalg::scale(cov, cov, 1.0 / num);
+
 	return cov;
 }
 
-SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* rhs)
+SGMatrix<float64_t> CDotFeatures::compute_cov(
+    CDotFeatures* lhs, CDotFeatures* rhs, bool copy_data_for_speed)
 {
 	CDotFeatures* feats[2];
 	feats[0]=lhs;
@@ -364,51 +361,48 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	int32_t dim = dims[0];
 
 	SGMatrix<float64_t> cov(dim, dim);
+	SGVector<float64_t> mean = compute_mean(lhs, rhs);
 
-	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
-
-	SGVector<float64_t>  mean=get_mean(lhs,rhs);
-
-	for (int i = 0; i < 2; i++)
+	if (copy_data_for_speed)
 	{
-		for (int j = 0; j < nums[i]; j++)
+		SGMatrix<float64_t> centered_data(dim, num);
+		for (int i = 0; i < num; i++)
 		{
-			SGVector<float64_t> v = feats[i]->get_computed_dot_feature_vector(j);
-			SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
-			for (int m = 0; m < v.vlen; m++)
+			SGVector<float64_t> v =
+			    i < nums[0] ? lhs->get_computed_dot_feature_vector(i)
+			                : rhs->get_computed_dot_feature_vector(i - nums[0]);
+
+			centered_data.set_column(i, linalg::add(v, mean, 1.0, -1.0));
+		}
+
+		cov = linalg::matrix_prod(centered_data, centered_data, false, true);
+	}
+	else
+	{
+		linalg::zero(cov);
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < nums[i]; j++)
 			{
-				for (int n = 0; n <= m; n++)
-				{
-					(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
-				}
+				SGVector<float64_t> v =
+				    feats[i]->get_computed_dot_feature_vector(j);
+				linalg::add(v, mean, v, 1.0, -1.0);
+				for (int m = 0; m < v.vlen; m++)
+					linalg::add_col_vec(cov, m, v, cov, 1.0, v.vector[m]);
+			}
+		}
+
+		for (int m = 0; m < dim - 1; m++)
+		{
+			for (int n = m + 1; n < dim; n++)
+			{
+				(cov.matrix[m * dim + n]) = (cov.matrix)[n * dim + m];
 			}
 		}
 	}
-	for (int m = 0; m < dim; m++)
-	{
-		for (int n = 0; n <= m; n++)
-		{
-			(cov.matrix)[m*dim+n] /= num;
-		}
-	}
-	for (int m = 0; m < dim-1; m++)
-	{
-		for (int n = m+1; n < dim; n++)
-		{
-			(cov.matrix[m*dim+n]) = (cov.matrix)[n*dim+m];
-		}
-	}
+	linalg::scale(cov, cov, 1.0 / num);
 
 	return cov;
-}
-
-void CDotFeatures::display_progress(int32_t start, int32_t stop, int32_t v)
-{
-	int32_t num_vectors=stop-start;
-	int32_t i=v-start;
-
-	if ( (i% (num_vectors/100+1))== 0)
-		SG_PROGRESS(v, 0.0, num_vectors-1)
 }
 
 void CDotFeatures::init()

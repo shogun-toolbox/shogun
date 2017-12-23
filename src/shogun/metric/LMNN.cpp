@@ -10,9 +10,9 @@
 
 #include <shogun/metric/LMNN.h>
 
-
-#include <shogun/metric/LMNNImpl.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/metric/LMNNImpl.h>
 
 // useful shorthand to perform operations with Eigen matrices
 // trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')
@@ -93,11 +93,12 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Make space for the training statistics
 	m_statistics->resize(m_maxiter);
 
+	// Progress bar
+	auto pb = progress(range(m_maxiter), *this->io);
+
 	// Main loop
 	while (!stop)
 	{
-		SG_PROGRESS(iter, 0, m_maxiter)
-
 		// Find current set of impostors
 		SG_DEBUG("Finding impostors.\n")
 		cur_impostors = CLMNNImpl::find_impostors(x,y,L,target_nn,iter,m_correction);
@@ -131,7 +132,11 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		SG_DEBUG("iteration=%d, objective=%.4f, #impostors=%4d, stepsize=%.4E\n",
 				iter, obj[iter-1], cur_impostors.size(), stepsize)
+
+		// Print progress bar iteration
+		pb.print_progress();
 	}
+	pb.complete();
 
 	// Truncate statistics in case convergence was reached in less than maxiter
 	m_statistics->resize(iter);

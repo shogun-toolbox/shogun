@@ -49,7 +49,6 @@ The steps are
     Read error messages and use the internet to find solutions.
     Compile errors are the easiest to fix!
     If all that does not help, ask us.
-
 7. Commit locally, using neat and informative commit messages, grouping commits, potentially iterate over more changes to the code,
 
         git commit FILENAME(S) -m "Fix issue #1234"
@@ -63,22 +62,29 @@ The steps are
 
         git reset --soft HEAD~3
         git commit -m 'Clear commit message'
+8. Check if the code was written in conformity with the  [Shogun Code Style Guidelines](https://github.com/shogun-toolbox/shogun/wiki/Code-style), or the Continuous Integration will fail.
+Shogun has a custom script called `check_format.sh` which can be used to verify the code formatting.
 
-8. [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) against shogun's develop branch.
+        ./scripts/check_format.sh "feature/BRANCH_NAME" "develop"
+
+    The script will provide you with the necessary information to fix potential style errors. All of this is done by
+    using [clang-format](https://clang.llvm.org/docs/ClangFormat.html). Make sure to have it installed
+    on your local machine, or the above script won't work. Update the commit once you have fixed the errors.
+9. [Rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) against shogun's develop branch.
     This might cause rebase errors, which you need to [solve](https://help.github.com/articles/resolving-merge-conflicts-after-a-git-rebase/)
 
         git pull --rebase upstream develop
 
-9. Push your commits to your fork
+10. Push your commits to your fork
 
         git push origin feature/BRANCH_NAME
 
     If you squashed or amended commits after you had pushed already, you might be required to force push via using the `git push -f` option **with care**.
 
-10. Send a [pull request](https://help.github.com/articles/about-pull-requests/) (PR) via GitHub.
+11. Send a [pull request](https://help.github.com/articles/about-pull-requests/) (PR) via GitHub.
     As described above, you can always **update** a pull request using the the `git push -f` option. Please **do not** close and send new ones instead, always update.
 
-11. Once the PR is merged, keep an eye on the [buildfarm](#buildfarm) to see whether your patch broke something.
+12. Once the PR is merged, keep an eye on the [buildfarm](#buildfarm) to see whether your patch broke something.
 
 ## Requirements for merging your PR
  * Read some [tips](http://blog.ploeh.dk/2015/01/15/10-tips-for-better-pull-requests/) on how to write good pull requests.

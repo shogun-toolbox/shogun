@@ -1,11 +1,9 @@
-The Shogun Machine learning toolbox offers a wide range of efficient and unified Machine Learning methods.
-
+Shogun is and open-source machine learning library that offers a wide range of efficient and unified machine learning methods.
 
 #### Shogun is accessible
 
 * Supports many languages (Python, Octave, R, Java/Scala, Lua, C#, Ruby, etc) and platforms (Linux/Unix, MacOS and Windows) and integrates with their scientific computing environments.
 * Try Shogun in the [cloud](https://cloud.shogun.ml) from your browser.
-
 
 #### Shogun is state-of-the-art
 

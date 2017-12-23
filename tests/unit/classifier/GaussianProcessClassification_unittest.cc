@@ -66,68 +66,397 @@
 
 using namespace shogun;
 
-TEST(GaussianProcessClassification,get_mean_vector)
+#ifdef USE_GPL_SHOGUN
+class GaussianProcessClassification : public ::testing::Test
 {
-	// create some easy random classification data
-	index_t n=10, m=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
+public:
+	virtual void SetUp()
 	{
-		for (index_t x2=-2; x2<=2; x2++)
+		// create some easy random classification data
+		index_t i = 0;
+
+		SGMatrix<float64_t> feat_train(2, n);
+		SGVector<float64_t> lab_train(n);
+		SGMatrix<float64_t> feat_test(2, m);
+
+		feat_train(0, 0) = 0.0919736;
+		feat_train(0, 1) = -0.3813827;
+		feat_train(0, 2) = -1.8011128;
+		feat_train(0, 3) = -1.4603061;
+		feat_train(0, 4) = -0.1386884;
+		feat_train(0, 5) = 0.7827657;
+		feat_train(0, 6) = -0.1369808;
+		feat_train(0, 7) = 0.0058596;
+		feat_train(0, 8) = 0.1059573;
+		feat_train(0, 9) = -1.3059609;
+
+		feat_train(1, 0) = 1.4186892;
+		feat_train(1, 1) = 0.2271813;
+		feat_train(1, 2) = 0.3451326;
+		feat_train(1, 3) = 0.4495962;
+		feat_train(1, 4) = 1.2066144;
+		feat_train(1, 5) = -0.5425118;
+		feat_train(1, 6) = 1.3479000;
+		feat_train(1, 7) = 0.7181545;
+		feat_train(1, 8) = 0.4036014;
+		feat_train(1, 9) = 0.8928408;
+
+		lab_train[0] = 1.0;
+		lab_train[1] = -1.0;
+		lab_train[2] = -1.0;
+		lab_train[3] = -1.0;
+		lab_train[4] = -1.0;
+		lab_train[5] = 1.0;
+		lab_train[6] = -1.0;
+		lab_train[7] = 1.0;
+		lab_train[8] = 1.0;
+		lab_train[9] = -1.0;
+
+		// create test features
+		for (index_t x1 = -2; x1 <= 2; x1++)
 		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
+			for (index_t x2 = -2; x2 <= 2; x2++)
+			{
+				feat_test(0, i) = (float64_t)x1;
+				feat_test(1, i) = (float64_t)x2;
+				i++;
+			}
 		}
+
+		// shogun representation of features and labels
+		features_train = new CDenseFeatures<float64_t>(feat_train);
+		labels_train = new CBinaryLabels(lab_train);
+		features_test = new CDenseFeatures<float64_t>(feat_test);
+		SG_REF(features_train);
+		SG_REF(labels_train);
+		SG_REF(features_test);
+
+		// choose Gaussian kernel with sigma = 2 and zero mean function
+		kernel = new CGaussianKernel(10, 2);
+		mean = new CZeroMean();
+
+		SG_REF(kernel);
+		SG_REF(mean);
 	}
 
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	virtual void TearDown()
+	{
+		SG_UNREF(features_train);
+		SG_UNREF(labels_train);
+		SG_UNREF(features_test);
+		SG_UNREF(kernel);
+		SG_UNREF(mean);
+	}
+	const index_t m = 25;
+	const index_t n = 10;
+	CDenseFeatures<float64_t>* features_train;
+	CBinaryLabels* labels_train;
+	CDenseFeatures<float64_t>* features_test;
+	CGaussianKernel* kernel;
+	CZeroMean* mean;
+};
 
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+class GaussianProcessClassificationUsingSingleLaplaceWithLBFGS
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
 
+		// probit likelihood
+		CProbitLikelihood* likelihood = new CProbitLikelihood();
+
+		// specify GP classification with SingleLaplace inference
+		CSingleLaplaceInferenceMethod* inf = new CSingleLaplaceInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE;
+		CLBFGSMinimizer* opt = new CLBFGSMinimizer();
+		opt->set_lbfgs_parameters(
+		    m, max_linesearch, linesearch, max_iterations, delta, past,
+		    epsilon);
+		inf->register_minimizer(opt);
+
+		// train Gaussian process binary classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	const int m = 100;
+	const int max_linesearch = 1000;
+	const int max_iterations = 1000;
+	const float64_t delta = 1e-15;
+	const int past = 0;
+	const float64_t epsilon = 1e-15;
+	CGaussianProcessClassification* gpc;
+};
+
+class GaussianProcessClassificationUsingKLCovariance
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
+
+		// probit likelihood
+		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+
+		CKLCovarianceInferenceMethod* inf = new CKLCovarianceInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+
+		// train Gaussian process binary classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	CGaussianProcessClassification* gpc;
+};
+
+class GaussianProcessClassificationUsingKLCholesky
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
+
+		// probit likelihood
+		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+
+		CKLCholeskyInferenceMethod* inf = new CKLCholeskyInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+
+		// train Gaussian process binary classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	CGaussianProcessClassification* gpc;
+};
+
+class GaussianProcessClassificationUsingKLDiagonal
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
+
+		// probit likelihood
+		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+
+		CKLDiagonalInferenceMethod* inf = new CKLDiagonalInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+
+		// train Gaussian process binary classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	CGaussianProcessClassification* gpc;
+};
+
+class GaussianProcessClassificationUsingKLDual
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
+
+		// probit likelihood
+		CLogitDVGLikelihood* likelihood = new CLogitDVGLikelihood();
+
+		CKLDualInferenceMethod* inf = new CKLDualInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+
+		// train Gaussian process binary classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	CGaussianProcessClassification* gpc;
+};
+
+#if defined HAVE_NLOPT
+class GaussianProcessClassificationUsingSingleLaplaceWithNLOPT
+    : public GaussianProcessClassification
+{
+public:
+	virtual void SetUp()
+	{
+		GaussianProcessClassification::SetUp();
+
+		// probit likelihood
+		CProbitLikelihood* likelihood = new CProbitLikelihood();
+		SG_REF(likelihood);
+
+		// specify GP classification with SingleLaplace inference
+		CSingleLaplaceInferenceMethod* inf = new CSingleLaplaceInferenceMethod(
+		    kernel, features_train, mean, labels_train, likelihood);
+		FirstOrderMinimizer* opt = new CNLOPTMinimizer();
+		inf->register_minimizer(opt);
+
+		// train gaussian process classifier
+		gpc = new CGaussianProcessClassification(inf);
+		gpc->train();
+	}
+	virtual void TearDown()
+	{
+		GaussianProcessClassification::TearDown();
+		SG_UNREF(gpc);
+	}
+	float64_t abs_tolerance;
+	const float64_t rel_tolerance = 1e-2;
+	CGaussianProcessClassification* gpc;
+};
+#endif // HAVE_NLOPT
+
+class GaussianProcessClassificationUsingSingleFITCLaplace
+    : public ::testing::Test
+{
+public:
+	virtual void SetUp()
+	{
+		SGMatrix<float64_t> feat_train(dim, n);
+		SGMatrix<float64_t> lat_feat_train(dim, m);
+		SGVector<float64_t> lab_train(n);
+		feat_train(0, 0) = -0.81263;
+		feat_train(0, 1) = -0.99976;
+		feat_train(0, 2) = 1.17037;
+		feat_train(0, 3) = -1.51752;
+		feat_train(0, 4) = 8.57765;
+		feat_train(0, 5) = 3.89440;
+
+		feat_train(1, 0) = -0.5;
+		feat_train(1, 1) = 5.4576;
+		feat_train(1, 2) = 7.17637;
+		feat_train(1, 3) = -2.56752;
+		feat_train(1, 4) = 4.57765;
+		feat_train(1, 5) = 2.89440;
+
+		lat_feat_train(0, 0) = 1.00000;
+		lat_feat_train(0, 1) = 23.00000;
+		lat_feat_train(0, 2) = 4.00000;
+
+		lat_feat_train(1, 0) = 3.00000;
+		lat_feat_train(1, 1) = 2.00000;
+		lat_feat_train(1, 2) = -5.00000;
+
+		lab_train[0] = 1;
+		lab_train[1] = -1;
+		lab_train[2] = 1;
+		lab_train[3] = 1;
+		lab_train[4] = -1;
+		lab_train[5] = -1;
+
+		// shogun representation of features and labels
+		CDenseFeatures<float64_t>* features_train =
+		    new CDenseFeatures<float64_t>(feat_train);
+		CDenseFeatures<float64_t>* latent_features_train =
+		    new CDenseFeatures<float64_t>(lat_feat_train);
+		CBinaryLabels* labels_train = new CBinaryLabels(lab_train);
+
+		// choose Gaussian kernel with sigma = 2 and zero mean function
+		CGaussianARDSparseKernel* kernel = new CGaussianARDSparseKernel(10);
+		int32_t t_dim = 2;
+		SGMatrix<float64_t> weights(t_dim, dim);
+		// the weights is a lower triangular matrix
+		float64_t weight1 = 0.02;
+		float64_t weight2 = -0.4;
+		float64_t weight3 = 0;
+		float64_t weight4 = 0.01;
+		weights(0, 0) = weight1;
+		weights(1, 0) = weight2;
+		weights(0, 1) = weight3;
+		weights(1, 1) = weight4;
+		kernel->set_matrix_weights(weights);
+
+		float64_t mean_weight = 2.0;
+		CConstMean* mean = new CConstMean(mean_weight);
+
+		CLogitLikelihood* lik = new CLogitLikelihood();
+
+		// specify GP regression with FITC inference
+		CSingleFITCLaplaceInferenceMethod* inf =
+		    new CSingleFITCLaplaceInferenceMethod(
+		        kernel, features_train, mean, labels_train, lik,
+		        latent_features_train);
+		SG_UNREF(latent_features_train);
+
+		float64_t ind_noise = 1e-6;
+		inf->set_inducing_noise(ind_noise);
+
+		float64_t scale = 4.0;
+		inf->set_scale(scale);
+
+		int32_t k = 4;
+		SGMatrix<float64_t> feat_test(dim, k);
+		feat_test(0, 0) = -0.81263;
+		feat_test(0, 1) = 5.4576;
+		feat_test(0, 2) = -0.239;
+		feat_test(0, 3) = 2.45;
+
+		feat_test(1, 0) = -0.5;
+		feat_test(1, 1) = 0.69979;
+		feat_test(1, 2) = 2.3546;
+		feat_test(1, 3) = -0.46;
+
+		features_test = new CDenseFeatures<float64_t>(feat_test);
+
+		gpc = new CGaussianProcessClassification(inf);
+
+		// train model
+		gpc->train();
+	}
+
+	virtual void TearDown()
+	{
+		SG_UNREF(gpc);
+	}
+	const index_t n = 6;
+	const index_t dim = 2;
+	const index_t m = 3;
+	const float64_t rel_tolorance = 1e-2;
+	float64_t abs_tolorance;
+	CGaussianProcessClassification* gpc;
+	CDenseFeatures<float64_t>* features_test;
+};
+
+TEST_F(GaussianProcessClassification, get_mean_vector)
+{
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
@@ -171,68 +500,8 @@ TEST(GaussianProcessClassification,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassification,get_variance_vector)
+TEST_F(GaussianProcessClassification, get_variance_vector)
 {
-	// create some easy random classification data
-	index_t n=10, m=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
@@ -276,68 +545,8 @@ TEST(GaussianProcessClassification,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassification,get_probabilities)
+TEST_F(GaussianProcessClassification, get_probabilities)
 {
-	// create some easy random classification data
-	index_t n=10, m=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
@@ -381,64 +590,8 @@ TEST(GaussianProcessClassification,get_probabilities)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
+TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 {
-	// create some easy random classification data
-	index_t n=10, m=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
 	CRescaleFeatures* preproc=new CRescaleFeatures();
 	preproc->init(features_train);
 
@@ -447,10 +600,6 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 
 	features_test->add_preprocessor(preproc);
 	features_test->apply_preprocessor();
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
 
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
@@ -462,7 +611,6 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
 
 	// compare predictions with result form GPML
 	CBinaryLabels* prediction=gpc->apply_binary(features_test);
@@ -495,107 +643,13 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 	EXPECT_EQ(p[23], 1);
 	EXPECT_EQ(p[24], 1);
 
-	SG_UNREF(gpc);
 	SG_UNREF(prediction);
+	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
+TEST_F(
+    GaussianProcessClassificationUsingSingleLaplaceWithLBFGS, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
-
-	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-	= new CSingleLaplaceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	int m = 100;
-	int max_linesearch = 1000;
-	int max_iterations = 1000;
-	float64_t delta = 1e-15;
-	int past = 0;
-	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
-	opt->set_lbfgs_parameters(m,
-		max_linesearch,
-		linesearch,
-		max_iterations,
-		delta,
-		past,
-		epsilon
-		);
-	inf->register_minimizer(opt);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form GPML with the minfunc function
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
 
@@ -677,107 +731,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
 	EXPECT_NEAR(mean_vector[23], 0.113006930991411, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.041654120309486, rel_tolerance);
 	EXPECT_NEAR(mean_vector[24], 0.041654120309486, abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vector)
+TEST_F(
+    GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,
+    get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
-
-	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
-			features_train,
-			mean,
-			labels_train,
-			likelihood);
-
-	int m = 100;
-	int max_linesearch = 1000;
-	int max_iterations = 1000;
-	float64_t delta = 1e-15;
-	int past = 0;
-	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
-	opt->set_lbfgs_parameters(m,
-		max_linesearch,
-		linesearch,
-		max_iterations,
-		delta,
-		past,
-		epsilon
-		);
-	inf->register_minimizer(opt);
-
-	// train gaussian process classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare variance vector with result form GPML with the minfunc function
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
 	/*variance =
@@ -858,104 +817,11 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vecto
 	EXPECT_NEAR(variance_vector[23], 0.987229433547902, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.998264934261243, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24], 0.998264934261243, abs_tolerance);
-
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
+TEST_F(
+    GaussianProcessClassificationUsingSingleLaplaceWithLBFGS, get_probabilities)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
-
-	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
-			features_train, mean, labels_train, likelihood);
-
-	int m = 100;
-	int max_linesearch = 1000;
-	int max_iterations = 1000;
-	float64_t delta = 1e-15;
-	int past = 0;
-	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
-	opt->set_lbfgs_parameters(m,
-		max_linesearch,
-		linesearch,
-		max_iterations,
-		delta,
-		past,
-		epsilon
-		);
-	inf->register_minimizer(opt);
-
-	// train gaussian process classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare probabilities with result form GPML with the minfunc function
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
 
@@ -1037,88 +903,10 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
 	EXPECT_NEAR(probabilities[23], 0.556503466053284, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.520827060710866, rel_tolerance);
 	EXPECT_NEAR(probabilities[24], 0.520827060710866, abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLCovariance,get_mean_vector)
+TEST_F(GaussianProcessClassificationUsingKLCovariance, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCovarianceInferenceMethod* inf
-	= new CKLCovarianceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
@@ -1201,88 +989,10 @@ TEST(GaussianProcessClassificationUsingKLCovariance,get_mean_vector)
 	EXPECT_NEAR(mean_vector[23],  0.061931242381067,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.020693347644828, rel_tolerance);
 	EXPECT_NEAR(mean_vector[24],  0.020693347644828,  abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLCovariance, get_variance_vector)
+TEST_F(GaussianProcessClassificationUsingKLCovariance, get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCovarianceInferenceMethod* inf
-	= new CKLCovarianceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
@@ -1364,89 +1074,10 @@ TEST(GaussianProcessClassificationUsingKLCovariance, get_variance_vector)
 	EXPECT_NEAR(variance_vector[23],  0.996164521217137,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.999571785363250, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24],  0.999571785363250,  abs_tolerance);
+}
 
-	SG_UNREF(gpc);
-	}
-
-
-TEST(GaussianProcessClassificationUsingKLCovariance, get_probabilities)
+TEST_F(GaussianProcessClassificationUsingKLCovariance, get_probabilities)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCovarianceInferenceMethod* inf
-	= new CKLCovarianceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
@@ -1528,88 +1159,10 @@ TEST(GaussianProcessClassificationUsingKLCovariance, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.530965621190533,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.510346673822414, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.510346673822414,  abs_tolerance);
+}
 
-	SG_UNREF(gpc);
-	}
-
-TEST(GaussianProcessClassificationUsingKLCholesky,get_mean_vector)
+TEST_F(GaussianProcessClassificationUsingKLCholesky, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCholeskyInferenceMethod* inf
-	= new CKLCholeskyInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
@@ -1665,115 +1218,37 @@ TEST(GaussianProcessClassificationUsingKLCholesky,get_mean_vector)
 	abs_tolerance = CMath::get_abs_tolerance(0.036264654510887, rel_tolerance);
 	EXPECT_NEAR(mean_vector[10],  0.036264654510887,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.092272078760991, rel_tolerance);
-	EXPECT_NEAR(mean_vector[11],  0.092272078760991,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[11], 0.092272078760991, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.081310502536392, rel_tolerance);
-	EXPECT_NEAR(mean_vector[12],  0.081310502536392,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[12], 0.081310502536392, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.018547648424229, rel_tolerance);
-	EXPECT_NEAR(mean_vector[13],  -0.018547648424229,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[13], -0.018547648424229, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.050537947293429, rel_tolerance);
-	EXPECT_NEAR(mean_vector[14],  -0.050537947293429,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[14], -0.050537947293429, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.057339417937389, rel_tolerance);
-	EXPECT_NEAR(mean_vector[15],  0.057339417937389,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[15], 0.057339417937389, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.173526475014741, rel_tolerance);
-	EXPECT_NEAR(mean_vector[16],  0.173526475014741,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[16], 0.173526475014741, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.232076894647369, rel_tolerance);
-	EXPECT_NEAR(mean_vector[17],  0.232076894647369,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[17], 0.232076894647369, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.145465719897800, rel_tolerance);
-	EXPECT_NEAR(mean_vector[18],  0.145465719897800,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[18], 0.145465719897800, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.040425760762898, rel_tolerance);
-	EXPECT_NEAR(mean_vector[19],  0.040425760762898,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[19], 0.040425760762898, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.027867843552160, rel_tolerance);
-	EXPECT_NEAR(mean_vector[20],  0.027867843552160,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[20], 0.027867843552160, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.080847982901803, rel_tolerance);
-	EXPECT_NEAR(mean_vector[21],  0.080847982901803,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[21], 0.080847982901803, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.100974911211954, rel_tolerance);
-	EXPECT_NEAR(mean_vector[22],  0.100974911211954,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[22], 0.100974911211954, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.061946134714323, rel_tolerance);
-	EXPECT_NEAR(mean_vector[23],  0.061946134714323,  abs_tolerance);
+	EXPECT_NEAR(mean_vector[23], 0.061946134714323, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.020730861749702, rel_tolerance);
-	EXPECT_NEAR(mean_vector[24],  0.020730861749702,  abs_tolerance);
-
-	SG_UNREF(gpc);
+	EXPECT_NEAR(mean_vector[24], 0.020730861749702, abs_tolerance);
 }
 
-TEST(GaussianProcessClassificationUsingKLCholesky, get_variance_vector)
+TEST_F(GaussianProcessClassificationUsingKLCholesky, get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCovarianceInferenceMethod* inf
-	= new CKLCovarianceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
@@ -1855,88 +1330,10 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_variance_vector)
 	EXPECT_NEAR(variance_vector[23],  0.996162676393955,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.999570231371115, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24],  0.999570231371115,  abs_tolerance);
+}
 
-	SG_UNREF(gpc);
-	}
-
-TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
+TEST_F(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLCholeskyInferenceMethod* inf
-	= new CKLCholeskyInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
@@ -2018,88 +1415,10 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.530973067357162,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.510365430874851, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.510365430874851,  abs_tolerance);
+}
 
-	SG_UNREF(gpc);
-	}
-
-TEST(GaussianProcessClassificationUsingKLDiagonal,get_mean_vector)
+TEST_F(GaussianProcessClassificationUsingKLDiagonal, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLDiagonalInferenceMethod* inf
-	= new CKLDiagonalInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
@@ -2182,88 +1501,10 @@ TEST(GaussianProcessClassificationUsingKLDiagonal,get_mean_vector)
 	EXPECT_NEAR(mean_vector[23],  0.061674380497058,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.020610276974189, rel_tolerance);
 	EXPECT_NEAR(mean_vector[24],  0.020610276974189,  abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLDiagonal, get_variance_vector)
+TEST_F(GaussianProcessClassificationUsingKLDiagonal, get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLDiagonalInferenceMethod* inf
-	= new CKLDiagonalInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
@@ -2345,88 +1586,10 @@ TEST(GaussianProcessClassificationUsingKLDiagonal, get_variance_vector)
 	EXPECT_NEAR(variance_vector[23],  0.996196270790304,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.999575216483047, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24],  0.999575216483047,  abs_tolerance);
+}
 
-	SG_UNREF(gpc);
-	}
-
-TEST(GaussianProcessClassificationUsingKLDiagonal, get_probabilities)
+TEST_F(GaussianProcessClassificationUsingKLDiagonal, get_probabilities)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
-
-	CKLDiagonalInferenceMethod* inf
-	= new CKLDiagonalInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
@@ -2505,91 +1668,13 @@ TEST(GaussianProcessClassificationUsingKLDiagonal, get_probabilities)
 	abs_tolerance = CMath::get_abs_tolerance(0.549808449840269, rel_tolerance);
 	EXPECT_NEAR(probabilities[22],  0.549808449840269,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.530837190248529, rel_tolerance);
-	EXPECT_NEAR(probabilities[23],  0.530837190248529,  abs_tolerance);
+	EXPECT_NEAR(probabilities[23], 0.530837190248529, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.510305138487094, rel_tolerance);
-	EXPECT_NEAR(probabilities[24],  0.510305138487094,  abs_tolerance);
-
-	SG_UNREF(gpc);
+	EXPECT_NEAR(probabilities[24], 0.510305138487094, abs_tolerance);
 }
 
-TEST(GaussianProcessClassificationUsingKLDual,get_mean_vector)
+TEST_F(GaussianProcessClassificationUsingKLDual, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
-
-	CKLDualInferenceMethod* inf
-	= new CKLDualInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
@@ -2672,88 +1757,10 @@ TEST(GaussianProcessClassificationUsingKLDual,get_mean_vector)
 	EXPECT_NEAR(mean_vector[23],  0.053864726312313,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.017338490592413, rel_tolerance);
 	EXPECT_NEAR(mean_vector[24],  0.017338490592413,  abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLDual, get_variance_vector)
+TEST_F(GaussianProcessClassificationUsingKLDual, get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
-
-	CKLDualInferenceMethod* inf
-	= new CKLDualInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	//
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
@@ -2835,88 +1842,10 @@ TEST(GaussianProcessClassificationUsingKLDual, get_variance_vector)
 	EXPECT_NEAR(variance_vector[23],  0.997098591259300,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.999699376743977, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24],  0.999699376743977,  abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
+TEST_F(GaussianProcessClassificationUsingKLDual, get_probabilities)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
-
-	CKLDualInferenceMethod* inf
-	= new CKLDualInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form the following Matlab code with the minfunc function
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
 	/*probabilities=
@@ -2997,11 +1926,9 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.526932363156156,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.508669245296206, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.508669245296206,  abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplace,get_mean_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3145,7 +2072,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplace,get_variance_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3290,7 +2217,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
+TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 {
 	index_t n=5;
 
@@ -3359,90 +2286,10 @@ TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
 	SG_UNREF(prediction);
 }
 
-#ifdef USE_GPL_SHOGUN
 #if defined HAVE_NLOPT
-TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_mean_vector)
+TEST_F(
+    GaussianProcessClassificationUsingSingleLaplaceWithNLOPT, get_mean_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
-
-	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-	= new CSingleLaplaceInferenceMethod(kernel,
-		features_train,
-		mean,
-		labels_train,
-		likelihood);
-
-	FirstOrderMinimizer* opt=new CNLOPTMinimizer();
-	inf->register_minimizer(opt);
-
-	// train Gaussian process binary classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare mean vector with result form GPML with the minfunc function
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
 
@@ -3524,92 +2371,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_mean_vector)
 	EXPECT_NEAR(mean_vector[23], 0.113006930991411, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.041654120309486, rel_tolerance);
 	EXPECT_NEAR(mean_vector[24], 0.041654120309486, abs_tolerance);
-
-	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_variance_vector)
+TEST_F(
+    GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,
+    get_variance_vector)
 {
-	float64_t abs_tolerance;
-	float64_t rel_tolerance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
-
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
-
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
-
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
-
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
-
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
-
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
-
-	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
-			features_train,
-			mean,
-			labels_train,
-			likelihood);
-
-	FirstOrderMinimizer* opt=new CNLOPTMinimizer();
-	inf->register_minimizer(opt);
-
-	// train gaussian process classifier
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-	gpc->train();
-
 	// compare variance vector with result form GPML with the minfunc function
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
 	/*variance =
@@ -3690,117 +2457,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_variance_vecto
 	EXPECT_NEAR(variance_vector[23], 0.987229433547902, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.998264934261243, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24], 0.998264934261243, abs_tolerance);
-
-
-	SG_UNREF(gpc);
 }
-
-
-
 #endif //HAVE_NLOPT
-#endif //USE_GPL_SHOGUN
 
-
-
-TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
+TEST_F(GaussianProcessClassificationUsingSingleFITCLaplace, get_mean_vector)
 {
-	index_t n=6;
-	index_t dim=2;
-	index_t m=3;
-	float64_t rel_tolorance=1e-2;
-	float64_t abs_tolorance;
-
-	SGMatrix<float64_t> feat_train(dim, n);
-	SGMatrix<float64_t> lat_feat_train(dim, m);
-	SGVector<float64_t> lab_train(n);
-
-	feat_train(0,0)=-0.81263;
-	feat_train(0,1)=-0.99976;
-	feat_train(0,2)=1.17037;
-	feat_train(0,3)=-1.51752;
-	feat_train(0,4)=8.57765;
-	feat_train(0,5)=3.89440;
-
-	feat_train(1,0)=-0.5;
-	feat_train(1,1)=5.4576;
-	feat_train(1,2)=7.17637;
-	feat_train(1,3)=-2.56752;
-	feat_train(1,4)=4.57765;
-	feat_train(1,5)=2.89440;
-
-	lat_feat_train(0,0)=1.00000;
-	lat_feat_train(0,1)=23.00000;
-	lat_feat_train(0,2)=4.00000;
-
-	lat_feat_train(1,0)=3.00000;
-	lat_feat_train(1,1)=2.00000;
-	lat_feat_train(1,2)=-5.00000;
-
-	lab_train[0]=1;
-	lab_train[1]=-1;
-	lab_train[2]=1;
-	lab_train[3]=1;
-	lab_train[4]=-1;
-	lab_train[5]=-1;
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
-	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(dim,t_dim);
-	//the weights is a lower triangular matrix
-	float64_t weight1=0.02;
-	float64_t weight2=-0.4;
-	float64_t weight3=0;
-	float64_t weight4=0.01;
-	weights(0,0)=weight1;
-	weights(1,0)=weight2;
-	weights(0,1)=weight3;
-	weights(1,1)=weight4;
-	kernel->set_matrix_weights(weights);
-
-	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
-
-	CLogitLikelihood* lik=new CLogitLikelihood();
-
-	// specify GP regression with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
-		mean, labels_train, lik, latent_features_train);
-
-	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise);
-
-	float64_t scale=4.0;
-	inf->set_scale(scale);
-
-	int32_t k=4;
-	SGMatrix<float64_t> feat_test(dim, k);
-	feat_test(0,0)=-0.81263;
-	feat_test(0,1)=5.4576;
-	feat_test(0,2)=-0.239;
-	feat_test(0,3)=2.45;
-
-	feat_test(1,0)=-0.5;
-	feat_test(1,1)=0.69979;
-	feat_test(1,2)=2.3546;
-	feat_test(1,3)=-0.46;
-
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-
-	// train model
-	gpc->train();
-
-	//result buggss
-	SG_REF(features_test);
 	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
-	SG_UNREF(features_test);
 
 	// compare variance vector with result form GPML 3.5
 	abs_tolorance = CMath::get_abs_tolerance(0.489770829538461, rel_tolorance);
@@ -3811,111 +2473,11 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 	EXPECT_NEAR(mean_vector[2],  -0.403233721232556,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(0.502096819177983, rel_tolorance);
 	EXPECT_NEAR(mean_vector[3],  0.502096819177983,  abs_tolorance);
-
-	// clean up
-	SG_UNREF(gpc);
-	SG_UNREF(latent_features_train);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
+TEST_F(GaussianProcessClassificationUsingSingleFITCLaplace, get_variance_vector)
 {
-	index_t n=6;
-	index_t dim=2;
-	index_t m=3;
-	float64_t rel_tolorance=1e-2;
-	float64_t abs_tolorance;
-
-	SGMatrix<float64_t> feat_train(dim, n);
-	SGMatrix<float64_t> lat_feat_train(dim, m);
-	SGVector<float64_t> lab_train(n);
-
-	feat_train(0,0)=-0.81263;
-	feat_train(0,1)=-0.99976;
-	feat_train(0,2)=1.17037;
-	feat_train(0,3)=-1.51752;
-	feat_train(0,4)=8.57765;
-	feat_train(0,5)=3.89440;
-
-	feat_train(1,0)=-0.5;
-	feat_train(1,1)=5.4576;
-	feat_train(1,2)=7.17637;
-	feat_train(1,3)=-2.56752;
-	feat_train(1,4)=4.57765;
-	feat_train(1,5)=2.89440;
-
-	lat_feat_train(0,0)=1.00000;
-	lat_feat_train(0,1)=23.00000;
-	lat_feat_train(0,2)=4.00000;
-
-	lat_feat_train(1,0)=3.00000;
-	lat_feat_train(1,1)=2.00000;
-	lat_feat_train(1,2)=-5.00000;
-
-	lab_train[0]=1;
-	lab_train[1]=-1;
-	lab_train[2]=1;
-	lab_train[3]=1;
-	lab_train[4]=-1;
-	lab_train[5]=-1;
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
-	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
-	//the weights is a lower triangular matrix
-	float64_t weight1=0.02;
-	float64_t weight2=-0.4;
-	float64_t weight3=0;
-	float64_t weight4=0.01;
-	weights(0,0)=weight1;
-	weights(1,0)=weight2;
-	weights(0,1)=weight3;
-	weights(1,1)=weight4;
-	kernel->set_matrix_weights(weights);
-
-	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
-
-	CLogitLikelihood* lik=new CLogitLikelihood();
-
-	// specify GP regression with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
-		mean, labels_train, lik, latent_features_train);
-
-	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise);
-
-	float64_t scale=4.0;
-	inf->set_scale(scale);
-
-	int32_t k=4;
-	SGMatrix<float64_t> feat_test(dim, k);
-	feat_test(0,0)=-0.81263;
-	feat_test(0,1)=5.4576;
-	feat_test(0,2)=-0.239;
-	feat_test(0,3)=2.45;
-
-	feat_test(1,0)=-0.5;
-	feat_test(1,1)=0.69979;
-	feat_test(1,2)=2.3546;
-	feat_test(1,3)=-0.46;
-
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-
-	// train model
-	gpc->train();
-
-	//result buggss
-	SG_REF(features_test);
 	SGVector<float64_t> var_vector=gpc->get_variance_vector(features_test);
-	SG_UNREF(features_test);
 
 	// compare variance vector with result form GPML 3.5
 	abs_tolorance = CMath::get_abs_tolerance(0.760124534533208, rel_tolorance);
@@ -3926,109 +2488,11 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
 	EXPECT_NEAR(var_vector[2],  0.837402566060945,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(0.747898784171351, rel_tolorance);
 	EXPECT_NEAR(var_vector[3],  0.747898784171351,  abs_tolorance);
-	// clean up
-	SG_UNREF(gpc);
-	SG_UNREF(latent_features_train);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
+TEST_F(GaussianProcessClassificationUsingSingleFITCLaplace, get_probabilities)
 {
-	index_t n=6;
-	index_t dim=2;
-	index_t m=3;
-	float64_t rel_tolorance=1e-2;
-	float64_t abs_tolorance;
-
-	SGMatrix<float64_t> feat_train(dim, n);
-	SGMatrix<float64_t> lat_feat_train(dim, m);
-	SGVector<float64_t> lab_train(n);
-
-	feat_train(0,0)=-0.81263;
-	feat_train(0,1)=-0.99976;
-	feat_train(0,2)=1.17037;
-	feat_train(0,3)=-1.51752;
-	feat_train(0,4)=8.57765;
-	feat_train(0,5)=3.89440;
-
-	feat_train(1,0)=-0.5;
-	feat_train(1,1)=5.4576;
-	feat_train(1,2)=7.17637;
-	feat_train(1,3)=-2.56752;
-	feat_train(1,4)=4.57765;
-	feat_train(1,5)=2.89440;
-
-	lat_feat_train(0,0)=1.00000;
-	lat_feat_train(0,1)=23.00000;
-	lat_feat_train(0,2)=4.00000;
-
-	lat_feat_train(1,0)=3.00000;
-	lat_feat_train(1,1)=2.00000;
-	lat_feat_train(1,2)=-5.00000;
-
-	lab_train[0]=1;
-	lab_train[1]=-1;
-	lab_train[2]=1;
-	lab_train[3]=1;
-	lab_train[4]=-1;
-	lab_train[5]=-1;
-
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
-	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(dim,t_dim);
-	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
-	float64_t weight1=0.02;
-	float64_t weight2=-0.4;
-	float64_t weight3=0;
-	float64_t weight4=0.01;
-	weights(0,0)=weight1;
-	weights(1,0)=weight2;
-	weights(0,1)=weight3;
-	weights(1,1)=weight4;
-	kernel->set_matrix_weights(weights);
-
-	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
-
-	CLogitLikelihood* lik=new CLogitLikelihood();
-
-	// specify GP regression with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
-		mean, labels_train, lik, latent_features_train);
-
-	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise);
-
-	float64_t scale=4.0;
-	inf->set_scale(scale);
-
-	int32_t k=4;
-	SGMatrix<float64_t> feat_test(dim, k);
-	feat_test(0,0)=-0.81263;
-	feat_test(0,1)=5.4576;
-	feat_test(0,2)=-0.239;
-	feat_test(0,3)=2.45;
-
-	feat_test(1,0)=-0.5;
-	feat_test(1,1)=0.69979;
-	feat_test(1,2)=2.3546;
-	feat_test(1,3)=-0.46;
-
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
-
-	// train model
-	gpc->train();
-
-	SG_REF(features_test);
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
-	SG_UNREF(features_test);
 
 	// compare variance vector with result form GPML 3.5
 	abs_tolorance = CMath::get_abs_tolerance(0.744885414769230, rel_tolorance);
@@ -4039,8 +2503,5 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 	EXPECT_NEAR(probabilities[2],  0.298383139383722,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(0.751048409588992, rel_tolorance);
 	EXPECT_NEAR(probabilities[3],  0.751048409588992,  abs_tolorance);
-
-	// clean up
-	SG_UNREF(gpc);
-	SG_UNREF(latent_features_train);
 }
+#endif // USE_GPL_SHOGUN

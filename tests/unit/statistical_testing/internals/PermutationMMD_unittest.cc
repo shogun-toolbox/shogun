@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
+
 #include <numeric>
 #include <algorithm>
 #include <shogun/base/some.h>
@@ -45,7 +47,6 @@
 #include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

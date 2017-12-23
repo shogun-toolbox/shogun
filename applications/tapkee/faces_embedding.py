@@ -8,7 +8,7 @@
 # Written (W) 2011 Sergey Lisitsyn
 # Copyright (C) 2011 Sergey Lisitsyn
 
-from modshogun import *
+from shogun import *
 from numpy import *
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 import re,os,time

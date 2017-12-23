@@ -24,9 +24,9 @@ try:
 	import genomic
 	import model
 	import seqdict
-	import shogun.Kernel
+	import shogun
 
-	d=shogun.Kernel.WeightedDegreeStringKernel(1)
+	d=shogun.WeightedDegreeStringKernel(1)
 	if (d.version.get_version_revision() < 2997):
 		print
 		print "ERROR: SHOGUN VERSION 0.6.2 or later required"

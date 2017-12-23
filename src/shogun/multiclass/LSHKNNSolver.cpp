@@ -65,8 +65,8 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 		sg_memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
 		delete indices;
 	}
-		
-	for (index_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+
+	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)

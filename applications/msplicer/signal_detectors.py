@@ -13,7 +13,7 @@ import sys
 import numpy
 import seqdict
 
-from modshogun import KernelMachine,StringCharFeatures,DNA,WeightedDegreeStringKernel
+from shogun import KernelMachine,StringCharFeatures,DNA,WeightedDegreeStringKernel
 
 class svm_splice_model(object):
 	def __init__(self, order, traindat, alphas, b, (window_left,offset,window_right), consensus):

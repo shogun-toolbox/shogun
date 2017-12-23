@@ -12,7 +12,40 @@
 
 using namespace shogun;
 
-TEST(MulticlassLabelsTest,confidences)
+class MulticlassLabelsTest : public ::testing::Test
+{
+public:
+	SGMatrix<float64_t> probabilities;
+	SGVector<float64_t> labels_true;
+	const index_t n = 3;
+
+	virtual void SetUp()
+	{
+		probabilities = SGMatrix<float64_t>(n, n);
+		probabilities(0, 0) = 0.6;
+		probabilities(0, 1) = 0.2;
+		probabilities(0, 2) = 0.2;
+		probabilities(1, 0) = 0.3;
+		probabilities(1, 1) = 0.3;
+		probabilities(1, 2) = 0.4;
+		probabilities(2, 0) = 0.1;
+		probabilities(2, 1) = 0.8;
+		probabilities(2, 2) = 0.1;
+
+		SGVector<float64_t> labels_A(3);
+		labels_A[0] = 0;
+		labels_A[1] = 2;
+		labels_A[2] = 1;
+
+		labels_true = labels_A;
+	}
+
+	virtual void TearDown()
+	{
+	}
+};
+
+TEST_F(MulticlassLabelsTest, confidences)
 {
 	const int n_labels = 3;
 	const int n_classes = 4;
@@ -28,9 +61,8 @@ TEST(MulticlassLabelsTest,confidences)
 	{
 		SGVector<float64_t> confs(n_classes);
 		confs.zero();
-		confs[i%n_classes] = 1.0;
-
-		labels->set_multiclass_confidences(i,confs);
+		confs[i % n_classes] = 1.0;
+		labels->set_multiclass_confidences(i, confs);
 
 		SGVector<float64_t> obtained_confs = labels->get_multiclass_confidences(i);
 		for (int j=0; j<n_classes; j++)

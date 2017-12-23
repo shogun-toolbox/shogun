@@ -9,12 +9,16 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <rxcpp/rx-lite.hpp>
+#include <shogun/base/init.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
 
 using namespace shogun;
 
-CMachine::CMachine() : CSGObject(), m_max_train_time(0), m_labels(NULL),
-		m_solver_type(ST_AUTO)
+CMachine::CMachine()
+    : CSGObject(), m_max_train_time(0), m_labels(NULL), m_solver_type(ST_AUTO),
+      m_cancel_computation(false), m_pause_computation_flag(false)
 {
 	m_data_locked=false;
 	m_store_model_features=false;
@@ -54,7 +58,10 @@ bool CMachine::train(CFeatures* data)
 		m_labels->ensure_valid(get_name());
 	}
 
+	auto sub = connect_to_signal_handler();
 	bool result = train_machine(data);
+	sub.unsubscribe();
+	reset_computation_variables();
 
 	if (m_store_model_features)
 		store_model_features();
@@ -268,4 +275,18 @@ CLatentLabels* CMachine::apply_locked_latent(SGVector<index_t> indices)
 	SG_ERROR("apply_locked_latent(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
+}
+
+rxcpp::subscription CMachine::connect_to_signal_handler()
+{
+	// Subscribe this algorithm to the signal handler
+	auto subscriber = rxcpp::make_subscriber<int>(
+	    [this](int i) {
+		    if (i == SG_PAUSE_COMP)
+			    this->on_pause();
+		    else
+			    this->on_next();
+		},
+	    [this]() { this->on_complete(); });
+	return get_global_signal()->get_observable()->subscribe(subscriber);
 }

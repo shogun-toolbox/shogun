@@ -23,8 +23,8 @@ import numpy
 import warnings
 import shutil
 
-from shogun.Features import Labels
-from shogun.Evaluation import *
+from shogun import Labels
+from shogun import *
 
 ################################################################################
 # evaluation functions

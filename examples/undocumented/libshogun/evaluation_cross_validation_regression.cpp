@@ -105,7 +105,7 @@ void test_cross_validation()
 	result->print_result();
 
 	/* same crude assertion as for above evaluation */
-	ASSERT(result->mean<2);
+	ASSERT(result->get_mean() < 2);
 
 	/* clean up */
 	SG_UNREF(result);

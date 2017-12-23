@@ -12,13 +12,16 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
+#include <vector>
 
 using namespace shogun;
 
 COnlineLinearMachine::COnlineLinearMachine()
-: CMachine(), w_dim(0), w(NULL), bias(0), features(NULL)
+: CMachine(), bias(0), features(NULL)
 {
-	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
+	SG_ADD(&m_w, "m_w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &features, "features",
 	    "Feature object.", MS_NOT_AVAILABLE);
@@ -26,10 +29,6 @@ COnlineLinearMachine::COnlineLinearMachine()
 
 COnlineLinearMachine::~COnlineLinearMachine()
 {
-	// It is possible that a derived class may have already
-	// called SG_FREE() on the weight vector
-	if (w != NULL)
-		SG_FREE(w);
 	SG_UNREF(features);
 }
 
@@ -58,37 +57,32 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	ASSERT(features)
 	ASSERT(features->has_property(FP_STREAMING_DOT))
 
-	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
-	int32_t num_labels=0;
-
+	std::vector<float64_t> labels;
 	features->start_parser();
 	while (features->get_next_example())
 	{
-		float64_t current_lab=features->dense_dot(w, w_dim) + bias;
+		float64_t current_lab=features->dense_dot(m_w.vector, m_w.vlen) + bias;
 
-		labels_dynarray->append_element(current_lab);
-		num_labels++;
-
+		labels.push_back(current_lab);
 		features->release_example();
 	}
 	features->end_parser();
 
-	SGVector<float64_t> labels_array(num_labels);
-	for (int32_t i=0; i<num_labels; i++)
-		labels_array.vector[i]=(*labels_dynarray)[i];
+	SGVector<float64_t> labels_array(labels.size());
+	sg_memcpy(labels_array.vector, labels.data(), sizeof(float64_t)*labels.size());
 
-	delete labels_dynarray;
 	return labels_array;
 }
 
 float32_t COnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
 {
-		return CMath::dot(vec, w, len)+bias;
+		SGVector<float32_t> wrap(vec, len, false);
+		return linalg::dot(wrap, m_w)+bias;
 }
 
 float32_t COnlineLinearMachine::apply_to_current_example()
 {
-		return features->dense_dot(w, w_dim)+bias;
+		return features->dense_dot(m_w.vector, m_w.vlen)+bias;
 }
 
 bool COnlineLinearMachine::train_machine(CFeatures *data)

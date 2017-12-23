@@ -8,12 +8,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/Perceptron.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
 #include <shogun/base/range.h>
+#include <shogun/classifier/Perceptron.h>
+#include <shogun/features/iterators/DotIterator.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -53,7 +55,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen)
-	float64_t* output=SG_MALLOC(float64_t, num_vec);
+	SGVector<float64_t> output(num_vec);
 
 	SGVector<float64_t> w = get_w();
 	if (m_initialize_hyperplane)
@@ -61,28 +63,28 @@ bool CPerceptron::train_machine(CFeatures* data)
 		w = SGVector<float64_t>(num_feat);
 		//start with uniform w, bias=0
 		bias=0;
-		for (int32_t i=0; i<num_feat; i++)
-			w.vector[i]=1.0/num_feat;
+		linalg::add_scalar(w, 1.0 / num_feat);
 	}
 
-	CSignal::clear_cancel();
-
 	//loop till we either get everything classified right or reach max_iter
-	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
+	while (!(cancel_computation()) && (!converged && iter < max_iter))
 	{
 		converged=true;
-		for (auto example_idx : features->index_iterator())
+		auto iter_train_labels = train_labels.begin();
+		auto iter_output = output.begin();
+		for (const auto& v : DotIterator(features))
 		{
-			const auto predicted_label = features->dense_dot(example_idx, w.vector, w.vlen) + bias;
-			const auto true_label = train_labels[example_idx];
-			output[example_idx] = predicted_label;
+			const auto true_label = *(iter_train_labels++);
+			auto& predicted_label = *(iter_output++);
+
+			predicted_label = v.dot(w) + bias;
 
 			if (CMath::sign<float64_t>(predicted_label) != true_label)
 			{
 				converged = false;
-				const auto gradient = learn_rate * train_labels[example_idx];
+				const auto gradient = learn_rate * true_label;
 				bias += gradient;
-				features->add_to_dense_vec(gradient, example_idx, w.vector, w.vlen);
+				v.add(gradient, w);
 			}
 		}
 
@@ -93,8 +95,6 @@ bool CPerceptron::train_machine(CFeatures* data)
 		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
 	else
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter)
-
-	SG_FREE(output);
 
 	set_w(w);
 

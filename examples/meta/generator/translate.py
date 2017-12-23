@@ -33,6 +33,7 @@ def getDependencies(program):
     allClasses = set()
     interfaceClasses = set()
     enums = set()
+    globalFunctions = set()
 
     # All classes used
     for objectType in find("ObjectType", program):
@@ -55,13 +56,18 @@ def getDependencies(program):
         objectKey = list(typeDict.keys())[0]
         interfaceClasses.add(typeDict[objectKey])
 
+    # All global function calls
+    for globalCall in find("GlobalCall", program):
+        identifier = list(globalCall[0].values())[0]
+        globalFunctions.add(identifier)
+
     # All enums used
     for enum in find("Enum", program):
         enumType = enum[0]["Identifier"]
         enumValue = enum[1]["Identifier"]
         enums.add((enumType, enumValue))
 
-    return allClasses, interfaceClasses, enums
+    return allClasses, interfaceClasses, enums, globalFunctions
 
 
 def getBasicTypesToStore():
@@ -160,11 +166,12 @@ class Translator:
                     pass
                 raise e
 
-        allClasses, interfacedClasses, enums = getDependencies(program)
+        allClasses, interfacedClasses, enums, globalFunctions = getDependencies(program)
         try:
             dependenciesString = self.dependenciesString(allClasses,
                                                          interfacedClasses,
-                                                         enums)
+                                                         enums,
+                                                         globalFunctions)
         except Exception as e:
             print("Translation of dependencies failed!")
             raise
@@ -239,9 +246,10 @@ class Translator:
         }
         statementList.append({"Statement": storageSerialize})
 
-    def dependenciesString(self, allClasses, interfacedClasses, enums):
+    def dependenciesString(self, allClasses, interfacedClasses, enums,
+                           globalFunctions):
         """ Returns dependency import string
-            e.g. for python: "from modshogun import RealFeatures\n\n"
+            e.g. for python: "from shogun import RealFeatures\n\n"
         """
 
         if "Dependencies" not in self.targetDict:
@@ -256,13 +264,19 @@ class Translator:
             dependencies = dependencies.union(interfacedClasses)
         if self.targetDict["Dependencies"].get("IncludeEnums"):
             dependencies = dependencies.union(enums)
+        if self.targetDict["Dependencies"].get("IncludeGlobalFunctions"):
+            dependencies = dependencies.union(globalFunctions)
 
-        translations = set(map(self.translateDependencyElement, dependencies))
+        dependencies = list(dependencies)
+
+        translations = list(map(self.translateDependencyElement, dependencies))
+        translations.sort()
 
         separator = self.targetDict["Dependencies"]["DependencyListSeparator"]
-        return reduce(lambda l, r: r if l == "" else l+separator+r,
+        result = reduce(lambda l, r: r if l == "" else l+separator+r,
                       translations,
                       "")
+        return result
 
     def translateDependencyElement(self, dependencyElement):
         """ Translates a dependency element
@@ -287,7 +301,6 @@ class Translator:
 
         elif "DependencyListElementClass" in dependencyRules:
             elementTemplate = Template(dependencyRules["DependencyListElementClass"])
-
 
         if "$includePath" in elementTemplate.template:
             includePath = self.getIncludePathForClass(typeName)
@@ -463,6 +476,19 @@ class Translator:
 
             return template.substitute(typeName=type_,
                                        method=method,
+                                       arguments=translatedArgsList)
+
+        elif key == "GlobalCall":
+            template = Template(self.targetDict["Expr"]["GlobalCall"])
+            method = expr[key][0]["Identifier"]
+            argsList = None
+            try:
+                argsList = expr[key][1]
+            except IndexError:
+                pass
+            translatedArgsList = self.translateArgumentList(argsList)
+
+            return template.substitute(typeName=type,method=method,
                                        arguments=translatedArgsList)
 
         elif key == "ElementAccess":

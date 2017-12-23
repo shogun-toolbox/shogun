@@ -1,5 +1,5 @@
 {
-    "Program": "using System;\n\npublic class classifier_knn_modular {\npublic static void Main() {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
+    "Program": "using System;\n\npublic class Application {\npublic static void Main() {\nshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
@@ -70,6 +70,7 @@
         "FloatLiteral": "${number}f",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
+        "GlobalCall": "shogun.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$typeName.$value"
     },

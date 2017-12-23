@@ -35,7 +35,9 @@
 
 
 #include <shogun/mathematics/Function.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Integration.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
@@ -617,9 +619,13 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 		// set Stundent's-t pdf parameters
 		g->set_mu(y[i]);
 
+#ifdef USE_GPL_SHOGUN
 		// evaluate integral on (-inf, inf)
 		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+#else
+			SG_ERROR("StudentsT likelihood moments only supported under GPL.\n")
+#endif //USE_GPL_SHOGUN
 	}
 
 	SG_UNREF(h);
@@ -658,15 +664,19 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	CProductFunction* k=new CProductFunction(new CLinearFunction(), h);
 	SG_REF(k);
 
+	float64_t Ex=0;
+#ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*t(x|mu,sigma,nu) dx
 	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
 
 	// compute 1st moment:
 	// E[x] = Z^-1 * \int x*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
-	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
-
+#else
+			SG_ERROR("StudentsT likelihood moments only supported under GPL.\n")
+#endif //USE_GPL_SHOGUN
 	SG_UNREF(k);
 
 	return Ex;
@@ -704,19 +714,24 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	CProductFunction* p=new CProductFunction(new CQuadraticFunction(), h);
 	SG_REF(p);
 
+	float64_t Ex=0;
+	float64_t Ex2=0;
+#ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*t(x|mu,sigma,nu) dx
 	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
 		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
 
 	// compute 1st moment:
 	// E[x] = Z^-1 * \int x*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
-	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+	Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
 
 	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
-	float64_t Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
+	Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
 			CIntegration::integrate_quadgk(p, mu[i], CMath::INFTY))/Z;
-
+#else
+	SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	SG_UNREF(k);
 	SG_UNREF(p);
 

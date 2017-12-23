@@ -9,12 +9,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Trie.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/Parallel.h>
+#include <shogun/lib/common.h>
 
 #include <shogun/kernel/string/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/normalizer/FirstElementKernelNormalizer.h>
@@ -23,6 +24,7 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+
 #endif
 
 using namespace shogun;
@@ -213,12 +215,10 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n")
 
-	for (int32_t i=0; i<count; i++)
+	for (auto i : progress(range(count), *this->io))
 	{
 		if (tree_num<0)
 		{
-			if ( (i % (count/10+1)) == 0)
-				SG_PROGRESS(i, 0, count)
 
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
@@ -235,9 +235,6 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 				add_example_to_single_tree_mismatch(IDX[i], alphas[i], tree_num) ;
 		}
 	}
-
-	if (tree_num<0)
-		SG_DONE()
 
 	//tries.compact_nodes(NO_CHILD, 0, weights) ;
 
@@ -883,11 +880,13 @@ void CWeightedDegreeStringKernel::compute_batch(
 #endif
 	ASSERT(num_threads>0)
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
+	auto pb = progress(range(num_feat), *this->io);
 
 	if (num_threads < 2)
 	{
-        CSignal::clear_cancel();
-		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM_WD params;
@@ -904,14 +903,16 @@ void CWeightedDegreeStringKernel::compute_batch(
 			params.vec_idx=vec_idx;
 			compute_batch_helper((void*) &params);
 
-			SG_PROGRESS(j,0,num_feat)
+			pb.print_progress();
 		}
+		pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
 	{
-        CSignal::clear_cancel();
-		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -949,11 +950,12 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			SG_PROGRESS(j,0,num_feat)
+			pb.print_progress();
 
 			SG_FREE(params);
 			SG_FREE(threads);
 		}
+		pb.complete();
 	}
 #endif
 

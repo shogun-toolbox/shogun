@@ -112,8 +112,8 @@ void CStreamingVwFeatures::expand_if_required(float64_t*& vec, int32_t& len)
 float32_t CStreamingVwFeatures::real_weight(float32_t w, float32_t gravity)
 {
 	float32_t wprime = 0;
-	if (gravity < fabsf(w))
-		wprime = CMath::sign(w)*(fabsf(w) - gravity);
+	if (gravity < CMath::abs(w))
+		wprime = CMath::sign(w)*(CMath::abs(w) - gravity);
 	return wprime;
 }
 
@@ -351,7 +351,7 @@ void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, flo
 		for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 		{
 			for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
-				vec2[f->weight_index & env->thread_mask] += alpha * abs(f->x);
+				vec2[f->weight_index & env->thread_mask] += alpha * CMath::abs(f->x);
 		}
 	}
 	else

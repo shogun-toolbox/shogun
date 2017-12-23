@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update && apt-get install -qq software-properties-common lsb-release
@@ -8,4 +8,4 @@ RUN apt-get update -qq
 RUN apt-get upgrade -y
 
 # install shogun
-RUN apt-get install -qq --force-yes --no-install-recommends libshogun17
+RUN apt-get install -qq --force-yes --no-install-recommends libshogun18

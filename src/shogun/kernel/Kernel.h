@@ -18,7 +18,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Signal.h>
+
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/mathematics/Math.h>
@@ -1086,6 +1086,12 @@ class CKernel : public CSGObject
 		 * function */
 		CKernelNormalizer* normalizer;
 };
+
+/** Creates kernel by its name
+ *
+ * @param name the name of the kernel to create
+ */
+CKernel* kernel(const char* name);
 
 }
 #endif /* _KERNEL_H__ */

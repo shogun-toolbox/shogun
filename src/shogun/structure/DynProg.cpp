@@ -1400,10 +1400,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		// recursion
 		for (int32_t t=1; t<m_seq_len; t++)
 		{
-			//if (is_big && t%(1+(m_seq_len/1000))==1)
-			//	SG_PROGRESS(t, 0, m_seq_len)
-			//SG_PRINT("%i\n", t)
-
 			for (T_STATES j=0; j<m_N; j++)
 			{
 				if (seq.element(j,t)<=-1e20)

@@ -1,9 +1,9 @@
 # File   : $HeadURL$
 # Version: $Id$
 
-from modshogun import RealFeatures, MulticlassLabels
-from modshogun import GaussianKernel
-from modshogun import GMNPSVM
+from shogun import RealFeatures, MulticlassLabels
+from shogun import GaussianKernel
+from shogun import GMNPSVM
 
 import numpy as np
 import gzip as gz

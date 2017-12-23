@@ -15,6 +15,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(LogitLikelihood,get_predictive_log_probabilities)
 {
 	// create some easy data:
@@ -170,6 +171,7 @@ TEST(LogitLikelihood,get_predictive_variances)
 	// clean up
 	SG_UNREF(likelihood);
 }
+#endif //USE_GPL_SHOGUN
 
 TEST(LogitLikelihood,get_log_probability_f)
 {
@@ -366,6 +368,7 @@ TEST(LogitLikelihood,get_log_probability_derivative_f)
 	SG_UNREF(labels);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(LogitLikelihood,get_first_moments)
 {
 	// create some easy data:
@@ -483,3 +486,4 @@ TEST(LogitLikelihood,get_second_moments)
 	SG_UNREF(likelihood);
 	SG_UNREF(labels);
 }
+#endif //USE_GPL_SHOGUN

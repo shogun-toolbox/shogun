@@ -1,7 +1,8 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/mathematics/eigen3.h>
@@ -564,7 +565,7 @@ TEST(SGMatrixTest, equals)
 
 	mat=SGMatrix<float32_t>(size, size);
 	CMath::init_random(100);
-	for (uint64_t i=0; i<mat.size(); ++i)
+	for (int64_t i=0; i<mat.size(); ++i)
 		mat.matrix[i]=CMath::randn_float();
 
 	EXPECT_TRUE(mat.equals(mat));
@@ -574,7 +575,7 @@ TEST(SGMatrixTest, equals)
 	EXPECT_FALSE(mat.equals(copy));
 
 	CMath::init_random(100);
-	for (uint64_t i=0; i<copy.size(); ++i)
+	for (int64_t i=0; i<copy.size(); ++i)
 		copy.matrix[i]=CMath::randn_float();
 
 	EXPECT_TRUE(mat.equals(copy));
@@ -584,7 +585,7 @@ TEST(SGMatrixTest, clone)
 {
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
-	for (uint64_t i=0; i<mat.size(); ++i)
+	for (int64_t i=0; i<mat.size(); ++i)
 		mat.matrix[i]=CMath::randn_float();
 
 	SGMatrix<float32_t> copy=mat.clone();
@@ -599,7 +600,7 @@ TEST(SGMatrixTest, set_const)
 	const auto value=CMath::randn_double();
 	mat.set_const(value);
 
-	for (uint64_t i=0; i<mat.size(); ++i)
+	for (int64_t i=0; i<mat.size(); ++i)
 		EXPECT_NEAR(mat.matrix[i], value, 1E-15);
 }
 
@@ -607,10 +608,90 @@ TEST(SGMatrixTest, max_single)
 {
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
-	for (uint64_t i=0; i<mat.size(); ++i)
+	for (int64_t i=0; i<mat.size(); ++i)
 		mat.matrix[i]=CMath::randn_float();
 
 	auto max=mat.max_single();
-	for (uint64_t i=0; i<mat.size(); ++i)
+	for (int64_t i=0; i<mat.size(); ++i)
 		EXPECT_GE(max, mat.matrix[i]);
+}
+
+TEST(SGMatrixTest, get_submatrix)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t start_col = 2, end_col = 5;
+	const index_t n_subcols = end_col - start_col;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	auto sub = mat.submatrix(start_col, end_col);
+
+	EXPECT_EQ(sub.num_rows, mat.num_rows);
+	EXPECT_EQ(sub.num_cols, end_col - start_col);
+	for (index_t i = 0; i < n_rows; ++i)
+		for (index_t j = 0; i < n_subcols; ++i)
+			EXPECT_EQ(sub(i, j), mat(i, j + start_col));
+}
+
+TEST(SGMatrixTest, get_column)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t col = 4;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	auto vec = mat.get_column_vector(col);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		EXPECT_EQ(mat(i, col), vec[i]);
+}
+
+TEST(SGMatrixTest, set_column)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t col = 4;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	SGVector<float64_t> vec(n_rows);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		vec[i] = CMath::randn_double();
+
+	mat.set_column(col, vec);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		EXPECT_EQ(mat(i, col), vec[i]);
+}
+
+TEST(SGMatrixTest,iterator)
+{
+	constexpr index_t size=5;
+	SGMatrix<float64_t> mat(size, size);
+	linalg::range_fill(mat, 1.0);
+
+	auto begin = mat.begin();
+	auto end = mat.end();
+	EXPECT_EQ(mat.size(), std::distance(begin, end));
+	EXPECT_EQ(1.0, *begin++);
+	++begin;
+	EXPECT_EQ(3.0, *begin);
+	--begin;
+	EXPECT_EQ(2.0, *begin);
+	EXPECT_TRUE(begin != end);
+	begin += 2;
+	EXPECT_EQ(4.0, *begin);
+	begin -= 1;
+	EXPECT_EQ(3.0, *begin);
+	EXPECT_EQ(4.0, begin[1]);
+	auto new_begin = begin + 2;
+	EXPECT_EQ(5.0, *new_begin);
+
+	// range-based loop should work as well
+	auto index = 0;
+	for (auto v: mat)
+		EXPECT_EQ(mat[index++], v);
 }

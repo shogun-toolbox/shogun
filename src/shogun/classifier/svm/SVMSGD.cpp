@@ -24,6 +24,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/loss/HingeLoss.h>
 
@@ -109,14 +110,13 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	calibrate();
 
 	SG_INFO("Training on %d vectors\n", num_vec)
-	CSignal::clear_cancel();
 
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
+	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		count = skip;
 		for (int32_t i=0; i<num_vec; i++)
@@ -143,14 +143,14 @@ bool CSVMSGD::train_machine(CFeatures* data)
 				float64_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
-				SGVector<float64_t>::scale_vector(r, w.vector, w.vlen);
+				linalg::scale(w, w, r);
 				count = skip;
 			}
 			t++;
 		}
 	}
 
-	float64_t wnorm =  CMath::dot(w.vector,w.vector, w.vlen);
+	float64_t wnorm = linalg::dot(w, w);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
 
 	set_w(w);

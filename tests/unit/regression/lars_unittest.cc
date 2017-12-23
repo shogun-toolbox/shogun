@@ -34,7 +34,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
@@ -374,13 +373,13 @@ TEST(LeastAngleRegression, cholesky_insert)
 	SGMatrix<float64_t> R(num_feats, num_feats);
 	SGMatrix<float64_t> mat(num_vec, num_feats-1);
 	SGMatrix<float64_t> matnew(num_vec, num_feats);
-	
+
 	SGVector<float64_t> vec(num_vec);
 	vec.random(0.0,1.0);
-	Map<VectorXd> map_vec(vec.vector, vec.size());	
+	Map<VectorXd> map_vec(vec.vector, vec.size());
 
 	for (index_t i=0; i<num_vec; i++)
-	{	
+	{
 		for (index_t j=0; j<num_feats-1; j++)
 		{
 			mat(i,j)=CMath::random(0.0,1.0);
@@ -392,40 +391,39 @@ TEST(LeastAngleRegression, cholesky_insert)
 
 	Map<MatrixXd> mat_old(mat.matrix, num_vec, num_feats-1);
 	Map<MatrixXd> mat_new(matnew.matrix, num_vec, num_feats);
-	Map<MatrixXd> map_R(R.matrix, num_feats, num_feats);	
-	
+	Map<MatrixXd> map_R(R.matrix, num_feats, num_feats);
+
 	MatrixXd XX=mat_old.transpose()*mat_old;
 	// Compute matrix R which has to be updated
 	SGMatrix<float64_t> R_old=linalg::cholesky_factor(SGMatrix<float64_t>(XX), false);
 
 	// Update cholesky decomposition matrix R
-	lars_helper lars = lars_helper();
+	lars_helper lars;
 	SGMatrix<float64_t> R_new = lars.cholesky_insert_helper(matnew, mat, R_old, 4, 4);
-	Map<MatrixXd> map_R_new(R_new.matrix, R_new.num_rows, R_new.num_cols);	
+	Map<MatrixXd> map_R_new(R_new.matrix, R_new.num_rows, R_new.num_cols);
 
-	// Compute true cholesky decomposition		
+	// Compute true cholesky decomposition
 	MatrixXd XX_new=mat_new.transpose()*mat_new;
 	SGMatrix<float64_t> R_true=linalg::cholesky_factor(SGMatrix<float64_t>(XX_new), false);
 
-	Map<MatrixXd> map_R_true(R_true.matrix, num_feats, num_feats);	
-	EXPECT_NEAR( (map_R_true - map_R_new).norm(), 0.0, 1E-12);	
-
+	Map<MatrixXd> map_R_true(R_true.matrix, num_feats, num_feats);
+	EXPECT_NEAR((map_R_true - map_R_new).norm(), 0.0, 1E-12);
 }
 
 TEST(LeastAngleRegression, ols_equivalence)
 {
 	int32_t n_feat=25, n_vec=100;
-	SGMatrix<float64_t> data(n_feat, n_vec);		
+	SGMatrix<float64_t> data(n_feat, n_vec);
 	for (index_t i=0; i<n_feat; i++)
-	{	
+	{
 		for (index_t j=0; j<n_vec; j++)
 			data(i,j)=CMath::random(0.0,1.0);
 	}
-	
+
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);
 	lab.random(0.0,1.0);
 	float64_t mean=linalg::mean(lab);
-	
+
 	for (index_t i=0; i<lab.size(); i++)
 		lab[i]-=mean;
 
@@ -446,7 +444,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 	lars->train(features);
 	// Full LAR model
 	SGVector<float64_t> w=lars->get_w();
-	Map<VectorXd> map_w(w.vector, w.size());	
+	Map<VectorXd> map_w(w.vector, w.size());
 
 	SGMatrix<float64_t> mat=features->get_feature_matrix();
 	Map<MatrixXd> feat(mat.matrix, mat.num_rows, mat.num_cols);
@@ -462,7 +460,6 @@ TEST(LeastAngleRegression, ols_equivalence)
 	// Check if full LAR model is equivalent to OLS
 	EXPECT_EQ( w.size(), n_feat);
 	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);
-	
 
 	SG_UNREF(proc1);
 	SG_UNREF(proc2);

@@ -25,6 +25,10 @@ using namespace Eigen;
 
 using namespace shogun;
 
+#ifndef M_SQRT1_2
+#define M_SQRT1_2 0.707106781186547524401
+#endif
+
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
 	REQUIRE(values.vlen>1, "Number of observations (%d) needs to be at least 1.\n",

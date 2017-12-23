@@ -15,15 +15,39 @@
 
 #include <shogun/lib/DataType.h>
 
+#include <shogun/io/SGIO.h>
+
 namespace shogun {
 	class CSGObject;
 
-	/** new shogun serializable
+	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	CSGObject* new_sgserializable(const char* sgserializable_name,
-										EPrimitiveType generic);
+	CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
+
+	/** Creates new shogun instance, typed.
+	 *
+	 * Throws an exception in case there is no such classname or
+	 * the requested type and the object's type do not match.
+	 *
+	 */
+	template <class T>
+	T* create_object(const char* name)
+	{
+		auto* object = create(name, PT_NOT_GENERIC);
+		if (!object)
+		{
+			SG_SERROR("No such class %s", name);
+		}
+		auto* cast = dynamic_cast<T*>(object);
+		if (!cast)
+		{
+			delete object;
+			SG_SERROR("Type mismatch");
+		}
+		return cast;
+	}
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

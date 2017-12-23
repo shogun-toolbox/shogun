@@ -1,11 +1,13 @@
-version: 4.2.{build}
+version: "{build}"
 
 environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       VSVER: Visual Studio 14 2015 Win64
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      VSVER: Visual Studio 15 2017 Win64
+      PYTHON: "C:\\Python27"
+# disable multiple builds until each build takes more than 30 minutes
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      VSVER: Visual Studio 15 2017 Win64
 
 platform:
   - x64
@@ -20,14 +22,19 @@ before_build:
   - md %APPVEYOR_BUILD_FOLDER%\build
   - cd %APPVEYOR_BUILD_FOLDER%\build
   - cmake -G"%VSVER%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..
-  - cd ..
 
 build:
-  parallel: true
-  project: build\shogun.sln
   verbosity: minimal
+
+# TODO: fix cmake script in order that building examples
+# triggers the build of shogun-static.vcxproj
+build_script:
+  - msbuild src\shogun\libshogun.vcxproj
+  - msbuild src\shogun\shogun.vcxproj
+  - msbuild src\shogun\shogun-static.vcxproj
+  - msbuild shogun.sln
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build
   - ctest --output-on-failure -C %CONFIGURATION%
-  - cd ..
+

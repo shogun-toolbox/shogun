@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
@@ -16,7 +17,6 @@
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

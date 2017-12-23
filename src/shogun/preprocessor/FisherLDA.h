@@ -36,10 +36,11 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/features/Features.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/Features.h>
+#include <vector>
 
 namespace shogun
 {
@@ -91,14 +92,23 @@ namespace shogun
 class CFisherLDA: public CDimensionReductionPreprocessor
 {
 	public:
-
 		/** standard constructor
-		 * @param method LDA based on : ::CLASSIC_FLDA/::CANVAR_FLDA/::AUTO_FLDA[default]
-		 * @param thresh threshold value for ::CANVAR_FLDA only. This is used to reject
-		 * those basis whose singular values are less than the provided threshold.
+		 * @param method LDA based on :
+		 * ::CLASSIC_FLDA/::CANVAR_FLDA/::AUTO_FLDA[default]
+		 * @param thresh threshold value for ::CANVAR_FLDA only. This is used to
+		 * reject
+		 * those basis whose singular values are less than the provided
+		 * threshold.
 		 * The default one is 0.01.
+		 * @param gamma regularization parameter
+		 * @param bdc_svd when using SVD solver switch between
+		 * Bidiagonal Divide and Conquer algorithm (BDC) and
+		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
+		 * [default = BDC-SVD]
 		 */
-		CFisherLDA(EFLDAMethod method=AUTO_FLDA, float64_t thresh=0.01);
+		CFisherLDA(
+		    EFLDAMethod method = AUTO_FLDA, float64_t thresh = 0.01,
+		    float64_t gamma = 0, bool bdc_svd = true);
 
 		/** destructor */
 		virtual ~CFisherLDA();
@@ -150,16 +160,34 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		void initialize_parameters();
 
 	protected:
+		/**
+		 * Train the preprocessor with the canonical variates method.
+		 * @param features training data.
+		 * @param labels multiclass labels.
+		 */
+		bool solver_canvar(
+		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
+		/**
+		 * Train the preprocessor with the classic method.
+		 * @param features training data.
+		 * @param labels multiclass labels.
+		 */
+		bool solver_classic(
+		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;
 		/** num dim */
 		int32_t m_num_dim;
+		/** gamma */
+		float64_t m_gamma;
 		/** m_threshold */
 		float64_t m_threshold;
 		/** m_method */
 		int32_t m_method;
+		/** m_bdc_svd */
+		bool m_bdc_svd;
 		/** mean vector */
 		SGVector<float64_t> m_mean_vector;
 		/** eigenvalues vector */

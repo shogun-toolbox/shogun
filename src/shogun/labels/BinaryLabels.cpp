@@ -54,7 +54,7 @@ CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDe
 	SGVector<float64_t> labels(src.vlen);
 	for (int32_t i = 0; i < labels.vlen; i++)
 	{
-		labels[i] = src[i] + threshold >= 0 ? +1.0 : -1.0;
+		labels[i] = src[i] >= threshold ? +1.0 : -1.0;
 	}
 	set_labels(labels);
 	set_values(src);

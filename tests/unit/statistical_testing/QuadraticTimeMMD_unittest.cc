@@ -29,6 +29,9 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
+#include <cfloat>
+
 #include <shogun/base/some.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -40,7 +43,6 @@
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -274,7 +276,7 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 	mmd->set_kernel(kernel);
 
 	float64_t var=mmd->compute_variance_h0();
-	EXPECT_NEAR(var, 0.0042963027954101562, 1E-10);
+	EXPECT_NEAR(var, 0.0042963027954101562, FLT_EPSILON);
 }
 
 TEST(QuadraticTimeMMD, compute_variance_h1)

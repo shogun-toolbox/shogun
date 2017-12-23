@@ -11,6 +11,7 @@
  */
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -105,7 +106,7 @@ float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	SGVector<char> vec1 = get_transformed_image(vec_idx1);
 	SGVector<char> vec2 = lbp_feat->get_transformed_image(vec_idx2);
 
-	return CMath::dot(vec1.vector, vec2.vector, vec_nDim);
+	return linalg::dot(vec1, vec2);
 }
 
 SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)

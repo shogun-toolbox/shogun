@@ -19,7 +19,7 @@ using namespace shogun;
 
 namespace shogun
 {
-const int32_t Version::version_revision = VERSION_REVISION;
+const int64_t Version::version_revision = VERSION_REVISION;
 const int32_t Version::version_year = VERSION_YEAR;
 const int32_t Version::version_month = VERSION_MONTH;
 const int32_t Version::version_day = VERSION_DAY;
@@ -43,7 +43,7 @@ Version::~Version()
 
 void Version::print_version()
 {
-	SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision)
+	SG_SPRINT("libshogun (%s/%s%" PRId64 ")\n\n", MACHINE, VERSION_RELEASE, version_revision)
 	SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n")
 	SG_SPRINT("Copyright (C) 1999-2011 Max Planck Society\n")
 	SG_SPRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n")
@@ -65,7 +65,7 @@ const char* Version::get_version_release()
 	return version_release;
 }
 
-int32_t Version::get_version_revision()
+int64_t Version::get_version_revision()
 {
 	return version_revision;
 }

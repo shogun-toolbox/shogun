@@ -5,174 +5,87 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2017 Giovanni De Toni
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-
+#include <csignal>
 #include <stdlib.h>
-#include <string.h>
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/base/init.h>
 
 using namespace shogun;
+using namespace rxcpp;
 
-int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
-struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
-bool CSignal::active=false;
-bool CSignal::cancel_computation=false;
-bool CSignal::cancel_immediately=false;
+bool CSignal::m_active = false;
+CSignal::SGSubjectS* CSignal::m_subject = new rxcpp::subjects::subject<int>();
+
+CSignal::SGObservableS* CSignal::m_observable =
+    new CSignal::SGObservableS(CSignal::m_subject->get_observable());
+CSignal::SGSubscriberS* CSignal::m_subscriber =
+    new CSignal::SGSubscriberS(CSignal::m_subject->get_subscriber());
 
 CSignal::CSignal()
-: CSGObject()
 {
 }
 
 CSignal::~CSignal()
 {
-	if (!unset_handler())
-		SG_PRINT("error uninitalizing signal handler\n")
 }
 
 void CSignal::handler(int signal)
 {
+	/* If the handler is not enabled, then return */
+	if (!m_active)
+		return;
+
 	if (signal == SIGINT)
 	{
-		SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ")
-		char answer=fgetc(stdin);
-
-		if (answer == 'I')
+		SG_SPRINT(
+		    "\n[ShogunSignalHandler] "
+		    "Immediately return to prompt / "
+		    "Prematurely finish computations / "
+		    "Pause current computation / "
+		    "Do nothing (I/C/P/D)? ")
+		char answer = getchar();
+		getchar();
+		switch (answer)
 		{
-			unset_handler();
-			set_cancel(true);
-			if (sg_print_error)
-				sg_print_error(stdout, "sg stopped by SIGINT\n");
+		case 'I':
+			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
+			m_subscriber->on_completed();
+			exit(0);
+			break;
+		case 'C':
+			SG_SPRINT(
+			    "[ShogunSignalHandler] Terminating"
+			    " prematurely current algorithm...\n");
+			m_subscriber->on_next(SG_BLOCK_COMP);
+			break;
+		case 'P':
+			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
+			m_subscriber->on_next(SG_PAUSE_COMP);
+			break;
+		default:
+			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
+			break;
 		}
-		else if (answer == 'P')
-			set_cancel();
-		else
-			SG_SPRINT("Continuing...\n")
 	}
-	else if (signal == SIGURG)
-		set_cancel();
 	else
-		SG_SPRINT("unknown signal %d received\n", signal)
-}
-
-bool CSignal::set_handler()
-{
-	if (!active)
 	{
-		struct sigaction act;
-		sigset_t st;
-
-		sigemptyset(&st);
-		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
-			sigaddset(&st, signals[i]);
-
-#if !(defined(__INTERIX) || defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__))
-		act.sa_sigaction=NULL; //just in case
-#endif
-		act.sa_handler=CSignal::handler;
-		act.sa_mask = st;
-		act.sa_flags = 0;
-
-		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
-		{
-			if (sigaction(signals[i], &act, &oldsigaction[i]))
-			{
-				SG_SPRINT("Error trapping signals!\n")
-				for (int32_t j=i-1; j>=0; j--)
-					sigaction(signals[i], &oldsigaction[i], NULL);
-
-				clear();
-				return false;
-			}
-		}
-
-		active=true;
-		return true;
+		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
 	}
-	else
-		return false;
 }
 
-bool CSignal::unset_handler()
+void CSignal::reset_handler()
 {
-	if (active)
-	{
-		bool result=true;
+	delete m_subject;
+	delete m_observable;
+	delete m_subscriber;
 
-		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
-		{
-			if (sigaction(signals[i], &oldsigaction[i], NULL))
-			{
-				SG_SPRINT("error uninitalizing signal handler for signal %d\n", signals[i])
-				result=false;
-			}
-		}
-
-		if (result)
-			clear();
-
-		return result;
-	}
-	else
-		return false;
+	m_subject = new rxcpp::subjects::subject<int>();
+	m_observable = new CSignal::SGObservableS(m_subject->get_observable());
+	m_subscriber = new CSignal::SGSubscriberS(m_subject->get_subscriber());
 }
-
-void CSignal::clear_cancel()
-{
-	cancel_computation=false;
-	cancel_immediately=false;
-}
-
-void CSignal::set_cancel(bool immediately)
-{
-	cancel_computation=true;
-
-	if (immediately)
-		cancel_immediately=true;
-}
-
-void CSignal::clear()
-{
-	clear_cancel();
-	active=false;
-	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
-}
-
-#if defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__)
-#define SIGBAD(signo) ( (signo) <=0 || (signo) >=NSIG)
-Sigfunc *handlers[NSIG]={0};
-
-int sigaddset(sigset_t *set, int signo)
-{
-	if (SIGBAD(signo)) {
-		errno = EINVAL;
-		return -1;
-	}
-	*set |= 1 << (signo-1);
-	return 0;
-}
-
-int sigaction(int signo, const struct sigaction *act, struct sigaction *oact)
-{
-	if (SIGBAD(signo)) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	if(oact){
-			oact->sa_handler = handlers[signo];
-			oact->sa_mask = 0;
-			oact->sa_flags =0;
-	}
-	if (act)
-		handlers[signo]=act->sa_handler;
-
-	return 0;
-}
-#endif

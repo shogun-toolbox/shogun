@@ -7,8 +7,9 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 
-#include <shogun/mathematics/lapack.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/optimization/liblinear/tron.h>
 
 using namespace shogun;
@@ -103,10 +104,12 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	iter = 1;
 
-	CSignal::clear_cancel();
 	CTime start_time;
+	auto pb = progress(range(10));
 
-	while (iter <= max_iter && search && (!CSignal::cancel_computations()))
+	// TODO: replace with new signal
+	// while (iter <= max_iter && search && (!CSignal::cancel_computations()))
+	while (iter <= max_iter && search)
 	{
 		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
 		  break;
@@ -156,7 +159,9 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 			gnorm = tron_dnrm2(n, g, inc);
 			if (gnorm < eps*gnorm1)
 				break;
-			SG_SABS_PROGRESS(gnorm, -CMath::log10(gnorm), -CMath::log10(1), -CMath::log10(eps*gnorm1), 6)
+			pb.print_absolute(
+			    gnorm, -CMath::log10(gnorm), -CMath::log10(1),
+			    -CMath::log10(eps * gnorm1));
 		}
 		if (f < -1.0e+32)
 		{
@@ -176,7 +181,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		}
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 
 	SG_FREE(g);
 	SG_FREE(r);
