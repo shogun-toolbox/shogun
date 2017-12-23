@@ -20,11 +20,15 @@ CROCEvaluation::~CROCEvaluation()
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
 	REQUIRE(predicted, "No predicted labels provided.\n");
-	REQUIRE(ground_truth, "No ground_truth labels provided.\n");
-	REQUIRE(predicted->get_label_type()==LT_BINARY, "Given predicted labels (%d) must be binary (%d).\n",
-			predicted->get_label_type(), LT_BINARY);
-	REQUIRE(ground_truth->get_label_type()==LT_BINARY, "Given ground_truth labels (%d) must be binary (%d).\n",
-			ground_truth->get_label_type(), LT_BINARY);
+	REQUIRE(ground_truth, "No ground truth labels provided.\n");
+	REQUIRE(
+	    predicted->get_label_type() == LT_BINARY,
+	    "Given predicted labels (%d) must be binary (%d).\n",
+	    predicted->get_label_type(), LT_BINARY);
+	REQUIRE(
+	    ground_truth->get_label_type() == LT_BINARY,
+	    "Given ground truth labels (%d) must be binary (%d).\n",
+	    ground_truth->get_label_type(), LT_BINARY);
 
 	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 }
