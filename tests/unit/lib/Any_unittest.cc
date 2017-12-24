@@ -40,7 +40,7 @@ using namespace shogun;
 TEST(Any, as)
 {
 	int32_t integer = 10;
-	auto any = Any(integer);
+	auto any = erase_type(integer);
 	EXPECT_EQ(any.as<int32_t>(), integer);
 	EXPECT_THROW(any.as<float64_t>(), std::logic_error);
 }
@@ -48,7 +48,7 @@ TEST(Any, as)
 TEST(Any, same_type)
 {
 	int32_t integer = 10;
-	auto any = Any(integer);
+	auto any = erase_type(integer);
 	EXPECT_EQ(any.same_type<int32_t>(), true);
 	EXPECT_EQ(any.same_type<float64_t>(), false);
 }
@@ -56,7 +56,7 @@ TEST(Any, same_type)
 TEST(Any, empty)
 {
 	int32_t integer = 10;
-	auto any = Any(integer);
+	auto any = erase_type(integer);
 	auto empty_any = Any();
 	EXPECT_EQ(any.empty(), false);
 	EXPECT_EQ(empty_any.empty(), true);
@@ -65,7 +65,7 @@ TEST(Any, empty)
 TEST(Any, same_type_fallback)
 {
 	int32_t integer = 10;
-	auto any = Any(integer);
+	auto any = erase_type(integer);
 	EXPECT_EQ(any.same_type_fallback<int32_t>(), true);
 	EXPECT_EQ(any.same_type_fallback<float64_t>(), false);
 }
@@ -76,9 +76,9 @@ TEST(Any, erase_type)
 {
 	int32_t integer = 10;
 	float64_t float_pt = 10.0;
-	auto int_any = Any(integer);
+	auto int_any = erase_type(integer);
 	auto empty_any = Any();
-	auto float_any = Any(float_pt);
+	auto float_any = erase_type(float_pt);
 	auto erased_int = erase_type(integer);
 	EXPECT_EQ(erased_int, int_any);
 	EXPECT_NE(erased_int, empty_any);
@@ -89,7 +89,7 @@ TEST(Any, erase_type)
 TEST(Any, recall_type)
 {
 	int32_t integer = 10;
-	auto any = Any(integer);
+	auto any = erase_type(integer);
 	auto empty_any = Any();
 	EXPECT_EQ(recall_type<int32_t>(any), integer);
 	EXPECT_THROW(recall_type<float64_t>(any), std::logic_error);
@@ -105,13 +105,126 @@ TEST(Any, erase_type_non_owning)
 	EXPECT_EQ(recall_type<int32_t>(any), integer);
 }
 
-TEST(Any, mixing_policies)
+TEST(Any, assign_non_owning)
 {
 	int32_t integer = 10;
-	auto owning_any = erase_type(integer);
-	auto non_owning_any = erase_type_non_owning(&integer);
-	EXPECT_THROW(owning_any = non_owning_any, std::logic_error);
-	EXPECT_THROW(non_owning_any = owning_any, std::logic_error);
+	Any any;
+	any = erase_type_non_owning(&integer);
+	EXPECT_EQ(any.as<int32_t>(), integer);
+}
+
+TEST(Any, assign_into_non_owning)
+{
+	int32_t integer = 10;
+	int32_t other = 42;
+	auto any = erase_type_non_owning(&integer);
+	EXPECT_EQ(any.as<int32_t>(), integer);
+	any = erase_type(other);
+	EXPECT_EQ(any.as<int32_t>(), other);
+	EXPECT_EQ(integer, other);
+}
+
+TEST(Any, assign_non_owning_into_non_owning_then_owning)
+{
+	int32_t first = 111;
+	int32_t second = 222;
+	int32_t third = 333;
+	auto first_any = erase_type_non_owning(&first);
+	auto second_any = erase_type_non_owning(&second);
+	EXPECT_EQ(first_any.as<int32_t>(), first);
+	EXPECT_EQ(second_any.as<int32_t>(), second);
+	first_any = second_any;
+	EXPECT_EQ(first_any.as<int32_t>(), second);
+	EXPECT_EQ(second_any.as<int32_t>(), second);
+	first_any = erase_type(third);
+	EXPECT_EQ(first_any.as<int32_t>(), third);
+	EXPECT_EQ(second_any.as<int32_t>(), third);
+}
+
+TEST(Any, assign_non_owning_into_non_owning_then_non_owning)
+{
+	int32_t first = 111;
+	int32_t second = 222;
+	int32_t third = 333;
+	auto first_any = erase_type_non_owning(&first);
+	auto second_any = erase_type_non_owning(&second);
+	EXPECT_EQ(first_any.as<int32_t>(), first);
+	EXPECT_EQ(second_any.as<int32_t>(), second);
+	first_any = second_any;
+	EXPECT_EQ(first_any.as<int32_t>(), second);
+	EXPECT_EQ(second_any.as<int32_t>(), second);
+	first_any = erase_type_non_owning(&third);
+	EXPECT_EQ(first_any.as<int32_t>(), third);
+	EXPECT_EQ(second_any.as<int32_t>(), second);
+}
+
+TEST(Any, assign_wrong_type_into_owning)
+{
+	int32_t integer = 10;
+	auto any = erase_type(integer);
+	EXPECT_THROW(any = erase_type(3.14), std::logic_error);
+}
+
+TEST(Any, assign_wrong_type_into_non_owning)
+{
+	int32_t integer = 10;
+	auto any = erase_type_non_owning(&integer);
+	EXPECT_THROW(any = erase_type(3.14), std::logic_error);
+}
+
+TEST(Any, compare_owning_and_non_owning)
+{
+	int32_t integer = 10;
+	auto owning = erase_type(integer);
+	auto non_owning = erase_type_non_owning(&integer);
+	EXPECT_EQ(owning, non_owning);
+}
+
+TEST(Any, compare_non_owning_and_non_owning)
+{
+	int32_t integer = 10;
+	auto first_non_owning = erase_type_non_owning(&integer);
+	auto second_non_owning = erase_type_non_owning(&integer);
+	EXPECT_EQ(first_non_owning, second_non_owning);
+}
+
+TEST(Any, compare_different_types)
+{
+	int32_t an_integer = 10;
+	float a_float = 10;
+	EXPECT_NE(erase_type(an_integer), erase_type(a_float));
+	EXPECT_NE(erase_type(a_float), erase_type(an_integer));
+}
+
+TEST(Any, compare_different_types_non_owning)
+{
+	int32_t an_integer = 10;
+	float a_float = 10;
+	EXPECT_NE(
+	    erase_type_non_owning(&an_integer), erase_type_non_owning(&a_float));
+	EXPECT_NE(
+	    erase_type_non_owning(&a_float), erase_type_non_owning(&an_integer));
+}
+
+TEST(Any, copy_owning)
+{
+	int32_t integer = 10;
+	int32_t other = 12;
+	auto any(erase_type(integer));
+	EXPECT_EQ(any.as<int32_t>(), integer);
+	any = erase_type(other);
+	EXPECT_EQ(any.as<int32_t>(), other);
+}
+
+TEST(Any, copy_non_owning)
+{
+	int32_t integer = 10;
+	int32_t other = 12;
+	auto any(erase_type_non_owning(&integer));
+	EXPECT_EQ(any.as<int32_t>(), integer);
+	any = erase_type(other);
+	EXPECT_EQ(any.as<int32_t>(), other);
+	EXPECT_EQ(integer, other);
 }
 
 TEST(Any, type_info)
@@ -119,4 +232,24 @@ TEST(Any, type_info)
 	int32_t integer = 10;
 	auto any = erase_type(integer);
 	EXPECT_EQ(any.type_info().hash_code(), typeid(integer).hash_code());
+}
+
+TEST(Any, store_in_map)
+{
+	int32_t integer = 10;
+	std::map<std::string, Any> map;
+	map["something"] = erase_type(integer);
+	EXPECT_EQ(map.at("something").as<int32_t>(), integer);
+	integer = 13;
+	EXPECT_NE(map.at("something").as<int32_t>(), integer);
+}
+
+TEST(Any, store_non_owning_in_map)
+{
+	int32_t integer = 10;
+	std::map<std::string, Any> map;
+	map["something"] = erase_type_non_owning(&integer);
+	EXPECT_EQ(map.at("something").as<int32_t>(), integer);
+	integer = 13;
+	EXPECT_EQ(map.at("something").as<int32_t>(), integer);
 }
