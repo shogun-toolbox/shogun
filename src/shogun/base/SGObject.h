@@ -76,19 +76,23 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD4(param, name, description, ms_available) {\
-		m_parameters->add(param, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add(param, name, description);\
-}
+#define SG_ADD4(param, name, description, ms_available)                        \
+	{                                                                          \
+		m_parameters->add(param, name, description);                           \
+		watch_param(name, param);                                              \
+		if (ms_available)                                                      \
+			m_model_selection_parameters->add(param, name, description);       \
+	}
 
-#define SG_ADD5(param, name, description, ms_available, gradient_available) {\
-		m_parameters->add(param, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add(param, name, description);\
-		if (gradient_available)\
-			m_gradient_parameters->add(param, name, description);\
-}
+#define SG_ADD5(param, name, description, ms_available, gradient_available)    \
+	{                                                                          \
+		m_parameters->add(param, name, description);                           \
+		watch_param(name, param);                                              \
+		if (ms_available)                                                      \
+			m_model_selection_parameters->add(param, name, description);       \
+		if (gradient_available)                                                \
+			m_gradient_parameters->add(param, name, description);              \
+	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
 
@@ -488,6 +492,13 @@ protected:
 	{
 		BaseTag tag(name);
 		type_erased_put(tag, erase_type(value));
+	}
+
+	template <typename T>
+	void watch_param(const std::string& name, T* value)
+	{
+		BaseTag tag(name);
+		type_erased_put(tag, erase_type_non_owning(value));
 	}
 
 public:

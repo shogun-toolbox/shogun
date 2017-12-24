@@ -384,3 +384,15 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has<int32_t>("foo"), false);
 	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
 }
+
+TEST(SGObject, watched_parameter)
+{
+	auto obj = some<CMockObject>();
+
+	obj->put("watched_int", 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+	obj->set_watched(12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+}
