@@ -216,6 +216,13 @@ public:
 
 };
 
+template <class T>
+inline bool
+operator==(const SGSparseVector<T>& lhs, const SGSparseVector<T>& rhs)
+{
+	SG_SERROR("Comparison is not implemented for sparse vectors");
+	return false;
+}
 }
 
 #endif // __SGSPARSEVECTOR_H__

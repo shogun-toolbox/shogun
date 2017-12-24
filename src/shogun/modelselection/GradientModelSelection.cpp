@@ -89,10 +89,12 @@ private:
 			"obj in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 		m_func_data = NULL;
 		m_val = SGVector<float64_t>();
-		SG_ADD(m_val, "GradientModelSelectionCostFunction__m_val",
+		SG_ADD(
+			&m_val, "GradientModelSelectionCostFunction__m_val",
 			"val in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 		m_grad = SGVector<float64_t>();
-		SG_ADD(m_grad, "GradientModelSelectionCostFunction__m_grad",
+		SG_ADD(
+			&m_grad, "GradientModelSelectionCostFunction__m_grad",
 			"grad in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 	}
 
