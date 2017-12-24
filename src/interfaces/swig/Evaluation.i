@@ -40,6 +40,7 @@
 %rename(SpecificityMeasure) CSpecificityMeasure;
 %rename(CrossValidation) CCrossValidation;
 %rename(SplittingStrategy) CSplittingStrategy;
+%rename(TimeSeriesSplitting) CTimeSeriesSplitting;
 %rename(StratifiedCrossValidationSplitting) CStratifiedCrossValidationSplitting;
 %rename(CrossValidationSplitting) CCrossValidationSplitting;
 %rename(DifferentiableFunction) CDifferentiableFunction;
@@ -73,6 +74,7 @@
 %include <shogun/evaluation/GradientEvaluation.h>
 %include <shogun/evaluation/GradientResult.h>
 %include <shogun/evaluation/MulticlassOVREvaluation.h>
+%include <shogun/evaluation/TimeSeriesSplitting.h>
 %include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationSplitting.h>
 %include <shogun/evaluation/StructuredAccuracy.h>
