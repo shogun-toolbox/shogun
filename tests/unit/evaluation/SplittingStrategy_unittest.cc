@@ -7,13 +7,13 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/evaluation/LOOCrossValidationSplitting.h>
 #include <gtest/gtest.h>
-
+#include <shogun/evaluation/CrossValidationSplitting.h>
+#include <shogun/evaluation/LOOCrossValidationSplitting.h>
+#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+#include <shogun/evaluation/TimeSeriesSplitting.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -291,6 +291,93 @@ TEST(SplittingStrategy,LOO)
 		}
 
 		EXPECT_EQ(flag,0);
+
+		/* clean up */
+		SG_UNREF(splitting);
+	}
+}
+
+TEST(SplittingStrategy, timeseries_subset_linear_splits)
+{
+	index_t num_labels, num_subsets, min_subset_size, base_size;
+	index_t runs = 10;
+
+	while (runs-- > 0)
+	{
+		num_labels = CMath::random(50, 150);
+		num_subsets = CMath::random(1, 5);
+		min_subset_size = CMath::random(1, 6);
+		base_size = num_labels / num_subsets;
+
+		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		for (index_t i = 0; i < num_labels; ++i)
+			labels->set_label(i, CMath::random(-10.0, 10.0));
+
+		CTimeSeriesSplitting* splitting =
+		    new CTimeSeriesSplitting(labels, num_subsets);
+
+		splitting->set_min_subset_size(min_subset_size);
+		splitting->build_subsets();
+
+		for (index_t i = 0; i < num_subsets; ++i)
+		{
+			SGVector<index_t> subset = splitting->generate_subset_indices(i);
+			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+
+			/* Subset size should be atleat min_subset_size */
+			EXPECT_GE(subset.vlen, splitting->get_min_subset_size());
+
+			/* check the splitting is linear */
+			EXPECT_TRUE(
+			    inverse.vlen % base_size == 0 ||
+			    inverse.vlen == num_labels - min_subset_size);
+		}
+
+		SG_UNREF(splitting);
+	}
+}
+
+TEST(SplittingStrategy, timeseries_subsets_future_leak)
+{
+	index_t num_labels, num_subsets, min_subset_size;
+	index_t runs = 10;
+
+	while (runs-- > 0)
+	{
+		num_labels = CMath::random(50, 150);
+		num_subsets = CMath::random(1, 5);
+		min_subset_size = CMath::random(1, 7);
+
+		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		for (index_t i = 0; i < num_labels; ++i)
+			labels->set_label(i, CMath::random(-10.0, 10.0));
+
+		CTimeSeriesSplitting* splitting =
+		    new CTimeSeriesSplitting(labels, num_subsets);
+
+		splitting->set_min_subset_size(min_subset_size);
+		splitting->build_subsets();
+
+		for (index_t i = 0; i < num_subsets; ++i)
+		{
+			SGVector<index_t> subset = splitting->generate_subset_indices(i);
+			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+
+			/* check future leak into test set */
+			for (index_t j = 0; j < inverse.vlen - 1; ++j)
+			{
+				EXPECT_LT(inverse.vector[j], inverse.vector[j + 1]);
+			}
+
+			EXPECT_LT(inverse.vector[inverse.vlen - 1], subset.vector[0]);
+
+			for (index_t j = 0; j < subset.vlen - 1; ++j)
+			{
+				EXPECT_LT(subset.vector[j], subset.vector[j + 1]);
+			}
+
+			EXPECT_EQ(subset.vlen + inverse.vlen, num_labels);
+		}
 
 		/* clean up */
 		SG_UNREF(splitting);
