@@ -21,6 +21,7 @@
  #include <shogun/evaluation/GradientResult.h>
  #include <shogun/evaluation/MulticlassOVREvaluation.h>
  #include <shogun/evaluation/SplittingStrategy.h>
+ #include <shogun/evaluation/TimeSeriesSplitting.h>
  #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
  #include <shogun/evaluation/CrossValidationSplitting.h>
  #include <shogun/evaluation/StructuredAccuracy.h>

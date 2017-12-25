@@ -1,0 +1,21 @@
+CSVFile f_labels("../../data/label_train_regression.dat")
+
+#![create labels]
+RegressionLabels labels(f_labels)
+#![create labels]
+
+#![set parameters]
+int num_subsets = 5
+int min_subset_size = 4
+TimeSeriesSplitting splitting(labels, num_subsets)
+splitting.set_min_subset_size(min_subset_size)
+#![set parameters]
+
+#![build subsets]
+splitting.build_subsets()
+#![build subsets]
+
+#![generate subsets and inverse (aka test labels and train labels)]
+IntVector test_labels_indices = splitting.generate_subset_indices(1)
+IntVector train_labels_indices = splitting.generate_subset_inverse(1)
+#![generate subsets and inverse (aka test labels and train labels)]
