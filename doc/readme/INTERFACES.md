@@ -69,6 +69,7 @@ This needs `shogun.R` to be visible, which is either in `path/to/build/src/inter
     export R_LIBS_USER="path/to/shogun.R:$R_LIBS_USER"
 
 Running an example:
+
     R --no-restore --no-save --no-readline --slave -f path/to/r_example.rb
 
 ### Lua
@@ -78,7 +79,7 @@ This needs `libshogun.so` (this is the interface file, not the shared library fi
 
 Running an example:
 
-    R --no-restore --no-save --no-readline --slave -f path/to/r_example.R
+    lua path/to/lua_example.lua
 
 ### CSharp
 This needs `shogun.dll` to be visible, which is either in `path/to/build/src/interfaces/csharp_modular` or in something similar to `path/to/shogun-install/lib/cli/shogun/`
