@@ -70,7 +70,7 @@ This needs `shogun.R` to be visible, which is either in `path/to/build/src/inter
 
 Running an example:
 
-    R --no-restore --no-save --no-readline --slave -f path/to/r_example.rb
+    R --no-restore --no-save --no-readline --slave -f path/to/r_example.r
 
 ### Lua
 This needs `libshogun.so` (this is the interface file, not the shared library file `libshogun.so`) to be visible, which is either in `path/to/build/src/interfaces/lua_modular/` or in something similar to `path/to/shogun-install/lib/lua/5.1/`
