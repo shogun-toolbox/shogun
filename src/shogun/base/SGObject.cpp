@@ -36,7 +36,29 @@
 
 namespace shogun
 {
-	typedef std::map<BaseTag, Any> ParametersMap;
+	class AnyParameter
+	{
+	public:
+		AnyParameter() : m_value()
+		{
+		}
+		explicit AnyParameter(const Any& value) : m_value(value)
+		{
+		}
+		explicit AnyParameter(const AnyParameter& other)
+		    : m_value(other.m_value)
+		{
+		}
+		Any value() const
+		{
+			return m_value;
+		}
+
+	private:
+		Any m_value;
+	};
+
+	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string,
 	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
@@ -46,14 +68,14 @@ namespace shogun
 	public:
 		void put(const BaseTag& tag, const Any& any)
 		{
-			map[tag] = any;
+			map[tag] = AnyParameter(any);
 		}
 
 		Any get(const BaseTag& tag) const
 		{
 			if(!has(tag))
 				return Any();
-			return map.at(tag);
+			return map.at(tag).value();
 		}
 
 		bool has(const BaseTag& tag) const
