@@ -71,6 +71,56 @@ namespace shogun
 		NON_OWNING
 	};
 
+	namespace any_detail
+	{
+
+		struct by_default
+		{
+		};
+
+		struct general : by_default
+		{
+		};
+
+		struct more_important : general
+		{
+		};
+
+		struct maybe_most_important : more_important
+		{
+		};
+
+		template <class T>
+		auto compare_impl(by_default, T& lhs, T& rhs) = delete;
+
+		template <class T>
+		auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
+		{
+			return lhs == rhs;
+		}
+
+		template <class T>
+		auto compare_impl(more_important, T& lhs, T& rhs)
+		    -> decltype(lhs.equals(rhs))
+		{
+			return lhs.equals(rhs);
+		}
+
+		template <class T>
+		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
+		    -> decltype(lhs->equals(rhs))
+		{
+			return lhs->equals(rhs);
+		}
+
+		template <class T>
+		auto compare(T& lhs, T& rhs)
+		    -> decltype(compare_impl(maybe_most_important(), lhs, rhs))
+		{
+			return compare_impl(maybe_most_important(), lhs, rhs);
+		}
+	}
+
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
 	 * Policy defines how to handle this data. It works with a
@@ -188,9 +238,9 @@ namespace shogun
 		 */
 		bool equals(void** storage, void** other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
+			T& typed_storage = *(reinterpret_cast<T*>(*storage));
+			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+			return any_detail::compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
@@ -257,9 +307,9 @@ namespace shogun
 		 */
 		bool equals(void** storage, void** other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
+			T& typed_storage = *(reinterpret_cast<T*>(*storage));
+			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+			return any_detail::compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
