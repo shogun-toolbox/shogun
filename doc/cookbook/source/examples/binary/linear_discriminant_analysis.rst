@@ -24,23 +24,23 @@ Example
 
 We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` from files with training and test data.
 
-.. sgexample:: lda.sg:create_features
+.. sgexample:: linear_discriminant_analysis.sg:create_features
 
 We create an instance of the :sgclass:`CLDA` classifier and set features and labels. By default, Shogun automatically chooses the decomposition method based on :math:`{N<=D}` or :math:`{N>D}`.
 
-.. sgexample:: lda.sg:create_instance
+.. sgexample:: linear_discriminant_analysis.sg:create_instance
 
 Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
 
-.. sgexample:: lda.sg:train_and_apply
+.. sgexample:: linear_discriminant_analysis.sg:train_and_apply
 
 We can extract weights :math:`{\bf w}`.
 
-.. sgexample:: lda.sg:extract_weights
+.. sgexample:: linear_discriminant_analysis.sg:extract_weights
 
 We can evaluate test performance via e.g. :sgclass:`CAccuracyMeasure`.
 
-.. sgexample:: lda.sg:evaluate_accuracy
+.. sgexample:: linear_discriminant_analysis.sg:evaluate_accuracy
 
 ----------
 References

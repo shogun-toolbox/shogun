@@ -15,19 +15,19 @@ Example
 Given a dataset which we assume consists of linearly mixed signals, we create CDenseFeatures
 (RealFeatures, here 64 bit float values).
 
-.. sgexample:: ica_fast.sg:create_features
+.. sgexample:: independent_component_analysis_fast.sg:create_features
 
 We create the :sgclass:`CFastICA` instance, and set its parameter for the iterative optimization.
 
-.. sgexample:: ica_fast.sg:set_parameters
+.. sgexample:: independent_component_analysis_fast.sg:set_parameters
 
 Then we apply ICA, which gives the unmixed signals.
 
-.. sgexample:: ica_fast.sg:apply_convert
+.. sgexample:: independent_component_analysis_fast.sg:apply_convert
 
 We can also extract the estimated mixing matrix.
 
-.. sgexample:: ica_fast.sg:extract
+.. sgexample:: independent_component_analysis_fast.sg:extract
 
 ----------
 References

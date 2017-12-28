@@ -37,31 +37,31 @@ The API is very similar to :sgclass:`CKernelRidgeRegression`. We create
 :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) and
 :sgclass:`CRegressionLabels` as
 
-.. sgexample:: krr_nystrom.sg:create_features
+.. sgexample:: kernel_ridge_regression_nystrom.sg:create_features
 
 Choose an appropriate :sgclass:`CKernel` and instantiate it. Here we use a
 :sgclass:`CGaussianKernel`.
 
-.. sgexample:: krr_nystrom.sg:create_appropriate_kernel
+.. sgexample:: kernel_ridge_regression_nystrom.sg:create_appropriate_kernel
 
 We create an instance of :sgclass:`CKRRNystrom` by passing it the ridge penalty
 :math:`\tau`, the number of data columns to subsample :math:`m`, the kernel and
 the labels.
 
-.. sgexample:: krr_nystrom.sg:create_instance
+.. sgexample:: kernel_ridge_regression_nystrom.sg:create_instance
 
 Then we train the regression model and apply it to test data to get the
 predicted :sgclass:`CRegressionLabels`.
 
-.. sgexample:: krr_nystrom.sg:train_and_apply
+.. sgexample:: kernel_ridge_regression_nystrom.sg:train_and_apply
 
 After training, we can extract :math:`\alpha`.
 
-.. sgexample:: krr_nystrom.sg:extract_alpha
+.. sgexample:: kernel_ridge_regression_nystrom.sg:extract_alpha
 
 Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
 
-.. sgexample:: krr_nystrom.sg:evaluate_error
+.. sgexample:: kernel_ridge_regression_nystrom.sg:evaluate_error
 
 ----------
 References
