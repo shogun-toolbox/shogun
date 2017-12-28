@@ -37,6 +37,19 @@
 
 using namespace shogun;
 
+struct Simple
+{
+public:
+	bool equals(const Simple* other) const
+	{
+		return true;
+	}
+	bool equals(const Simple& other) const
+	{
+		return true;
+	}
+};
+
 TEST(Any, as)
 {
 	int32_t integer = 10;
@@ -252,4 +265,30 @@ TEST(Any, store_non_owning_in_map)
 	EXPECT_EQ(map.at("something").as<int32_t>(), integer);
 	integer = 13;
 	EXPECT_EQ(map.at("something").as<int32_t>(), integer);
+}
+
+TEST(Any, equals_int)
+{
+	int32_t a = 1;
+	int32_t b = 1;
+	EXPECT_EQ(erase_type(a), erase_type(b));
+	EXPECT_EQ(erase_type(b), erase_type(a));
+}
+
+TEST(Any, equals_pointer)
+{
+	Simple* a = new Simple;
+	Simple* b = new Simple;
+	EXPECT_EQ(erase_type(a), erase_type(b));
+	EXPECT_EQ(erase_type(b), erase_type(a));
+	delete a;
+	delete b;
+}
+
+TEST(Any, equals_value)
+{
+	Simple a;
+	Simple b;
+	EXPECT_EQ(erase_type(a), erase_type(b));
+	EXPECT_EQ(erase_type(b), erase_type(a));
 }
