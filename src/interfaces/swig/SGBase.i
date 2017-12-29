@@ -1,5 +1,6 @@
 /* base includes required by any module */
 %include "stdint.i"
+%include "std_string.i"
 %include "exception.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
