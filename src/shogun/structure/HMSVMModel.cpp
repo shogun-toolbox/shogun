@@ -163,8 +163,7 @@ CResultSet* CHMSVMModel::argmax(
 		int32_t feat_idx,
 		bool const training)
 {
-	int32_t dim = get_dim();
-	ASSERT( w.vlen == get_dim() )
+	ASSERT(w.vlen == get_dim())
 
 	// Shorthand for the number of features of the feature vector
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;

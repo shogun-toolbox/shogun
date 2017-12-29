@@ -39,7 +39,7 @@ TEST(SGVectorTest,ctor)
 	/* test iterator */
 	std::vector<float64_t> src {1.0, 2.0, 3.0, 4.0, 5.0};
 	SGVector<float64_t> d(src.begin(), src.end());
-	EXPECT_EQ(src.size(), d.vlen);
+	EXPECT_EQ(src.size(), static_cast<size_t>(d.vlen));
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(b[i], c[i]);
 
