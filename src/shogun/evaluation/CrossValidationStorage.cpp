@@ -37,6 +37,8 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/Machine.h>
 
+#include <shogun/base/range.h>
+
 using namespace shogun;
 
 CrossValidationFoldStorage::CrossValidationFoldStorage() : CSGObject()
@@ -265,7 +267,7 @@ bool CrossValidationStorage::operator==(const CrossValidationStorage& rhs) const
 
 	if (rhs.m_folds_results.size() != m_folds_results.size())
 		return false;
-	for (index_t i = 0; i < m_folds_results.size(); i++)
+	for (auto i : range(m_folds_results.size()))
 	{
 		if (!(m_folds_results[i] == rhs.m_folds_results[i]))
 			return false;

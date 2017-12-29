@@ -26,13 +26,13 @@ TEST(GEMPLP, find_intersections_index)
 	clique_B[0] = 2;
 	k = mplp->find_intersection_index(clique_A, clique_B);
 	EXPECT_EQ(k, 0);
-	EXPECT_EQ(mplp->m_all_intersections.size(), 1);
+	EXPECT_EQ(mplp->m_all_intersections.size(), 1u);
 	EXPECT_EQ(mplp->m_all_intersections[0][0], 2);
 
 	clique_B[1] = 1;
 	k = mplp->find_intersection_index(clique_A, clique_B);
 	EXPECT_EQ(k, 1);
-	EXPECT_EQ(mplp->m_all_intersections.size(), 2);
+	EXPECT_EQ(mplp->m_all_intersections.size(), 2u);
 	EXPECT_EQ(mplp->m_all_intersections[1].size(), 2);
 	EXPECT_EQ(mplp->m_all_intersections[1][0], 1);
 	EXPECT_EQ(mplp->m_all_intersections[1][1], 2);
