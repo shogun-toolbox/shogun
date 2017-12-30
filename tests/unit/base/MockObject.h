@@ -39,7 +39,10 @@ namespace shogun
 			register_param("int", m_integer);
 			register_param("float", decimal);
 
-			watch_param("watched_int", &m_watched);
+			watch_param(
+			    "watched_int", &m_watched,
+			    AnyParameterProperties(
+			        MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 		}
 
 	private:

@@ -36,27 +36,6 @@
 
 namespace shogun
 {
-	class AnyParameter
-	{
-	public:
-		AnyParameter() : m_value()
-		{
-		}
-		explicit AnyParameter(const Any& value) : m_value(value)
-		{
-		}
-		explicit AnyParameter(const AnyParameter& other)
-		    : m_value(other.m_value)
-		{
-		}
-		Any value() const
-		{
-			return m_value;
-		}
-
-	private:
-		Any m_value;
-	};
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string,
@@ -66,16 +45,16 @@ namespace shogun
 	class CSGObject::Self
 	{
 	public:
-		void put(const BaseTag& tag, const Any& any)
+		void put(const BaseTag& tag, const AnyParameter& parameter)
 		{
-			map[tag] = AnyParameter(any);
+			map[tag] = parameter;
 		}
 
-		Any get(const BaseTag& tag) const
+		AnyParameter get(const BaseTag& tag) const
 		{
 			if(!has(tag))
-				return Any();
-			return map.at(tag).value();
+				return AnyParameter();
+			return map.at(tag);
 		}
 
 		bool has(const BaseTag& tag) const
@@ -809,23 +788,24 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::type_erased_put(const BaseTag& _tag, const Any& any)
+void CSGObject::put_parameter(
+    const BaseTag& _tag, const AnyParameter& parameter)
 {
-	self->put(_tag, any);
+	self->put(_tag, parameter);
 }
 
-Any CSGObject::type_erased_get(const BaseTag& _tag) const
+AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 {
-	Any any = self->get(_tag);
-	if(any.empty())
+	const auto& parameter = self->get(_tag);
+	if (parameter.get_value().empty())
 	{
 		SG_ERROR("There is no parameter called \"%s\" in %s",
 			_tag.name().c_str(), get_name());
 	}
-	return any;
+	return parameter;
 }
 
-bool CSGObject::type_erased_has(const BaseTag& _tag) const
+bool CSGObject::has_parameter(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
