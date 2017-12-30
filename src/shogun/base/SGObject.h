@@ -13,6 +13,7 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
+#include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -79,7 +80,9 @@ template <class T> class SGStringList;
 #define SG_ADD4(param, name, description, ms_available)                        \
 	{                                                                          \
 		m_parameters->add(param, name, description);                           \
-		watch_param(name, param);                                              \
+		watch_param(                                                           \
+		    name, param,                                                       \
+		    AnyParameterProperties(ms_available, GRADIENT_NOT_AVAILABLE));     \
 		if (ms_available)                                                      \
 			m_model_selection_parameters->add(param, name, description);       \
 	}
@@ -87,7 +90,9 @@ template <class T> class SGStringList;
 #define SG_ADD5(param, name, description, ms_available, gradient_available)    \
 	{                                                                          \
 		m_parameters->add(param, name, description);                           \
-		watch_param(name, param);                                              \
+		watch_param(                                                           \
+		    name, param,                                                       \
+		    AnyParameterProperties(ms_available, gradient_available));         \
 		if (ms_available)                                                      \
 			m_model_selection_parameters->add(param, name, description);       \
 		if (gradient_available)                                                \
@@ -99,19 +104,6 @@ template <class T> class SGStringList;
 /*******************************************************************************
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
-
-/** model selection availability */
-enum EModelSelectionAvailability {
-	MS_NOT_AVAILABLE=0,
-	MS_AVAILABLE=1,
-};
-
-/** gradient availability */
-enum EGradientAvailability
-{
-	GRADIENT_NOT_AVAILABLE=0,
-	GRADIENT_AVAILABLE=1
-};
 
 /** @brief Class SGObject is the base class of all shogun objects.
  *
@@ -307,7 +299,7 @@ public:
 	 */
 	bool has(const std::string& name) const
 	{
-		return type_erased_has(BaseTag(name));
+		return has_parameter(BaseTag(name));
 	}
 
 	/** Checks if object has a class parameter identified by a Tag.
@@ -330,9 +322,9 @@ public:
 	bool has(const std::string& name) const
 	{
 		BaseTag tag(name);
-		if(!type_erased_has(tag))
+		if (!has_parameter(tag))
 			return false;
-		const Any value = type_erased_get(tag);
+		const Any value = get_parameter(tag).get_value();
 		return value.same_type<T>();
 	}
 
@@ -345,10 +337,10 @@ public:
 	template <typename T>
 	void put(const Tag<T>& _tag, const T& value)
 	{
-		if(type_erased_has(_tag))
+		if (has_parameter(_tag))
 		{
 			if(has<T>(_tag.name()))
-				type_erased_put(_tag, erase_type(value));
+				put_parameter(_tag, AnyParameter(erase_type(value)));
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -384,7 +376,7 @@ public:
 	template <typename T>
 	T get(const Tag<T>& _tag) const
 	{
-		const Any value = type_erased_get(_tag);
+		const Any value = get_parameter(_tag).get_value();
 		try
 		{
 			return recall_type<T>(value);
@@ -476,7 +468,7 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		type_erased_put(_tag, erase_type(value));
+		put_parameter(_tag, AnyParameter(erase_type(value)));
 	}
 
 	/** Registers a class parameter which is identified by a name.
@@ -491,14 +483,16 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		type_erased_put(tag, erase_type(value));
+		put_parameter(tag, AnyParameter(erase_type(value)));
 	}
 
 	template <typename T>
-	void watch_param(const std::string& name, T* value)
+	void watch_param(
+		const std::string& name, T* value, AnyParameterProperties properties)
 	{
 		BaseTag tag(name);
-		type_erased_put(tag, erase_type_non_owning(value));
+		put_parameter(
+			tag, AnyParameter(erase_type_non_owning(value), properties));
 	}
 
 public:
@@ -556,7 +550,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return true if the parameter exists with the input tag
 	 */
-	bool type_erased_has(const BaseTag& _tag) const;
+	bool has_parameter(const BaseTag& _tag) const;
 
 	/** Registers and modifies a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -564,7 +558,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param any value without type information of the parameter
 	 */
-	void type_erased_put(const BaseTag& _tag, const Any& any);
+	void put_parameter(const BaseTag& _tag, const AnyParameter& any);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -572,7 +566,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	Any type_erased_get(const BaseTag& _tag) const;
+	AnyParameter get_parameter(const BaseTag& _tag) const;
 
 	/** Gets an incremental hash of all parameters as well as the parameters of
 	 * CSGObject children of the current object's parameters.
