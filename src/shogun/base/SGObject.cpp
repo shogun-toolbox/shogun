@@ -45,9 +45,24 @@ namespace shogun
 	class CSGObject::Self
 	{
 	public:
-		void put(const BaseTag& tag, const AnyParameter& parameter)
+		void create(const BaseTag& tag, const AnyParameter& parameter)
 		{
+			if (has(tag))
+			{
+				SG_SERROR("Can not register %s twice", tag.name().c_str())
+			}
 			map[tag] = parameter;
+		}
+
+		void update(const BaseTag& tag, const Any& value)
+		{
+			if (!has(tag))
+			{
+				SG_SERROR(
+				    "Can not update unregistered parameter %s",
+				    tag.name().c_str())
+			}
+			map.at(tag).set_value(value);
 		}
 
 		AnyParameter get(const BaseTag& tag) const
@@ -788,10 +803,15 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::put_parameter(
+void CSGObject::create_parameter(
     const BaseTag& _tag, const AnyParameter& parameter)
 {
-	self->put(_tag, parameter);
+	self->create(_tag, parameter);
+}
+
+void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
+{
+	self->update(_tag, value);
 }
 
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const

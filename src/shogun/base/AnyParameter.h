@@ -78,6 +78,11 @@ namespace shogun
 			return m_value;
 		}
 
+		void set_value(const Any& value)
+		{
+			m_value = value;
+		}
+
 		AnyParameterProperties get_properties() const
 		{
 			return m_properties;
