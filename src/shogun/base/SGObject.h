@@ -318,8 +318,8 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name and type
 	 */
-	template <typename T, typename U=void>
-	bool has(const std::string& name) const
+	template <typename T, typename U = void>
+	bool has(const std::string& name) const throw(ShogunException)
 	{
 		BaseTag tag(name);
 		if (!has_parameter(tag))
@@ -335,7 +335,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T>
-	void put(const Tag<T>& _tag, const T& value)
+	void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
 	{
 		if (has_parameter(_tag))
 		{
@@ -361,7 +361,7 @@ public:
 	 * @param value value of the parameter along with type information
 	 */
 	template <typename T, typename U = void>
-	void put(const std::string& name, const T& value)
+	void put(const std::string& name, const T& value) throw(ShogunException)
 	{
 		Tag<T> tag(name);
 		put(tag, value);
@@ -374,7 +374,7 @@ public:
 	 * @return value of the parameter identified by the input tag
 	 */
 	template <typename T>
-	T get(const Tag<T>& _tag) const
+	T get(const Tag<T>& _tag) const throw(ShogunException)
 	{
 		const Any value = get_parameter(_tag).get_value();
 		try
@@ -396,8 +396,8 @@ public:
 	 * @param name name of the parameter
 	 * @return value of the parameter corresponding to the input name and type
 	 */
-	template <typename T, typename U=void>
-	T get(const std::string& name) const
+	template <typename T, typename U = void>
+	T get(const std::string& name) const throw(ShogunException)
 	{
 		Tag<T> tag(name);
 		return get(tag);
