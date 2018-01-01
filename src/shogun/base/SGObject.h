@@ -340,7 +340,7 @@ public:
 		if (has_parameter(_tag))
 		{
 			if(has<T>(_tag.name()))
-				put_parameter(_tag, AnyParameter(erase_type(value)));
+				update_parameter(_tag, erase_type(value));
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -468,7 +468,7 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		put_parameter(_tag, AnyParameter(erase_type(value)));
+		create_parameter(_tag, AnyParameter(erase_type(value)));
 	}
 
 	/** Registers a class parameter which is identified by a name.
@@ -483,7 +483,7 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		put_parameter(tag, AnyParameter(erase_type(value)));
+		create_parameter(tag, AnyParameter(erase_type(value)));
 	}
 
 	template <typename T>
@@ -491,7 +491,7 @@ protected:
 		const std::string& name, T* value, AnyParameterProperties properties)
 	{
 		BaseTag tag(name);
-		put_parameter(
+		create_parameter(
 			tag, AnyParameter(erase_type_non_owning(value), properties));
 	}
 
@@ -552,13 +552,19 @@ private:
 	 */
 	bool has_parameter(const BaseTag& _tag) const;
 
-	/** Registers and modifies a class parameter, identified by a BaseTag.
-	 * Throws an exception if the class does not have such a parameter.
+	/** Creates a parameter identified by a BaseTag.
 	 *
 	 * @param _tag name information of parameter
-	 * @param any value without type information of the parameter
+	 * @param parameter parameter to be created
 	 */
-	void put_parameter(const BaseTag& _tag, const AnyParameter& any);
+	void create_parameter(const BaseTag& _tag, const AnyParameter& parameter);
+
+	/** Updates a parameter identified by a BaseTag.
+	 *
+	 * @param _tag name information of parameter
+	 * @param value new value of parameter
+	 */
+	void update_parameter(const BaseTag& _tag, const Any& value);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
