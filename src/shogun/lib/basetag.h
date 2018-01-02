@@ -74,61 +74,69 @@ namespace shogun
             m_hash = other.m_hash;
             return *this;
         }
-        
-        /** @return name of Tag */
-        inline std::string name() const
-        {
-            return m_name;
-        }
 
-        /** @return hash of Tag */
-        inline std::size_t hash() const
-        {
-            return m_hash;
-        }
+		/** @return name of Tag */
+		inline std::string name() const
+		{
+			return m_name;
+		}
 
-        /** Equality operator
-         * @param first first BaseTag
-         * @param second secondBaseTag
-         */
-        friend inline bool operator==(const BaseTag& first, const BaseTag& second);
+		/** @return hash of Tag */
+		inline std::size_t hash() const
+		{
+			return m_hash;
+		}
 
-        /** Inequality operator
-         * @param first first BaseTag
-         * @param second secondBaseTag
-         */
-        friend inline bool operator!=(const BaseTag& first, const BaseTag& second);
+#ifndef SWIG
+		/** Equality operator
+		 * @param first first BaseTag
+		 * @param second secondBaseTag
+		 */
+		friend inline bool
+		operator==(const BaseTag& first, const BaseTag& second);
 
-        /** Comparison operator
-         * @param first first BaseTag
-         * @param second secondBaseTag
-         */
-        friend inline bool operator<(const BaseTag& first, const BaseTag& second);
+		/** Inequality operator
+		 * @param first first BaseTag
+		 * @param second secondBaseTag
+		 */
+		friend inline bool
+		operator!=(const BaseTag& first, const BaseTag& second);
 
-    private:
-        /** name for object */
-        std::string m_name;
-        /** hash is stored for quick access from hash-map */
-        size_t m_hash;
-    };
+		/** Comparison operator
+		 * @param first first BaseTag
+		 * @param second secondBaseTag
+		 */
+		friend inline bool
+		operator<(const BaseTag& first, const BaseTag& second);
+#endif /* SWIG */
 
-    inline bool operator==(const BaseTag& first, const BaseTag& second)
-    {
-        return first.m_hash == second.m_hash ? first.m_name == second.m_name : false;
-    }
+	private:
+		/** name for object */
+		std::string m_name;
+		/** hash is stored for quick access from hash-map */
+		size_t m_hash;
+	};
 
-    inline bool operator!=(const BaseTag& first, const BaseTag& second)
-    {
-        return !(first == second);
-    }
+#ifndef SWIG
+	inline bool operator==(const BaseTag& first, const BaseTag& second)
+	{
+		return first.m_hash == second.m_hash ? first.m_name == second.m_name
+		                                     : false;
+	}
 
-    inline bool operator<(const BaseTag& first, const BaseTag& second)
-    {
-        return first.m_name < second.m_name;
-    }
+	inline bool operator!=(const BaseTag& first, const BaseTag& second)
+	{
+		return !(first == second);
+	}
 
+	inline bool operator<(const BaseTag& first, const BaseTag& second)
+	{
+		return first.m_name < second.m_name;
+	}
+#endif /* SWIG */
 }
 
+#ifndef SWIG
 namespace std
 {
     /** Overload hash for BaseTag */
@@ -142,5 +150,6 @@ namespace std
     };
 
 }
+#endif /* SWIG */
 
 #endif  // _BASETAG_H_
