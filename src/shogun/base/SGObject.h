@@ -120,10 +120,13 @@ template <class T> class SGStringList;
 class CSGObject
 {
 public:
+	/** Definition of observed subject */
 	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	/** Definition of observable */
 	typedef rxcpp::observable<ObservedValue,
 		                      rxcpp::dynamic_observable<ObservedValue>>
 		SGObservable;
+	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
 		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
 		SGSubscriber;
