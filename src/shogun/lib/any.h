@@ -71,6 +71,49 @@ namespace shogun
 		NON_OWNING
 	};
 
+	class CSGObject;
+	template <class T>
+	class SGVector;
+	template <class T>
+	class SGMatrix;
+
+	/** Used to denote an empty Any object */
+	struct Empty
+	{
+		/** Equality operator */
+		bool operator==(const Empty& other) const
+		{
+			return true;
+		}
+	};
+
+	class AnyVisitor
+	{
+	public:
+		virtual ~AnyVisitor() = default;
+
+		virtual void on(bool*) = 0;
+		virtual void on(int32_t*) = 0;
+		virtual void on(int64_t*) = 0;
+		virtual void on(float*) = 0;
+		virtual void on(double*) = 0;
+		virtual void on(CSGObject**) = 0;
+		virtual void on(SGVector<int>*) = 0;
+		virtual void on(SGVector<float>*) = 0;
+		virtual void on(SGVector<double>*) = 0;
+		virtual void on(SGMatrix<int>*) = 0;
+		virtual void on(SGMatrix<float>*) = 0;
+		virtual void on(SGMatrix<double>*) = 0;
+
+		void on(Empty*)
+		{
+		}
+
+		void on(...)
+		{
+		}
+	};
+
 	namespace any_detail
 	{
 
@@ -174,6 +217,13 @@ namespace shogun
 		 * @return type of policy
 		 */
 		virtual PolicyType policy_type() const = 0;
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to a pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void** storage, AnyVisitor* visitor) const = 0;
 	};
 
 	/** @brief This is one concrete implementation of policy that
@@ -247,6 +297,16 @@ namespace shogun
 		{
 			return PolicyType::OWNING;
 		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to a pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void** storage, AnyVisitor* visitor) const
+		{
+			visitor->on(reinterpret_cast<T*>(*storage));
+		}
 	};
 
 	template <typename T>
@@ -316,6 +376,16 @@ namespace shogun
 		{
 			return PolicyType::NON_OWNING;
 		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to a pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void** storage, AnyVisitor* visitor) const
+		{
+			visitor->on(reinterpret_cast<T*>(*storage));
+		}
 	};
 
 	template <typename T>
@@ -371,8 +441,6 @@ namespace shogun
 	class Any
 	{
 	public:
-		/** Used to denote an empty Any object */
-		struct Empty;
 
 		/** Empty value constructor */
 		Any() : Any(owning_policy<Empty>(), nullptr)
@@ -537,16 +605,6 @@ namespace shogun
 	{
 		return !(lhs == rhs);
 	}
-
-	/** Used to denote an empty Any object */
-	struct Any::Empty
-	{
-		/** Equality operator */
-		bool operator==(const Empty& other) const
-		{
-			return true;
-		}
-	};
 
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
