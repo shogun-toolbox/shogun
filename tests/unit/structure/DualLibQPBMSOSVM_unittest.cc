@@ -111,8 +111,8 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	//SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
 	//		res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
-	ASSERT_LE(res.nCP, 8);
-	ASSERT_LE(res.nzA, 8);
+	ASSERT_LE(res.nCP, 8u);
+	ASSERT_LE(res.nzA, 8u);
 	ASSERT_LE(res.exitflag, 0);
 
 	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
