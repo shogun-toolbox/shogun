@@ -306,6 +306,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
+%include <shogun/lib/ShogunException.h>
 
 %include "swig_typemaps.i"
 
@@ -509,7 +510,6 @@ copy_reg._reconstructor=_sg_reconstructor
 
 %include <shogun/lib/basetag.h>
 %include <shogun/lib/tag.h>
-%include <shogun/lib/ShogunException.h>
 %include <shogun/base/SGObject.h>
 
 %define SUPPORT_TAG(camel_type, short_type, type)
