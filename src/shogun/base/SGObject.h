@@ -489,6 +489,12 @@ protected:
 		create_parameter(tag, AnyParameter(erase_type(value)));
 	}
 
+	/** Puts a pointer to some parameter into the parameter map.
+	 *
+	 * @param name name of the parameter
+	 * @param value pointer to the parameter value
+	 * @param properties properties of the parameter (e.g. if model selection is supported)
+	 */
 	template <typename T>
 	void watch_param(
 		const std::string& name, T* value, AnyParameterProperties properties)
