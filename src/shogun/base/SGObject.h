@@ -381,10 +381,10 @@ public:
 		{
 			return recall_type<T>(value);
 		}
-		catch (const std::logic_error&)
+		catch (const std::logic_error& exc)
 		{
-			SG_ERROR("Type for parameter with name \"%s\" is not correct in \"%s\".\n",
-					_tag.name().c_str(), get_name());
+			SG_ERROR(
+				"Get \"%s\" failed: %s.\n", _tag.name().c_str(), exc.what());
 		}
 		// we won't be there
 		return recall_type<T>(value);
