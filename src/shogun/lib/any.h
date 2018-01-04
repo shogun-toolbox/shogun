@@ -220,10 +220,10 @@ namespace shogun
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
-		 * @param storage pointer to a pointer to storage
+		 * @param storage pointer to storage
 		 * @param visitor abstract visitor to use
 		 */
-		virtual void visit(void** storage, AnyVisitor* visitor) const = 0;
+		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
 	};
 
 	/** @brief This is one concrete implementation of policy that
@@ -303,9 +303,9 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param visitor abstract visitor to use
 		 */
-		virtual void visit(void** storage, AnyVisitor* visitor) const
+		virtual void visit(void* storage, AnyVisitor* visitor) const
 		{
-			visitor->on(reinterpret_cast<T*>(*storage));
+			visitor->on(reinterpret_cast<T*>(storage));
 		}
 	};
 
@@ -379,12 +379,12 @@ namespace shogun
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
-		 * @param storage pointer to a pointer to storage
+		 * @param storage pointer to storage
 		 * @param visitor abstract visitor to use
 		 */
-		virtual void visit(void** storage, AnyVisitor* visitor) const
+		virtual void visit(void* storage, AnyVisitor* visitor) const
 		{
-			visitor->on(reinterpret_cast<T*>(*storage));
+			visitor->on(reinterpret_cast<T*>(storage));
 		}
 	};
 
@@ -566,6 +566,15 @@ namespace shogun
 		const std::type_info& type_info() const
 		{
 			return policy->type_info();
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param visitor visitor object to use
+		 */
+		void visit(AnyVisitor* visitor) const
+		{
+			policy->visit(storage, visitor);
 		}
 
 	private:
