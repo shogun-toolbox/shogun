@@ -16,6 +16,11 @@ namespace shogun
 			init_params();
 		}
 
+		virtual ~CMockObject()
+		{
+			SG_UNREF(m_object);
+		}
+
 		const char* get_name() const
 		{
 			return "MockObject";
@@ -31,6 +36,11 @@ namespace shogun
 			return m_watched;
 		}
 
+		CSGObject* get_object() const
+		{
+			return m_object;
+		}
+
 	protected:
 		void init_params()
 		{
@@ -43,10 +53,17 @@ namespace shogun
 			    "watched_int", &m_watched,
 			    AnyParameterProperties(
 			        MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+
+			watch_param(
+			    "watched_object", (CSGObject**)&m_object,
+			    AnyParameterProperties(
+			        MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 		}
 
 	private:
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
+
+		CSGObject* m_object = 0;
 	};
 }

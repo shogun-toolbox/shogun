@@ -46,6 +46,7 @@ namespace shogun {
 			delete object;
 			SG_SERROR("Type mismatch");
 		}
+		cast->ref();
 		return cast;
 	}
 }

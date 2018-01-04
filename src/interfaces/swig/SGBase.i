@@ -525,3 +525,4 @@ copy_reg._reconstructor=_sg_reconstructor
 SUPPORT_TAG(String, string, std::string)
 SUPPORT_TAG(Float64, float, float64_t)
 SUPPORT_TAG(Int64, int, int64_t)
+SUPPORT_TAG(Object, object, CSGObject*)

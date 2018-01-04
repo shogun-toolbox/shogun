@@ -300,10 +300,7 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name
 	 */
-	bool has(const std::string& name) const
-	{
-		return has_parameter(BaseTag(name));
-	}
+	bool has(const std::string& name) const;
 
 	/** Checks if object has a class parameter identified by a Tag.
 	 *
@@ -343,7 +340,10 @@ public:
 		if (has_parameter(_tag))
 		{
 			if(has<T>(_tag.name()))
+			{
+				ref_value(&value);
 				update_parameter(_tag, erase_type(value));
+			}
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -551,6 +551,9 @@ private:
 	void set_global_objects();
 	void unset_global_objects();
 	void init();
+
+	static void ref_value(CSGObject* const* value);
+	static void ref_value(...);
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.
