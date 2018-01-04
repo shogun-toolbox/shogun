@@ -923,3 +923,95 @@ void CSGObject::ref_value(CSGObject* const* value)
 void CSGObject::ref_value(...)
 {
 }
+
+class ToStringVisitor : public AnyVisitor
+{
+public:
+	ToStringVisitor(std::stringstream* stream) : AnyVisitor(), m_stream(stream)
+	{
+	}
+
+	virtual void on(bool* v)
+	{
+		stream() << (*v ? "true" : "false");
+	}
+	virtual void on(int32_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(int64_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(float* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(double* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(CSGObject** v)
+	{
+		if (*v)
+		{
+			stream() << (*v)->get_name() << "(...)";
+		}
+		else
+		{
+			stream() << "null";
+		}
+	}
+	virtual void on(SGVector<int>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGVector<float>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGVector<double>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<int>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<float>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<double>*)
+	{
+		stream() << "[...]";
+	}
+
+private:
+	std::stringstream& stream()
+	{
+		return *m_stream;
+	}
+
+private:
+	std::stringstream* m_stream;
+};
+
+std::string CSGObject::to_string() const
+{
+	std::stringstream ss;
+	auto visitor = std::make_unique<ToStringVisitor>(&ss);
+	ss << get_name();
+	ss << "(";
+	for (auto it = self->map.begin(); it != self->map.end(); ++it)
+	{
+		ss << it->first.name() << "=";
+		it->second.get_value().visit(visitor.get());
+		if (std::next(it) != (self->map.end()))
+		{
+			ss << ",";
+		}
+	}
+	ss << ")";
+	return ss.str();
+}

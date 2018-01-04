@@ -229,7 +229,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
             }
 
             CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-            fprintf(f, "%s", obj->get_name());
+            std::string s = obj->to_string();
+            fprintf(f, "%s", s.c_str());
             return 0;
         }
 %}
@@ -259,7 +260,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
       return SWIG_ERROR;
     }
     CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-    fprintf(f, "%s", obj->get_name());
+    std::string s = obj->to_string();
+    fprintf(f, "%s", s.c_str());
     return 0;
   }
 %}
@@ -332,14 +334,14 @@ namespace shogun
 
     %extend CSGObject
     {
-        const char* __str__() const
+        std::string __str__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
-        const char* __repr__() const
+        std::string __repr__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
         PyObject* __reduce_ex__(int proto)

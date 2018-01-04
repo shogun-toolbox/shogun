@@ -406,6 +406,12 @@ public:
 		return get(tag);
 	}
 
+	/** Returns string representation of the object that contains
+	 * its name and parameters.
+	 *
+	 */
+	std::string to_string() const;
+
 #ifndef SWIG
 	/**
 	  * Get parameters observable
