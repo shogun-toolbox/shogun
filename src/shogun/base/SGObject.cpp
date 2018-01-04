@@ -33,6 +33,7 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <unordered_map>
+#include <memory>
 
 namespace shogun
 {
@@ -927,7 +928,7 @@ void CSGObject::ref_value(...)
 class ToStringVisitor : public AnyVisitor
 {
 public:
-	ToStringVisitor(std::stringstream* stream) : AnyVisitor(), m_stream(stream)
+	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
 	{
 	}
 
@@ -1000,7 +1001,7 @@ private:
 std::string CSGObject::to_string() const
 {
 	std::stringstream ss;
-	auto visitor = std::make_unique<ToStringVisitor>(&ss);
+	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
 	ss << get_name();
 	ss << "(";
 	for (auto it = self->map.begin(); it != self->map.end(); ++it)
