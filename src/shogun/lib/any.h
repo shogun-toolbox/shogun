@@ -153,7 +153,12 @@ namespace shogun
 		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
 		    -> decltype(lhs->equals(rhs))
 		{
-			return lhs->equals(rhs);
+			if (lhs && rhs)
+				return lhs->equals(rhs);
+			else if (!lhs && ! rhs)
+				return true;
+			else
+				return false;
 		}
 
 		template <class T>
