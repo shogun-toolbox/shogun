@@ -6,6 +6,8 @@
  *
  * Written (W) 2011 Alesis Novik
  * Written (W) 2014 Parijat Mazumdar
+ * Written (W) 2018 Chinmay Kousik
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/lib/config.h>
@@ -168,13 +170,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		switch (cov_type)
 		{
 		case FULL:
-#ifdef HAVE_LAPACK
-			cblas_dger(
-			    CblasRowMajor, num_dim, num_dim, alpha_k[j], v.vector, 1,
-			    v.vector, 1, (double*)cov_sum.matrix, num_dim);
-#else
 			linalg::dger<float64_t>(alpha_k[j], v, v, cov_sum);
-#endif
 			break;
 		case DIAG:
 			for (int32_t k = 0; k < num_dim; k++)
@@ -198,18 +194,10 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		linalg::scale(cov_sum, cov_sum, 1 / alpha_k_sum);
 
 		SGVector<float64_t> d0(num_dim);
-#ifdef HAVE_LAPACK
-		d0.vector = SGMatrix<float64_t>::compute_eigenvectors(
-		    cov_sum.matrix, num_dim, num_dim);
-#else
-		// FIXME use eigenvectors computeation warpper by micmn
-		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = cov_sum;
-		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = d0;
 
-		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
-		    eig);
-		eigenvalues_eig = solver.eigenvalues().real();
-#endif
+		SGMatrix<float64_t> eigenvectors(cov_sum.num_rows, cov_sum.num_cols);
+		linalg::eigen_solver<float64_t>(cov_sum, d0, eigenvectors);
+		cov_sum = eigenvectors;
 
 		set_d(d0);
 		set_u(cov_sum);
@@ -248,13 +236,8 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 	{
 		SGVector<float64_t> temp_holder(m_d.vlen);
 		temp_holder.zero();
-#ifdef HAVE_LAPACK
-		cblas_dgemv(
-		    CblasRowMajor, CblasNoTrans, m_d.vlen, m_d.vlen, 1, m_u.matrix,
-		    m_d.vlen, difference, 1, 0, temp_holder, 1);
-#else
+
 		linalg::dgemv<float64_t>(1, m_u, false, difference, 0, temp_holder);
-#endif
 
 		for (int32_t i=0; i<m_d.vlen; i++)
 			answer+=temp_holder[i]*temp_holder[i]/m_d.vector[i];
@@ -315,20 +298,10 @@ SGMatrix<float64_t> CGaussian::get_cov()
 		diag_holder.zero();
 		for (int32_t i = 0; i < m_d.vlen; i++)
 			diag_holder(i, i) = m_d.vector[i];
-#ifdef HAVE_LAPACK
-		cblas_dgemm(
-		    CblasRowMajor, CblasTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
-		    m_d.vlen, 1, m_u.matrix, m_d.vlen, diag_holder.matrix, m_d.vlen, 0,
-		    temp_holder.matrix, m_d.vlen);
-		cblas_dgemm(
-		    CblasRowMajor, CblasNoTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
-		    m_d.vlen, 1, temp_holder.matrix, m_d.vlen, m_u.matrix, m_d.vlen, 0,
-		    cov.matrix, m_d.vlen);
-#else
+
 		linalg::dgemm<float64_t>(
 		    1, m_u, diag_holder, true, false, 0, temp_holder);
 		linalg::dgemm<float64_t>(1, temp_holder, m_u, false, false, 0, cov);
-#endif
 	}
 	else if (m_cov_type == DIAG)
 	{
@@ -361,18 +334,12 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 		m_u = SGMatrix<float64_t>(cov.num_rows, cov.num_rows);
 		m_u = cov.clone();
 		m_d = SGVector<float64_t>(cov.num_rows);
-#ifdef HAVE_LAPACK
-		m_d.vector = SGMatrix<float64_t>::compute_eigenvectors(
-		    m_u.matrix, cov.num_rows, cov.num_rows);
-#else
-		// FIXME use eigenvectors computeation warpper by micmn
-		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = m_u;
-		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = m_d;
 
-		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
-		    eig);
-		eigenvalues_eig = solver.eigenvalues().real();
-#endif
+		// compute eigen decomposition
+		SGMatrix<float64_t> eigenvectors(cov.num_rows, cov.num_rows);
+		linalg::eigen_solver_symmetric<float64_t>(m_u, m_d, eigenvectors);
+		m_u = eigenvectors;
+
 		break;
 	}
 	case DIAG:
@@ -418,27 +385,16 @@ SGVector<float64_t> CGaussian::sample()
 	{
 		SGMatrix<float64_t> temp_matrix(m_d.vlen, m_d.vlen);
 		temp_matrix.zero();
-#ifdef HAVE_LAPACK
-		cblas_dgemm(
-		    CblasRowMajor, CblasNoTrans, CblasNoTrans, m_d.vlen, m_d.vlen,
-		    m_d.vlen, 1, m_u.matrix, m_d.vlen, r_matrix.matrix, m_d.vlen, 0,
-		    temp_matrix.matrix, m_d.vlen);
-#else
+
 		linalg::dgemm<float64_t>(
+
 		    1, m_u, r_matrix, false, false, 0, temp_matrix);
-#endif
 		r_matrix = temp_matrix;
 	}
 
 	SGVector<float64_t> samp(m_mean.vlen);
 
-#ifdef HAVE_LAPACK
-	cblas_dgemv(
-	    CblasRowMajor, CblasNoTrans, m_mean.vlen, m_mean.vlen, 1,
-	    r_matrix.matrix, m_mean.vlen, random_vec.vector, 1, 0, samp.vector, 1);
-#else
 	linalg::dgemv<float64_t>(1.0, r_matrix, false, random_vec, 0.0, samp);
-#endif
 	for (int32_t i = 0; i < m_mean.vlen; i++)
 		samp.vector[i] += m_mean.vector[i];
 

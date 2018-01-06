@@ -84,7 +84,7 @@ TEST(Gaussian, log_pdf_multiple_2d)
 
 	cov(0,0) = 4.0;
 	cov(0,1) = 1.0;
-	cov(0,1) = 1.0;
+	cov(1, 0) = 1.0;
 	cov(1,1) = 2.0;
 	auto gauss = some<CGaussian>(mean, cov, FULL);
 	float64_t log_pdf = gauss->compute_log_PDF(mean);
