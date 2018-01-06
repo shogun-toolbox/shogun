@@ -11,14 +11,12 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/classifier/LDA.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
 #include <vector>
 
-using namespace Eigen;
 using namespace shogun;
 
 CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
