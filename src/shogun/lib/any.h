@@ -577,6 +577,14 @@ namespace shogun
 			return policy->type_info();
 		}
 
+		/** Returns type-name of policy as string.
+		 * @return name of type class
+		 */
+		std::string type() const
+		{
+			return policy->type();
+		}
+
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
 		 *
 		 * @param visitor visitor object to use
