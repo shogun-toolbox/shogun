@@ -358,6 +358,42 @@ SGSparseVector<T> SGSparseVector<T>::clone() const
 	return SGSparseVector<T>(copy, num_feat_entries);
 }
 
+template <class T>
+inline bool
+SGSparseVector<T>::operator==(const SGSparseVector<T>& other) const
+{
+	if (num_feat_entries != other.num_feat_entries)
+		return false;
+
+	if (features != other.features)
+		return false;
+
+	return true;
+}
+
+template <class T>
+bool SGSparseVector<T>::equals(const SGSparseVector<T>& other) const
+{
+	/* same instance */
+	if (*this==other)
+		return true;
+
+	// both empty
+	if (!(num_feat_entries || other.num_feat_entries))
+		return true;
+
+	// only one empty
+	if (!num_feat_entries || !other.num_feat_entries)
+		return false;
+
+	// different size
+	if (num_feat_entries != other.num_feat_entries)
+		return false;
+
+	// content
+	return std::equal(features, features+num_feat_entries, other.features);
+}
+
 template<class T> void SGSparseVector<T>::load(CFile * loader)
 {
 	ASSERT(loader)
@@ -613,6 +649,43 @@ void SGSparseVector<complex128_t>::display_vector(const char * name, const char 
 		          features[i].entry.real(), features[i].entry.imag());
 
 	SG_SPRINT("%s]\n", prefix);
+}
+
+
+template <class T>
+bool SGSparseVectorEntry<T>::operator==(const SGSparseVectorEntry<T>& other) const
+{
+	if (feat_index != other.feat_index)
+		return false;
+
+	return entry == other.entry;
+}
+
+#ifndef REAL_SPARSE_EQUALS
+#define REAL_SPARSE_EQUALS(real_t)	\
+template <>	\
+bool SGSparseVectorEntry<real_t>::operator==(const SGSparseVectorEntry<real_t>& other) const \
+{	\
+	if (feat_index != other.feat_index)	\
+		return false;	\
+		\
+	return CMath::fequals<real_t>(entry, other.entry, std::numeric_limits<real_t>::epsilon());	\
+}
+
+REAL_SPARSE_EQUALS(float32_t)
+REAL_SPARSE_EQUALS(float64_t)
+REAL_SPARSE_EQUALS(floatmax_t)
+#undef REAL_SPARSE_EQUALS
+#endif // REAL_SPARSE_EQUALS
+
+template <>
+bool SGSparseVectorEntry<complex128_t>::operator==(const SGSparseVectorEntry<complex128_t>& other) const
+{
+	if (feat_index != other.feat_index)
+		return false;
+
+	return CMath::fequals<float64_t>(entry.real(), other.entry.real(), LDBL_EPSILON) &&
+	CMath::fequals<float64_t>(entry.imag(), other.entry.imag(), LDBL_EPSILON);
 }
 
 template class SGSparseVector<bool>;

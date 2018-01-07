@@ -506,3 +506,52 @@ TEST(SGSparseVector, sparse_dot_not_sorted_features_different_length_last_index_
 	EXPECT_EQ(4, SGSparseVector<int32_t>::sparse_dot(v1, v2));
 	EXPECT_EQ(4, SGSparseVector<int32_t>::sparse_dot(v2, v1));
 }
+
+/** @brief Fixture class template for typed tests of equals method */
+template <typename T>
+class SGSparseVectorEquals : public ::testing::Test
+{
+public:
+	SGSparseVector<T> v1_ = SGSparseVector<T>(1);
+	SGSparseVector<T> v2_ = SGSparseVector<T>(1);
+};
+typedef ::testing::Types<int16_t, int32_t, int64_t, float32_t, float64_t, floatmax_t, complex128_t> SGSparseVectorEqualsTypes;
+TYPED_TEST_CASE(SGSparseVectorEquals, SGSparseVectorEqualsTypes);
+
+TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
+{
+	auto& v1=this->v1_;
+	auto& v2=this->v2_;
+
+	v1.features[0].feat_index = 1;
+	v1.features[0].entry = 1;
+	v2.features[0].feat_index = 1;
+	v2.features[0].entry = 1;
+	EXPECT_TRUE(v1.equals(v1));
+	EXPECT_TRUE(v1.equals(v2));
+	EXPECT_TRUE(v2.equals(v1));
+
+	v1.features[0].feat_index = 1;
+	v1.features[0].entry = 1;
+	v2.features[0].feat_index = 1;
+	v2.features[0].entry = 0;
+	EXPECT_FALSE(v1.equals(v2));
+	EXPECT_FALSE(v2.equals(v1));
+
+	v1.features[0].feat_index = 1;
+	v1.features[0].entry = 1;
+	v2.features[0].feat_index = 0;
+	v2.features[0].entry = 1;
+	EXPECT_FALSE(v1.equals(v2));
+	EXPECT_FALSE(v2.equals(v1));
+}
+
+TYPED_TEST(SGSparseVectorEquals, equals_different_dim)
+{
+	auto& v1=this->v1_;
+	auto& v2=this->v2_;
+
+	EXPECT_FALSE(v1.equals(v2));
+	EXPECT_FALSE(v2.equals(v1));
+}
+
