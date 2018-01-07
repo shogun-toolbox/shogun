@@ -15,7 +15,6 @@ using namespace shogun;
 
 CFactor::CFactor() : CSGObject()
 {
-	SG_UNSTABLE("CFactor::CFactor()", "\n");
 	init();
 }
 
