@@ -513,6 +513,8 @@ copy_reg._reconstructor=_sg_reconstructor
 %include <shogun/lib/basetag.h>
 %include <shogun/lib/tag.h>
 %include <shogun/base/SGObject.h>
+%include <shogun/lib/SGVector.h>
+%include <shogun/lib/SGMatrix.h>
 
 %define SUPPORT_TAG(camel_type, short_type, type)
     %template(Tag ## camel_type) shogun::Tag<type>;
@@ -528,3 +530,5 @@ SUPPORT_TAG(String, string, std::string)
 SUPPORT_TAG(Float64, float, float64_t)
 SUPPORT_TAG(Int64, int, int64_t)
 SUPPORT_TAG(Object, object, CSGObject*)
+SUPPORT_TAG(Vector, vector, SGVector<float64_t>)
+SUPPORT_TAG(Matrix, matrix, SGMatrix<float64_t>)
