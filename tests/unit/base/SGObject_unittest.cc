@@ -435,7 +435,7 @@ TEST(SGObject, watched_parameter_object)
 	EXPECT_EQ(other_obj->ref_count(), 1);
 	obj->put("watched_object", dynamic_cast<CSGObject*>(other_obj.get()));
 	EXPECT_EQ(other_obj->ref_count(), 2);
-	EXPECT_TRUE(other_obj->equals(obj));
+	EXPECT_FALSE(other_obj->equals(obj));
 	obj = nullptr;
 	EXPECT_EQ(other_obj->ref_count(), 1);
 }
