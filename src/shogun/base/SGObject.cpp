@@ -33,10 +33,12 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <unordered_map>
+#include <memory>
 
 namespace shogun
 {
-	typedef std::map<BaseTag, Any> ParametersMap;
+
+	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string,
 	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
@@ -44,15 +46,30 @@ namespace shogun
 	class CSGObject::Self
 	{
 	public:
-		void put(const BaseTag& tag, const Any& any)
+		void create(const BaseTag& tag, const AnyParameter& parameter)
 		{
-			map[tag] = any;
+			if (has(tag))
+			{
+				SG_SERROR("Can not register %s twice", tag.name().c_str())
+			}
+			map[tag] = parameter;
 		}
 
-		Any get(const BaseTag& tag) const
+		void update(const BaseTag& tag, const Any& value)
+		{
+			if (!has(tag))
+			{
+				SG_SERROR(
+				    "Can not update unregistered parameter %s",
+				    tag.name().c_str())
+			}
+			map.at(tag).set_value(value);
+		}
+
+		AnyParameter get(const BaseTag& tag) const
 		{
 			if(!has(tag))
-				return Any();
+				return AnyParameter();
 			return map.at(tag);
 		}
 
@@ -787,23 +804,29 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::type_erased_put(const BaseTag& _tag, const Any& any)
+void CSGObject::create_parameter(
+    const BaseTag& _tag, const AnyParameter& parameter)
 {
-	self->put(_tag, any);
+	self->create(_tag, parameter);
 }
 
-Any CSGObject::type_erased_get(const BaseTag& _tag) const
+void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	Any any = self->get(_tag);
-	if(any.empty())
+	self->update(_tag, value);
+}
+
+AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
+{
+	const auto& parameter = self->get(_tag);
+	if (parameter.get_value().empty())
 	{
 		SG_ERROR("There is no parameter called \"%s\" in %s",
 			_tag.name().c_str(), get_name());
 	}
-	return any;
+	return parameter;
 }
 
-bool CSGObject::type_erased_has(const BaseTag& _tag) const
+bool CSGObject::has_parameter(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
@@ -886,4 +909,110 @@ void CSGObject::list_observable_parameters()
 		    param_obs_list->type_name(x.second.first).c_str(),
 		    x.second.second.c_str());
 	}
+}
+
+bool CSGObject::has(const std::string& name) const
+{
+	return has_parameter(BaseTag(name));
+}
+
+void CSGObject::ref_value(CSGObject* const* value)
+{
+	SG_REF(*value);
+}
+
+void CSGObject::ref_value(...)
+{
+}
+
+class ToStringVisitor : public AnyVisitor
+{
+public:
+	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
+	{
+	}
+
+	virtual void on(bool* v)
+	{
+		stream() << (*v ? "true" : "false");
+	}
+	virtual void on(int32_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(int64_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(float* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(double* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(CSGObject** v)
+	{
+		if (*v)
+		{
+			stream() << (*v)->get_name() << "(...)";
+		}
+		else
+		{
+			stream() << "null";
+		}
+	}
+	virtual void on(SGVector<int>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGVector<float>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGVector<double>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<int>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<float>*)
+	{
+		stream() << "[...]";
+	}
+	virtual void on(SGMatrix<double>*)
+	{
+		stream() << "[...]";
+	}
+
+private:
+	std::stringstream& stream()
+	{
+		return *m_stream;
+	}
+
+private:
+	std::stringstream* m_stream;
+};
+
+std::string CSGObject::to_string() const
+{
+	std::stringstream ss;
+	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
+	ss << get_name();
+	ss << "(";
+	for (auto it = self->map.begin(); it != self->map.end(); ++it)
+	{
+		ss << it->first.name() << "=";
+		it->second.get_value().visit(visitor.get());
+		if (std::next(it) != (self->map.end()))
+		{
+			ss << ",";
+		}
+	}
+	ss << ")";
+	return ss.str();
 }

@@ -38,7 +38,7 @@
  #include <shogun/classifier/mkl/MKL.h>
  #include <shogun/classifier/mkl/MKLClassification.h>
  #include <shogun/classifier/mkl/MKLOneClass.h>
- #include <shogun/classifier/vw/VowpalWabbit.h>
+
  #include <shogun/classifier/svm/NewtonSVM.h>
 #ifdef USE_GPL_SHOGUN
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>

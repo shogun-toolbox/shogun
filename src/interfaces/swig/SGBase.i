@@ -1,5 +1,6 @@
 /* base includes required by any module */
 %include "stdint.i"
+%include "std_string.i"
 %include "exception.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
@@ -126,6 +127,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
  using namespace shogun;
+
 %}
 
 #if  defined (SWIGPERL) && defined(HAVE_PDL)
@@ -227,7 +229,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
             }
 
             CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-            fprintf(f, "%s", obj->get_name());
+            std::string s = obj->to_string();
+            fprintf(f, "%s", s.c_str());
             return 0;
         }
 %}
@@ -257,7 +260,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
       return SWIG_ERROR;
     }
     CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-    fprintf(f, "%s", obj->get_name());
+    std::string s = obj->to_string();
+    fprintf(f, "%s", s.c_str());
     return 0;
   }
 %}
@@ -304,6 +308,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
+%include <shogun/lib/ShogunException.h>
 
 %include "swig_typemaps.i"
 
@@ -329,20 +334,20 @@ namespace shogun
 
     %extend CSGObject
     {
-        const char* __str__() const
+        std::string __str__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
-        const char* __repr__() const
+        std::string __repr__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
         PyObject* __reduce_ex__(int proto)
         {
-            pickle_ascii= (proto==0) ? 1 : 0;
-            return NULL;
+            pickle_ascii = (proto==0) ? 1 : 0;
+            Py_RETURN_NONE;
         }
 
         PyObject* __getstate__()
@@ -503,5 +508,23 @@ copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}
 
-
 #endif /* SWIGPYTHON  */
+
+%include <shogun/lib/basetag.h>
+%include <shogun/lib/tag.h>
+%include <shogun/base/SGObject.h>
+
+%define SUPPORT_TAG(camel_type, short_type, type)
+    %template(Tag ## camel_type) shogun::Tag<type>;
+    %template(put) shogun::CSGObject::put<type>;
+    %template(put) shogun::CSGObject::put<type, void>;
+    %template(put) shogun::CSGObject::put<type>;
+    %template(get_ ## short_type) shogun::CSGObject::get<type, void>;
+    %template(has) shogun::CSGObject::has<type>;
+    %template(has_ ## short_type) shogun::CSGObject::has<type, void>;
+%enddef
+
+SUPPORT_TAG(String, string, std::string)
+SUPPORT_TAG(Float64, float, float64_t)
+SUPPORT_TAG(Int64, int, int64_t)
+SUPPORT_TAG(Object, object, CSGObject*)

@@ -71,6 +71,99 @@ namespace shogun
 		NON_OWNING
 	};
 
+	class CSGObject;
+	template <class T>
+	class SGVector;
+	template <class T>
+	class SGMatrix;
+
+	/** Used to denote an empty Any object */
+	struct Empty
+	{
+		/** Equality operator */
+		bool operator==(const Empty& other) const
+		{
+			return true;
+		}
+	};
+
+	class AnyVisitor
+	{
+	public:
+		virtual ~AnyVisitor() = default;
+
+		virtual void on(bool*) = 0;
+		virtual void on(int32_t*) = 0;
+		virtual void on(int64_t*) = 0;
+		virtual void on(float*) = 0;
+		virtual void on(double*) = 0;
+		virtual void on(CSGObject**) = 0;
+		virtual void on(SGVector<int>*) = 0;
+		virtual void on(SGVector<float>*) = 0;
+		virtual void on(SGVector<double>*) = 0;
+		virtual void on(SGMatrix<int>*) = 0;
+		virtual void on(SGMatrix<float>*) = 0;
+		virtual void on(SGMatrix<double>*) = 0;
+
+		void on(Empty*)
+		{
+		}
+
+		void on(...)
+		{
+		}
+	};
+
+	namespace any_detail
+	{
+
+		struct by_default
+		{
+		};
+
+		struct general : by_default
+		{
+		};
+
+		struct more_important : general
+		{
+		};
+
+		struct maybe_most_important : more_important
+		{
+		};
+
+		template <class T>
+		auto compare_impl(by_default, T& lhs, T& rhs) = delete;
+
+		template <class T>
+		auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
+		{
+			return lhs == rhs;
+		}
+
+		template <class T>
+		auto compare_impl(more_important, T& lhs, T& rhs)
+		    -> decltype(lhs.equals(rhs))
+		{
+			return lhs.equals(rhs);
+		}
+
+		template <class T>
+		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
+		    -> decltype(lhs->equals(rhs))
+		{
+			return lhs->equals(rhs);
+		}
+
+		template <class T>
+		auto compare(T& lhs, T& rhs)
+		    -> decltype(compare_impl(maybe_most_important(), lhs, rhs))
+		{
+			return compare_impl(maybe_most_important(), lhs, rhs);
+		}
+	}
+
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
 	 * Policy defines how to handle this data. It works with a
@@ -107,6 +200,12 @@ namespace shogun
 		 */
 		virtual bool matches(const std::type_info& ti) const = 0;
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const = 0;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
@@ -114,15 +213,17 @@ namespace shogun
 		 */
 		virtual bool equals(void** storage, void** other_storage) const = 0;
 
-		/** Returns the name of policy.
-		 * @return name of policy
-		 */
-		virtual std::string policy_name() const = 0;
-
 		/** Returns the type of policy.
 		 * @return type of policy
 		 */
 		virtual PolicyType policy_type() const = 0;
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
 	};
 
 	/** @brief This is one concrete implementation of policy that
@@ -174,6 +275,12 @@ namespace shogun
 			return typeid(T) == ti;
 		}
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
@@ -181,19 +288,24 @@ namespace shogun
 		 */
 		bool equals(void** storage, void** other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
-		}
-
-		virtual std::string policy_name() const
-		{
-			return "owning";
+			T& typed_storage = *(reinterpret_cast<T*>(*storage));
+			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+			return any_detail::compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
 		{
 			return PolicyType::OWNING;
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to a pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const
+		{
+			visitor->on(reinterpret_cast<T*>(storage));
 		}
 	};
 
@@ -207,7 +319,7 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const
 		{
-			*(storage) = const_cast<void*>(v);
+			*static_cast<T*>(*(storage)) = T(*reinterpret_cast<T const*>(v));
 		}
 
 		/** Clears storage.
@@ -242,6 +354,12 @@ namespace shogun
 			return typeid(T) == ti;
 		}
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
@@ -249,19 +367,24 @@ namespace shogun
 		 */
 		bool equals(void** storage, void** other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
-		}
-
-		virtual std::string policy_name() const
-		{
-			return "non owning";
+			T& typed_storage = *(reinterpret_cast<T*>(*storage));
+			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+			return any_detail::compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
 		{
 			return PolicyType::NON_OWNING;
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const
+		{
+			visitor->on(reinterpret_cast<T*>(storage));
 		}
 	};
 
@@ -281,6 +404,34 @@ namespace shogun
 		return &policy;
 	}
 
+	template <class T>
+	bool NonOwningAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == owning_policy<T>())
+		{
+			return true;
+		}
+		return matches(other->type_info());
+	}
+
+	template <class T>
+	bool PointerValueAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == non_owning_policy<T>())
+		{
+			return true;
+		}
+		return matches(other->type_info());
+	}
+
 	/** @brief Allows to store objects of arbitrary types
 	 * by using a BaseAnyPolicy and provides a type agnostic API.
 	 * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
@@ -290,11 +441,15 @@ namespace shogun
 	class Any
 	{
 	public:
-		/** Used to denote an empty Any object */
-		struct Empty;
 
 		/** Empty value constructor */
 		Any() : Any(owning_policy<Empty>(), nullptr)
+		{
+		}
+
+		/** Base constructor */
+		Any(BaseAnyPolicy* the_policy, void* the_storage)
+		    : policy(the_policy), storage(the_storage)
 		{
 		}
 
@@ -305,17 +460,16 @@ namespace shogun
 			policy->set(&storage, &v);
 		}
 
-		/** Base constructor */
-		Any(BaseAnyPolicy* the_policy, void* the_storage)
-		    : policy(the_policy), storage(the_storage)
-		{
-		}
-
 		/** Copy constructor */
 		Any(const Any& other) : Any(other.policy, nullptr)
 		{
-			assert_same_policy_type(other.policy);
-			policy->set(&storage, other.storage);
+			set_or_inherit(other);
+		}
+
+		/** Move constructor */
+		Any(Any&& other) : Any(other.policy, nullptr)
+		{
+			set_or_inherit(other);
 		}
 
 		/** Assignment operator
@@ -324,10 +478,28 @@ namespace shogun
 		 */
 		Any& operator=(const Any& other)
 		{
-			assert_same_policy_type(other.policy);
+			if (empty())
+			{
+				policy = other.policy;
+				set_or_inherit(other);
+				return *(this);
+			}
+			if (!policy->matches(other.policy))
+			{
+				throw std::logic_error(
+				    "Bad assign into " + policy->type() + " from " +
+				    other.policy->type());
+			}
 			policy->clear(&storage);
-			policy = other.policy;
-			policy->set(&storage, other.storage);
+			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			{
+				policy = other.policy;
+				storage = other.storage;
+			}
+			else
+			{
+				policy->set(&storage, other.storage);
+			}
 			return *(this);
 		}
 
@@ -396,14 +568,25 @@ namespace shogun
 			return policy->type_info();
 		}
 
-	private:
-		void assert_same_policy_type(BaseAnyPolicy* other_policy)
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param visitor visitor object to use
+		 */
+		void visit(AnyVisitor* visitor) const
 		{
-			if (policy->policy_type() != other_policy->policy_type())
+			policy->visit(storage, visitor);
+		}
+
+	private:
+		void set_or_inherit(const Any& other)
+		{
+			if (other.policy->policy_type() == PolicyType::NON_OWNING)
 			{
-				throw std::logic_error(
-				    "The policies are different: " + policy->policy_name() +
-				    " and " + other_policy->policy_name());
+				storage = other.storage;
+			}
+			else
+			{
+				policy->set(&storage, other.storage);
 			}
 		}
 
@@ -414,26 +597,23 @@ namespace shogun
 
 	inline bool operator==(const Any& lhs, const Any& rhs)
 	{
+		if (lhs.empty() || rhs.empty())
+		{
+			return lhs.empty() && rhs.empty();
+		}
+		if (!lhs.policy->matches(rhs.policy))
+		{
+			return false;
+		}
 		void* lhs_storage = lhs.storage;
 		void* rhs_storage = rhs.storage;
-		return lhs.policy == rhs.policy &&
-		       lhs.policy->equals(&lhs_storage, &rhs_storage);
+		return lhs.policy->equals(&lhs_storage, &rhs_storage);
 	}
 
 	inline bool operator!=(const Any& lhs, const Any& rhs)
 	{
 		return !(lhs == rhs);
 	}
-
-	/** Used to denote an empty Any object */
-	struct Any::Empty
-	{
-		/** Equality operator */
-		bool operator==(const Empty& other) const
-		{
-			return true;
-		}
-	};
 
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object

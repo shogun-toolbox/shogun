@@ -384,3 +384,28 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has<int32_t>("foo"), false);
 	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
 }
+
+TEST(SGObject, watched_parameter)
+{
+	auto obj = some<CMockObject>();
+
+	obj->put("watched_int", 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+	obj->set_watched(12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+}
+
+TEST(SGObject, watched_parameter_object)
+{
+	auto obj = some<CMockObject>();
+	Some<CMockObject> other_obj = some<CMockObject>();
+
+	EXPECT_EQ(other_obj->ref_count(), 1);
+	obj->put("watched_object", dynamic_cast<CSGObject*>(other_obj.get()));
+	EXPECT_EQ(other_obj->ref_count(), 2);
+	EXPECT_TRUE(other_obj->equals(obj));
+	obj = nullptr;
+	EXPECT_EQ(other_obj->ref_count(), 1);
+}

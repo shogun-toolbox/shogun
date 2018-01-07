@@ -1276,4 +1276,11 @@ TYPEMAP_SPARSEFEATURES_OUT(complex128_t,  NPY_CDOUBLE)
 TYPEMAP_SPARSEFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_OUT
+
+%typemap(throws) shogun::ShogunException
+{
+    PyErr_SetString(PyExc_RuntimeError, $1.get_exception_string());
+    SWIG_fail;
+}
+
 #endif /* HAVE_PYTHON */

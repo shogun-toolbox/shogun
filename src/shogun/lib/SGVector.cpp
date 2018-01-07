@@ -391,8 +391,8 @@ void SGVector<T>::free_data()
 	gpu_ptr=NULL;
 }
 
-template<class T>
-bool SGVector<T>::equals(SGVector<T>& other)
+template <class T>
+bool SGVector<T>::equals(SGVector<T>& other) const
 {
 	assert_on_cpu();
 	if (other.vlen!=vlen)
