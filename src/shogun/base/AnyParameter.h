@@ -88,6 +88,19 @@ namespace shogun
 			return m_properties;
 		}
 
+		/** Equality operator which compares value but not properties.
+		 * @return true if value of other parameter equals own */
+		inline bool operator==(const AnyParameter& other) const
+		{
+			return m_value == other.get_value();
+		}
+
+		/** @see operator==() */
+		inline bool operator!=(const AnyParameter& other) const
+		{
+			return !(*this == other);
+		}
+
 	private:
 		Any m_value;
 		AnyParameterProperties m_properties;

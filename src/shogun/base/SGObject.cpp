@@ -22,12 +22,14 @@
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 #include <shogun/base/class_list.h>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <typeinfo>
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
@@ -670,84 +672,6 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
-{
-	SG_DEBUG("entering %s::equals()\n", get_name());
-
-	if (other==this)
-	{
-		SG_DEBUG("leaving %s::equals(): other object is me\n", get_name());
-		return true;
-	}
-
-	if (!other)
-	{
-		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
-		return false;
-	}
-
-	SG_DEBUG("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
-
-	/* a crude type check based on the get_name */
-	if (strcmp(other->get_name(), get_name()))
-	{
-		SG_INFO("leaving %s::equals(): name of other object differs\n", get_name());
-		return false;
-	}
-
-	/* should not be necessary but just ot be sure that type has not changed.
-	 * Will assume that parameters are in same order with same name from here */
-	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
-	{
-		SG_INFO("leaving %s::equals(): number of parameters of other object "
-				"differs\n", get_name());
-		return false;
-	}
-
-	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
-	{
-		SG_DEBUG("comparing parameter %d\n", i);
-
-		TParameter* this_param=m_parameters->get_parameter(i);
-		TParameter* other_param=other->m_parameters->get_parameter(i);
-
-		/* some checks to make sure parameters have same order and names and
-		 * are not NULL. Should never be the case but check anyway. */
-		if (!this_param && !other_param)
-			continue;
-
-		if (!this_param && other_param)
-		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is NULL where other's "
-					"parameter \"%s\" is not\n", get_name(), other_param->m_name);
-			return false;
-		}
-
-		if (this_param && !other_param)
-		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is \"%s\" where other's "
-						"parameter is NULL\n", get_name(), this_param->m_name);
-			return false;
-		}
-
-		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
-				this_param->m_name, other_param->m_name);
-
-		/* use equals method of TParameter from here */
-		if (!this_param->equals(other_param, accuracy, tolerant))
-		{
-			SG_INFO("leaving %s::equals(): parameters at position %d with name"
-					" \"%s\" differs from other object parameter with name "
-					"\"%s\"\n",
-					get_name(), i, this_param->m_name, other_param->m_name);
-			return false;
-		}
-	}
-
-	SG_DEBUG("leaving %s::equals(): object are equal\n", get_name());
-	return true;
-}
-
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
@@ -820,7 +744,7 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	const auto& parameter = self->get(_tag);
 	if (parameter.get_value().empty())
 	{
-		SG_ERROR("There is no parameter called \"%s\" in %s",
+		SG_ERROR("There is no parameter called \"%s\" in %s\n",
 			_tag.name().c_str(), get_name());
 	}
 	return parameter;
@@ -983,9 +907,9 @@ public:
 	{
 		stream() << "[...]";
 	}
-	virtual void on(SGMatrix<double>*)
+	virtual void on(SGMatrix<double>* mat)
 	{
-		stream() << "[...]";
+		stream() << "Matrix("<< mat->num_rows << "," << mat->num_cols << ")";
 	}
 
 private:
@@ -1016,3 +940,57 @@ std::string CSGObject::to_string() const
 	ss << ")";
 	return ss.str();
 }
+
+bool CSGObject::equals(const CSGObject* other, float64_t accuracy, bool tolerant) const
+{
+	if (other==this)
+		return true;
+
+	if (other==nullptr)
+	{
+		SG_DEBUG("No object to compare to provided.\n");
+		return false;
+	}
+
+	/* Assumption: can use SGObject::get_name to distinguish types */
+	if (strcmp(this->get_name(), other->get_name()))
+	{
+		SG_DEBUG("Own type %s differs from provided %s.\n",
+				get_name(), other->get_name());
+		return false;
+	}
+
+	/* Assumption: objects of same type have same set of tags. */
+	for (const auto it : self->map)
+	{
+		auto tag = it.first;
+		auto own = it.second;
+		auto given = other->get_parameter(tag);
+
+		SG_SDEBUG("Comparing parameter %s::%s of type %s.\n", this->get_name(),
+				tag.name().c_str(), own.get_value().type().c_str());
+		if (own != given)
+		{
+			if (io->get_loglevel()<=MSG_DEBUG)
+			{
+				std::stringstream ss;
+				std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
+
+				ss << "Own parameter " << this->get_name() << "::" << tag.name() << "=";
+				own.get_value().visit(visitor.get());
+
+				ss << " different from provided " << other->get_name() << "::" << tag.name() << "=";
+				given.get_value().visit(visitor.get());
+
+				SG_SDEBUG("%s\n", ss.str().c_str());
+			}
+
+			return false;
+
+		}
+	}
+
+	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
+	return true;
+}
+
