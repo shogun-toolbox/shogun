@@ -39,6 +39,7 @@
 #include <string>
 #include <string.h>
 #include <typeinfo>
+#include <shogun/io/SGIO.h>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
 #endif
@@ -139,6 +140,7 @@ namespace shogun
 		template <class T>
 		auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
 		{
+			SG_SDEBUG("Comparing using lhs==rhs.\n");
 			return lhs == rhs;
 		}
 
@@ -146,6 +148,7 @@ namespace shogun
 		auto compare_impl(more_important, T& lhs, T& rhs)
 		    -> decltype(lhs.equals(rhs))
 		{
+			SG_SDEBUG("Comparing using lhs.equals(rhs).\n");
 			return lhs.equals(rhs);
 		}
 
@@ -153,6 +156,7 @@ namespace shogun
 		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
 		    -> decltype(lhs->equals(rhs))
 		{
+			SG_SDEBUG("Comparing using lhs->equals(rhs).\n");
 			if (lhs && rhs)
 				return lhs->equals(rhs);
 			else if (!lhs && ! rhs)
