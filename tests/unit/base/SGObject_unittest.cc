@@ -9,17 +9,17 @@
  * Written (W) 2015 Wu Lin
  */
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/neuralnets/NeuralNetwork.h>
 #include "MockObject.h"
 #include <shogun/base/some.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/regression/GaussianProcessRegression.h>
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -62,10 +62,10 @@ TEST(SGObject, equals_basic_member)
 
 TEST(SGObject, equals_object_member)
 {
-	SGMatrix<float64_t> data(3,10);
-	SGMatrix<float64_t> data2(3,10);
-	auto feats=some<CDenseFeatures<float64_t>>(data);
-	auto feats2=some<CDenseFeatures<float64_t>>(data2);
+	SGMatrix<float64_t> data(3, 10);
+	SGMatrix<float64_t> data2(3, 10);
+	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats2 = some<CDenseFeatures<float64_t>>(data2);
 
 	auto kernel = some<CGaussianKernel>();
 	auto kernel2 = some<CGaussianKernel>();
@@ -76,12 +76,12 @@ TEST(SGObject, equals_object_member)
 	EXPECT_TRUE(kernel->equals(kernel2));
 	EXPECT_TRUE(kernel2->equals(kernel));
 
-	data(1,1) = 1;
+	data(1, 1) = 1;
 	EXPECT_FALSE(kernel->equals(kernel2));
 	EXPECT_FALSE(kernel2->equals(kernel));
 }
 
-TEST(SGObject,equals_other_has_NULL_parameter)
+TEST(SGObject, equals_other_has_NULL_parameter)
 {
 	SGMatrix<float64_t> data(3,10);
 	for (index_t i=0; i<data.num_rows*data.num_cols; ++i)
@@ -127,7 +127,7 @@ TEST(SGObject,ref_unref_simple)
 	EXPECT_TRUE(labs == NULL);
 }
 
-TEST(SGObject,DISABLED_equals_DynamicObjectArray_equal)
+TEST(SGObject, DISABLED_equals_DynamicObjectArray_equal)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
 	CDynamicObjectArray* array2=new CDynamicObjectArray();
@@ -139,7 +139,7 @@ TEST(SGObject,DISABLED_equals_DynamicObjectArray_equal)
 	SG_UNREF(array2);
 }
 
-TEST(SGObject,DISABLED_equals_DynamicObjectArray_equal_after_resize)
+TEST(SGObject, DISABLED_equals_DynamicObjectArray_equal_after_resize)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
 	CDynamicObjectArray* array2=new CDynamicObjectArray();
@@ -157,7 +157,7 @@ TEST(SGObject,DISABLED_equals_DynamicObjectArray_equal_after_resize)
 	SG_UNREF(array2);
 }
 
-TEST(SGObject,DISABLED_equals_DynamicObjectArray_different)
+TEST(SGObject, DISABLED_equals_DynamicObjectArray_different)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
 	CDynamicObjectArray* array2=new CDynamicObjectArray();
@@ -240,9 +240,10 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(file);
 
 	/* now compare */
-	floatmax_t accuracy=1E-10;
-	EXPECT_TRUE(predictions->equals(predictions_copy, accuracy));
-	EXPECT_TRUE(gpr->equals(gpr_copy, accuracy));
+	set_global_fequals_epsilon(1e-10);
+	EXPECT_TRUE(predictions->equals(predictions_copy));
+	EXPECT_TRUE(gpr->equals(gpr_copy));
+	set_global_fequals_epsilon(0);
 
 	SG_UNREF(predictions);
 	SG_UNREF(predictions_copy);
