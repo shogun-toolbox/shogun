@@ -39,12 +39,25 @@ EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconf
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 IF ("${PYTHON_LDSHARED}" MATCHES "dynamic_lookup")
-    SET(PYTHON_LINK_LIBRARIES "")
+    MESSAGE("Using static linking for Python")
+    SET(PYTHON_LINK_LIBRARIES "NO")
 ELSE()
     SET(PYTHON_LINK_LIBRARIES "${PYTHON_LIBRARIES}")
 ENDIF()
 
 GENERATE_INTERFACE_TARGET(python "${CMAKE_CURRENT_SOURCE_DIR}" "${PYTHON_LINK_LIBRARIES}")
+
+IF (NOT PYTHON_LINK_LIBRARIES)
+    IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        SET_TARGET_PROPERTIES(${SWIG_MODULE_interface_python_REAL_NAME} PROPERTIES
+                              LINK_FLAGS "-Wl,-flat_namespace,-undefined,dynamic_lookup")
+    ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        SET_TARGET_PROPERTIES(${SWIG_MODULE_interface_python_REAL_NAME} PROPERTIES
+                              LINK_FLAGS "-undefined dynamic_lookup")
+    ELSE()
+        MESSAGE(FATAL_ERROR "No libraries to link with the interface are provided but don't know how to handle dynamic lookup")
+    ENDIF()
+ENDIF()
 
 # pacakges directory
 if(CMAKE_HOST_UNIX)
