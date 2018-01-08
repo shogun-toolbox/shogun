@@ -12,6 +12,7 @@
 #define __SG_INIT_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #include <functional>
 #include <stdio.h>
@@ -65,6 +66,26 @@ namespace shogun
 	 * @return io object
 	 */
 	SGIO* get_global_io();
+
+	/** @return the globally over-ridden floating point epsilon for CMath::fequals
+	 */
+	float64_t get_global_fequals_epsilon();
+
+	/** Globally over-ride the floating point epsilon for CMath::fequals.
+	 * Hack required for CSGObject::equals checks for certain serialization formats.
+	 * @param fequals_epsilon new epsilon to use
+	 */
+	void set_global_fequals_epsilon(float64_t fequals_epsilon);
+
+	/** @return whether global linient check for CMath::fequals is enabled
+	 */
+	bool get_global_fequals_tolerant();
+
+	/** Globally enable linient check for CMath::fequals.
+	 * Hack required for CSGObject::equals checks for certain serialization formats.
+	 * @param fequals_tolerant whether or not to use tolerant check
+	 */
+	void set_global_fequals_tolerant(bool fequals_tolerant);
 
 	/** set the global parallel object
 	 *

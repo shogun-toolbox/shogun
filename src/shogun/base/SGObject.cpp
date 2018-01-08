@@ -20,15 +20,15 @@
 #include <shogun/base/Version.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 #include <shogun/base/class_list.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <typeinfo>
 
 #include <rxcpp/operators/rx-filter.hpp>
@@ -744,8 +744,9 @@ AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 	const auto& parameter = self->get(_tag);
 	if (parameter.get_value().empty())
 	{
-		SG_ERROR("There is no parameter called \"%s\" in %s\n",
-			_tag.name().c_str(), get_name());
+		SG_ERROR(
+		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    get_name());
 	}
 	return parameter;
 }
@@ -909,7 +910,7 @@ public:
 	}
 	virtual void on(SGMatrix<double>* mat)
 	{
-		stream() << "Matrix("<< mat->num_rows << "," << mat->num_cols << ")";
+		stream() << "Matrix(" << mat->num_rows << "," << mat->num_cols << ")";
 	}
 
 private:
@@ -941,12 +942,12 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-bool CSGObject::equals(const CSGObject* other, float64_t accuracy, bool tolerant) const
+bool CSGObject::equals(const CSGObject* other) const
 {
-	if (other==this)
+	if (other == this)
 		return true;
 
-	if (other==nullptr)
+	if (other == nullptr)
 	{
 		SG_DEBUG("No object to compare to provided.\n");
 		return false;
@@ -955,8 +956,9 @@ bool CSGObject::equals(const CSGObject* other, float64_t accuracy, bool tolerant
 	/* Assumption: can use SGObject::get_name to distinguish types */
 	if (strcmp(this->get_name(), other->get_name()))
 	{
-		SG_DEBUG("Own type %s differs from provided %s.\n",
-				get_name(), other->get_name());
+		SG_DEBUG(
+		    "Own type %s differs from provided %s.\n", get_name(),
+		    other->get_name());
 		return false;
 	}
 
@@ -967,30 +969,31 @@ bool CSGObject::equals(const CSGObject* other, float64_t accuracy, bool tolerant
 		auto own = it.second;
 		auto given = other->get_parameter(tag);
 
-		SG_SDEBUG("Comparing parameter %s::%s of type %s.\n", this->get_name(),
-				tag.name().c_str(), own.get_value().type().c_str());
+		SG_SDEBUG(
+		    "Comparing parameter %s::%s of type %s.\n", this->get_name(),
+		    tag.name().c_str(), own.get_value().type().c_str());
 		if (own != given)
 		{
-			if (io->get_loglevel()<=MSG_DEBUG)
+			if (io->get_loglevel() <= MSG_DEBUG)
 			{
 				std::stringstream ss;
 				std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
 
-				ss << "Own parameter " << this->get_name() << "::" << tag.name() << "=";
+				ss << "Own parameter " << this->get_name() << "::" << tag.name()
+				   << "=";
 				own.get_value().visit(visitor.get());
 
-				ss << " different from provided " << other->get_name() << "::" << tag.name() << "=";
+				ss << " different from provided " << other->get_name()
+				   << "::" << tag.name() << "=";
 				given.get_value().visit(visitor.get());
 
 				SG_SDEBUG("%s\n", ss.str().c_str());
 			}
 
 			return false;
-
 		}
 	}
 
 	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
 	return true;
 }
-

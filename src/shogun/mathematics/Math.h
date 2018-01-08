@@ -301,13 +301,16 @@ class CMath : public CSGObject
 		 * @param a first value to compare
 		 * @param b second value to compare
 		 * @param eps threshold for values to be equal/different
-		 * @param tolerant allows linient check on float equality (within accuracy)
 		 * @return true if values are equal within eps accuracy, false if not.
 		 */
 		template <class T, class = typename std::enable_if<std::is_floating_point<T>::value>::type>
 			static inline bool fequals(const T& a, const T& b,
-				const float64_t eps, bool tolerant=false)
+				const float64_t eps_)
 			{
+				// global fequals epsilon might override passed one
+				// hack for lossy serialization formats
+				float64_t eps = std::max(eps_, get_global_fequals_epsilon());
+
 				const T absA = CMath::abs<T>(a);
 				const T absB = CMath::abs<T>(b);
 				const T diff = CMath::abs<T>((a-b));
@@ -317,7 +320,7 @@ class CMath : public CSGObject
 					return true;
 
 				// Required for JSON Serialization Tests
-				if (tolerant)
+				if (get_global_fequals_tolerant())
 					return CMath::fequals_abs<T>(a, b, eps);
 
 				// handles float32_t and float64_t separately
