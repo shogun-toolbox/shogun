@@ -35,11 +35,14 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
-#include <stdexcept>
-#include <string>
-#include <string.h>
-#include <typeinfo>
+#include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
+
+#include <limits>
+#include <stdexcept>
+#include <string.h>
+#include <string>
+#include <typeinfo>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
 #endif
@@ -144,6 +147,15 @@ namespace shogun
 			return lhs == rhs;
 		}
 
+		auto compare_impl(more_important, float32_t& lhs, float32_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, float64_t& lhs, float64_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, floatmax_t& lhs, floatmax_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, complex128_t& lhs, complex128_t& rhs)
+		    -> bool;
+
 		template <class T>
 		auto compare_impl(more_important, T& lhs, T& rhs)
 		    -> decltype(lhs.equals(rhs))
@@ -159,7 +171,7 @@ namespace shogun
 			SG_SDEBUG("Comparing using lhs->equals(rhs).\n");
 			if (lhs && rhs)
 				return lhs->equals(rhs);
-			else if (!lhs && ! rhs)
+			else if (!lhs && !rhs)
 				return true;
 			else
 				return false;
