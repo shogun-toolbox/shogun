@@ -115,11 +115,11 @@ bool deserialize_machine(CMachine *machine, std::string filename)
 	return load_success && (delete_success == 0);
 }
 
-const float64_t accuracy=1e-7;
-
 {% macro machine_test(class) -%}
 TEST_F(TrainedModelSerializationTest, {{class}})
 {
+	set_global_fequals_epsilon(1e-7);
+
 	auto machine=some<{{class}}>();
 	load_data(machine->get_machine_problem_type());
 
@@ -141,7 +141,7 @@ TEST_F(TrainedModelSerializationTest, {{class}})
 	ASSERT_TRUE(deserialize_machine(deserialized_machine, filename));
 
 	auto deserialized_predictions=wrap<CLabels>(deserialized_machine->apply(test_feats));
-	ASSERT(predictions->equals(deserialized_predictions, accuracy, true))
+	ASSERT(predictions->equals(deserialized_predictions))
 }
 {%- endmacro %}
 
@@ -154,6 +154,8 @@ TEST_F(TrainedModelSerializationTest, {{class}})
 {% endif -%}
 TEST_F(TrainedModelSerializationTest, {{test_name}})
 {
+	set_global_fequals_epsilon(1e-6);
+
 	auto machine=some<{{class}}>();
 	load_data(machine->get_machine_problem_type());
 
@@ -173,7 +175,7 @@ TEST_F(TrainedModelSerializationTest, {{test_name}})
 	ASSERT_TRUE(deserialize_machine(deserialized_machine, filename));
 
 	auto deserialized_predictions=Some<CLabels>(deserialized_machine->apply(test_feats));
-	ASSERT(predictions->equals(deserialized_predictions, accuracy, true))
+	ASSERT(predictions->equals(deserialized_predictions))
 }
 {% endfor %}
 {%- endmacro %}

@@ -524,7 +524,7 @@ public:
 	 * @param other object to compare with
 	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(const CSGObject* other, float64_t accuracy=0.0, bool tolerant=false) const;
+	virtual bool equals(const CSGObject* other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
