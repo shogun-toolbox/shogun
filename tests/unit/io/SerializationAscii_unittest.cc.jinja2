@@ -21,9 +21,6 @@ TEST(SerializationAscii, DISABLED_{{class}})
 TEST(SerializationAscii, {{class}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy ASCII 
-	set_global_fequals_epsilon(1e-14);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-ascii-" + class_name + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -46,8 +43,11 @@ TEST(SerializationAscii, {{class}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy ASCII 
+	set_global_fequals_epsilon(1e-14);
 	ASSERT_TRUE(object->equals(deserializedObject));
-
+	set_global_fequals_epsilon(0);
+	
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
@@ -64,9 +64,6 @@ TEST(SerializationAscii,DISABLED_{{class}}_{{type}})
 TEST(SerializationAscii,{{class}}_{{type}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy ASCII 
-	set_global_fequals_epsilon(1e-14);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "/tmp/shogun-unittest-serialization-ascii-" + class_name + "_{{type}}" + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -89,7 +86,10 @@ TEST(SerializationAscii,{{class}}_{{type}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy ASCII 
+	set_global_fequals_epsilon(1e-14);
 	ASSERT_TRUE(object->equals(deserializedObject));
+	set_global_fequals_epsilon(0);
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);

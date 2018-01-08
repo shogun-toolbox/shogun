@@ -24,10 +24,6 @@ TEST(SerializationJSON, DISABLED_{{class}})
 TEST(SerializationJSON, {{class}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy JSON, and enable tolerant checks
-	set_global_fequals_epsilon(1e-6);
-	set_global_fequals_tolerant(true);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-json-" + class_name + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -50,7 +46,12 @@ TEST(SerializationJSON, {{class}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy JSON, and enable tolerant checks
+	set_global_fequals_epsilon(1e-6);
+	set_global_fequals_tolerant(true);
 	ASSERT(object->equals(deserializedObject));
+	set_global_fequals_epsilon(0);
+	set_global_fequals_tolerant(false);
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
@@ -68,10 +69,6 @@ TEST(SerializationJSON,DISABLED_{{class}}_{{type}})
 TEST(SerializationJSON,{{class}}_{{type}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy JSON, and enable tolerant checks
-	set_global_fequals_epsilon(1e-6);
-	set_global_fequals_tolerant(true);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-json-" + class_name + "_{{type}}" + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -94,7 +91,12 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy JSON, and enable tolerant checks
+	set_global_fequals_epsilon(1e-6);
+	set_global_fequals_tolerant(true);
 	ASSERT(object->equals(deserializedObject));
+	set_global_fequals_epsilon(0);
+	set_global_fequals_tolerant(false);
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);

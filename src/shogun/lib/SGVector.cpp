@@ -20,11 +20,11 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/File.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/mathematics/lapack.h>
 #include <algorithm>
 #include <limits>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -409,21 +409,22 @@ bool SGVector<T>::equals(SGVector<T>& other) const
 }
 
 #ifndef REAL_EQUALS
-#define REAL_EQUALS(real_t)	\
-	template <>	\
-	bool SGVector<real_t>::equals(SGVector<real_t>& other) const	\
-	{	\
-		assert_on_cpu();	\
-		if (other.vlen!=vlen)	\
-			return false;	\
-			\
-		for (index_t i=0; i<vlen; ++i)	\
-		{	\
-			if (!CMath::fequals(vector[i], other.vector[i], \
-					std::numeric_limits<real_t>::epsilon()))	\
-				return false;	\
-		}	\
-		return true;	\
+#define REAL_EQUALS(real_t)                                                    \
+	template <>                                                                \
+	bool SGVector<real_t>::equals(SGVector<real_t>& other) const               \
+	{                                                                          \
+		assert_on_cpu();                                                       \
+		if (other.vlen != vlen)                                                \
+			return false;                                                      \
+                                                                               \
+		for (index_t i = 0; i < vlen; ++i)                                     \
+		{                                                                      \
+			if (!CMath::fequals(                                               \
+			        vector[i], other.vector[i],                                \
+			        std::numeric_limits<real_t>::epsilon()))                   \
+				return false;                                                  \
+		}                                                                      \
+		return true;                                                           \
 	}
 REAL_EQUALS(float32_t)
 REAL_EQUALS(float64_t)

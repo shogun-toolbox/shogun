@@ -23,9 +23,6 @@ TEST(SerializationXML, DISABLED_{{class}})
 TEST(SerializationXML, {{class}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy XML 
-	set_global_fequals_epsilon(1e-14);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-xml-" + class_name + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -48,7 +45,10 @@ TEST(SerializationXML, {{class}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy XML 
+	set_global_fequals_epsilon(1e-14);
 	ASSERT_TRUE(object->equals(deserializedObject));
+	set_global_fequals_epsilon(0);
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
@@ -66,9 +66,6 @@ TEST(SerializationXML,DISABLED_{{class}}_{{type}})
 TEST(SerializationXML,{{class}}_{{type}})
 {% endif %}
 {
-	// set accuracy to tolerate lossy XML 
-	set_global_fequals_epsilon(1e-14);
-	
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-xml-" + class_name + "_{{type}}" + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
@@ -91,8 +88,11 @@ TEST(SerializationXML,{{class}}_{{type}})
 	SG_UNREF(file);
 	ASSERT_TRUE(load_success);
 
+	// set accuracy to tolerate lossy XML 
+	set_global_fequals_epsilon(1e-14);
 	ASSERT_TRUE(object->equals(deserializedObject));
-
+	set_global_fequals_epsilon(0);
+	
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
