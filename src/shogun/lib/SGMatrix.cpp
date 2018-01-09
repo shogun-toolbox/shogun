@@ -148,36 +148,46 @@ bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 	if (*this==other)
 		return true;
 
-	// avoid uninitialized memory read in case the matrices are not initialized
-	if (matrix==nullptr || other.matrix==nullptr)
+	// both empty
+	if (!(num_rows || num_cols || other.num_rows || other.num_cols))
+		return true;
+
+	// only one empty
+	if (!matrix || !other.matrix)
 		return false;
 
+	// different size
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
+	// content
 	return std::equal(matrix, matrix+size(), other.matrix);
 }
 
 #ifndef REAL_EQUALS
-#define REAL_EQUALS(real_t)	\
-template <>	\
-bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const	\
-{	\
-	if (*this==other)	\
-		return true;	\
-	\
-	if (matrix==nullptr || other.matrix==nullptr)	\
-		return false;	\
-	\
-	if (num_rows!=other.num_rows || num_cols!=other.num_cols)	\
-		return false;	\
-	\
-	return std::equal(matrix, matrix+size(), other.matrix,	\
-			[](const real_t& a, const real_t& b)	\
-			{	\
-				return CMath::fequals<real_t>(a, b, std::numeric_limits<real_t>::epsilon());	\
-			});	\
-}
+#define REAL_EQUALS(real_t)                                                    \
+	template <>                                                                \
+	bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const         \
+	{                                                                          \
+		if (*this == other)                                                    \
+			return true;                                                       \
+                                                                               \
+		if (!(num_rows || num_cols || other.num_rows || other.num_cols))       \
+			return true;                                                       \
+                                                                               \
+		if (!matrix || !other.matrix)                                          \
+			return false;                                                      \
+                                                                               \
+		if (num_rows != other.num_rows || num_cols != other.num_cols)          \
+			return false;                                                      \
+                                                                               \
+		return std::equal(                                                     \
+		    matrix, matrix + size(), other.matrix,                             \
+		    [](const real_t& a, const real_t& b) {                             \
+			    return CMath::fequals<real_t>(                                 \
+			        a, b, std::numeric_limits<real_t>::epsilon());             \
+			});                                                                \
+	}
 
 REAL_EQUALS(float32_t)
 REAL_EQUALS(float64_t)

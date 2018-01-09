@@ -519,19 +519,12 @@ public:
 	 */
 	virtual bool parameter_hash_changed();
 
-	/** Recursively compares the current SGObject to another one. Compares all
-	 * registered numerical parameters, recursion upon complex (SGObject)
-	 * parameters. Does not compare pointers!
-	 *
-	 * May be overwritten but please do with care! Should not be necessary in
-	 * most cases.
+	/** Deep comparison of two objects.
 	 *
 	 * @param other object to compare with
-	 * @param accuracy accuracy to use for comparison (optional)
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return true if all parameters were equal, false if not
+	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(CSGObject* other, float64_t accuracy=0.0, bool tolerant=false);
+	virtual bool equals(const CSGObject* other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.

@@ -60,49 +60,6 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
-	/** Numerically this instance with another instance. Compares recursively
-	 * in case of non-numerical parameters
-	 *
-	 * @param other other instance to compare with
-	 * @param accuracy accuracy for numerical comparison
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return true if given parameter instance is equal, false otherwise
-	 */
-	bool equals(TParameter* other, float64_t accuracy=0.0, bool tolerant=false);
-
-	/** Given two pointers to a scalar element of a given primitive-type, this
-	 * method compares the values up to a given accuracy.
-	 *
-	 * If the type of the data is SGObject, recursively calls equals on the
-	 * object.
-	 *
-	 * @param ptype primitive type of both data
-	 * @param data1 pointer 1
-	 * @param data2 pointer 2
-	 * @param accuracy accuracy to compare
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return whether the data was equal
-	 */
-	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
-			float64_t accuracy=0.0, bool tolerant=false);
-
-	/** Given two pointers to a string element of a given primitive-type, this
-	 * method compares the values up to a given accuracy.
-	 *
-	 * If the type of the data is SGObject, recursively calls equals on the
-	 * object.
-	 *
-	 * @param stype string type of both data
-	 * @param ptype primitive type of both data
-	 * @param data1 pointer 1
-	 * @param data2 pointer 2
-	 * @param accuracy accuracy to compare
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return whether the data was equal
-	 */
-	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
-			void* data1, void* data2, float64_t accuracy=0.0, bool tolerant=false);
-
 	/** copy primitive type from source to target
 	 *
 	 * @param ptype the primitive type

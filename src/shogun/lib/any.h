@@ -35,9 +35,13 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
+#include <shogun/base/init.h>
+#include <shogun/io/SGIO.h>
+
+#include <limits>
 #include <stdexcept>
-#include <string>
 #include <string.h>
+#include <string>
 #include <typeinfo>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
@@ -139,13 +143,24 @@ namespace shogun
 		template <class T>
 		auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
 		{
+			SG_SDEBUG("Comparing using lhs==rhs.\n");
 			return lhs == rhs;
 		}
+
+		auto compare_impl(more_important, float32_t& lhs, float32_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, float64_t& lhs, float64_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, floatmax_t& lhs, floatmax_t& rhs)
+		    -> bool;
+		auto compare_impl(more_important, complex128_t& lhs, complex128_t& rhs)
+		    -> bool;
 
 		template <class T>
 		auto compare_impl(more_important, T& lhs, T& rhs)
 		    -> decltype(lhs.equals(rhs))
 		{
+			SG_SDEBUG("Comparing using lhs.equals(rhs).\n");
 			return lhs.equals(rhs);
 		}
 
@@ -153,7 +168,13 @@ namespace shogun
 		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
 		    -> decltype(lhs->equals(rhs))
 		{
-			return lhs->equals(rhs);
+			SG_SDEBUG("Comparing using lhs->equals(rhs).\n");
+			if (lhs && rhs)
+				return lhs->equals(rhs);
+			else if (!lhs && !rhs)
+				return true;
+			else
+				return false;
 		}
 
 		template <class T>
@@ -566,6 +587,14 @@ namespace shogun
 		const std::type_info& type_info() const
 		{
 			return policy->type_info();
+		}
+
+		/** Returns type-name of policy as string.
+		 * @return name of type class
+		 */
+		std::string type() const
+		{
+			return policy->type();
 		}
 
 		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
