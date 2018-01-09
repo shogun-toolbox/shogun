@@ -303,33 +303,36 @@ class CMath : public CSGObject
 		 * @param eps threshold for values to be equal/different
 		 * @return true if values are equal within eps accuracy, false if not.
 		 */
-		template <class T, class = typename std::enable_if<std::is_floating_point<T>::value>::type>
-			static inline bool fequals(const T& a, const T& b,
-				const float64_t eps_)
-			{
-				// global fequals epsilon might override passed one
-				// hack for lossy serialization formats
-				float64_t eps = std::max(eps_, get_global_fequals_epsilon());
+		    template <class T, class = typename std::enable_if<
+		                           std::is_floating_point<T>::value>::type>
+		    static inline bool
+		    fequals(const T& a, const T& b, const float64_t eps_)
+		    {
+			    // global fequals epsilon might override passed one
+			    // hack for lossy serialization formats
+			    float64_t eps = std::max(eps_, get_global_fequals_epsilon());
 
-				const T absA = CMath::abs<T>(a);
-				const T absB = CMath::abs<T>(b);
-				const T diff = CMath::abs<T>((a-b));
+			    const T absA = CMath::abs<T>(a);
+			    const T absB = CMath::abs<T>(b);
+			    const T diff = CMath::abs<T>((a - b));
 
-				// Handle this separately since NAN is unordered
-				if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
-					return true;
+			    // Handle this separately since NAN is unordered
+			    if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
+				    return true;
 
 				// Required for JSON Serialization Tests
-				if (get_global_fequals_tolerant())
-					return CMath::fequals_abs<T>(a, b, eps);
+			    if (get_global_fequals_tolerant())
+				    return CMath::fequals_abs<T>(a, b, eps);
 
-				// handles float32_t and float64_t separately
-				T comp = (std::is_same<float32_t, T>::value) ? CMath::F_MIN_NORM_VAL32 : CMath::F_MIN_NORM_VAL64;
+			    // handles float32_t and float64_t separately
+			    T comp = (std::is_same<float32_t, T>::value)
+			                 ? CMath::F_MIN_NORM_VAL32
+			                 : CMath::F_MIN_NORM_VAL64;
 
-				if (a == b)
-					return true;
+			    if (a == b)
+				    return true;
 
-				// both a and b are 0 and relative error is less meaningful
+			    // both a and b are 0 and relative error is less meaningful
 				else if ((a == 0) || (b == 0) || (diff < comp))
 					return (diff < (eps * comp));
 				// use max(relative error, diff) to handle large eps

@@ -172,7 +172,7 @@ TEST(SGMatrixTest,equals_different_size)
 	EXPECT_FALSE(a.equals(b));
 }
 
-TEST(SGMatrixTest,equals_both_empty)
+TEST(SGMatrixTest, equals_both_empty)
 {
 	SGMatrix<float64_t> a;
 	SGMatrix<float64_t> b;

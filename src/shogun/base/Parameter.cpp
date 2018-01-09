@@ -3094,8 +3094,10 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 		break;
 	}
 	default:
-		SG_SERROR("TParameter::copy_ptype(): Encountered unknown primitive"
-				"-type: %d\n", ptype);
+		SG_SERROR(
+		    "TParameter::copy_ptype(): Encountered unknown primitive"
+		    "-type: %d\n",
+		    ptype);
 		return false;
 		break;
 	}

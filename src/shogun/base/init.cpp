@@ -48,11 +48,12 @@ namespace shogun
 	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
-	// Two global variables to over-ride CMath::fequals for certain serialization
+	// Two global variables to over-ride CMath::fequals for certain
+	// serialization
 	// unit tests to pass. These should be removed if possible and serialization
 	// formats should be fixed.
-	float64_t sg_fequals_epsilon=0.0;
-	bool sg_fequals_tolerant=0.0;
+	float64_t sg_fequals_epsilon = 0.0;
+	bool sg_fequals_tolerant = 0.0;
 
 	/// function called to print normal messages
 	std::function<void(FILE*, const char*)> sg_print_message(nullptr);

@@ -194,12 +194,10 @@ public:
 	void display_vector(const char* name="vector",
 			const char* prefix="");
 
-
 	/** Pointer identify comparison.
 	 *  @return true iff length and pointer are equal
 	 */
-	inline bool
-	operator==(const SGSparseVector<T>& other) const;
+	inline bool operator==(const SGSparseVector<T>& other) const;
 
 	bool equals(const SGSparseVector<T>& other) const;
 
