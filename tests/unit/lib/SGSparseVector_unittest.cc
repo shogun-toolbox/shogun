@@ -522,8 +522,8 @@ TYPED_TEST_CASE(SGSparseVectorEquals, SGSparseVectorEqualsTypes);
 
 TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
 {
-	auto & v1 = this->v1_;
-	auto & v2 = this->v2_;
+	auto& v1 = this->v1_;
+	auto& v2 = this->v2_;
 	v1 = SGSparseVector<TypeParam>(1);
 	v2 = SGSparseVector<TypeParam>(1);
 
@@ -552,8 +552,8 @@ TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
 
 TYPED_TEST(SGSparseVectorEquals, equals_different_dim)
 {
-	auto & v1 = this->v1_;
-	auto & v2 = this->v2_;
+	auto& v1 = this->v1_;
+	auto& v2 = this->v2_;
 	v1 = SGSparseVector<TypeParam>(1);
 	v2 = SGSparseVector<TypeParam>(2);
 

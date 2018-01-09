@@ -359,8 +359,7 @@ SGSparseVector<T> SGSparseVector<T>::clone() const
 }
 
 template <class T>
-inline bool
-SGSparseVector<T>::operator==(const SGSparseVector<T>& other) const
+inline bool SGSparseVector<T>::operator==(const SGSparseVector<T>& other) const
 {
 	if (num_feat_entries != other.num_feat_entries)
 		return false;
@@ -375,7 +374,7 @@ template <class T>
 bool SGSparseVector<T>::equals(const SGSparseVector<T>& other) const
 {
 	/* same instance */
-	if (*this==other)
+	if (*this == other)
 		return true;
 
 	// both empty
@@ -391,7 +390,7 @@ bool SGSparseVector<T>::equals(const SGSparseVector<T>& other) const
 		return false;
 
 	// content
-	return std::equal(features, features+num_feat_entries, other.features);
+	return std::equal(features, features + num_feat_entries, other.features);
 }
 
 template<class T> void SGSparseVector<T>::load(CFile * loader)
@@ -651,9 +650,9 @@ void SGSparseVector<complex128_t>::display_vector(const char * name, const char 
 	SG_SPRINT("%s]\n", prefix);
 }
 
-
 template <class T>
-bool SGSparseVectorEntry<T>::operator==(const SGSparseVectorEntry<T>& other) const
+bool SGSparseVectorEntry<T>::
+operator==(const SGSparseVectorEntry<T>& other) const
 {
 	if (feat_index != other.feat_index)
 		return false;
@@ -662,15 +661,17 @@ bool SGSparseVectorEntry<T>::operator==(const SGSparseVectorEntry<T>& other) con
 }
 
 #ifndef REAL_SPARSE_EQUALS
-#define REAL_SPARSE_EQUALS(real_t)	\
-template <>	\
-bool SGSparseVectorEntry<real_t>::operator==(const SGSparseVectorEntry<real_t>& other) const \
-{	\
-	if (feat_index != other.feat_index)	\
-		return false;	\
-		\
-	return CMath::fequals<real_t>(entry, other.entry, std::numeric_limits<real_t>::epsilon());	\
-}
+#define REAL_SPARSE_EQUALS(real_t)                                             \
+	template <>                                                                \
+	bool SGSparseVectorEntry<real_t>::operator==(                              \
+	    const SGSparseVectorEntry<real_t>& other) const                        \
+	{                                                                          \
+		if (feat_index != other.feat_index)                                    \
+			return false;                                                      \
+                                                                               \
+		return CMath::fequals<real_t>(                                         \
+		    entry, other.entry, std::numeric_limits<real_t>::epsilon());       \
+	}
 
 REAL_SPARSE_EQUALS(float32_t)
 REAL_SPARSE_EQUALS(float64_t)
@@ -679,13 +680,16 @@ REAL_SPARSE_EQUALS(floatmax_t)
 #endif // REAL_SPARSE_EQUALS
 
 template <>
-bool SGSparseVectorEntry<complex128_t>::operator==(const SGSparseVectorEntry<complex128_t>& other) const
+bool SGSparseVectorEntry<complex128_t>::
+operator==(const SGSparseVectorEntry<complex128_t>& other) const
 {
 	if (feat_index != other.feat_index)
 		return false;
 
-	return CMath::fequals<float64_t>(entry.real(), other.entry.real(), LDBL_EPSILON) &&
-	CMath::fequals<float64_t>(entry.imag(), other.entry.imag(), LDBL_EPSILON);
+	return CMath::fequals<float64_t>(
+		       entry.real(), other.entry.real(), LDBL_EPSILON) &&
+		   CMath::fequals<float64_t>(
+		       entry.imag(), other.entry.imag(), LDBL_EPSILON);
 }
 
 template class SGSparseVector<bool>;

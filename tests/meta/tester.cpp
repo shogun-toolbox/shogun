@@ -46,18 +46,18 @@ int main(int argc, const char *argv[])
 	bool equal = a->equals(a_ref);
 
 	// print comparison output only if different as it it slow
-    if (!equal)
-    {
-        a->get_global_io()->set_loglevel(MSG_DEBUG);
+	if (!equal)
+	{
+		a->get_global_io()->set_loglevel(MSG_DEBUG);
 		a->equals(a_ref);
 	}
-    
-    SG_UNREF(f);
-    SG_UNREF(f_ref);
-    SG_UNREF(a);
-    SG_UNREF(a_ref);
-    
-    exit_shogun();
+
+	SG_UNREF(f);
+	SG_UNREF(f_ref);
+	SG_UNREF(a);
+	SG_UNREF(a_ref);
+
+	exit_shogun();
     return equal != true;
 }
 
