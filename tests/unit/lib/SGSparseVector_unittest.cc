@@ -512,16 +512,20 @@ template <typename T>
 class SGSparseVectorEquals : public ::testing::Test
 {
 public:
-	SGSparseVector<T> v1_ = SGSparseVector<T>(1);
-	SGSparseVector<T> v2_ = SGSparseVector<T>(1);
+	SGSparseVector<T> v1_;
+	SGSparseVector<T> v2_;
 };
-typedef ::testing::Types<int16_t, int32_t, int64_t, float32_t, float64_t, floatmax_t, complex128_t> SGSparseVectorEqualsTypes;
+typedef ::testing::Types<int16_t, int32_t, int64_t, float32_t, float64_t,
+                         floatmax_t, complex128_t>
+    SGSparseVectorEqualsTypes;
 TYPED_TEST_CASE(SGSparseVectorEquals, SGSparseVectorEqualsTypes);
 
 TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
 {
-	auto& v1=this->v1_;
-	auto& v2=this->v2_;
+	auto & v1 = this->v1_;
+	auto & v2 = this->v2_;
+	v1 = SGSparseVector<TypeParam>(1);
+	v2 = SGSparseVector<TypeParam>(1);
 
 	v1.features[0].feat_index = 1;
 	v1.features[0].entry = 1;
@@ -548,10 +552,22 @@ TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
 
 TYPED_TEST(SGSparseVectorEquals, equals_different_dim)
 {
-	auto& v1=this->v1_;
-	auto& v2=this->v2_;
+	auto & v1 = this->v1_;
+	auto & v2 = this->v2_;
+	v1 = SGSparseVector<TypeParam>(1);
+	v2 = SGSparseVector<TypeParam>(2);
 
+	// this should work without a memory read error as sizes are compared first
+	EXPECT_FALSE(v1.equals(v2));
+	EXPECT_FALSE(v2.equals(v1));
+
+	// without uninitialised memory
+	v1.features[0].feat_index = 1;
+	v1.features[0].entry = 1;
+	v2.features[0].feat_index = 1;
+	v2.features[0].entry = 1;
+	v2.features[1].feat_index = 1;
+	v2.features[1].entry = 1;
 	EXPECT_FALSE(v1.equals(v2));
 	EXPECT_FALSE(v2.equals(v1));
 }
-
