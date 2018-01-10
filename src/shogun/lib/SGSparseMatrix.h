@@ -187,8 +187,20 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		/** sort the indices of the sparse matrix such that they are in ascending order */
 		void sort_features();
 
-protected:
+		/** Pointer identify comparison.
+		 *  @return true iff number of vectors and features and pointer are
+		 * equal
+		 */
+		bool operator==(const SGSparseMatrix<T>& other) const;
 
+		/** Equals method up to precision for matrix (element-wise)
+		 * @param other matrix to compare with
+		 * @return false if any element differs or if shapes are different,
+		 * true otherwise
+		 */
+		bool equals(const SGSparseMatrix<T>& other) const;
+
+	protected:
 		/** copy data */
 		virtual void copy_data(const SGReferencedData& orig);
 

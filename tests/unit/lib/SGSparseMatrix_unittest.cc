@@ -10,12 +10,13 @@
 
 #include <gtest/gtest.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/base/range.h>
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Random.h>
 
 using namespace shogun;
@@ -285,4 +286,48 @@ TEST(SGSparseMatrix, transposed_square_matrix)
 		for (index_t vec_index=0; vec_index<number_of_vectors; ++vec_index)
 			EXPECT_NEAR(sparse_matrix(feat_index,vec_index), sparse_matrix_t(vec_index,feat_index), 1E-14);
 	}
+}
+
+TEST(SGSparseMatrix, equals_same_shape)
+{
+	const index_t number_of_features = 2;
+	const index_t number_of_vectors = 2;
+
+	SGSparseMatrix<float64_t> m1(number_of_vectors, number_of_features);
+	SGSparseMatrix<float64_t> m2(number_of_vectors, number_of_features);
+
+	for (auto i : range(number_of_vectors))
+	{
+		m1.sparse_matrix[i] = SGSparseVector<float64_t>(number_of_vectors);
+		m2.sparse_matrix[i] = SGSparseVector<float64_t>(number_of_vectors);
+
+		for (auto j : range(number_of_features))
+		{
+			m1.sparse_matrix[i].features[j].feat_index = 0;
+			m1.sparse_matrix[i].features[j].entry = 1;
+			m2.sparse_matrix[i].features[j].feat_index = 0;
+			m2.sparse_matrix[i].features[j].entry = 1;
+		}
+	}
+
+	EXPECT_TRUE(m1.equals(m1));
+	EXPECT_TRUE(m1.equals(m2));
+	EXPECT_TRUE(m2.equals(m1));
+
+	m1.sparse_matrix[0].features[0].feat_index = 1;
+	EXPECT_FALSE(m1.equals(m2));
+	EXPECT_FALSE(m2.equals(m1));
+	m1.sparse_matrix[0].features[0].feat_index = 0;
+
+	m1.sparse_matrix[1].features[1].entry = 2;
+	EXPECT_FALSE(m1.equals(m2));
+	EXPECT_FALSE(m2.equals(m1));
+}
+
+TEST(SGSparseMatrix, equals_different_shape)
+{
+	SGSparseMatrix<float64_t> m1(2, 2);
+	SGSparseMatrix<float64_t> m2(2, 3);
+	EXPECT_FALSE(m1.equals(m2));
+	EXPECT_FALSE(m2.equals(m1));
 }
