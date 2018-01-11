@@ -26,27 +26,27 @@ Example
 
 Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
 
-.. sgexample:: kernel_svm.sg:create_features
+.. sgexample:: kernel_support_vector_machine.sg:create_features
 
 In order to run :sgclass:`CLibSVM`, we need to initialize a kernel like :sgclass:`CGaussianKernel` with training features and some parameters like :math:`C` and epsilon i.e. residual convergence parameter which is optional.
 
-.. sgexample:: kernel_svm.sg:set_parameters
+.. sgexample:: kernel_support_vector_machine.sg:set_parameters
 
 We create an instance of the :sgclass:`CLibSVM` classifier by passing it regularization coefficient, kernel and labels.
 
-.. sgexample:: kernel_svm.sg:create_instance
+.. sgexample:: kernel_support_vector_machine.sg:create_instance
 
 Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
 
-.. sgexample:: kernel_svm.sg:train_and_apply
+.. sgexample:: kernel_support_vector_machine.sg:train_and_apply
 
 We can extract :math:`\alpha` and :math:`b`.
 
-.. sgexample:: kernel_svm.sg:extract_weights_bias
+.. sgexample:: kernel_support_vector_machine.sg:extract_weights_bias
 
 Finally, we can evaluate test performance via e.g. :sgclass:`CAccuracyMeasure`.
 
-.. sgexample:: kernel_svm.sg:evaluate_accuracy
+.. sgexample:: kernel_support_vector_machine.sg:evaluate_accuracy
 
 ----------
 References

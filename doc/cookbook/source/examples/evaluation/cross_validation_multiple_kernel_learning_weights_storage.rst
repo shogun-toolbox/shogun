@@ -15,36 +15,36 @@ We'll use as example a classification problem solvable by using :sgclass:`CMKLCl
 For the sake of brevity, we'll skip the initialization of features, kernels and so on
 (see :doc:`../regression/multiple_kernel_learning` for a more complete example of MKL usage).
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:create_classifier
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:create_classifier
 
 Firstly, we initialize a splitting strategy :sgclass:`CStratifiedCrossValidationSplitting`, which is needed
 to divide the dataset into folds, and an evaluation criterium :sgclass:`CAccuracyMeasure`, to evaluate the
 performance of the trained models. Secondly, we create the :sgclass:`CCrossValidation` instance.
 We set also the number of cross validation's runs.
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:create_cross_validation
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:create_cross_validation
 
 To observe also the partial folds' results, we create a cross validation's observer :sgclass:`CParameterObserverCV`
 and then we register it into the :sgclass:`CCrossValidation` instance.
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:create_observer
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:create_observer
 
 Finally, we evaluate the model and get the results (aka a :sgclass:`CCrossValidationResult` instance).
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:evaluate_and_get_result
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:evaluate_and_get_result
 
 We get the :math:`mean` of all the evaluation results and its standard deviation :math:`stddev`.
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:get_results
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:get_results
 
 We can get more information about the single cross validation's runs and folds by using the observer we set before, like the kernels' weights.
 We get the :sgclass:`CMKLClassification` machine used during the first run and trained on the first fold.
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:get_fold_machine
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:get_fold_machine
 
 Then, from the trained machine, we get the weights :math:`\mathbf{w}` of its kernels.
 
-.. sgexample:: cross_validation_mkl_weight_storage.sg:get_weights
+.. sgexample:: cross_validation_multiple_kernel_learning_weights_storage.sg:get_weights
 
 ----------
 References

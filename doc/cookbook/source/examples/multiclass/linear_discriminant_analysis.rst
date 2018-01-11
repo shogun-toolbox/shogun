@@ -3,7 +3,7 @@ Linear Discriminant Analysis
 ============================
 
 This cookbook page introduces the application of
-`linear discriminant analysis <http://shogun.ml/cookbook/latest/examples/binary_classifier/lda.html>`_
+`linear discriminant analysis <http://shogun.ml/cookbook/latest/examples/binary/linear_discriminant_analysis.html>`_
 to multi-class classifications.
 
 -------
