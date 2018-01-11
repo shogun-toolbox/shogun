@@ -2,7 +2,7 @@
 Large Margin Nearest Neighbours
 ===============================
 
-Large margin nearest neighbours is a metric learning algorithm.  It learns a metric that can be used with the :doc:`knn` algorithm.
+Large margin nearest neighbours is a metric learning algorithm.  It learns a metric that can be used with the :doc:`k_nearest_neighbours` algorithm.
 
 The Mahalanobis distance metric which is an instance of :sgclass:`CCustomMahalanobisDistance` is obtained as a result.
 

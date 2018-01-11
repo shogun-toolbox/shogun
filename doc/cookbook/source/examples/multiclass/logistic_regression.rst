@@ -27,19 +27,19 @@ Example
 
 Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
 
-.. sgexample:: multiclass_logisticregression.sg:create_features
+.. sgexample:: logistic_regression.sg:create_features
 
 We create an instance of the :sgclass:`CMulticlassLogisticRegression` classifier by passing it the dataset, lables, and specifying the regularization constant :math:`\lambda` for each machine
 
-.. sgexample:: multiclass_logisticregression.sg:create_instance
+.. sgexample:: logistic_regression.sg:create_instance
 
 Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
 
-.. sgexample:: multiclass_logisticregression.sg:train_and_apply
+.. sgexample:: logistic_regression.sg:train_and_apply
 
 We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
 
-.. sgexample:: multiclass_logisticregression.sg:evaluate_accuracy
+.. sgexample:: logistic_regression.sg:evaluate_accuracy
 
 ----------
 References

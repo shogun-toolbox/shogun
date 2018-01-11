@@ -54,9 +54,9 @@ The pages are rendered with [our own plugin](https://github.com/shogun-toolbox/s
 
 ## Adding a page
 To add an entry for an existing example, create a markdown `*.rst` file with matching filename and directory.
-E.g. for the example `examples/meta/src/multiclass_classifier/knn.sg`, this would be
+E.g. for the example `examples/meta/src/multiclass/k_nearest_neighbours.sg`, this would be
 
-    touch doc/cookbook/source/examples/multiclass_classifier/knn.rst
+    touch doc/cookbook/source/examples/multiclass/k_nearest_neighbours.rst
 
 Edit the file so that it contains details on API example and references to code snippets.
 The point is to **not** show the full file listing but only snippets.

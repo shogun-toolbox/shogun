@@ -26,27 +26,27 @@ Example
 
 Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
 
-.. sgexample:: linear_svm.sg:create_features
+.. sgexample:: linear_support_vector_machine.sg:create_features
 
 In order to run :sgclass:`CLibLinear`, we need to initialize some parameters like :math:`C` and epsilon which is the residual convergence parameter of the solver.
 
-.. sgexample:: linear_svm.sg:set_parameters
+.. sgexample:: linear_support_vector_machine.sg:set_parameters
 
 We create an instance of the :sgclass:`CLibLinear` classifier by passing it regularization coefficient, features and labels. We here set the solver type to L2 regularized classification. There are many other solver types in :sgclass:`CLibLinear` to choose from.
 
-.. sgexample:: linear_svm.sg:create_instance
+.. sgexample:: linear_support_vector_machine.sg:create_instance
 
 Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
 
-.. sgexample:: linear_svm.sg:train_and_apply
+.. sgexample:: linear_support_vector_machine.sg:train_and_apply
 
 We can extract :math:`{\bf w}` and :math:`b`.
 
-.. sgexample:: linear_svm.sg:extract_weights_bias
+.. sgexample:: linear_support_vector_machine.sg:extract_weights_bias
 
 We can evaluate test performance via e.g. :sgclass:`CAccuracyMeasure`.
 
-.. sgexample:: linear_svm.sg:evaluate_accuracy
+.. sgexample:: linear_support_vector_machine.sg:evaluate_accuracy
 
 ----------
 References

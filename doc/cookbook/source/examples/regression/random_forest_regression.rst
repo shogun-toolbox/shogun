@@ -4,7 +4,7 @@ Random Forest
 
 A Random Forest is an ensemble learning method which implements multiple decision trees during training. It predicts by using a combination rule on the outputs of individual decision trees.
 
-See :doc:`../multiclass_classifier/random_forest` for classification with random forest.
+See :doc:`../multiclass/random_forest` for classification with random forest.
 See :cite:`Breiman2001` for a detailed introduction.
 
 -------

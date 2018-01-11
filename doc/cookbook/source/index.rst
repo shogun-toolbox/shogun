@@ -24,7 +24,7 @@ Binary classifier
    :glob:
    :caption: Binary classifier
 
-   examples/binary_classifier/**
+   examples/binary/**
 
 Multiclass classifier
 ---------------------
@@ -34,7 +34,7 @@ Multiclass classifier
   :glob:
   :caption: Multiclass classifier
 
-  examples/multiclass_classifier/**
+  examples/multiclass/**
 
 
 Regression
@@ -74,7 +74,7 @@ Gaussian Processes
    :glob:
    :caption: Gaussian Processes
 
-   examples/gaussian_processes/**
+   examples/gaussian_process/**
 
 Clustering
 ----------
