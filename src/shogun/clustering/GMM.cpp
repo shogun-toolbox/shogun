@@ -9,15 +9,12 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <shogun/base/Parameter.h>
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
 #include <vector>
@@ -423,7 +420,11 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		SGMatrix<float64_t> c2=components[2]->get_cov();
 		linalg::add(c1, c2, c1, alpha1, alpha2);
 
-		components[1]->set_d(SGVector<float64_t>(SGMatrix<float64_t>::compute_eigenvectors(c1.matrix, dim_n, dim_n), dim_n));
+		SGVector<float64_t> eigenvalues(dim_n);
+		SGMatrix<float64_t> eigenvectors(dim_n, dim_n);
+		linalg::eigen_solver(c1, eigenvalues, eigenvectors);
+
+		components[1]->set_d(eigenvalues);
 		components[1]->set_u(c1);
 
 		float64_t new_d=0;
@@ -585,11 +586,8 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			switch (cov_type)
 			{
 				case FULL:
-				    cblas_dger(
-				        CblasRowMajor, num_dim, num_dim,
-				        alpha.matrix[j * alpha.num_cols + i], v.vector, 1,
-				        v.vector, 1, (double*)cov_sum.matrix, num_dim);
-
+				    linalg::dger(
+				        alpha.matrix[j * alpha.num_cols + i], v, v, cov_sum);
 				    break;
 			    case DIAG:
 			    {
@@ -619,8 +617,10 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 		    {
 			    linalg::scale(cov_sum, cov_sum, 1.0 / alpha_sum);
 
-			    SGVector<float64_t> d0 =
-			        SGMatrix<float64_t>::compute_eigenvectors(cov_sum);
+			    SGVector<float64_t> d0(num_dim);
+			    SGMatrix<float64_t> eigenvectors(num_dim, num_dim);
+			    linalg::eigen_solver(cov_sum, d0, eigenvectors);
+
 			    for (int32_t j = 0; j < num_dim; j++)
 				    d0[j] = CMath::max(min_cov, d0[j]);
 
@@ -827,4 +827,3 @@ void CGMM::register_params()
 	m_parameters->add(&m_coefficients, "m_coefficients", "Mixture coefficients.");
 }
 
-#endif
