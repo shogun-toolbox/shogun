@@ -146,14 +146,16 @@ namespace shogun
 			return lhs == rhs;
 		}
 
-		auto compare_impl(more_important, float32_t& lhs, float32_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, float64_t& lhs, float64_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, floatmax_t& lhs, floatmax_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, complex128_t& lhs, complex128_t& rhs)
-		    -> bool;
+		template <>
+		bool compare_impl(general, const float32_t& lhs, const float32_t& rhs);
+		template <>
+		bool compare_impl(general, const float64_t& lhs, const float64_t& rhs);
+		template <>
+		bool
+		compare_impl(general, const floatmax_t& lhs, const floatmax_t& rhs);
+		template <>
+		bool
+		compare_impl(general, const complex128_t& lhs, const complex128_t& rhs);
 
 		template <class T>
 		inline auto compare_impl(more_important, const T& lhs, const T& rhs)
@@ -175,8 +177,7 @@ namespace shogun
 		}
 
 		template <class T>
-		inline auto compare(const T& lhs, const T& rhs)
-		    -> decltype(compare_impl(maybe_most_important(), lhs, rhs))
+		inline bool compare(const T& lhs, const T& rhs)
 		{
 			return compare_impl(maybe_most_important(), lhs, rhs);
 		}
