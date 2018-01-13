@@ -140,7 +140,8 @@ namespace shogun
 		auto compare_impl(by_default, T& lhs, T& rhs) = delete;
 
 		template <class T>
-		inline auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
+		inline auto compare_impl(general, T& lhs, T& rhs)
+		    -> decltype(lhs == rhs)
 		{
 			return lhs == rhs;
 		}
@@ -198,7 +199,7 @@ namespace shogun
 
 		template <class T>
 		inline auto clone(T& value)
-			-> decltype(clone_impl(maybe_most_important(), value))
+		    -> decltype(clone_impl(maybe_most_important(), value))
 		{
 			return clone_impl(maybe_most_important(), value);
 		}
@@ -220,7 +221,6 @@ namespace shogun
 		{
 			return *static_cast<T*>(*ptr);
 		}
-
 	}
 
 	using any_detail::typed_pointer;
@@ -281,7 +281,8 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		virtual bool equals(const void* storage, const void* other_storage) const = 0;
+		virtual bool
+		equals(const void* storage, const void* other_storage) const = 0;
 
 		/** Returns the type of policy.
 		 * @return type of policy
@@ -318,7 +319,8 @@ namespace shogun
 		 */
 		virtual void clone(void** storage, const void* v) const
 		{
-			mutable_value_of<T>(storage) = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<T>(storage) =
+			    any_detail::clone(value_of(typed_pointer<T>(v)));
 		}
 
 		/** Clears storage.
@@ -368,7 +370,8 @@ namespace shogun
 		bool equals(const void* storage, const void* other_storage) const
 		{
 			const T& typed_storage = value_of(typed_pointer<T>(storage));
-			const T& typed_other_storage = value_of(typed_pointer<T>(other_storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
 		}
 
@@ -407,7 +410,8 @@ namespace shogun
 		 */
 		virtual void clone(void** storage, const void* v) const
 		{
-			mutable_value_of<T>(storage) = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<T>(storage) =
+			    any_detail::clone(value_of(typed_pointer<T>(v)));
 		}
 
 		/** Clears storage.
@@ -456,7 +460,8 @@ namespace shogun
 		bool equals(const void* storage, const void* other_storage) const
 		{
 			const T& typed_storage = value_of(typed_pointer<T>(storage));
-			const T& typed_other_storage = value_of(typed_pointer<T>(other_storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
 			return compare(typed_storage, typed_other_storage);
 		}
 

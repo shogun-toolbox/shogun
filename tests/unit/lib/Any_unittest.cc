@@ -317,41 +317,41 @@ TEST(Any, equals_value)
 TEST(Any, clone_into_non_owning_via_clone)
 {
 	Simple* a = nullptr;
-    Simple* other = new Simple;
+	Simple* other = new Simple;
 	auto a_any = erase_type_non_owning(&a);
-    Simple* old_a = a;
+	Simple* old_a = a;
 	a_any.clone_from(erase_type(other));
-    auto cloned = a_any.as<Simple*>();
-    EXPECT_NE(cloned, nullptr);
+	auto cloned = a_any.as<Simple*>();
+	EXPECT_NE(cloned, nullptr);
 	EXPECT_EQ(cloned->cloned, true);
-    delete cloned;
-    delete old_a;
-    delete other;
+	delete cloned;
+	delete old_a;
+	delete other;
 }
 
 TEST(Any, clone_into_non_owning_via_copy)
 {
 	int a = 3;
-    int other = 5;
-    auto a_any = erase_type_non_owning(&a);
+	int other = 5;
+	auto a_any = erase_type_non_owning(&a);
 	a_any.clone_from(erase_type(other));
 	EXPECT_EQ(a_any.as<int>(), other);
-    EXPECT_EQ(a, other);
+	EXPECT_EQ(a, other);
 }
 
 TEST(Any, clone_wrong_type)
 {
-    Simple* a = nullptr;
-    int other = 5;
-    auto any = erase_type_non_owning(&a);
+	Simple* a = nullptr;
+	int other = 5;
+	auto any = erase_type_non_owning(&a);
 	EXPECT_THROW(any.clone_from(erase_type(other)), std::logic_error);
 }
 
 TEST(Any, clone_into_owning_via_copy)
 {
 	int a = 3;
-    int other = 5;
-    auto a_any = erase_type(a);
+	int other = 5;
+	auto a_any = erase_type(a);
 	a_any.clone_from(erase_type(other));
 	EXPECT_EQ(a_any.as<int>(), other);
 }
