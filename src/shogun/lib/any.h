@@ -137,10 +137,10 @@ namespace shogun
 		};
 
 		template <class T>
-		auto compare_impl(by_default, T& lhs, T& rhs) = delete;
+		auto compare_impl(by_default, const T& lhs, const T& rhs) = delete;
 
 		template <class T>
-		inline auto compare_impl(general, T& lhs, T& rhs)
+		inline auto compare_impl(general, const T& lhs, const T& rhs)
 		    -> decltype(lhs == rhs)
 		{
 			return lhs == rhs;
@@ -156,7 +156,7 @@ namespace shogun
 		    -> bool;
 
 		template <class T>
-		inline auto compare_impl(more_important, T& lhs, T& rhs)
+		inline auto compare_impl(more_important, const T& lhs, const T& rhs)
 		    -> decltype(lhs.equals(rhs))
 		{
 			return lhs.equals(rhs);
@@ -189,12 +189,12 @@ namespace shogun
 
 		template <class T>
 		inline auto clone_impl(maybe_most_important, T* value)
-		    -> decltype(value->clone())
+		    -> decltype(static_cast<void*>(value->clone()))
 		{
 			if (!value)
 				return nullptr;
 
-			return value->clone();
+			return static_cast<void*>(value->clone());
 		}
 
 		template <class T>
@@ -319,8 +319,8 @@ namespace shogun
 		 */
 		virtual void clone(void** storage, const void* v) const
 		{
-			mutable_value_of<T>(storage) =
-			    any_detail::clone(value_of(typed_pointer<T>(v)));
+			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		/** Clears storage.
@@ -410,8 +410,8 @@ namespace shogun
 		 */
 		virtual void clone(void** storage, const void* v) const
 		{
-			mutable_value_of<T>(storage) =
-			    any_detail::clone(value_of(typed_pointer<T>(v)));
+			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		/** Clears storage.
