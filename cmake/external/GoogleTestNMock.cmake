@@ -35,8 +35,8 @@ IF(EXISTS /usr/src/googletest)
 ELSE()
 	ExternalProject_Add(
 		GoogleMock
-		URL https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-		URL_MD5 16877098823401d1bf2ed7891d7dce36
+		URL https://github.com/google/googletest/archive/release-1.8.0.zip
+		URL_MD5 adfafc8512ab65fd3cf7955ef0100ff5
 		TIMEOUT 10
 		PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
 		DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock
