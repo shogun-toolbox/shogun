@@ -42,7 +42,8 @@ namespace shogun
 
 #ifndef REAL_COMPARE_IMPL
 #define REAL_COMPARE_IMPL(real_t)                                              \
-	auto compare_impl(more_important, real_t& lhs, real_t& rhs)->bool          \
+	template <>                                                                \
+	bool compare_impl_eq(const real_t& lhs, const real_t& rhs)                 \
 	{                                                                          \
 		SG_SDEBUG("Comparing using fequals<" #real_t ">(lhs, rhs).\n");        \
 		return CMath::fequals(                                                 \
@@ -55,8 +56,8 @@ namespace shogun
 #undef REAL_COMPARE_IMPL
 #endif // REAL_COMPARE_IMPL
 
-		auto compare_impl(more_important, complex128_t& lhs, complex128_t& rhs)
-		    -> decltype(lhs == rhs)
+		template <>
+		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs)
 		{
 			SG_SDEBUG("Comparing using fequals<complex128_t>(lhs, rhs).\n");
 			return CMath::fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&

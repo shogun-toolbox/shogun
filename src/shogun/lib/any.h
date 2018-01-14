@@ -36,7 +36,6 @@
 #define _ANY_H_
 
 #include <shogun/base/init.h>
-#include <shogun/io/SGIO.h>
 
 #include <limits>
 #include <stdexcept>
@@ -54,7 +53,7 @@ namespace shogun
 	 * @return human readable name of class
 	 */
 	template <typename T>
-	std::string demangledType()
+	std::string demangled_type()
 	{
 #ifdef HAVE_CXA_DEMANGLE
 		size_t length;
@@ -138,29 +137,33 @@ namespace shogun
 		};
 
 		template <class T>
-		auto compare_impl(by_default, T& lhs, T& rhs) = delete;
+		auto compare_impl(by_default, const T& lhs, const T& rhs) = delete;
 
 		template <class T>
-		auto compare_impl(general, T& lhs, T& rhs) -> decltype(lhs == rhs)
+		bool compare_impl_eq(const T& lhs, const T& rhs)
 		{
-			SG_SDEBUG("Comparing using lhs==rhs.\n");
 			return lhs == rhs;
 		}
-
-		auto compare_impl(more_important, float32_t& lhs, float32_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, float64_t& lhs, float64_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, floatmax_t& lhs, floatmax_t& rhs)
-		    -> bool;
-		auto compare_impl(more_important, complex128_t& lhs, complex128_t& rhs)
-		    -> bool;
+		template <>
+		bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
+		template <>
+		bool compare_impl_eq(const float64_t& lhs, const float64_t& rhs);
+		template <>
+		bool compare_impl_eq(const floatmax_t& lhs, const floatmax_t& rhs);
+		template <>
+		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
 		template <class T>
-		auto compare_impl(more_important, T& lhs, T& rhs)
+		auto compare_impl(general, const T& lhs, const T& rhs)
+		    -> decltype(lhs == rhs)
+		{
+			return compare_impl_eq(lhs, rhs);
+		}
+
+		template <class T>
+		auto compare_impl(more_important, const T& lhs, const T& rhs)
 		    -> decltype(lhs.equals(rhs))
 		{
-			SG_SDEBUG("Comparing using lhs.equals(rhs).\n");
 			return lhs.equals(rhs);
 		}
 
@@ -168,7 +171,6 @@ namespace shogun
 		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
 		    -> decltype(lhs->equals(rhs))
 		{
-			SG_SDEBUG("Comparing using lhs->equals(rhs).\n");
 			if (lhs && rhs)
 				return lhs->equals(rhs);
 			else if (!lhs && !rhs)
@@ -178,12 +180,57 @@ namespace shogun
 		}
 
 		template <class T>
-		auto compare(T& lhs, T& rhs)
-		    -> decltype(compare_impl(maybe_most_important(), lhs, rhs))
+		inline bool compare(const T& lhs, const T& rhs)
 		{
 			return compare_impl(maybe_most_important(), lhs, rhs);
 		}
+
+		template <class T>
+		inline T clone_impl(general, T& value)
+		{
+			return value;
+		}
+
+		template <class T>
+		inline auto clone_impl(maybe_most_important, T* value)
+		    -> decltype(static_cast<void*>(value->clone()))
+		{
+			if (!value)
+				return nullptr;
+
+			return static_cast<void*>(value->clone());
+		}
+
+		template <class T>
+		inline auto clone(T& value)
+		    -> decltype(clone_impl(maybe_most_important(), value))
+		{
+			return clone_impl(maybe_most_important(), value);
+		}
+
+		template <class T>
+		inline T const* typed_pointer(const void* ptr)
+		{
+			return static_cast<T const*>(ptr);
+		}
+
+		template <class T>
+		inline const T& value_of(T const* ptr)
+		{
+			return *ptr;
+		}
+
+		template <class T>
+		inline T& mutable_value_of(void** ptr)
+		{
+			return *static_cast<T*>(*ptr);
+		}
 	}
+
+	using any_detail::typed_pointer;
+	using any_detail::value_of;
+	using any_detail::mutable_value_of;
+	using any_detail::compare;
 
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
@@ -199,6 +246,12 @@ namespace shogun
 		 * @param v pointer to value
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
+
+		/** Clones value provided by v into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* v) const = 0;
 
 		/** Clears storage.
 		 * @param storage pointer to a pointer to storage
@@ -232,7 +285,8 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		virtual bool equals(void** storage, void** other_storage) const = 0;
+		virtual bool
+		equals(const void* storage, const void* other_storage) const = 0;
 
 		/** Returns the type of policy.
 		 * @return type of policy
@@ -260,7 +314,17 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const
 		{
-			*(storage) = new T(*reinterpret_cast<T const*>(v));
+			*(storage) = new T(value_of(typed_pointer<T>(v)));
+		}
+
+		/** Clones value provided by v into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* v) const
+		{
+			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		/** Clears storage.
@@ -268,7 +332,7 @@ namespace shogun
 		 */
 		virtual void clear(void** storage) const
 		{
-			delete reinterpret_cast<T*>(*storage);
+			delete typed_pointer<T>(*storage);
 		}
 
 		/** Returns type-name as string.
@@ -276,7 +340,7 @@ namespace shogun
 		 */
 		virtual std::string type() const
 		{
-			return demangledType<T>();
+			return demangled_type<T>();
 		}
 
 		/** Returns type info
@@ -307,11 +371,12 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(void** storage, void** other_storage) const
+		bool equals(const void* storage, const void* other_storage) const
 		{
-			T& typed_storage = *(reinterpret_cast<T*>(*storage));
-			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return any_detail::compare(typed_storage, typed_other_storage);
+			const T& typed_storage = value_of(typed_pointer<T>(storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
+			return compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
@@ -326,7 +391,7 @@ namespace shogun
 		 */
 		virtual void visit(void* storage, AnyVisitor* visitor) const
 		{
-			visitor->on(reinterpret_cast<T*>(storage));
+			visitor->on(typed_pointer<T>(storage));
 		}
 	};
 
@@ -340,7 +405,17 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const
 		{
-			*static_cast<T*>(*(storage)) = T(*reinterpret_cast<T const*>(v));
+			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
+		}
+
+		/** Clones value provided by v into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* v) const
+		{
+			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		/** Clears storage.
@@ -355,7 +430,7 @@ namespace shogun
 		 */
 		virtual std::string type() const
 		{
-			return demangledType<T>();
+			return demangled_type<T>();
 		}
 
 		/** Returns type info
@@ -386,11 +461,12 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(void** storage, void** other_storage) const
+		bool equals(const void* storage, const void* other_storage) const
 		{
-			T& typed_storage = *(reinterpret_cast<T*>(*storage));
-			T& typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return any_detail::compare(typed_storage, typed_other_storage);
+			const T& typed_storage = value_of(typed_pointer<T>(storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
+			return compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
@@ -405,7 +481,7 @@ namespace shogun
 		 */
 		virtual void visit(void* storage, AnyVisitor* visitor) const
 		{
-			visitor->on(reinterpret_cast<T*>(storage));
+			visitor->on(typed_pointer<T>(storage));
 		}
 	};
 
@@ -524,6 +600,18 @@ namespace shogun
 			return *(this);
 		}
 
+		Any& clone_from(const Any& other)
+		{
+			if (!policy->matches(other.policy))
+			{
+				throw std::logic_error(
+				    "Can't clone into " + policy->type() + " from " +
+				    other.policy->type());
+			}
+			policy->clone(&storage, other.storage);
+			return *(this);
+		}
+
 		/** Equality operator
 		 * @param lhs Any object on left hand side
 		 * @param rhs Any object on right hand side
@@ -548,16 +636,16 @@ namespace shogun
 		 * @return type-casted value
 		 */
 		template <typename T>
-		T& as() const
+		const T& as() const
 		{
 			if (same_type<T>())
 			{
-				return *(reinterpret_cast<T*>(storage));
+				return value_of(typed_pointer<T>(storage));
 			}
 			else
 			{
 				throw std::logic_error(
-				    "Bad cast to " + demangledType<T>() + " but the type is " +
+				    "Bad cast to " + demangled_type<T>() + " but the type is " +
 				    policy->type());
 			}
 		}
@@ -636,7 +724,7 @@ namespace shogun
 		}
 		void* lhs_storage = lhs.storage;
 		void* rhs_storage = rhs.storage;
-		return lhs.policy->equals(&lhs_storage, &rhs_storage);
+		return lhs.policy->equals(lhs_storage, rhs_storage);
 	}
 
 	inline bool operator!=(const Any& lhs, const Any& rhs)
