@@ -742,19 +742,19 @@ namespace shogun
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
 	 * which stores the input object's raw value. It saves the type
-	 * information internally to be recalled later by using recall_type().
+	 * information internally to be cast back later by using any_cast().
 	 *
 	 * @param v value
 	 * @return Any object with the input value
 	 */
 	template <typename T>
-	inline Any erase_type(const T& v)
+	inline Any make_any(const T& v)
 	{
 		return Any(v);
 	}
 
 	template <typename T>
-	inline Any erase_type_non_owning(T* v)
+	inline Any make_any_ref(T* v)
 	{
 		return Any(non_owning_policy<T>(), v);
 	}
@@ -768,7 +768,7 @@ namespace shogun
 	 * @return type-casted value
 	 */
 	template <typename T>
-	inline T recall_type(const Any& any)
+	inline T any_cast(const Any& any)
 	{
 		return any.as<T>();
 	}
