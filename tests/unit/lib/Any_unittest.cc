@@ -223,10 +223,8 @@ TEST(Any, compare_different_types_non_owning)
 {
 	int32_t an_integer = 10;
 	float a_float = 10;
-	EXPECT_NE(
-	    make_any_ref(&an_integer), make_any_ref(&a_float));
-	EXPECT_NE(
-	    make_any_ref(&a_float), make_any_ref(&an_integer));
+	EXPECT_NE(make_any_ref(&an_integer), make_any_ref(&a_float));
+	EXPECT_NE(make_any_ref(&a_float), make_any_ref(&an_integer));
 }
 
 TEST(Any, copy_owning)

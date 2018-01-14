@@ -506,8 +506,7 @@ protected:
 		const std::string& name, T* value, AnyParameterProperties properties)
 	{
 		BaseTag tag(name);
-		create_parameter(
-			tag, AnyParameter(make_any_ref(value), properties));
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
 	}
 
 public:
