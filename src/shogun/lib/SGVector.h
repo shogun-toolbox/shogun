@@ -368,7 +368,7 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return false if any element differs or if sizes are different,
 		 * true otherwise
 		 */
-		bool equals(SGVector<T>& other) const;
+		bool equals(const SGVector<T>& other) const;
 
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);

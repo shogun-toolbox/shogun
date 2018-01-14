@@ -393,7 +393,7 @@ void SGVector<T>::free_data()
 }
 
 template <class T>
-bool SGVector<T>::equals(SGVector<T>& other) const
+bool SGVector<T>::equals(const SGVector<T>& other) const
 {
 	assert_on_cpu();
 	if (other.vlen!=vlen)
@@ -411,7 +411,7 @@ bool SGVector<T>::equals(SGVector<T>& other) const
 #ifndef REAL_EQUALS
 #define REAL_EQUALS(real_t)                                                    \
 	template <>                                                                \
-	bool SGVector<real_t>::equals(SGVector<real_t>& other) const               \
+	bool SGVector<real_t>::equals(const SGVector<real_t>& other) const         \
 	{                                                                          \
 		assert_on_cpu();                                                       \
 		if (other.vlen != vlen)                                                \
