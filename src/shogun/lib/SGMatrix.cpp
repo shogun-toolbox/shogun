@@ -351,6 +351,7 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 	if (!matrix || !nrows || !ncols)
 		return nullptr;
 
+	REQUIRE(nrows > 0, "Number of rows (%d) has to be positive!\n", nrows);
 	REQUIRE(ncols > 0, "Number of cols (%d) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
