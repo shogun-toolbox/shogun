@@ -599,6 +599,17 @@ TEST(SGMatrixTest, clone)
 
 	SGMatrix<float32_t> copy=mat.clone();
 
+	EXPECT_NE(mat.data(), copy.data());
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, clone_empty)
+{
+	SGMatrix<float32_t> mat;
+	ASSERT_EQ(mat.data(), nullptr);
+
+	SGMatrix<float32_t> copy = mat.clone();
+	EXPECT_EQ(copy.data(), mat.data());
 	EXPECT_TRUE(mat.equals(copy));
 }
 

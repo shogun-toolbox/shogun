@@ -31,6 +31,8 @@
 #include <gtest/gtest.h>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/config.h>
 #include <stdexcept>
@@ -354,4 +356,36 @@ TEST(Any, clone_into_owning_via_copy)
 	auto a_any = erase_type(a);
 	a_any.clone_from(erase_type(other));
 	EXPECT_EQ(a_any.as<int>(), other);
+}
+
+TEST(Any, clone_sgvector)
+{
+	auto a = SGVector<float64_t>(3);
+	a.range_fill();
+	SGVector<float64_t> b;
+	ASSERT_FALSE(a.equals(b));
+
+	auto a_any = erase_type(a);
+	auto b_any = erase_type(b);
+
+	auto cloned_b = b_any.clone_from(a_any).as<SGVector<float64_t>>();
+
+	EXPECT_NE(a.vector, cloned_b.vector);
+	EXPECT_TRUE(a.equals(cloned_b));
+}
+
+TEST(Any, clone_sgmatrix)
+{
+	auto a = SGMatrix<float64_t>(3, 4);
+	SGVector<float64_t>(a.matrix, a.num_rows * a.num_cols, false).range_fill();
+	SGMatrix<float64_t> b;
+	ASSERT_FALSE(a.equals(b));
+
+	auto a_any = erase_type(a);
+	auto b_any = erase_type(b);
+
+	auto cloned_b = b_any.clone_from(a_any).as<SGMatrix<float64_t>>();
+
+	EXPECT_NE(a.matrix, cloned_b.matrix);
+	EXPECT_TRUE(a.equals(cloned_b));
 }
