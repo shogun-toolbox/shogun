@@ -49,7 +49,7 @@ using namespace shogun;
 	    typeid(type).hash_code())                                              \
 	{                                                                          \
 		summaryValue->set_simple_value(                                        \
-		    recall_type<type>(value.first.get_value()));                       \
+		    any_cast<type>(value.first.get_value()));                          \
 	}
 
 #define CHECK_TYPE_HISTO(type)                                                 \
@@ -59,7 +59,7 @@ using namespace shogun;
 	{                                                                          \
 		tensorflow::histogram::Histogram h;                                    \
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();     \
-		auto v = recall_type<type>(value.first.get_value());                   \
+		auto v = any_cast<type>(value.first.get_value());                      \
 		for (auto value_v : v)                                                 \
 			h.Add(value_v);                                                    \
 		h.EncodeToProto(hp, true);                                             \
@@ -87,7 +87,7 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	    typeid(int8_t).hash_code())
 	{
 		summaryValue->set_simple_value(
-		    recall_type<int8_t>(value.first.get_value()));
+		    any_cast<int8_t>(value.first.get_value()));
 	}
 	CHECK_TYPE(uint8_t)
 	CHECK_TYPE(int16_t)
@@ -127,7 +127,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	{
 		tensorflow::histogram::Histogram h;
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
-		auto v = recall_type<std::vector<int8_t>>(value.first.get_value());
+		auto v = any_cast<std::vector<int8_t>>(value.first.get_value());
 		for (auto value_v : v)
 			h.Add(value_v);
 		h.EncodeToProto(hp, true);

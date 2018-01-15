@@ -63,7 +63,7 @@ void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 	    typeid(CrossValidationStorage*).hash_code())
 	{
 		CrossValidationStorage* recalled_value =
-		    recall_type<CrossValidationStorage*>(value.first.get_value());
+		    any_cast<CrossValidationStorage*>(value.first.get_value());
 		SG_REF(recalled_value);
 
 		/* Print information on screen if enabled*/

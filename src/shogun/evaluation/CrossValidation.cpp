@@ -111,7 +111,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 
 		/* Emit the value*/
 		std::string obs_value_name{"cross_validation_run"};
-		ObservedValue cv_data{i, obs_value_name, erase_type(storage),
+		ObservedValue cv_data{i, obs_value_name, make_any(storage),
 		                      CROSSVALIDATION};
 		observe(cv_data);
 		SG_UNREF(storage)
