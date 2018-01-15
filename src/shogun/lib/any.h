@@ -192,6 +192,13 @@ namespace shogun
 		}
 
 		template <class T>
+		inline auto clone_impl(more_important, const T& value)
+		    -> decltype(value.clone())
+		{
+			return value.clone();
+		}
+
+		template <class T>
 		inline auto clone_impl(maybe_most_important, T* value)
 		    -> decltype(static_cast<void*>(value->clone()))
 		{
