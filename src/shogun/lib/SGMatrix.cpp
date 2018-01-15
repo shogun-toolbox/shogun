@@ -354,9 +354,12 @@ SGMatrix<T> SGMatrix<T>::clone() const
 template <class T>
 T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 {
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(nrows>0, "Number of rows (%d) has to be positive!\n", nrows);
-	REQUIRE(ncols>0, "Number of cols (%d) has to be positive!\n", ncols);
+	if (!matrix || !nrows || !ncols)
+		return nullptr;
+
+	if (matrix)
+		REQUIRE(nrows > 0, "Number of rows (%d) has to be positive!\n", nrows);
+	REQUIRE(ncols > 0, "Number of cols (%d) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
 	T* result=SG_MALLOC(T, size);
