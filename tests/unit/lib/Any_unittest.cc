@@ -363,8 +363,8 @@ TEST(Any, clone_sgvector)
 	SGVector<float64_t> b;
 	ASSERT_FALSE(a.equals(b));
 
-	auto a_any = erase_type(a);
-	auto b_any = erase_type(b);
+	auto a_any = make_any(a);
+	auto b_any = make_any(b);
 
 	auto cloned_b = b_any.clone_from(a_any).as<SGVector<float64_t>>();
 
@@ -379,8 +379,8 @@ TEST(Any, clone_sgmatrix)
 	SGMatrix<float64_t> b;
 	ASSERT_FALSE(a.equals(b));
 
-	auto a_any = erase_type(a);
-	auto b_any = erase_type(b);
+	auto a_any = make_any(a);
+	auto b_any = make_any(b);
 
 	auto cloned_b = b_any.clone_from(a_any).as<SGMatrix<float64_t>>();
 
