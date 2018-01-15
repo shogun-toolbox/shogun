@@ -271,6 +271,11 @@ SGVector<T> SGVector<T>::clone() const
 template<class T>
 T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 {
+	if (!vec || !len)
+		return nullptr;
+
+	REQUIRE(len > 0, "Number of elements (%d) has to be positive!\n", len);
+
 	T* result = SG_MALLOC(T, len);
 	sg_memcpy(result, vec, sizeof(T)*len);
 	return result;
