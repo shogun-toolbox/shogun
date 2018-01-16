@@ -6,7 +6,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/regression/LinearRidgeRegression.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
@@ -110,4 +109,3 @@ bool CLinearRidgeRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
-#endif

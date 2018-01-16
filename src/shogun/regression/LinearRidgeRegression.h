@@ -10,8 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DenseFeatures.h>
@@ -106,5 +104,4 @@ class CLinearRidgeRegression : public CLinearMachine
 		float64_t m_tau;
 };
 }
-#endif // HAVE_LAPACK
 #endif // _LINEARRIDGEREGRESSION_H__

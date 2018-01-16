@@ -39,7 +39,6 @@ function(get_excluded_meta_examples)
 
 	IF(NOT HAVE_LAPACK)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
-			regression/linear_ridge_regression.sg
 			distance/mahalanobis.sg
 			)
 	ENDIF()
