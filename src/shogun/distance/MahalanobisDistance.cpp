@@ -7,14 +7,12 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/distance/MahalanobisDistance.h>
 #include <shogun/features/Features.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -83,12 +81,8 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t i=0; i < diff.vlen; i++)
 		diff[i] = bvec.vector[i] - diff[i];
 
-	SGVector<float64_t> v = diff.clone();
-	cblas_dgemv(CblasColMajor, CblasNoTrans,
-		icov.num_rows, icov.num_cols, 1.0, icov.matrix,
-		diff.vlen, diff.vector, 1, 0.0, v.vector, 1);
-
-	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);
+	auto v = linalg::matrix_prod(icov, diff);
+	float64_t result = linalg::dot(v, diff);
 
 	if (!use_mean)
 		((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
@@ -110,4 +104,3 @@ void CMahalanobisDistance::init()
 	m_parameters->add(&use_mean, "use_mean", "If distance shall be computed between mean vector and vector from rhs or between lhs and rhs.");
 }
 
-#endif /* HAVE_LAPACK */

@@ -10,8 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
 
@@ -146,5 +144,4 @@ class CMahalanobisDistance: public CRealDistance
 };
 
 } // namespace shogun
-#endif /* HAVE_LAPACK */
 #endif /* _MAHALANOBISDISTANCE_H__ */
