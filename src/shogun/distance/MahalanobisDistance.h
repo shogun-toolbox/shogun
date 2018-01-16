@@ -15,37 +15,40 @@
 
 namespace shogun
 {
-/** @brief class MahalanobisDistance
- *
- * The Mahalanobis distance for real valued features computes the distance
- * between a feature vector and a distribution of features characterized by its
- * mean and covariance.
- *
- * \f[\displaystyle
- *  D = \sqrt{ (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)  }
- * \f]
- *
- * The Mahalanobis Squared distance does not take the square root:
- *
- * \f[\displaystyle
- *  D = (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)
- * \f]
- *
- * If use_mean is set to false (which it is by default) the distance is computed
- * as
- *
- * \f[\displaystyle
- *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
- * \f]
- *
- * i.e., instead of the mean as reference two vector \f$x_i\f$ and \f$x_i'\f$
- * are compared.
- *
- * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
- * Wikipedia: Mahalanobis Distance</a>
- */
-class CMahalanobisDistance: public CRealDistance
-{
+	/** @brief class MahalanobisDistance
+	 *
+	 * The Mahalanobis distance for real valued features computes the distance
+	 * between a feature vector and a distribution of features characterized by
+	 * its
+	 * mean and covariance.
+	 *
+	 * \f[\displaystyle
+	 *  D = \sqrt{ (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)  }
+	 * \f]
+	 *
+	 * The Mahalanobis Squared distance does not take the square root:
+	 *
+	 * \f[\displaystyle
+	 *  D = (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)
+	 * \f]
+	 *
+	 * If use_mean is set to false (which it is by default) the distance is
+	 * computed
+	 * as
+	 *
+	 * \f[\displaystyle
+	 *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
+	 * \f]
+	 *
+	 * i.e., instead of the mean as reference two vector \f$x_i\f$ and
+	 * \f$x_i'\f$
+	 * are compared.
+	 *
+	 * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
+	 * Wikipedia: Mahalanobis Distance</a>
+	 */
+	class CMahalanobisDistance : public CRealDistance
+	{
 	public:
 		/** default constructor */
 		CMahalanobisDistance();
