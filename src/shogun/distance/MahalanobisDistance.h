@@ -43,7 +43,7 @@ namespace shogun
  * i.e., instead of the mean as reference two vector \f$x_i\f$ and \f$x_i'\f$
  * are compared.
  *
- * @see <a href="en.wikipedia.org/wiki/Mahalanobis_distance">
+ * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
  * Wikipedia: Mahalanobis Distance</a>
  */
 class CMahalanobisDistance: public CRealDistance
