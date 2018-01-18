@@ -331,3 +331,15 @@ TEST(SGSparseMatrix, equals_different_shape)
 	EXPECT_FALSE(m1.equals(m2));
 	EXPECT_FALSE(m2.equals(m1));
 }
+
+TEST(SGSparseMatrix, pointer_equal)
+{
+	SGSparseMatrix<float64_t> m1(2, 2);
+	SGSparseMatrix<float64_t> m2(2, 3);
+	EXPECT_FALSE(m1 == m2);
+	EXPECT_TRUE(m1 == m1);
+	EXPECT_TRUE(m2 == m2);
+
+	SGSparseMatrix<float64_t> m3(2, 2);
+	EXPECT_FALSE(m1 == m3);
+}
