@@ -446,6 +446,32 @@ namespace shogun
 		}
 
 		/**
+		 * Performs the operation A.diagonal = alpha * A.diagonal + beta * b.
+		 * The matrix is not required to be square.
+		 *
+		 * @param A The matrix
+		 * @param b The vector
+		 * @param alpha Constant to be multiplied by the main diagonal of the
+		 * matrix
+		 * @param beta Constant to be multiplied by the vector
+		 */
+		template <typename T>
+		void
+		add_diag(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1, T beta = 1)
+		{
+			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
+			REQUIRE(
+			    diagonal_len == b.vlen, "Length of main diagonal of matrix A "
+			                            "(%d) doesn't match length of vector b "
+			                            "(%d).\n",
+			    diagonal_len, b.vlen);
+			REQUIRE(
+			    diagonal_len > 0 && b.vlen > 0, "Matrix / vector can't be "
+			                                    "empty.\n");
+			infer_backend(A, SGMatrix<T>(b))->add_diag(A, b, alpha, beta);
+		}
+
+		/**
 		 * Performs the operation result = alpha * A.col(i) + beta * b,
 		 * for each column of A.
 		 * User should pass an appropriately pre-allocated memory matrix

@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <shogun/base/range.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-#include <shogun/lib/ShogunException.h>
 
 using namespace shogun;
 using namespace linalg;
@@ -187,6 +188,43 @@ TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
 			else
 				EXPECT_EQ(A.get_element(i,j), a);
 		}
+}
+
+TEST(LinalgBackendEigen, add_diag)
+{
+	SGMatrix<float64_t> A(2, 3);
+	SGVector<float64_t> b(2);
+
+	A(0, 0) = 1;
+	A(0, 1) = 2;
+	A(0, 2) = 3;
+	A(1, 0) = 4;
+	A(1, 1) = 5;
+	A(1, 2) = 6;
+
+	b[0] = 1;
+	b[1] = 2;
+
+	add_diag(A, b, 0.5, 2.0);
+
+	EXPECT_NEAR(A(0, 0), 2.5, 1e-15);
+	EXPECT_NEAR(A(0, 1), 2, 1e-15);
+	EXPECT_NEAR(A(0, 2), 3, 1e-15);
+	EXPECT_NEAR(A(1, 0), 4, 1e-15);
+	EXPECT_NEAR(A(1, 1), 6.5, 1e-15);
+	EXPECT_NEAR(A(1, 2), 6, 1e-15);
+}
+
+TEST(LinalgBackendEigen, add_diag_error)
+{
+	SGMatrix<float64_t> A1(2, 2);
+	SGVector<float64_t> b1(3);
+	SGMatrix<float64_t> A2;
+	SGVector<float64_t> b2;
+	EXPECT_THROW(add_diag(A1, b1), ShogunException);
+	EXPECT_THROW(add_diag(A1, b2), ShogunException);
+	EXPECT_THROW(add_diag(A2, b1), ShogunException);
+	EXPECT_THROW(add_diag(A2, b2), ShogunException);
 }
 
 TEST(LinalgBackendEigen, add_vector)
