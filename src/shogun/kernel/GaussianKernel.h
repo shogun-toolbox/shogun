@@ -1,15 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2010 Soeren Sonnenburg
- * Written (W) 2011 Abhinav Maurya
- * Written (W) 2012 Heiko Strathmann
- * Written (W) 2016 Soumyajit De
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Jacob Walker, Soeren Sonnenburg, Chiyuan Zhang, Wu Lin, 
+ *          Sergey Lisitsyn, Roman Votyakov, Heiko Strathmann, Yuyu Zhang, 
+ *          Tonmoy Saikia, Soumyajit De, Sanuj Sharma
  */
 
 #ifndef GAUSSIANKERNEL_H

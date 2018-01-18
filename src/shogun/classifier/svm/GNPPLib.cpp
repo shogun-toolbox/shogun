@@ -1,16 +1,8 @@
-/*-----------------------------------------------------------------------
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Library of solvers for Generalized Nearest Point Problem (GNPP).
- *
- * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
- *
--------------------------------------------------------------------- */
+ * Authors: Vojtech Franc, Soeren Sonnenburg, Saurabh Goyal
+ */
 
 #include <limits.h>
 #include <shogun/lib/common.h>
