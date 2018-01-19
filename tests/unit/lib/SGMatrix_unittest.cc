@@ -172,6 +172,15 @@ TEST(SGMatrixTest,equals_different_size)
 	EXPECT_FALSE(a.equals(b));
 }
 
+TEST(SGMatrixTest, equals_both_empty)
+{
+	SGMatrix<float64_t> a;
+	SGMatrix<float64_t> b;
+
+	EXPECT_TRUE(a.equals(b));
+	EXPECT_TRUE(b.equals(a));
+}
+
 #ifdef HAVE_VIENNACL
 TEST(SGMatrixTest,pointer_equal_equal)
 {

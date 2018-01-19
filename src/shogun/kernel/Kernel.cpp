@@ -77,8 +77,6 @@ CKernel::~CKernel()
 
 	remove_lhs_and_rhs();
 	SG_UNREF(normalizer);
-
-	SG_INFO("Kernel deleted (%p).\n", this)
 }
 
 #ifdef USE_SVMLIGHT
@@ -636,7 +634,6 @@ void CKernel::save(CFile* writer)
 
 void CKernel::remove_lhs_and_rhs()
 {
-	SG_DEBUG("entering CKernel::remove_lhs_and_rhs\n")
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
@@ -650,7 +647,6 @@ void CKernel::remove_lhs_and_rhs()
 #ifdef USE_SVMLIGHT
 	cache_reset();
 #endif //USE_SVMLIGHT
-	SG_DEBUG("leaving CKernel::remove_lhs_and_rhs\n")
 }
 
 void CKernel::remove_lhs()

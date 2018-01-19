@@ -40,22 +40,24 @@ int main(int argc, const char *argv[])
     
     a->load_serializable(f);
     a_ref->load_serializable(f_ref);
-    
-    bool equal = a->equals(a_ref, 1E-1, true);
 
-    // print comparison output only if different as it it slow
-    if (!equal)
-    {
-        a->get_global_io()->set_loglevel(MSG_DEBUG);
-        a->equals(a_ref, 10E-8, true);
-    }
-    
-    SG_UNREF(f);
-    SG_UNREF(f_ref);
-    SG_UNREF(a);
-    SG_UNREF(a_ref);
-    
-    exit_shogun();
+	// allow for lossy serialization format
+	set_global_fequals_epsilon(1e-7);
+	bool equal = a->equals(a_ref);
+
+	// print comparison output only if different as it it slow
+	if (!equal)
+	{
+		a->get_global_io()->set_loglevel(MSG_DEBUG);
+		a->equals(a_ref);
+	}
+
+	SG_UNREF(f);
+	SG_UNREF(f_ref);
+	SG_UNREF(a);
+	SG_UNREF(a_ref);
+
+	exit_shogun();
     return equal != true;
 }
 

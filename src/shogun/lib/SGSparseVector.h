@@ -30,6 +30,11 @@ template <class T> struct SGSparseVectorEntry
 	index_t feat_index;
 	/** entry ... */
 	T entry;
+
+	/** Comparson of entry
+	 * @return true iff index and value (numerically for floats) are equal
+	 */
+	inline bool operator==(const SGSparseVectorEntry<T>& other) const;
 };
 
 /** @brief template class SGSparseVector
@@ -189,6 +194,13 @@ public:
 	void display_vector(const char* name="vector",
 			const char* prefix="");
 
+	/** Pointer identify comparison.
+	 *  @return true iff length and pointer are equal
+	 */
+	inline bool operator==(const SGSparseVector<T>& other) const;
+
+	bool equals(const SGSparseVector<T>& other) const;
+
 protected:
 	virtual void copy_data(const SGReferencedData& orig);
 
@@ -216,13 +228,6 @@ public:
 
 };
 
-template <class T>
-inline bool
-operator==(const SGSparseVector<T>& lhs, const SGSparseVector<T>& rhs)
-{
-	SG_SERROR("Comparison is not implemented for sparse vectors");
-	return false;
-}
 }
 
 #endif // __SGSPARSEVECTOR_H__

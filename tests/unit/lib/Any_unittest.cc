@@ -285,6 +285,19 @@ TEST(Any, equals_pointer)
 	delete b;
 }
 
+TEST(Any, equals_null_pointer)
+{
+	Simple* a = nullptr;
+	Simple* b = nullptr;
+	EXPECT_EQ(erase_type(a), erase_type(b));
+	EXPECT_EQ(erase_type(b), erase_type(a));
+
+	b = new Simple;
+	EXPECT_NE(erase_type(a), erase_type(b));
+	EXPECT_NE(erase_type(b), erase_type(a));
+	delete b;
+}
+
 TEST(Any, equals_value)
 {
 	Simple a;

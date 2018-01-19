@@ -6,15 +6,13 @@
  *
  * Written (W) 2013 Soumyajit De
  */
-
+#include <omp.h>
 #include <shogun/lib/common.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
+#include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
@@ -26,6 +24,7 @@
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
+
 
 namespace shogun
 {
@@ -42,9 +41,6 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 {
 	init();
 
-	m_computation_engine=new CSerialComputationEngine();
-	SG_REF(m_computation_engine);
-
 	CSparseMatrixOperator<float64_t>* op=
 		new CSparseMatrixOperator<float64_t>(sparse_mat);
 
@@ -53,8 +49,7 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
 
-	m_operator_log=new CLogRationalApproximationCGM(op,m_computation_engine,
-		eig_solver,linear_solver,accuracy);
+	m_operator_log=new CLogRationalApproximationCGM(op,eig_solver,linear_solver,accuracy);
 	SG_REF(m_operator_log);
 
 	#ifdef HAVE_COLPACK
@@ -65,15 +60,13 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 
 	SG_REF(m_trace_sampler);
 
-	SG_INFO("LogDetEstimator:Using %s, %s with 1E-5 accuracy, %s as default\n",
-		m_computation_engine->get_name(), m_operator_log->get_name(),
+	SG_INFO("LogDetEstimator: %s with 1E-5 accuracy, %s as default\n", m_operator_log->get_name(),
 		m_trace_sampler->get_name());
 }
 #endif //HAVE_LAPACK
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
-	COperatorFunction<float64_t>* operator_log,
-	CIndependentComputationEngine* computation_engine)
+	COperatorFunction<float64_t>* operator_log)
 	: CSGObject()
 {
 	init();
@@ -83,44 +76,30 @@ CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
 
 	m_operator_log=operator_log;
 	SG_REF(m_operator_log);
-
-	m_computation_engine=computation_engine;
-	SG_REF(m_computation_engine);
 }
 
 void CLogDetEstimator::init()
 {
 	m_trace_sampler=NULL;
 	m_operator_log=NULL;
-	m_computation_engine=NULL;
 
 	SG_ADD((CSGObject**)&m_trace_sampler, "trace_sampler",
 		"Trace sampler for the log operator", MS_NOT_AVAILABLE);
 
 	SG_ADD((CSGObject**)&m_operator_log, "operator_log",
 		"The log operator function", MS_NOT_AVAILABLE);
-
-	SG_ADD((CSGObject**)&m_computation_engine, "computation_engine",
-		"The computation engine for the jobs", MS_NOT_AVAILABLE);
 }
 
 CLogDetEstimator::~CLogDetEstimator()
 {
 	SG_UNREF(m_trace_sampler);
 	SG_UNREF(m_operator_log);
-	SG_UNREF(m_computation_engine);
 }
 
 CTraceSampler* CLogDetEstimator::get_trace_sampler(void) const
 {
 	SG_REF(m_trace_sampler);
 	return m_trace_sampler;
-}
-
-CIndependentComputationEngine* CLogDetEstimator::get_computation_engine(void) const
-{
-	SG_REF(m_computation_engine);
-	return m_computation_engine;
 }
 
 COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) const
@@ -148,71 +127,80 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		m_operator_log->get_operator()->get_dimension(),
 		m_trace_sampler->get_dimension());
 
-	// for storing the aggregators that submit_jobs return
-	CDynamicObjectArray* aggregators=new CDynamicObjectArray();
+// for storing the result
+	CDynamicArray<float64_t> aggregators;
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
+//for omp
+	int32_t num_vectors = num_estimates;
+	auto pb = progress(range(num_vectors));
+	int32_t num_threads;
+	int64_t step;
+#pragma omp parallel shared(num_threads, step)
+			{
 
-	for (index_t i=0; i<num_estimates; ++i)
-	{
-		for (index_t j=0; j<num_trace_samples; ++j)
-		{
-			SG_INFO("Computing log-determinant trace sample %d/%d\n", j,
-					num_trace_samples);
+#ifdef HAVE_OPENMP //HAVE OPENMP
+#pragma omp single
+				{
+					num_threads = omp_get_num_threads();
+					step = num_vectors / num_threads;
+					num_threads--;
+				}
+				int32_t thread_num = omp_get_thread_num();
+#else
+				num_threads = 0;
+				step = num_vectors;
+				int32_t thread_num = 0;
+#endif
+				int32_t start = thread_num * step;
+				int32_t end = (thread_num == num_threads)
+													? num_vectors
+													: (thread_num + 1) * step;
 
-			SG_DEBUG("Creating job for estimate %d, trace sample %d/%d\n", i, j,
-					num_trace_samples);
-			// get the trace sampler vector
-			SGVector<float64_t> s=m_trace_sampler->sample(j);
-			// create jobs with the sample vector and store the aggregator
-			CJobResultAggregator* agg=m_operator_log->submit_jobs(s);
-			aggregators->append_element(agg);
-			SG_UNREF(agg);
-		}
-	}
-
-	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
-
-	// wait for all the jobs to be completed
-	SG_INFO("Waiting for jobs to finish\n");
-	m_computation_engine->wait_for_all();
-	SG_INFO("All jobs finished, aggregating results\n");
+#ifdef WIN32 //HAVE WIN32
+				for (int32_t vec = start; vec < end; vec++)
+#else
+				for (int32_t vec = start; vec < end; vec++)
+#endif
+				{
+					pb.print_progress();
+					for (index_t j=0; j<num_trace_samples; ++j)
+					{
+						SG_INFO("Computing log-determinant trace sample %d/%d\n", j,
+								num_trace_samples);
+						// get the trace sampler vector
+						SGVector<float64_t> s=m_trace_sampler->sample(j);
+						// calculate the result for sample s
+						float64_t agg=m_operator_log->solve(s);
+#pragma omp critical //so that the dynamic array stays concurrent
+						{
+							aggregators.append_element(agg);
+						}
+					}
+				}
+			}
+	// wait for all the computations to be completed
+	SG_INFO("Waiting for computations to finish\n");
+	#pragma omp barrier
+	SG_INFO("All computations finished\n");
 
 	// the samples vector which stores the estimates with averaging
 	SGVector<float64_t> samples(num_estimates);
 	samples.zero();
 
-	// use the aggregators to find the final result
-	// use the same order as job submission to combine results
-	int32_t num_aggregates=aggregators->get_num_elements();
+	//preparing the final result
+	int32_t num_aggregates=aggregators.get_num_elements();
 	index_t idx_row=0;
 	index_t idx_col=0;
 	for (int32_t i=0; i<num_aggregates; ++i)
 	{
-		// this cast is safe due to above way of building the array
-		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
-			(aggregators->get_element(i));
-		ASSERT(agg);
-
-		// call finalize on all the aggregators, cast is safe again
-		agg->finalize();
-		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
-			(agg->get_final_result());
-		ASSERT(r);
-
-		// iterate through indices, group results in the same way as jobs
-		samples[idx_col]+=r->get_result();
+		samples[idx_col]+=aggregators.get_element(i);
 		idx_row++;
 		if (idx_row>=num_trace_samples)
 		{
 			idx_row=0;
 			idx_col++;
 		}
-
-		SG_UNREF(agg);
 	}
-
-	// clear all aggregators
-	SG_UNREF(aggregators)
 
 	SG_INFO("Finished computing %d log-det estimates\n", num_estimates);
 
@@ -233,60 +221,78 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	// call the precompute of the sampler
 	m_trace_sampler->precompute();
 
-	// for storing the aggregators that submit_jobs return
-	CDynamicObjectArray aggregators;
+	// for storing the result
+	CDynamicArray<float64_t> aggregators;
+
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
 
-	for (index_t i=0; i<num_estimates; ++i)
-	{
-		for (index_t j=0; j<num_trace_samples; ++j)
-		{
-			// get the trace sampler vector
-			SGVector<float64_t> s=m_trace_sampler->sample(j);
-			// create jobs with the sample vector and store the aggregator
-			CJobResultAggregator* agg=m_operator_log->submit_jobs(s);
-			aggregators.append_element(agg);
-			SG_UNREF(agg);
-		}
-	}
+	int32_t num_vectors=num_estimates;
+	auto pb = progress(range(num_vectors));
+	int32_t num_threads;
+	int64_t step;
 
-	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
-	// wait for all the jobs to be completed
-	m_computation_engine->wait_for_all();
+#pragma omp parallel shared(num_threads, step)
+				{
+
+#ifdef HAVE_OPENMP //HAVE OPENMP
+#pragma omp single
+					{
+						num_threads = omp_get_num_threads();
+						step = num_vectors / num_threads;
+						num_threads--;
+					}
+					int32_t thread_num = omp_get_thread_num();
+#else
+					num_threads = 0;
+					step = num_vectors;
+					int32_t thread_num = 0;
+#endif
+					int32_t start = thread_num * step;
+					int32_t end = (thread_num == num_threads)
+														? num_vectors
+														: (thread_num + 1) * step;
+
+#ifdef WIN32
+					for (int32_t vec = start; vec < end; vec++)
+#else
+					for (int32_t vec = start; vec < end; vec++)
+#endif
+					{
+						pb.print_progress();
+						for (index_t j=0; j<num_trace_samples; ++j)
+						{
+							SG_INFO("Computing log-determinant trace sample %d/%d\n", j,
+									num_trace_samples);
+							// get the trace sampler vector
+							SGVector<float64_t> s=m_trace_sampler->sample(j);
+							// solve the result for s
+							float64_t agg=m_operator_log->solve(s);
+#pragma omp critical //aggregators array should be concurrent
+							{
+								aggregators.append_element(agg);
+							}
+						}
+					}
+				}
+		// wait for all the computations to be completed
+		SG_INFO("Waiting for computations to finish\n");
+#pragma omp barrier
+		SG_INFO("All computations finished\n");
 
 	// the samples matrix which stores the estimates without averaging
 	// dimension: number of trace samples x number of log-det estimates
 	SGMatrix<float64_t> samples(num_trace_samples, num_estimates);
 
-	// use the aggregators to find the final result
 	int32_t num_aggregates=aggregators.get_num_elements();
 	for (int32_t i=0; i<num_aggregates; ++i)
 	{
-		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
-			(aggregators.get_element(i));
-		if (!agg)
-			SG_ERROR("Element is not CJobResultAggregator type!\n");
-
-		// call finalize on all the aggregators
-		agg->finalize();
-		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
-			(agg->get_final_result());
-		if (!r)
-			SG_ERROR("Result is not CScalarResult type!\n");
-
-		// its important that we don't just unref the result here
 		index_t idx_row=i%num_trace_samples;
 		index_t idx_col=i/num_trace_samples;
-		samples(idx_row, idx_col)=r->get_result();
-		SG_UNREF(agg);
+		samples(idx_row, idx_col)=aggregators.get_element(i);
 	}
-
-	// clear all aggregators
-	aggregators.clear_array();
 
 	SG_DEBUG("Leaving\n")
 	return samples;
 }
 
 }
-
