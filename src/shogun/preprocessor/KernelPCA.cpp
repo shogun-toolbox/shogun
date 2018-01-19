@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Soeren Sonnenburg
- * Copyright (C) 2011 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni, Evan Shelhamer, 
+ *          Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, Giovanni De Toni
  */
 
 #include <shogun/preprocessor/KernelPCA.h>

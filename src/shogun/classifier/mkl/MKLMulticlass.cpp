@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Alexander Binder
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
- *
- * Update to patch 0.10.0 - thanks to Eric aka Yoo (thereisnoknife@gmail.com)
- *
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Giovanni De Toni, 
+ *          Heiko Strathmann, Sergey Lisitsyn, Björn Esser, Saurabh Goyal
  */
 
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>

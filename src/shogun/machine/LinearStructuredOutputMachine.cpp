@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Authors: Fernando Iglesias, Shell Hu, Thoralf Klein, Sergey Lisitsyn, 
+ *          Björn Esser, Soeren Sonnenburg
  */
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>

@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2016 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
- *
- * Most cdf routines are wrappers for CDFLIB, part of the public domain NETLIB.
- * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
+ * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Roman Votyakov, 
+ *          Fernando Iglesias, Sanuj Sharma, Sergey Lisitsyn, Wu Lin, 
+ *          Evgeniy Andreev, Björn Esser, Saurabh Goyal
  */
 
 #ifndef __STATISTICS_H_

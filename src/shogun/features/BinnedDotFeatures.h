@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, 
+ *          Evan Shelhamer, Björn Esser, Sergey Lisitsyn
  */
 
 #ifndef _BINNED_DOTFEATURES_H___

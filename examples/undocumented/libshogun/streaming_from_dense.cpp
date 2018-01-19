@@ -1,16 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
- * Written (W) 2011 Shashwat Lal Das
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
- *
- * This file demonstrates how a regular CDenseFeatures object can
- * be used as input for the StreamingFeatures framework, effectively
- * making it suitable for using online learning algorithms.
+ * Authors: Heiko Strathmann
  */
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>

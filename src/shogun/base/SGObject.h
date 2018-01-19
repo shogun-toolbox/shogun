@@ -1,13 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013-2014 Thoralf Klein
- * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
+ *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang, 
+ *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang, 
+ *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
 #ifndef __SGOBJECT_H__

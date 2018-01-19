@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2004-2009 Soeren Sonnenburg, Gunnar Raetsch
- *                       Alexander Zien, Marius Kloft, Chen Guohua
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Ryota Tomioka (University of Tokyo)
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal, 
+ *          Fernando Iglesias, Giovanni De Toni, Evan Shelhamer, Björn Esser, 
+ *          Evangelos Anagnostopoulos, Leon Kuchenbecker, Saurabh Goyal
  */
 
 #include <list>

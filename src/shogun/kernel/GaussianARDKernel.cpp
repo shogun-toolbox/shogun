@@ -1,13 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2015 Wu Lin
- * Written (W) 2012 Jacob Walker
- *
- * Adapted from WeightedDegreeRBFKernel.cpp
+ * Authors: Wu Lin, Jacob Walker, Roman Votyakov, Pan Deng, Heiko Strathmann, 
+ *          Soumyajit De, Viktor Gal, Björn Esser, Soeren Sonnenburg
  */
 
 #include <shogun/kernel/GaussianARDKernel.h>

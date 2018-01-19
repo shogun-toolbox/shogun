@@ -1,18 +1,8 @@
 /*
-  Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
-  embodied in the content of this file are licensed under the BSD
-  (revised) open source license.
-
-  Copyright (c) 2011 Berlin Institute of Technology and Max-Planck-Society.
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  Modifications (w) 2011 Shashwat Lal Das
-  Modifications (w) 2012 Fernando José Iglesias García
-*/
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Shashwat Lal Das, Fernando Iglesias, Yuyu Zhang, Björn Esser
+ */
 
 #ifndef _SQUAREDLOSS_H__
 #define _SQUAREDLOSS_H__

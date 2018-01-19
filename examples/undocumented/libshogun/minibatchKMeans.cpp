@@ -1,15 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * This is an example of mini-batch KMeans compared with classical KMeans.
- * Refer: http://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf
- * While the accuracy of mini-batch KMeans is lower than Lloyd's KMeans,
- * the former is much faster than the latter.
- *
- * Written (W) 2014 Parijat Mazumdar
+ * Authors: Björn Esser
  */
 
 #include <shogun/base/init.h>

@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2006-2007 Mikio L. Braun
- * Written (W) 2008 Jochen Garcke
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Soumyajit De, 
+ *          Evan Shelhamer, Björn Esser
  */
 
 #ifndef _LAPACK_H__

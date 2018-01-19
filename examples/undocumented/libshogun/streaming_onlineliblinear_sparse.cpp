@@ -1,16 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Copyright (C) 2013 Zuse-Institute-Berlin
- *
- * This example demonstrates use of the online learning with
- * OnlineLibLinear using sparse streaming features.  This example
- * also parses command line options: Can be used as stand-alone
- * program to do binary classifications on user-provided inputs.
+ * Authors: Thoralf Klein, Viktor Gal, Dawei Chen, Vladimir Perić, 
+ *          Sergey Lisitsyn, Björn Esser
  */
 
 #include <shogun/base/init.h>

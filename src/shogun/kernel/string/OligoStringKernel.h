@@ -1,15 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008 Christian Igel, Tobias Glasmachers
- * Copyright (C) 2008 Christian Igel, Tobias Glasmachers
- *
- * Shogun adjustments (W) 2008-2009,2013 Soeren Sonnenburg
- * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2013 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Björn Esser, Sergey Lisitsyn
  */
 #ifndef _OLIGOSTRINGKERNEL_H_
 #define _OLIGOSTRINGKERNEL_H_

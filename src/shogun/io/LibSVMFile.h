@@ -1,12 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2014 Jiaolong Xu
- * Written (W) 2013 Evgeniy Andreev (gsomix)
- * Written (W) 2010 Soeren Sonnenburg
+ * Authors: Jiaolong Xu, Evgeniy Andreev, Björn Esser, Soeren Sonnenburg, 
+ *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer, 
+ *          Abhinav Agarwalla
  */
 
 #ifndef __LIBSVMFILE_H__

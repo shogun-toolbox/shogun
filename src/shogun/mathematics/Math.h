@@ -1,20 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando Jose Iglesias Garcia
- * Written (W) 2011 Siddharth Kherada
- * Written (W) 2011 Justin Patera
- * Written (W) 2011 Alesis Novik
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2007 Konrad Rieck
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias, 
+ *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Shashwat Lal Das, 
+ *          Thoralf Klein, Wu Lin, Chiyuan Zhang, Harshit Syal, Evan Shelhamer, 
+ *          Philippe Tillet, Björn Esser, Yuyu Zhang, Abhinav Agarwalla, 
+ *          Saurabh Goyal
  */
 
 #ifndef __MATHEMATICS_H_

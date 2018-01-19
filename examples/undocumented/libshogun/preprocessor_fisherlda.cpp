@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2014 Abhijeet Kislay
- * Copyright (C) 2014 Abhijeet Kislay
-*/
+ * Authors: Abhijeet Kislay, Pan Deng, Sergey Lisitsyn
+ */
 
 #include <shogun/base/init.h>
 

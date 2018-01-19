@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Written (W) 1999-2007 Gunnar Raetsch
- * Written (W) 2008-2009 Jonas Behr
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, Viktor Gal, 
+ *          Weijie Lin, Evan Shelhamer, Björn Esser, Giovanni De Toni, 
+ *          Leon Kuchenbecker, Saurabh Goyal
  */
 
 #include <shogun/structure/DynProg.h>
