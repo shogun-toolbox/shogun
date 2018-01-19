@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker, 
+ *          Thoralf Klein, Soumyajit De, Yuyu Zhang, Evan Shelhamer
  */
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__

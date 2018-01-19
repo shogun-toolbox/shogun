@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2006 Christian Gehl
- * Written (W) 2006-2009 Soeren Sonnenburg
- * Written (W) 2011 Sergey Lisitsyn
- * Written (W) 2012 Fernando José Iglesias García, cover tree support
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Giovanni De Toni, 
+ *          Saurabh Mahindre, Sergey Lisitsyn, Weijie Lin, Heiko Strathmann, 
+ *          Evgeniy Andreev, Viktor Gal, Björn Esser
  */
 
 #include <shogun/base/Parameter.h>

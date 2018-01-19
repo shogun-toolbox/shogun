@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2014 Shell Hu
- * Copyright (C) 2014 Shell Hu
+ * Authors: Sanuj Sharma, Björn Esser, Shell Hu, Viktor Gal
  */
 
 #include <shogun/mathematics/Math.h>

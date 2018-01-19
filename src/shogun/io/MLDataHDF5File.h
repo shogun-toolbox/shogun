@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2013 Zhengyang Liu (zhengyangl)
+ * Authors: Liu Zhengyang, Viktor Gal, Thoralf Klein, Abhinav Agarwalla, 
+ *          Björn Esser
  */
 #ifndef __MLDATA_HDF5_FILE_H__
 #define __MLDATA_HDF5_FILE_H__
