@@ -34,12 +34,12 @@
     },
     "Element": {
         "Access": {
-            "Vector": "$identifier[$indices]",
-            "Matrix": "$identifier[$indices]"
+            "Vector": "$identifier$$get_element($indices)",
+            "Matrix": "$identifier$$get_element($indices)"
         },
         "Assign": {
-            "Vector": "$identifier[$indices] = $expr",
-            "Matrix": "$identifier[$indices] = $expr"
+            "Vector": "$identifier$$set_element($expr, $indices)",
+            "Matrix": "$identifier$$set_element($expr, $indices)"
         },
         "ZeroIndexed": false
     },
