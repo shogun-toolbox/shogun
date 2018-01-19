@@ -1,15 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2010 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2014-2017 Soumyajit De
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Saurabh Mahindre, Soumyajit De, Heiko Strathmann, 
+ *          Sergey Lisitsyn, Sanuj Sharma, Chiyuan Zhang, Viktor Gal, 
+ *          Michele Mazzoni, Vladislav Horbatiuk, Kevin Hughes, Weijie Lin, 
+ *          Fernando Iglesias, Björn Esser, Evgeniy Andreev, 
+ *          Christopher Goldsworthy
  */
 
 #include <shogun/base/some.h>

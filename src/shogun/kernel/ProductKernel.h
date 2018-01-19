@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Jacob Walker
- *
- * Code adapted from CCombinedKernel
+ * Authors: Jacob Walker, Roman Votyakov, Soeren Sonnenburg, Yuyu Zhang, 
+ *          Sergey Lisitsyn, Evangelos Anagnostopoulos
  */
 
 #ifndef _PRODUCTKERNEL_H___

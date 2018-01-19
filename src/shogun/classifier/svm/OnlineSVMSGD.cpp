@@ -1,24 +1,9 @@
 /*
-   SVM with stochastic gradient
-   Copyright (C) 2007- Leon Bottou
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-   $Id: svmsgd.cpp,v 1.13 2007/10/02 20:40:06 cvs Exp $
-
-   Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
-*/
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
+ *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Björn Esser
+ */
 
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
 #include <shogun/mathematics/Math.h>
