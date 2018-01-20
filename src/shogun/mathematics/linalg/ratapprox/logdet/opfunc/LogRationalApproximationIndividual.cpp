@@ -14,6 +14,11 @@
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+<<<<<<< HEAD
+=======
+#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
+>>>>>>> refs/remotes/origin/feature/remove/lib.computation
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <typeinfo>
 
@@ -141,6 +146,7 @@ float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
 		v = -v;
 
 		SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
+<<<<<<< HEAD
 
 		// perform dot product
 		Map<VectorXd> map_agg(agg.vector, agg.vlen);
@@ -149,6 +155,16 @@ float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
 
 		result *= m_constant_multiplier;
 
+=======
+
+		// perform dot product
+		Map<VectorXd> map_agg(agg.vector, agg.vlen);
+		Map<VectorXd> map_vector(sample.vector, sample.vlen);
+		float64_t result = map_vector.dot(map_agg);
+
+		result *= m_constant_multiplier;
+
+>>>>>>> refs/remotes/origin/feature/remove/lib.computation
 		return result;
 	}
 }

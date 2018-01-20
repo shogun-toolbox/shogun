@@ -394,6 +394,7 @@ namespace shogun
 %include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/lib/StructuredData.h>
 %include <shogun/lib/DynamicObjectArray.h>
+<<<<<<< HEAD
 namespace shogun
 {
     /* Specialize DynamicObjectArray::append_element function */
@@ -422,6 +423,9 @@ namespace shogun
     %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
 }
+=======
+%include <shogun/lib/WrappedObjectArray.h>
+>>>>>>> refs/remotes/origin/feature/remove/lib.computation
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>
 %include <shogun/lib/IndexBlockGroup.h>
