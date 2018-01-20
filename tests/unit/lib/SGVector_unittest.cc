@@ -273,6 +273,16 @@ TEST(SGVectorTest,equals_different_size)
 	EXPECT_FALSE(a.equals(b));
 }
 
+TEST(SGVectorTest, clone_empty)
+{
+	SGVector<float32_t> vec;
+	ASSERT_EQ(vec.data(), nullptr);
+
+	SGVector<float32_t> copy = vec.clone();
+	EXPECT_EQ(copy.data(), vec.data());
+	EXPECT_TRUE(vec.equals(copy));
+}
+
 TEST(SGVectorTest, convert_to_matrix)
 {
 	index_t len=6;

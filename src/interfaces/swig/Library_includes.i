@@ -21,7 +21,6 @@
 #include <shogun/lib/StructuredDataTypes.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/WrappedObjectArray.h>
 #include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/lib/IndexBlockGroup.h>
@@ -30,10 +29,4 @@
 #include <shogun/lib/Tokenizer.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
-#include <shogun/lib/computation/job/IndependentJob.h>
-#include <shogun/lib/computation/jobresult/JobResult.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/jobresult/VectorResult.h>
 %}

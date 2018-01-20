@@ -1,13 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2012 Christian Widmer
- * Written (W) 2007-2010 Soeren Sonnenburg
- * Copyright (c) 2007-2009 The LIBLINEAR Project.
- * Copyright (C) 2007-2012 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn, 
+ *          Soeren Sonnenburg, Björn Esser
  */
 
 #include <vector>

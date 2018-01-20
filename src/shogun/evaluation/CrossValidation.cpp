@@ -1,11 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ *          Sergey Lisitsyn, Saurabh Mahindre, Jacob Walker, Viktor Gal, 
+ *          Leon Kuchenbecker
  */
 
 #include <shogun/base/Parameter.h>
@@ -111,7 +109,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 
 		/* Emit the value*/
 		std::string obs_value_name{"cross_validation_run"};
-		ObservedValue cv_data{i, obs_value_name, erase_type(storage),
+		ObservedValue cv_data{i, obs_value_name, make_any(storage),
 		                      CROSSVALIDATION};
 		observe(cv_data);
 		SG_UNREF(storage)

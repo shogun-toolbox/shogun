@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Viktor Gal
- * Copyright (C) 2013 Viktor Gal
+ * Authors: Viktor Gal, Björn Esser, Thoralf Klein, Heiko Strathmann, 
+ *          Soeren Sonnenburg
  */
 #ifdef _WIN32
 #define _CRT_RAND_S

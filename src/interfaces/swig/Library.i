@@ -22,7 +22,6 @@
 %rename(Hash) CHash;
 %rename(StructuredData) CStructuredData;
 %rename(DynamicObjectArray) CDynamicObjectArray;
-%rename(WrappedObjectArray) CWrappedObjectArray;
 %rename(Tokenizer) CTokenizer;
 %rename(DelimiterTokenizer) CDelimiterTokenizer;
 %rename(NGramTokenizer) CNGramTokenizer;
@@ -32,10 +31,6 @@
 %rename(IndexBlockGroup) CIndexBlockGroup;
 %rename(IndexBlockTree) CIndexBlockTree;
 %rename(Data) CData;
-
-%rename(IndependentComputationEngine) CIndependentComputationEngine;
-%rename(SerialComputationEngine) CSerialComputationEngine;
-
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -399,100 +394,36 @@ namespace shogun
 %include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/lib/StructuredData.h>
 %include <shogun/lib/DynamicObjectArray.h>
-%include <shogun/lib/WrappedObjectArray.h>
+namespace shogun
+{
+    /* Specialize DynamicObjectArray::append_element function */
+#ifdef USE_FLOAT64
+    %template(append_element_real) CDynamicObjectArray::append_element<float64_t, float64_t>;
+    %template(append_element_real_vector) CDynamicObjectArray::append_element<SGVector<float64_t>, SGVector<float64_t>>;
+    %template(append_element_real_matrix) CDynamicObjectArray::append_element<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#ifdef SWIGOCTAVE
+    /* (Octave converts single element arrays to scalars and our typemaps take that for real) */
+    %extend CDynamicObjectArray {
+        bool append_element_real_vector(float64_t v, const char* name="")
+        {
+            SGVector<float64_t> wrap(1);
+            wrap[0] = v;
+            return $self->append_element(wrap, name);
+        }
+    }
+#endif
+#endif
+#ifdef USE_FLOAT32
+    %template(append_element_float) CDynamicObjectArray::append_element<float32_t, float32_t>;
+    %template(append_element_float_vector) CDynamicObjectArray::append_element<SGVector<float32_t>, SGVector<float32_t>>;
+    %template(append_element_float_matrix) CDynamicObjectArray::append_element<SGMatrix<float32_t>, SGMatrix<float32_t>>;
+#endif
+#ifdef USE_INT32
+    %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
+#endif
+}
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>
 %include <shogun/lib/IndexBlockGroup.h>
 %include <shogun/lib/IndexBlockTree.h>
 %include <shogun/lib/Data.h>
-
-/* Computation framework */
-
-/* Computation Engine */
-%rename (IndependentComputationEngine) CIndependentComputationEngine;
-%rename (SerialComputationEngine) CSerialComputationEngine;
-
-%include <shogun/lib/computation/engine/IndependentComputationEngine.h>
-%include <shogun/lib/computation/engine/SerialComputationEngine.h>
-
-/* Independent compution-job */
-%include <shogun/lib/computation/job/IndependentJob.h>
-
-/* Independent computation-job results */
-%rename (JobResult) CJobResult;
-%include <shogun/lib/computation/jobresult/JobResult.h>
-%include <shogun/lib/computation/jobresult/ScalarResult.h>
-namespace shogun
-{
-#ifdef USE_CHAR
-  %template(ScalarCharResult) CScalarResult<char>;
-#endif
-#ifdef USE_BOOL
-  %template(ScalarBoolResult) CScalarResult<bool>;
-#endif
-#ifdef USE_UINT8
-  %template(ScalarByteResult) CScalarResult<uint8_t>;
-#endif
-#ifdef USE_INT16
-  %template(ScalarShortResult) CScalarResult<int16_t>;
-#endif
-#ifdef USE_UINT16
-  %template(ScalarWordResult) CScalarResult<uint16_t>;
-#endif
-#ifdef USE_INT32
-  %template(ScalarIntResult) CScalarResult<int32_t>;
-#endif
-#ifdef USE_UINT32
-  %template(ScalarUIntResult) CScalarResult<uint32_t>;
-#endif
-#ifdef USE_INT64
-  %template(ScalarLongResult) CScalarResult<int64_t>;
-#endif
-#ifdef USE_UINT64
-  %template(ScalarULongResult) CScalarResult<uint64_t>;
-#endif
-#ifdef USE_FLOAT32
-  %template(ScalarShortRealResult) CScalarResult<float32_t>;
-#endif
-#ifdef USE_FLOAT64
-  %template(ScalarRealResult) CScalarResult<float64_t>;
-#endif
-}
-
-%include <shogun/lib/computation/jobresult/VectorResult.h>
-namespace shogun
-{
-#ifdef USE_CHAR
-  %template(VectorCharResult) CVectorResult<char>;
-#endif
-#ifdef USE_BOOL
-  %template(VectorBoolResult) CVectorResult<bool>;
-#endif
-#ifdef USE_UINT8
-  %template(VectorByteResult) CVectorResult<uint8_t>;
-#endif
-#ifdef USE_INT16
-  %template(VectorShortResult) CVectorResult<int16_t>;
-#endif
-#ifdef USE_UINT16
-  %template(VectorWordResult) CVectorResult<uint16_t>;
-#endif
-#ifdef USE_INT32
-  %template(VectorIntResult) CVectorResult<int32_t>;
-#endif
-#ifdef USE_UINT32
-  %template(VectorUIntResult) CVectorResult<uint32_t>;
-#endif
-#ifdef USE_INT64
-  %template(VectorLongResult) CVectorResult<int64_t>;
-#endif
-#ifdef USE_UINT64
-  %template(VectorULongResult) CVectorResult<uint64_t>;
-#endif
-#ifdef USE_FLOAT32
-  %template(VectorShortRealResult) CVectorResult<float32_t>;
-#endif
-#ifdef USE_FLOAT64
-  %template(VectorRealResult) CVectorResult<float64_t>;
-#endif
-}

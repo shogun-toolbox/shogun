@@ -1,13 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013-2014 Thoralf Klein
- * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
+ *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang, 
+ *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang, 
+ *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
 #ifndef __SGOBJECT_H__
@@ -342,7 +339,7 @@ public:
 			if(has<T>(_tag.name()))
 			{
 				ref_value(&value);
-				update_parameter(_tag, erase_type(value));
+				update_parameter(_tag, make_any(value));
 			}
 			else
 			{
@@ -382,7 +379,7 @@ public:
 		const Any value = get_parameter(_tag).get_value();
 		try
 		{
-			return recall_type<T>(value);
+			return any_cast<T>(value);
 		}
 		catch (const std::logic_error& exc)
 		{
@@ -390,7 +387,7 @@ public:
 				"Get \"%s\" failed: %s.\n", _tag.name().c_str(), exc.what());
 		}
 		// we won't be there
-		return recall_type<T>(value);
+		return any_cast<T>(value);
 	}
 
 	/** Getter for a class parameter, identified by a name.
@@ -477,7 +474,7 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		create_parameter(_tag, AnyParameter(erase_type(value)));
+		create_parameter(_tag, AnyParameter(make_any(value)));
 	}
 
 	/** Registers a class parameter which is identified by a name.
@@ -492,7 +489,7 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(erase_type(value)));
+		create_parameter(tag, AnyParameter(make_any(value)));
 	}
 
 	/** Puts a pointer to some parameter into the parameter map.
@@ -506,8 +503,7 @@ protected:
 		const std::string& name, T* value, AnyParameterProperties properties)
 	{
 		BaseTag tag(name);
-		create_parameter(
-			tag, AnyParameter(erase_type_non_owning(value), properties));
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
 	}
 
 public:

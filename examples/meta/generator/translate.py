@@ -185,8 +185,8 @@ class Translator:
         """ Injects statements at the end of the program that perform variable
             storing
         """
-        storage = "__sg_storage"
-        storageFile = "__sg_storage_file"
+        storage = "sg_storage"
+        storageFile = "sg_storage_file"
 
         # TODO: handle directories
         storageFilename = {
@@ -195,7 +195,7 @@ class Translator:
         # 'w'
         storageFilemode = {"Expr": {"CharLiteral": 'w'}}
         storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
-        storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
+        storageInit = {"Init": [{"ObjectType": "DynamicObjectArray"},
                                 {"Identifier": storage},
                                 {"ArgumentList": []}]}
         storageFileInit = {
@@ -221,16 +221,20 @@ class Translator:
             # i.e. one key
             # python2/3 compatible key accessing
             sgType = vartypeAST[list(vartypeAST.keys())[0]]
-
             assert sgType in getBasicTypesToStore() or sgType in getSGTypesToStore()
-            if sgType in getBasicTypesToStore():
-                methodNameSuffix = sgType
-            elif sgType in getSGTypesToStore():
-                methodNameSuffix = getSGTypeToStoreMethodName(sgType)
-            
+
+            if "cpp" in self.targetDict["FileExtension"]:
+                methodNameSuffix = "<%s>" % self.targetDict["Type"][sgType]
+            else:
+                if sgType in getBasicTypesToStore():
+                    methodNameSuffix = sgType
+                elif sgType in getSGTypesToStore():
+                    methodNameSuffix = getSGTypeToStoreMethodName(sgType)
+                methodNameSuffix = "_%s" % methodNameSuffix
+
             methodCall = {
                 "MethodCall": [{"Identifier": storage},
-                               {"Identifier": "append_wrapped_%s" % methodNameSuffix},
+                               {"Identifier": "append_element%s" % methodNameSuffix},
                                {"ArgumentList": [varnameIdentifierExpr,
                                                  varnameExpr]}]
             }

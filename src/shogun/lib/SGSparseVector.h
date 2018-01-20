@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013,2014 Thoralf Klein
- * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Christian Widmer, 
+ *          Heiko Strathmann, Viktor Gal, Sergey Lisitsyn, Soumyajit De, 
+ *          Yuyu Zhang, Fernando Iglesias, Björn Esser, Abinash Panda
  */
 
 #ifndef __SGSPARSEVECTOR_H__

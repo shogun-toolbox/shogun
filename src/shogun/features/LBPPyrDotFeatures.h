@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Vojtech Franc, Soeren Sonnenburg
- * Written (W) 2013 Evangelos Anagnostopoulos
- * Copyright (C) 2010 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, 
+ *          Björn Esser, Evangelos Anagnostopoulos
  */
 #ifndef _LBP_PYR_DOTFEATURES__H__
 #define _LBP_PYR_DOTFEATURES__H__

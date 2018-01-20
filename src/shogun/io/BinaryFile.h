@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Chiyuan Zhang, Viktor Gal, 
+ *          Thoralf Klein, Evan Shelhamer
  */
 #ifndef __BINARY_FILE_H__
 #define __BINARY_FILE_H__

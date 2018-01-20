@@ -1,16 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Viktor Gal, Heiko Strathmann, Fernando Iglesias, 
+ *          Sanuj Sharma, Pan Deng, Sergey Lisitsyn, Thoralf Klein, 
+ *          Soumyajit De, Michele Mazzoni, Evgeniy Andreev, Chiyuan Zhang, 
+ *          Björn Esser, Weijie Lin, Khaled Nasr, Koen van de Sande, 
+ *          Somya Anand
  */
 
 #include <shogun/lib/config.h>
@@ -271,6 +266,11 @@ SGVector<T> SGVector<T>::clone() const
 template<class T>
 T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 {
+	if (!vec || !len)
+		return nullptr;
+
+	REQUIRE(len > 0, "Number of elements (%d) has to be positive!\n", len);
+
 	T* result = SG_MALLOC(T, len);
 	sg_memcpy(result, vec, sizeof(T)*len);
 	return result;
@@ -393,7 +393,7 @@ void SGVector<T>::free_data()
 }
 
 template <class T>
-bool SGVector<T>::equals(SGVector<T>& other) const
+bool SGVector<T>::equals(const SGVector<T>& other) const
 {
 	assert_on_cpu();
 	if (other.vlen!=vlen)
@@ -411,7 +411,7 @@ bool SGVector<T>::equals(SGVector<T>& other) const
 #ifndef REAL_EQUALS
 #define REAL_EQUALS(real_t)                                                    \
 	template <>                                                                \
-	bool SGVector<real_t>::equals(SGVector<real_t>& other) const               \
+	bool SGVector<real_t>::equals(const SGVector<real_t>& other) const         \
 	{                                                                          \
 		assert_on_cpu();                                                       \
 		if (other.vlen != vlen)                                                \

@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
- * Written (W) 2013 Heiko Strathmann
+ * Authors: Soumyajit De, Heiko Strathmann, Sunil Mahendrakar, Björn Esser
  */
 
 #include <shogun/lib/config.h>
@@ -19,7 +15,6 @@
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {
@@ -33,13 +28,9 @@ CRationalApproximation::CRationalApproximation()
 }
 
 CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
-	float64_t desired_accuracy,
-	EOperatorFunction function_type)
-	: COperatorFunction<float64_t>(linear_operator, computation_engine,
-	  function_type)
+	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+	float64_t desired_accuracy, EOperatorFunction function_type)
+	: COperatorFunction<float64_t>(linear_operator, function_type)
 {
 	init();
 

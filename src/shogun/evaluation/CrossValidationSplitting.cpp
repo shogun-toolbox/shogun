@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Thoralf Klein, Soeren Sonnenburg, 
+ *          Fernando Iglesias, Viktor Gal
  */
 
 #include <shogun/evaluation/CrossValidationSplitting.h>

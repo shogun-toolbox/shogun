@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
+ * Authors: Sunil Mahendrakar, Soumyajit De, Heiko Strathmann, Björn Esser, 
+ *          Viktor Gal
  */
 
 #ifndef LOG_DET_ESTIMATOR_H_
@@ -18,15 +16,14 @@ namespace shogun
 {
 class CTraceSampler;
 template<class T> class COperatorFunction;
-class CIndependentComputationEngine;
 template<class T> class SGVector;
 template<class T> class SGMatrix;
 
 /** @brief Class to create unbiased estimators of \f$log(\left|C\right|)=
  * trace(log(C))\f$. For each estimate, it samples trace vectors (one by one)
- * and calls submit_jobs of COperatorFunction, stores the resulting job result
- * aggregator instances, calls wait_for_all of CIndependentComputationEngine
- * to ensure that the job result aggregators are all up to date. Then simply
+ * and calls solve of COperatorFunction, stores the result in dynamic array
+ * aggregator instances parallelly, then waits for all results to be computed
+ * to ensure that the aggregators are all up to date. Then simply
  * computes running averages over the estimates
  */
 class CLogDetEstimator : public CSGObject
@@ -41,7 +38,6 @@ public:
 	 * Eigen3 and LAPACK libraries are available.
 	 *
 	 * Uses the default configuration:
-	 * - CSerialComputationEngine
 	 * - CLanczosEigenSolver,
 	 * - CLogRationalApproximationCGM with 1E-5 accuracy
 	 * - CCGMShiftedFamilySolver,
@@ -59,11 +55,10 @@ public:
 	 *
 	 * @param trace_sampler the trace sampler
 	 * @param operator_log the operator function
-	 * @param computation_engine the independent computation engine
 	 */
-	CLogDetEstimator(CTraceSampler* trace_sampler,
-		COperatorFunction<float64_t>* operator_log,
-		CIndependentComputationEngine* computation_engine);
+	CLogDetEstimator(
+		CTraceSampler* trace_sampler,
+		COperatorFunction<float64_t>* operator_log);
 
 	/** Destructor */
 	virtual ~CLogDetEstimator();
@@ -95,9 +90,6 @@ public:
 	/** @return trace sampler */
 	CTraceSampler* get_trace_sampler(void) const;
 
-	/** @return computation sampler */
-	CIndependentComputationEngine* get_computation_engine(void) const;
-
 	/** @return operator function */
 	COperatorFunction<float64_t>* get_operator_function(void) const;
 
@@ -107,9 +99,6 @@ private:
 
 	/** the linear operator function, which is log in this case */
 	COperatorFunction<float64_t>* m_operator_log;
-
-	/** the computation engine for the independent jobs */
-	CIndependentComputationEngine* m_computation_engine;
 
 	/** initialize with default values and register params */
 	void init();
