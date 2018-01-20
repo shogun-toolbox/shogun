@@ -69,3 +69,8 @@ CSGObject* shogun::create(const char* classname, EPrimitiveType generic)
 
 	return NULL;
 }
+
+void shogun::delete_object(CSGObject* object)
+{
+	delete object;
+}
