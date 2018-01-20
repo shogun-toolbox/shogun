@@ -192,39 +192,37 @@ TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
 
 TEST(LinalgBackendEigen, add_diag)
 {
-	SGMatrix<float64_t> A(2, 3);
-	SGVector<float64_t> b(2);
+	SGMatrix<float64_t> A1(2, 3);
+	SGVector<float64_t> b1(2);
 
-	A(0, 0) = 1;
-	A(0, 1) = 2;
-	A(0, 2) = 3;
-	A(1, 0) = 4;
-	A(1, 1) = 5;
-	A(1, 2) = 6;
+	A1(0, 0) = 1;
+	A1(0, 1) = 2;
+	A1(0, 2) = 3;
+	A1(1, 0) = 4;
+	A1(1, 1) = 5;
+	A1(1, 2) = 6;
 
-	b[0] = 1;
-	b[1] = 2;
+	b1[0] = 1;
+	b1[1] = 2;
 
-	add_diag(A, b, 0.5, 2.0);
+	add_diag(A1, b1, 0.5, 2.0);
 
-	EXPECT_NEAR(A(0, 0), 2.5, 1e-15);
-	EXPECT_NEAR(A(0, 1), 2, 1e-15);
-	EXPECT_NEAR(A(0, 2), 3, 1e-15);
-	EXPECT_NEAR(A(1, 0), 4, 1e-15);
-	EXPECT_NEAR(A(1, 1), 6.5, 1e-15);
-	EXPECT_NEAR(A(1, 2), 6, 1e-15);
-}
+	EXPECT_NEAR(A1(0, 0), 2.5, 1e-15);
+	EXPECT_NEAR(A1(0, 1), 2, 1e-15);
+	EXPECT_NEAR(A1(0, 2), 3, 1e-15);
+	EXPECT_NEAR(A1(1, 0), 4, 1e-15);
+	EXPECT_NEAR(A1(1, 1), 6.5, 1e-15);
+	EXPECT_NEAR(A1(1, 2), 6, 1e-15);
 
-TEST(LinalgBackendEigen, add_diag_error)
-{
-	SGMatrix<float64_t> A1(2, 2);
-	SGVector<float64_t> b1(3);
-	SGMatrix<float64_t> A2;
-	SGVector<float64_t> b2;
-	EXPECT_THROW(add_diag(A1, b1), ShogunException);
-	EXPECT_THROW(add_diag(A1, b2), ShogunException);
-	EXPECT_THROW(add_diag(A2, b1), ShogunException);
+	// test error cases
+	SGMatrix<float64_t> A2(2, 2);
+	SGVector<float64_t> b2(3);
+	SGMatrix<float64_t> A3;
+	SGVector<float64_t> b3;
 	EXPECT_THROW(add_diag(A2, b2), ShogunException);
+	EXPECT_THROW(add_diag(A2, b3), ShogunException);
+	EXPECT_THROW(add_diag(A3, b2), ShogunException);
+	EXPECT_THROW(add_diag(A3, b3), ShogunException);
 }
 
 TEST(LinalgBackendEigen, add_vector)
