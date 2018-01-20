@@ -26,6 +26,11 @@ namespace shogun {
 	 */
 	CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
 
+	/** deletes object
+	 * @param object pointer to object to be deleted
+	 */
+	void delete_object(CSGObject* object);
+
 	/** Creates new shogun instance, typed.
 	 *
 	 * Throws an exception in case there is no such classname or
@@ -43,7 +48,7 @@ namespace shogun {
 		auto* cast = dynamic_cast<T*>(object);
 		if (!cast)
 		{
-			delete object;
+			delete_object(object);
 			SG_SERROR("Type mismatch");
 		}
 		cast->ref();
