@@ -57,6 +57,16 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
+#define BACKEND_GENERIC_ADD_DIAG(Type, Container)                              \
+	void LinalgBackendEigen::add_diag(                                         \
+	    SGMatrix<Type>& A, const SGVector<Type>& b, Type alpha, Type beta)     \
+	    const                                                                  \
+	{                                                                          \
+		add_diag_impl(A, b, alpha, beta);                                      \
+	}
+DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
+#undef BACKEND_GENERIC_ADD_DIAG
+
 #define BACKEND_GENERIC_ADD_VECTOR(Type, Container)                            \
 	void LinalgBackendEigen::add_vector(                                       \
 	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
@@ -177,6 +187,16 @@ void LinalgBackendEigen::add_col_vec_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 	result_eig.col(i) = alpha * A_eig.col(i) + beta * b_eig;
+}
+
+template <typename T>
+void LinalgBackendEigen::add_diag_impl(
+    SGMatrix<T>& A, const SGVector<T>& b, T alpha, T beta) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGVector<T>::EigenVectorXtMap b_eig = b;
+
+	A_eig.diagonal() = alpha * A_eig.diagonal() + beta * b_eig;
 }
 
 template <typename T>
