@@ -263,7 +263,7 @@ namespace shogun
 	using any_detail::compare;
 
 	template <class T, class S>
-	bool ArrayReference<T,S>::equals(const ArrayReference<T, S>& other) const
+	bool ArrayReference<T, S>::equals(const ArrayReference<T, S>& other) const
 	{
 		if (*(m_length) != *(other.m_length))
 		{
@@ -273,8 +273,9 @@ namespace shogun
 		{
 			return true;
 		}
-		return std::equal(*(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
-				[](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+		return std::equal(
+		    *(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
+		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
 	}
 
 	/** @brief An interface for a policy to store a value.
