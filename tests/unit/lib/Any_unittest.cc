@@ -30,9 +30,8 @@
  */
 #include <gtest/gtest.h>
 
+#include <numeric>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/config.h>
 #include <stdexcept>
@@ -53,6 +52,23 @@ public:
 		return true;
 	}
 	bool equals(const Simple& other) const
+	{
+		return true;
+	}
+
+	bool cloned = false;
+};
+
+struct SimpleValue
+{
+public:
+	SimpleValue clone() const
+	{
+		SimpleValue copy;
+		copy.cloned = true;
+		return copy;
+	}
+	bool equals(const SimpleValue& other) const
 	{
 		return true;
 	}
@@ -356,34 +372,42 @@ TEST(Any, clone_into_owning_via_copy)
 	EXPECT_EQ(a_any.as<int>(), other);
 }
 
-TEST(Any, clone_sgvector)
+TEST(Any, clone_value)
 {
-	auto a = SGVector<float64_t>(3);
-	a.range_fill();
-	SGVector<float64_t> b;
-	ASSERT_FALSE(a.equals(b));
-
-	auto a_any = make_any(a);
-	auto b_any = make_any(b);
-
-	auto cloned_b = b_any.clone_from(a_any).as<SGVector<float64_t>>();
-
-	EXPECT_NE(a.vector, cloned_b.vector);
-	EXPECT_TRUE(a.equals(cloned_b));
+	auto a_any = make_any(SimpleValue());
+	auto b_any = make_any(SimpleValue());
+	auto cloned_b = b_any.clone_from(a_any).as<SimpleValue>();
 }
 
-TEST(Any, clone_sgmatrix)
+TEST(Any, array_ref)
 {
-	auto a = SGMatrix<float64_t>(3, 4);
-	SGVector<float64_t>(a.matrix, a.num_rows * a.num_cols, false).range_fill();
-	SGMatrix<float64_t> b;
-	ASSERT_FALSE(a.equals(b));
+	int src_len = 5;
+	float* src = new float[src_len];
+	std::iota(src, src + src_len, 9);
+	int dst_len = 8;
+	float* dst = new float[dst_len];
+	std::iota(dst, dst + dst_len, 5);
+	int other_len = src_len;
+	float* other = new float[other_len];
+	std::iota(other, other + other_len, 9);
 
-	auto a_any = make_any(a);
-	auto b_any = make_any(b);
+	auto any_src = make_any_ref_array(&src, &src_len);
+	auto any_dst = make_any_ref_array(&dst, &dst_len);
+	auto any_other = make_any_ref_array(&other, &other_len);
 
-	auto cloned_b = b_any.clone_from(a_any).as<SGMatrix<float64_t>>();
+	EXPECT_EQ(any_src, any_src);
+	EXPECT_EQ(any_dst, any_dst);
 
-	EXPECT_NE(a.matrix, cloned_b.matrix);
-	EXPECT_TRUE(a.equals(cloned_b));
+	EXPECT_NE(any_src, any_dst);
+	EXPECT_NE(any_dst, any_src);
+
+	EXPECT_EQ(any_src, any_other);
+	EXPECT_EQ(any_other, any_src);
+
+	EXPECT_NE(any_dst, any_other);
+	EXPECT_NE(any_other, any_dst);
+
+	delete[] src;
+	delete[] dst;
+	delete[] other;
 }

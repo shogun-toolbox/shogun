@@ -37,6 +37,7 @@
 
 #include <shogun/base/init.h>
 
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 #include <string.h>
@@ -79,6 +80,28 @@ namespace shogun
 	class SGVector;
 	template <class T>
 	class SGMatrix;
+
+	template <class T, class S>
+	class ArrayReference
+	{
+	public:
+		ArrayReference(T** ptr, S* length) : m_ptr(ptr), m_length(length)
+		{
+		}
+		ArrayReference(const ArrayReference<T, S>& other)
+		    : m_ptr(other.m_ptr), m_length(other.m_length)
+		{
+		}
+		ArrayReference<T, S> operator=(const ArrayReference<T, S>& other)
+		{
+			throw std::logic_error("Assignment not supported");
+		}
+		bool equals(const ArrayReference<T, S>& other) const;
+
+	private:
+		T** m_ptr;
+		S* m_length;
+	};
 
 	/** Used to denote an empty Any object */
 	struct Empty
@@ -238,6 +261,22 @@ namespace shogun
 	using any_detail::value_of;
 	using any_detail::mutable_value_of;
 	using any_detail::compare;
+
+	template <class T, class S>
+	bool ArrayReference<T, S>::equals(const ArrayReference<T, S>& other) const
+	{
+		if (*(m_length) != *(other.m_length))
+		{
+			return false;
+		}
+		if (*(m_ptr) == *(other.m_ptr))
+		{
+			return true;
+		}
+		return std::equal(
+		    *(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
+		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+	}
 
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
@@ -757,6 +796,12 @@ namespace shogun
 	inline Any make_any_ref(T* v)
 	{
 		return Any(non_owning_policy<T>(), v);
+	}
+
+	template <typename T, typename S>
+	inline Any make_any_ref_array(T** ptr, S* length)
+	{
+		return make_any(ArrayReference<T, S>(ptr, length));
 	}
 
 	/** Tries to recall Any type, fails when type is wrong.
