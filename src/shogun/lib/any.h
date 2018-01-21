@@ -37,12 +37,12 @@
 
 #include <shogun/base/init.h>
 
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 #include <string.h>
 #include <string>
 #include <typeinfo>
-#include <algorithm>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
 #endif
@@ -88,25 +88,16 @@ namespace shogun
 		ArrayReference(T** ptr, S* length) : m_ptr(ptr), m_length(length)
 		{
 		}
-		ArrayReference(const ArrayReference<T, S>& other) : m_ptr(other.m_ptr), m_length(other.m_length)
+		ArrayReference(const ArrayReference<T, S>& other)
+		    : m_ptr(other.m_ptr), m_length(other.m_length)
 		{
 		}
 		ArrayReference<T, S> operator=(const ArrayReference<T, S>& other)
 		{
 			throw std::logic_error("Assignment not supported");
 		}
-		bool equals(const ArrayReference<T, S>& other) const
-		{
-			if (*(m_length) != *(other.m_length))
-			{
-				return false;
-			}
-			if (*(m_ptr) == *(other.m_ptr))
-			{
-				return true;
-			}
-			return std::equal(*(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr));
-		}
+		bool equals(const ArrayReference<T, S>& other) const;
+
 	private:
 		T** m_ptr;
 		S* m_length;
@@ -270,6 +261,21 @@ namespace shogun
 	using any_detail::value_of;
 	using any_detail::mutable_value_of;
 	using any_detail::compare;
+
+	template <class T, class S>
+	bool ArrayReference<T,S>::equals(const ArrayReference<T, S>& other) const
+	{
+		if (*(m_length) != *(other.m_length))
+		{
+			return false;
+		}
+		if (*(m_ptr) == *(other.m_ptr))
+		{
+			return true;
+		}
+		return std::equal(*(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
+				[](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+	}
 
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.

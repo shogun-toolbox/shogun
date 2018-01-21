@@ -30,11 +30,11 @@
  */
 #include <gtest/gtest.h>
 
+#include <numeric>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/config.h>
 #include <stdexcept>
-#include <numeric>
 
 using namespace shogun;
 
@@ -383,13 +383,13 @@ TEST(Any, array_ref)
 {
 	int src_len = 5;
 	float* src = new float[src_len];
-	std::iota(src, src+src_len, 9);
+	std::iota(src, src + src_len, 9);
 	int dst_len = 8;
 	float* dst = new float[dst_len];
-	std::iota(dst, dst+dst_len, 5);
+	std::iota(dst, dst + dst_len, 5);
 	int other_len = src_len;
 	float* other = new float[other_len];
-	std::iota(other, other+other_len, 9);
+	std::iota(other, other + other_len, 9);
 
 	auto any_src = make_any_ref_array(&src, &src_len);
 	auto any_dst = make_any_ref_array(&dst, &dst_len);
