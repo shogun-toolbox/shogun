@@ -3,7 +3,6 @@
  *
  * Authors: Sunil Mahendrakar, Heiko Strathmann, Soumyajit De, Björn Esser
  */
-#include <omp.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/progress.h>
 #include <shogun/lib/SGMatrix.h>
