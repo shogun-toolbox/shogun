@@ -27,76 +27,215 @@
 
 using namespace shogun;
 
-TEST(SGObject, equals_same_instance)
+TEST(SGObject, CCloneEqualsMock_allocate_delete)
 {
-	auto kernel = some<CGaussianKernel>();
-	EXPECT_TRUE(kernel->equals(kernel));
+	auto obj = some<CCloneEqualsMock<int32_t>>();
 }
 
-TEST(SGObject, equals_null)
+template <typename T>
+class SGObjectEquals : public ::testing::Test
 {
-	auto kernel = some<CGaussianKernel>();
-	EXPECT_FALSE(kernel->equals(nullptr));
+};
+// TODO: SGString doesn't support complex128_t, so omitted here
+typedef ::testing::Types<bool, char, int8_t, uint8_t, int16_t, int32_t, int64_t,
+                         float32_t, float64_t, floatmax_t>
+    CloneEqualsTypes;
+TYPED_TEST_CASE(SGObjectEquals, CloneEqualsTypes);
+
+TYPED_TEST(SGObjectEquals, same)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	EXPECT_TRUE(obj1->equals(obj1));
+	EXPECT_TRUE(obj1->equals(obj2));
+	EXPECT_TRUE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_null)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+
+	EXPECT_FALSE(obj1->equals(nullptr));
+}
+
+TYPED_TEST(SGObjectEquals, different_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_basic -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_object)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_object->m_some_value -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+	obj1->m_object->m_some_value += 1;
+
+	delete obj1->m_object;
+	obj1->m_object = nullptr;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_vector)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_vector[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_sparse_vector)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_sparse_vector.features[0].entry -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_sparse_matrix)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_matrix)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_matrix(0, 0) = 0;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_vector_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_vector_basic[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_vector_sg_string)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_vector_sg_string[0].string[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_vector_object)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_vector_object[0]->m_some_value -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+	obj1->m_vector_object[0]->m_some_value += 1;
+
+	delete obj1->m_vector_object[0];
+	obj1->m_vector_object[0] = nullptr;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
 }
 
 TEST(SGObject, equals_different_type)
 {
-	auto kernel = some<CGaussianKernel>();
-	auto kernel2 = some<CLinearKernel>();
+	auto obj1 = some<CCloneEqualsMock<int>>();
+	auto obj2 = some<CCloneEqualsMock<float>>();
 
-	EXPECT_FALSE(kernel->equals(kernel2));
-	EXPECT_FALSE(kernel2->equals(kernel));
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TEST(SGObject, equals_basic_member)
+TEST(SGObject, clone_not_null_and_correct_type)
 {
-	auto kernel = some<CGaussianKernel>(1);
-	auto kernel2 = some<CGaussianKernel>(1);
-	EXPECT_TRUE(kernel->equals(kernel2));
-	EXPECT_TRUE(kernel2->equals(kernel));
-
-	kernel->set_width(2);
-	EXPECT_FALSE(kernel->equals(kernel2));
-	EXPECT_FALSE(kernel2->equals(kernel));
+	auto object = some<CGaussianKernel>();
+	auto clone = object->clone();
+	ASSERT_NE(clone, nullptr);
+	ASSERT_TRUE(!strcmp(object->get_name(), clone->get_name()));
 }
 
-TEST(SGObject, equals_object_member)
+TEST(SGObject, clone_basic_parameter)
 {
-	SGMatrix<float64_t> data(3, 10);
-	SGMatrix<float64_t> data2(3, 10);
-	auto feats = some<CDenseFeatures<float64_t>>(data);
-	auto feats2 = some<CDenseFeatures<float64_t>>(data2);
+	auto object = some<CGaussianKernel>();
+	object->put("log_width", 2.0);
+	ASSERT_EQ(object->get<float64_t>("log_width"), 2);
 
-	auto kernel = some<CGaussianKernel>();
-	auto kernel2 = some<CGaussianKernel>();
-
-	kernel->init(feats, feats);
-	kernel2->init(feats2, feats2);
-
-	EXPECT_TRUE(kernel->equals(kernel2));
-	EXPECT_TRUE(kernel2->equals(kernel));
-
-	data(1, 1) = 1;
-	EXPECT_FALSE(kernel->equals(kernel2));
-	EXPECT_FALSE(kernel2->equals(kernel));
+	auto clone = object->clone();
+	EXPECT_EQ(
+	    object->get<float64_t>("log_width"),
+	    clone->get<float64_t>("log_width"));
 }
 
-TEST(SGObject, equals_other_has_NULL_parameter)
+TEST(SGObject, clone_sgmatrix_parameter)
 {
-	SGMatrix<float64_t> data(3,10);
-	for (index_t i=0; i<data.num_rows*data.num_cols; ++i)
-		data.matrix[i]=CMath::randn_double();
+	SGMatrix<float64_t> data(10, 10);
+	for (auto i : range(data.num_rows * data.num_cols))
+		data.matrix[i] = CMath::randn_double();
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
-	CGaussianKernel* kernel=new CGaussianKernel();
-	CGaussianKernel* kernel2=new CGaussianKernel();
-	kernel2->init(feats, feats);
+	auto object = some<CDenseFeatures<float64_t>>(data);
+	ASSERT_TRUE(data.equals(object->get_feature_matrix()));
 
-	EXPECT_FALSE(kernel->equals(kernel2));
-	EXPECT_FALSE(kernel2->equals(kernel));
+	auto clone = object->clone();
+	EXPECT_NE(
+	    data.data(), clone->get<SGMatrix<float64_t>>("feature_matrix").data());
+	ASSERT_TRUE(data.equals(clone->get<SGMatrix<float64_t>>("feature_matrix")));
+}
 
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
+TEST(SGObject, clone_sgvector_parameter)
+{
+	SGVector<float64_t> data(10);
+	for (auto i : range(data.vlen))
+		data.vector[i] = CMath::randn_double();
+
+	auto object = some<CRegressionLabels>(data);
+	ASSERT_TRUE(data.equals(object->get_labels()));
+
+	auto clone = object->clone();
+	EXPECT_NE(data.data(), clone->get<SGVector<float64_t>>("labels").data());
+	EXPECT_TRUE(data.equals(clone->get<SGVector<float64_t>>("labels")));
+}
+
+TEST(SGObject, clone_sgobject_parameter)
+{
+	SGMatrix<float64_t> data(10, 10);
+	for (auto i : range(data.num_rows * data.num_cols))
+		data.matrix[i] = CMath::randn_double();
+
+	auto object_parameter = some<CDenseFeatures<float64_t>>(data);
+	auto object = some<CGaussianKernel>();
+	object->init(object_parameter, object_parameter);
+	ASSERT_TRUE(object_parameter->equals(object->get<CSGObject*>("lhs")));
+	ASSERT_TRUE(object_parameter->equals(object->get<CSGObject*>("rhs")));
+
+	auto clone = object->clone();
+	EXPECT_NE(object_parameter, clone->get<CSGObject*>("lhs"));
+	EXPECT_NE(object_parameter, clone->get<CSGObject*>("rhs"));
+	EXPECT_TRUE(object_parameter->equals(clone->get<CSGObject*>("lhs")));
+	EXPECT_TRUE(object_parameter->equals(clone->get<CSGObject*>("rhs")));
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
