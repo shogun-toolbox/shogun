@@ -35,8 +35,11 @@ public:
 	/** copy constructor */
 	SGString(const SGString &orig);
 
-	/** equality operator */
+	/** @return true iff pointer and size are equal */
 	bool operator==(const SGString & other) const;
+
+	/** @return true iff content is equal */
+	bool equals(const SGString& other) const;
 
 	/** free string */
 	void free_string();

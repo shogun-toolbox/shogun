@@ -35,11 +35,34 @@ bool SGString<T>::operator==(const SGString & other) const
 	if (other.slen != slen)
 		return false;
 
-	for (int i = 0; i < slen; i++)
-	{
-		if (other.string[i] != string[i])
-			return false;
-	}
+	if (string != other.string)
+		return false;
+
+	return true;
+}
+
+template <class T>
+bool SGString<T>::equals(const SGString& other) const
+{
+	// avoid comparing elements when both are same.
+	// the case where both matrices are uninitialized is handled here as well.
+	if (*this == other)
+		return true;
+
+	// both empty
+	if (!(slen || other.slen))
+		return true;
+
+	// only one empty
+	if (!string || !other.string)
+		return false;
+
+	// different size
+	if (slen != other.slen)
+		return false;
+
+	// content
+	return std::equal(string, string + slen, other.string);
 
 	return true;
 }
