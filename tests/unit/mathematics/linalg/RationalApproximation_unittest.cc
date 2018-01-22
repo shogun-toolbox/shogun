@@ -13,10 +13,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
@@ -36,9 +32,6 @@ using namespace Eigen;
 #ifdef USE_GPL_SHOGUN
 TEST(RationalApproximation, precompute)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
 	m(0,0)=2.0;
@@ -55,9 +48,10 @@ TEST(RationalApproximation, precompute)
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationIndividual *op_func
-		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex128_t, float64_t>*)linear_solver, 0);
+	CLogRationalApproximationIndividual* op_func =
+	    new CLogRationalApproximationIndividual(
+	        op, eig_solver,
+	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, 0);
 	SG_REF(op_func);
 	op_func->set_num_shifts(5);
 
@@ -99,15 +93,11 @@ TEST(RationalApproximation, precompute)
 	SG_UNREF(eig_solver);
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
-	SG_UNREF(e);
 	SG_UNREF(op);
 }
 
 TEST(RationalApproximation, trace_accuracy)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=5;
 	SGMatrix<float64_t> m(size, size);
 	m.set_const(0.0);
@@ -136,49 +126,21 @@ TEST(RationalApproximation, trace_accuracy)
 
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
-	CLogRationalApproximationIndividual *op_func
-	=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, linear_solver, accuracy);
+	CLogRationalApproximationIndividual* op_func =
+	    new CLogRationalApproximationIndividual(
+	        op, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	op_func->precompute();
-
-	// create the aggregators to contain the result aggregators
-	CDynamicObjectArray aggregators;
-
+	float64_t result = 0.0;
 	// extract the trace of approximation of log using basis vectors
 	for (index_t i=0; i<size; ++i)
 	{
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		CJobResultAggregator* agg=op_func->submit_jobs(s);
-		aggregators.append_element(agg);
-		SG_UNREF(agg);
+		result += op_func->solve(s);
 	}
-	// wait for all computation jobs to be computed
-	e->wait_for_all();
-
-	// use the aggregators to find the final result
-	int32_t num_aggregates=aggregators.get_num_elements();
-	float64_t result=0.0;
-	for (int32_t i=0; i<num_aggregates; ++i)
-	{
-		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
-			(aggregators.get_element(i));
-
-		// call finalize on all the aggregators
-		agg->finalize();
-		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
-			(agg->get_final_result());
-
-		// its important that we don't just unref the result here
-		result+=r->get_result();
-		SG_UNREF(agg);
-	}
-
-	// clear all aggregators
-	aggregators.clear_array();
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	// compute the trace of log(m) using Eigen3 that uses Schur-Parlett algorithm
@@ -202,15 +164,11 @@ TEST(RationalApproximation, trace_accuracy)
 	SG_UNREF(eig_solver);
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
-	SG_UNREF(e);
 	SG_UNREF(op);
 }
 
 TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
 	m(0,0)=1.0;
@@ -230,9 +188,10 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	CConjugateOrthogonalCGSolver *sparse_solver
 		=new CConjugateOrthogonalCGSolver();
 
-	CLogRationalApproximationIndividual *op_func
-		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex128_t, float64_t>*)dense_solver, 0);
+	CLogRationalApproximationIndividual* op_func =
+	    new CLogRationalApproximationIndividual(
+	        op, eig_solver,
+	        (CLinearSolver<complex128_t, float64_t>*)dense_solver, 0);
 	SG_REF(op_func);
 	op_func->set_num_shifts(4);
 
@@ -285,15 +244,11 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	SG_UNREF(dense_solver);
 	SG_UNREF(sparse_solver);
 	SG_UNREF(op_func);
-	SG_UNREF(e);
 	SG_UNREF(op);
 }
 
 TEST(RationalApproximation, trace_accuracy_cg_m)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=5;
 	SGMatrix<float64_t> m(size, size);
 	m.set_const(0.0);
@@ -323,49 +278,20 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
-	CLogRationalApproximationCGM *op_func
-	=new CLogRationalApproximationCGM(op, e, eig_solver,
-		linear_solver, accuracy);
+	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	    op, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	op_func->precompute();
-
-	// create the aggregators to contain the result aggregators
-	CDynamicObjectArray aggregators;
-
+	float64_t result = 0.0;
 	// extract the trace of approximation of log using basis vectors
 	for (index_t i=0; i<size; ++i)
 	{
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		CJobResultAggregator* agg=op_func->submit_jobs(s);
-		aggregators.append_element(agg);
-		SG_UNREF(agg);
+		result += op_func->solve(s);
 	}
-	// wait for all computation jobs to be computed
-	e->wait_for_all();
-
-	// use the aggregators to find the final result
-	int32_t num_aggregates=aggregators.get_num_elements();
-	float64_t result=0.0;
-	for (int32_t i=0; i<num_aggregates; ++i)
-	{
-		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
-			(aggregators.get_element(i));
-
-		// call finalize on all the aggregators
-		agg->finalize();
-		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
-			(agg->get_final_result());
-
-		// its important that we don't just unref the result here
-		result+=r->get_result();
-		SG_UNREF(agg);
-	}
-
-	// clear all aggregators
-	aggregators.clear_array();
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	// compute the trace of log(m) using Eigen3 that uses Schur-Parlett algorithm
@@ -389,7 +315,6 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	SG_UNREF(eig_solver);
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
-	SG_UNREF(e);
 	SG_UNREF(op);
 }
 #endif //USE_GPL_SHOGUN

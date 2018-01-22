@@ -15,8 +15,6 @@ namespace shogun
 
 template<class T> class SGVector;
 template<class T> class CLinearOperator;
-class CIndependentComputationEngine;
-class CJobResultAggregator;
 class CEigenSolver;
 
 /** @brief Abstract base class of the rational approximation of a function of a
@@ -67,7 +65,6 @@ public:
 	 *
 	 * @param linear_operator real valued linear operator for this operator
 	 * function
-	 * @param computation_engine engine that computes the independent jobs
 	 * @param eigen_solver eigen solver for computing min and max eigenvalues
 	 * needed for computing shifts, weights and constant multiplier
 	 * @param desired_accuracy desired error bound on approximation. Computes
@@ -76,7 +73,6 @@ public:
 	 */
 	CRationalApproximation(
 		CLinearOperator<float64_t>* linear_operator,
-		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		float64_t desired_accuracy,
 		EOperatorFunction function_type);
@@ -108,16 +104,9 @@ public:
 	int32_t compute_num_shifts_from_accuracy();
 
 	/**
-	 * abstract method that creates a job result aggregator, then creates a
-	 * number of jobs based on its implementation, attaches the aggregator
-	 * with all those jobs, hands over the responsility of those to the
-	 * computation engine and then returns the aggregator for collecting the
-	 * job results
-	 *
-	 * @param sample the vector for which new computation job(s) are to be created
-	 * @return the array of generated independent jobs
+	 *method that solves for a particular sample
 	 */
-	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample) = 0;
+	virtual float64_t solve(SGVector<float64_t> sample) = 0;
 
 	/** @return shifts */
 	SGVector<complex128_t> get_shifts() const;

@@ -13,29 +13,23 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationCGMJob.h>
-#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
 
-CLogRationalApproximationCGM::CLogRationalApproximationCGM()
-	: CRationalApproximation(NULL, NULL, NULL, 0, OF_LOG)
-{
-	init();
+	CLogRationalApproximationCGM::CLogRationalApproximationCGM()
+	    : CRationalApproximation(NULL, NULL, 0, OF_LOG)
+	{
+		init();
 }
 
 CLogRationalApproximationCGM::CLogRationalApproximationCGM(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
-	CCGMShiftedFamilySolver* linear_solver,
-	float64_t desired_accuracy)
-	: CRationalApproximation(linear_operator, computation_engine,
-	  eigen_solver, desired_accuracy, OF_LOG)
+	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+	CCGMShiftedFamilySolver* linear_solver, float64_t desired_accuracy)
+	: CRationalApproximation(
+	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
 {
 	init();
 
@@ -59,18 +53,11 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 	SG_UNREF(m_linear_solver);
 }
 
-CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
-	SGVector<float64_t> sample)
+float64_t CLogRationalApproximationCGM::solve(SGVector<float64_t> sample)
 {
 	SG_DEBUG("Entering\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
-	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
-
-	// create the scalar aggregator
-	CStoreScalarAggregator<float64_t>* agg=new CStoreScalarAggregator<float64_t>();
-	// we don't want the aggregator to be destroyed when the job is unref-ed
-	SG_REF(agg);
 
 	// we need to take the negation of the shifts for this case
 	if (m_negated_shifts.vector==NULL)
@@ -80,21 +67,30 @@ CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 		Map<VectorXcd> negated_shifts(m_negated_shifts.vector, m_negated_shifts.vlen);
 		negated_shifts=-shifts;
 	}
+	REQUIRE(
+		m_linear_operator->get_dimension() == sample.vlen,
+		"Dimension mismatch! %d vs %d\n", m_linear_operator->get_dimension(),
+		sample.vlen);
+	REQUIRE(
+		m_negated_shifts.vlen == m_weights.vlen,
+		"Number of shifts and weights are not equal!\n");
 
-	// create one CG-M job for current sample vector which solves for all
-	// the shifts, and computes the final result and stores that in the aggregator
-	CRationalApproximationCGMJob* job
-			=new CRationalApproximationCGMJob(agg, m_linear_solver,
-			m_linear_operator, sample, m_negated_shifts, m_weights, m_constant_multiplier);
-	SG_REF(job);
+	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
+		m_linear_operator, sample, m_negated_shifts, m_weights);
 
-	m_computation_engine->submit_job(job);
+	Map<VectorXcd> v(vec.vector, vec.vlen);
+	v = -v;
+	// take out the imaginary part of the result before
+	// applying linear operator
+	SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
 
-	// we can safely unref the job here, computation engine takes it from here
-	SG_UNREF(job);
+	// perform dot product
+	Map<VectorXd> map_agg(agg.vector, agg.vlen);
+	Map<VectorXd> map_vector(sample.vector, sample.vlen);
+	float64_t result = map_vector.dot(map_agg);
 
-	SG_DEBUG("Leaving\n");
-	return agg;
+	result *= m_constant_multiplier;
+	return result;
 }
 
 }

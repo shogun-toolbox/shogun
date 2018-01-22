@@ -17,14 +17,12 @@ namespace shogun
 template<class T> class SGVector;
 template<class T> class CLinearOperator;
 class CCGMShiftedFamilySolver;
-class CJobResultAggregator;
-class CIndependentComputationEngine;
 
 /** @brief Implementaion of rational approximation of a operator-function times
  * vector where the operator function is log of a linear operator. Each complex
  * system generated from the shifts due to rational approximation of opertor-
  * log times vector expression are solved at once with a shifted linear-family
- * solver by the computation engine. generate_jobs generates one job per sample
+ * solver.
  */
 class CLogRationalApproximationCGM : public CRationalApproximation
 {
@@ -36,7 +34,6 @@ public:
 	 * Constructor. Number of shifts will be computed using a specified accuracy.
 	 *
 	 * @param linear_operator linear operator of the log operator function
-	 * @param computation_engine engine that computes the independent jobs
 	 * @param eigen_solver eigen solver for computing min and max eigenvalues
 	 * needed for computing shifts, weights and multiplier in the rational
 	 * approximation
@@ -46,7 +43,6 @@ public:
 	 */
 	CLogRationalApproximationCGM(
 		CLinearOperator<float64_t>* linear_operator,
-		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		CCGMShiftedFamilySolver* linear_solver,
 		float64_t desired_accuracy);
@@ -55,14 +51,9 @@ public:
 	virtual ~CLogRationalApproximationCGM();
 
 	/**
-	 * method that creates a scalar job result aggregator, then creates
-	 * one job per trace sample, attaches the aggregator with them, and submits
-	 * the job to computation engine and then returns the aggregator
-	 *
-	 * @param sample the vector for which new computation jobs are to be created
-	 * @return the job result aggregator of all the jobs created
+	 * method that solves the result for a sample
 	 */
-	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample);
+	virtual float64_t solve(SGVector<float64_t> sample);
 
 	/** @return object name */
 	virtual const char* get_name() const

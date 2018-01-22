@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sunil Mahendrakar, Soumyajit De, Heiko Strathmann, Björn Esser, 
+ * Authors: Sunil Mahendrakar, Soumyajit De, Heiko Strathmann, Björn Esser,
  *          Viktor Gal
  */
 
@@ -15,27 +15,22 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/DenseExactLogJob.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
 
-CDenseMatrixExactLog::CDenseMatrixExactLog()
-	: COperatorFunction<float64_t>(NULL, NULL, OF_LOG)
-{
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	CDenseMatrixExactLog::CDenseMatrixExactLog()
+	    : COperatorFunction<float64_t>(NULL, OF_LOG)
+	{
+		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDenseMatrixExactLog::CDenseMatrixExactLog(
-	CDenseMatrixOperator<float64_t>* op,
-	CIndependentComputationEngine* engine)
-	: COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, engine, OF_LOG)
+CDenseMatrixExactLog::CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op)
+	: COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, OF_LOG)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -82,25 +77,23 @@ void CDenseMatrixExactLog::precompute()
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
-CJobResultAggregator* CDenseMatrixExactLog::submit_jobs(SGVector<float64_t>
-	sample)
+float64_t CDenseMatrixExactLog::solve(SGVector<float64_t> sample)
 {
 	SG_DEBUG("Entering...\n");
 
-	CStoreScalarAggregator<float64_t>* agg=new CStoreScalarAggregator<float64_t>;
-	// we don't want the aggregator to be destroyed when the job is unref-ed
-	SG_REF(agg);
-	CDenseExactLogJob* job=new CDenseExactLogJob(agg,
-		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator), sample);
-	SG_REF(job);
-	// sanity check
-	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
-	m_computation_engine->submit_job(job);
-	// we can safely unref the job here, computation engine takes it from here
-	SG_UNREF(job);
+	CDenseMatrixOperator<float64_t>* m_log_operator =
+		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+
+	SGVector<float64_t> vec = m_log_operator->apply(sample);
+
+	// compute the vector-vector dot product using Eigen3
+	Map<VectorXd> v(vec.vector, vec.vlen);
+	Map<VectorXd> s(sample.vector, sample.vlen);
+
+	float64_t result = s.dot(v);
 
 	SG_DEBUG("Leaving...\n");
-	return agg;
+	return result;
 }
 
 }

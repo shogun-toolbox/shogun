@@ -30,7 +30,6 @@
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -38,9 +37,6 @@ using namespace Eigen;
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 TEST(LogDetEstimator, sample)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=2.0;
@@ -51,13 +47,13 @@ TEST(LogDetEstimator, sample)
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
-	CDenseMatrixExactLog *op_func=new CDenseMatrixExactLog(op, e);
+	CDenseMatrixExactLog* op_func = new CDenseMatrixExactLog(op);
 	SG_REF(op_func);
 
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=5000;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -71,7 +67,6 @@ TEST(LogDetEstimator, sample)
 	SG_UNREF(trace_sampler);
 	SG_UNREF(op_func);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 
 #ifdef HAVE_LAPACK
@@ -86,10 +81,6 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 
 	CLogDetEstimator estimator(sm);
 
-	CIndependentComputationEngine* e=
-		dynamic_cast<CIndependentComputationEngine*>
-		(estimator.get_computation_engine());
-
 	COperatorFunction<float64_t>* op=
 		dynamic_cast<COperatorFunction<float64_t>*>
 		(estimator.get_operator_function());
@@ -97,13 +88,11 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	CTraceSampler* tracer=
 		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
 
-	EXPECT_TRUE(e);
 	EXPECT_TRUE(op);
 	EXPECT_TRUE(tracer);
 
 	SG_UNREF(tracer);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 #endif //HAVE_LAPACK
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -111,9 +100,6 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 #ifdef USE_GPL_SHOGUN
 TEST(LogDetEstimator, sample_ratapp_dense)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=1.0;
@@ -133,16 +119,16 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationIndividual *op_func
-		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver,
-			(CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
+	CLogRationalApproximationIndividual* op_func =
+	    new CLogRationalApproximationIndividual(
+	        op, eig_solver,
+	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
 	SG_REF(op_func);
 
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=10;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -158,16 +144,12 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_LAPACK
 TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
@@ -222,15 +204,16 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationIndividual *op_func
-		=new CLogRationalApproximationIndividual
-		(opd, e, eig_solver, (CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
+	CLogRationalApproximationIndividual* op_func =
+	    new CLogRationalApproximationIndividual(
+	        opd, eig_solver,
+	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
 	SG_REF(op_func);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -247,14 +230,10 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	SG_UNREF(op_func);
 	SG_UNREF(op);
 	SG_UNREF(opd);
-	SG_UNREF(e);
 }
 
 TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
@@ -307,14 +286,14 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationCGM *op_func
-		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
+	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	    op, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=10;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -330,14 +309,10 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 
 TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	float64_t difficulty=2;
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
@@ -363,14 +338,14 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationCGM *op_func
-		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
+	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	    op, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -389,14 +364,10 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 
 TEST(LogDetEstimator, sample_ratapp_big_matrix)
 {
-	CSerialComputationEngine* e=new CSerialComputationEngine;
-	SG_REF(e);
-
 	float64_t difficulty=2;
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
@@ -430,14 +401,14 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	//linear_solver->set_iteration_limit(2000);
 	SG_REF(linear_solver);
 
-	CLogRationalApproximationCGM *op_func
-		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
+	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	    op, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op);
 	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	CLogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -456,7 +427,6 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
 	SG_UNREF(op);
-	SG_UNREF(e);
 }
 #endif // HAVE_LAPACK
 #endif // HAVE_COLPACK

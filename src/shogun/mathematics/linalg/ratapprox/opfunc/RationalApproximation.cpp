@@ -15,7 +15,6 @@
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {
@@ -29,13 +28,9 @@ CRationalApproximation::CRationalApproximation()
 }
 
 CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
-	float64_t desired_accuracy,
-	EOperatorFunction function_type)
-	: COperatorFunction<float64_t>(linear_operator, computation_engine,
-	  function_type)
+	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+	float64_t desired_accuracy, EOperatorFunction function_type)
+	: COperatorFunction<float64_t>(linear_operator, function_type)
 {
 	init();
 

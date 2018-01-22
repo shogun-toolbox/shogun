@@ -16,8 +16,6 @@ namespace shogun
 
 template<class T> class SGVector;
 template<class T> class CDenseMatrixOperator;
-class CJobResultAggregator;
-class CIndependentComputationEngine;
 
 /** @brief Class that generates jobs for computing logarithm of
  *  a dense matrix linear operator
@@ -32,10 +30,8 @@ public:
 	 * constructor
 	 *
 	 * @param op the dense matrix linear operator for this operator function
-	 * @param engine the computation engine for the independent jobs
 	 */
-	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op,
-		CIndependentComputationEngine* engine);
+	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op);
 
 	/** destructor */
 	virtual ~CDenseMatrixExactLog();
@@ -48,14 +44,9 @@ public:
 	virtual void precompute();
 
 	/**
-	 * method that creates a scalar job result aggregator, then creates one
-	 * job per sample, attaches the aggregator with it, and submits the job to
-	 * computation engine and then returns the aggregator
-	 *
-	 * @param sample the vector for which a new computation job has to be created
-	 * @return the array of generated independent jobs
+	 * method that solves the result for a sample
 	 */
-	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample);
+	virtual float64_t solve(SGVector<float64_t> sample);
 
 	/** @return object name */
 	virtual const char* get_name() const

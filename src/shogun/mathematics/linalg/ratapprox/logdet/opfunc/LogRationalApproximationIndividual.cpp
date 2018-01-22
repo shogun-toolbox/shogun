@@ -7,36 +7,34 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 #include <typeinfo>
+
+using namespace Eigen;
 
 namespace shogun
 {
 
-CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
-	: CRationalApproximation(NULL, NULL, NULL, 0, OF_LOG)
-{
-	init();
+	CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
+	    : CRationalApproximation(NULL, NULL, 0, OF_LOG)
+	{
+		init();
 
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
-	CMatrixOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
+	CMatrixOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
 	CLinearSolver<complex128_t, float64_t>* linear_solver,
 	float64_t desired_accuracy)
-	: CRationalApproximation(linear_operator, computation_engine,
-	  eigen_solver, desired_accuracy, OF_LOG)
+	: CRationalApproximation(
+	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
 {
 	init();
 
@@ -61,19 +59,11 @@ CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
-	SGVector<float64_t> sample)
+float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
 {
-	SG_DEBUG("OperatorFunction::submit_jobs(): Entering..\n");
+	SG_DEBUG("OperatorFunction::solve(): Entering..\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
-	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
-
-	// create the aggregator with sample, and the multiplier
-	CIndividualJobResultAggregator* agg=new CIndividualJobResultAggregator(
-		m_linear_operator, sample, m_constant_multiplier);
-	// we don't want the aggregator to be destroyed when the job is unref-ed
-	SG_REF(agg);
 
 	// this enum will save from repeated typechecking for all jobs
 	enum typeID {DENSE=1, SPARSE, UNKNOWN} operator_type=UNKNOWN;
@@ -107,7 +97,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	else
 	{
 		// something weird happened
-		SG_ERROR("OperatorFunction::submit_jobs(): Unknown MatrixOperator given!\n");
+		SG_ERROR("OperatorFunction::solve(): Unknown MatrixOperator given!\n");
 	}
 
 	// create num_shifts number of jobs for current sample vector
@@ -130,8 +120,9 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 			break;
 		}
 
-		REQUIRE(shifted_op, "OperatorFunction::submit_jobs():"
-			"MatrixOperator typeinfo was not detected!\n");
+		REQUIRE(
+			shifted_op, "OperatorFunction::solve():"
+			            "MatrixOperator typeinfo was not detected!\n");
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
@@ -140,22 +131,25 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 			diag[j]-=m_shifts[i];
 		shifted_op->set_diagonal(diag);
 
-		// create a job and submit to the engine
-		CRationalApproximationIndividualJob* job
-			=new CRationalApproximationIndividualJob(agg, m_linear_solver,
-				shifted_op, sample, m_weights[i]);
-		SG_REF(job);
+		SGVector<complex128_t> vec = m_linear_solver->solve(shifted_op, sample);
 
-		m_computation_engine->submit_job(job);
+		// multiply with the weight using Eigen3 and take negative
+		// (see CRationalApproximation for the formula)
+		Map<VectorXcd> v(vec.vector, vec.vlen);
+		v *= m_weights[i];
+		v = -v;
 
-		// we can safely unref the job here, computation engine takes it from here
-		SG_UNREF(job);
-	}
+		SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
 
-	SG_UNREF(complex_op);
+		// perform dot product
+		Map<VectorXd> map_agg(agg.vector, agg.vlen);
+		Map<VectorXd> map_vector(sample.vector, sample.vlen);
+		float64_t result = map_vector.dot(map_agg);
 
-	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");
-	return agg;
+		result *= m_constant_multiplier;
+
+		return result;
 }
 
+}
 }
