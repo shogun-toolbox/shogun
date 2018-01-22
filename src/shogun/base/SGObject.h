@@ -500,10 +500,30 @@ protected:
 	 */
 	template <typename T>
 	void watch_param(
-		const std::string& name, T* value, AnyParameterProperties properties)
+		const std::string& name, T* value,
+		AnyParameterProperties properties =
+		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+	}
+
+	/** Puts a pointer to some parameter array into the parameter map.
+	 *
+	 * @param name name of the parameter array
+	 * @param value pointer to the first element of the parameter array
+	 * @param properties properties of the parameter (e.g. if model selection is
+	 * supported)
+	 */
+	template <typename T, typename S>
+	void watch_param(
+		const std::string& name, T** value, S* len,
+		AnyParameterProperties properties =
+		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+	{
+		BaseTag tag(name);
+		create_parameter(
+			tag, AnyParameter(make_any_ref_array(value, len), properties));
 	}
 
 public:
