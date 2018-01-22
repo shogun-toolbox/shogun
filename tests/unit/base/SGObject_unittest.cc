@@ -266,50 +266,6 @@ TEST(SGObject,ref_unref_simple)
 	EXPECT_TRUE(labs == NULL);
 }
 
-TEST(SGObject, DISABLED_equals_DynamicObjectArray_equal)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	EXPECT_TRUE(array1->equals(array2));
-	EXPECT_TRUE(array2->equals(array1));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
-}
-
-TEST(SGObject, DISABLED_equals_DynamicObjectArray_equal_after_resize)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	/* enforce a resize */
-	for (index_t i=0; i<1000; ++i)
-		array1->append_element(new CGaussianKernel());
-
-	array1->reset_array();
-
-	EXPECT_TRUE(array1->equals(array2));
-	EXPECT_TRUE(array2->equals(array1));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
-}
-
-TEST(SGObject, DISABLED_equals_DynamicObjectArray_different)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	array1->append_element(new CGaussianKernel());
-
-	EXPECT_FALSE(array1->equals(array2));
-	EXPECT_FALSE(array2->equals(array1));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
-}
-
 #ifdef USE_GPL_SHOGUN
 TEST(SGObject,equals_complex_equal)
 {

@@ -55,3 +55,35 @@ TEST(DynamicObjectArray,clone)
 	SG_UNREF(orig_array);
 	SG_UNREF(cloned_array);
 }
+
+TEST(DynamicObjectArray, equals_after_resize)
+{
+	CDynamicObjectArray* array1 = new CDynamicObjectArray();
+	CDynamicObjectArray* array2 = new CDynamicObjectArray();
+
+	/* enforce a resize */
+	for (index_t i = 0; i < 1000; ++i)
+		array1->append_element(new CDynamicObjectArray());
+
+	array1->reset_array();
+
+	EXPECT_TRUE(array1->equals(array2));
+	EXPECT_TRUE(array2->equals(array1));
+
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
+
+TEST(DynamicObjectArray, equals_different)
+{
+	CDynamicObjectArray* array1 = new CDynamicObjectArray();
+	CDynamicObjectArray* array2 = new CDynamicObjectArray();
+
+	array1->append_element(new CDynamicObjectArray());
+
+	EXPECT_FALSE(array1->equals(array2));
+	EXPECT_FALSE(array2->equals(array1));
+
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
