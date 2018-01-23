@@ -24,6 +24,7 @@
 #include <shogun/lib/tag.h>
 
 #include <utility>
+#include <set>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -408,6 +409,11 @@ public:
 	 *
 	 */
 	std::string to_string() const;
+
+	/** Returns set of all parameter names of the object.
+	 *
+	 */
+	std::set<std::string> parameter_names() const;
 
 #ifndef SWIG
 	/**
