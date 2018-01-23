@@ -53,12 +53,14 @@ namespace shogun
 			init_sg_vector_matrix();
 			init_sg_sparse_vector_matrix();
 			init_raw_vector();
+			init_raw_matrix();
 		}
 
 		~CCloneEqualsMock()
 		{
 			free_single();
 			free_raw_vector();
+			free_raw_matrix();
 		}
 
 		void init_single()
@@ -161,6 +163,22 @@ namespace shogun
 			delete m_raw_vector_sg_string;
 		}
 
+		void init_raw_matrix()
+		{
+			m_raw_matrix_basic_rows = 2;
+			m_raw_matrix_basic_cols = 3;
+			auto size =
+			    int64_t(m_raw_matrix_basic_rows) * m_raw_matrix_basic_cols;
+			m_raw_matrix_basic = new T[size];
+			for (auto i : range(size))
+				m_raw_matrix_basic[i] = 1;
+		}
+
+		void free_raw_matrix()
+		{
+			delete m_raw_matrix_basic;
+		}
+
 		const char* get_name() const
 		{
 			return "CloneEqualsMock";
@@ -183,6 +201,10 @@ namespace shogun
 
 		CCloneEqualsMockParameter<T>** m_raw_vector_object;
 		index_t m_raw_vector_object_len;
+
+		T* m_raw_matrix_basic;
+		index_t m_raw_matrix_basic_rows;
+		index_t m_raw_matrix_basic_cols;
 	};
 
 	/** @brief Used to test the tags-parameter framework

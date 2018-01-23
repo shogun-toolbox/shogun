@@ -161,6 +161,16 @@ TYPED_TEST(SGObjectEquals, different_raw_vector_object)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
+TYPED_TEST(SGObjectEquals, different_raw_matrix_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_raw_matrix_basic[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
 TEST(SGObject, equals_different_type)
 {
 	auto obj1 = some<CCloneEqualsMock<int>>();
