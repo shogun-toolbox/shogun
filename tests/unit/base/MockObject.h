@@ -152,15 +152,15 @@ namespace shogun
 
 		void free_raw_vector()
 		{
-			delete m_raw_vector_basic;
+			delete[] m_raw_vector_basic;
 
 			for (auto i : range(m_raw_vector_object_len))
 				delete m_raw_vector_object[i];
-			delete m_raw_vector_object;
+			delete[] m_raw_vector_object;
 
 			for (auto i : range(m_raw_vector_sg_string_len))
 				m_raw_vector_sg_string[i].free_string();
-			delete m_raw_vector_sg_string;
+			delete[] m_raw_vector_sg_string;
 		}
 
 		void init_raw_matrix()
@@ -176,7 +176,7 @@ namespace shogun
 
 		void free_raw_matrix()
 		{
-			delete m_raw_matrix_basic;
+			delete[] m_raw_matrix_basic;
 		}
 
 		const char* get_name() const
