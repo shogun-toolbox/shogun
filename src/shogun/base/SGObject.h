@@ -23,8 +23,8 @@
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
-#include <utility>
 #include <set>
+#include <utility>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace

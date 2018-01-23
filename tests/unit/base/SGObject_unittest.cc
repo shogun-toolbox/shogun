@@ -4,22 +4,25 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Heiko Strathmann
+ * Written (W) 2013-2018 Heiko Strathmann
  * Written (W) 2014 Thoralf Klein
  * Written (W) 2015 Wu Lin
  */
 
 #include "MockObject.h"
+#include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
+#include <shogun/lib/DataType.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -544,4 +547,42 @@ TEST(SGObject, watched_parameter_object)
 	EXPECT_FALSE(other_obj->equals(obj));
 	obj = nullptr;
 	EXPECT_EQ(other_obj->ref_count(), 1);
+}
+
+// temporary test until old parameter framework is gone
+// enable test to hunt for parameters not registered in tags
+// see https://github.com/shogun-toolbox/shogun/issues/4117
+TEST(SGObjectAll, DISABLED_tag_coverage)
+{
+	auto class_names = available_objects();
+
+	for (auto class_name : class_names)
+	{
+		auto obj = create(class_name.c_str(), PT_NOT_GENERIC);
+
+		// templated classes cannot be created in the above way
+		if (!obj)
+		{
+			// only test single generic type here: all types have the same
+			// parameter names
+			obj = create(class_name.c_str(), PT_FLOAT64);
+		}
+
+		// whether templated or not
+		ASSERT_NE(obj, nullptr);
+
+		// old parameter framework names
+		std::set<std::string> old_names;
+		for (auto i : range(obj->m_parameters->get_num_parameters()))
+			old_names.insert(obj->m_parameters->get_parameter(i)->m_name);
+		auto tag_names = obj->parameter_names();
+
+		// hack to increase readability of error messages
+		old_names.insert("Class: " + class_name);
+		tag_names.insert("Class: " + class_name);
+
+		EXPECT_EQ(tag_names, old_names);
+
+		SG_UNREF(obj);
+	}
 }
