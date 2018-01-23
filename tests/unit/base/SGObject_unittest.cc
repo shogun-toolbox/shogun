@@ -27,11 +27,6 @@
 
 using namespace shogun;
 
-TEST(SGObject, CCloneEqualsMock_allocate_delete)
-{
-	auto obj = some<CCloneEqualsMock<int32_t>>();
-}
-
 template <typename T>
 class SGObjectEquals : public ::testing::Test
 {
@@ -50,6 +45,11 @@ TYPED_TEST(SGObjectEquals, same)
 	EXPECT_TRUE(obj1->equals(obj1));
 	EXPECT_TRUE(obj1->equals(obj2));
 	EXPECT_TRUE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, mock_allocate_delete)
+{
+	auto obj = some<CCloneEqualsMock<int32_t>>();
 }
 
 TYPED_TEST(SGObjectEquals, different_null)
@@ -125,38 +125,38 @@ TYPED_TEST(SGObjectEquals, different_sg_matrix)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TYPED_TEST(SGObjectEquals, different_vector_basic)
+TYPED_TEST(SGObjectEquals, different_raw_vector_basic)
 {
 	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
 	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
 
-	obj1->m_vector_basic[0] -= 1;
+	obj1->m_raw_vector_basic[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TYPED_TEST(SGObjectEquals, different_vector_sg_string)
+TYPED_TEST(SGObjectEquals, different_raw_vector_sg_string)
 {
 	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
 	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
 
-	obj1->m_vector_sg_string[0].string[0] -= 1;
+	obj1->m_raw_vector_sg_string[0].string[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TYPED_TEST(SGObjectEquals, different_vector_object)
+TYPED_TEST(SGObjectEquals, different_raw_vector_object)
 {
 	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
 	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
 
-	obj1->m_vector_object[0]->m_some_value -= 1;
+	obj1->m_raw_vector_object[0]->m_some_value -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
-	obj1->m_vector_object[0]->m_some_value += 1;
+	obj1->m_raw_vector_object[0]->m_some_value += 1;
 
-	delete obj1->m_vector_object[0];
-	obj1->m_vector_object[0] = nullptr;
+	delete obj1->m_raw_vector_object[0];
+	obj1->m_raw_vector_object[0] = nullptr;
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
 }

@@ -49,12 +49,34 @@ namespace shogun
 	public:
 		CCloneEqualsMock()
 		{
+			init_single();
+			init_sg_vector_matrix();
+			init_sg_sparse_vector_matrix();
+			init_raw_vector();
+		}
+
+		~CCloneEqualsMock()
+		{
+			free_single();
+			free_raw_vector();
+		}
+
+		void init_single()
+		{
 			m_basic = 1;
 			watch_param("basic", &m_basic);
 
 			m_object = new CCloneEqualsMockParameter<T>();
 			watch_param("object", &m_object);
+		}
 
+		void free_single()
+		{
+			delete m_object;
+		}
+
+		void init_sg_vector_matrix()
+		{
 			m_sg_vector = SGVector<T>(2);
 			m_sg_vector.set_const(m_basic);
 			watch_param("sg_vector", &m_sg_vector);
@@ -62,7 +84,10 @@ namespace shogun
 			m_sg_matrix = SGMatrix<T>(3, 4);
 			m_sg_matrix.set_const(m_basic);
 			watch_param("sg_matrix", &m_sg_matrix);
+		}
 
+		void init_sg_sparse_vector_matrix()
+		{
 			m_sg_sparse_vector = SGSparseVector<T>(4);
 			for (auto i : range(m_sg_sparse_vector.num_feat_entries))
 			{
@@ -88,45 +113,52 @@ namespace shogun
 				m_sg_sparse_matrix.sparse_matrix[i] = vec;
 			}
 			watch_param("sg_sparse_matrix", &m_sg_sparse_matrix);
-
-			m_vector_basic_len = 5;
-			m_vector_basic = new T[m_vector_basic_len];
-			for (auto i : range(m_vector_basic_len))
-				m_vector_basic[i] = m_basic;
-			watch_param("vector_basic", &m_vector_basic, &m_vector_basic_len);
-
-			m_vector_sg_string_len = 7;
-			m_vector_sg_string = new SGString<T>[m_vector_sg_string_len];
-			for (auto i : range(m_vector_sg_string_len))
-			{
-				m_vector_sg_string[i] = SGString<T>(i + 1, true);
-				for (auto j : range(m_vector_sg_string[i].slen))
-					m_vector_sg_string[i].string[j] = 1;
-			}
-			watch_param(
-			    "vector_sg_string", &m_vector_sg_string,
-			    &m_vector_sg_string_len);
-
-			m_vector_object_len = 6;
-			m_vector_object =
-			    new CCloneEqualsMockParameter<T>*[m_vector_object_len];
-			for (auto i : range(m_vector_object_len))
-				m_vector_object[i] = new CCloneEqualsMockParameter<T>();
-			watch_param(
-			    "vector_object", &m_vector_object, &m_vector_object_len);
 		}
 
-		~CCloneEqualsMock()
+		void init_raw_vector()
 		{
-			delete m_object;
-			delete m_vector_basic;
-			for (auto i : range(m_vector_object_len))
-				delete m_vector_object[i];
-			delete m_vector_object;
+			m_raw_vector_basic_len = 5;
+			m_raw_vector_basic = new T[m_raw_vector_basic_len];
+			for (auto i : range(m_raw_vector_basic_len))
+				m_raw_vector_basic[i] = m_basic;
+			watch_param(
+			    "raw_vector_basic", &m_raw_vector_basic,
+			    &m_raw_vector_basic_len);
 
-			for (auto i : range(m_vector_sg_string_len))
-				m_vector_sg_string[i].free_string();
-			delete m_vector_sg_string;
+			m_raw_vector_sg_string_len = 7;
+			m_raw_vector_sg_string =
+			    new SGString<T>[m_raw_vector_sg_string_len];
+			for (auto i : range(m_raw_vector_sg_string_len))
+			{
+				m_raw_vector_sg_string[i] = SGString<T>(i + 1, true);
+				for (auto j : range(m_raw_vector_sg_string[i].slen))
+					m_raw_vector_sg_string[i].string[j] = 1;
+			}
+			watch_param(
+			    "raw_vector_sg_string", &m_raw_vector_sg_string,
+			    &m_raw_vector_sg_string_len);
+
+			m_raw_vector_object_len = 6;
+			m_raw_vector_object =
+			    new CCloneEqualsMockParameter<T>*[m_raw_vector_object_len];
+			for (auto i : range(m_raw_vector_object_len))
+				m_raw_vector_object[i] = new CCloneEqualsMockParameter<T>();
+			watch_param(
+			    "raw_vector_object", &m_raw_vector_object,
+			    &m_raw_vector_object_len);
+		}
+
+		void free_raw_vector()
+		{
+			delete m_raw_vector_basic;
+
+			for (auto i : range(m_raw_vector_object_len))
+				delete m_raw_vector_object[i];
+			delete m_raw_vector_object;
+
+			for (auto i : range(m_raw_vector_sg_string_len))
+				m_raw_vector_sg_string[i].free_string();
+			delete m_raw_vector_sg_string;
 		}
 
 		const char* get_name() const
@@ -143,14 +175,14 @@ namespace shogun
 		SGSparseVector<T> m_sg_sparse_vector;
 		SGSparseMatrix<T> m_sg_sparse_matrix;
 
-		T* m_vector_basic;
-		index_t m_vector_basic_len;
+		T* m_raw_vector_basic;
+		index_t m_raw_vector_basic_len;
 
-		SGString<T>* m_vector_sg_string;
-		index_t m_vector_sg_string_len;
+		SGString<T>* m_raw_vector_sg_string;
+		index_t m_raw_vector_sg_string_len;
 
-		CCloneEqualsMockParameter<T>** m_vector_object;
-		index_t m_vector_object_len;
+		CCloneEqualsMockParameter<T>** m_raw_vector_object;
+		index_t m_raw_vector_object_len;
 	};
 
 	/** @brief Used to test the tags-parameter framework
