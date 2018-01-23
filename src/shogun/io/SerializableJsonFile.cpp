@@ -42,7 +42,6 @@ CSerializableJsonFile::new_reader(char* dest_version, size_t n)
                          m_stack_stream.back(), STR_KEY_FILETYPE, &buf);
 
 	if (!success || buf == NULL
-		|| is_error(buf)
 		|| (ftype = json_object_get_string(buf)) == NULL)
 		return NULL;
 
@@ -77,11 +76,10 @@ bool
 CSerializableJsonFile::get_object(json_object** dest, json_object* src,
 								  const char* key, json_type t)
 {
-        bool success = true ;
-        success = json_object_object_get_ex(src, key, & *dest);
+	bool success = true;
+	success = json_object_object_get_ex(src, key, &*dest);
 
-	return success && *dest != NULL && !is_error(*dest)
-		&& json_object_is_type(*dest, t);
+	return success && *dest != nullptr && json_object_is_type(*dest, t);
 }
 
 void
@@ -97,7 +95,8 @@ CSerializableJsonFile::init(const char* fname)
 	switch (m_task) {
 	case 'r':
 		buf = json_object_from_file((char*) fname);
-		if (is_error(buf)) {
+		if (buf == nullptr)
+		{
 			SG_ERROR("Could not open file `%s' for reading!\n",
 					   fname);
 			return;
@@ -219,7 +218,7 @@ CSerializableJsonFile::write_scalar_wrapped(
 		break;
 	}
 
-	if (is_error(m_stack_stream.back()))
+	if (m_stack_stream.back() == nullptr)
 		return false;
 
 	return true;
@@ -289,7 +288,7 @@ CSerializableJsonFile::write_sparse_begin_wrapped(
 	push_object(json_object_new_object());
 
 	json_object* buf = json_object_new_array();
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 
 	json_object_object_add(m_stack_stream.back(),
@@ -319,7 +318,7 @@ CSerializableJsonFile::write_sparseentry_begin_wrapped(
 	push_object(buf);
 
 	buf = json_object_new_int(feat_index);
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 
 	json_object_object_add(m_stack_stream.back(),
@@ -380,7 +379,7 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 
 	json_object* buf;
 	buf = json_object_new_string(sgserializable_name);
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 
 	json_object_object_add(m_stack_stream.back(),
@@ -390,7 +389,7 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 		string_t buf_str;
 		TSGDataType::ptype_to_string(buf_str, generic, STRING_LEN);
 		buf = json_object_new_string(buf_str);
-		if (is_error(buf))
+		if (buf == nullptr)
 			return false;
 
 		json_object_object_add(m_stack_stream.back(),
@@ -398,7 +397,7 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 	}
 
 	buf = json_object_new_object();
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 	json_object_object_add(m_stack_stream.back(), STR_KEY_INSTANCE,
 						   buf);
@@ -423,7 +422,7 @@ CSerializableJsonFile::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	json_object* buf = json_object_new_object();
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 
 	json_object_object_add(m_stack_stream.back(), name, buf);
@@ -432,7 +431,7 @@ CSerializableJsonFile::write_type_begin_wrapped(
 	string_t str_buf;
 	type->to_string(str_buf, STRING_LEN);
 	buf = json_object_new_string(str_buf);
-	if (is_error(buf))
+	if (buf == nullptr)
 		return false;
 
 	json_object_object_add(m_stack_stream.back(), STR_KEY_TYPE, buf);
