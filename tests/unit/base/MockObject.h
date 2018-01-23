@@ -172,6 +172,9 @@ namespace shogun
 			m_raw_matrix_basic = new T[size];
 			for (auto i : range(size))
 				m_raw_matrix_basic[i] = 1;
+			watch_param(
+			    "raw_matrix_basic", &m_raw_matrix_basic,
+			    &m_raw_matrix_basic_rows, &m_raw_matrix_basic_cols);
 		}
 
 		void free_raw_matrix()
