@@ -939,6 +939,16 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
+std::set<std::string> CSGObject::parameter_names() const
+{
+	std::set<std::string> result;
+	for (const auto& each : self->map)
+	{
+		result.insert(each.first.name());
+	}
+	return result;
+}
+
 bool CSGObject::equals(const CSGObject* other) const
 {
 	if (other == this)
