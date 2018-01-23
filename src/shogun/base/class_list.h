@@ -13,6 +13,9 @@
 
 #include <shogun/io/SGIO.h>
 
+#include <set>
+#include <string>
+
 namespace shogun {
 	class CSGObject;
 
@@ -50,6 +53,12 @@ namespace shogun {
 		cast->ref();
 		return cast;
 	}
+
+	/** Returns all available object names
+	 *
+	 */
+	std::set<std::string> available_objects();
+
 }
 
 #endif /* __SG_CLASS_LIST_H__  */
