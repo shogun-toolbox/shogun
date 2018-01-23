@@ -512,6 +512,7 @@ protected:
 	 *
 	 * @param name name of the parameter array
 	 * @param value pointer to the first element of the parameter array
+	 * @param len number of elements in the array
 	 * @param properties properties of the parameter (e.g. if model selection is
 	 * supported)
 	 */
