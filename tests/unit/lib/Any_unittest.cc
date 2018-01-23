@@ -391,9 +391,9 @@ TEST(Any, array_ref)
 	float* other = new float[other_len];
 	std::iota(other, other + other_len, 9);
 
-	auto any_src = make_any_ref_array(&src, &src_len);
-	auto any_dst = make_any_ref_array(&dst, &dst_len);
-	auto any_other = make_any_ref_array(&other, &other_len);
+	auto any_src = make_any_ref(&src, &src_len);
+	auto any_dst = make_any_ref(&dst, &dst_len);
+	auto any_other = make_any_ref(&other, &other_len);
 
 	EXPECT_EQ(any_src, any_src);
 	EXPECT_EQ(any_dst, any_dst);
