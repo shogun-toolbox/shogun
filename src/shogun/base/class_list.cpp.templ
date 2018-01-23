@@ -74,3 +74,14 @@ void shogun::delete_object(CSGObject* object)
 {
 	delete object;
 }
+
+std::set<std::string> available_objects()
+{
+	std::set<std::string> result;
+	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
+		 i++)
+	{
+		result.insert(i->m_class_name);
+	}
+	return result;
+}
