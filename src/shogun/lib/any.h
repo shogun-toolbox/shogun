@@ -799,7 +799,7 @@ namespace shogun
 	}
 
 	template <typename T, typename S>
-	inline Any make_any_ref_array(T** ptr, S* length)
+	inline Any make_any_ref(T** ptr, S* length)
 	{
 		return make_any(ArrayReference<T, S>(ptr, length));
 	}

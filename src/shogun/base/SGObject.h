@@ -523,7 +523,7 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(
-			tag, AnyParameter(make_any_ref_array(value, len), properties));
+			tag, AnyParameter(make_any_ref(value, len), properties));
 	}
 
 public:
