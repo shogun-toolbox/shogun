@@ -26,9 +26,8 @@ The C++ examples are always available, you can compile them using `make` or more
 
 and run them as from their folder straight-away (you might have to set environmental variables, see [INTERFACES.md](INTERFACES.md))
 
-    cd examples/meta/cpp/multiclass_classifier
-    ./knn
-    ./svm
+    cd examples/meta/cpp/multiclass
+    ./cpp-multiclass-k_nearest_neighbours
 
 As the examples are part of the tests, you can easily run them as described in [DEVELOPING.md](DEVELOPING.md#testing).
 Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manually.
