@@ -12,7 +12,7 @@ MulticlassLabels labels_test(f_labels_test)
 
 #![set_parameters]
 MulticlassLibLinear mll()
-GaussianKernel kernel()
+Kernel kernel = kernel("GaussianKernel")
 #![set_parameters]
 
 #![create_instance]
