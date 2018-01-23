@@ -391,9 +391,50 @@ TEST(Any, array_ref)
 	float* other = new float[other_len];
 	std::iota(other, other + other_len, 9);
 
-	auto any_src = make_any_ref_array(&src, &src_len);
-	auto any_dst = make_any_ref_array(&dst, &dst_len);
-	auto any_other = make_any_ref_array(&other, &other_len);
+	auto any_src = make_any_ref(&src, &src_len);
+	auto any_dst = make_any_ref(&dst, &dst_len);
+	auto any_other = make_any_ref(&other, &other_len);
+
+	EXPECT_EQ(any_src, any_src);
+	EXPECT_EQ(any_dst, any_dst);
+
+	EXPECT_NE(any_src, any_dst);
+	EXPECT_NE(any_dst, any_src);
+
+	EXPECT_EQ(any_src, any_other);
+	EXPECT_EQ(any_other, any_src);
+
+	EXPECT_NE(any_dst, any_other);
+	EXPECT_NE(any_other, any_dst);
+
+	delete[] src;
+	delete[] dst;
+	delete[] other;
+}
+
+TEST(Any, array2d_ref)
+{
+	int src_rows = 5;
+	int src_cols = 4;
+	int src_size = src_rows * src_cols;
+	float* src = new float[src_size];
+	std::iota(src, src + src_size, 9);
+
+	int dst_rows = 3;
+	int dst_cols = 2;
+	int dst_size = dst_rows * dst_cols;
+	float* dst = new float[dst_size];
+	std::iota(dst, dst + dst_size, 5);
+
+	int other_rows = src_rows;
+	int other_cols = src_cols;
+	int other_size = other_rows * other_cols;
+	float* other = new float[other_size];
+	std::iota(other, other + other_size, 9);
+
+	auto any_src = make_any_ref(&src, &src_rows, &src_cols);
+	auto any_dst = make_any_ref(&dst, &dst_rows, &dst_cols);
+	auto any_other = make_any_ref(&other, &other_rows, &other_cols);
 
 	EXPECT_EQ(any_src, any_src);
 	EXPECT_EQ(any_dst, any_dst);

@@ -512,6 +512,7 @@ protected:
 	 *
 	 * @param name name of the parameter array
 	 * @param value pointer to the first element of the parameter array
+	 * @param len number of elements in the array
 	 * @param properties properties of the parameter (e.g. if model selection is
 	 * supported)
 	 */
@@ -523,7 +524,28 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(
-			tag, AnyParameter(make_any_ref_array(value, len), properties));
+			tag, AnyParameter(make_any_ref(value, len), properties));
+	}
+
+	/** Puts a pointer to some 2d parameter array (i.e. a matrix) into the
+	 * parameter map.
+	 *
+	 * @param name name of the parameter array
+	 * @param value pointer to the first element of the parameter array
+	 * @param rows number of rows in the array
+	 * @param cols number of columns in the array
+	 * @param properties properties of the parameter (e.g. if model selection is
+	 * supported)
+	 */
+	template <typename T, typename S>
+	void watch_param(
+		const std::string& name, T** value, S* rows, S* cols,
+		AnyParameterProperties properties =
+		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+	{
+		BaseTag tag(name);
+		create_parameter(
+			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
 	}
 
 public:

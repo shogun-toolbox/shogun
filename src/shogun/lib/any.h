@@ -103,6 +103,30 @@ namespace shogun
 		S* m_length;
 	};
 
+	template <class T, class S>
+	class Array2DReference
+	{
+	public:
+		Array2DReference(T** ptr, S* rows, S* cols)
+		    : m_ptr(ptr), m_rows(rows), m_cols(cols)
+		{
+		}
+		Array2DReference(const Array2DReference<T, S>& other)
+		    : m_ptr(other.m_ptr), m_rows(other.m_rows), m_cols(other.m_cols)
+		{
+		}
+		Array2DReference<T, S> operator=(const Array2DReference<T, S>& other)
+		{
+			throw std::logic_error("Assignment not supported");
+		}
+		bool equals(const Array2DReference<T, S>& other) const;
+
+	private:
+		T** m_ptr;
+		S* m_rows;
+		S* m_cols;
+	};
+
 	/** Used to denote an empty Any object */
 	struct Empty
 	{
@@ -275,6 +299,24 @@ namespace shogun
 		}
 		return std::equal(
 		    *(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
+		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+	}
+
+	template <class T, class S>
+	bool
+	Array2DReference<T, S>::equals(const Array2DReference<T, S>& other) const
+	{
+		if ((*(m_rows) != *(other.m_rows)) || (*(m_cols) != *(other.m_cols)))
+		{
+			return false;
+		}
+		if (*(m_ptr) == *(other.m_ptr))
+		{
+			return true;
+		}
+		int64_t size = int64_t(*(m_rows)) * (*(m_cols));
+		return std::equal(
+		    *(m_ptr), *(m_ptr) + size, *(other.m_ptr),
 		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
 	}
 
@@ -799,9 +841,15 @@ namespace shogun
 	}
 
 	template <typename T, typename S>
-	inline Any make_any_ref_array(T** ptr, S* length)
+	inline Any make_any_ref(T** ptr, S* length)
 	{
 		return make_any(ArrayReference<T, S>(ptr, length));
+	}
+
+	template <typename T, typename S>
+	inline Any make_any_ref(T** ptr, S* rows, S* cols)
+	{
+		return make_any(Array2DReference<T, S>(ptr, rows, cols));
 	}
 
 	/** Tries to recall Any type, fails when type is wrong.
