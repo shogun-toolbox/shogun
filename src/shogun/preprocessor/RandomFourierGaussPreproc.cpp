@@ -89,6 +89,9 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
 		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		watch_param(
+		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
+		    &cur_dim_feature_space, &cur_dim_input_space);
 	}
 
 }
@@ -117,7 +120,11 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", MS_AVAILABLE);
 
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+
 		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		watch_param(
+		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
+		    &cur_dim_feature_space, &cur_dim_input_space);
 	}
 
 	copy(feats);
