@@ -311,6 +311,12 @@ void CLinearHMM::init()
 
 	m_parameters->add_matrix(&transition_probs, &num_symbols, &sequence_length,
 			"transition_probs", "Transition probabilities.");
+	watch_param(
+	    "transition_probs", &transition_probs, &num_symbols, &sequence_length);
+
 	m_parameters->add_matrix(&log_transition_probs, &num_symbols, &sequence_length,
 			"log_transition_probs", "Transition probabilities (logspace).");
+	watch_param(
+	    "log_transition_probs", &log_transition_probs, &num_symbols,
+	    &sequence_length);
 }
