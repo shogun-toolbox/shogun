@@ -663,10 +663,15 @@ void CCombinedKernel::init()
 
 	SG_ADD((CSGObject**) &kernel_array, "kernel_array", "Array of kernels.",
 	    MS_AVAILABLE);
+
 	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
 		 "Support vector index.");
+	watch_param("sv_idx", &sv_idx, &sv_count);
+
 	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
 		 "Support vector weights.");
+	watch_param("sv_weight", &sv_weight, &sv_count);
+
 	SG_ADD(&append_subkernel_weights, "append_subkernel_weights",
 	    "If subkernel weights are appended.", MS_AVAILABLE);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",

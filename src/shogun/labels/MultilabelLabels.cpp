@@ -76,13 +76,15 @@ CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 
 	// Can only be enabled after this issue has been solved:
 	// https://github.com/shogun-toolbox/shogun/issues/1972
-/*	this->m_parameters->add(&m_num_labels, "m_num_labels",
-	                        "Number of labels.");
-	this->m_parameters->add(&m_num_classes, "m_num_classes",
-	                        "Number of classes.");
-	this->m_parameters->add_vector(&m_labels, &m_num_labels, "labels_array",
-	                               "The label vectors for all (num_labels) outputs.");
-*/
+	/*	this->m_parameters->add(&m_num_labels, "m_num_labels",
+	                            "Number of labels.");
+	    this->m_parameters->add(&m_num_classes, "m_num_classes",
+	                            "Number of classes.");
+
+	    this->m_parameters->add_vector(&m_labels, &m_num_labels, "labels_array",
+	                                   "The label vectors for all (num_labels)
+	   outputs.");
+	*/
 
 	m_num_labels = num_labels;
 	m_num_classes = num_classes;

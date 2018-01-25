@@ -45,8 +45,13 @@ CScatterSVM::~CScatterSVM()
 void CScatterSVM::register_params()
 {
 	SG_ADD((machine_int_t*) &scatter_type, "scatter_type", "Type of scatter SVM", MS_NOT_AVAILABLE);
+
 	m_parameters->add_vector(&norm_wc, &norm_wc_len, "norm_wc", "Norm of w_c");
+	watch_param("norm_wc", &norm_wc, &norm_wc_len);
+
 	m_parameters->add_vector(&norm_wcw, &norm_wcw_len, "norm_wcw", "Norm of w_cw");
+	watch_param("norm_wcw", &norm_wcw, &norm_wcw_len);
+
 	SG_ADD(&rho, "rho", "Scatter SVM rho", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }

@@ -67,6 +67,10 @@ void CSparseMatrixOperator<T>::init()
 		this->m_parameters->add_vector(&m_operator.sparse_matrix,
 				&m_operator.num_vectors, "sparse_matrix",
 				"The sparse matrix of the linear operator.");
+		this->watch_param(
+		    "sparse_matrix", &m_operator.sparse_matrix,
+		    &m_operator.num_vectors);
+
 		this->m_parameters->add(&m_operator.num_features,
 				"m_operator.num_features", "Number of features.");
 	}
