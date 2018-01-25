@@ -40,6 +40,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template<typename T>
 struct extract_value_type
 {
@@ -51,6 +52,7 @@ struct extract_value_type<X<T, Args...>>
 {
 	typedef T value_type;
 };
+#endif
 
 /** @brief A trait that makes a none SGObject SG-serializable
  * This only works with classes derived of SGReferencedData (SGVector, SGMatrix etc)
