@@ -257,9 +257,14 @@ void CSparsePolyFeatures::init()
 			"Dimensions of the input space.");
 	m_parameters->add(&m_output_dimensions, "output_dimensions",
 			"Dimensions of the feature space of the polynomial kernel.");
+
 	m_normalization_values_len = get_num_vectors();
 	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
 			"m_normalization_values", "Norm of each training example");
+	watch_param(
+	    "m_normalization_values", &m_normalization_values,
+	    &m_normalization_values_len);
+
 	m_parameters->add(&mask, "mask", "Mask.");
 	m_parameters->add(&m_hash_bits, "m_hash_bits", "Number of bits in hash");
 }

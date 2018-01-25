@@ -229,6 +229,8 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
+			watch_param(m_node_name, &param_vect, m_vector_length);
+
 			break;
 		}
 		case MSPT_INT32_SGVECTOR:
@@ -255,6 +257,8 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
+			watch_param(m_node_name, &param_vect, m_vector_length);
+
 			break;
 		}
 		case MSPT_FLOAT64:
