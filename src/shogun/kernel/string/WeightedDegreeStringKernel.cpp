@@ -1010,6 +1010,8 @@ void CWeightedDegreeStringKernel::init()
 
 	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
 			"weights", "WD Kernel weights.");
+	watch_param("weights", &weights, &weights_degree, &weights_length);
+
 	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
