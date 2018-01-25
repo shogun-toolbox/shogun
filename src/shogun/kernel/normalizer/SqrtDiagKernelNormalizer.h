@@ -38,8 +38,12 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		{
 			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
 							  "sqrt(K(x,x)) for left hand side examples.");
+			watch_param("sqrtdiag_lhs", &sqrtdiag_lhs, &num_sqrtdiag_lhs);
+
 			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs",
 							  "sqrt(K(x,x)) for right hand side examples.");
+			watch_param("sqrtdiag_rhs", &sqrtdiag_rhs, &num_sqrtdiag_rhs);
+
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
 					"flat if optimized diagonal computation is used", MS_NOT_AVAILABLE);

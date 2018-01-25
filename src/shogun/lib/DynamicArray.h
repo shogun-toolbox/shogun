@@ -623,6 +623,8 @@ template <class T> class CDynamicArray :public CSGObject
 			m_parameters->add_vector(&m_array.array,
 					&m_array.current_num_elements, "array",
 					"Memory for dynamic array.");
+			watch_param("array", &m_array.array, &m_array.current_num_elements);
+
 			SG_ADD(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.", MS_NOT_AVAILABLE);

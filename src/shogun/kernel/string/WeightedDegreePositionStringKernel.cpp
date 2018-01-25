@@ -1939,15 +1939,27 @@ void CWeightedDegreePositionStringKernel::init()
 	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
+	watch_param("position_weights", &position_weights, &position_weights_len);
+
 	m_parameters->add_vector(&position_weights_lhs, &position_weights_lhs_len,
 			"position_weights_lhs",
 			"Weights per position left hand side.");
+	watch_param(
+	    "position_weights_lhs", &position_weights_lhs,
+	    &position_weights_lhs_len);
+
 	m_parameters->add_vector(&position_weights_rhs, &position_weights_rhs_len,
 			"position_weights_rhs",
 			"Weights per position right hand side.");
+	watch_param(
+	    "position_weights_rhs", &position_weights_rhs,
+	    &position_weights_rhs_len);
+
 	m_parameters->add_vector(&shift, &shift_len,
 			"shift",
 			"Shift Vector.");
+	watch_param("shift", &shift, &shift_len);
+
 	SG_ADD(&max_shift, "max_shift", "Maximal shift.", MS_AVAILABLE);
 	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
