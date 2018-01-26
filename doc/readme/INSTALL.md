@@ -148,11 +148,11 @@ Download the latest [stable release source code](https://github.com/shogun-toolb
 Potentially update submodules
 
     git clone https://github.com/shogun-toolbox/shogun.git
+    cd shogun
     git submodule update --init
 
 Create the build directory in the source tree root
 
-    cd shogun
     mkdir build
 
 Configure cmake, from the build directory, passing the Shogun source root as argument.
