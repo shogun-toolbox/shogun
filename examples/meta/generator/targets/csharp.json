@@ -3,8 +3,14 @@
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
-        "Construct": "$typeName $name = new $typeName($arguments)",
-        "Copy": "$typeName $name = $expr",
+        "Construct": "$typeName $name = new $typeName($arguments)$kwargs",
+        "Copy": "$typeName $name = $expr$kwargs",
+        "KeywordArguments": {
+            "List": ";\n$elements",
+            "Element": "$name.put(\"$keyword\", $expr)",
+            "Separator": ";\n",
+            "InitialSeperatorWhenArgs>0": false
+        },
         "CharVector": "var $name = new char[$arguments]",
         "ByteVector": "var $name = new byte[$arguments]",
         "WordVector": "var $name = new ushort[$arguments]",

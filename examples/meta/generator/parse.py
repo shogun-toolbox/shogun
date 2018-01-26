@@ -2,6 +2,7 @@ import sys
 import json
 import argparse
 import ply
+import os
 
 
 # The FastParser parses input using PLY
@@ -24,7 +25,7 @@ class FastParser:
                                 outputdir=generatedFilesOutputDir,
                                 debug=generateFiles)
 
-    def parse(self, programString, filePath="Unknown"):
+    def parse(self, programString, filePath=None):
         """
         Parse a program string.
         The path of the program file is added as metadata to returned object
@@ -36,7 +37,10 @@ class FastParser:
 
         # Parse program and add FilePath key to object
         program = self.parser.parse(programString)
-        program["FilePath"] = filePath
+        if filePath is not None:
+            program["FilePath"] = os.path.abspath(filePath)
+        else:
+            program["FilePath"] = "Unknown"
 
         return program
 
@@ -181,15 +185,6 @@ class FastParser:
         "objecttype : IDENTIFIER"
         p[0] = {"ObjectType": p[1]}
 
-    def p_argumentList_nonEmpty(self, p):
-        """
-        argumentListNonEmpty : expr
-                             | expr COMMA argumentListNonEmpty
-        """
-        p[0] = [p[1]]
-        if len(p) > 2:
-            p[0].extend(p[3])
-
     def p_argumentList(self, p):
         """
         argumentList : argumentListNonEmpty
@@ -200,6 +195,25 @@ class FastParser:
             arguments = p[1]
 
         p[0] = {"ArgumentList": arguments}
+
+    def p_argumentListNonEmpty(self, p):
+        """
+        argumentListNonEmpty : argumentListElement
+                             | argumentListElement COMMA argumentListNonEmpty
+        """
+        p[0] = [p[1]]
+        if len(p) > 2:
+            p[0].extend(p[3])
+
+    def p_argumentListElement(self, p):
+        """
+        argumentListElement : expr
+                            | identifier EQUALS expr
+        """
+        if "Expr" in p[1]:
+            p[0] = p[1]
+        else:
+            p[0] = {"KeywordArgument": [p[1], p[3]]}
 
     def p_identifier(self, p):
         "identifier : IDENTIFIER"

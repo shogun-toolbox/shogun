@@ -3,8 +3,14 @@
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = Shogun::$typeName.new $arguments",
-        "Copy": "$name = $expr",
+        "Construct": "$name = Shogun::$typeName.new $arguments$kwargs",
+        "Copy": "$name = $expr$kwargs",
+        "KeywordArguments": {
+            "List": "\n$elements",
+            "Element": "$name.put \"$keyword\", $expr",
+            "Separator": "\n",
+            "InitialSeperatorWhenArgs>0": false
+        },
         "CharVector": "$name = NArray.byte($arguments)",
         "ByteVector": "$name = NArray.byte($arguments)",
         "WordVector": "$name = NArray.byte($arguments)",

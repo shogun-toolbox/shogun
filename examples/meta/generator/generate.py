@@ -69,8 +69,8 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         # print("Translating {}".format(os.sep.join([dirRelative, filename])))
 
         # Parse the example file
-        filePath = os.path.join(dirRelative, filename)
-        with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
+        filePath = os.path.join(inputDir, dirRelative, filename)
+        with open(filePath, 'r') as file:
             ast = parse(file.read(), filePath, generatedFilesOutputDir)
 
         # Translate ast to each target language
