@@ -1004,3 +1004,8 @@ bool CSGObject::equals(const CSGObject* other) const
 	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
 	return true;
 }
+
+CSGObject* CSGObject::create_empty() const
+{
+	CSGObject* object = create(this->get_name(), this->m_generic);
+}

@@ -23,9 +23,16 @@ namespace shogun
 
 			watch_param("some_value", &m_some_value);
 		}
-		const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CloneEqualsMockParameter";
+		}
+
+		virtual CSGObject* create_empty() const override
+		{
+			CSGObject* empty = new CCloneEqualsMockParameter();
+			SG_REF(empty);
+			return empty;
 		}
 
 		virtual CSGObject* clone()
@@ -182,9 +189,16 @@ namespace shogun
 			delete[] m_raw_matrix_basic;
 		}
 
-		const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CloneEqualsMock";
+		}
+
+		virtual CSGObject* create_empty() const override
+		{
+			CSGObject* empty = new CCloneEqualsMock();
+			SG_REF(empty);
+			return empty;
 		}
 
 		T m_basic;
@@ -227,7 +241,7 @@ namespace shogun
 			SG_UNREF(m_object);
 		}
 
-		const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MockObject";
 		}
