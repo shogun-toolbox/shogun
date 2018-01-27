@@ -147,18 +147,22 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 			SG_DEBUG("Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
 			if (!k->has_features())
 				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
-
-			//extract row & column subset indices from combined features
-			auto lhs_subset = ((CCombinedFeatures*)l)->get_subset_stack()->get_last_subset()->get_subset_idx();
-			auto rhs_subset = ((CCombinedFeatures*)r)->get_subset_stack()->get_last_subset()->get_subset_idx();
-
-			//clear all previous subsets
-			((CCustomKernel*)k)->remove_all_row_subsets();
-			((CCustomKernel*)k)->remove_all_col_subsets();
-
-			//apply new subset
-			((CCustomKernel*)k)->add_row_subset(lhs_subset);
-			((CCustomKernel*)k)->add_col_subset(rhs_subset);
+            if (((CCombinedFeatures*)l)->get_subset_stack() != NULL){
+                //extract row subset indices from combined features
+                auto lhs_subset = ((CCombinedFeatures*)l)->get_subset_stack()->get_last_subset()->get_subset_idx();
+                //clear all previous subsets
+                ((CCustomKernel*)k)->remove_all_row_subsets();
+                //apply new subset
+                ((CCustomKernel*)k)->add_row_subset(lhs_subset);
+            }
+            if (((CCombinedFeatures*)r)->get_subset_stack() != NULL){
+                //extract col subset indices from combined features
+                auto rhs_subset = ((CCombinedFeatures*)r)->get_subset_stack()->get_last_subset()->get_subset_idx();
+                //clear all previous subsets
+                ((CCustomKernel*)k)->remove_all_col_subsets();
+                //apply new subset
+                ((CCustomKernel*)k)->add_col_subset(rhs_subset);
+            }
 
 			if (k->get_num_vec_lhs() != num_lhs)
 				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs())
