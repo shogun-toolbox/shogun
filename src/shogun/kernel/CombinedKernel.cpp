@@ -159,7 +159,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
                 //apply new subset
                 ((CCustomKernel*)k)->add_row_subset(lhs_subset);
             }
-            
+
             if (rhs_subset_stack->has_subsets()) {
                 auto rhs_subset = rhs_subset_stack->get_last_subset()->get_subset_idx();
                 //clear all previous subsets
