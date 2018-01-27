@@ -172,6 +172,9 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 				((CCustomKernel*)k)->add_col_subset(rhs_subset);
 			}
 
+            SG_UNREF(lhs_subset_stack)
+            SG_UNREF(rhs_subset_stack)
+
 			if (k->get_num_vec_lhs() != num_lhs)
 				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs())
 			if (k->get_num_vec_rhs() != num_rhs)
