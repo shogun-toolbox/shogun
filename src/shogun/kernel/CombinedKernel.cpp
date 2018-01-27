@@ -148,7 +148,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 			if (!k->has_features())
 				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
 
-			//extract row & column subset indices from combined features
+			// extract row & column subset indices from combined features
 			auto lhs_subset_stack = ((CCombinedFeatures*)l)->get_subset_stack();
 			auto rhs_subset_stack = ((CCombinedFeatures*)r)->get_subset_stack();
 
