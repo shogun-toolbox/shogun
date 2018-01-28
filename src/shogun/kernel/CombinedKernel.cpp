@@ -177,8 +177,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	}
 
 	if (l_combined->get_num_feature_obj() <= 0 ||
-	    l_combined->get_num_feature_obj() !=
-	        r_combined->get_num_feature_obj())
+	    l_combined->get_num_feature_obj() != r_combined->get_num_feature_obj())
 		SG_ERROR(
 		    "CombinedKernel: Number of features/kernels does not match - "
 		    "bailing out\n")
