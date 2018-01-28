@@ -84,6 +84,9 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	CFeatures* rf = NULL;
 	CKernel* k = NULL;
 
+    auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
+    auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
+
 	bool result = true;
 	index_t f_idx = 0;
 
@@ -98,11 +101,11 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
-			if (((CCombinedFeatures*)l)->get_num_feature_obj() > f_idx &&
-			    ((CCombinedFeatures*)r)->get_num_feature_obj() > f_idx)
+			if (l_combined->get_num_feature_obj() > f_idx &&
+			    r_combined->get_num_feature_obj() > f_idx)
 			{
-				lf = ((CCombinedFeatures*)l)->get_feature_obj(f_idx);
-				rf = ((CCombinedFeatures*)r)->get_feature_obj(f_idx);
+				lf = l_combined->get_feature_obj(f_idx);
+				rf = r_combined->get_feature_obj(f_idx);
 			}
 
 			f_idx++;
@@ -134,14 +137,16 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_ERROR(
 				    "No kernel matrix was assigned to this Custom kernel\n")
 
-			// clear all previous subsets
-			((CCustomKernel*)k)->remove_all_row_subsets();
-			// apply new subset
-			((CCustomKernel*)k)->add_row_subset(lhs_subset);
+            auto k_custom = dynamic_cast<CCustomKernel*>(k);
 
-			((CCustomKernel*)k)->remove_all_col_subsets();
+			// clear all previous subsets
+			k_custom->remove_all_row_subsets();
 			// apply new subset
-			((CCustomKernel*)k)->add_col_subset(rhs_subset);
+            k_custom->add_row_subset(lhs_subset);
+
+            k_custom->remove_all_col_subsets();
+			// apply new subset
+            k_custom->add_col_subset(rhs_subset);
 
 			if (k->get_num_vec_lhs() != num_lhs)
 				SG_ERROR(
@@ -171,9 +176,9 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		return false;
 	}
 
-	if (((CCombinedFeatures*)l)->get_num_feature_obj() <= 0 ||
-	    ((CCombinedFeatures*)l)->get_num_feature_obj() !=
-	        ((CCombinedFeatures*)r)->get_num_feature_obj())
+	if (l_combined->get_num_feature_obj() <= 0 ||
+	    l_combined->get_num_feature_obj() !=
+	        r_combined->get_num_feature_obj())
 		SG_ERROR(
 		    "CombinedKernel: Number of features/kernels does not match - "
 		    "bailing out\n")
