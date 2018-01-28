@@ -342,6 +342,45 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
 	EXPECT_EQ(m.num_cols, U.num_cols);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_cholesky_ldlt_lower)
+{
+	const index_t size = 3;
+	SGMatrix<float64_t> m(size, size);
+	m(0, 0) = 0.0;
+	m(0, 1) = 0.0;
+	m(0, 2) = 0.0;
+	m(1, 0) = 0.0;
+	m(1, 1) = 1.0;
+	m(1, 2) = 2.0;
+	m(2, 0) = 0.0;
+	m(2, 1) = 2.0;
+	m(2, 2) = 3.0;
+
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> d(size);
+	SGVector<index_t> p(size);
+
+	linalg::ldlt_factor(m, L, d, p);
+
+	EXPECT_NEAR(d[0], 3.0, 1e-15);
+	EXPECT_NEAR(d[1], -0.333333333333333, 1e-15);
+	EXPECT_NEAR(d[2], 0.0, 1e-15);
+
+	EXPECT_NEAR(L(0, 0), 1.0, 1e-15);
+	EXPECT_NEAR(L(0, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(0, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(1, 0), 0.666666666666666, 1e-15);
+	EXPECT_NEAR(L(1, 1), 1.0, 1e-15);
+	EXPECT_NEAR(L(1, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 0), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 2), 1.0, 1e-15);
+
+	EXPECT_EQ(p[0], 2);
+	EXPECT_EQ(p[1], 1);
+	EXPECT_EQ(p[2], 2);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 {
 	const index_t size=2;

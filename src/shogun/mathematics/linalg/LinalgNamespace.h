@@ -591,6 +591,44 @@ namespace shogun
 		}
 
 		/**
+		 * Compute the LDLT cholesky decomposition \f$A = P^{T} L D L^{*} P\f$
+		 * or \f$A = P^{T} U^{*} D U P\f$
+		 * of a positive semidefinite or negative semidefinite Hermitan matrix
+		 *
+		 * @param A The matrix whose LDLT cholesky decomposition is to be
+		 *  computed
+		 * @param L The matrix that saves tht upper or lower triangular LDLT
+		 *  Cholesky factorization (default: lower)
+		 * @param d The vector that saves the diagonal of the diagonal matrix D
+		 * @param p The vector that saves the permuattion matrix P as a
+		 * transposition sequence
+		 * @param lower Whether to compute the upper or lower triangular
+		 *  Cholesky factorization (default: lower)
+		 */
+		template <typename T>
+		void ldlt_factor(
+		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
+		    SGVector<index_t>& p, const bool lower = true)
+		{
+			REQUIRE(A.num_rows == A.num_cols, "Matrix A is not square\n");
+			REQUIRE(
+			    A.num_rows == L.num_rows && A.num_cols == L.num_cols,
+			    "Shape of matrix A (%d, %d) doesn't match matrix L (%d, %d)\n",
+			    A.num_rows, A.num_cols, L.num_rows, L.num_rows);
+			REQUIRE(
+			    d.vlen == A.num_rows, "Length of vector d (%d) doesn't match "
+			                          "length of diagonal of matrix L (%d)\n",
+			    d.vlen, A.num_rows);
+			REQUIRE(
+			    p.vlen = A.num_rows, "Length of transpositions vector p (%d) "
+			                         "doesn't match length of diagonal of "
+			                         "matrix L (%d)\n",
+			    p.vlen, A.num_rows);
+
+			infer_backend(A)->ldlt_factor(A, L, d, p, lower);
+		}
+
+		/**
 		 * Vector dot-product that works with generic vectors.
 		 *
 		 * @param a First vector
