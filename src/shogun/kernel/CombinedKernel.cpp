@@ -183,7 +183,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 {
-	if(enable_subkernel_weight_opt && !weight_update)
+	if (enable_subkernel_weight_opt && !weight_update)
 	{
 		init_subkernel_weights();
 	}
@@ -230,12 +230,12 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 
 	/* if the specified features are not combined features, but a single other
 	 * feature type, assume that the caller wants to use all kernels on these */
-	if (l && r && l->get_feature_class()==r->get_feature_class() &&
-			l->get_feature_type()==r->get_feature_type() &&
-			l->get_feature_class()!= C_COMBINED)
+	if (l && r && l->get_feature_class() == r->get_feature_class() &&
+	    l->get_feature_type() == r->get_feature_type() &&
+	    l->get_feature_class() != C_COMBINED)
 	{
 		SG_DEBUG("Initialising combined kernel's combined features with the "
-				"same instance from parameters\n");
+		         "same instance from parameters\n");
 		/* construct combined features with each element being the parameter
 		 * The we must make sure that we make any custom kernels aware of any
 		 * subsets present!
@@ -243,7 +243,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		combined_l = new CCombinedFeatures();
 		combined_r = new CCombinedFeatures();
 
-		for (index_t i=0; i<get_num_subkernels(); ++i)
+		for (index_t i = 0; i < get_num_subkernels(); ++i)
 		{
 			combined_l->append_feature_obj(l);
 			combined_r->append_feature_obj(r);
