@@ -124,7 +124,7 @@ def shogun_debug_information():
 
 
 def parse_shogun_version(version_header):
-    shogun_version_pattern = re.compile(ur'#define MAINVERSION \"([0-9]\.[0-9]\.[0-9])\"')
+    shogun_version_pattern = re.compile(r'#define MAINVERSION \"([0-9]\.[0-9]\.[0-9])\"')
 
     with open(version_header, 'r') as f:
         content = f.read()
