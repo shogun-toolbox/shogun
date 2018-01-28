@@ -258,12 +258,12 @@ namespace shogun
 			watch_param(
 			    "watched_int", &m_watched,
 			    AnyParameterProperties(
-			        MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+			        "Integer", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 
 			watch_param(
 			    "watched_object", (CSGObject**)&m_object,
 			    AnyParameterProperties(
-			        MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+			        "Object", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 		}
 
 	private:

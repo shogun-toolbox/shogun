@@ -3,6 +3,8 @@
 
 #include <shogun/lib/any.h>
 
+#include <string>
+
 namespace shogun
 {
 
@@ -24,20 +26,28 @@ namespace shogun
 	{
 	public:
 		AnyParameterProperties()
-		    : m_model_selection(MS_NOT_AVAILABLE),
+		    : m_description(), m_model_selection(MS_NOT_AVAILABLE),
 		      m_gradient(GRADIENT_NOT_AVAILABLE)
 		{
 		}
 		AnyParameterProperties(
+		    std::string description,
 		    EModelSelectionAvailability model_selection,
 		    EGradientAvailability gradient)
-		    : m_model_selection(model_selection), m_gradient(gradient)
+		    : m_description(description), m_model_selection(model_selection),
+		      m_gradient(gradient)
 		{
 		}
 		AnyParameterProperties(const AnyParameterProperties& other)
-		    : m_model_selection(other.m_model_selection),
+		    : m_description(other.m_description),
+		      m_model_selection(other.m_model_selection),
 		      m_gradient(other.m_gradient)
 		{
+		}
+
+		std::string get_description() const
+		{
+			return m_description;
 		}
 
 		EModelSelectionAvailability get_model_selection() const
@@ -51,6 +61,7 @@ namespace shogun
 		}
 
 	private:
+		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;
 	};
