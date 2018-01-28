@@ -111,8 +111,10 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_UNREF(lf);
 				SG_UNREF(rf);
 				SG_UNREF(k);
-				SG_ERROR("CombinedKernel: Number of features/kernels does not "
-				         "match - bailing out\n")
+				SG_ERROR(
+				    "CombinedKernel: Number of features/kernels does not "
+				    "match - bailing out\n")
+
 			}
 
 			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
@@ -173,8 +175,9 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	if (((CCombinedFeatures*)l)->get_num_feature_obj() <= 0 ||
 	    ((CCombinedFeatures*)l)->get_num_feature_obj() !=
 	        ((CCombinedFeatures*)r)->get_num_feature_obj())
-		SG_ERROR("CombinedKernel: Number of features/kernels does not match - "
-		         "bailing out\n")
+		SG_ERROR(
+		    "CombinedKernel: Number of features/kernels does not match - "
+		    "bailing out\n")
 
 	init_normalizer();
 	initialized = true;
@@ -234,8 +237,9 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	    l->get_feature_type() == r->get_feature_type() &&
 	    l->get_feature_class() != C_COMBINED)
 	{
-		SG_DEBUG("Initialising combined kernel's combined features with the "
-		         "same instance from parameters\n");
+		SG_DEBUG(
+		    "Initialising combined kernel's combined features with the "
+		    "same instance from parameters\n");
 		/* construct combined features with each element being the parameter
 		 * The we must make sure that we make any custom kernels aware of any
 		 * subsets present!
