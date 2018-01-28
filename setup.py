@@ -45,7 +45,7 @@ setup_py_location = os.path.abspath(os.path.dirname(__file__))
 
 shogun_build_directory = os.path.join(setup_py_location, 'build')
 shogun_generated_install = os.path.join(shogun_build_directory, 'install')
-shogun_versionstring_h = os.path.abspath('src/shogun/lib/versionstring.h')
+shogun_versionstring_h = os.path.join(shogun_generated_install, 'include/shogun/lib/versionstring.h')
 shogun_python_packages_location = None
 
 shogun_completed_cmake = False
