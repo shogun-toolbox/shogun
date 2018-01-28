@@ -61,108 +61,124 @@ void CCombinedKernel::init_subkernel_weights()
 	eigen_wt = eigen_wt.array().exp();
 	set_subkernel_weights(wt);
 }
-bool CCombinedKernel::init_with_extracted_subsets(CFeatures *l, CFeatures *r, SGVector<index_t> lhs_subset,
-                                                  SGVector<index_t> rhs_subset) {
+bool CCombinedKernel::init_with_extracted_subsets(
+    CFeatures* l, CFeatures* r, SGVector<index_t> lhs_subset,
+    SGVector<index_t> rhs_subset)
+{
 
+	CKernel::init(l, r);
+	REQUIRE(
+	    l->get_feature_class() == C_COMBINED,
+	    "%s::init(): LHS features are"
+	    " of class %s but need to be combined features!\n",
+	    get_name(), l->get_name());
+	REQUIRE(
+	    r->get_feature_class() == C_COMBINED,
+	    "%s::init(): RHS features are"
+	    " of class %s but need to be combined features!\n",
+	    get_name(), r->get_name());
+	ASSERT(l->get_feature_type() == F_UNKNOWN)
+	ASSERT(r->get_feature_type() == F_UNKNOWN)
 
-    CKernel::init(l,r);
-    REQUIRE(l->get_feature_class()==C_COMBINED, "%s::init(): LHS features are"
-            " of class %s but need to be combined features!\n",
-            get_name(), l->get_name());
-    REQUIRE(r->get_feature_class()==C_COMBINED, "%s::init(): RHS features are"
-            " of class %s but need to be combined features!\n",
-            get_name(), r->get_name());
-    ASSERT(l->get_feature_type()==F_UNKNOWN)
-    ASSERT(r->get_feature_type()==F_UNKNOWN)
+	CFeatures* lf = NULL;
+	CFeatures* rf = NULL;
+	CKernel* k = NULL;
 
-    CFeatures* lf=NULL;
-    CFeatures* rf=NULL;
-    CKernel* k=NULL;
+	bool result = true;
+	index_t f_idx = 0;
 
-    bool result=true;
-    index_t f_idx = 0;
+	SG_DEBUG("Starting for loop for kernels\n")
+	for (index_t k_idx = 0; k_idx < get_num_kernels() && result; k_idx++)
+	{
+		k = get_kernel(k_idx);
 
-    SG_DEBUG("Starting for loop for kernels\n")
-    for (index_t k_idx=0; k_idx<get_num_kernels() && result; k_idx++)
-    {
-        k = get_kernel(k_idx);
+		if (!k)
+			SG_ERROR("Kernel at position %d is NULL\n", k_idx);
 
-        if (!k)
-        SG_ERROR("Kernel at position %d is NULL\n", k_idx);
+		// skip over features - the custom kernel does not need any
+		if (k->get_kernel_type() != K_CUSTOM)
+		{
+			if (((CCombinedFeatures*)l)->get_num_feature_obj() > f_idx &&
+			    ((CCombinedFeatures*)r)->get_num_feature_obj() > f_idx)
+			{
+				lf = ((CCombinedFeatures*)l)->get_feature_obj(f_idx);
+				rf = ((CCombinedFeatures*)r)->get_feature_obj(f_idx);
+			}
 
-        // skip over features - the custom kernel does not need any
-        if (k->get_kernel_type() != K_CUSTOM)
-        {
-            if (((CCombinedFeatures*)l)->get_num_feature_obj() > f_idx &&
-                ((CCombinedFeatures*)r)->get_num_feature_obj() > f_idx)
-            {
-                lf = ((CCombinedFeatures*)l)->get_feature_obj(f_idx);
-                rf = ((CCombinedFeatures*)r)->get_feature_obj(f_idx);
-            }
+			f_idx++;
+			if (!lf || !rf)
+			{
+				SG_UNREF(lf);
+				SG_UNREF(rf);
+				SG_UNREF(k);
+				SG_ERROR("CombinedKernel: Number of features/kernels does not "
+				         "match - bailing out\n")
+			}
 
-            f_idx++;
-            if (!lf || !rf)
-            {
-                SG_UNREF(lf);
-                SG_UNREF(rf);
-                SG_UNREF(k);
-                SG_ERROR("CombinedKernel: Number of features/kernels does not match - bailing out\n")
-            }
+			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
+			result = k->init(lf, rf);
+			SG_UNREF(lf);
+			SG_UNREF(rf);
 
-            SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
-            result=k->init(lf,rf);
-            SG_UNREF(lf);
-            SG_UNREF(rf);
+			if (!result)
+				break;
+		}
+		else
+		{
+			SG_DEBUG(
+			    "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM "
+			    "kernel)\n",
+			    this, k->get_name())
+			if (!k->has_features())
+				SG_ERROR(
+				    "No kernel matrix was assigned to this Custom kernel\n")
 
-            if (!result)
-                break;
-        }
-        else
-        {
-            SG_DEBUG("Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
-            if (!k->has_features())
-            SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
+			// clear all previous subsets
+			((CCustomKernel*)k)->remove_all_row_subsets();
+			// apply new subset
+			((CCustomKernel*)k)->add_row_subset(lhs_subset);
 
+			((CCustomKernel*)k)->remove_all_col_subsets();
+			// apply new subset
+			((CCustomKernel*)k)->add_col_subset(rhs_subset);
 
-                // clear all previous subsets
-                ((CCustomKernel*)k)->remove_all_row_subsets();
-                // apply new subset
-                ((CCustomKernel*)k)->add_row_subset(lhs_subset);
+			if (k->get_num_vec_lhs() != num_lhs)
+				SG_ERROR(
+				    "Number of lhs-feature vectors (%d) not match with number "
+				    "of rows (%d) of custom kernel\n",
+				    num_lhs, k->get_num_vec_lhs())
+			if (k->get_num_vec_rhs() != num_rhs)
+				SG_ERROR(
+				    "Number of rhs-feature vectors (%d) not match with number "
+				    "of cols (%d) of custom kernel\n",
+				    num_rhs, k->get_num_vec_rhs())
+		}
 
-                ((CCustomKernel*)k)->remove_all_col_subsets();
-                // apply new subset
-                ((CCustomKernel*)k)->add_col_subset(rhs_subset);
+		SG_UNREF(k);
+	}
 
-            if (k->get_num_vec_lhs() != num_lhs)
-            SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs())
-            if (k->get_num_vec_rhs() != num_rhs)
-            SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs())
-        }
+	if (!result)
+	{
+		SG_INFO("CombinedKernel: Initialising the following kernel failed\n")
+		if (k)
+		{
+			k->list_kernel();
+			SG_UNREF(k);
+		}
+		else
+			SG_INFO("<NULL>\n")
+		return false;
+	}
 
-        SG_UNREF(k);
-    }
+	if (((CCombinedFeatures*)l)->get_num_feature_obj() <= 0 ||
+	    ((CCombinedFeatures*)l)->get_num_feature_obj() !=
+	        ((CCombinedFeatures*)r)->get_num_feature_obj())
+		SG_ERROR("CombinedKernel: Number of features/kernels does not match - "
+		         "bailing out\n")
 
-    if (!result)
-    {
-        SG_INFO("CombinedKernel: Initialising the following kernel failed\n")
-        if (k)
-        {
-            k->list_kernel();
-            SG_UNREF(k);
-        }
-        else
-        SG_INFO("<NULL>\n")
-        return false;
-    }
-
-    if ( ((CCombinedFeatures*) l)->get_num_feature_obj()<=0 ||
-         ((CCombinedFeatures*) l)->get_num_feature_obj() != ((CCombinedFeatures*) r)->get_num_feature_obj() )
-    SG_ERROR("CombinedKernel: Number of features/kernels does not match - bailing out\n")
-
-    init_normalizer();
-    initialized=true;
-    return true;
-
+	init_normalizer();
+	initialized = true;
+	return true;
 }
 
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
@@ -171,40 +187,46 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	{
 		init_subkernel_weights();
 	}
-    /*
-     * The two subsets, we will be passing those to init_with_extracted_subsets
-     */
-    SGVector<index_t> lhs_subset;
-    SGVector<index_t> rhs_subset;
+	/*
+	 * The two subsets, we will be passing those to init_with_extracted_subsets
+	 */
+	SGVector<index_t> lhs_subset;
+	SGVector<index_t> rhs_subset;
 
-    /*
-     * We will be passing these features to init_with_extracted_subsets
-     */
-    CCombinedFeatures* combined_l;
-    CCombinedFeatures* combined_r;
+	/*
+	 * We will be passing these features to init_with_extracted_subsets
+	 */
+	CCombinedFeatures* combined_l;
+	CCombinedFeatures* combined_r;
 
-    /*
-     * Extract the subsets so that we can pass them on
-     */
-    auto l_subset_stack = l->get_subset_stack();
-    auto r_subset_stack = r->get_subset_stack();
+	/*
+	 * Extract the subsets so that we can pass them on
+	 */
+	auto l_subset_stack = l->get_subset_stack();
+	auto r_subset_stack = r->get_subset_stack();
 
-    if (l_subset_stack->has_subsets()) {
-        lhs_subset = l_subset_stack->get_last_subset()->get_subset_idx();
-    } else {
-        lhs_subset = SGVector<index_t>(l->get_num_vectors());
-        lhs_subset.range_fill();
-    }
+	if (l_subset_stack->has_subsets())
+	{
+		lhs_subset = l_subset_stack->get_last_subset()->get_subset_idx();
+	}
+	else
+	{
+		lhs_subset = SGVector<index_t>(l->get_num_vectors());
+		lhs_subset.range_fill();
+	}
 
-    if (r_subset_stack->has_subsets()) {
-        rhs_subset = r_subset_stack->get_last_subset()->get_subset_idx();
-    } else {
-        rhs_subset = SGVector<index_t>(r->get_num_vectors());
-        rhs_subset.range_fill();
-    }
+	if (r_subset_stack->has_subsets())
+	{
+		rhs_subset = r_subset_stack->get_last_subset()->get_subset_idx();
+	}
+	else
+	{
+		rhs_subset = SGVector<index_t>(r->get_num_vectors());
+		rhs_subset.range_fill();
+	}
 
-    SG_UNREF(l_subset_stack);
-    SG_UNREF(r_subset_stack);
+	SG_UNREF(l_subset_stack);
+	SG_UNREF(r_subset_stack);
 
 	/* if the specified features are not combined features, but a single other
 	 * feature type, assume that the caller wants to use all kernels on these */
@@ -215,25 +237,29 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		SG_DEBUG("Initialising combined kernel's combined features with the "
 				"same instance from parameters\n");
 		/* construct combined features with each element being the parameter
-         * The we must make sure that we make any custom kernels aware of any subsets present!
-         */
-		combined_l=new CCombinedFeatures();
-        combined_r=new CCombinedFeatures();
+		 * The we must make sure that we make any custom kernels aware of any
+		 * subsets present!
+		 */
+		combined_l = new CCombinedFeatures();
+		combined_r = new CCombinedFeatures();
 
 		for (index_t i=0; i<get_num_subkernels(); ++i)
 		{
 			combined_l->append_feature_obj(l);
 			combined_r->append_feature_obj(r);
 		}
-	} else {
-        /*
-         * Otherwise, we just pass l & r straight on
-         */
-        combined_l = (CCombinedFeatures*)l;
-        combined_r = (CCombinedFeatures*)r;
-    }
+	}
+	else
+	{
+		/*
+		 * Otherwise, we just pass l & r straight on
+		 */
+		combined_l = (CCombinedFeatures*)l;
+		combined_r = (CCombinedFeatures*)r;
+	}
 
-    return init_with_extracted_subsets(combined_l, combined_r, lhs_subset, rhs_subset);
+	return init_with_extracted_subsets(
+	    combined_l, combined_r, lhs_subset, rhs_subset);
 }
 
 void CCombinedKernel::remove_lhs()
