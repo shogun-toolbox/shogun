@@ -114,7 +114,6 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_ERROR(
 				    "CombinedKernel: Number of features/kernels does not "
 				    "match - bailing out\n")
-
 			}
 
 			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
