@@ -80,7 +80,8 @@ template <class T> class SGStringList;
 		m_parameters->add(param, name, description);                           \
 		watch_param(                                                           \
 		    name, param,                                                       \
-		    AnyParameterProperties(ms_available, GRADIENT_NOT_AVAILABLE));     \
+		    AnyParameterProperties(                                            \
+		        description, ms_available, GRADIENT_NOT_AVAILABLE));           \
 		if (ms_available)                                                      \
 			m_model_selection_parameters->add(param, name, description);       \
 	}
@@ -89,8 +90,8 @@ template <class T> class SGStringList;
 	{                                                                          \
 		m_parameters->add(param, name, description);                           \
 		watch_param(                                                           \
-		    name, param,                                                       \
-		    AnyParameterProperties(ms_available, gradient_available));         \
+		    name, param, AnyParameterProperties(                               \
+		                     description, ms_available, gradient_available));  \
 		if (ms_available)                                                      \
 			m_model_selection_parameters->add(param, name, description);       \
 		if (gradient_available)                                                \
@@ -507,8 +508,8 @@ protected:
 	template <typename T>
 	void watch_param(
 		const std::string& name, T* value,
-		AnyParameterProperties properties =
-		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
@@ -525,8 +526,8 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* len,
-		AnyParameterProperties properties =
-		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -546,8 +547,8 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* rows, S* cols,
-		AnyParameterProperties properties =
-		    AnyParameterProperties(MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
 	{
 		BaseTag tag(name);
 		create_parameter(
