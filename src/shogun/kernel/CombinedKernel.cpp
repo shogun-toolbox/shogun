@@ -84,8 +84,8 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	CFeatures* rf = NULL;
 	CKernel* k = NULL;
 
-    auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
-    auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
+	auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
+	auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
 
 	bool result = true;
 	index_t f_idx = 0;
@@ -137,16 +137,16 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_ERROR(
 				    "No kernel matrix was assigned to this Custom kernel\n")
 
-            auto k_custom = dynamic_cast<CCustomKernel*>(k);
+			auto k_custom = dynamic_cast<CCustomKernel*>(k);
 
 			// clear all previous subsets
 			k_custom->remove_all_row_subsets();
 			// apply new subset
-            k_custom->add_row_subset(lhs_subset);
+			k_custom->add_row_subset(lhs_subset);
 
-            k_custom->remove_all_col_subsets();
+			k_custom->remove_all_col_subsets();
 			// apply new subset
-            k_custom->add_col_subset(rhs_subset);
+			k_custom->add_col_subset(rhs_subset);
 
 			if (k->get_num_vec_lhs() != num_lhs)
 				SG_ERROR(
