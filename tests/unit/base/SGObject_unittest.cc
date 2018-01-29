@@ -572,14 +572,14 @@ TEST(SGObjectAll, DISABLED_tag_coverage)
 		ASSERT_NE(obj, nullptr);
 
 		// old parameter framework names
-		std::set<std::string> old_names;
+		std::vector<std::string> old_names;
 		for (auto i : range(obj->m_parameters->get_num_parameters()))
-			old_names.insert(obj->m_parameters->get_parameter(i)->m_name);
+			old_names.push_back(obj->m_parameters->get_parameter(i)->m_name);
 		auto tag_names = obj->parameter_names();
 
 		// hack to increase readability of error messages
-		old_names.insert("Class: " + class_name);
-		tag_names.insert("Class: " + class_name);
+		old_names.push_back("Class: " + class_name);
+		tag_names.push_back("Class: " + class_name);
 
 		EXPECT_EQ(tag_names, old_names);
 

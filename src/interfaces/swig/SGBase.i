@@ -312,20 +312,12 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %include "swig_typemaps.i"
 
-#if !defined(SWIGJAVA)
 %include "std_vector.i"
 namespace std {
     %template(IntStdVector) vector<int32_t>;
     %template(DoubleStdVector) vector<float64_t>;
+    %template(StringStdVector) vector<string>;
 }
-#endif
-
-#if defined(SWIGPYTHON) || defined(SWIGRUBY)
-%include "std_set.i"
-namespace std {
-    %template(StringSet) set<string>;
-}
-#endif
 
 #ifndef SWIGR
 %include <shogun/base/init.h>

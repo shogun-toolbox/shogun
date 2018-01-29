@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang, 
- *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang,
+ *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang,
  *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
@@ -23,8 +23,8 @@
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
-#include <set>
 #include <utility>
+#include <vector>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -414,7 +414,7 @@ public:
 	/** Returns set of all parameter names of the object.
 	 *
 	 */
-	std::set<std::string> parameter_names() const;
+	std::vector<std::string> parameter_names() const;
 
 #ifndef SWIG
 	/**
