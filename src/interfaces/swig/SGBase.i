@@ -320,7 +320,7 @@ namespace std {
 }
 #endif
 
-#if defined(SWIGPYTHON) || defined(SWIG)
+#if defined(SWIGPYTHON) || defined(SWIGRUBY)
 %include "std_set.i"
 namespace std {
     %template(StringSet) set<string>;
