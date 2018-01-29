@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, 
- *          Giovanni De Toni, Jacob Walker, Fernando Iglesias, Roman Votyakov, 
- *          Soumyajit De, Evgeniy Andreev, Evangelos Anagnostopoulos, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein,
+ *          Giovanni De Toni, Jacob Walker, Fernando Iglesias, Roman Votyakov,
+ *          Soumyajit De, Evgeniy Andreev, Evangelos Anagnostopoulos,
  *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
@@ -31,6 +31,7 @@
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
 
+#include <algorithm>
 #include <unordered_map>
 #include <memory>
 
@@ -939,13 +940,11 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-std::set<std::string> CSGObject::parameter_names() const
+std::vector<std::string> CSGObject::parameter_names() const
 {
-	std::set<std::string> result;
-	for (const auto& each : self->map)
-	{
-		result.insert(each.first.name());
-	}
+	std::vector<std::string> result;
+	std::transform(self->map.cbegin(), self->map.cend(), std::back_inserter(result),
+		[](const auto& each) -> std::string { return each.first.name(); });
 	return result;
 }
 
