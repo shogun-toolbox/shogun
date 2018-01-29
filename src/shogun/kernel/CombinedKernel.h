@@ -458,6 +458,21 @@ class CCombinedKernel : public CKernel
 
 	private:
 		void init();
+		/**
+		 * The purpose of this function is to make customkernels aware of any
+		 * subsets present, regardless whether the features passed are of type
+		 * CCombinedFeatures or not
+		 * @param lhs combined features
+		 * @param rhs rombined features
+		 * @param lhs_subset subset present on lhs - pass identity subset if
+		 * none
+		 * @param rhs_subset subset present on rhs - pass identity subset if
+		 * none
+		 * @return init succesful
+		 */
+		bool init_with_extracted_subsets(
+		    CFeatures* lhs, CFeatures* rhs, SGVector<index_t> lhs_subset,
+		    SGVector<index_t> rhs_subset);
 
 	protected:
 		/** list of kernels */
