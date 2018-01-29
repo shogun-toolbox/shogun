@@ -1,7 +1,6 @@
 #include "MockLatentModel.h"
 #include <shogun/lib/config.h>
 
-#ifdef USE_GPL_SHOGUN
 #include <shogun/latent/LatentSVM.h>
 
 using namespace shogun;
@@ -107,4 +106,3 @@ TEST(LatentSVM, apply)
 	SG_UNREF(lsvm);
 	SG_UNREF(dense_feats);
 }
-#endif //USE_GPL_SHOGUN
