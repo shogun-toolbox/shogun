@@ -320,10 +320,12 @@ namespace std {
 }
 #endif
 
+#if defined(SWIGPYTHON) || defined(SWIG)
 %include "std_set.i"
 namespace std {
     %template(StringSet) set<string>;
 }
+#endif
 
 #ifndef SWIGR
 %include <shogun/base/init.h>
