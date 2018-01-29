@@ -320,6 +320,11 @@ namespace std {
 }
 #endif
 
+%include "std_set.i"
+namespace std {
+    %template(StringSet) set<string>;
+}
+
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
