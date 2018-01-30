@@ -19,14 +19,22 @@ IF (LAPACK_FOUND)
         NAMES lapacke
         PATHS /usr/lib /usr/local/lib $ENV{LAPACKE_PATH})
       if (LAPACKE_LIBRARY)
-        MESSAGE(STATUS "Enabling Accelerate.framework as LAPACK backend for Eigen.")
-        SET(EIGEN_USE_LAPACKE_STRICT 1)
-        LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
-        find_library(VECLIB vecLib)
-        if (VECLIB)
-          LIST(APPEND LAPACK_LIBRARIES ${VECLIB})
+        # no comes some magic as on osx el capitalismo and sierra leone
+        # versions things are working in some magic way (vecLib that is)
+        # see #4136
+        include(CheckCXXSourceCompiles)
+        CHECK_CXX_SOURCE_COMPILES(
+          "#include <vecLib/cblas.h>
+          int main(void){
+              return 0;
+          }" VECLIB_INCLUDE_WORKS)
+
+        if (VECLIB_INCLUDE_WORKS)
+          MESSAGE(STATUS "Enabling Accelerate.framework as LAPACK backend for Eigen.")
+          SET(EIGEN_USE_LAPACKE_STRICT 1)
+          LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
         else()
-          MESSAGE(FATAL_ERROR "Accelerate.framework without vecLib.framework!")
+          MESSAGE(STATUS "Could not include <vecLib/cblas.h> hence not enabling LAPACK as an Eigen backend")
         endif()
       endif()
     endif()
