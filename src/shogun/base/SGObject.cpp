@@ -944,7 +944,8 @@ std::vector<std::string> CSGObject::parameter_names() const
 {
 	std::vector<std::string> result;
 	std::transform(self->map.cbegin(), self->map.cend(), std::back_inserter(result),
-		[](const auto& each) -> std::string { return each.first.name(); });
+		// FIXME: const auto& each fails on gcc 4.8.4
+		[](const std::pair<BaseTag, AnyParameter>& each) -> std::string { return each.first.name(); });
 	return result;
 }
 
