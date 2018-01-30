@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Soumyajit De, 
+ * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Soumyajit De,
  *          Evan Shelhamer, Björn Esser
  */
 
@@ -19,13 +19,7 @@ extern "C" {
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
 #elif defined(HAVE_MVEC)
-//FIXME: Accelerate framework's vForce.h forward declares
-// std::complex<> classes that causes major errors
-// in c++11 mode and Eigen3
-// this define basically disables the include of vForce.h
-#ifdef HAVE_CXX11
 #define __VFORCE_H 1
-#endif
 #if !(defined(EIGEN_USE_LAPACKE) || defined(EIGEN_USE_LAPACKE_STRICT))
 #include <Accelerate/Accelerate.h>
 #else
