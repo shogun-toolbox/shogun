@@ -22,6 +22,12 @@ IF (LAPACK_FOUND)
         MESSAGE(STATUS "Enabling Accelerate.framework as LAPACK backend for Eigen.")
         SET(EIGEN_USE_LAPACKE_STRICT 1)
         LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
+        find_library(VECLIB vecLib)
+        if (VECLIB)
+          LIST(APPEND LAPACK_LIBRARIES ${VECLIB})
+        else()
+          MESSAGE(FATAL_ERROR "Accelerate.framework without vecLib.framework!")
+        endif()
       endif()
     endif()
   ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_.*")
@@ -92,7 +98,7 @@ IF (LAPACK_FOUND)
     ENDIF()
 
     IF(FOUND_CBLAS_DGEMV AND NOT HAVE_ATLAS)
-      #check is detected BLAS/LAPACK is OpenBLAS by looking for an OpenBLAS specific function 
+      #check is detected BLAS/LAPACK is OpenBLAS by looking for an OpenBLAS specific function
       check_library_exists("${LAPACK_LIBRARIES}" openblas_set_num_threads "" OpenBLAS_FOUND)
       IF(OpenBLAS_FOUND)
         #check if cblas.h exists
