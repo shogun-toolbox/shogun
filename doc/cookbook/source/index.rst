@@ -16,6 +16,16 @@ Quickstart
 
    quickstart/interfaces
 
+Getting Started
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Getting started
+
+   examples/getting_started/**
+
 Binary classifier
 -----------------
 
