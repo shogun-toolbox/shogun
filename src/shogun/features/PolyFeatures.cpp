@@ -392,7 +392,11 @@ void CPolyFeatures::register_parameters()
 			"multi_index",
 			"Flattened matrix of all multi indices that sum do the"
 			" degree of the polynomial kernel.");
-	watch_param("multi_index", &m_multi_index, &multi_index_length);
+	watch_param(
+	    "multi_index", &m_multi_index, &multi_index_length,
+	    AnyParameterProperties(
+	        "Flattened matrix of all multi indices that sum do the"
+	        "degree of the polynomial kernel."));
 
 	multinomial_coefficients_length=m_output_dimensions;
 	m_parameters->add_vector(&m_multinomial_coefficients,
@@ -400,7 +404,9 @@ void CPolyFeatures::register_parameters()
 			"Multinomial coefficients for all multi-indices.");
 	watch_param(
 	    "multinomial_coefficients", &m_multinomial_coefficients,
-	    &multinomial_coefficients_length);
+	    &multinomial_coefficients_length,
+	    AnyParameterProperties(
+	        "Multinomial coefficients for all multi-indices."));
 
 	normalization_values_length=get_num_vectors();
 	m_parameters->add_vector(&m_normalization_values,
@@ -408,5 +414,6 @@ void CPolyFeatures::register_parameters()
 			"Norm of each training example.");
 	watch_param(
 	    "normalization_values", &m_normalization_values,
-	    &normalization_values_length);
+	    &normalization_values_length,
+	    AnyParameterProperties("Norm of each training example."));
 }

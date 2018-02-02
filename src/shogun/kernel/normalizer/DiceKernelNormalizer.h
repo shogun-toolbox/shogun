@@ -34,11 +34,15 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		{
 			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
 							  "K(x,x) for left hand side examples.");
-			watch_param("diag_lhs", &diag_lhs, &num_diag_lhs);
+			watch_param(
+			    "diag_lhs", &diag_lhs, &num_diag_lhs,
+			    AnyParameterProperties("K(x,x) for left hand side examples."));
 
 			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
 							  "K(x,x) for right hand side examples.");
-			watch_param("diag_rhs", &diag_rhs, &num_diag_rhs);
+			watch_param(
+			    "diag_rhs", &diag_rhs, &num_diag_rhs,
+			    AnyParameterProperties("K(x,x) for right hand side examples."));
 
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",

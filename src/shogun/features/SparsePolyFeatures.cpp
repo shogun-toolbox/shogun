@@ -263,7 +263,8 @@ void CSparsePolyFeatures::init()
 			"m_normalization_values", "Norm of each training example");
 	watch_param(
 	    "m_normalization_values", &m_normalization_values,
-	    &m_normalization_values_len);
+	    &m_normalization_values_len,
+	    AnyParameterProperties("Norm of each training example"));
 
 	m_parameters->add(&mask, "mask", "Mask.");
 	m_parameters->add(&m_hash_bits, "m_hash_bits", "Number of bits in hash");

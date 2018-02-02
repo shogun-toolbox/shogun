@@ -183,10 +183,14 @@ void CSNPStringKernel::register_params()
 	  "the mark of whether it's an inhomogeneous poly kernel", MS_NOT_AVAILABLE);
 
 	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
-	watch_param("m_str_min", &m_str_min, &m_str_len);
+	watch_param(
+	    "m_str_min", &m_str_min, &m_str_len,
+	    AnyParameterProperties("allele A"));
 
 	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");
-	watch_param("m_str_maj", &m_str_maj, &m_str_len);
+	watch_param(
+	    "m_str_maj", &m_str_maj, &m_str_len,
+	    AnyParameterProperties("allele B"));
 }
 
 void CSNPStringKernel::init()

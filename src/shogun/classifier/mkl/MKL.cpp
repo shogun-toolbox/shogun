@@ -278,7 +278,10 @@ void CMKL::register_params()
 	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter", MS_NOT_AVAILABLE);
 
 	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
-	watch_param("beta_local", &beta_local, &beta_local_size);
+	watch_param(
+	    "beta_local", &beta_local, &beta_local_size,
+	    AnyParameterProperties(
+	        "subkernel weights on L1 term of elastic net mkl"));
 
 	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", MS_NOT_AVAILABLE);
 	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", MS_NOT_AVAILABLE);

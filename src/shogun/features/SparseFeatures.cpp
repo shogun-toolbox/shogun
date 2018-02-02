@@ -614,7 +614,8 @@ template<class ST> void CSparseFeatures<ST>::init()
 			"Array of sparse vectors.");
 	watch_param(
 		"sparse_feature_matrix", &sparse_feature_matrix.sparse_matrix,
-		&sparse_feature_matrix.num_vectors);
+		&sparse_feature_matrix.num_vectors,
+		AnyParameterProperties("Array of sparse vectors."));
 
 	m_parameters->add(&sparse_feature_matrix.num_features, "sparse_feature_matrix.num_features",
 			"Total number of features.");

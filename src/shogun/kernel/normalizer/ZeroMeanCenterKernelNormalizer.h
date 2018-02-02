@@ -47,11 +47,15 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		{
 			m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
 					"num_ktrain", "Train row means.");
-			watch_param("num_ktrain", &ktrain_row_means, &num_ktrain);
+			watch_param(
+			    "num_ktrain", &ktrain_row_means, &num_ktrain,
+			    AnyParameterProperties("Train row means."));
 
 			m_parameters->add_vector(&ktest_row_means, &num_ktest,
 					"num_ktest","Test row means.");
-			watch_param("num_ktest", &ktest_row_means, &num_ktest);
+			watch_param(
+			    "num_ktest", &ktest_row_means, &num_ktest,
+			    AnyParameterProperties("Test row means."));
 		}
 
 		/** default destructor */

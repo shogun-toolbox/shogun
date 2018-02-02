@@ -43,7 +43,8 @@ CGMNPSVM::init()
 							 "m_basealphas",
 							 "Is the basic untransformed alpha.");
 	watch_param(
-	    "m_basealphas", &m_basealphas, &m_basealphas_y, &m_basealphas_x);
+	    "m_basealphas", &m_basealphas, &m_basealphas_y, &m_basealphas_x,
+	    AnyParameterProperties("Is the basic untransformed alpha."));
 
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }

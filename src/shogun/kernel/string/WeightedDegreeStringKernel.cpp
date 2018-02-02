@@ -1010,12 +1010,16 @@ void CWeightedDegreeStringKernel::init()
 
 	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
 			"weights", "WD Kernel weights.");
-	watch_param("weights", &weights, &weights_degree, &weights_length);
+	watch_param(
+	    "weights", &weights, &weights_degree, &weights_length,
+	    AnyParameterProperties("WD Kernel weights."));
 
 	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
-	watch_param("position_weights", &position_weights, &position_weights_len);
+	watch_param(
+	    "position_weights", &position_weights, &position_weights_len,
+	    AnyParameterProperties("Weights per position."));
 
 	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);

@@ -312,5 +312,8 @@ void CWeightedCommWordStringKernel::init()
 
 	m_parameters->add_vector(&weights, &degree, "weights",
 			"weights for each of the subkernels of degree 1...d");
-	watch_param("weights", &weights, &degree);
+	watch_param(
+	    "weights", &weights, &degree,
+	    AnyParameterProperties(
+	        "weights for each of the subkernels of degree 1...d"));
 }

@@ -385,7 +385,9 @@ void CSpectrumRBFKernel::register_param()
 	    MS_NOT_AVAILABLE);
 
 	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
-	watch_param("sequences", &sequences, &nof_sequences);
+	watch_param(
+	    "sequences", &sequences, &nof_sequences,
+	    AnyParameterProperties("the sequences as a part of profile"));
 
 	SG_ADD(&max_sequence_length,
 	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
