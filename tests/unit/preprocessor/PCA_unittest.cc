@@ -23,8 +23,9 @@ using namespace shogun;
  * @return 1.0 if the eigen vectors are pointing to the same director, -1.0
  * if pointing to the opposite direction.
  */
-template<class T>
-inline T check_eigenvector_eq(const SGVector<T>& a, const SGVector<T>& b, float64_t epsilon = 10E-8)
+template <class T>
+inline T check_eigenvector_eq(
+    const SGVector<T>& a, const SGVector<T>& b, float64_t epsilon = 10E-8)
 {
 	T sign = linalg::dot(a, b);
 	EXPECT_NEAR(1.0, CMath::abs(sign), epsilon);
