@@ -238,7 +238,7 @@ TYPED_TEST(SGObjectAll, serialization_empty_ascii)
 	{
 		SCOPED_TRACE(obj->get_name());
 
-		std::string filename = "/tmp/shogun-unittest-serialization-ascii-" +
+		std::string filename = "shogun-unittest-serialization-ascii-" +
 		                       std::string(obj->get_name()) + "_" +
 		                       sg_primitive_type_string<TypeParam>() +
 		                       ".XXXXXX";
