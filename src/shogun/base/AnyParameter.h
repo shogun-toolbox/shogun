@@ -32,8 +32,8 @@ namespace shogun
 		}
 		AnyParameterProperties(
 		    std::string description,
-		    EModelSelectionAvailability model_selection,
-		    EGradientAvailability gradient)
+		    EModelSelectionAvailability model_selection = MS_NOT_AVAILABLE,
+		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE)
 		    : m_description(description), m_model_selection(model_selection),
 		      m_gradient(gradient)
 		{
