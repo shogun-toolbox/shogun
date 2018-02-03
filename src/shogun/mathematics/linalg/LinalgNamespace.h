@@ -649,7 +649,10 @@ namespace shogun
 		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
 		    SGVector<index_t>& p, const bool lower = true)
 		{
-			REQUIRE(A.num_rows == A.num_cols, "Matrix A is not square\n");
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", A.num_rows,
+			    A.num_cols);
 			REQUIRE(
 			    A.num_rows == L.num_rows && A.num_cols == L.num_cols,
 			    "Shape of matrix A (%d, %d) doesn't match matrix L (%d, %d)\n",
