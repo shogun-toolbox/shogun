@@ -33,8 +33,8 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver)
 
 	m_k=k;
 
-	ASSERT(d)
-	ASSERT(trainlab)
+	REQUIRE(d, "Distance is null.\n");
+	REQUIRE(trainlab, "Train labels are null.\n");
 
 	set_distance(d);
 	set_labels(trainlab);
@@ -74,19 +74,20 @@ CKNN::~CKNN()
 
 bool CKNN::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels)
-	ASSERT(distance)
+	REQUIRE(m_labels, "No training labels provided.\n");
+	REQUIRE(distance, "No training distance provided.\n");
 
 	if (data)
 	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+		REQUIRE(
+		    m_labels->get_num_labels() == data->get_num_vectors(),
+		    "Number of training vectors does not match number of labels\n");
 		distance->init(data, data);
 	}
 
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
-	ASSERT(m_train_labels.vlen>0)
+	REQUIRE(m_train_labels.vlen > 0, "Number of training labels is zero.\n");
 
 	// find minimal and maximal class
 	auto min_class = CMath::min(m_train_labels.vector, m_train_labels.vlen);
@@ -161,9 +162,11 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	if (m_k == 1)
 		return classify_NN();
 
-	ASSERT(m_num_classes>0)
-	ASSERT(distance)
-	ASSERT(distance->get_num_vec_rhs())
+	REQUIRE(
+	    m_num_classes > 0,
+	    "Number of classes is zero. You may need to call train()\n");
+	REQUIRE(distance, "No distance assigned.\n");
+	REQUIRE(distance->get_num_vec_rhs(), "No vectors on right hand side.\n");
 
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs())
@@ -187,11 +190,13 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 CMulticlassLabels* CKNN::classify_NN()
 {
-	ASSERT(distance)
-	ASSERT(m_num_classes>0)
+	REQUIRE(distance, "No distance assigned.\n");
+	REQUIRE(
+	    m_num_classes > 0,
+	    "Number of classes is zero. You may need to call train()\n");
 
 	int32_t num_lab = distance->get_num_vec_rhs();
-	ASSERT(num_lab)
+	REQUIRE(num_lab, "No vectors on right hand side\n");
 
 	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
 	SGVector<float64_t> distances(m_train_labels.vlen);
@@ -237,12 +242,17 @@ CMulticlassLabels* CKNN::classify_NN()
 
 SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
-	ASSERT(m_num_classes>0)
-	ASSERT(distance)
-	ASSERT(distance->get_num_vec_rhs())
+	REQUIRE(distance, "No distance assigned.\n");
+	REQUIRE(
+	    m_num_classes > 0,
+	    "Number of classes is zero. You may need to call train()\n");
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(m_k<=num_lab)
+	REQUIRE(num_lab, "No vectors on right hand side\n");
+
+	REQUIRE(
+	    m_k <= num_lab, "Number of labels (%d) is less than K (%d).\n", num_lab,
+	    m_k);
 
 	//working buffer of m_train_labels
 	SGVector<int32_t> train_lab(m_k);
@@ -263,13 +273,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 void CKNN::init_distance(CFeatures* data)
 {
-	if (!distance)
-		SG_ERROR("No distance assigned!\n")
+	REQUIRE(distance, "No distance assigned.\n");
 	CFeatures* lhs=distance->get_lhs();
 	if (!lhs || !lhs->get_num_vectors())
 	{
 		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n")
+		SG_ERROR("No vectors on left hand side\n");
 	}
 	distance->init(lhs, data);
 	SG_UNREF(lhs);
