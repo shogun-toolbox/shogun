@@ -1,0 +1,38 @@
+# Keyword arguments are supported when constructing objects
+
+# Either when using factory functions:
+#Kernel k1 = kernel_factory(param=2)
+#Kernel k2 = kernel_factory("GaussianKernel", c=1.0)
+
+# Or when constructing objects from class constructors
+#SomeKernelClass k3(1, a=2, b=3)
+
+# This fails (keyword arguments appear before normal arguments)
+#Kernel k4(asd=123, "SomeParam", kw=val)
+
+# This fails (keywords not allowed outside initialisations of variables)
+#k4 = kernel_factory("GaussianKernel", b=2)
+
+# This fails (keywords not allowed outside initialisation of variables)
+#Kernel k5 = kernel_factory("GaussianKernel", a=glob_fun(kw=123))
+
+# This is fine:
+#Kernel k6 = kernel_factory("GaussianKernel", a=glob_fun(ordinary_argument))
+
+# This also fails (keywords not allowed outside initialisation variables)
+#kernel_factory("GaussianKernel", a=glob_fun(ordinary_argument))
+
+
+# Real example
+# ------------
+
+# The following lines fail in Octave because of a float literal issue
+#KernelMachine svm = kernel_machine("LibSVM", C1=2.0)
+#GaussianKernel k(log_width=2.0)
+#k.put("log_width", 4.0)
+
+# The following line fails in Python because of a bool literal issue
+#GaussianKernel k2(log_width=14.0, lhs_equals_rhs=True)
+
+# The following line currently gives a type error
+#svm.put("kernel", k)
