@@ -10,7 +10,6 @@
  */
 
 #include "MockObject.h"
-#include "utils/Utils.h"
 #include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
