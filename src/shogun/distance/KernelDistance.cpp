@@ -70,6 +70,10 @@ void CKernelDistance::init()
 	width = 0.0;
 
 	m_parameters->add(&width, "width", "Width of RBF Kernel");
+	watch_param("width", &width, AnyParameterProperties("Width of RBF Kernel"));
+
 	m_parameters->add((CSGObject**) &kernel, "kernel",
 					  "Kernel.");
+	watch_param(
+	    "kernel", (CSGObject**)&kernel, AnyParameterProperties("kernel."));
 }

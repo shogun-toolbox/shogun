@@ -109,6 +109,7 @@ double CPNorm::get_pnorm () const
 void CPNorm::register_param ()
 {
 	m_parameters->add (&m_p, "norm", "P-norm parameter");
+	watch_param("norm", &m_p, AnyParameterProperties("P-norm parameter"));
 }
 
 inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const

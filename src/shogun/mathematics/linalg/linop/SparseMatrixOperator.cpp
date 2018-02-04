@@ -73,6 +73,9 @@ void CSparseMatrixOperator<T>::init()
 
 		this->m_parameters->add(&m_operator.num_features,
 				"m_operator.num_features", "Number of features.");
+		this->watch_param(
+		    "m_operator.num_features", &m_operator.num_features,
+		    AnyParameterProperties("Number of features."));
 	}
 
 template<class T>

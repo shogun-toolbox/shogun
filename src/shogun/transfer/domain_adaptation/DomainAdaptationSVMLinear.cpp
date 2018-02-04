@@ -64,9 +64,16 @@ void CDomainAdaptationSVMLinear::init(CLinearMachine* pre_svm, float64_t B_param
 
     // serialization code
 	m_parameters->add((CSGObject**) &presvm, "presvm", "SVM to regularize against");
-	m_parameters->add(&B, "B",  "Regularization strenth B.");
-	m_parameters->add(&train_factor, "train_factor",  "train_factor");
+	watch_param(
+	    "presvm", (CSGObject**)&presvm,
+	    AnyParameterProperties("SVM to regularize against"));
 
+	m_parameters->add(&B, "B", "Regularization strenth B.");
+	watch_param("B", &B, AnyParameterProperties("Regularization strenth B."));
+
+	m_parameters->add(&train_factor, "train_factor", "train_factor");
+	watch_param(
+	    "train_factor", &train_factor, AnyParameterProperties("train_factor"));
 }
 
 

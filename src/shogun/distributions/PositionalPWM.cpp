@@ -125,10 +125,21 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 void CPositionalPWM::register_params()
 {
 	m_parameters->add(&m_poim, "poim", "POIM Scoring Matrix");
+	watch_param("poim", &m_poim, AnyParameterProperties("POIM Scoring Matrix"));
+
 	m_parameters->add(&m_w, "w", "Scoring Matrix");
+	watch_param("w", &m_w, AnyParameterProperties("Scoring Matrix"));
+
 	m_parameters->add(&m_pwm, "pwm", "Positional Weight Matrix.");
+	watch_param(
+	    "pwm", &m_pwm, AnyParameterProperties("Positional Weight Matrix."));
+
 	m_parameters->add(&m_sigma, "sigma", "Standard Deviation.");
+	watch_param(
+	    "sigma", &m_sigma, AnyParameterProperties("Standard Deviation."));
+
 	m_parameters->add(&m_mean, "mean", "Mean.");
+	watch_param("mean", &m_mean, AnyParameterProperties("Mean."));
 }
 
 void CPositionalPWM::compute_scoring(int32_t max_degree)

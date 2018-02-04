@@ -48,4 +48,7 @@ void CDummyFeatures::init()
 {
 	m_parameters->add(&num_vectors, "num_vectors",
 			"Number of feature vectors.");
+	watch_param(
+	    "num_vectors", &num_vectors,
+	    AnyParameterProperties("Number of feature vectors."));
 }

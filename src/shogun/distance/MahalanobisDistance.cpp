@@ -107,7 +107,16 @@ void CMahalanobisDistance::init()
 	use_mean=false;
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
+	watch_param(
+	    "disable_sqrt", &disable_sqrt,
+	    AnyParameterProperties("If sqrt shall not be applied."));
+
 	m_parameters->add(&use_mean, "use_mean", "If distance shall be computed between mean vector and vector from rhs or between lhs and rhs.");
+	watch_param(
+	    "use_mean", &use_mean,
+	    AnyParameterProperties(
+	        "If distance shall be computed between mean vector and vector from "
+	        "rhs or between lhs and rhs."));
 }
 
 #endif /* HAVE_LAPACK */

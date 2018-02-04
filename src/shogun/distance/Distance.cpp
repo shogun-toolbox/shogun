@@ -261,8 +261,15 @@ void CDistance::init()
 
 	m_parameters->add((CSGObject**) &lhs, "lhs",
 					  "Feature vectors to occur on left hand side.");
+	watch_param(
+	    "lhs", (CSGObject**)&lhs,
+	    AnyParameterProperties("Feature vectors to occur on left hand side."));
+
 	m_parameters->add((CSGObject**) &rhs, "rhs",
 					  "Feature vectors to occur on right hand side.");
+	watch_param(
+	    "rhs", (CSGObject**)&rhs,
+	    AnyParameterProperties("Feature vectors to occur on right hand side."));
 }
 
 template <class T>

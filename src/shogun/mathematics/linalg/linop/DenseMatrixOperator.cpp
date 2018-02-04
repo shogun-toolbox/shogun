@@ -60,6 +60,9 @@ void CDenseMatrixOperator<T>::init()
 
 		this->m_parameters->add(&m_operator, "dense_matrix",
 				"The dense matrix of the linear operator");
+		this->watch_param(
+		    "dense_matrix", &m_operator,
+		    AnyParameterProperties("The dense matrix of the linear operator"));
 	}
 
 template<class T>

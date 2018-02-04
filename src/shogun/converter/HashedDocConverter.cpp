@@ -65,8 +65,12 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 		MS_NOT_AVAILABLE);
 	SG_ADD(&should_normalize, "should_normalize", "Whether to normalize vectors or not",
 		MS_NOT_AVAILABLE);
+
 	m_parameters->add((CSGObject**) &tokenizer, "tokenizer",
 		"Tokenizer");
+	watch_param(
+		"tokenizer", (CSGObject**)&tokenizer,
+		AnyParameterProperties("Tokenizer"));
 }
 
 const char* CHashedDocConverter::get_name() const

@@ -256,4 +256,5 @@ void CFKFeatures::init()
 	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
 	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
 	m_parameters->add(&weight_a, "weight_a", "Class prior.");
+	watch_param("weight_a", &weight_a, AnyParameterProperties("Class prior."));
 }

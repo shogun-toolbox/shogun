@@ -171,4 +171,7 @@ void CHammingWordDistance::init()
 	use_sign = false;
 	m_parameters->add(&use_sign, "use_sign",
 			"If signum(counts) is used instead of counts.");
+	watch_param(
+	    "use_sign", &use_sign,
+	    AnyParameterProperties("If signum(counts) is used instead of counts."));
 }

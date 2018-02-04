@@ -168,8 +168,14 @@ void CCombinedFeatures::init()
 {
 	m_parameters->add(&num_vec, "num_vec",
 					  "Number of vectors.");
+	watch_param(
+	    "num_vec", &num_vec, AnyParameterProperties("Number of vectors."));
+
 	m_parameters->add((CSGObject**) &feature_array,
 					  "feature_array", "Feature array.");
+	watch_param(
+	    "feature_array", (CSGObject**)&feature_array,
+	    AnyParameterProperties("Feature array."));
 }
 
 CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)

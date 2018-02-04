@@ -41,18 +41,34 @@ void CIterativeLinearSolver<T, ST>::init()
 
 		this->m_parameters->add(&m_max_iteration_limit, "max_iteration_limit",
 			"Maximum number of iteration for the solver");
+		this->watch_param(
+		    "max_iteration_limit", &m_max_iteration_limit,
+		    AnyParameterProperties(
+		        "Maximum number of iteration for the solver"));
 
 		this->m_parameters->add(&m_relative_tolerence, "relative_tolerence",
 			"Relative tolerence of solver");
+		this->watch_param(
+		    "relative_tolerence", &m_relative_tolerence,
+		    AnyParameterProperties("Relative tolerence of solver"));
 
 		this->m_parameters->add(&m_absolute_tolerence, "absolute_tolerence",
 			"Absolute tolerence of solver");
+		this->watch_param(
+		    "absolute_tolerence", &m_absolute_tolerence,
+		    AnyParameterProperties("Absolute tolerence of solver"));
 
 		this->m_parameters->add(&m_store_residuals, "store_residuals",
 			"Whether to store the residuals");
+		this->watch_param(
+		    "store_residuals", &m_store_residuals,
+		    AnyParameterProperties("Whether to store the residuals"));
 
 		this->m_parameters->add(&m_residuals, "residuals",
 			"Residuals for each iterations");
+		this->watch_param(
+		    "residuals", &m_residuals,
+		    AnyParameterProperties("Residuals for each iterations"));
 	}
 
 template <class T, class ST>

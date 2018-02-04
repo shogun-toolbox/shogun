@@ -225,8 +225,17 @@ void CSGDQN::init()
 	SG_REF(loss);
 
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
+	watch_param("C1", &C1, AnyParameterProperties("Cost constant 1."));
+
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");
+	watch_param("C2", &C2, AnyParameterProperties("Cost constant 2."));
+
 	m_parameters->add(&epochs, "epochs",  "epochs");
+	watch_param("epochs", &epochs, AnyParameterProperties("epochs"));
+
 	m_parameters->add(&skip, "skip",  "skip");
+	watch_param("skip", &skip, AnyParameterProperties("skip"));
+
 	m_parameters->add(&count, "count",  "count");
+	watch_param("count", &count, AnyParameterProperties("count"));
 }

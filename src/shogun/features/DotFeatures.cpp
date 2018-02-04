@@ -408,4 +408,7 @@ void CDotFeatures::init()
 	set_property(FP_DOT);
 	m_parameters->add(&combined_weight, "combined_weight",
 					  "Feature weighting in combined dot features.");
+	watch_param(
+	    "combined_weight", &combined_weight,
+	    AnyParameterProperties("Feature weighting in combined dot features."));
 }

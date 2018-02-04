@@ -117,8 +117,20 @@ void CLinearLatentMachine::init()
 	m_model = NULL;
 
 	m_parameters->add(&m_C, "C",  "Cost constant.");
+	watch_param("C", &m_C, AnyParameterProperties("Cost constant."));
+
 	m_parameters->add(&m_epsilon, "epsilon", "Convergence precision.");
+	watch_param(
+	    "epsilon", &m_epsilon,
+	    AnyParameterProperties("Convergence precision."));
+
 	m_parameters->add(&m_max_iter, "max_iter", "Maximum iterations.");
+	watch_param(
+	    "max_iter", &m_max_iter, AnyParameterProperties("Maximum iterations."));
+
 	m_parameters->add((CSGObject**) &m_model, "latent_model", "Latent Model.");
+	watch_param(
+	    "latent_model", (CSGObject**)&m_model,
+	    AnyParameterProperties("Latent Model."));
 }
 

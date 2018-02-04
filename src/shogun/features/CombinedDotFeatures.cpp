@@ -343,9 +343,19 @@ void CCombinedDotFeatures::init()
 {
 	m_parameters->add(&num_dimensions, "num_dimensions",
 					  "Total number of dimensions.");
+	watch_param(
+	    "num_dimensions", &num_dimensions,
+	    AnyParameterProperties("Total number of dimensions."));
+
 	m_parameters->add(&num_vectors, "num_vectors",
 					  "Total number of vectors.");
+	watch_param(
+	    "num_vectors", &num_vectors,
+	    AnyParameterProperties("Total number of vectors."));
+
 	m_parameters->add((CSGObject**) &feature_array,
 					  "feature_array", "Feature array.");
+	watch_param(
+	    "feature_array", (CSGObject**)&feature_array,
+	    AnyParameterProperties("Feature array."));
 }
-

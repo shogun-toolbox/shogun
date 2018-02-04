@@ -22,16 +22,33 @@ CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 {
 	m_parameters->add(&m_pos_pseudo,
 			"pos_pseudo","pseudo count for positive class");
+	watch_param(
+	    "pos_pseudo", &m_pos_pseudo,
+	    AnyParameterProperties("pseudo count for positive class"));
+
 	m_parameters->add(&m_neg_pseudo,
 			"neg_pseudo", "pseudo count for negative class");
+	watch_param(
+	    "neg_pseudo", &m_neg_pseudo,
+	    AnyParameterProperties("pseudo count for negative class"));
 
 	m_parameters->add((CSGObject**) &pos_model,
 			"pos_model", "LinearHMM modelling positive class.");
+	watch_param(
+	    "pos_model", (CSGObject**)&pos_model,
+	    AnyParameterProperties("LinearHMM modelling positive class."));
+
 	m_parameters->add((CSGObject**) &neg_model,
 			"neg_model", "LinearHMM modelling negative class.");
+	watch_param(
+	    "neg_model", (CSGObject**)&neg_model,
+	    AnyParameterProperties("LinearHMM modelling negative class."));
 
 	m_parameters->add((CSGObject**) &features,
 			"features", "String Features.");
+	watch_param(
+	    "features", (CSGObject**)&features,
+	    AnyParameterProperties("LinearHMM modelling negative class."));
 }
 
 CPluginEstimate::~CPluginEstimate()

@@ -126,6 +126,9 @@ void CCustomDistance::init()
 	watch_param("dmatrix", &dmatrix, &num_rows, &num_cols);
 
 	m_parameters->add(&upper_diagonal, "upper_diagonal", "Upper diagonal");
+	watch_param(
+	    "upper_diagonal", &upper_diagonal,
+	    AnyParameterProperties("Upper diagonal"));
 }
 
 void CCustomDistance::cleanup()

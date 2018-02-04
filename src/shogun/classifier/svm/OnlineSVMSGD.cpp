@@ -205,13 +205,37 @@ void COnlineSVMSGD::init()
 	SG_REF(loss);
 
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
+	watch_param("C1", &C1, AnyParameterProperties("Cost constant 1."));
+
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");
+	watch_param("C2", &C2, AnyParameterProperties("Cost constant 2."));
+
 	m_parameters->add(&lambda, "lambda", "Regularization parameter.");
+	watch_param(
+	    "lambda", &lambda, AnyParameterProperties("Regularization parameter."));
+
 	m_parameters->add(&wscale, "wscale",  "W scale");
+	watch_param("wscale", &wscale, AnyParameterProperties("W scale"));
+
 	m_parameters->add(&bscale, "bscale",  "b scale");
+	watch_param("bscale", &bscale, AnyParameterProperties("b scale"));
+
 	m_parameters->add(&epochs, "epochs",  "epochs");
+	watch_param("epochs", &epochs, AnyParameterProperties("epochs"));
+
 	m_parameters->add(&skip, "skip",  "skip");
+	watch_param("skip", &skip, AnyParameterProperties("skip"));
+
 	m_parameters->add(&count, "count",  "count");
+	watch_param("count", &count, AnyParameterProperties("count"));
+
 	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+	watch_param(
+	    "use_bias", &use_bias,
+	    AnyParameterProperties("Indicates if bias is used."));
+
 	m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+	watch_param(
+	    "use_regularized_bias", &use_regularized_bias,
+	    AnyParameterProperties("Indicates if bias is regularized."));
 }

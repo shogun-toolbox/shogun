@@ -54,8 +54,13 @@ void CRandomFourierDotFeatures::init(KernelName kernel_name, SGVector<float64_t>
 	kernel_params = params;
 
 	constant = num_samples>0 ? CMath::sqrt(2.0 / num_samples) : 1;
+
 	m_parameters->add(&kernel_params, "kernel_params",
 			"The parameters of the kernel to approximate");
+	watch_param(
+		"kernel_params", &kernel_params,
+		AnyParameterProperties("The parameters of the kernel to approximate"));
+
 	SG_ADD((machine_int_t* ) &kernel, "kernel",
 			"The kernel to approximate", MS_NOT_AVAILABLE);
 	SG_ADD(&constant, "constant", "A constant needed",

@@ -729,10 +729,20 @@ void CAlphabet::init()
 
 	m_parameters->add((machine_int_t*) &alphabet, "alphabet",
 					  "Alphabet enum.");
+	watch_param(
+	    "alphabet", (machine_int_t*)&alphabet,
+	    AnyParameterProperties("Alphabet enum."));
+
 	m_parameters->add(&num_symbols, "num_symbols",
 					  "Number of symbols.");
+	watch_param(
+	    "num_symbols", &num_symbols,
+	    AnyParameterProperties("Number of symbols."));
+
 	m_parameters->add(&num_bits, "num_bits",
 					  "Number of bits.");
+	watch_param(
+	    "num_bits", &num_symbols, AnyParameterProperties("Number of bits."));
 
 	/* We don't need to serialize the mapping tables / they can be computed
 	 * after de-serializing. Lets not serialize the histogram for now. Doesn't

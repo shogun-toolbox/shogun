@@ -378,12 +378,31 @@ void CPolyFeatures::register_parameters()
 {
 	m_parameters->add((CSGObject**) &m_feat, "features",
 				"Features in original space.");
+	watch_param(
+	    "features", (CSGObject**)&m_feat,
+	    AnyParameterProperties("Features in original space."));
+
 	m_parameters->add(&m_degree, "degree", "Degree of the polynomial kernel.");
-	m_parameters->add(&m_normalize, "normalize", "Normalize?");
+	watch_param(
+	    "degree", &m_degree,
+	    AnyParameterProperties("Degree of the polynomial kernel."));
+
+	m_parameters->add(&m_normalize, "normalize", "Normalize.");
+	watch_param(
+	    "normalize", &m_normalize, AnyParameterProperties("Normalize."));
+
 	m_parameters->add(&m_input_dimensions, "input_dimensions",
 			"Dimensions of the input space.");
+	watch_param(
+	    "input_dimensions", &m_input_dimensions,
+	    AnyParameterProperties("Dimensions of the input space."));
+
 	m_parameters->add(&m_output_dimensions, "output_dimensions",
 			"Dimensions of the feature space of the polynomial kernel.");
+	watch_param(
+	    "output_dimensions", &m_output_dimensions,
+	    AnyParameterProperties(
+	        "Dimensions of the feature space of the polynomial kernel."));
 
 	multi_index_length=m_output_dimensions*m_degree;
 	m_parameters->add_vector(

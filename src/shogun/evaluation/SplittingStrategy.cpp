@@ -57,10 +57,25 @@ void CSplittingStrategy::init()
 	m_num_subsets=0;
 
 	m_parameters->add((CSGObject**)&m_labels, "labels", "Labels for subsets");
+	watch_param(
+	    "labels", (CSGObject**)&m_labels,
+	    AnyParameterProperties("Labels for subsets"));
+
 	m_parameters->add((CSGObject**)&m_subset_indices, "subset_indices",
 			"Set of sets of subset indices");
+	watch_param(
+	    "subset_indices", (CSGObject**)&m_subset_indices,
+	    AnyParameterProperties("Set of sets of subset indices"));
+
 	m_parameters->add(&m_is_filled, "is_filled", "Whether ther are index sets");
+	watch_param(
+	    "is_filled", &m_is_filled,
+	    AnyParameterProperties("Whether ther are index sets"));
+
 	m_parameters->add(&m_num_subsets, "num_subsets", "Number of index sets");
+	watch_param(
+	    "num_subsets", &m_num_subsets,
+	    AnyParameterProperties("Number of index sets"));
 }
 
 CSplittingStrategy::~CSplittingStrategy()

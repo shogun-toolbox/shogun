@@ -54,8 +54,15 @@ class CListElement :public CSGObject
 		void init()
 		{
 			m_parameters->add(&data, "data", "Data of this element.");
+			watch_param(
+			    "data", &data, AnyParameterProperties("Data of this element."));
+
 			m_parameters->add((CSGObject**) &next, "next",
 					"Next element in list.");
+			watch_param(
+			    "next", (CSGObject**)&next,
+			    AnyParameterProperties("Next element in list."));
+
 			m_model_selection_parameters->add((CSGObject**) &next, "next",
 					"Next element in list.");
 			m_model_selection_parameters->add(&data, "data", "Data of this element.");
@@ -85,12 +92,24 @@ class CList : public CSGObject
 		 */
 		CList(bool p_delete_data=false) : CSGObject()
 		{
-			m_parameters->add(&delete_data, "delete_data",
-							  "Delete data on destruction?");
+			m_parameters->add(
+			    &delete_data, "delete_data", "Delete data on destruction.");
+			watch_param(
+			    "delete_data", &delete_data,
+			    AnyParameterProperties("Delete data on destruction."));
+
 			m_parameters->add(&num_elements, "num_elements",
 							  "Number of elements.");
+			watch_param(
+			    "num_elements", &num_elements,
+			    AnyParameterProperties("Number of elements."));
+
 			m_parameters->add((CSGObject**) &first, "first",
 							  "First element in list.");
+			watch_param(
+			    "first", (CSGObject**)&first,
+			    AnyParameterProperties("First element in list."));
+
 			m_model_selection_parameters->add((CSGObject**) &first, "first",
 								  "First element in list.");
 
