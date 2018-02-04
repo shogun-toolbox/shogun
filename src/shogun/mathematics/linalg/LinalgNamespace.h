@@ -674,7 +674,7 @@ namespace shogun
 		 * Solve the linear equations \f$Ax=b\f$, given the LDLT Cholesky
 		 * factorization of A,
 		 * where \f$A\f$ is a positive semidefinite or negative semidefinite
-		 * Hermitan matrix
+		 * Hermitan matrix @see ldlt_factor
 		 *
 		 * @param L Triangular matrix, LDLT Cholesky factorization of A
 		 * @param d The diagonal of the diagonal matrix D
