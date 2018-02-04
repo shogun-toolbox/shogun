@@ -193,14 +193,7 @@ TYPED_TEST(SGObjectClone, basic)
 {
 	auto obj = some<CCloneEqualsMock<TypeParam>>();
 
-	CSGObject* clone = nullptr;
-	try
-	{
-		clone = obj->clone();
-	}
-	catch (...)
-	{
-	}
+	CSGObject* clone = obj->clone();
 
 	EXPECT_NE(clone, obj);
 	ASSERT_NE(clone, nullptr);
