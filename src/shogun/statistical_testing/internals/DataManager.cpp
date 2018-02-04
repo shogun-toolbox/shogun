@@ -222,24 +222,36 @@ const bool DataManager::is_blockwise() const
 
 void DataManager::set_train_test_mode(bool on)
 {
-	train_test_mode=on;
-	if (!train_test_mode)
+	if (!on)
 	{
 		train_mode=default_train_mode;
 		train_test_ratio=default_train_test_ratio;
 		cross_validation_mode=default_cross_validation_mode;
+
+		set_train_mode(train_mode);
+		set_train_test_ratio(train_test_ratio);
+
+		train_test_mode = on;
+		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		typedef std::unique_ptr<DataFetcher> fetcher_type;
+		std::for_each(
+		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
+			    f->set_train_test_mode(train_test_mode);
+		    });
 	}
-	REQUIRE(fetchers.size()>0, "Features are not set!");
-	typedef std::unique_ptr<DataFetcher> fetcher_type;
-	std::for_each(fetchers.begin(), fetchers.end(), [this, on](fetcher_type& f)
+	else
 	{
-		f->set_train_test_mode(on);
-		if (on)
-		{
-			f->set_train_mode(train_mode);
-			f->set_train_test_ratio(train_test_ratio);
-		}
-	});
+		train_test_mode = on;
+		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		typedef std::unique_ptr<DataFetcher> fetcher_type;
+		std::for_each(
+		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
+			    f->set_train_test_mode(train_test_mode);
+		    });
+
+		set_train_mode(train_mode);
+		set_train_test_ratio(train_test_ratio);
+	}
 }
 
 bool DataManager::is_train_test_mode() const
@@ -250,7 +262,14 @@ bool DataManager::is_train_test_mode() const
 void DataManager::set_train_mode(bool on)
 {
 	if (train_test_mode)
+	{
 		train_mode=on;
+		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		typedef std::unique_ptr<DataFetcher> fetcher_type;
+		std::for_each(
+		    fetchers.begin(), fetchers.end(),
+		    [this](fetcher_type& f) { f->set_train_mode(train_mode); });
+	}
 	else
 	{
 		SG_SERROR("Train mode cannot be used without turning on Train/Test mode first!"
@@ -282,7 +301,15 @@ bool DataManager::is_cross_validation_mode() const
 void DataManager::set_train_test_ratio(float64_t ratio)
 {
 	if (train_test_mode)
+	{
 		train_test_ratio=ratio;
+		REQUIRE(fetchers.size() > 0, "Features are not set!\n");
+		typedef std::unique_ptr<DataFetcher> fetcher_type;
+		std::for_each(
+		    fetchers.begin(), fetchers.end(), [this](fetcher_type& f) {
+			    f->set_train_test_ratio(train_test_ratio);
+		    });
+	}
 	else
 	{
 		SG_SERROR("Train-test ratio cannot be set without turning on Train/Test mode first!"
