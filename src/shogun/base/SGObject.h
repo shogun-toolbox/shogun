@@ -193,6 +193,14 @@ public:
 	 */
 	template<class T> void set_generic();
 
+	/** Returns generic type.
+	 * @return generic type of this object
+	 */
+	EPrimitiveType get_generic() const
+	{
+		return m_generic;
+	}
+
 	/** unset generic type
 	 *
 	 * this has to be called in classes specializing a template class
@@ -582,6 +590,17 @@ public:
 	virtual CSGObject* clone();
 
 protected:
+	/** Returns an empty instance of own type.
+	 *
+	 * When inheriting from CSGObject from outside the main source tree (i.e.
+	 * customized classes, or in a unit test), then this method has to be
+	 * overloaded manually to return an empty instance.
+	 * Shogun can only instantiate empty class instances from its source tree.
+	 *
+	 * @return empty instance of own type
+	 */
+	virtual CSGObject* create_empty() const;
+
 	/** Iteratively clones all parameters of the provided instance into this instance.
 	 * This will fail if the objects have different sets of registered parameters,
 	 * or if they have a different type as defined by get_name().

@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013-2018 Heiko Strathmann
- * Written (W) 2014 Thoralf Klein
- * Written (W) 2015 Wu Lin
+ * Authors: Heiko Strathmann, Thoralf Klein, Wu Lin
  */
 
 #include "MockObject.h"
@@ -30,15 +25,23 @@
 
 using namespace shogun;
 
+// fixture for SGObject::equals tests
 template <typename T>
 class SGObjectEquals : public ::testing::Test
 {
 };
+// types that go into SGVector<> and co
 // TODO: SGString doesn't support complex128_t, so omitted here
-typedef ::testing::Types<bool, char, int8_t, uint8_t, int16_t, int32_t, int64_t,
+typedef ::testing::Types<bool, char, int8_t, int16_t, int32_t, int64_t,
                          float32_t, float64_t, floatmax_t>
-    CloneEqualsTypes;
-TYPED_TEST_CASE(SGObjectEquals, CloneEqualsTypes);
+    SGBasicTypes;
+
+TYPED_TEST_CASE(SGObjectEquals, SGBasicTypes);
+
+TYPED_TEST(SGObjectEquals, mock_allocate_delete)
+{
+	auto obj = some<CCloneEqualsMock<int32_t>>();
+}
 
 TYPED_TEST(SGObjectEquals, same)
 {
@@ -48,11 +51,6 @@ TYPED_TEST(SGObjectEquals, same)
 	EXPECT_TRUE(obj1->equals(obj1));
 	EXPECT_TRUE(obj1->equals(obj2));
 	EXPECT_TRUE(obj2->equals(obj1));
-}
-
-TYPED_TEST(SGObjectEquals, mock_allocate_delete)
-{
-	auto obj = some<CCloneEqualsMock<int32_t>>();
 }
 
 TYPED_TEST(SGObjectEquals, different_null)
@@ -181,14 +179,6 @@ TEST(SGObject, equals_different_type)
 
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
-}
-
-TEST(SGObject, clone_not_null_and_correct_type)
-{
-	auto object = some<CGaussianKernel>();
-	auto clone = object->clone();
-	ASSERT_NE(clone, nullptr);
-	ASSERT_TRUE(!strcmp(object->get_name(), clone->get_name()));
 }
 
 TEST(SGObject, clone_basic_parameter)
@@ -547,42 +537,4 @@ TEST(SGObject, watched_parameter_object)
 	EXPECT_FALSE(other_obj->equals(obj));
 	obj = nullptr;
 	EXPECT_EQ(other_obj->ref_count(), 1);
-}
-
-// temporary test until old parameter framework is gone
-// enable test to hunt for parameters not registered in tags
-// see https://github.com/shogun-toolbox/shogun/issues/4117
-TEST(SGObjectAll, DISABLED_tag_coverage)
-{
-	auto class_names = available_objects();
-
-	for (auto class_name : class_names)
-	{
-		auto obj = create(class_name.c_str(), PT_NOT_GENERIC);
-
-		// templated classes cannot be created in the above way
-		if (!obj)
-		{
-			// only test single generic type here: all types have the same
-			// parameter names
-			obj = create(class_name.c_str(), PT_FLOAT64);
-		}
-
-		// whether templated or not
-		ASSERT_NE(obj, nullptr);
-
-		// old parameter framework names
-		std::vector<std::string> old_names;
-		for (auto i : range(obj->m_parameters->get_num_parameters()))
-			old_names.push_back(obj->m_parameters->get_parameter(i)->m_name);
-		auto tag_names = obj->parameter_names();
-
-		// hack to increase readability of error messages
-		old_names.push_back("Class: " + class_name);
-		tag_names.push_back("Class: " + class_name);
-
-		EXPECT_EQ(tag_names, old_names);
-
-		SG_UNREF(obj);
-	}
 }
