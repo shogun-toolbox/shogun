@@ -1008,5 +1008,6 @@ bool CSGObject::equals(const CSGObject* other) const
 CSGObject* CSGObject::create_empty() const
 {
 	CSGObject* object = create(this->get_name(), this->m_generic);
+	SG_REF(object);
 	return object;
 }
