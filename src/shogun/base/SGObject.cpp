@@ -673,14 +673,15 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	CSGObject* copy = create(get_name(), this->m_generic);
+	CSGObject* copy = create_empty();
 
-	SG_REF(copy);
-
-	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
-			"this usually is that get_name() of the class returns something "
-			"wrong, or that a class has a wrongly set generic type.\n",
-			get_name());
+	REQUIRE(
+	    copy, "Could not create empty instance of %s. The reason for "
+	          "this usually is that get_name() of the class returns something "
+	          "wrong, that a class has a wrongly set generic type, or that it "
+	          "lies outside the main source tree and does not have "
+	          "CSGObject::create_empty() overridden.\n",
+	    get_name());
 
 	SG_DEBUG("Cloning all parameters of %s\n", get_name());
 	if (!copy->clone_parameters(this))
