@@ -70,7 +70,7 @@ TEST(CombinedKernelTest, test_subset_mixed)
 
 	combined->append_kernel(custom_2);
 	combined->append_kernel(gaus_2);
-f	eats_combined->append_feature_obj(feats);
+	feats_combined->append_feature_obj(feats);
 
 	SGVector<index_t> inds(10);
 	inds.range_fill();
@@ -79,7 +79,7 @@ f	eats_combined->append_feature_obj(feats);
 	{
 		CMath::permute(inds);
 
-		cf->add_subset(inds);
+		feats_combined->add_subset(inds);
 		combined->init(feats_combined, feats_combined);
 
 		CKernel* ground_truth_kernel = combined->get_kernel(1);
@@ -94,8 +94,8 @@ f	eats_combined->append_feature_obj(feats);
 		{
 			for (index_t k = 0; k < n_runs; ++k)
 			{
-				EXPECT_TRUE(gauss_matrix.equals(custom_matrix_1);
-				EXPECT_TRUE(gauss_matrix.equals(custom_matrix_2);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
 			}
 		}
 
@@ -148,8 +148,11 @@ TEST(CombinedKernelTest, test_subset_combined_only)
 
 		for (index_t j = 0; j < n_runs; ++j)
 		{
-			EXPECT_TRUE(gauss_matrix.equals(custom_matrix_1);
-			EXPECT_TRUE(gauss_matrix.equals(custom_matrix_2);
+			for (index_t k = 0; k < n_runs; ++k)
+			{
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
+			}
 		}
 
 		feats->remove_subset();
