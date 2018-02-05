@@ -132,7 +132,8 @@ bool CCombinedKernel::init_with_extracted_subsets(
 
 			auto k_custom = dynamic_cast<CCustomKernel*>(k);
 			if (!k_custom)
-				SG_ERROR("Dynamic cast to custom kernel failed")
+				SG_ERROR(
+				    "Dynamic cast to custom kernel failed")
 
 			// clear all previous subsets
 			k_custom->remove_all_row_subsets();

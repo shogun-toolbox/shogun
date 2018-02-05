@@ -86,19 +86,16 @@ TEST(CombinedKernelTest, test_subset_mixed)
 		CKernel* custom_kernel_1 = combined->get_kernel(0);
 		CKernel* custom_kernel_2 = combined->get_kernel(2);
 
-		SGMatrix<float64_t> gauss_matrix =
-		    ground_truth_kernel->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_1 =
-		    custom_kernel_1->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_2 =
-		    custom_kernel_2->get_kernel_matrix();
+		SGMatrix<float64_t> gauss_matrix = ground_truth_kernel->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 = custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 = custom_kernel_2->get_kernel_matrix();
 
 		for (index_t j = 0; j < n_runs; ++j)
 		{
 			for (index_t k = 0; k < n_runs; ++k)
 			{
-				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
-				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
 			}
 		}
 
@@ -146,17 +143,15 @@ TEST(CombinedKernelTest, test_subset_combined_only)
 		CKernel* custom_kernel_2 = combined->get_kernel(1);
 
 		SGMatrix<float64_t> gauss_matrix = gaus_ck->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_1 =
-		    custom_kernel_1->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_2 =
-		    custom_kernel_2->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 = custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 = custom_kernel_2->get_kernel_matrix();
 
 		for (index_t j = 0; j < n_runs; ++j)
 		{
 			for (index_t k = 0; k < n_runs; ++k)
 			{
-				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
-				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j,k), custom_matrix_1(j,k), 1e-6);
 			}
 		}
 
