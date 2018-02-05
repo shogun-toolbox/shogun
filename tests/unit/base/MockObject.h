@@ -23,6 +23,7 @@ namespace shogun
 			m_some_value = 1;
 
 			watch_param("some_value", &m_some_value);
+			m_parameters->add(&m_some_value, "some_value", "Some value");
 		}
 		const char* get_name() const override
 		{
@@ -38,9 +39,8 @@ namespace shogun
 
 		virtual CSGObject* clone() override
 		{
-			auto* clone = new CCloneEqualsMockParameter<T>();
-			clone->m_was_cloned = true;
-			SG_REF(clone);
+			auto* clone = CSGObject::clone();
+			((CCloneEqualsMockParameter*)clone)->m_was_cloned = true;
 			return clone;
 		}
 
@@ -75,11 +75,10 @@ namespace shogun
 		{
 			m_basic = 1;
 			watch_param("basic", &m_basic);
+			m_parameters->add(&m_basic, "basic", "The basic guy");
 
 			m_object = new CCloneEqualsMockParameter<T>();
 			watch_param("object", &m_object);
-
-			// TODO: delete once clone is based on tags
 			m_parameters->add(
 			    (CSGObject**)&m_object, "object", "The object (tm)");
 		}
@@ -94,10 +93,12 @@ namespace shogun
 			m_sg_vector = SGVector<T>(2);
 			m_sg_vector.set_const(m_basic);
 			watch_param("sg_vector", &m_sg_vector);
+			m_parameters->add(&m_sg_vector, "sg_vector", "The SGVector");
 
 			m_sg_matrix = SGMatrix<T>(3, 4);
 			m_sg_matrix.set_const(m_basic);
 			watch_param("sg_matrix", &m_sg_matrix);
+			m_parameters->add(&m_sg_matrix, "sg_matrix", "The SGMatrix");
 		}
 
 		void init_sg_sparse_vector_matrix()
@@ -111,6 +112,8 @@ namespace shogun
 				m_sg_sparse_vector.features[i] = entry;
 			}
 			watch_param("sg_sparse_vector", &m_sg_sparse_vector);
+			m_parameters->add(
+			    &m_sg_sparse_vector, "sg_sparse_vector", "The SGSparseVector");
 
 			m_sg_sparse_matrix =
 			    SGSparseMatrix<T>(m_sg_sparse_vector.num_feat_entries, 6);
@@ -127,6 +130,8 @@ namespace shogun
 				m_sg_sparse_matrix.sparse_matrix[i] = vec;
 			}
 			watch_param("sg_sparse_matrix", &m_sg_sparse_matrix);
+			m_parameters->add(
+			    &m_sg_sparse_matrix, "sg_sparse_matrix", "The SGSparseMatrix");
 		}
 
 		void init_raw_vector()
@@ -138,6 +143,9 @@ namespace shogun
 			watch_param(
 			    "raw_vector_basic", &m_raw_vector_basic,
 			    &m_raw_vector_basic_len);
+			m_parameters->add_vector(
+			    &m_raw_vector_basic, &m_raw_vector_basic_len,
+			    "raw_vector_basic", "The raw vector basic");
 
 			m_raw_vector_sg_string_len = 7;
 			m_raw_vector_sg_string =
@@ -151,6 +159,9 @@ namespace shogun
 			watch_param(
 			    "raw_vector_sg_string", &m_raw_vector_sg_string,
 			    &m_raw_vector_sg_string_len);
+			m_parameters->add_vector(
+			    &m_raw_vector_sg_string, &m_raw_vector_sg_string_len,
+			    "raw_vector_sg_string", "The raw vector sg_string");
 
 			m_raw_vector_object_len = 6;
 			m_raw_vector_object =
@@ -160,6 +171,9 @@ namespace shogun
 			watch_param(
 			    "raw_vector_object", &m_raw_vector_object,
 			    &m_raw_vector_object_len);
+			m_parameters->add_vector(
+			    (CSGObject***)&m_raw_vector_object, &m_raw_vector_object_len,
+			    "raw_vector_object", "The raw vector object");
 		}
 
 		void free_raw_vector()
@@ -187,6 +201,9 @@ namespace shogun
 			watch_param(
 			    "raw_matrix_basic", &m_raw_matrix_basic,
 			    &m_raw_matrix_basic_rows, &m_raw_matrix_basic_cols);
+			m_parameters->add_matrix(
+			    &m_raw_matrix_basic, &m_raw_matrix_basic_rows,
+			    &m_raw_matrix_basic_cols, "raw_matrix_basic", "The raw matrix");
 		}
 
 		void free_raw_matrix()
