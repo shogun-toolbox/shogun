@@ -6,14 +6,12 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/regression/LinearRidgeRegression.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/regression/LinearRidgeRegression.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 CLinearRidgeRegression::CLinearRidgeRegression()
 : CLinearMachine()
@@ -61,7 +59,6 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 
     CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
     int32_t num_feat=feats->get_num_features();
-    int32_t num_vec=feats->get_num_vectors();
 
     SGMatrix<float64_t> kernel_matrix(num_feat,num_feat);
     SGMatrix<float64_t> feats_matrix(feats->get_feature_matrix());
@@ -71,29 +68,17 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
     tau_vector.zero();
     tau_vector.add(m_tau);
 
-    Map<MatrixXd> eigen_kernel_matrix(kernel_matrix.matrix, num_feat,num_feat);
-    Map<MatrixXd> eigen_feats_matrix(feats_matrix.matrix, num_feat,num_vec);
-    Map<VectorXd> eigen_y(y.vector, num_feat);
-    Map<VectorXd> eigen_labels(((CRegressionLabels*)m_labels)->get_labels(),num_vec);
-    Map<VectorXd> eigen_tau(tau_vector.vector, num_feat);
+	linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
+	linalg::add_diag(kernel_matrix, tau_vector);
 
-    eigen_kernel_matrix = eigen_feats_matrix*eigen_feats_matrix.transpose();
+	auto labels = ((CRegressionLabels*)m_labels)->get_labels();
+	linalg::matrix_prod(feats_matrix, labels, y);
 
-    eigen_kernel_matrix.diagonal() += eigen_tau;
+	auto decomposition = linalg::cholesky_factor(kernel_matrix);
+	y = linalg::cholesky_solver(decomposition, y);
 
-    eigen_y = eigen_feats_matrix*eigen_labels ;
-
-    LLT<MatrixXd> llt;
-    llt.compute(eigen_kernel_matrix);
-    if(llt.info() != Eigen::Success)
-    {
-    	SG_WARNING("Features covariance matrix was not positive definite\n");
-    	return false;
-    }
-    eigen_y = llt.solve(eigen_y);
-
-    set_w(y);
-    return true;
+	set_w(y);
+	return true;
 }
 
 bool CLinearRidgeRegression::load(FILE* srcfile)
