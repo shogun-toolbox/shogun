@@ -1,3 +1,4 @@
+#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/range.h>
 #include <shogun/base/some.h>
@@ -77,6 +78,10 @@ namespace shogun
 
 			m_object = new CCloneEqualsMockParameter<T>();
 			watch_param("object", &m_object);
+
+			// TODO: delete once clone is based on tags
+			m_parameters->add(
+			    (CSGObject**)&m_object, "object", "The object (tm)");
 		}
 
 		void free_single()

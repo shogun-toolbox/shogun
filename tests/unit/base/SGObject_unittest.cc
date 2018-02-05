@@ -30,6 +30,13 @@ template <typename T>
 class SGObjectEquals : public ::testing::Test
 {
 };
+
+// fixture for SGObject::clone tests
+template <typename T>
+class SGObjectClone : public ::testing::Test
+{
+};
+
 // types that go into SGVector<> and co
 // TODO: SGString doesn't support complex128_t, so omitted here
 typedef ::testing::Types<bool, char, int8_t, int16_t, int32_t, int64_t,
@@ -37,10 +44,11 @@ typedef ::testing::Types<bool, char, int8_t, int16_t, int32_t, int64_t,
     SGBasicTypes;
 
 TYPED_TEST_CASE(SGObjectEquals, SGBasicTypes);
+TYPED_TEST_CASE(SGObjectClone, SGBasicTypes);
 
 TYPED_TEST(SGObjectEquals, mock_allocate_delete)
 {
-	auto obj = some<CCloneEqualsMock<int32_t>>();
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
 }
 
 TYPED_TEST(SGObjectEquals, same)
@@ -172,13 +180,40 @@ TYPED_TEST(SGObjectEquals, different_raw_matrix_basic)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TEST(SGObject, equals_different_type)
+TEST(SGObjectEquals, different_type)
 {
 	auto obj1 = some<CCloneEqualsMock<int>>();
 	auto obj2 = some<CCloneEqualsMock<float>>();
 
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectClone, basic)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+
+	CSGObject* clone = nullptr;
+	try
+	{
+		clone = obj->clone();
+	}
+	catch (...)
+	{
+	}
+
+	EXPECT_NE(clone, obj);
+	ASSERT_NE(clone, nullptr);
+	EXPECT_EQ(clone->ref_count(), 1);
+
+	auto clone_casted = dynamic_cast<CCloneEqualsMock<TypeParam>*>(clone);
+	ASSERT_NE(clone_casted, nullptr);
+	ASSERT_NE(clone_casted->m_object, obj->m_object);
+	EXPECT_EQ(clone_casted->m_object->m_was_cloned, true);
+
+	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
+
+	SG_UNREF(clone);
 }
 
 TEST(SGObject, clone_basic_parameter)
