@@ -189,18 +189,11 @@ TEST(SGObjectEquals, different_type)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
-TYPED_TEST(SGObjectClone, basic)
+TYPED_TEST(SGObjectClone, basic_checks)
 {
 	auto obj = some<CCloneEqualsMock<TypeParam>>();
 
-	CSGObject* clone = nullptr;
-	try
-	{
-		clone = obj->clone();
-	}
-	catch (...)
-	{
-	}
+	CSGObject* clone = obj->clone();
 
 	EXPECT_NE(clone, obj);
 	ASSERT_NE(clone, nullptr);
@@ -208,7 +201,8 @@ TYPED_TEST(SGObjectClone, basic)
 
 	auto clone_casted = dynamic_cast<CCloneEqualsMock<TypeParam>*>(clone);
 	ASSERT_NE(clone_casted, nullptr);
-	ASSERT_NE(clone_casted->m_object, obj->m_object);
+
+	EXPECT_NE(clone_casted->m_object, obj->m_object);
 	EXPECT_EQ(clone_casted->m_object->m_was_cloned, true);
 
 	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
@@ -216,64 +210,34 @@ TYPED_TEST(SGObjectClone, basic)
 	SG_UNREF(clone);
 }
 
-TEST(SGObject, clone_basic_parameter)
+TYPED_TEST(SGObjectClone, equals_empty)
 {
-	auto object = some<CGaussianKernel>();
-	object->put("log_width", 2.0);
-	ASSERT_EQ(object->get<float64_t>("log_width"), 2);
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
 
-	auto clone = object->clone();
-	EXPECT_EQ(
-	    object->get<float64_t>("log_width"),
-	    clone->get<float64_t>("log_width"));
+	CSGObject* clone = obj->clone();
+	EXPECT_TRUE(clone->equals(obj));
+
+	SG_UNREF(clone);
 }
 
-TEST(SGObject, clone_sgmatrix_parameter)
+TYPED_TEST(SGObjectClone, equals_non_empty)
 {
-	SGMatrix<float64_t> data(10, 10);
-	for (auto i : range(data.num_rows * data.num_cols))
-		data.matrix[i] = CMath::randn_double();
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	obj->m_basic -= 1;
+	obj->m_object->m_some_value -= 1;
+	obj->m_sg_vector[0] -= 1;
+	obj->m_sg_matrix(0, 0) = 0;
+	obj->m_sg_sparse_vector.features[0].entry -= 1;
+	obj->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
+	obj->m_raw_vector_basic[0] -= 1;
+	obj->m_raw_matrix_basic[0] -= 1;
+	obj->m_raw_vector_sg_string[0].string[0] -= 1;
+	obj->m_raw_vector_object[0]->m_some_value -= 1;
 
-	auto object = some<CDenseFeatures<float64_t>>(data);
-	ASSERT_TRUE(data.equals(object->get_feature_matrix()));
+	CSGObject* clone = obj->clone();
+	EXPECT_TRUE(clone->equals(obj));
 
-	auto clone = object->clone();
-	EXPECT_NE(
-	    data.data(), clone->get<SGMatrix<float64_t>>("feature_matrix").data());
-	ASSERT_TRUE(data.equals(clone->get<SGMatrix<float64_t>>("feature_matrix")));
-}
-
-TEST(SGObject, clone_sgvector_parameter)
-{
-	SGVector<float64_t> data(10);
-	for (auto i : range(data.vlen))
-		data.vector[i] = CMath::randn_double();
-
-	auto object = some<CRegressionLabels>(data);
-	ASSERT_TRUE(data.equals(object->get_labels()));
-
-	auto clone = object->clone();
-	EXPECT_NE(data.data(), clone->get<SGVector<float64_t>>("labels").data());
-	EXPECT_TRUE(data.equals(clone->get<SGVector<float64_t>>("labels")));
-}
-
-TEST(SGObject, clone_sgobject_parameter)
-{
-	SGMatrix<float64_t> data(10, 10);
-	for (auto i : range(data.num_rows * data.num_cols))
-		data.matrix[i] = CMath::randn_double();
-
-	auto object_parameter = some<CDenseFeatures<float64_t>>(data);
-	auto object = some<CGaussianKernel>();
-	object->init(object_parameter, object_parameter);
-	ASSERT_TRUE(object_parameter->equals(object->get<CSGObject*>("lhs")));
-	ASSERT_TRUE(object_parameter->equals(object->get<CSGObject*>("rhs")));
-
-	auto clone = object->clone();
-	EXPECT_NE(object_parameter, clone->get<CSGObject*>("lhs"));
-	EXPECT_NE(object_parameter, clone->get<CSGObject*>("rhs"));
-	EXPECT_TRUE(object_parameter->equals(clone->get<CSGObject*>("lhs")));
-	EXPECT_TRUE(object_parameter->equals(clone->get<CSGObject*>("rhs")));
+	SG_UNREF(clone);
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
