@@ -24,16 +24,12 @@ function(get_excluded_meta_examples)
 
     IF(NOT HAVE_NLOPT)
         LIST(APPEND EXCLUDED_META_EXAMPLES
-            gaussian_processes/gaussian_process_regression.sg)
+            gaussian_process/regression.sg)
     ENDIF()
 
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
-			gaussian_processes/gaussian_process_regression.sg
-			gaussian_processes/gaussian_process_classifier.sg
-			multiclass_classifier/multiclass_logisticregression.sg
-            statistical_testing/linear_time_mmd.sg
-            statistical_testing/quadratic_time_mmd.sg
+			multiclass/logistic_regression.sg
 			)
 	ENDIF()
 
@@ -47,7 +43,7 @@ function(get_excluded_meta_examples)
 	IF(NOT USE_SVMLIGHT)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
 			regression/multiple_kernel_learning.sg
-			binary_classifier/multiple_kernel_learning.sg
+			binary/multiple_kernel_learning.sg
 		)
 	ENDIF()
 
@@ -62,7 +58,13 @@ function(find_meta_examples)
     get_excluded_meta_examples()
 
     FOREACH(META_EXAMPLE ${EXCLUDED_META_EXAMPLES})
-        LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/${META_EXAMPLE})
+        SET(EXCLUDED_EXAMPLE_FNAME ${CMAKE_SOURCE_DIR}/examples/meta/src/${META_EXAMPLE})
+        LIST(FIND META_EXAMPLE_LISTINGS ${EXCLUDED_EXAMPLE_FNAME} HAS_EXAMPLE)
+ 
+        IF(HAS_EXAMPLE EQUAL -1)
+            MESSAGE(FATAL_ERROR "Guarded meta example ${META_EXAMPLE} does not exist.")
+        ENDIF()
+        LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${EXCLUDED_EXAMPLE_FNAME})
     ENDFOREACH()
 
 	SET(META_EXAMPLES ${META_EXAMPLE_LISTINGS} PARENT_SCOPE)
