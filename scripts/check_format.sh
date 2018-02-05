@@ -41,7 +41,7 @@ function check_shogun_style {
             fi
         done
 
-        RESULT_OUTPUT="$(git clang-format-3.8 --commit $BASE_COMMIT --diff --binary `which clang-format-3.8` $LIST)"
+        RESULT_OUTPUT="$(git clang-format --commit $BASE_COMMIT --diff --binary `which clang-format` $LIST)"
 
         if [ "$RESULT_OUTPUT" == "no modified files to format" ] \
             || [ "$RESULT_OUTPUT" == "clang-format-3.8 did not modify any files" ] \
@@ -54,10 +54,10 @@ function check_shogun_style {
             echo "clang-format failed."
             echo "To reproduce it locally please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --diff --binary $(which clang-format-3.8)"
+            echo -e "\t2) git clang-format --commit $BASE_COMMIT --diff --binary $(which clang-format)"
             echo "To fix the errors automatically please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --binary $(which clang-format-3.8)"
+            echo -e "\t2) git clang-format --commit $BASE_COMMIT --binary $(which clang-format)"
             echo "-----"
             echo "Style errors found:"
             echo "$RESULT_OUTPUT"
