@@ -342,6 +342,45 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
 	EXPECT_EQ(m.num_cols, U.num_cols);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_cholesky_ldlt_lower)
+{
+	const index_t size = 3;
+	SGMatrix<float64_t> m(size, size);
+	m(0, 0) = 0.0;
+	m(0, 1) = 0.0;
+	m(0, 2) = 0.0;
+	m(1, 0) = 0.0;
+	m(1, 1) = 1.0;
+	m(1, 2) = 2.0;
+	m(2, 0) = 0.0;
+	m(2, 1) = 2.0;
+	m(2, 2) = 3.0;
+
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> d(size);
+	SGVector<index_t> p(size);
+
+	linalg::ldlt_factor(m, L, d, p);
+
+	EXPECT_NEAR(d[0], 3.0, 1e-15);
+	EXPECT_NEAR(d[1], -0.333333333333333, 1e-15);
+	EXPECT_NEAR(d[2], 0.0, 1e-15);
+
+	EXPECT_NEAR(L(0, 0), 1.0, 1e-15);
+	EXPECT_NEAR(L(0, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(0, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(1, 0), 0.666666666666666, 1e-15);
+	EXPECT_NEAR(L(1, 1), 1.0, 1e-15);
+	EXPECT_NEAR(L(1, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 0), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 2), 1.0, 1e-15);
+
+	EXPECT_EQ(p[0], 2);
+	EXPECT_EQ(p[1], 1);
+	EXPECT_EQ(p[2], 2);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 {
 	const index_t size=2;
@@ -367,6 +406,44 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_ldlt_solver)
+{
+	const index_t size = 3;
+	SGMatrix<float64_t> A(size, size);
+	A(0, 0) = 0.0;
+	A(0, 1) = 0.0;
+	A(0, 2) = 0.0;
+	A(1, 0) = 0.0;
+	A(1, 1) = 1.0;
+	A(1, 2) = 2.0;
+	A(2, 0) = 0.0;
+	A(2, 1) = 2.0;
+	A(2, 2) = 3.0;
+
+	SGVector<float64_t> b(size);
+	b[0] = 0.0;
+	b[1] = 5.0;
+	b[2] = 11.0;
+
+	SGVector<float64_t> x_ref(size), x(size);
+	x_ref[0] = 0.0;
+	x_ref[1] = 7.0;
+	x_ref[2] = -1.0;
+
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> d(size);
+	SGVector<index_t> p(size);
+
+	linalg::ldlt_factor(A, L, d, p, true);
+	x = linalg::ldlt_solver(L, d, p, b, true);
+	for (auto i : range(size))
+		EXPECT_NEAR(x[i], x_ref[i], 1e-15);
+
+	linalg::ldlt_factor(A, L, d, p, false);
+	x = linalg::ldlt_solver(L, d, p, b, false);
+	for (auto i : range(size))
+		EXPECT_NEAR(x[i], x_ref[i], 1e-15);
+}
 TEST(LinalgBackendEigen, SGMatrix_cross_entropy)
 {
 	SGMatrix<float64_t> A(4, 3);
