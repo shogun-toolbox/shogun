@@ -66,26 +66,19 @@ bool CCombinedKernel::init_with_extracted_subsets(
     SGVector<index_t> rhs_subset)
 {
 
+	auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
+	auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
+
+	if (!l_combined || !r_combined)
+		SG_ERROR("Cast failed - unsupported features passed")
+
 	CKernel::init(l, r);
-	REQUIRE(
-	    l->get_feature_class() == C_COMBINED,
-	    "%s::init(): LHS features are"
-	    " of class %s but need to be combined features!\n",
-	    get_name(), l->get_name());
-	REQUIRE(
-	    r->get_feature_class() == C_COMBINED,
-	    "%s::init(): RHS features are"
-	    " of class %s but need to be combined features!\n",
-	    get_name(), r->get_name());
 	ASSERT(l->get_feature_type() == F_UNKNOWN)
 	ASSERT(r->get_feature_type() == F_UNKNOWN)
 
 	CFeatures* lf = NULL;
 	CFeatures* rf = NULL;
 	CKernel* k = NULL;
-
-	auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
-	auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
 
 	bool result = true;
 	index_t f_idx = 0;
@@ -138,6 +131,8 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				    "No kernel matrix was assigned to this Custom kernel\n")
 
 			auto k_custom = dynamic_cast<CCustomKernel*>(k);
+			if (!k_custom)
+				SG_ERROR("Dynamic cast to custom kernel failed")
 
 			// clear all previous subsets
 			k_custom->remove_all_row_subsets();
@@ -193,21 +188,18 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	{
 		init_subkernel_weights();
 	}
-	/*
-	 * The two subsets, we will be passing those to init_with_extracted_subsets
-	 */
+
+	if (!l)
+		SG_ERROR("LHS features are NULL");
+	if (!r)
+		SG_ERROR("RHS features are NULL");
+
 	SGVector<index_t> lhs_subset;
 	SGVector<index_t> rhs_subset;
 
-	/*
-	 * We will be passing these features to init_with_extracted_subsets
-	 */
 	CCombinedFeatures* combined_l;
 	CCombinedFeatures* combined_r;
 
-	/*
-	 * Extract the subsets so that we can pass them on
-	 */
 	auto l_subset_stack = l->get_subset_stack();
 	auto r_subset_stack = r->get_subset_stack();
 
@@ -258,9 +250,6 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	}
 	else
 	{
-		/*
-		 * Otherwise, we just pass l & r straight on
-		 */
 		combined_l = (CCombinedFeatures*)l;
 		combined_r = (CCombinedFeatures*)r;
 	}
