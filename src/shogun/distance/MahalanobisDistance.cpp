@@ -36,18 +36,37 @@ CMahalanobisDistance::~CMahalanobisDistance()
 bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
+
+	REQUIRE(
+	    lhs->get_feature_class() == C_DENSE,
+	    "Left hand side (was %s) has to be CDenseFeatures instance.\n",
+	    lhs->get_name());
+	REQUIRE(
+	    rhs->get_feature_class() == C_DENSE,
+	    "Right hand side (was %s) has to be CDenseFeatures instance.\n",
+	    rhs->get_name());
+
+	REQUIRE(
+	    lhs->get_feature_type() == F_DREAL,
+	    "Left hand side (was %s) has to be of double type.\n", lhs->get_name());
+	REQUIRE(
+	    rhs->get_feature_type() == F_DREAL,
+	    "Right hand side (was %s) has to be double type.\n", rhs->get_name());
+
 	SGMatrix<float64_t> cov;
+
+	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(l);
+	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(r);
 
 	if ( l == r)
 	{
-		mean = ((CDenseFeatures<float64_t>*) l)->get_mean();
-		cov = ((CDenseFeatures<float64_t>*)l)->get_cov();
+		mean = feat_l->get_mean();
+		cov = feat_r->get_cov();
 	}
 	else
 	{
-		mean = ((CDenseFeatures<float64_t>*)l)
-		           ->compute_mean((CDotFeatures*)lhs, (CDotFeatures*)rhs);
-		cov = CDotFeatures::compute_cov((CDotFeatures*)lhs, (CDotFeatures*)rhs);
+		mean = feat_l->compute_mean(feat_l, feat_r);
+		cov = CDotFeatures::compute_cov(feat_l, feat_r);
 	}
 
 	auto num_features = cov.num_rows;
@@ -65,9 +84,10 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
+	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(lhs);
+	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(rhs);
 
-	SGVector<float64_t> bvec = ((CDenseFeatures<float64_t>*) rhs)->
-		get_feature_vector(idx_b);
+	SGVector<float64_t> bvec = feat_r->get_feature_vector(idx_b);
 
 	SGVector<float64_t> diff;
 	SGVector<float64_t> avec;
@@ -76,7 +96,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 		diff = mean.clone();
 	else
 	{
-		avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
+		avec = feat_l->get_feature_vector(idx_a);
 		diff=avec.clone();
 	}
 
@@ -86,12 +106,12 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 		diff[i] = bvec.vector[i] - diff[i];
 
 	auto v = linalg::ldlt_solver(chol_cov_L, chol_cov_d, chol_cov_p, diff);
-	float64_t result = linalg::dot(v, diff);
+	auto result = linalg::dot(v, diff);
 
 	if (!use_mean)
-		((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
+		feat_l->free_feature_vector(avec, idx_a);
 
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b);
+	feat_r->free_feature_vector(bvec, idx_b);
 
 	if (disable_sqrt)
 		return result;
