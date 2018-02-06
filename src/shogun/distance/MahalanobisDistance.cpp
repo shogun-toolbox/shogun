@@ -35,23 +35,9 @@ CMahalanobisDistance::~CMahalanobisDistance()
 
 bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
-	CRealDistance::init(l, r);
-
-	REQUIRE(
-	    lhs->get_feature_class() == C_DENSE,
-	    "Left hand side (was %s) has to be CDenseFeatures instance.\n",
-	    lhs->get_name());
-	REQUIRE(
-	    rhs->get_feature_class() == C_DENSE,
-	    "Right hand side (was %s) has to be CDenseFeatures instance.\n",
-	    rhs->get_name());
-
-	REQUIRE(
-	    lhs->get_feature_type() == F_DREAL,
-	    "Left hand side (was %s) has to be of double type.\n", lhs->get_name());
-	REQUIRE(
-	    rhs->get_feature_type() == F_DREAL,
-	    "Right hand side (was %s) has to be double type.\n", rhs->get_name());
+	// FIXME: See comments in
+	// https://github.com/shogun-toolbox/shogun/pull/4085#discussion_r166254024
+	ASSERT(CRealDistance::init(l, r));
 
 	SGMatrix<float64_t> cov;
 
