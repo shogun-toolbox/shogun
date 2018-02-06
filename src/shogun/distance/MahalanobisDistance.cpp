@@ -5,7 +5,6 @@
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
-#ifdef HAVE_LAPACK
 #include <shogun/lib/config.h>
 
 #include <shogun/distance/MahalanobisDistance.h>
@@ -37,21 +36,25 @@ CMahalanobisDistance::~CMahalanobisDistance()
 bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
-
+	SGMatrix<float64_t> cov;
 
 	if ( l == r)
 	{
 		mean = ((CDenseFeatures<float64_t>*) l)->get_mean();
-		icov  = ((CDenseFeatures<float64_t>*) l)->get_cov();
+		cov = ((CDenseFeatures<float64_t>*)l)->get_cov();
 	}
 	else
 	{
 		mean = ((CDenseFeatures<float64_t>*)l)
 		           ->compute_mean((CDotFeatures*)lhs, (CDotFeatures*)rhs);
-		icov = CDotFeatures::compute_cov((CDotFeatures*) lhs, (CDotFeatures*) rhs);
+		cov = CDotFeatures::compute_cov((CDotFeatures*)lhs, (CDotFeatures*)rhs);
 	}
 
-	SGMatrix<float64_t>::inverse(icov);
+	auto num_features = cov.num_rows;
+	chol_cov_L = SGMatrix<float64_t>(num_features, num_features);
+	chol_cov_d = SGVector<float64_t>(num_features);
+	chol_cov_p = SGVector<index_t>(num_features);
+	linalg::ldlt_factor(cov, chol_cov_L, chol_cov_d, chol_cov_p);
 
 	return true;
 }
@@ -82,7 +85,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t i=0; i < diff.vlen; i++)
 		diff[i] = bvec.vector[i] - diff[i];
 
-	auto v = linalg::matrix_prod(icov, diff);
+	auto v = linalg::ldlt_solver(chol_cov_L, chol_cov_d, chol_cov_p, diff);
 	float64_t result = linalg::dot(v, diff);
 
 	if (!use_mean)
@@ -105,4 +108,3 @@ void CMahalanobisDistance::init()
 	m_parameters->add(&use_mean, "use_mean", "If distance shall be computed between mean vector and vector from rhs or between lhs and rhs.");
 }
 
-#endif // HAVE_LAPACK

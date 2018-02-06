@@ -142,8 +142,12 @@ namespace shogun
 
 		/** vector mean of the lhs feature vectors */
 		SGVector<float64_t> mean;
-		/** inverse of the covariance matrix of lhs feature vectors */
-		SGMatrix<float64_t> icov;
+
+		/** LDLT decomposition of the covariance matrix of lhs feature vectors
+		 */
+		SGMatrix<float64_t> chol_cov_L;
+		SGVector<float64_t> chol_cov_d;
+		SGVector<index_t> chol_cov_p;
 };
 
 } // namespace shogun
