@@ -364,15 +364,14 @@ public:
 		}
 	}
 
-
-#define SGOBJECT_PUT_DECLARE(T) \
-	/** Setter for a class parameter, identified by a name. \
-	 * Throws an exception if the class does not have such a parameter. \
-	 * \
-	 * @param name name of the parameter \
-	 * @param value value of the parameter along with type information \
-	 */ \
-	void put(const std::string& name, T const & value) throw(ShogunException);
+#define SGOBJECT_PUT_DECLARE(T)                                                \
+	/** Setter for a class parameter, identified by a name.                    \
+	 * Throws an exception if the class does not have such a parameter.        \
+	 *                                                                         \
+	 * @param name name of the parameter                                       \
+	 * @param value value of the parameter along with type information         \
+	 */                                                                        \
+	void put(const std::string& name, T const& value) throw(ShogunException);
 
 	SGOBJECT_PUT_DECLARE(int32_t)
 	SGOBJECT_PUT_DECLARE(float32_t)
