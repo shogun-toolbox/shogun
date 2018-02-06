@@ -1030,7 +1030,14 @@ SGOBJECT_PUT_DEFINE(CSGObject*)
 else if (has(Tag<T>(name))) \
 	put(Tag<T>(name), (T)value);
 
-#define SGOBJECT_PUT_DEFINE_NUMBER(numeric_t) \
+/* Some target languages have problems with scalar numeric types, so allow to
+ * convert all int/float types into each other.
+ *
+ * For example, Octave treats a=1.0 as an integer, and b=1.1 as a float.
+ * Furthermore, if a user wants to set a registered 16bit integer using a
+ * literal obj.put("16-bit-var", 2), might complain about a wrong type since
+ * internally the int literal is represented at a different word length. */
+#define SGOBJECT_PUT_DEFINE_WITH_CONVERSION(numeric_t) \
 void CSGObject::put(const std::string& name, numeric_t const & value)  throw(ShogunException)\
 { \
 	/* use correct type of possible, otherwise cast-convert */ \
@@ -1044,8 +1051,8 @@ void CSGObject::put(const std::string& name, numeric_t const & value)  throw(Sho
 		put(Tag<numeric_t>(name), value); \
 }
 
-SGOBJECT_PUT_DEFINE_NUMBER(int32_t)
-SGOBJECT_PUT_DEFINE_NUMBER(float32_t)
-SGOBJECT_PUT_DEFINE_NUMBER(float64_t)
+SGOBJECT_PUT_DEFINE_WITH_CONVERSION(int32_t)
+SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float32_t)
+SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float64_t)
 
 };

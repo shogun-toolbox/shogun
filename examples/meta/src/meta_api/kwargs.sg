@@ -31,5 +31,5 @@
 # ------------
 
 Kernel k = kernel("GaussianKernel", log_width=2.0)
-KernelMachine svm = kernel_machine("LibSVM", C1=1.0, kernel=k)
+KernelMachine svm = kernel_machine("LibSVM", C1=1.1, kernel=k)
 
