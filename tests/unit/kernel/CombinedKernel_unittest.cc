@@ -45,10 +45,12 @@ TEST(CombinedKernelTest,test_array_operations)
 TEST(CombinedKernelTest, test_subset_mixed)
 {
 
-	CMeanShiftDataGenerator* gen = new CMeanShiftDataGenerator(0, 2);
-	CFeatures* feats = gen->get_streamed_features(10);
+	int n_runs = 10;
 
-	CCombinedFeatures* cf = new CCombinedFeatures();
+	auto gen = new CMeanShiftDataGenerator(0, 2);
+	CFeatures* feats = gen->get_streamed_features(n_runs);
+
+	CCombinedFeatures* feats_combined = new CCombinedFeatures();
 
 	CCombinedKernel* combined = new CCombinedKernel();
 
@@ -64,50 +66,48 @@ TEST(CombinedKernelTest, test_subset_mixed)
 
 	combined->append_kernel(custom_1);
 	combined->append_kernel(gaus_1);
-	cf->append_feature_obj(feats);
+	feats_combined->append_feature_obj(feats);
 
 	combined->append_kernel(custom_2);
 	combined->append_kernel(gaus_2);
-	cf->append_feature_obj(feats);
+	feats_combined->append_feature_obj(feats);
 
 	SGVector<index_t> inds(10);
 	inds.range_fill();
 
-	for (index_t i = 0; i < 10; ++i)
+	for (index_t i = 0; i < n_runs; ++i)
 	{
 		CMath::permute(inds);
 
-		cf->add_subset(inds);
-		combined->init(cf, cf);
+		feats_combined->add_subset(inds);
+		combined->init(feats_combined, feats_combined);
 
-		CKernel* k_g = combined->get_kernel(1);
-		CKernel* k_0 = combined->get_kernel(0);
-		CKernel* k_3 = combined->get_kernel(2);
+		CKernel* ground_truth_kernel = combined->get_kernel(1);
+		CKernel* custom_kernel_1 = combined->get_kernel(0);
+		CKernel* custom_kernel_2 = combined->get_kernel(2);
 
-		SGMatrix<float64_t> gauss_matrix = k_g->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_1 = k_0->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_2 = k_3->get_kernel_matrix();
+		SGMatrix<float64_t> gauss_matrix =
+		    ground_truth_kernel->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 =
+		    custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 =
+		    custom_kernel_2->get_kernel_matrix();
 
-		for (index_t j = 0; j < 10; ++j)
+		for (index_t j = 0; j < n_runs; ++j)
 		{
-			for (index_t k = 0; k < 10; ++k)
+			for (index_t k = 0; k < n_runs; ++k)
 			{
-				EXPECT_LE(
-				    CMath::abs(gauss_matrix(k, j) - custom_matrix_1(k, j)),
-				    1e-6);
-				EXPECT_LE(
-				    CMath::abs(gauss_matrix(k, j) - custom_matrix_2(k, j)),
-				    1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
 			}
 		}
 
-		cf->remove_subset();
-		SG_UNREF(k_g);
-		SG_UNREF(k_0);
-		SG_UNREF(k_3);
+		feats_combined->remove_subset();
+		SG_UNREF(ground_truth_kernel);
+		SG_UNREF(custom_kernel_1);
+		SG_UNREF(custom_kernel_2);
 	}
 
-	SG_UNREF(gen);
 	SG_UNREF(gaus_ck);
 	SG_UNREF(combined);
 }
@@ -115,8 +115,10 @@ TEST(CombinedKernelTest, test_subset_mixed)
 TEST(CombinedKernelTest, test_subset_combined_only)
 {
 
-	CMeanShiftDataGenerator* gen = new CMeanShiftDataGenerator(0, 2);
-	CFeatures* feats = gen->get_streamed_features(10);
+	int n_runs = 10;
+
+	auto gen = new CMeanShiftDataGenerator(0, 2);
+	CFeatures* feats = gen->get_streamed_features(n_runs);
 
 	CCombinedKernel* combined = new CCombinedKernel();
 
@@ -125,15 +127,14 @@ TEST(CombinedKernelTest, test_subset_combined_only)
 
 	CCustomKernel* custom_1 = new CCustomKernel(gaus_ck);
 	CCustomKernel* custom_2 = new CCustomKernel(gaus_ck);
-	;
 
 	combined->append_kernel(custom_1);
 	combined->append_kernel(custom_2);
 
-	SGVector<index_t> inds(10);
+	SGVector<index_t> inds(n_runs);
 	inds.range_fill();
 
-	for (index_t i = 0; i < 10; ++i)
+	for (index_t i = 0; i < n_runs; ++i)
 	{
 		CMath::permute(inds);
 
@@ -141,32 +142,29 @@ TEST(CombinedKernelTest, test_subset_combined_only)
 		combined->init(feats, feats);
 		gaus_ck->init(feats, feats);
 
-		CKernel* k_0 = combined->get_kernel(0);
-		CKernel* k_1 = combined->get_kernel(1);
+		CKernel* custom_kernel_1 = combined->get_kernel(0);
+		CKernel* custom_kernel_2 = combined->get_kernel(1);
 
 		SGMatrix<float64_t> gauss_matrix = gaus_ck->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_1 = k_0->get_kernel_matrix();
-		SGMatrix<float64_t> custom_matrix_2 = k_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 =
+		    custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 =
+		    custom_kernel_2->get_kernel_matrix();
 
-		for (index_t j = 0; j < 10; ++j)
+		for (index_t j = 0; j < n_runs; ++j)
 		{
-			for (index_t k = 0; k < 10; ++k)
+			for (index_t k = 0; k < n_runs; ++k)
 			{
-				EXPECT_LE(
-				    CMath::abs(gauss_matrix(k, j) - custom_matrix_1(k, j)),
-				    1e-6);
-				EXPECT_LE(
-				    CMath::abs(gauss_matrix(k, j) - custom_matrix_2(k, j)),
-				    1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
 			}
 		}
 
 		feats->remove_subset();
-		SG_UNREF(k_0);
-		SG_UNREF(k_1);
+		SG_UNREF(custom_kernel_1);
+		SG_UNREF(custom_kernel_2);
 	}
 
-	SG_UNREF(gen);
 	SG_UNREF(gaus_ck);
 	SG_UNREF(combined);
 }
