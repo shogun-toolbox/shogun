@@ -1022,10 +1022,30 @@ void CSGObject::put(const std::string& name, T const & value)  throw(ShogunExcep
 	put(tag, value); \
 }
 
-SGOBJECT_PUT_DEFINE(int32_t)
-SGOBJECT_PUT_DEFINE(float64_t)
 SGOBJECT_PUT_DEFINE(SGVector<int32_t>)
 SGOBJECT_PUT_DEFINE(SGVector<float64_t>)
 SGOBJECT_PUT_DEFINE(CSGObject*)
+
+#define PUT_DEFINE_CHECK_AND_CAST(T) \
+else if (has(Tag<T>(name))) \
+	put(Tag<T>(name), (T)value);
+
+#define SGOBJECT_PUT_DEFINE_NUMBER(numeric_t) \
+void CSGObject::put(const std::string& name, numeric_t const & value)  throw(ShogunException)\
+{ \
+	/* use correct type of possible, otherwise cast-convert */ \
+	if (has(Tag<numeric_t>(name))) \
+		put(Tag<numeric_t>(name), value); \
+	PUT_DEFINE_CHECK_AND_CAST(int32_t) \
+	PUT_DEFINE_CHECK_AND_CAST(float32_t) \
+	PUT_DEFINE_CHECK_AND_CAST(float64_t) \
+	else \
+		/* if nothing works, moan about original type */ \
+		put(Tag<numeric_t>(name), value); \
+}
+
+SGOBJECT_PUT_DEFINE_NUMBER(int32_t)
+SGOBJECT_PUT_DEFINE_NUMBER(float32_t)
+SGOBJECT_PUT_DEFINE_NUMBER(float64_t)
 
 };

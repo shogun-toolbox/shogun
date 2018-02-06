@@ -375,6 +375,7 @@ public:
 	void put(const std::string& name, T const & value) throw(ShogunException);
 
 	SGOBJECT_PUT_DECLARE(int32_t)
+	SGOBJECT_PUT_DECLARE(float32_t)
 	SGOBJECT_PUT_DECLARE(float64_t)
 	SGOBJECT_PUT_DECLARE(SGVector<int32_t>)
 	SGOBJECT_PUT_DECLARE(SGVector<float64_t>)

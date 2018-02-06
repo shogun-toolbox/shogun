@@ -30,6 +30,6 @@
 # Real example
 # ------------
 
-Kernel k = kernel("GaussianKernel")
-KernelMachine svm = kernel_machine("LibSVM", kernel=k)
+Kernel k = kernel("GaussianKernel", log_width=2.0)
+KernelMachine svm = kernel_machine("LibSVM", C1=1.0, kernel=k)
 
