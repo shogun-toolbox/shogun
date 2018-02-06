@@ -508,22 +508,3 @@ copy_reg._reconstructor=_sg_reconstructor
 %}
 
 #endif /* SWIGPYTHON  */
-
-%include <shogun/lib/basetag.h>
-%include <shogun/lib/tag.h>
-%include <shogun/base/SGObject.h>
-
-%define SUPPORT_TAG(camel_type, short_type, type)
-    %template(Tag ## camel_type) shogun::Tag<type>;
-    %template(put) shogun::CSGObject::put<type>;
-    %template(put) shogun::CSGObject::put<type, void>;
-    %template(put) shogun::CSGObject::put<type>;
-    %template(get_ ## short_type) shogun::CSGObject::get<type, void>;
-    %template(has) shogun::CSGObject::has<type>;
-    %template(has_ ## short_type) shogun::CSGObject::has<type, void>;
-%enddef
-
-SUPPORT_TAG(String, string, std::string)
-SUPPORT_TAG(Float64, float, float64_t)
-SUPPORT_TAG(Int64, int, int64_t)
-SUPPORT_TAG(Object, object, CSGObject*)

@@ -1012,3 +1012,20 @@ CSGObject* CSGObject::create_empty() const
 	SG_REF(object);
 	return object;
 }
+
+namespace shogun
+{
+#define SGOBJECT_PUT_DEFINE(T) \
+void CSGObject::put(const std::string& name, T const & value)  throw(ShogunException)\
+{ \
+	Tag<T> tag(name); \
+	put(tag, value); \
+}
+
+SGOBJECT_PUT_DEFINE(int32_t)
+SGOBJECT_PUT_DEFINE(float64_t)
+SGOBJECT_PUT_DEFINE(SGVector<int32_t>)
+SGOBJECT_PUT_DEFINE(SGVector<float64_t>)
+SGOBJECT_PUT_DEFINE(CSGObject*)
+
+};
