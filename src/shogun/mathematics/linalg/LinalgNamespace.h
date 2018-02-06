@@ -106,6 +106,45 @@ namespace shogun
 				return sg_linalg->get_cpu_backend();
 		}
 
+		/** Infer the appropriate backend for linalg operations
+		 * from the input SGVector or SGMatrix (Container).
+		 * Raise error if the backends of the Containers conflict.
+		 *
+		 * @param a The first SGVector/SGMatrix
+		 * @param b The second SGVector/SGMatrix
+		 * @param c The third SGVector/SGMatrix
+		 * @return @see LinalgBackendBase pointer
+		 */
+		template <typename T, template <typename> class Container>
+		LinalgBackendBase* infer_backend(
+		    const Container<T>& a, const Container<T>& b, const Container<T>& c)
+		{
+			if (a.on_gpu() && b.on_gpu() && c.on_gpu())
+			{
+				if (sg_linalg->get_gpu_backend())
+					return sg_linalg->get_gpu_backend();
+				else
+				{
+					SG_SERROR(
+					    "Vector or matrix is on GPU but no GPU backend registered. \
+					  This can happen if the GPU backend was de-activated \
+					  after memory has been transferred to GPU.\n");
+					return NULL;
+				}
+			}
+			else if (a.on_gpu() || b.on_gpu() || c.on_gpu())
+			{
+				SG_SERROR(
+				    "Cannot operate with first vector/matrix on_gpu flag(%d),\
+					second vector/matrix on_gpu flag (%d) and third vector/matrix \
+					on_gpu flag (%d).\n",
+				    a.on_gpu(), b.on_gpu(), c.on_gpu());
+				return NULL;
+			}
+			else
+				return sg_linalg->get_cpu_backend();
+		}
+
 		/**
 		 * Transfers data to GPU memory.
 		 * Shallow-copy of SGVector with vector on CPU if GPU backend not
@@ -588,6 +627,71 @@ namespace shogun
 		{
 			return infer_backend(L, SGMatrix<T>(b))
 			    ->cholesky_solver(L, b, lower);
+		}
+
+		/**
+		 * Compute the LDLT cholesky decomposition \f$A = P^{T} L D L^{*} P\f$
+		 * or \f$A = P^{T} U^{*} D U P\f$
+		 * of a positive semidefinite or negative semidefinite Hermitan matrix
+		 *
+		 * @param A The matrix whose LDLT cholesky decomposition is to be
+		 *  computed
+		 * @param L The matrix that saves the triangular LDLT
+		 *  Cholesky factorization (default: lower)
+		 * @param d The vector that saves the diagonal of the diagonal matrix D
+		 * @param p The vector that saves the permutation matrix P as a
+		 * transposition sequence
+		 * @param lower Whether to use L as the upper or lower triangular
+		 *  Cholesky factorization (default:lower)
+		 */
+		template <typename T>
+		void ldlt_factor(
+		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
+		    SGVector<index_t>& p, const bool lower = true)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", A.num_rows,
+			    A.num_cols);
+			REQUIRE(
+			    A.num_rows == L.num_rows && A.num_cols == L.num_cols,
+			    "Shape of matrix A (%d, %d) doesn't match matrix L (%d, %d)\n",
+			    A.num_rows, A.num_cols, L.num_rows, L.num_rows);
+			REQUIRE(
+			    d.vlen == A.num_rows, "Length of vector d (%d) doesn't match "
+			                          "length of diagonal of matrix L (%d)\n",
+			    d.vlen, A.num_rows);
+			REQUIRE(
+			    p.vlen = A.num_rows, "Length of transpositions vector p (%d) "
+			                         "doesn't match length of diagonal of "
+			                         "matrix L (%d)\n",
+			    p.vlen, A.num_rows);
+
+			infer_backend(A)->ldlt_factor(A, L, d, p, lower);
+		}
+
+		/**
+		 * Solve the linear equations \f$Ax=b\f$, given the LDLT Cholesky
+		 * factorization of A,
+		 * where \f$A\f$ is a positive semidefinite or negative semidefinite
+		 * Hermitan matrix @see ldlt_factor
+		 *
+		 * @param L Triangular matrix, LDLT Cholesky factorization of A
+		 * @param d The diagonal of the diagonal matrix D
+		 * @param p The permuattion matrix P as a
+		 * transposition sequence
+		 * @param b Right-hand side array
+		 * @param lower Whether to use L as the upper or lower triangular
+		 *  Cholesky factorization (default:lower)
+		 * @return \f$\x\f$
+		 */
+		template <typename T>
+		SGVector<T> ldlt_solver(
+		    const SGMatrix<T>& L, const SGVector<T>& d, SGVector<index_t>& p,
+		    const SGVector<T>& b, const bool lower = true)
+		{
+			return infer_backend(L, SGMatrix<T>(d), SGMatrix<T>(b))
+			    ->ldlt_solver(L, d, p, b, lower);
 		}
 
 		/**

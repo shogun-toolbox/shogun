@@ -215,6 +215,38 @@ namespace shogun
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 /**
+ * Wrapper method of LDLT Cholesky decomposition
+ *
+ * @see linalg::ldlt_factor
+ */
+#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
+	virtual void ldlt_factor(                                                  \
+	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
+	    SGVector<index_t>& p, const bool lower) const                          \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_FACTOR
+
+/**
+ * Wrapper method of LDLT Cholesky solver
+ *
+ * @see linalg::ldlt_solver
+ */
+#define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
+	virtual SGVector<Type> ldlt_solver(                                        \
+	    const Container<Type>& L, const SGVector<Type>& d,                     \
+	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_SOLVER
+
+/**
  * Wrapper method of cross entropy.
  *
  * @see linalg::cross_entropy

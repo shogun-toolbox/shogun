@@ -45,6 +45,16 @@ using namespace shogun;
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_FACTOR
 
+#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
+	void LinalgBackendEigen::ldlt_factor(                                      \
+	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
+	    SGVector<index_t>& p, const bool lower) const                          \
+	{                                                                          \
+		return ldlt_factor_impl(A, L, d, p, lower);                            \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_FACTOR
+
 #define BACKEND_GENERIC_SVD(Type, Container)                                   \
 	void LinalgBackendEigen::svd(                                              \
 	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
@@ -89,6 +99,33 @@ SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
 	    "Matrix is not Hermitian positive definite!\n");
 
 	return c;
+}
+
+template <typename T>
+void LinalgBackendEigen::ldlt_factor_impl(
+    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d, SGVector<index_t>& p,
+    const bool lower) const
+{
+	set_const(L, 0);
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
+	typename SGVector<T>::EigenVectorXtMap d_eig = d;
+	typename SGVector<index_t>::EigenVectorXtMap p_eig = p;
+
+	Eigen::LDLT<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> ldlt(A_eig);
+
+	d_eig = ldlt.vectorD().template cast<T>();
+	if (lower)
+		L_eig = ldlt.matrixL();
+	else
+		L_eig = ldlt.matrixU();
+
+	// flatten N*1 matrix into vector
+	p_eig = ldlt.transpositionsP().indices().template cast<index_t>();
+
+	REQUIRE(
+	    ldlt.info() != Eigen::NumericalIssue,
+	    "The factorization failed because of a zero pivot.\n");
 }
 
 template <typename T>

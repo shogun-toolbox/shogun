@@ -109,6 +109,23 @@ namespace shogun
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
+/** Implementation of @see LinalgBackendBase::ldlt_factor */
+#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
+	virtual void ldlt_factor(                                                  \
+	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
+	    SGVector<index_t>& p, const bool lower) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_FACTOR
+
+/** Implementation of @see LinalgBackendBase::ldlt_solver */
+#define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
+	virtual SGVector<Type> ldlt_solver(                                        \
+	    const Container<Type>& L, const SGVector<Type>& d,                     \
+	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
+	    const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_SOLVER
+
 /** Implementation of @see linalg::cross_entropy */
 #define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
 	virtual Type cross_entropy(                                                \
@@ -431,6 +448,19 @@ namespace shogun
 		template <typename T>
 		SGVector<T> cholesky_solver_impl(
 		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower) const;
+
+		/** Eigen3 LDLT Cholesky decomposition */
+		template <typename T>
+		void ldlt_factor_impl(
+		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
+		    SGVector<index_t>& p, const bool lower) const;
+
+		/** Eigen3 LDLT Cholesky solver */
+		template <typename T>
+		SGVector<T> ldlt_solver_impl(
+		    const SGMatrix<T>& L, const SGVector<T>& d,
+		    const SGVector<index_t>& p, const SGVector<T>& b,
+		    const bool lower) const;
 
 		/** Eigen3 cross_entropy method
 		 * The cross entropy is defined as \f$ H(P,Q) = - \sum_{ij}
