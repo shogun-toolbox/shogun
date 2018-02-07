@@ -75,7 +75,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 		"number of iterations not set to positive value. Current iterations %d \n", minib_iter);
 
 	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(mus);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();

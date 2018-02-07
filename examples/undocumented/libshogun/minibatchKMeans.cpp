@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
-	CDenseFeatures<float64_t>* centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	CDenseFeatures<float64_t>* centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix,
 			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using Lloyd's KMeans");

@@ -429,6 +429,36 @@ public:
 	 */
 	std::vector<std::string> parameter_names() const;
 
+	/**
+	 * Utility method to specialize the feature to the required type.
+	 *
+	 * @param sgo CSGObject base type
+	 * @return The requested type if casting was successful.
+	 */
+	template<class T> static T* as(CSGObject* sgo)
+	{
+		REQUIRE(sgo, "No object provided!\n");
+		return sgo->as<T>();
+	}
+
+	/**
+	 * Utility method to specialize the feature to the required type.
+	 *
+	 * @param sgo CSGObject base type
+	 * @return The requested type if casting was successful, or throws exception.
+	 */
+	template<class T> T* as()
+	{
+		T* c = dynamic_cast<T*>(this);
+		if (c)
+			return c;
+
+		SG_SERROR("The object (%s) cannot be casted to the requested type %s!\n",
+			demangled_type<std::remove_pointer_t<decltype(this)>>().c_str(),
+			demangled_type<T>().c_str());
+		return nullptr;
+	}
+
 #ifndef SWIG
 	/**
 	  * Get parameters observable

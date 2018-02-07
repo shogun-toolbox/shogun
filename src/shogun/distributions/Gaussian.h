@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Alesis Novik, Heiko Strathmann, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Alesis Novik, Heiko Strathmann, Evgeniy Andreev,
  *          Viktor Gal, Weijie Lin, Evan Shelhamer, Thoralf Klein
  */
 
@@ -211,6 +211,9 @@ class CGaussian : public CDistribution
 		 * Note that the object is SG_REF'ed
 		 * @return casted CGaussian object
 		 */
+#ifndef SWIG
+		[[deprecated("use .as template function")]]
+#endif
 		static CGaussian* obtain_from_generic(CDistribution* distribution);
 
 		/** @return object name */

@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Viktor Gal, Giovanni De Toni, Sergey Lisitsyn, 
- *          Heiko Strathmann, Yuyu Zhang, Shashwat Lal Das, Thoralf Klein, 
- *          Björn Esser, Evangelos Anagnostopoulos, Sanuj Sharma, 
+ * Authors: Soeren Sonnenburg, Viktor Gal, Giovanni De Toni, Sergey Lisitsyn,
+ *          Heiko Strathmann, Yuyu Zhang, Shashwat Lal Das, Thoralf Klein,
+ *          Björn Esser, Evangelos Anagnostopoulos, Sanuj Sharma,
  *          Saurabh Goyal
  */
 
@@ -134,7 +134,6 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_GPL_ONLY { io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_DEPRECATED { io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define SG_DONE() {								\
 	if (SG_UNLIKELY(io->get_show_progress()))	\
@@ -168,7 +167,6 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 
 #define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_SGPL_ONLY { sg_io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\

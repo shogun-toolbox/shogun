@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Heiko Strathmann, Saurabh Mahindre, Soeren Sonnenburg, 
- *          Vladislav Horbatiuk, Yuyu Zhang, Kevin Hughes, Evgeniy Andreev, 
+ * Authors: Soumyajit De, Heiko Strathmann, Saurabh Mahindre, Soeren Sonnenburg,
+ *          Vladislav Horbatiuk, Yuyu Zhang, Kevin Hughes, Evgeniy Andreev,
  *          Thoralf Klein, Fernando Iglesias, Björn Esser, Sergey Lisitsyn
  */
 
@@ -86,6 +86,12 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec);
+
+	/** constructor from DotFeatures
+	 *
+	 * @param features DotFeatures object
+	 */
+	CDenseFeatures(CDotFeatures* features);
 
 	/** constructor loading features from file
 	 *
@@ -254,14 +260,6 @@ public:
 	 * @return transposed sparse feature matrix
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec);
-
-	/** obtain dense features from other dotfeatures
-	 *
-	 * removes any subset before
-	 *
-	 * @param df dotfeatures to obtain features from
-	 */
-	void obtain_from_dot(CDotFeatures* df);
 
 	/** apply preprocessor
 	 *
@@ -498,6 +496,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 */
+#ifndef SWIG
+	[[deprecated("use .as template function")]]
+#endif
 	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
 
 #ifndef SWIG // SWIG should skip this part

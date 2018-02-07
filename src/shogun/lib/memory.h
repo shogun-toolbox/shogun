@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Soumyajit De, Evgeniy Andreev, Sergey Lisitsyn, 
- *          Evan Shelhamer, Weijie Lin, Fernando Iglesias, Björn Esser, 
+ * Authors: Soeren Sonnenburg, Soumyajit De, Evgeniy Andreev, Sergey Lisitsyn,
+ *          Evan Shelhamer, Weijie Lin, Fernando Iglesias, Björn Esser,
  *          Thoralf Klein
  */
 
@@ -10,6 +10,7 @@
 #define __MEMORY_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/base/macros.h>
 #include <shogun/lib/common.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

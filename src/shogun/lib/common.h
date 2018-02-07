@@ -77,11 +77,5 @@ constexpr size_t CPU_CACHE_LINE_SIZE_BYTES = CPU_CACHE_LINE_SIZE/8;
 typedef SSIZE_T ssize_t;
 #endif
 
-#ifdef _MSC_VER
-#define SG_FORCED_INLINE __forceinline
-#else
-#define SG_FORCED_INLINE inline __attribute__((always_inline))
-#endif
-
 #include <shogun/lib/memory.h>
 #endif //__COMMON_H__

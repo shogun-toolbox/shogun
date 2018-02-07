@@ -46,7 +46,7 @@ CKMeansBase::~CKMeansBase()
 
 void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 {
- 	CDenseFeatures<float64_t>* lhs=((CDenseFeatures<float64_t>*) distance->get_lhs());
+	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
 			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
@@ -60,9 +60,9 @@ void CKMeansBase::set_random_centers()
 {
 	mus.zero();
 	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	int32_t lhs_size=lhs->get_num_vectors();
-	
+
 	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
 	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
 	CMath::permute(temp);
@@ -134,12 +134,12 @@ void CKMeansBase::initialize_training(CFeatures* data)
 {
 	REQUIRE(distance, "Distance is not provided")
 	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)")
-	
+
 	if (data)
 		distance->init(data, data);
 
 	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 
 	REQUIRE(lhs, "Lhs features of distance not provided");
 	int32_t lhs_size=lhs->get_num_vectors();
@@ -225,7 +225,7 @@ SGMatrix<float64_t> CKMeansBase::get_cluster_centers()
 		return SGMatrix<float64_t>();
 
 	CDenseFeatures<float64_t>* lhs=
-		(CDenseFeatures<float64_t>*)distance->get_lhs();
+		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
 	SG_UNREF(lhs);
 	return centers;
@@ -261,9 +261,9 @@ void CKMeansBase::store_model_features()
 SGMatrix<float64_t> CKMeansBase::kmeanspp()
 {
 	int32_t lhs_size;
-	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	lhs_size=lhs->get_num_vectors();
-	
+
 	SGMatrix<float64_t> centers=SGMatrix<float64_t>(dimensions, k);
 	centers.zero();
 	SGVector<float64_t> min_dist=SGVector<float64_t>(lhs_size);
@@ -271,7 +271,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 	/* First center is chosen at random */
 	int32_t mu=CMath::random((int32_t) 0, lhs_size-1);
-	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);	
+	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
 
@@ -292,21 +292,21 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 	/* Choose centers with weighted probability */
 	for(int32_t i=1; i<k; i++)
-	{	
-		int32_t best_center=0;		
+	{
+		int32_t best_center=0;
 		float64_t best_sum=-1.0;
 		SGVector<float64_t> best_min_dist=SGVector<float64_t>(lhs_size);
 
 		/* local tries for best center */
 		for(int32_t trial=0; trial<n_rands; trial++)
 		{
-			float64_t temp_sum=0.0;		
+			float64_t temp_sum=0.0;
 			float64_t temp_dist=0.0;
-			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);		
-			int32_t new_center=0;		
+			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
+			int32_t new_center=0;
 			float64_t prob=CMath::random(0.0, 1.0);
 			prob=prob*sum;
-		
+
 			for(int32_t j=0; j<lhs_size; j++)
 			{
 				temp_sum+=min_dist[j];
@@ -339,7 +339,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 				best_center=new_center;
 			}
 		}
-		
+
 		SGVector<float64_t> vec=lhs->get_feature_vector(best_center);
 		for(int32_t j=0; j<dimensions; j++)
 			centers(j, i)=vec[j];

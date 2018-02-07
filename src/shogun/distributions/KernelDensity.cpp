@@ -57,7 +57,7 @@ CKernelDensity::~CKernelDensity()
 bool CKernelDensity::train(CFeatures* data)
 {
 	REQUIRE(data,"Data not supplied\n")
-	CDenseFeatures<float64_t>* dense_data=CDenseFeatures<float64_t>::obtain_from_generic(data);
+	CDenseFeatures<float64_t>* dense_data=data->as<CDenseFeatures<float64_t>>();
 
 	SG_UNREF(tree);
 	switch (m_eval)

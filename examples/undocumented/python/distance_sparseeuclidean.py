@@ -8,11 +8,9 @@ def distance_sparseeuclidean (train_fname=traindat,test_fname=testdat):
 	from shogun import RealFeatures, SparseRealFeatures, SparseEuclideanDistance, CSVFile
 
 	realfeat=RealFeatures(CSVFile(train_fname))
-	feats_train=SparseRealFeatures()
-	feats_train.obtain_from_simple(realfeat)
+	feats_train=SparseRealFeatures(realfeat)
 	realfeat=RealFeatures(CSVFile(test_fname))
-	feats_test=SparseRealFeatures()
-	feats_test.obtain_from_simple(realfeat)
+	feats_test=SparseRealFeatures(realfeat)
 
 	distance=SparseEuclideanDistance(feats_train, feats_train)
 

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre, 
- *          Sergey Lisitsyn, Evan Shelhamer, Soumyajit De, Fernando Iglesias, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre,
+ *          Sergey Lisitsyn, Evan Shelhamer, Soumyajit De, Fernando Iglesias,
  *          Björn Esser, parijat
  */
 
@@ -39,8 +39,8 @@ CKMeans::~CKMeans()
 
 void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 {
-	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	CDenseFeatures<float64_t>* lhs =
+		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
