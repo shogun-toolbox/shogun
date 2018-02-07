@@ -364,21 +364,29 @@ public:
 		}
 	}
 
-#define SGOBJECT_PUT_DECLARE(T)                                                \
-	/** Setter for a class parameter, identified by a name.                    \
-	 * Throws an exception if the class does not have such a parameter.        \
-	 *                                                                         \
-	 * @param name name of the parameter                                       \
-	 * @param value value of the parameter along with type information         \
-	 */                                                                        \
-	void put(const std::string& name, T const& value) throw(ShogunException);
+#ifndef SWIG
+	template <typename T, std::enable_if_t<std::is_convertible<T, CSGObject*>::value>* = nullptr>
+	[[deprecated ("SGObject parameters should be registered as a base class.")]]
+	void put(const std::string& name, const T value)
+	{
+		CSGObject* v = value;
+		Tag<CSGObject*> tag(name);
+		put(tag, v);
+	}
+#endif
 
-	SGOBJECT_PUT_DECLARE(int32_t)
-	SGOBJECT_PUT_DECLARE(float32_t)
-	SGOBJECT_PUT_DECLARE(float64_t)
-	SGOBJECT_PUT_DECLARE(SGVector<int32_t>)
-	SGOBJECT_PUT_DECLARE(SGVector<float64_t>)
-	SGOBJECT_PUT_DECLARE(CSGObject*)
+	/** Setter for a class parameter, identified by a name.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter along with type information
+	 */
+	template<typename T, typename U = typename std::enable_if_t<!std::is_convertible<T, CSGObject*>::value>>
+	void put(const std::string& name, const T value) throw(ShogunException)
+	{
+		Tag<T> tag(name);
+		put(tag, value);
+	}
 
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.

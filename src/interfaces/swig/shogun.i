@@ -116,6 +116,16 @@
 
 %include "ParameterObserver.i"
 
+%define SUPPORT_TAG(short_type, type)
+    %template(put) shogun::CSGObject::put<type, void>;
+    %template(get_ ## short_type) shogun::CSGObject::get<type, void>;
+%enddef
+SUPPORT_TAG(double, float64_t)
+SUPPORT_TAG(int, int64_t)
+SUPPORT_TAG(real_vector, SGVector<float64_t>)
+SUPPORT_TAG(real_matrix, SGMatrix<float64_t>)
+SUPPORT_TAG(object, CSGObject*)
+
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
 #endif
