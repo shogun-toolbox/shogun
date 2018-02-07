@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal,
  *          Evan Shelhamer, Evgeniy Andreev, Marc Zimmermann, Björn Esser
  */
 #include <shogun/lib/config.h>
@@ -287,7 +287,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
 	ASSERT(features != NULL)
-	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
+	SGMatrix<float64_t> m = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
 

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	CFeatures* neg = gen_n->get_streamed_features(num_pos);
 	CFeatures* pos = gen_p->get_streamed_features(num_neg);
 	CDenseFeatures<float64_t>* train_feats =
-		CDenseFeatures<float64_t>::obtain_from_generic(neg->create_merged_copy(pos));
+		neg->create_merged_copy(pos)->as<CDenseFeatures<float64_t>>();
 
 	SGVector<float64_t> tl(num_neg+num_pos);
 	tl.set_const(1);

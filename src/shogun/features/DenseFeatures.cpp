@@ -1,10 +1,10 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Saurabh Mahindre, Soumyajit De, Heiko Strathmann, 
- *          Sergey Lisitsyn, Sanuj Sharma, Chiyuan Zhang, Viktor Gal, 
- *          Michele Mazzoni, Vladislav Horbatiuk, Kevin Hughes, Weijie Lin, 
- *          Fernando Iglesias, Björn Esser, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Saurabh Mahindre, Soumyajit De, Heiko Strathmann,
+ *          Sergey Lisitsyn, Sanuj Sharma, Chiyuan Zhang, Viktor Gal,
+ *          Michele Mazzoni, Vladislav Horbatiuk, Kevin Hughes, Weijie Lin,
+ *          Fernando Iglesias, Björn Esser, Evgeniy Andreev,
  *          Christopher Goldsworthy
  */
 
@@ -59,6 +59,28 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
 {
 	init();
 	load(loader);
+}
+
+template<class ST> CDenseFeatures<ST>::CDenseFeatures(CDotFeatures* features) :
+		CDotFeatures()
+{
+	init();
+
+	auto num_feat = features->get_dim_feature_space();
+	auto num_vec = features->get_num_vectors();
+
+	ASSERT(num_feat>0 && num_vec>0)
+	feature_matrix = SGMatrix<ST>(num_feat, num_vec);
+	for (auto i = 0; i < num_vec; i++)
+	{
+		SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
+		ASSERT(num_feat==v.vlen)
+
+		for (auto j = 0; j < num_feat; j++)
+			feature_matrix.matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
+	}
+	num_features = num_feat;
+	num_vectors = num_vec;
 }
 
 template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
@@ -364,30 +386,6 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 	}
 
 	return fm;
-}
-
-template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
-{
-	m_subset_stack->remove_all_subsets();
-
-	int32_t num_feat = df->get_dim_feature_space();
-	int32_t num_vec = df->get_num_vectors();
-
-	ASSERT(num_feat>0 && num_vec>0)
-
-	free_feature_matrix();
-	feature_matrix = SGMatrix<ST>(num_feat, num_vec);
-
-	for (int32_t i = 0; i < num_vec; i++)
-	{
-		SGVector<float64_t> v = df->get_computed_dot_feature_vector(i);
-		ASSERT(num_feat==v.vlen)
-
-		for (int32_t j = 0; j < num_feat; j++)
-			feature_matrix.matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
-	}
-	num_features = num_feat;
-	num_vectors = num_vec;
 }
 
 template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
