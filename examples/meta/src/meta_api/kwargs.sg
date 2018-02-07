@@ -22,17 +22,14 @@
 # This also fails (keywords not allowed outside initialisation variables)
 #kernel_factory("GaussianKernel", a=glob_fun(ordinary_argument))
 
+# doesnt work in ruby (TODO, don't allow in meta grammar)
+# KernelMachine svm2 = kernel_machine("LibSVM", kernel=kernel("GaussianKernel"))
+
+
 
 # Real example
 # ------------
 
-# The following lines fail in Octave because of a float literal issue
-#KernelMachine svm = kernel_machine("LibSVM", C1=2.0)
-#GaussianKernel k(log_width=2.0)
-#k.put("log_width", 4.0)
+Kernel k = kernel("GaussianKernel", log_width=2.0)
+KernelMachine svm = kernel_machine("LibSVM", C1=1.1, kernel=k)
 
-# The following line fails in Python because of a bool literal issue
-#GaussianKernel k2(log_width=14.0, lhs_equals_rhs=True)
-
-# The following line currently gives a type error
-#svm.put("kernel", k)
