@@ -51,7 +51,7 @@ float64_t CEMMixtureModel::expectation_step()
 		// for each component
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
 		{
-			CDistribution* jth_component=CDistribution::obtain_from_generic(data.components->get_element(j));
+			CDistribution* jth_component=data.components->get_element(j)->as<CDistribution>();
 			alpha_ij[j]=CMath::log(data.weights[j])+jth_component->get_log_likelihood_example(i);
 			SG_UNREF(jth_component);
 		};
@@ -74,7 +74,7 @@ void CEMMixtureModel::maximization_step()
 	float64_t sum_weights=0;
 	for (int32_t j=0;j<data.alpha.num_cols;j++)
 	{
-		CDistribution* jth_component=CDistribution::obtain_from_generic(data.components->get_element(j));
+		CDistribution* jth_component=data.components->get_element(j)->as<CDistribution>();
 
 		// update mean covariance of components
 		alpha_j=data.alpha.matrix+j*data.alpha.num_rows;

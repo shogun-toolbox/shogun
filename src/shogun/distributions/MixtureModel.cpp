@@ -75,7 +75,7 @@ bool CMixtureModel::train(CFeatures* data)
 	// set training points in all components of the mixture
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		CDistribution* comp=CDistribution::obtain_from_generic(m_components->get_element(i));
+		CDistribution* comp=m_components->get_element(i)->as<CDistribution>();
 		comp->set_features(features);
 
 		SG_UNREF(comp)
@@ -123,7 +123,7 @@ float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		CDistribution* ith_comp=CDistribution::obtain_from_generic(m_components->get_element(i));
+		CDistribution* ith_comp=m_components->get_element(i)->as<CDistribution>();
 		log_likelihood_component[i]=ith_comp->get_log_likelihood_example(num_example)+CMath::log(m_weights[i]);
 
 		SG_UNREF(ith_comp);
@@ -166,7 +166,7 @@ CDistribution* CMixtureModel::get_component(index_t index) const
 {
 	REQUIRE(index<get_num_components(),"index supplied (%d) is greater than total mixture components (%d)\n"
 																				,index,get_num_components())
-	return CDistribution::obtain_from_generic(m_components->get_element(index));
+	return m_components->get_element(index)->as<CDistribution>();
 }
 
 void CMixtureModel::set_max_iters(int32_t max_iters)

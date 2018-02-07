@@ -51,7 +51,7 @@ SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFe
 	else
 	{
 		SG_WARNING("Converter to process was not set.\n")
-		return ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+		return features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	}
 }
 

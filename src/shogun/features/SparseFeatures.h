@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Evgeniy Andreev, Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Evgeniy Andreev, Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal,
  *          Thoralf Klein, Björn Esser, Soumyajit De
  */
 
@@ -71,6 +71,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** copy constructor */
 		CSparseFeatures(const CSparseFeatures & orig);
+
+		/** copy constructor from DenseFeatures */
+		CSparseFeatures(CDenseFeatures<ST>* dense);
 
 		/** constructor loading features from file
 		 *
@@ -248,14 +251,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return if applying was successful
 		 */
 		virtual bool apply_preprocessor(bool force_preprocessing=false);
-
-		/** obtain sparse features from simple features
-		 *
-		 * subset on input is ignored, subset of this instance is removed
-		 *
-		 * @param sf simple features
-		 */
-		void obtain_from_simple(CDenseFeatures<ST>* sf);
 
 		/** get number of feature vectors, possibly of subset
 		 *
