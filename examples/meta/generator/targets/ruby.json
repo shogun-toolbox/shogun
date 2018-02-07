@@ -3,11 +3,11 @@
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = Shogun::$typeName.new $arguments$kwargs",
+        "Construct": "$name = Shogun::$typeName.new($arguments)$kwargs",
         "Copy": "$name = $expr$kwargs",
         "KeywordArguments": {
             "List": "\n$elements",
-            "Element": "$name.put \"$keyword\", $expr",
+            "Element": "$name.put(\"$keyword\", $expr)",
             "Separator": "\n",
             "InitialSeperatorWhenArgs>0": false
         },
@@ -46,9 +46,9 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
-        "MethodCall": "$object.$method $arguments",
-        "StaticCall": "Shogun::$typeName.$method $arguments",
-        "GlobalCall": "Shogun::$method $arguments",
+        "MethodCall": "$object.$method($arguments)",
+        "StaticCall": "Shogun::$typeName.$method($arguments)",
+        "GlobalCall": "Shogun::$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"Shogun::$value"
     },
@@ -56,18 +56,18 @@
         "Access": {
             "Vector": "$identifier[$indices]",
             "Matrix": "$identifier[$indices]",
-            "BoolVector": "$identifier.get_element $indices",
-            "BoolMatrix": "$identifier.get_element $indices"
+            "BoolVector": "$identifier.get_element($indices)",
+            "BoolMatrix": "$identifier.get_element($indices)"
         },
         "Assign": {
             "Vector": "$identifier[$indices] = $expr",
             "Matrix": "$identifier[$indices] = $expr",
-            "BoolVector": "$identifier.set_element $expr, $indices",
-            "BoolMatrix": "$identifier.set_element $expr, $indices"
+            "BoolVector": "$identifier.set_element($expr, $indices)",
+            "BoolMatrix": "$identifier.set_element($expr, $indices)"
         },
         "ZeroIndexed": true
     },
-    "Print": "puts $expr",
+    "Print": "puts($expr)",
     "OutputDirectoryName": "ruby",
     "FileExtension": ".rb"
 }

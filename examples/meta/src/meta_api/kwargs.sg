@@ -22,10 +22,6 @@
 # This also fails (keywords not allowed outside initialisation variables)
 #kernel_factory("GaussianKernel", a=glob_fun(ordinary_argument))
 
-# doesnt work in ruby (TODO, don't allow in meta grammar)
-# KernelMachine svm2 = kernel_machine("LibSVM", kernel=kernel("GaussianKernel"))
-
-
 
 # Real example
 # ------------
@@ -33,3 +29,4 @@
 Kernel k = kernel("GaussianKernel", log_width=2.0)
 KernelMachine svm = kernel_machine("LibSVM", C1=1.1, kernel=k)
 
+KernelMachine svm2 = kernel_machine("LibSVM", kernel=kernel("GaussianKernel"))
