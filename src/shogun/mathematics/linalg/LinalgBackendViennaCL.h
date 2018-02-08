@@ -187,7 +187,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::scale */
 	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
-	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
+	virtual void scale(const Container<Type>& a, Type alpha, Container<Type>& result) const \
 	{  \
 		scale_impl(a, result, alpha); \
 	}
