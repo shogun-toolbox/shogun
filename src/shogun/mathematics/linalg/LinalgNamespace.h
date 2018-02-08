@@ -818,7 +818,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void element_prod(
-		    Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b, SGMatrix<T>& result)
+		    const Block<SGMatrix<T>>& a, const Block<SGMatrix<T>>& b,
+		    SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
@@ -850,7 +851,8 @@ namespace shogun
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T> element_prod(Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b)
+		SGMatrix<T>
+		element_prod(const Block<SGMatrix<T>>& a, const Block<SGMatrix<T>>& b)
 		{
 			REQUIRE(
 			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
@@ -877,7 +879,8 @@ namespace shogun
 		 * @param result Result matrix
 		 */
 		template <typename T>
-		void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)
+		void element_prod(
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
@@ -912,7 +915,7 @@ namespace shogun
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
+		SGMatrix<T> element_prod(const SGMatrix<T>& a, const SGMatrix<T>& b)
 		{
 			REQUIRE(
 			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
@@ -1015,7 +1018,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void matrix_prod(
-		    SGMatrix<T>& A, SGVector<T>& b, SGVector<T>& result,
+		    const SGMatrix<T>& A, const SGVector<T>& b, SGVector<T>& result,
 		    bool transpose = false)
 		{
 			if (transpose)
@@ -1069,8 +1072,8 @@ namespace shogun
 		 * @return result Result vector
 		 */
 		template <typename T>
-		SGVector<T>
-		matrix_prod(SGMatrix<T>& A, SGVector<T>& b, bool transpose = false)
+		SGVector<T> matrix_prod(
+		    const SGMatrix<T>& A, const SGVector<T>& b, bool transpose = false)
 		{
 			SGVector<T> result;
 			if (transpose)
@@ -1113,7 +1116,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void matrix_prod(
-		    SGMatrix<T>& A, SGMatrix<T>& B, SGMatrix<T>& result,
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
 		    bool transpose_A = false, bool transpose_B = false)
 		{
 			REQUIRE(
@@ -1214,8 +1217,8 @@ namespace shogun
 		 */
 		template <typename T>
 		SGMatrix<T> matrix_prod(
-		    SGMatrix<T>& A, SGMatrix<T>& B, bool transpose_A = false,
-		    bool transpose_B = false)
+		    const SGMatrix<T>& A, const SGMatrix<T>& B,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
 			SGMatrix<T> result;
 
@@ -1278,8 +1281,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void dgemv(
-		    T alpha, SGMatrix<T> a, bool transpose, SGVector<T> x, T beta,
-		    SGVector<T>& y)
+		    T alpha, const SGMatrix<T>& a, bool transpose, const SGVector<T>& x,
+		    T beta, SGVector<T>& y)
 		{
 			auto temp_vector = matrix_prod(a, x, transpose);
 			add(temp_vector, y, y, alpha, beta);
@@ -1302,8 +1305,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void dgemm(
-		    T alpha, SGMatrix<T> a, SGMatrix<T> b, bool transpose_a,
-		    bool transpose_b, T beta, SGMatrix<T>& c)
+		    T alpha, const SGMatrix<T>& a, const SGMatrix<T>& b,
+		    bool transpose_a, bool transpose_b, T beta, SGMatrix<T>& c)
 		{
 			auto temp_matrix = matrix_prod(a, b, transpose_a, transpose_b);
 			add(temp_matrix, c, c, alpha, beta);
@@ -1408,7 +1411,7 @@ namespace shogun
 		 * @param result The vector of alpha * a
 		 */
 		template <typename T>
-		void scale(SGVector<T>& a, SGVector<T>& result, T alpha = 1)
+		void scale(const SGVector<T>& a, SGVector<T>& result, T alpha = 1)
 		{
 			REQUIRE(
 			    result.vlen == a.vlen,
@@ -1428,7 +1431,7 @@ namespace shogun
 		 * @param result The matrix of alpha * A
 		 */
 		template <typename T>
-		void scale(SGMatrix<T>& A, SGMatrix<T>& result, T alpha = 1)
+		void scale(const SGMatrix<T>& A, SGMatrix<T>& result, T alpha = 1)
 		{
 			REQUIRE(
 			    (A.num_rows == result.num_rows), "Number of rows of matrix A "
@@ -1452,7 +1455,7 @@ namespace shogun
 		 * @return Vector or matrix of alpha * A
 		 */
 		template <typename T, template <typename> class Container>
-		Container<T> scale(Container<T>& a, T alpha = 1)
+		Container<T> scale(const Container<T>& a, T alpha = 1)
 		{
 			auto result = a.clone();
 			scale(a, result, alpha);

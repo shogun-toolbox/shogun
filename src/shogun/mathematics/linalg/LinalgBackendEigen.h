@@ -199,8 +199,8 @@ namespace shogun
 /** Implementation of @see LinalgBackendBase::matrix_prod */
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	virtual void matrix_prod(                                                  \
-	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
-	    bool transpose_A, bool transpose_B) const;
+	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
@@ -267,7 +267,7 @@ namespace shogun
 /** Implementation of @see linalg::scale */
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	virtual void scale(                                                        \
-	    Container<Type>& a, Type alpha, Container<Type>& result) const;
+	    const Container<Type>& a, Type alpha, Container<Type>& result) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
@@ -531,13 +531,13 @@ namespace shogun
 		/** Eigen3 matrix * vector in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result, bool transpose,
-		    bool transpose_B = false) const;
+		    const SGMatrix<T>& a, const SGVector<T>& b, SGVector<T>& result,
+		    bool transpose, bool transpose_B = false) const;
 
 		/** Eigen3 matrix in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
 		    bool transpose_A, bool transpose_B) const;
 
 		/** Return the largest element in the vector with Eigen3 library */
@@ -594,11 +594,13 @@ namespace shogun
 
 		/** Eigen3 vector inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const;
+		void
+		scale_impl(const SGVector<T>& a, T alpha, SGVector<T>& result) const;
 
 		/** Eigen3 matrix inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
+		void
+		scale_impl(const SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
 
 		/** Eigen3 set const method */
 		template <typename T, template <typename> class Container>

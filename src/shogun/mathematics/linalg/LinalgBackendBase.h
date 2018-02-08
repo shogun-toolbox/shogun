@@ -389,8 +389,8 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	virtual void matrix_prod(                                                  \
-	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
-	    bool transpose_A, bool transpose_B) const                              \
+	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -529,7 +529,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	virtual void scale(                                                        \
-	    Container<Type>& a, Type alpha, Container<Type>& result) const         \
+	    const Container<Type>& a, Type alpha, Container<Type>& result) const   \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
