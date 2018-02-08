@@ -46,7 +46,7 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 
 #define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
 	void LinalgBackendEigen::logistic(                                         \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		logistic_impl(a, result);                                              \
 	}
@@ -55,7 +55,7 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
 
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
 	void LinalgBackendEigen::multiply_by_logistic_derivative(                  \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		multiply_by_logistic_derivative_impl(a, result);                       \
 	}
@@ -64,7 +64,7 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 
 #define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
 	void LinalgBackendEigen::multiply_by_rectified_linear_derivative(          \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		multiply_by_rectified_linear_derivative_impl(a, result);               \
 	}
@@ -74,7 +74,7 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
 
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
 	void LinalgBackendEigen::rectified_linear(                                 \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		rectified_linear_impl(a, result);                                      \
 	}
@@ -115,7 +115,7 @@ T LinalgBackendEigen::cross_entropy_impl(
 
 template <typename T>
 void LinalgBackendEigen::logistic_impl(
-    SGMatrix<T>& a, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
@@ -125,7 +125,7 @@ void LinalgBackendEigen::logistic_impl(
 
 template <typename T>
 void LinalgBackendEigen::multiply_by_logistic_derivative_impl(
-    SGMatrix<T>& a, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
@@ -135,7 +135,7 @@ void LinalgBackendEigen::multiply_by_logistic_derivative_impl(
 
 template <typename T>
 void LinalgBackendEigen::multiply_by_rectified_linear_derivative_impl(
-    SGMatrix<T>& a, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
@@ -147,7 +147,7 @@ void LinalgBackendEigen::multiply_by_rectified_linear_derivative_impl(
 
 template <typename T>
 void LinalgBackendEigen::rectified_linear_impl(
-    SGMatrix<T>& a, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
