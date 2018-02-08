@@ -154,7 +154,7 @@ namespace shogun
 		 * @param b SGVector to be set
 		 */
 		template <typename T>
-		void to_gpu(SGVector<T>& a, SGVector<T>& b)
+		void to_gpu(const SGVector<T>& a, SGVector<T>& b)
 		{
 			sg_linalg->m_gpu_transfer.lock();
 
@@ -190,7 +190,7 @@ namespace shogun
 		 * @param b SGMatrix to be set
 		 */
 		template <typename T>
-		void to_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
+		void to_gpu(const SGMatrix<T>& a, SGMatrix<T>& b)
 		{
 			sg_linalg->m_gpu_transfer.lock();
 

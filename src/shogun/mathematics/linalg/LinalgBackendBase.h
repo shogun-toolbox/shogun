@@ -375,7 +375,8 @@ namespace shogun
  * @see linalg::logistic
  */
 #define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const   \
+	virtual void logistic(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -454,7 +455,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
 	virtual void multiply_by_logistic_derivative(                              \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -469,7 +470,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
 	virtual void multiply_by_rectified_linear_derivative(                      \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -497,8 +498,8 @@ namespace shogun
  * @see linalg::rectified_linear
  */
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
-	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
-	    const                                                                  \
+	virtual void rectified_linear(                                             \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
