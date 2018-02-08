@@ -81,7 +81,7 @@ TEST(Any, as)
 	int32_t integer = 10;
 	auto any = make_any(integer);
 	EXPECT_EQ(any.as<int32_t>(), integer);
-	EXPECT_THROW(any.as<float64_t>(), std::logic_error);
+	EXPECT_THROW(any.as<float64_t>(), TypeMismatchException);
 }
 
 TEST(Any, same_type)
@@ -131,8 +131,8 @@ TEST(Any, any_cast)
 	auto any = make_any(integer);
 	auto empty_any = Any();
 	EXPECT_EQ(any_cast<int32_t>(any), integer);
-	EXPECT_THROW(any_cast<float64_t>(any), std::logic_error);
-	EXPECT_THROW(any_cast<int32_t>(empty_any), std::logic_error);
+	EXPECT_THROW(any_cast<float64_t>(any), TypeMismatchException);
+	EXPECT_THROW(any_cast<int32_t>(empty_any), TypeMismatchException);
 }
 
 TEST(Any, make_any_ref)
@@ -201,14 +201,14 @@ TEST(Any, assign_wrong_type_into_owning)
 {
 	int32_t integer = 10;
 	auto any = make_any(integer);
-	EXPECT_THROW(any = make_any(3.14), std::logic_error);
+	EXPECT_THROW(any = make_any(3.14), TypeMismatchException);
 }
 
 TEST(Any, assign_wrong_type_into_non_owning)
 {
 	int32_t integer = 10;
 	auto any = make_any_ref(&integer);
-	EXPECT_THROW(any = make_any(3.14), std::logic_error);
+	EXPECT_THROW(any = make_any(3.14), TypeMismatchException);
 }
 
 TEST(Any, compare_owning_and_non_owning)
@@ -360,7 +360,7 @@ TEST(Any, clone_wrong_type)
 	Simple* a = nullptr;
 	int other = 5;
 	auto any = make_any_ref(&a);
-	EXPECT_THROW(any.clone_from(make_any(other)), std::logic_error);
+	EXPECT_THROW(any.clone_from(make_any(other)), TypeMismatchException);
 }
 
 TEST(Any, clone_into_owning_via_copy)

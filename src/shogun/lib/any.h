@@ -81,6 +81,32 @@ namespace shogun
 	template <class T>
 	class SGMatrix;
 
+	class TypeMismatchException : public std::exception
+	{
+	public:
+		TypeMismatchException(
+		    const std::string& expected, const std::string& actual)
+		    : m_expected(expected), m_actual(actual)
+		{
+		}
+		TypeMismatchException(const TypeMismatchException& other)
+		    : m_expected(other.m_expected), m_actual(other.m_actual)
+		{
+		}
+		std::string expected() const
+		{
+			return m_expected;
+		}
+		std::string actual() const
+		{
+			return m_actual;
+		}
+
+	private:
+		std::string m_expected;
+		std::string m_actual;
+	};
+
 	template <class T, class S>
 	class ArrayReference
 	{
@@ -671,9 +697,8 @@ namespace shogun
 			}
 			if (!policy->matches(other.policy))
 			{
-				throw std::logic_error(
-				    "Bad assign into " + policy->type() + " from " +
-				    other.policy->type());
+				throw TypeMismatchException(
+				    other.policy->type(), policy->type());
 			}
 			policy->clear(&storage);
 			if (other.policy->policy_type() == PolicyType::NON_OWNING)
@@ -692,9 +717,8 @@ namespace shogun
 		{
 			if (!policy->matches(other.policy))
 			{
-				throw std::logic_error(
-				    "Can't clone into " + policy->type() + " from " +
-				    other.policy->type());
+				throw TypeMismatchException(
+				    other.policy->type(), policy->type());
 			}
 			policy->clone(&storage, other.storage);
 			return *(this);
@@ -732,9 +756,8 @@ namespace shogun
 			}
 			else
 			{
-				throw std::logic_error(
-				    "Bad cast to " + demangled_type<T>() + " but the type is " +
-				    policy->type());
+				throw TypeMismatchException(
+				    demangled_type<T>(), policy->type());
 			}
 		}
 
