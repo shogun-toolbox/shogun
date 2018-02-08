@@ -129,8 +129,8 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
 
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	void LinalgBackendEigen::matrix_prod(                                      \
-	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
-	    bool transpose_A, bool transpose_B) const                              \
+	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
 		matrix_prod_impl(a, b, result, transpose_A, transpose_B);              \
 	}
@@ -140,7 +140,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	void LinalgBackendEigen::scale(                                            \
-	    Container<Type>& a, Type alpha, Container<Type>& result) const         \
+	    const Container<Type>& a, Type alpha, Container<Type>& result) const   \
 	{                                                                          \
 		scale_impl(a, alpha, result);                                          \
 	}
@@ -303,8 +303,8 @@ void LinalgBackendEigen::exponent_impl(
 
 template <typename T>
 void LinalgBackendEigen::matrix_prod_impl(
-    SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result, bool transpose,
-    bool transpose_B) const
+    const SGMatrix<T>& a, const SGVector<T>& b, SGVector<T>& result,
+    bool transpose, bool transpose_B) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGVector<T>::EigenVectorXtMap b_eig = b;
@@ -318,8 +318,8 @@ void LinalgBackendEigen::matrix_prod_impl(
 
 template <typename T>
 void LinalgBackendEigen::matrix_prod_impl(
-    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, bool transpose_A,
-    bool transpose_B) const
+    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+    bool transpose_A, bool transpose_B) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
@@ -340,7 +340,7 @@ void LinalgBackendEigen::matrix_prod_impl(
 
 template <typename T>
 void LinalgBackendEigen::scale_impl(
-    SGVector<T>& a, T alpha, SGVector<T>& result) const
+    const SGVector<T>& a, T alpha, SGVector<T>& result) const
 {
 	typename SGVector<T>::EigenVectorXtMap a_eig = a;
 	typename SGVector<T>::EigenVectorXtMap result_eig = result;
@@ -350,7 +350,7 @@ void LinalgBackendEigen::scale_impl(
 
 template <typename T>
 void LinalgBackendEigen::scale_impl(
-    SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
