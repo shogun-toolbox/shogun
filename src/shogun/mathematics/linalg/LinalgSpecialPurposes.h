@@ -49,7 +49,7 @@ namespace shogun
 		 * @param result The output matrix
 		 */
 		template <typename T>
-		void logistic(SGMatrix<T>& a, SGMatrix<T>& result)
+		void logistic(const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
@@ -74,8 +74,8 @@ namespace shogun
 		 * @param result The output matrix
 		 */
 		template <typename T>
-		void
-		multiply_by_logistic_derivative(SGMatrix<T>& a, SGMatrix<T>& result)
+		void multiply_by_logistic_derivative(
+		    const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
@@ -100,7 +100,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void multiply_by_rectified_linear_derivative(
-		    SGMatrix<T>& a, SGMatrix<T>& result)
+		    const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
@@ -125,7 +125,7 @@ namespace shogun
 		 * @param result The output matrix
 		 */
 		template <typename T>
-		void rectified_linear(SGMatrix<T>& a, SGMatrix<T>& result)
+		void rectified_linear(const SGMatrix<T>& a, SGMatrix<T>& result)
 		{
 			REQUIRE(
 			    (a.num_rows == result.num_rows), "Number of rows of matrix a "

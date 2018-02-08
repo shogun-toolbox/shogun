@@ -192,7 +192,8 @@ namespace shogun
 
 /** Implementation of @see LinalgBackendBase::logistic */
 #define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const;
+	virtual void logistic(const Container<Type>& a, Container<Type>& result)   \
+	    const;
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
 #undef BACKEND_GENERIC_LOGISTIC
 
@@ -229,7 +230,7 @@ namespace shogun
 /** Implementation of @see linalg::multiply_by_logistic_derivative */
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
 	virtual void multiply_by_logistic_derivative(                              \
-	    Container<Type>& a, Container<Type>& result) const;
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_NUMERIC_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
@@ -237,7 +238,7 @@ namespace shogun
 /** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
 #define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
 	virtual void multiply_by_rectified_linear_derivative(                      \
-	    Container<Type>& a, Container<Type>& result) const;
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
@@ -259,8 +260,8 @@ namespace shogun
 
 /** Implementation of @see linalg::rectified_linear */
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
-	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
-	    const;
+	virtual void rectified_linear(                                             \
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
@@ -526,7 +527,7 @@ namespace shogun
 
 		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>
-		void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
+		void logistic_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 matrix * vector in-place product method */
 		template <typename T>
@@ -565,14 +566,14 @@ namespace shogun
 		 */
 		template <typename T>
 		void multiply_by_logistic_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 multiply_by_rectified_linear_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j
 		 */
 		template <typename T>
 		void multiply_by_rectified_linear_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector QR solver. */
 		template <typename T>
@@ -590,7 +591,8 @@ namespace shogun
 
 		/** Applies the elementwise rectified linear function f(x) = max(0,x) */
 		template <typename T>
-		void rectified_linear_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
+		void
+		rectified_linear_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector inplace scale method: result = alpha * A */
 		template <typename T>
