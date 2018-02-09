@@ -394,10 +394,11 @@ public:
 		{
 			return any_cast<T>(value);
 		}
-		catch (const std::logic_error& exc)
+		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Get \"%s\" failed: %s.\n", _tag.name().c_str(), exc.what());
+				"Get \"%s\" failed. Expected %s, got %s.\n",
+				exc.expected().c_str(), exc.actual().c_str());
 		}
 		// we won't be there
 		return any_cast<T>(value);
