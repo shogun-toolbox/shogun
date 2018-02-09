@@ -116,15 +116,52 @@
 
 %include "ParameterObserver.i"
 
+
+#ifdef SWIGOCTAVE
+// Octave treats 4.0 as integer, so need conversion when setting float parameters
+%include <shogun/base/SGObject.h>
+namespace shogun {
+%extend CSGObject {
+	void put(const std::string& name, const long value) throw(ShogunException)
+	{
+		Tag<long> tag_int(name);
+		Tag<double> tag_float(name);
+		
+		// octave treats 4.0 as an integer
+		if ($self->has(tag_int))
+			$self->put(tag_int, value);
+		else if ($self->has(tag_float))
+		{
+			SG_SWARNING("Converting %d of type int64 to %f of type float64 "
+						"when setting parameter %s::%s. Octave treats 4.0 as integer.\n",
+				value, (float64_t)value,$self->get_name(), name.c_str());
+			$self->put(tag_float, (double) value);
+		}
+		else
+			// to get original error message
+			$self->put(tag_int, value);
+	}
+}
+}
+#endif
+
 %define SUPPORT_TAG(short_type, type)
     %template(put) shogun::CSGObject::put<type, void>;
     %template(get_ ## short_type) shogun::CSGObject::get<type, void>;
 %enddef
+
 SUPPORT_TAG(double, float64_t)
-SUPPORT_TAG(int, int64_t)
-SUPPORT_TAG(real_vector, SGVector<float64_t>)
+#ifdef SWIGOCTAVE
+	// already defined a custom put above
+    %template(get_int) shogun::CSGObject::get<int64_t, void>;
+#else
+	SUPPORT_TAG(int, int64_t)
+#endif
+#ifndef SWIGJAVA
+	// Java treats everything as a matrix
+	SUPPORT_TAG(real_vector, SGVector<float64_t>)
+#endif
 SUPPORT_TAG(real_matrix, SGMatrix<float64_t>)
-SUPPORT_TAG(object, CSGObject*)
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"

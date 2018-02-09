@@ -346,95 +346,118 @@ public:
 	{
 		if (has_parameter(_tag))
 		{
-			if(has<T>(_tag.name()))
+			try
 			{
-				ref_value(&value);
-				update_parameter(_tag, make_any(value));
+				any_cast<T>(get_parameter(_tag).get_value());
 			}
-			else
+			catch (const TypeMismatchException& exc)
 			{
-				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
-					_tag.name().c_str());
+				SG_ERROR(
+					"Setting parameter %s::%s failed. Provided type is %s, but "
+					"actual type is %s.\n",
+					get_name(), _tag.name().c_str(), exc.expected().c_str(),
+					exc.actual().c_str());
 			}
+			ref_value(&value);
+			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
-			SG_ERROR("\"%s\" does not have a parameter with name \"%s\".\n",
-				get_name(), _tag.name().c_str());
+			SG_ERROR(
+				"Parameter %s::%s does not exist.\n", get_name(),
+				_tag.name().c_str());
 		}
 	}
 
-#ifndef SWIG
-	template <typename T, std::enable_if_t<std::is_convertible<T, CSGObject*>::value>* = nullptr>
-	[[deprecated ("SGObject parameters should be registered as a base class.")]]
-	void put(const std::string& name, const T value)
-	{
-		CSGObject* v = value;
-		Tag<CSGObject*> tag(name);
-		put(tag, v);
-	}
-#endif
-
-	/** Setter for a class parameter, identified by a name.
-	 * Throws an exception if the class does not have such a parameter.
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter along with type information
-	 */
-	template<typename T, typename U = typename std::enable_if_t<!std::is_convertible<T, CSGObject*>::value>>
-	void put(const std::string& name, const T value) throw(ShogunException)
-	{
-		Tag<T> tag(name);
-		put(tag, value);
-	}
-
-	/** Getter for a class parameter, identified by a Tag.
-	 * Throws an exception if the class does not have such a parameter.
-	 *
-	 * @param _tag name and type information of parameter
-	 * @return value of the parameter identified by the input tag
-	 */
-	template <typename T>
-	T get(const Tag<T>& _tag) const throw(ShogunException)
-	{
-		const Any value = get_parameter(_tag).get_value();
-		try
+/** Setter for an object class parameter, identified by a name.
+ * Throws an exception if the class does not have such a parameter.
+ *
+ * @param name name of the parameter
+ * @param value value of the parameter along with type information
+ */
+#ifndef SWIG // c++ interface has put<T>, type-safe at compile time
+		template <typename T,
+		          std::enable_if_t<std::is_convertible<T, CSGObject*>::value>* =
+		              nullptr>
+		void put(const std::string& name, const T value)
 		{
+			CSGObject* v = value;
+			Tag<CSGObject*> tag(name);
+			put(tag, v);
+		}
+#else  // SWIG interface only has put<CSGObject*>, type checking is done at
+       // runtime
+		void put(const std::string& name, CSGObject* value)
+		{
+			Tag<CSGObject*> tag(name);
+			put(tag, v);
+		}
+#endif // SWIG
+
+		/** Setter for a non-object class parameter, identified by a name.
+		 * Throws an exception if the class does not have such a parameter.
+		 *
+		 * @param name name of the parameter
+		 * @param value value of the parameter along with type information
+		 */
+		template <typename T, typename U = typename std::enable_if_t<
+		                          !std::is_convertible<T, CSGObject*>::value>>
+		void put(const std::string& name, const T value) throw(ShogunException)
+		{
+			Tag<T> tag(name);
+			put(tag, value);
+		}
+
+		/** Getter for a class parameter, identified by a Tag.
+		 * Throws an exception if the class does not have such a parameter.
+		 *
+		 * @param _tag name and type information of parameter
+		 * @return value of the parameter identified by the input tag
+		 */
+		template <typename T>
+		T get(const Tag<T>& _tag) const throw(ShogunException)
+		{
+			const Any value = get_parameter(_tag).get_value();
+			try
+			{
+				return any_cast<T>(value);
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+				    "Getting parameter %s::%s failed. Requested type is %s, "
+				    "but actual type is %s.\n",
+				    get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				    exc.expected().c_str());
+			}
+			// we won't be there
 			return any_cast<T>(value);
 		}
-		catch (const TypeMismatchException& exc)
+
+		/** Getter for a class parameter, identified by a name.
+		 * Throws an exception if the class does not have such a parameter.
+		 *
+		 * @param name name of the parameter
+		 * @return value of the parameter corresponding to the input name and
+		 * type
+		 */
+		template <typename T, typename U = void>
+		T get(const std::string& name) const throw(ShogunException)
 		{
-			SG_ERROR(
-				"Get \"%s\" failed. Expected %s, got %s.\n",
-				exc.expected().c_str(), exc.actual().c_str());
+			Tag<T> tag(name);
+			return get(tag);
 		}
-		// we won't be there
-		return any_cast<T>(value);
-	}
 
-	/** Getter for a class parameter, identified by a name.
-	 * Throws an exception if the class does not have such a parameter.
-	 *
-	 * @param name name of the parameter
-	 * @return value of the parameter corresponding to the input name and type
-	 */
-	template <typename T, typename U = void>
-	T get(const std::string& name) const throw(ShogunException)
-	{
-		Tag<T> tag(name);
-		return get(tag);
-	}
+		/** Returns string representation of the object that contains
+		 * its name and parameters.
+		 *
+		 */
+		std::string to_string() const;
 
-	/** Returns string representation of the object that contains
-	 * its name and parameters.
-	 *
-	 */
-	std::string to_string() const;
-
-	/** Returns set of all parameter names of the object.
-	 *
-	 */
-	std::vector<std::string> parameter_names() const;
+		/** Returns set of all parameter names of the object.
+		 *
+		 */
+		std::vector<std::string> parameter_names() const;
 
 #ifndef SWIG
 	/**
