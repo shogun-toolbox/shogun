@@ -1,9 +1,10 @@
+#include <iostream>
 #include <shogun/base/init.h>
+#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/evaluation/SigmoidCalibration.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <iostream>
 
 using namespace shogun;
 
@@ -50,45 +51,53 @@ int main(int argc, char** argv)
 
     //create train labels
     CLabels* labels=new CBinaryLabels(labelVector);
+	SG_REF(labels);
 
-    //create train features
-    CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-    SG_REF(features);
-    features->set_feature_matrix(featureMatrix);
+	// create train features
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>();
+	SG_REF(features);
+	features->set_feature_matrix(featureMatrix);
 
-    //create linear kernel
-    CLinearKernel* kernel=new CLinearKernel();
-    SG_REF(kernel);
-    kernel->init(features, features);
+	// create linear kernel
+	CLinearKernel* kernel = new CLinearKernel();
+	SG_REF(kernel);
+	kernel->init(features, features);
 
-    //create svm classifier by LibSVM
-    CLibSVM* svm=new CLibSVM(svm_C,kernel, labels);
-    SG_REF(svm);
-    svm->train();
+	// create svm classifier by LibSVM
+	CLibSVM* svm = new CLibSVM(svm_C, kernel, labels);
+	SG_REF(svm);
+	svm->train();
 
-    //classify data points
-    CBinaryLabels* out_labels=CLabelsFactory::to_binary(svm->apply());
+	// classify data points
+	CBinaryLabels* out_labels = CLabelsFactory::to_binary(svm->apply());
 
-    /*convert scores to calibrated probabilities  by fitting a sigmoid function
-    using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note
-    on Platt's probabilistic outputs for support vector machines.
-    See BinaryLabels documentation for details*/
-    out_labels->scores_to_probabilities();
+	/*convert scores to calibrated probabilities  by fitting a sigmoid function
+	using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note
+	on Platt's probabilistic outputs for support vector machines.
+	See BinaryLabels documentation for details*/
+	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
+	sigmoid_calibration->fit_binary(
+	    out_labels, CLabelsFactory::to_binary(labels));
+	CBinaryLabels* calibrated_labels =
+	    sigmoid_calibration->calibrate_binary(out_labels);
 
-    //display output labels and probabilities
-    for (int32_t i=0; i<num_samples; i++)
-    {
-        SG_SPRINT("out[%d]=%f (%f)\n", i, out_labels->get_label(i),
-            out_labels->get_value(i));
-    }
+	// display output labels and probabilities
+	for (int32_t i = 0; i < num_samples; i++)
+	{
+		SG_SPRINT(
+		    "out[%d]=%f (%f)\n", i, out_labels->get_label(i),
+		    calibrated_labels->get_value(i));
+	}
 
-    //clean up
-    SG_UNREF(out_labels);
-    SG_UNREF(kernel);
-    SG_UNREF(features);
-    SG_UNREF(svm);
+	// clean up
+	SG_UNREF(sigmoid_calibration);
+	SG_UNREF(calibrated_labels);
+	SG_UNREF(out_labels);
+	SG_UNREF(kernel);
+	SG_UNREF(features);
+	SG_UNREF(svm);
 
-    exit_shogun();
+	exit_shogun();
 
-    return 0;
+	return 0;
 }

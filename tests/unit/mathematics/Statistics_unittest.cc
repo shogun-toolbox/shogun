@@ -17,18 +17,34 @@ using namespace Eigen;
 
 TEST(Statistics, fit_sigmoid)
 {
-	SGVector<float64_t> scores(10);
+	SGVector<float64_t> predictions(10), targets(10);
 
-	for (index_t i=0; i<scores.vlen; ++i)
-		scores[i]=i%2==0 ? 1 : -1;
+	predictions.vector[0] = 0.6;
+	predictions.vector[1] = -0.2;
+	predictions.vector[2] = 0.7;
+	predictions.vector[3] = 0.9;
+	predictions.vector[4] = -0.1;
+	predictions.vector[5] = -0.3;
+	predictions.vector[6] = 0.9;
+	predictions.vector[7] = 0.6;
+	predictions.vector[8] = -0.3;
+	predictions.vector[9] = 0.7;
 
-	CStatistics::SigmoidParamters params=CStatistics::fit_sigmoid(scores);
+	targets.vector[0] = 1;
+	targets.vector[1] = -1;
+	targets.vector[2] = 1;
+	targets.vector[3] = 1;
+	targets.vector[4] = -1;
+	targets.vector[5] = -1;
+	targets.vector[6] = 1;
+	targets.vector[7] = 1;
+	targets.vector[8] = -1;
+	targets.vector[9] = -1;
 
-	// compare against python implementation of john plat's algoorithm
-	//	SG_SPRINT("a=%f, b=%f\n", params.a, params.b);
+	auto params = CStatistics::fit_sigmoid(predictions, targets);
 
-	EXPECT_NEAR(params.a, -1.791759, 1E-5);
-	EXPECT_NEAR(params.b, 0.000000, 10E-5);
+	EXPECT_NEAR(params.a, -2.88898665372199437, 1E-5);
+	EXPECT_NEAR(params.b, 1.0850855568530737, 1E-5);
 }
 
 // TEST 1
