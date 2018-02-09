@@ -127,6 +127,12 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		void allocate_confidences_for(int32_t n_classes);
 
+		/** Returns confidence scores for given class
+		* @param i Class index
+		* @return Confidences of class i
+		*/
+		SGVector<float64_t> get_confidences_for_class(int32_t i);
+
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
 #ifndef SWIG // SWIG should skip this part

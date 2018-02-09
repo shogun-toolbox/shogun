@@ -71,6 +71,20 @@ void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
 }
 
+SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
+{
+	REQUIRE(
+	    (m_multiclass_confidences.num_rows != 0) &&
+	        (m_multiclass_confidences.num_cols != 0),
+	    "Empty confidences, which need to be allocated before fetching.\n");
+
+	SGVector<float64_t> confs(m_multiclass_confidences.num_cols);
+	for (index_t j = 0; j < confs.size(); j++)
+		confs[j] = m_multiclass_confidences(i, j);
+
+	return confs;
+}
+
 void CMulticlassLabels::ensure_valid(const char* context)
 {
     CDenseLabels::ensure_valid(context);

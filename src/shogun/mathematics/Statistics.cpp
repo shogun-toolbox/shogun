@@ -6,13 +6,14 @@
  *          Björn Esser, Sergey Lisitsyn
  */
 
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/Math.h>
+#include <algorithm>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/external/cdflib.hpp>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
@@ -814,6 +815,158 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	return S;
 }
 
+CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
+    SGVector<float64_t> scores, SGVector<float64_t> labels, index_t maxiter,
+    float64_t minstep, float64_t sigma, float64_t epsilon)
+{
+	REQUIRE(scores.vector, "Provided scores are empty.\n");
+
+	/* count prior0 and prior1 if needed */
+	int32_t prior0 = 0;
+	int32_t prior1 = 0;
+	SG_SDEBUG("counting number of positive and negative labels\n")
+	{
+		prior1 =
+		    std::count_if(labels.begin(), labels.end(), [](float64_t label) {
+			    return label > 0;
+			});
+		prior0 = labels.vlen - prior1;
+	}
+	SG_SDEBUG("%d pos; %d neg\n", prior1, prior0)
+
+	/* construct target support */
+	float64_t hiTarget = (prior1 + 1.0) / (prior1 + 2.0);
+	float64_t loTarget = 1 / (prior0 + 2.0);
+	index_t length = prior1 + prior0;
+
+	SGVector<float64_t> t(length);
+	std::transform(
+	    labels.begin(), labels.end(), t.begin(),
+	    [hiTarget, loTarget](float64_t a) {
+		    return a > 0 ? hiTarget : loTarget;
+		});
+
+	/* initial Point and Initial Fun Value */
+	/* result parameters of sigmoid */
+	float64_t a = 0;
+	float64_t b = CMath::log((prior0 + 1.0) / (prior1 + 1.0));
+	float64_t fval = 0.0;
+
+	for (index_t i = 0; i < length; ++i)
+	{
+		float64_t fApB = scores[i] * a + b;
+		if (fApB >= 0)
+			fval += t[i] * fApB + CMath::log(1 + CMath::exp(-fApB));
+		else
+			fval += (t[i] - 1) * fApB + CMath::log(1 + CMath::exp(fApB));
+	}
+
+	index_t it;
+	float64_t g1;
+	float64_t g2;
+	for (it = 0; it < maxiter; ++it)
+	{
+		SG_SDEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
+
+		/* Update Gradient and Hessian (use H' = H + sigma I) */
+		float64_t h11 = sigma; // Numerically ensures strict PD
+		float64_t h22 = h11;
+		float64_t h21 = 0;
+		g1 = 0;
+		g2 = 0;
+
+		for (index_t i = 0; i < length; ++i)
+		{
+			float64_t fApB = scores[i] * a + b;
+			float64_t p;
+			float64_t q;
+			if (fApB >= 0)
+			{
+				p = CMath::exp(-fApB) / (1.0 + CMath::exp(-fApB));
+				q = 1.0 / (1.0 + CMath::exp(-fApB));
+			}
+			else
+			{
+				p = 1.0 / (1.0 + CMath::exp(fApB));
+				q = CMath::exp(fApB) / (1.0 + CMath::exp(fApB));
+			}
+
+			float64_t d2 = p * q;
+			h11 += scores[i] * scores[i] * d2;
+			h22 += d2;
+			h21 += scores[i] * d2;
+			float64_t d1 = t[i] - p;
+			g1 += scores[i] * d1;
+			g2 += d1;
+		}
+
+		/* Stopping Criteria */
+		if (CMath::abs(g1) < epsilon && CMath::abs(g2) < epsilon)
+			break;
+
+		/* Finding Newton direction: -inv(H') * g */
+		float64_t det = h11 * h22 - h21 * h21;
+		float64_t dA = -(h22 * g1 - h21 * g2) / det;
+		float64_t dB = -(-h21 * g1 + h11 * g2) / det;
+		float64_t gd = g1 * dA + g2 * dB;
+
+		/* Line Search */
+		float64_t stepsize = 1;
+
+		while (stepsize >= minstep)
+		{
+			float64_t newA = a + stepsize * dA;
+			float64_t newB = b + stepsize * dB;
+
+			/* New function value */
+			float64_t newf = 0.0;
+			for (index_t i = 0; i < length; ++i)
+			{
+				float64_t fApB = scores[i] * newA + newB;
+				if (fApB >= 0)
+					newf += t[i] * fApB + CMath::log(1 + CMath::exp(-fApB));
+				else
+					newf +=
+					    (t[i] - 1) * fApB + CMath::log(1 + CMath::exp(fApB));
+			}
+
+			/* Check sufficient decrease */
+			if (newf < fval + 0.0001 * stepsize * gd)
+			{
+				a = newA;
+				b = newB;
+				fval = newf;
+				break;
+			}
+			else
+				stepsize = stepsize / 2.0;
+		}
+
+		if (stepsize < minstep)
+		{
+			SG_SWARNING(
+			    "Line search fails, A=%f, "
+			    "B=%f, g1=%f, g2=%f, dA=%f, dB=%f, gd=%f\n",
+			    a, b, g1, g2, dA, dB, gd);
+		}
+	}
+
+	if (it >= maxiter - 1)
+	{
+		SG_SWARNING(
+		    "Reaching maximal iterations,"
+		    " g1=%f, g2=%f\n",
+		    g1, g2);
+	}
+
+	SG_SDEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
+
+	CStatistics::SigmoidParamters result;
+	result.a = a;
+	result.b = b;
+
+	return result;
+}
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
 {
