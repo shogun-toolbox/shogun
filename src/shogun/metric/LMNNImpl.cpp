@@ -6,20 +6,13 @@
 
 #include <shogun/metric/LMNNImpl.h>
 
-
-#include <shogun/multiclass/KNN.h>
-#include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/PCA.h>
-
 #include <iterator>
-
-/// useful shorthands to perform operations with Eigen matrices
-
-// column-wise sum of the squared elements of a matrix
-#define SUMSQCOLS(A)	((A).array().square().colwise().sum())
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/multiclass/KNN.h>
+#include <shogun/preprocessor/PCA.h>
+#include <shogun/preprocessor/PruneVarSubMean.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 CImpostorNode::CImpostorNode(index_t ex, index_t tar, index_t imp)
 : example(ex), target(tar), impostor(imp)
@@ -95,11 +88,11 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 			}
 		}
 
-		MatrixXd slice_mat(d, slice_size);
+		SGMatrix<float64_t> slice_mat(d, slice_size);
 		for (int32_t j = 0; j < slice_size; ++j)
-			slice_mat.col(j) = Map<const VectorXd>(x->get_feature_vector(idxsmap[j]).vector, d);
+			slice_mat.set_column(j, x->get_feature_vector(idxsmap[j]));
 
-		features_slice->set_feature_matrix(SGMatrix<float64_t>(slice_mat.data(), d, slice_size, false));
+		features_slice->set_feature_matrix(slice_mat);
 
 		//FIXME the labels are not actually necessary to get the nearest neighbors, the
 		//features suffice. The labels are needed when we want to classify.
@@ -131,49 +124,46 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 	return target_neighbors;
 }
 
-MatrixXd CLMNNImpl::sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn)
+SGMatrix<float64_t> CLMNNImpl::sum_outer_products(
+    CDenseFeatures<float64_t>* x, const SGMatrix<index_t>& target_nn)
 {
 	// get the number of features
 	int32_t d = x->get_num_features();
 	// initialize the sum of outer products (sop)
-	MatrixXd sop(d,d);
-	sop.setZero();
-	// map the feature matrix (each column is a feature vector) to an Eigen matrix
-	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, x->get_num_vectors());
+	SGMatrix<float64_t> sop(d, d);
+
+	auto X = x->get_feature_matrix();
 
 	// sum the outer products stored in C using the indices specified in target_nn
 	for (index_t i = 0; i < target_nn.num_cols; ++i)
 	{
 		for (index_t j = 0; j < target_nn.num_rows; ++j)
 		{
-			VectorXd dx = X.col(i) - X.col(target_nn(j,i));
-			sop += dx*dx.transpose();
+			auto dx = linalg::add(
+			    X.get_column(i), X.get_column(target_nn(j, i)), 1.0, -1.0);
+			linalg::dger(1.0, dx, dx, sop);
 		}
 	}
 
 	return sop;
 }
 
-ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
-		CMulticlassLabels* y, const MatrixXd& L, const SGMatrix<index_t> target_nn,
-		const uint32_t iter, const uint32_t correction)
+ImpostorsSetType CLMNNImpl::find_impostors(
+    CDenseFeatures<float64_t>* x, CMulticlassLabels* y,
+    const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
+    const uint32_t iter, const uint32_t correction)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors().\n")
 
-	// get the number of examples from data
-	int32_t n = x->get_num_vectors();
-	// get the number of features
-	int32_t d = x->get_num_features();
 	// get the number of neighbors
 	int32_t k = target_nn.num_rows;
 
-	// map the feature matrix (each column is a feature vector) to an Eigen matrix
-	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, n);
+	auto X = x->get_feature_matrix();
 	// transform the feature vectors
-	MatrixXd LX = L*X;
+	auto LX = linalg::matrix_prod(L, X);
 
 	// compute square distances plus margin from examples to target neighbors
-	MatrixXd sqdists = CLMNNImpl::compute_sqdists(LX,target_nn);
+	auto sqdists = CLMNNImpl::compute_sqdists(LX, target_nn);
 
 	// initialize impostors set
 	ImpostorsSetType N;
@@ -185,12 +175,14 @@ ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
 			"impostors set must be greater than 0\n")
 	if ((iter % correction)==0)
 	{
-		Nexact = CLMNNImpl::find_impostors_exact(LX, sqdists, y, target_nn, k);
+		Nexact = CLMNNImpl::find_impostors_exact(
+		    SGMatrix<float64_t>(LX), sqdists, y, target_nn, k);
 		N = Nexact;
 	}
 	else
 	{
-		N = CLMNNImpl::find_impostors_approx(LX, sqdists, Nexact, target_nn);
+		N = CLMNNImpl::find_impostors_approx(
+		    SGMatrix<float64_t>(LX), sqdists, Nexact, target_nn);
 	}
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_impostors().\n")
@@ -198,58 +190,67 @@ ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
 	return N;
 }
 
-void CLMNNImpl::update_gradient(CDenseFeatures<float64_t>* x, MatrixXd& G,
-		const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t regularization)
+void CLMNNImpl::update_gradient(
+    CDenseFeatures<float64_t>* x, SGMatrix<float64_t>& G,
+    const ImpostorsSetType& Nc, const ImpostorsSetType& Np,
+    float64_t regularization)
 {
 	// compute the difference sets
 	ImpostorsSetType Np_Nc, Nc_Np;
 	set_difference(Np.begin(), Np.end(), Nc.begin(), Nc.end(), inserter(Np_Nc, Np_Nc.begin()));
 	set_difference(Nc.begin(), Nc.end(), Np.begin(), Np.end(), inserter(Nc_Np, Nc_Np.begin()));
 
-	// map the feature matrix (each column is a feature vector) to an Eigen matrix
-	Map<const MatrixXd> X(x->get_feature_matrix().matrix, x->get_num_features(), x->get_num_vectors());
+	auto X = x->get_feature_matrix();
 
 	// remove the gradient contributions of the impostors that were in the previous
 	// set but disappeared in the current
 	for (ImpostorsSetType::iterator it = Np_Nc.begin(); it != Np_Nc.end(); ++it)
 	{
-		VectorXd dx1 = X.col(it->example) - X.col(it->target);
-		VectorXd dx2 = X.col(it->example) - X.col(it->impostor);
-		G -= regularization*(dx1*dx1.transpose() - dx2*dx2.transpose());
+		// G -= regularization*(dx1*dx1' - dx2*dx2');
+		auto dx1 = linalg::add(
+		    X.get_column(it->example), X.get_column(it->target), 1.0, -1.0);
+		auto dx2 = linalg::add(
+		    X.get_column(it->example), X.get_column(it->impostor), 1.0, -1.0);
+		linalg::dger(-regularization, dx1, dx1, G);
+		linalg::dger(regularization, dx2, dx2, G);
 	}
 
 	// add the gradient contributions of the new impostors
 	for (ImpostorsSetType::iterator it = Nc_Np.begin(); it != Nc_Np.end(); ++it)
 	{
-		VectorXd dx1 = X.col(it->example) - X.col(it->target);
-		VectorXd dx2 = X.col(it->example) - X.col(it->impostor);
-		G += regularization*(dx1*dx1.transpose() - dx2*dx2.transpose());
+		// G += regularization*(dx1*dx1' - dx2*dx2');
+		auto dx1 = linalg::add(
+		    X.get_column(it->example), X.get_column(it->target), 1.0, -1.0);
+		auto dx2 = linalg::add(
+		    X.get_column(it->example), X.get_column(it->impostor), 1.0, -1.0);
+		linalg::dger(regularization, dx1, dx1, G);
+		linalg::dger(-regularization, dx2, dx2, G);
 	}
 }
 
-void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize, bool diagonal)
+void CLMNNImpl::gradient_step(
+    SGMatrix<float64_t>& L, const SGMatrix<float64_t>& G, float64_t stepsize,
+    bool diagonal)
 {
 	if (diagonal)
 	{
 		// compute M as the square of L
-		MatrixXd M = L.transpose()*L;
+		auto M = linalg::matrix_prod(L, L, true, false);
 		// do step in M along the gradient direction
-		M -= stepsize*G;
+		linalg::add(M, G, M, 1.0, -stepsize);
 		// keep only the elements in the diagonal of M
-		VectorXd m = M.diagonal();
-
-		VectorXd zero;
-		zero.resize(m.size());
-		zero.setZero();
+		auto m = M.get_diagonal_vector();
+		for (auto i : range(m.vlen))
+			m[i] = m > 0 ? CMath::sqrt(m[i]) : 0.0;
 
 		// return to representation in L
-		VectorXd l = m.array().max(zero.array()).array().sqrt();
-		L = l.asDiagonal();
+		SGMatrix<float64_t>::create_diagonal_matrix(L.matrix, m.vector, m.vlen);
 	}
 	else
 	{
 		// do step in L along the gradient direction (no need to project M then)
-		L -= stepsize*(2*L*G);
+		// L -= stepsize*(2*L*G)
+		linalg::dgemm(-2.0 * stepsize, L, G, false, false, 1.0, L);
 	}
 }
 
@@ -331,25 +332,23 @@ SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* 
 	return pca_transform;
 }
 
-MatrixXd CLMNNImpl::compute_sqdists(MatrixXd& LX, const SGMatrix<index_t> target_nn)
+SGMatrix<float64_t> CLMNNImpl::compute_sqdists(
+    const SGMatrix<float64_t>& LX, const SGMatrix<index_t>& target_nn)
 {
 	// get the number of examples
-	ASSERT(LX.cols()==target_nn.num_cols)
-	int32_t n = LX.cols();
-	// get the number of features
-	int32_t d = LX.rows();
+	ASSERT(LX.num_cols == target_nn.num_cols)
+	int32_t n = LX.num_cols;
 	// get the number of neighbors
 	int32_t k = target_nn.num_rows;
 
 	/// compute square distances to target neighbors plus margin
 
 	// create Shogun features from LX to later apply subset
-	SGMatrix<float64_t> lx_mat(LX.data(), d, n, false);
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(lx_mat);
+	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
 
 	// initialize distances
-	MatrixXd sqdists(k,n);
-	sqdists.setZero();
+	SGMatrix<float64_t> sqdists(k, n);
+
 	for (int32_t i = 0; i < k; ++i)
 	{
 		//FIXME avoid copying the rows of target_nn and access them directly. Maybe
@@ -359,7 +358,11 @@ MatrixXd CLMNNImpl::compute_sqdists(MatrixXd& LX, const SGMatrix<index_t> target
 		lx->add_subset(subset_vec);
 		// after the subset, there are still n columns, i.e. the subset is used to
 		// modify the order of the columns in x according to the target neighbors
-		sqdists.row(i) = SUMSQCOLS(LX - Map<const MatrixXd>(lx->get_feature_matrix().matrix, d, n)) + 1;
+		auto diff = linalg::add(LX, lx->get_feature_matrix(), 1.0, -1.0);
+		auto sum = linalg::colwise_sum(linalg::element_prod(diff, diff));
+		for (int j = 0; j < sum.vlen; j++)
+			sqdists(i, j) = sum[j] + 1;
+
 		lx->remove_subset();
 	}
 
@@ -369,21 +372,17 @@ MatrixXd CLMNNImpl::compute_sqdists(MatrixXd& LX, const SGMatrix<index_t> target
 	return sqdists;
 }
 
-ImpostorsSetType CLMNNImpl::find_impostors_exact(MatrixXd& LX, const MatrixXd& sqdists,
-		CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t k)
+ImpostorsSetType CLMNNImpl::find_impostors_exact(
+    const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
+    CMulticlassLabels* y, const SGMatrix<index_t>& target_nn, int32_t k)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors_exact().\n")
 
 	// initialize empty impostors set
 	ImpostorsSetType N = ImpostorsSetType();
 
-	// get the number of examples from data
-	int32_t n = LX.cols();
-	// get the number of features
-	int32_t d = LX.rows();
 	// create Shogun features from LX to later apply subset
-	SGMatrix<float64_t> lx_mat(LX.data(), d, n, false);
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(lx_mat);
+	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
 
 	// get a vector with unique label values
 	SGVector<float64_t> unique = y->get_unique_labels();
@@ -429,8 +428,9 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(MatrixXd& LX, const MatrixXd& s
 	return N;
 }
 
-ImpostorsSetType CLMNNImpl::find_impostors_approx(MatrixXd& LX, const MatrixXd& sqdists,
-		const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn)
+ImpostorsSetType CLMNNImpl::find_impostors_approx(
+    const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
+    const ImpostorsSetType& Nexact, const SGMatrix<index_t>& target_nn)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors_approx().\n")
 
@@ -462,20 +462,16 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(MatrixXd& LX, const MatrixXd& 
 	return N;
 }
 
-SGVector<float64_t> CLMNNImpl::compute_impostors_sqdists(MatrixXd& LX, const ImpostorsSetType& Nexact)
+SGVector<float64_t> CLMNNImpl::compute_impostors_sqdists(
+    const SGMatrix<float64_t>& LX, const ImpostorsSetType& Nexact)
 {
-	// get the number of examples
-	int32_t n = LX.cols();
-	// get the number of features
-	int32_t d = LX.rows();
 	// get the number of impostors
 	size_t num_impostors = Nexact.size();
 
 	/// compute square distances to impostors
 
 	// create Shogun features from LX and distance
-	SGMatrix<float64_t> lx_mat(LX.data(), d, n, false);
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(lx_mat);
+	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
 	CEuclideanDistance* euclidean = new CEuclideanDistance(lx,lx);
 	euclidean->set_disable_sqrt(true);
 

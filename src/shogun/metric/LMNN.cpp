@@ -8,14 +8,10 @@
 
 #include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/metric/LMNNImpl.h>
 
-// useful shorthand to perform operations with Eigen matrices
-// trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')
-#define	TRACE(A,B)		(((A).array()*(B).transpose().array()).sum())
-
 using namespace shogun;
-using namespace Eigen;
 
 CLMNN::CLMNN()
 {
@@ -66,15 +62,14 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	CMulticlassLabels* y = CLabelsFactory::to_multiclass(m_labels);
 	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
 
-	// Use Eigen matrix for the linear transform L. The Mahalanobis distance is L^T*L
-	MatrixXd L = Map<MatrixXd>(init_transform.matrix, init_transform.num_rows,
-			init_transform.num_cols);
+	auto& L = init_transform;
 	// Compute target or genuine neighbours
 	SG_DEBUG("Finding target nearest neighbors.\n")
 	SGMatrix<index_t> target_nn = CLMNNImpl::find_target_nn(x, y, m_k);
 	// Initialize (sub-)gradient
 	SG_DEBUG("Summing outer products for (sub-)gradient initialization.\n")
-	MatrixXd gradient = (1-m_regularization)*CLMNNImpl::sum_outer_products(x, target_nn);
+	auto gradient = CLMNNImpl::sum_outer_products(x, target_nn);
+	linalg::scale(gradient, gradient, 1 - m_regularization);
 	// Value of the objective function at every iteration
 	SGVector<float64_t> obj(m_maxiter);
 	// The step size is modified depending on how the objective changes, leave the
@@ -109,8 +104,13 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
 		// plus the number of current impostors to account for the margin
+		// trace of the product of two matrices computed fast using
+		// trace(A*B)=sum(A.*B')
 		SG_DEBUG("Computing objective.\n")
-		obj[iter] = TRACE(L.transpose()*L,gradient) + m_regularization*cur_impostors.size();
+		obj[iter] = m_regularization * cur_impostors.size();
+		obj[iter] += linalg::trace(
+		    linalg::element_prod(
+		        linalg::matrix_prod(L, L, true, false), gradient));
 
 		// Correct step size
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
@@ -139,7 +139,8 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 	// Store the transformation found in the class attribute
 	int32_t nfeats = x->get_num_features();
-	float64_t* cloned_data = SGMatrix<float64_t>::clone_matrix(L.data(), nfeats, nfeats);
+	float64_t* cloned_data =
+	    SGMatrix<float64_t>::clone_matrix(L.matrix, nfeats, nfeats);
 	m_linear_transform = SGMatrix<float64_t>(cloned_data, nfeats, nfeats);
 
 	SG_DEBUG("Leaving CLMNN::train().\n")
@@ -153,23 +154,11 @@ SGMatrix<float64_t> CLMNN::get_linear_transform() const
 CCustomMahalanobisDistance* CLMNN::get_distance() const
 {
 	// Compute Mahalanobis distance matrix M = L^T*L
-
-	// Put the linear transform L in Eigen to perform the matrix multiplication
-	// L is not copied to another region of memory
-	Map<const MatrixXd> map_linear_transform(m_linear_transform.matrix,
-			m_linear_transform.num_rows, m_linear_transform.num_cols);
-	// TODO exploit that M is symmetric
-	MatrixXd M = map_linear_transform.transpose()*map_linear_transform;
-	// TODO avoid copying
-	SGMatrix<float64_t> mahalanobis_matrix(M.rows(), M.cols());
-	for (index_t i = 0; i < M.rows(); i++)
-		for (index_t j = 0; j < M.cols(); j++)
-			mahalanobis_matrix(i,j) = M(i,j);
+	auto M = linalg::matrix_prod(
+	    m_linear_transform, m_linear_transform, true, false);
 
 	// Create custom Mahalanobis distance with matrix M associated with the training features
-
-	CCustomMahalanobisDistance* distance =
-			new CCustomMahalanobisDistance(m_features, m_features, mahalanobis_matrix);
+	auto distance = new CCustomMahalanobisDistance(m_features, m_features, M);
 	SG_REF(distance)
 
 	return distance;
