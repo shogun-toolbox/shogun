@@ -398,7 +398,8 @@ public:
 		{
 			SG_ERROR(
 				"Get \"%s\" failed. Expected %s, got %s.\n",
-				exc.expected().c_str(), exc.actual().c_str());
+				_tag.name().c_str(), exc.expected().c_str(),
+				exc.actual().c_str());
 		}
 		// we won't be there
 		return any_cast<T>(value);
