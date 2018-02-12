@@ -13,7 +13,8 @@ ELSE()
 		"It is required for java interface!")
 ENDIF()
 
-SET(TARGET_SWIGFLAGS "-package\;org.shogun")
+LIST(APPEND TARGET_SWIGFLAGS "-package")
+LIST(APPEND TARGET_SWIGFLAGS "org.shogun")
 
 include(ShogunInterfaces)
 include_directories(${JNI_INCLUDE_DIRS})

@@ -6,11 +6,10 @@ FIND_PACKAGE(NumPy REQUIRED)
 SET(HAVE_PYTHON 1)
 
 #custom swig flags for python interface
+SET(TARGET_SWIGFLAGS "-builtin" "-modern" "-modernargs" "-threads")
 IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
-  SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads\;-py3")
+  LIST(APPEND TARGET_SWIGFLAGS "-py3")
   SET(PYTHON3 1)
-ELSE()
-  SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads")
 ENDIF()
 
 # SWIG-generated Python-wrappers fail to build
