@@ -1,0 +1,18 @@
+
+#![create_matrix]
+RealMatrix real_matrix(2,3)
+real_matrix[0,0]= 1
+real_matrix[0,1]= 2
+real_matrix[0,2]= 3
+real_matrix[1,0]= 4
+real_matrix[1,1]= 5
+real_matrix[1,2]= 6
+#![create_matrix]
+
+#![create_features]
+RealFeatures features(real_matrix)
+#![create_features]
+
+#![get_features]
+features.get_feature_vector(0)
+#![get_features]
