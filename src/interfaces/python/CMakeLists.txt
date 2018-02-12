@@ -26,13 +26,6 @@ ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
 include(ShogunInterfaces)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
-#TODO: check for SWIG version where this bug has been applied already:
-# https://github.com/swig/swig/pull/70
-
-IF (NOT MSVC)
-  SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -Wno-c++11-narrowing")
-ENDIF()
-
 EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var('LDSHARED'))"
                 RESULT_VARIABLE PYTHON_CVPY_PROCESS
                 OUTPUT_VARIABLE PYTHON_LDSHARED
