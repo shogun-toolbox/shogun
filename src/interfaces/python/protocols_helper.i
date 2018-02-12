@@ -149,7 +149,7 @@ void set_method(PyMethodDef* methods, const char* name, PyCFunction new_method)
 	do
 	{
 		method_temp=methods[method_idx];
-		method_idx++;
+		++method_idx;
 	}
 	while (strcmp(method_temp.ml_name, name)!=0 && method_temp.ml_name!=NULL);
 
