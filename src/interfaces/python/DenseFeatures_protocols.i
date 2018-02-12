@@ -430,13 +430,13 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 		if (type_item1==1)
 		{
 			// transpose
-			shape++;
-			strides++;
-			ndims--;
+			++shape;
+			++strides;
+			--ndims;
 		}
 		if (type_item2==1)
 		{
-			ndims--;
+			--ndims;
 		}
 
 		if (ndims==0 && get_scalar)
