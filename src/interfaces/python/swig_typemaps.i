@@ -211,7 +211,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
 #if PY_VERSION_HEX >= 0x03000000
                 if (!PyUnicode_Check(o))
 #else
-				if (!PyString_Check(o))
+				if (!PyString_Check(o) && !PyUnicode_Check(o))
 #endif
                 {
                     result=0;
@@ -386,11 +386,11 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
-        int32_t size=PyList_Size(list);
+        int64_t size=PyList_Size(list);
         shogun::SGString<type>* strings=SG_MALLOC(shogun::SGString<type>, size);
 
-        int32_t max_len=0;
-        for (int32_t i=0; i<size; ++i)
+        int64_t max_len=0;
+        for (auto i=0; i<size; ++i)
         {
             PyObject *o = PyList_GetItem(list,i);
             if (typecode == NPY_STRING || typecode == NPY_UNICODE)
@@ -398,18 +398,40 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 #if PY_VERSION_HEX >= 0x03000000
                 if (PyUnicode_Check(o))
 #else
-				if (PyString_Check(o))
+				if (PyString_Check(o) || PyUnicode_Check(o))
 #endif
                 {
-
+                    PyObject *tmp = nullptr;
 #if PY_VERSION_HEX >= 0x03000000
-					int32_t len = PyUnicode_GetSize((PyObject*) o);
-				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
+                    int64_t len = -1;
+                    const char* str = PyUnicode_AsUTF8AndSize(o, &len);
 #else
-                    int32_t len = PyString_Size(o);
-                    const char* str = PyString_AsString(o);
+                    int64_t len = -1;
+                    const char* str = nullptr;
+                    if (PyString_Check(o))
+                    {
+                        len = PyString_Size(o);
+                        str = PyString_AsString(o);
+                    }
+                    else
+                    {
+                        tmp = PyUnicode_AsUTF8String(o);
+                        if (tmp != nullptr)
+                        {
+                            str = PyString_AsString(tmp);
+                            len = PyUnicode_GetSize(o);
+                        }
+                    }
 #endif
-					max_len=shogun::CMath::max(len,max_len);
+                    if (str == nullptr)
+                    {
+                        PyErr_SetString(PyExc_TypeError, "Error converting string content.");
+                        for (auto j=0; j<i; ++j)
+                            SG_FREE(strings[i].string);
+                        SG_FREE(strings);
+                        return false;
+                    }
+					max_len=shogun::CMath::max(len, max_len);
 
                     strings[i].slen=len;
                     strings[i].string=NULL;
@@ -418,13 +440,14 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     {
                         strings[i].string=SG_MALLOC(type, len);
                         sg_memcpy(strings[i].string, str, len);
+                        Py_XDECREF(tmp);
                     }
                 }
                 else
                 {
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
-                    for (int32_t j=0; j<i; ++j)
+                    for (auto j=0; j<i; ++j)
                         SG_FREE(strings[i].string);
                     SG_FREE(strings);
                     return false;
@@ -440,7 +463,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                         return false;
 
                     type* str=(type*) PyArray_DATA(array);
-                    int32_t len = PyArray_DIM(array,0);
+                    int64_t len = PyArray_DIM(array,0);
                     max_len=shogun::CMath::max(len,max_len);
 
                     strings[i].slen=len;
