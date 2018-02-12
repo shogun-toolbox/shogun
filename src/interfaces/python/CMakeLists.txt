@@ -1,7 +1,7 @@
 # find python library for the found python interpreter
 # i.e. versions should match!
 FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
-FIND_PACKAGE(NumPy REQUIRED)
+FIND_PACKAGE(NumPy 1.7 REQUIRED)
 
 SET(HAVE_PYTHON 1)
 
