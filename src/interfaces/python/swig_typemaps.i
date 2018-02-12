@@ -29,6 +29,7 @@
 #include <shogun/lib/memory.h>
 
 #undef _POSIX_C_SOURCE
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>
@@ -37,10 +38,8 @@ extern "C" {
 /* Functions to extract array attributes.
  */
 static bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
-static int array_type(PyObject* a) { return (int) PyArray_TYPE(a); }
-static int array_dimensions(PyObject* a)  { return ((PyArrayObject *)a)->nd; }
-static int array_size(PyObject* a, int i) { return ((PyArrayObject *)a)->dimensions[i]; }
-static bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
+static int array_type(const PyObject* a) { return (int) PyArray_TYPE((const PyArrayObject*)a); }
+static int array_dimensions(const PyObject* a)  { return PyArray_NDIM((const PyArrayObject *)a); }
 
 /* Given a PyObject, return a string describing its type.
  */
@@ -96,18 +95,18 @@ static const char* typecode_string(int typecode) {
  * If array is NULL or dimensionality or typecode does not match
  * return NULL
  */
-static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
-                               int dims, int typecode, bool force_copy=false)
+static PyArrayObject* make_contiguous(
+    PyObject* ary, int* is_new_object, int dims, int typecode, bool force_copy=false)
 {
     PyObject* array;
-    if (PyArray_ISFARRAY(ary) && !force_copy)
+    if (PyArray_ISFARRAY((PyArrayObject*)ary) && !force_copy)
     {
         array = ary;
         *is_new_object = 0;
     }
     else
     {
-        array=PyArray_FromAny((PyObject*)ary, NULL,0,0, NPY_FARRAY|NPY_ENSURECOPY, NULL);
+        array=PyArray_FromAny((PyObject*)ary, NULL,0,0,  NPY_ARRAY_FARRAY|NPY_ARRAY_ENSURECOPY, NULL);
         *is_new_object = 1;
     }
 
@@ -151,7 +150,7 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    return array;
+    return (PyArrayObject*)array;
 }
 
 /* End John Hunter translation (with modifications by Bill Spotz) */
@@ -244,12 +243,12 @@ static bool vector_from_numpy(SGVector<type>& sg_vec, PyObject* obj, int typecod
     }
 
     int is_new_object;
-    PyObject* array = make_contiguous(obj, &is_new_object, 1,typecode, true);
+    PyArrayObject* array = make_contiguous(obj, &is_new_object, 1,typecode, true);
     if (!array)
         return false;
 
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
-    type* vec = (type*) PyArray_BYTES(array);
+    PyArray_CLEARFLAGS(array, NPY_ARRAY_OWNDATA);
+    type* vec = (type*) PyArray_DATA(array);
     int32_t vlen = PyArray_DIM(array,0);
     Py_DECREF(array);
 
@@ -268,8 +267,8 @@ static bool vector_to_numpy(PyObject* &obj, SGVector<type> sg_vec, int typecode)
     {
         void* copy=get_copy(sg_vec.vector, sizeof(type)*size_t(sg_vec.vlen));
         obj = PyArray_NewFromDescr(&PyArray_Type,
-                descr, 1, &dims, NULL, copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+                descr, 1, &dims, NULL, copy,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+        PyArray_ENABLEFLAGS((PyArrayObject*) obj, NPY_ARRAY_OWNDATA);
     }
 
     return descr!=NULL;
@@ -285,14 +284,14 @@ static bool matrix_from_numpy(SGMatrix<type>& sg_matrix, PyObject* obj, int type
     }
 
     int is_new_object;
-    PyObject* array = make_contiguous(obj, &is_new_object, 2,typecode, true);
+    PyArrayObject* array = make_contiguous(obj, &is_new_object, 2,typecode, true);
     if (!array)
         return false;
 
-    sg_matrix = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
+    sg_matrix = shogun::SGMatrix<type>((type*) PyArray_DATA(array),
             PyArray_DIM(array,0), PyArray_DIM(array,1), true);
 
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    PyArray_CLEARFLAGS(array, NPY_ARRAY_OWNDATA);
     Py_DECREF(array);
 
     return true;
@@ -308,8 +307,8 @@ static bool matrix_to_numpy(PyObject* &obj, SGMatrix<type> sg_matrix, int typeco
     {
         void* copy=get_copy(sg_matrix.matrix, sizeof(type)*size_t(sg_matrix.num_rows)*size_t(sg_matrix.num_cols));
         obj = PyArray_NewFromDescr(&PyArray_Type,
-            descr, 2, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+            descr, 2, dims, NULL, (void*) copy,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+        PyArray_ENABLEFLAGS((PyArrayObject*) obj, NPY_ARRAY_OWNDATA);
     }
 
     return descr!=NULL;
@@ -325,7 +324,7 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
     }
 
     int is_new_object;
-    PyObject* array = make_contiguous(obj, &is_new_object, -1,typecode, true);
+    PyArrayObject* array = make_contiguous(obj, &is_new_object, -1,typecode, true);
     if (!array)
         return false;
 
@@ -340,9 +339,9 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
     for (int32_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
 
-    sg_array = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
+    sg_array = SGNDArray<type>((type*) PyArray_DATA(array), temp_dims, ndim);
 
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    PyArray_CLEARFLAGS(array, NPY_ARRAY_OWNDATA);
     Py_DECREF(array);
 
     return true;
@@ -369,8 +368,8 @@ static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecod
 	{
 		void* copy=get_copy(sg_array.array, sizeof(type)*size_t(n));
 		obj = PyArray_NewFromDescr(&PyArray_Type,
-		    descr, sg_array.num_dims, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
-		((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+		    descr, sg_array.num_dims, dims, NULL, (void*) copy,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+		PyArray_ENABLEFLAGS((PyArrayObject*) obj, NPY_ARRAY_OWNDATA);
 	}
 #ifdef _MSC_VER
     delete[] dims;
@@ -436,11 +435,11 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                 if (::is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
                 {
                     int is_new_object=0;
-                    PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
+                    PyArrayObject* array = make_contiguous(o, &is_new_object, 1, typecode);
                     if (!array)
                         return false;
 
-                    type* str=(type*) PyArray_BYTES(array);
+                    type* str=(type*) PyArray_DATA(array);
                     int32_t len = PyArray_DIM(array,0);
                     max_len=shogun::CMath::max(len,max_len);
 
@@ -516,8 +515,8 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
                     npy_intp dims = str[i].slen;
 
                     s = PyArray_NewFromDescr(&PyArray_Type,
-                            descr, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
-                    ((PyArrayObject*) s)->flags |= NPY_OWNDATA;
+                            descr, 1, &dims, NULL, (void*) data,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+                    PyArray_ENABLEFLAGS((PyArrayObject*) s, NPY_ARRAY_OWNDATA);
                 }
                 else
                     return false;
@@ -605,23 +604,23 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
 
     /* get indptr array */
     int is_new_object_indptr=0;
-    PyObject* array_indptr = make_contiguous(indptr, &is_new_object_indptr, 1, NPY_INT32);
+    PyArrayObject* array_indptr = make_contiguous(indptr, &is_new_object_indptr, 1, NPY_INT32);
     if (!array_indptr) return false;
-    int32_t* bytes_indptr=(int32_t*) PyArray_BYTES(array_indptr);
+    int32_t* bytes_indptr=(int32_t*) PyArray_DATA(array_indptr);
     int32_t len_indptr = PyArray_DIM(array_indptr,0);
 
     /* get indices array */
     int is_new_object_indices=0;
-    PyObject* array_indices = make_contiguous(indices, &is_new_object_indices, 1, NPY_INT32);
+    PyArrayObject* array_indices = make_contiguous(indices, &is_new_object_indices, 1, NPY_INT32);
     if (!array_indices) return false;
-    int32_t* bytes_indices=(int32_t*) PyArray_BYTES(array_indices);
+    int32_t* bytes_indices=(int32_t*) PyArray_DATA(array_indices);
     int32_t len_indices = PyArray_DIM(array_indices,0);
 
     /* get data array */
     int is_new_object_data=0;
-    PyObject* array_data = make_contiguous(data, &is_new_object_data, 1, typecode);
+    PyArrayObject* array_data = make_contiguous(data, &is_new_object_data, 1, typecode);
     if (!array_data) return false;
-    type* bytes_data=(type*) PyArray_BYTES(array_data);
+    type* bytes_data=(type*) PyArray_DATA(array_data);
     int32_t len_data = PyArray_DIM(array_data,0);
 
     if (len_indices!=len_data)
@@ -719,17 +718,17 @@ static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, in
 
             npy_intp indptr_dims = num_vec+1;
             indptr_py = PyArray_NewFromDescr(&PyArray_Type,
-                    descr, 1, &indptr_dims, NULL, (void*) indptr, NPY_FARRAY | NPY_WRITEABLE, NULL);
-            ((PyArrayObject*) indptr_py)->flags |= NPY_OWNDATA;
+                    descr, 1, &indptr_dims, NULL, (void*) indptr,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+            PyArray_ENABLEFLAGS((PyArrayObject*) indptr_py, NPY_ARRAY_OWNDATA);
 
             npy_intp dims = nnz;
             indices_py = PyArray_NewFromDescr(&PyArray_Type,
-                    descr, 1, &dims, NULL, (void*) indices, NPY_FARRAY | NPY_WRITEABLE, NULL);
-            ((PyArrayObject*) indices_py)->flags |= NPY_OWNDATA;
+                    descr, 1, &dims, NULL, (void*) indices,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+            PyArray_ENABLEFLAGS((PyArrayObject*) indices_py, NPY_ARRAY_OWNDATA);
 
             data_py = PyArray_NewFromDescr(&PyArray_Type,
-                    descr_data, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
-            ((PyArrayObject*) data_py)->flags |= NPY_OWNDATA;
+                    descr_data, 1, &dims, NULL, (void*) data,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+            PyArray_ENABLEFLAGS((PyArrayObject*) data_py, NPY_ARRAY_OWNDATA);
 
             PyTuple_SetItem(tuple, 0, data_py);
             PyTuple_SetItem(tuple, 1, indices_py);
@@ -778,12 +777,13 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
     }
 
     indices_py = PyArray_NewFromDescr(&PyArray_Type,
-            descr, 1, &dims, NULL, (void*) indices, NPY_FARRAY | NPY_WRITEABLE, NULL);
-    ((PyArrayObject*) indices_py)->flags |= NPY_OWNDATA;
+            descr, 1, &dims, NULL, (void*) indices,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+
+    PyArray_ENABLEFLAGS((PyArrayObject*) indices_py, NPY_ARRAY_OWNDATA);
 
     data_py = PyArray_NewFromDescr(&PyArray_Type,
-            descr_data, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
-    ((PyArrayObject*) data_py)->flags |= NPY_OWNDATA;
+            descr_data, 1, &dims, NULL, (void*) data,  NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE, NULL);
+    PyArray_ENABLEFLAGS((PyArrayObject*) data_py, NPY_ARRAY_OWNDATA);
 
     PyTuple_SetItem(tuple, 0, data_py);
     PyTuple_SetItem(tuple, 1, indices_py);
