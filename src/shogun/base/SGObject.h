@@ -346,16 +346,20 @@ public:
 	{
 		if (has_parameter(_tag))
 		{
-			if(has<T>(_tag.name()))
+			try
 			{
-				ref_value(&value);
-				update_parameter(_tag, make_any(value));
+				any_cast<T>(get_parameter(_tag).get_value());
 			}
-			else
+			catch (const TypeMismatchException& exc)
 			{
-				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
-					_tag.name().c_str());
+				SG_ERROR(
+					"Setting parameter %s::%s failed. Provided type is %s, but "
+					"actual type is %s.\n",
+					get_name(), _tag.name().c_str(), exc.expected().c_str(),
+					exc.actual().c_str());
 			}
+			ref_value(&value);
+			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
@@ -397,9 +401,10 @@ public:
 		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Get \"%s\" failed. Expected %s, got %s.\n",
-				_tag.name().c_str(), exc.expected().c_str(),
-				exc.actual().c_str());
+				"Getting parameter %s::%s failed. Requested type is %s, "
+				"but actual type is %s.\n",
+				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				exc.expected().c_str());
 		}
 		// we won't be there
 		return any_cast<T>(value);
