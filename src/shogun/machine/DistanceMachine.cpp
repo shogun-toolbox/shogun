@@ -36,6 +36,7 @@ void CDistanceMachine::init()
 
 	distance=NULL;
 	m_parameters->add((CSGObject**)&distance, "distance", "Distance to use");
+	watch_param("distance", &distance, AnyParameterProperties("Distance to use"));
 }
 
 void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
