@@ -12,6 +12,7 @@
 
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -375,6 +376,20 @@ public:
 	 * @param value value of the parameter
 	 */
 	void put(const std::string& name, CSGObject* value);
+
+#ifndef SWIG
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter, wrapped in smart pointer
+	 */
+	template <typename T, typename T2 = typename std::enable_if<std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
+	void put(const std::string& name, Some<T> value)
+	{
+		put(name, (CSGObject*)(value.get()));
+	}
+#endif // SWIG
 
 	/** Typed setter for a non-object class parameter, identified by a name.
 	 *
