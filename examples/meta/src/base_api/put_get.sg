@@ -1,0 +1,42 @@
+KNN knn()
+knn.put("m_k", 2)
+
+Kernel k = kernel("GaussianKernel")
+k.put("log_width", 2.1)
+k.put("log_width", 2.0)
+
+RealVector vector(2)
+vector[0] = 0.0
+vector[1] = 0.1
+
+RegressionLabels labels()
+labels.put("labels", vector)
+
+RealVector vector2(1)
+vector[0] = 0.1
+# FIXME Octave treats this as a scalar
+#labels.put("labels", vector)
+
+RealMatrix matrix(2,2)
+matrix[0,0] = 0.0
+matrix[0,1] = 0.1
+matrix[1,0] = 0.2
+matrix[1,1] = 0.4
+
+RealFeatures features()
+features.put("feature_matrix", matrix)
+
+EuclideanDistance distance()
+knn.put("distance", distance)
+
+RealMatrix matrix2(2,1)
+matrix2[0,0] = 0.0
+matrix2[1,0] = 0.2
+# FIXME Octave treats this as a vector
+#features.put("feature_matrix", matrix2)
+
+# FIXME: Octave: CDynamicObjectArray::append_element_matrix should accept scalars
+#RealMatrix matrix3(1,1)
+#matrix3[0,0] = 0.1
+#features.put("feature_matrix", matrix2)
+

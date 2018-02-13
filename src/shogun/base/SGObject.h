@@ -368,21 +368,55 @@ public:
 		}
 	}
 
-#define SGOBJECT_PUT_DECLARE(T)                                                \
-	/** Setter for a class parameter, identified by a name.                    \
-	 * Throws an exception if the class does not have such a parameter.        \
-	 *                                                                         \
-	 * @param name name of the parameter                                       \
-	 * @param value value of the parameter along with type information         \
-	 */                                                                        \
-	void put(const std::string& name, T const& value) throw(ShogunException);
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
+	 */
+	void put(const std::string& name, CSGObject* value);
 
-	SGOBJECT_PUT_DECLARE(int32_t)
-	SGOBJECT_PUT_DECLARE(float32_t)
-	SGOBJECT_PUT_DECLARE(float64_t)
-	SGOBJECT_PUT_DECLARE(SGVector<int32_t>)
-	SGOBJECT_PUT_DECLARE(SGVector<float64_t>)
-	SGOBJECT_PUT_DECLARE(CSGObject*)
+	/** Typed setter for a non-object class parameter, identified by a name.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter along with type information
+	 */
+	template <typename T, typename T2 = typename std::enable_if<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
+	void put(const std::string& name, T value)
+	{
+		put(Tag<T>(name), value);
+	}
+
+	// FIXME: move to swig interface.i, can be moved once the typemaps match
+	// also should be void put_vector_or_matrix(const std::string& name, SGMatrix<T> value);
+	template <typename T, typename T2 = typename std::enable_if<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
+	void put_vector_or_matrix(const std::string& name, T value);
+
+	/** Untyped setter for a scalar class parameter, identified by a name.
+	 * Will attempt to convert passed scalar to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
+	 */
+	template <typename T, typename U= typename std::enable_if_t<std::is_arithmetic<T>::value>>
+	void put_scalar(const std::string& name, T value)
+	{
+		Tag<T> tag_t(name);
+		Tag<int32_t> tag_int32(name);
+		Tag<int64_t> tag_int64(name);
+		Tag<float64_t> tag_float64(name);
+
+		if (has(tag_t))
+			put(tag_t, value);
+		else if (has(tag_int32))
+			put(tag_int32, (int32_t)value);
+		else if (has(tag_int64))
+			put(tag_int64, (int64_t)value);
+		else if (has(tag_float64))
+			put(tag_float64, (float64_t)value);
+		else
+			put(tag_t, value);
+	}
 
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.

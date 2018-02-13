@@ -35,6 +35,11 @@
 #include <unordered_map>
 #include <memory>
 
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/features/Features.h>
+#include <shogun/distance/Distance.h>
+
 namespace shogun
 {
 
@@ -1021,46 +1026,45 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
+void CSGObject::put(const std::string& name, CSGObject* value)
+{
+	REQUIRE(value, "Cannot set %s::%s, no object provided.\n", get_name(), name.c_str());
+
+
+	if (dynamic_cast<CKernel*>(value))
+		put(Tag<CKernel*>(name), (CKernel*) value);
+	else if (dynamic_cast<CDistance*>(value))
+	{
+		if (has<CDistance*>(name))
+		{
+			SG_REF(value);
+			CDistance* old = get<CDistance*>(name);
+			SG_UNREF(old);
+		}
+		put(Tag<CDistance*>(name), (CDistance*) value);
+	}
+	else
+	{
+		SG_WARNING("Could not match %s with any base-type when putting %s::%s, trying as SGObject.\n",value->get_name(),get_name(), name.c_str());
+		put(Tag<CSGObject*>(name), value);
+	}
+}
+
 namespace shogun
 {
-#define SGOBJECT_PUT_DEFINE(T)                                                 \
-	void CSGObject::put(const std::string& name, T const& value) throw(        \
-	    ShogunException)                                                       \
-	{                                                                          \
-		Tag<T> tag(name);                                                      \
-		put(tag, value);                                                       \
-	}
+// TODO: Move this to SGBase.i and make it SGMatrix<T> (T=float64) rather than T=SGMatrix<float64>
+template<>
+void CSGObject::put_vector_or_matrix(const std::string& name, SGMatrix<float64_t> value)
+{
+	Tag<SGVector<float64_t>> tag_vec(name);
+	Tag<SGMatrix<float64_t>> tag_mat(name);
 
-	SGOBJECT_PUT_DEFINE(SGVector<int32_t>)
-	SGOBJECT_PUT_DEFINE(SGVector<float64_t>)
-	SGOBJECT_PUT_DEFINE(CSGObject*)
+	if (has(tag_mat))
+		put(tag_mat, value);
+	else if ((value.num_rows==1 || value.num_cols==1) && has(tag_vec))
+		put(tag_vec, SGVector<float64_t>(value.data()));
+	else
+		put(tag_mat, value);
+}
+}
 
-#define PUT_DEFINE_CHECK_AND_CAST(T)                                           \
-	else if (has(Tag<T>(name))) put(Tag<T>(name), (T)value);
-
-/* Some target languages have problems with scalar numeric types, so allow to
- * convert all int/float types into each other.
- *
- * For example, Octave treats a=1.0 as an integer, and b=1.1 as a float.
- * Furthermore, if a user wants to set a registered 16bit integer using a
- * literal obj.put("16-bit-var", 2), might complain about a wrong type since
- * internally the int literal is represented at a different word length. */
-#define SGOBJECT_PUT_DEFINE_WITH_CONVERSION(numeric_t)                         \
-	void CSGObject::put(                                                       \
-	    const std::string& name,                                               \
-	    numeric_t const& value) throw(ShogunException)                         \
-	{                                                                          \
-		/* use correct type of possible, otherwise cast-convert */             \
-		if (has(Tag<numeric_t>(name)))                                         \
-			put(Tag<numeric_t>(name), value);                                  \
-		PUT_DEFINE_CHECK_AND_CAST(int32_t)                                     \
-		PUT_DEFINE_CHECK_AND_CAST(float32_t)                                   \
-		PUT_DEFINE_CHECK_AND_CAST(float64_t)                                   \
-		else /* if nothing works, moan about original type */                  \
-		    put(Tag<numeric_t>(name), value);                                  \
-	}
-
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(int32_t)
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float32_t)
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float64_t)
-};

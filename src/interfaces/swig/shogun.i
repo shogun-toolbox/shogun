@@ -119,3 +119,19 @@
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
 #endif
+
+namespace shogun
+{
+%template(put) CSGObject::put_scalar<int32_t, int32_t>;
+%template(put) CSGObject::put_scalar<int64_t, int64_t>;
+%template(put) CSGObject::put_scalar<float64_t, float64_t>;
+
+
+#ifndef SWIGJAVA
+%template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
+%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#else // SWIGJAVA
+%template(put) CSGObject::put_vector_or_matrix<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#endif // SWIGJAVA
+
+} // namespace shogun
