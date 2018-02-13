@@ -634,7 +634,10 @@ void CKernelMachine::init()
 	use_linadd=true;
 	use_bias=true;
 
-	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	//	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	m_parameters->add((CSGObject**) &kernel, "kernel", "");
+	watch_param("kernel", &kernel, AnyParameterProperties(""));
+
 	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
