@@ -636,7 +636,9 @@ void CKernelMachine::init()
 
 	//	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
 	m_parameters->add((CSGObject**) &kernel, "kernel", "");
-	watch_param("kernel", &kernel, AnyParameterProperties(""));
+	m_model_selection_parameters->add((CSGObject**) &kernel, "kernel", "");
+
+	watch_param("kernel", &kernel, AnyParameterProperties("", MS_AVAILABLE));
 
 	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock", MS_NOT_AVAILABLE);
