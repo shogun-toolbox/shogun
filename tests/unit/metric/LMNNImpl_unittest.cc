@@ -8,9 +8,10 @@
  */
 #include <gtest/gtest.h>
 
-#include <shogun/metric/LMNNImpl.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/metric/LMNNImpl.h>
 
 using namespace shogun;
 
@@ -91,11 +92,11 @@ TEST(LMNNImpl,sum_outer_products)
 	target_nn(0,3)=2;
 
 	// compute the sum of outer products of vector differences given by target_nn
-	Eigen::MatrixXd sop=CLMNNImpl::sum_outer_products(features,target_nn);
+	auto sop = CLMNNImpl::sum_outer_products(features, target_nn);
 
 	// check output dimensions
-	EXPECT_EQ(sop.rows(), d);
-	EXPECT_EQ(sop.cols(), d);
+	EXPECT_EQ(sop.num_rows, d);
+	EXPECT_EQ(sop.num_cols, d);
 	// check output contents
 	EXPECT_EQ(sop(0,0), 8);
 	EXPECT_EQ(sop(0,1), 0);
@@ -109,8 +110,8 @@ TEST(LMNNImpl,sum_outer_products)
 	sop=CLMNNImpl::sum_outer_products(features,target_nn);
 
 	// check output dimensions
-	EXPECT_EQ(sop.rows(), d);
-	EXPECT_EQ(sop.cols(), d);
+	EXPECT_EQ(sop.num_rows, d);
+	EXPECT_EQ(sop.num_cols, d);
 	// check output contents
 	for (int32_t i=0; i<d; i++)
 		for (int32_t j=0; j<d; j++)
@@ -120,8 +121,8 @@ TEST(LMNNImpl,sum_outer_products)
 	sop=CLMNNImpl::sum_outer_products(features,SGMatrix<index_t>(0,0));
 
 	// check output dimensions
-	EXPECT_EQ(sop.rows(), d);
-	EXPECT_EQ(sop.cols(), d);
+	EXPECT_EQ(sop.num_rows, d);
+	EXPECT_EQ(sop.num_cols, d);
 	// check output contents
 	for (int32_t i=0; i<d; i++)
 		for (int32_t j=0; j<d; j++)
@@ -166,8 +167,10 @@ TEST(LMNNImpl,find_impostors_exact)
 	SGMatrix<index_t> target_nn=CLMNNImpl::find_target_nn(features,labels,k);
 
 	// find impostors with exact search (force exact search by setting correction=1)
-	ImpostorsSetType impostors=CLMNNImpl::find_impostors(features,labels,
-			Eigen::MatrixXd::Identity(d,d),target_nn,0,1);
+	SGMatrix<float64_t> L(d, d);
+	linalg::identity(L);
+	ImpostorsSetType impostors =
+	    CLMNNImpl::find_impostors(features, labels, L, target_nn, 0, 1);
 
 	// impostors ground truth computed externally
 	index_t impostors_arr[] = {0,1,2, 0,1,3, 2,3,0, 2,3,1, 3,2,0, 3,2,1};

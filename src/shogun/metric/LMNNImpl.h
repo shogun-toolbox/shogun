@@ -15,7 +15,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <shogun/mathematics/eigen3.h>
 
 #include <set>
 #include <vector>
@@ -88,16 +87,25 @@ class CLMNNImpl
 		static SGMatrix<index_t> find_target_nn(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, int32_t k);
 
 		/** sum the outer products indicated by target_nn */
-		static Eigen::MatrixXd sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn);
+		static SGMatrix<float64_t> sum_outer_products(
+		    CDenseFeatures<float64_t>* x, const SGMatrix<index_t>& target_nn);
 
 		/** find the impostors that remain after applying the transformation L */
-		static ImpostorsSetType find_impostors(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, const Eigen::MatrixXd& L, const SGMatrix<index_t> target_nn, const uint32_t iter, const uint32_t correction);
+		static ImpostorsSetType find_impostors(
+		    CDenseFeatures<float64_t>* x, CMulticlassLabels* y,
+		    const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
+		    const uint32_t iter, const uint32_t correction);
 
 		/** update the gradient using the last transition in the impostors sets */
-		static void update_gradient(CDenseFeatures<float64_t>* x, Eigen::MatrixXd& G, const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t mu);
+		static void update_gradient(
+		    CDenseFeatures<float64_t>* x, SGMatrix<float64_t>& G,
+		    const ImpostorsSetType& Nc, const ImpostorsSetType& Np,
+		    float64_t mu);
 
 		/** take gradient step and project onto positive semi-definite cone if necessary */
-		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize, bool diagonal);
+		static void gradient_step(
+		    SGMatrix<float64_t>& L, const SGMatrix<float64_t>& G,
+		    float64_t stepsize, bool diagonal);
 
 		/** correct step size depending on the last fluctuation of the objective */
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);
@@ -118,19 +126,26 @@ class CLMNNImpl
 		 * compute squared distances plus margin between each example and its target neighbors
 		 * in the transformed feature space
 		 */
-		static Eigen::MatrixXd compute_sqdists(Eigen::MatrixXd& L, const SGMatrix<index_t> target_nn);
+		static SGMatrix<float64_t> compute_sqdists(
+		    const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn);
 
 		/**
 		 * compute squared distances between examples and impostors in the given impostors set
 		 * Nexact
 		 */
-		static SGVector<float64_t> compute_impostors_sqdists(Eigen::MatrixXd& L, const ImpostorsSetType& Nexact);
+		static SGVector<float64_t> compute_impostors_sqdists(
+		    const SGMatrix<float64_t>& L, const ImpostorsSetType& Nexact);
 
 		/** find impostors; variant computing the impostors exactly, using all the data */
-		static ImpostorsSetType find_impostors_exact(Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t k);
+		static ImpostorsSetType find_impostors_exact(
+		    const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
+		    CMulticlassLabels* y, const SGMatrix<index_t>& target_nn,
+		    int32_t k);
 
 		/** find impostors; approximate variant, using the last exact set of impostors */
-		static ImpostorsSetType find_impostors_approx(Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn);
+		static ImpostorsSetType find_impostors_approx(
+		    const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
+		    const ImpostorsSetType& Nexact, const SGMatrix<index_t>& target_nn);
 
 		/** get the indices of the examples whose label is equal to yi */
 		static std::vector<index_t> get_examples_label(CMulticlassLabels* y, float64_t yi);
