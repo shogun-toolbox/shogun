@@ -386,10 +386,10 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
-        int64_t size=PyList_Size(list);
+        Py_ssize_t size=PyList_Size(list);
         shogun::SGString<type>* strings=SG_MALLOC(shogun::SGString<type>, size);
 
-        int64_t max_len=0;
+        Py_ssize_t max_len=0;
         for (auto i=0; i<size; ++i)
         {
             PyObject *o = PyList_GetItem(list,i);
@@ -403,10 +403,10 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                 {
                     PyObject *tmp = nullptr;
 #if PY_VERSION_HEX >= 0x03000000
-                    int64_t len = -1;
+                    Py_ssize_t len = -1;
                     const char* str = PyUnicode_AsUTF8AndSize(o, &len);
 #else
-                    int64_t len = -1;
+                    Py_ssize_t len = -1;
                     const char* str = nullptr;
                     if (PyString_Check(o))
                     {
@@ -463,7 +463,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                         return false;
 
                     type* str=(type*) PyArray_DATA(array);
-                    int64_t len = PyArray_DIM(array,0);
+                    Py_ssize_t len = PyArray_DIM(array,0);
                     max_len=shogun::CMath::max(len,max_len);
 
                     strings[i].slen=len;
