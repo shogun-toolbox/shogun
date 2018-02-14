@@ -369,6 +369,25 @@ public:
 		}
 	}
 
+#ifndef SWIG
+	template <typename T>
+	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
+	{
+		if (dynamic_cast<T*>(value))
+		{
+			if (has<T*>(name))
+			{
+				SG_REF(value);
+				T* old = get<T*>(name);
+				SG_UNREF(old);
+			}
+			put(Tag<T*>(name), (T*) value);
+			return true;
+		}
+		return false;
+	}
+#endif // SWIG
+
 	/** Untyped setter for an object class parameter, identified by a name.
 	 * Will attempt to convert passed object to appropriate type.
 	 *

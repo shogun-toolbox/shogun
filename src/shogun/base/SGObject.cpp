@@ -1030,24 +1030,13 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 {
 	REQUIRE(value, "Cannot set %s::%s, no object provided.\n", get_name(), name.c_str());
 
+	if (put_sgobject_type_dispatcher<CKernel>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CDistance>(name, value))
+		return;
 
-	if (dynamic_cast<CKernel*>(value))
-		put(Tag<CKernel*>(name), (CKernel*) value);
-	else if (dynamic_cast<CDistance*>(value))
-	{
-		if (has<CDistance*>(name))
-		{
-			SG_REF(value);
-			CDistance* old = get<CDistance*>(name);
-			SG_UNREF(old);
-		}
-		put(Tag<CDistance*>(name), (CDistance*) value);
-	}
-	else
-	{
-		SG_WARNING("Could not match %s with any base-type when putting %s::%s, trying as SGObject.\n",value->get_name(),get_name(), name.c_str());
-		put(Tag<CSGObject*>(name), value);
-	}
+	SG_WARNING("Could not match %s with any base-type when putting %s::%s, trying as SGObject.\n",value->get_name(),get_name(), name.c_str());
+	put(Tag<CSGObject*>(name), value);
 }
 
 namespace shogun
