@@ -14,7 +14,7 @@
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
 	$1 = (
 					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ||
-					($input && NA_IsNArray($input) && NA_SHAPE0($input) > 0)
+					($input && NA_IsNArray($input) && NA_RANK($input) == 1 && NA_SHAPE0($input) > 0)
 			)? 1 : 0;
 }
 
@@ -33,7 +33,7 @@
 		}
 	}
 	else {
-		if (NA_IsNArray($input)) {
+		if (NA_IsNArray($input) && NA_RANK($input) == 1) {
 
 			VALUE v = (*na_to_array_dl)($input);
 			len = RARRAY_LEN(v);
@@ -84,7 +84,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 {
 	$1 = (
 					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ||
-					($input &&  NA_IsNArray($input) && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)
+					($input &&  NA_IsNArray($input) && NA_RANK($input) == 2 && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)
 				) ? 1 : 0;
 }
 
@@ -94,7 +94,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 	VALUE vec;
 	VALUE v;
 
-	if (rb_obj_is_kind_of($input,rb_cArray) || NA_IsNArray($input)) {
+	if (rb_obj_is_kind_of($input,rb_cArray) || (NA_IsNArray($input) && NA_RANK($input) == 2)) {
 		if (NA_IsNArray($input))	{
 			v = (*na_to_array_dl)($input);
 		}
