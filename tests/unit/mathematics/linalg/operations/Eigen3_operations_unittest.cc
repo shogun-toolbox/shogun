@@ -1734,6 +1734,23 @@ TEST(LinalgBackendEigen, SGMatrix_trace)
 	EXPECT_NEAR(trace(A), tr, 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_tract_dot)
+{
+	const index_t m = 2;
+	float64_t data_A[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194};
+	float64_t data_B[] = {0.30786772, 0.25503552, 0.34367041, 0.66491478};
+
+	SGMatrix<float64_t> A(data_A, m, m, false);
+	SGMatrix<float64_t> B(data_B, m, m, false);
+
+	auto C = matrix_prod(A, B);
+	auto tr = 0.0;
+	for (auto i : range(m))
+		tr += C(i, i);
+
+	EXPECT_NEAR(tr, trace_dot(A, B), 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_transpose_matrix)
 {
 	const index_t m = 5, n = 3;

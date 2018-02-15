@@ -1691,6 +1691,19 @@ namespace shogun
 		}
 
 		/**
+		 * Method that computes the trace of \f$AB\f$ as \f$sum(A.*B')$\f
+		 *
+		 * @param A The matrix A
+		 * @param B The matrix B
+		 * @return The trace of the product of A and B
+		 */
+		template <typename T>
+		T trace_dot(const SGMatrix<T>& A, const SGMatrix<T>& B)
+		{
+			return sum(element_prod(A, transpose_matrix(B)));
+		}
+
+		/**
 		 * Solve the linear equations \f$Lx=b\f$,
 		 * where \f$L\f$ is a triangular matrix.
 		 *
