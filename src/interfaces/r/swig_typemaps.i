@@ -43,7 +43,7 @@ extern "C" {
 }
 
 %typemap("rtypecheck") shogun::SGVector<sg_type>
-    %{ is.numeric($arg) %}
+    %{ is.numeric($arg) || is.logical($arg) %}
 
 %typemap(in) shogun::SGVector<sg_type>
 {
@@ -105,7 +105,7 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint16_t, int, "Word")
 }
 
 %typemap("rtypecheck") shogun::SGMatrix<sg_type>
-    %{ is.numeric($arg) %}
+    %{ is.numeric($arg) || is.logical($arg) %}
 
 %typemap(in) shogun::SGMatrix<sg_type>
 {
