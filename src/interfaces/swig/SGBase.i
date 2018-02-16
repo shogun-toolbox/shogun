@@ -13,6 +13,7 @@
 %{
 import org.shogun.SerializableFile;
 import org.shogun.SerializableAsciiFile;
+import org.jblas.*;
 %}
 %typemap(javacode) shogun::CSGObject
 %{
