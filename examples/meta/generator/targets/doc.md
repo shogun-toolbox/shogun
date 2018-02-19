@@ -1,3 +1,4 @@
+```javascript
 /** Target files specify rules for translation from meta-language to a target
  *  programming language. Each rule specifies the syntax of a specific language
  *  construct in the target programming language. The rules are given in 
@@ -81,6 +82,7 @@
          * $name: The name of the variable
          * $typeName: The name of the variable's type
          * $arguments: Arguments passed to the class constructor
+         * $kwargs: translated keyword arguments according to "KeywordArguments"
          */
         "Construct": "auto $name = some<C$typeName>($arguments)",
 
@@ -88,8 +90,32 @@
          * $name: The name of the variable
          * $typeName: The name of the variable's type
          * $expr: translated expression to assign
+         * $kwargs: translated keyword arguments according to "KeywordArguments"
          */
         "Copy": "auto $name = $expr",
+
+        "KeywordArguments": {
+            /** Keywords:
+             * $elements: the list of elements according to the rules below
+             */
+            "List": "\n$elements",
+
+            /** Keywords:
+             * $name: The name of the variable
+             * $keyword: The keyword identifier
+             * $expr: The translated expression associated with the keyword
+             */
+            "Element": "$name.put(\"$keyword\", $expr)",
+
+            /** What string should go between the elements? 
+             */
+            "Separator": "\n",
+
+            /* Should there be an initial separator string when there are any
+             * normal arguments preceding the keyword arguments?
+             */
+            "InitialSeperatorWhenArgs>0": false
+        },
 
         /** SGVector and SGMatrix construction rule. Allows to use native types
          *  in the target languages.
@@ -203,12 +229,15 @@
          */
         "FloatLiteral": "${number}f",
 
-        /** Keywords:
+        /** Keywords for all rules in "MethodCall":
          * $object: name of the object
          * $method: name of the method
          * $arguments: argument list passed to the method
          */
-        "MethodCall": "$object->$method($arguments)",
+        "MethodCall": {
+            "Default": "$object->$method($arguments)",
+            "get_real": "$object->prefix_$method_postfix($arguments)"
+        },
 
         /** Keywords:
          * $typeName: name of class to call the static method on
@@ -216,6 +245,15 @@
          * $arguments: argument list passed to the method
          */
         "StaticCall": "C$typeName::$method($arguments)",
+
+        /** Keywords:
+         * $method: method name
+         * $arguments: argument list passed to the method
+         * $kwargs: translated keyword arguments (this only happens if the
+                    global function is a factory function that constructs
+                    objects)
+         */
+        "GlobalCall": "$method($arguments)$kwargs",
 
         // Keywords: $identifier
         "Identifier": "$identifier",
@@ -266,3 +304,4 @@
     "OutputDirectoryName": "cpp",
     "FileExtension": ".cpp"
 }
+```

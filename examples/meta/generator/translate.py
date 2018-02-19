@@ -543,68 +543,13 @@ class Translator:
         key = list(expr.keys())[0]
 
         if key == "MethodCall":
-            template = Template(self.targetDict["Expr"]["MethodCall"])
-            object = expr[key][0]["Identifier"]
-            method = expr[key][1]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][2]
-            except IndexError:
-                pass
-            translatedArgsList = self.translateArgumentList(argsList)
-
-            assert object in self.variableTypes, \
-                "Variable {} not initialised".format(identifier)
-
-            return template.substitute(object=object,
-                                       method=method,
-                                       arguments=translatedArgsList)
+            return self.translateMethodCall(expr[key])
 
         elif key == "StaticCall":
-            template = Template(self.targetDict["Expr"]["StaticCall"])
-            type_ = self.translateType(expr[key][0])
-            method = expr[key][1]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][2]
-            except IndexError:
-                pass
-            translatedArgsList = self.translateArgumentList(argsList)
-
-            return template.substitute(typeName=type_,
-                                       method=method,
-                                       arguments=translatedArgsList)
+            return self.translateStaticCall(expr[key])
 
         elif key == "GlobalCall":
-            template = Template(self.targetDict["Expr"]["GlobalCall"])
-            method = expr[key][0]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][1]
-            except IndexError:
-                pass
-
-            translatedArgsList, kwargs = self.translateArgumentList(
-                argsList, returnKwargs=True
-            )
-
-            normalArgs = [
-                arg for arg in argsList["ArgumentList"] 
-                    if not "KeywordArgument" in arg
-            ]
-            kwargsString = self.translateKwargs(
-                kwargs, argsGtZero=len(normalArgs) > 0
-            )
-
-            translation = template.substitute(
-                typeName=type,method=method, arguments=translatedArgsList,
-                kwargs=kwargsString
-            )
-
-            if returnKwargs:
-                return translation, kwargs
-
-            return translation
+            return self.translateGlobalCall(expr[key], returnKwargs=returnKwargs)
 
         elif key == "ElementAccess":
             return self.translateElementAccess(expr[key])
@@ -642,6 +587,86 @@ class Translator:
                                        value=expr[key][1]["Identifier"])
 
         raise TranslationFailure("Unknown expression type: " + key)
+
+    def translateMethodCall(self, methodCall):
+        """ Translates a method call expression
+        Args:
+            methodCall: object like [identifierAST, identifierAST, argumentListAST]
+        """
+
+        object = methodCall[0]["Identifier"]
+        method = methodCall[1]["Identifier"]
+        argsList = None
+        try:
+            argsList = methodCall[2]
+        except IndexError:
+            pass
+        translatedArgsList = self.translateArgumentList(argsList)
+
+        if object not in self.variableTypes:
+            raise TranslationFailure("Variable {} not initialised".format(identifier))
+
+        template = Template(self.targetDict["Expr"]["MethodCall"]["Default"])
+        if method in self.targetDict["Expr"]["MethodCall"]:
+            template = Template(self.targetDict["Expr"]["MethodCall"][method])
+
+        return template.substitute(object=object,
+                                   method=method,
+                                   arguments=translatedArgsList)
+
+    def translateStaticCall(self, staticCall):
+        """ Translates a method call expression
+        Args:
+            staticCall: object like [identifierAST, identifierAST, argumentListAST]
+        """
+        template = Template(self.targetDict["Expr"]["StaticCall"])
+        type_ = self.translateType(staticCall[0])
+        method = staticCall[1]["Identifier"]
+        argsList = None
+        try:
+            argsList = staticCall[2]
+        except IndexError:
+            pass
+        translatedArgsList = self.translateArgumentList(argsList)
+
+        return template.substitute(typeName=type_,
+                                   method=method,
+                                   arguments=translatedArgsList)
+
+    def translateGlobalCall(self, globalCall, returnKwargs):
+        """ Translates a method call expression
+        Args:
+            staticCall: object like [identifierAST, argumentListAST]
+        """
+        template = Template(self.targetDict["Expr"]["GlobalCall"])
+        method = globalCall[0]["Identifier"]
+        argsList = None
+        try:
+            argsList = globalCall[1]
+        except IndexError:
+            pass
+
+        translatedArgsList, kwargs = self.translateArgumentList(
+            argsList, returnKwargs=True
+        )
+
+        normalArgs = [
+            arg for arg in argsList["ArgumentList"] 
+                if not "KeywordArgument" in arg
+        ]
+        kwargsString = self.translateKwargs(
+            kwargs, argsGtZero=len(normalArgs) > 0
+        )
+
+        translation = template.substitute(
+            typeName=type,method=method, arguments=translatedArgsList,
+            kwargs=kwargsString
+        )
+
+        if returnKwargs:
+            return translation, kwargs
+
+        return translation
 
     def translatePrint(self, printStmt):
         template = Template(self.targetDict["Print"])
