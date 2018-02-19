@@ -53,7 +53,7 @@ void CTimeSeriesSplitting::init()
 	m_min_subset_size = 1;
 }
 
-void CTimeSeriesSplitting::build_subsets()
+void CTimeSeriesSplitting::build_subsets() const
 {
 	reset_subsets();
 	m_is_filled = true;

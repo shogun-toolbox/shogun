@@ -14,7 +14,6 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 {
 	const int32_t N_splits = 2; // 5
 	CCrossValidationSplitting *split = new CCrossValidationSplitting(Y, N_splits);
-	split->build_subsets();
 
 	SGMatrix<float64_t> conf_mat(num_classes, num_classes), tmp_mat(num_classes, num_classes);
 	conf_mat.zero();
@@ -25,7 +24,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	for (int32_t i=0; i < N_splits; ++i)
 	{
 		// subset for training
-		SGVector<index_t> inverse_subset_indices = split->generate_subset_inverse(i);
+		SGVector<index_t> inverse_subset_indices = split->train(i);
 		X->add_subset(inverse_subset_indices);
 		Y->add_subset(inverse_subset_indices);
 
@@ -34,7 +33,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 		Y->remove_subset();
 
 		// subset for predicting
-		SGVector<index_t> subset_indices = split->generate_subset_indices(i);
+		SGVector<index_t> subset_indices = split->validation(i);
 		X->add_subset(subset_indices);
 		Y->add_subset(subset_indices);
 

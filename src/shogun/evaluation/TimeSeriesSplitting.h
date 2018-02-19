@@ -82,13 +82,14 @@ namespace shogun
 			return "TimeSeriesSplitting";
 		}
 
-		void build_subsets() override;
-
 		/** Custom rng if using cross validation across different threads */
 		CRandom* m_rng;
 
 		/**  The minimum subset size for test set.*/
 		index_t m_min_subset_size;
+
+	protected:
+		void build_subsets() const override;
 
 	private:
 		void init();

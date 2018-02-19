@@ -38,14 +38,12 @@ int main(int argc, char **argv)
 		CLOOCrossValidationSplitting* splitting=
 				new CLOOCrossValidationSplitting(labels);
 
-		splitting->build_subsets();
-
 		for (index_t i=0; i<num_labels; ++i)
 		{
 			//SG_SPRINT("subset %d\n", i);
 
-			SGVector<index_t> subset=splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			SGVector<index_t>::display_vector(subset.vector, subset.vlen, "subset indices");
 			SGVector<index_t>::display_vector(inverse.vector, inverse.vlen, "inverse indices");

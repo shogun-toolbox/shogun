@@ -111,13 +111,11 @@ TEST(CrossValidationMMD, biased_full)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
-			kfold_p->build_subsets();
-			kfold_q->build_subsets();
 
 			for (auto current_fold=0; current_fold<num_folds; ++current_fold)
 			{
-				auto current_train_subset_p=kfold_p->generate_subset_inverse(current_fold);
-				auto current_train_subset_q=kfold_q->generate_subset_inverse(current_fold);
+				auto current_train_subset_p = kfold_p->train(current_fold);
+				auto current_train_subset_q = kfold_q->train(current_fold);
 
 				feats_p->add_subset(current_train_subset_p);
 				feats_q->add_subset(current_train_subset_q);
@@ -206,13 +204,11 @@ TEST(CrossValidationMMD, unbiased_full)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
-			kfold_p->build_subsets();
-			kfold_q->build_subsets();
 
 			for (auto current_fold=0; current_fold<num_folds; ++current_fold)
 			{
-				auto current_train_subset_p=kfold_p->generate_subset_inverse(current_fold);
-				auto current_train_subset_q=kfold_q->generate_subset_inverse(current_fold);
+				auto current_train_subset_p = kfold_p->train(current_fold);
+				auto current_train_subset_q = kfold_q->train(current_fold);
 
 				feats_p->add_subset(current_train_subset_p);
 				feats_q->add_subset(current_train_subset_q);
@@ -301,13 +297,11 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 		CKernel* kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
-			kfold_p->build_subsets();
-			kfold_q->build_subsets();
 
 			for (auto current_fold=0; current_fold<num_folds; ++current_fold)
 			{
-				auto current_train_subset_p=kfold_p->generate_subset_inverse(current_fold);
-				auto current_train_subset_q=kfold_q->generate_subset_inverse(current_fold);
+				auto current_train_subset_p = kfold_p->train(current_fold);
+				auto current_train_subset_q = kfold_q->train(current_fold);
 
 				feats_p->add_subset(current_train_subset_p);
 				feats_q->add_subset(current_train_subset_q);

@@ -23,7 +23,7 @@ CCrossValidationSplitting::CCrossValidationSplitting(
 	m_rng = sg_rand;
 }
 
-void CCrossValidationSplitting::build_subsets()
+void CCrossValidationSplitting::build_subsets() const
 {
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();

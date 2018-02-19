@@ -41,15 +41,13 @@ TEST(SplittingStrategy,standard)
 		CCrossValidationSplitting* splitting=
 				new CCrossValidationSplitting(labels, num_subsets);
 
-		splitting->build_subsets();
-
 		SGVector<index_t> total(num_labels);
 		SGVector<index_t>::fill_vector(total.vector, total.vlen,(index_t)-1);
 
 		for (index_t i=0; i<num_subsets; ++i)
 		{
-			SGVector<index_t> subset=splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
 			{
@@ -123,15 +121,13 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 		CStratifiedCrossValidationSplitting* splitting=
 				new CStratifiedCrossValidationSplitting(labels, num_subsets);
 
-		splitting->build_subsets();
-
 		SGVector<index_t> total(num_labels);
 		SGVector<index_t>::fill_vector(total.vector, total.vlen,(index_t)-1);
 
 		for (index_t i=0; i<num_subsets; ++i)
 		{
-			SGVector<index_t> subset=splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
 			{
@@ -199,13 +195,11 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 		CStratifiedCrossValidationSplitting* splitting=
 				new CStratifiedCrossValidationSplitting(labels, num_subsets);
 
-		splitting->build_subsets();
-
 		/* check whether number of labels in every subset is nearly equal */
 		for (index_t i=0; i<num_classes; ++i)
 		{
 			/* count number of elements for this class */
-			SGVector<index_t> temp=splitting->generate_subset_indices(0);
+			SGVector<index_t> temp = splitting->validation(0);
 			int32_t count=0;
 			int32_t total_count=0;
 			for (index_t j=0; j<temp.vlen; ++j)
@@ -217,7 +211,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 			/* check all subsets for same ratio */
 			for (index_t j=0; j<num_subsets; ++j)
 			{
-				SGVector<index_t> subset=splitting->generate_subset_indices(j);
+				SGVector<index_t> subset = splitting->validation(j);
 				int32_t temp_count=0;
 				for (index_t k=0; k<subset.vlen; ++k)
 				{
@@ -256,15 +250,13 @@ TEST(SplittingStrategy,LOO)
 		CLOOCrossValidationSplitting* splitting=
 				new CLOOCrossValidationSplitting(labels);
 
-		splitting->build_subsets();
-
 		SGVector<index_t> total(num_labels);
 		SGVector<index_t>::fill_vector(total.vector, total.vlen,(index_t)-1);
 
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			SGVector<index_t> subset=splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
 			{
@@ -317,12 +309,11 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 		    new CTimeSeriesSplitting(labels, num_subsets);
 
 		splitting->set_min_subset_size(min_subset_size);
-		splitting->build_subsets();
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			/* Subset size should be atleat min_subset_size */
 			EXPECT_GE(subset.vlen, splitting->get_min_subset_size());
@@ -356,12 +347,11 @@ TEST(SplittingStrategy, timeseries_subsets_future_leak)
 		    new CTimeSeriesSplitting(labels, num_subsets);
 
 		splitting->set_min_subset_size(min_subset_size);
-		splitting->build_subsets();
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->generate_subset_indices(i);
-			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> inverse = splitting->train(i);
 
 			/* check future leak into test set */
 			for (index_t j = 0; j < inverse.vlen - 1; ++j)

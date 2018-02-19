@@ -99,8 +99,6 @@ struct CrossValidationMMD : PermutationMMD
 
 			for (auto current_run=0; current_run<m_num_runs; ++current_run)
 			{
-				m_kfold_x->build_subsets();
-				m_kfold_y->build_subsets();
 				for (auto current_fold=0; current_fold<m_num_folds; ++current_fold)
 				{
 					generate_inds(current_fold);
@@ -205,8 +203,8 @@ struct CrossValidationMMD : PermutationMMD
 
 	void generate_inds(index_t current_fold)
 	{
-		SGVector<index_t> x_inds=m_kfold_x->generate_subset_inverse(current_fold);
-		SGVector<index_t> y_inds=m_kfold_y->generate_subset_inverse(current_fold);
+		SGVector<index_t> x_inds = m_kfold_x->train(current_fold);
+		SGVector<index_t> y_inds = m_kfold_y->train(current_fold);
 		std::for_each(y_inds.data(), y_inds.data()+y_inds.size(), [this](index_t& val) { val += m_n_x; });
 
 		m_n_x=x_inds.size();
