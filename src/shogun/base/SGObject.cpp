@@ -1039,21 +1039,3 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 	put(Tag<CSGObject*>(name), value);
 }
 
-namespace shogun
-{
-// TODO: Move this to SGBase.i and make it SGMatrix<T> (T=float64) rather than T=SGMatrix<float64>
-template<>
-void CSGObject::put_vector_or_matrix(const std::string& name, SGMatrix<float64_t> value)
-{
-	Tag<SGVector<float64_t>> tag_vec(name);
-	Tag<SGMatrix<float64_t>> tag_mat(name);
-
-	if (has(tag_mat))
-		put(tag_mat, value);
-	else if ((value.num_rows==1 || value.num_cols==1) && has(tag_vec))
-		put(tag_vec, SGVector<float64_t>(value.data()));
-	else
-		put(tag_mat, value);
-}
-}
-
