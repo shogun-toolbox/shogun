@@ -31,7 +31,6 @@ echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
-#$2 <- function(...) .External("$2",...,PACKAGE="$2")
 
 # Load the shogun dynamic library at startup.
 #
@@ -40,14 +39,14 @@ cat >"$1/$2/R/$2" <<EOF
 	cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 
-for f in *.so
+for f in *$3
 do
 	echo "library.dynam(\"`basename $f .so`\", pkg, lib)" >> "$1/$2/R/$2"
 done
 
 for f in *.RData
 do
-	echo "load(paste(lib, \"/\", \"$2\", \"/R/\", \"`basename $f`\", sep=''), envir=.GlobalEnv)" >> "$1/$2/R/$2"
+	echo "load(paste(lib, \"$2\", \"R\", \"`basename $f`\", sep='/'), envir=.GlobalEnv)" >> "$1/$2/R/$2"
 	echo "cacheMetaData(1)" >> "$1/$2/R/$2"
 done
 cat >>"$1/$2/R/$2" <<EOF
@@ -58,7 +57,7 @@ cat >>"$1/$2/R/$2" <<EOF
 {
 EOF
 
-for f in *.$3
+for f in *$3
 do
 	echo "library.dynam.unload(\"$f\", lib)" >> "$1/$2/R/$2"
 done
