@@ -44,7 +44,9 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
-        "MethodCall": "$object.$method($arguments)",
+        "MethodCall": {
+            "Default": "$object.$method($arguments)"
+        },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
