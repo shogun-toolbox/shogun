@@ -421,11 +421,6 @@ public:
 		put(Tag<T>(name), value);
 	}
 
-	// FIXME: move to swig interface.i, can be moved once the typemaps match
-	// also should be void put_vector_or_matrix(const std::string& name, SGMatrix<T> value);
-	template <typename T, typename T2 = typename std::enable_if<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
-	void put_vector_or_matrix(const std::string& name, T value);
-
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
