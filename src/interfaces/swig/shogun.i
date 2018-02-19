@@ -122,9 +122,33 @@
 
 namespace shogun
 {
-%template(put) CSGObject::put_scalar<int32_t, int32_t>;
-%template(put) CSGObject::put_scalar<int64_t, int64_t>;
-%template(put) CSGObject::put_scalar<float64_t, float64_t>;
+
+%extend CSGObject
+{
+	template <typename T, typename U= typename std::enable_if_t<std::is_arithmetic<T>::value>>
+	void put_scalar_dispatcher(const std::string& name, T value)
+	{
+		Tag<T> tag_t(name);
+		Tag<int32_t> tag_int32(name);
+		Tag<int64_t> tag_int64(name);
+		Tag<float64_t> tag_float64(name);
+
+		if ($self->has(tag_t))
+			$self->put(tag_t, value);
+		else if ($self->has(tag_int32))
+			$self->put(tag_int32, (int32_t)value);
+		else if ($self->has(tag_int64))
+			$self->put(tag_int64, (int64_t)value);
+		else if ($self->has(tag_float64))
+			$self->put(tag_float64, (float64_t)value);
+		else
+			$self->put(tag_t, value);
+	}
+}
+
+%template(put) CSGObject::put_scalar_dispatcher<int32_t, int32_t>;
+%template(put) CSGObject::put_scalar_dispatcher<int64_t, int64_t>;
+%template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
 
 
 #ifndef SWIGJAVA
