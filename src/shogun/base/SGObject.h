@@ -403,7 +403,7 @@ public:
 	 * @param name name of the parameter
 	 * @param value value of the parameter, wrapped in smart pointer
 	 */
-	template <typename T, typename std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
 	void put(const std::string& name, Some<T> value)
 	{
 		put(name, (CSGObject*)(value.get()));
