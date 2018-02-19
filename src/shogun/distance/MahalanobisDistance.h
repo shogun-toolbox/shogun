@@ -10,44 +10,45 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
 
 namespace shogun
 {
-/** @brief class MahalanobisDistance
- *
- * The Mahalanobis distance for real valued features computes the distance
- * between a feature vector and a distribution of features characterized by its
- * mean and covariance.
- *
- * \f[\displaystyle
- *  D = \sqrt{ (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)  }
- * \f]
- *
- * The Mahalanobis Squared distance does not take the square root:
- *
- * \f[\displaystyle
- *  D = (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)
- * \f]
- *
- * If use_mean is set to false (which it is by default) the distance is computed
- * as
- *
- * \f[\displaystyle
- *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
- * \f]
- *
- * i.e., instead of the mean as reference two vector \f$x_i\f$ and \f$x_i'\f$
- * are compared.
- *
- * @see <a href="en.wikipedia.org/wiki/Mahalanobis_distance">
- * Wikipedia: Mahalanobis Distance</a>
- */
-class CMahalanobisDistance: public CRealDistance
-{
+	/** @brief class MahalanobisDistance
+	 *
+	 * The Mahalanobis distance for real valued features computes the distance
+	 * between a feature vector and a distribution of features characterized by
+	 * its
+	 * mean and covariance.
+	 *
+	 * \f[\displaystyle
+	 *  D = \sqrt{ (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)  }
+	 * \f]
+	 *
+	 * The Mahalanobis Squared distance does not take the square root:
+	 *
+	 * \f[\displaystyle
+	 *  D = (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)
+	 * \f]
+	 *
+	 * If use_mean is set to false (which it is by default) the distance is
+	 * computed
+	 * as
+	 *
+	 * \f[\displaystyle
+	 *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
+	 * \f]
+	 *
+	 * i.e., instead of the mean as reference two vector \f$x_i\f$ and
+	 * \f$x_i'\f$
+	 * are compared.
+	 *
+	 * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
+	 * Wikipedia: Mahalanobis Distance</a>
+	 */
+	class CMahalanobisDistance : public CRealDistance
+	{
 	public:
 		/** default constructor */
 		CMahalanobisDistance();
@@ -141,10 +142,13 @@ class CMahalanobisDistance: public CRealDistance
 
 		/** vector mean of the lhs feature vectors */
 		SGVector<float64_t> mean;
-		/** inverse of the covariance matrix of lhs feature vectors */
-		SGMatrix<float64_t> icov;
+
+		/** LDLT decomposition of the covariance matrix of lhs feature vectors
+		 */
+		SGMatrix<float64_t> chol_cov_L;
+		SGVector<float64_t> chol_cov_d;
+		SGVector<index_t> chol_cov_p;
 };
 
 } // namespace shogun
-#endif /* HAVE_LAPACK */
 #endif /* _MAHALANOBISDISTANCE_H__ */
