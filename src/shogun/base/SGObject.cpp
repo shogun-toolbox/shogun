@@ -1028,14 +1028,38 @@ CSGObject* CSGObject::create_empty() const
 
 void CSGObject::put(const std::string& name, CSGObject* value)
 {
-	REQUIRE(value, "Cannot set %s::%s, no object provided.\n", get_name(), name.c_str());
+	REQUIRE(value, "Cannot put %s::%s, no object provided.\n", get_name(), name.c_str());
 
 	if (put_sgobject_type_dispatcher<CKernel>(name, value))
 		return;
 	if (put_sgobject_type_dispatcher<CDistance>(name, value))
 		return;
+	if (put_sgobject_type_dispatcher<CFeatures>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CLabels>(name, value))
+		return;
 
-	SG_WARNING("Could not match %s with any base-type when putting %s::%s, trying as SGObject.\n",value->get_name(),get_name(), name.c_str());
-	put(Tag<CSGObject*>(name), value);
+
+	SG_ERROR("Cannot put object %s as parameter %s::%s of type %s, type does not match.\n",
+			  value->get_name(), get_name(), name.c_str(),
+			  self->map[BaseTag(name)].get_value().type().c_str());
+
+}
+
+CSGObject* CSGObject::get(const std::string& name)
+{
+	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CKernel>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CFeatures>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
+		return result;
+
+
+	SG_ERROR("Cannot get parameter %s::%s of type %s as object, not object type.\n",
+			get_name(), name.c_str(), self->map[BaseTag(name)].get_value().type().c_str());
+	return nullptr;
 }
 

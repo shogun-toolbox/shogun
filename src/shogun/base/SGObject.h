@@ -354,17 +354,16 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-					"Setting parameter %s::%s failed. Provided type is %s, but "
-					"actual type is %s.\n",
-					get_name(), _tag.name().c_str(), exc.expected().c_str(),
-					exc.actual().c_str());
+					"Cannot set parameter %s::%s of type %s, incompatible provided type %s.\n",
+					get_name(), _tag.name().c_str(),
+					exc.actual().c_str(), exc.expected().c_str());
 			}
 			ref_value(&value);
 			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
-			SG_ERROR("\"%s\" does not have a parameter with name \"%s\".\n",
+			SG_ERROR("Parameter %s::%s does not exist.\n",
 				get_name(), _tag.name().c_str());
 		}
 	}
@@ -386,6 +385,19 @@ public:
 		}
 		return false;
 	}
+
+	template <typename T>
+	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	{
+		if (has<T*>(name))
+		{
+			T* result = get<T*>(name);
+			SG_REF(result)
+			return (CSGObject*)result;
+		}
+
+		return nullptr;
+	}
 #endif // SWIG
 
 	/** Untyped setter for an object class parameter, identified by a name.
@@ -395,6 +407,14 @@ public:
 	 * @param value value of the parameter
 	 */
 	void put(const std::string& name, CSGObject* value);
+
+	/** Untyped getter for an object class parameter, identified by a name.
+	 * Will attempt to get specified object of appropriate internal type.
+	 *
+	 * @param name name of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name);
 
 #ifndef SWIG
 	/** Untyped setter for an object class parameter, identified by a name.
@@ -438,8 +458,7 @@ public:
 		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Getting parameter %s::%s failed. Requested type is %s, "
-				"but actual type is %s.\n",
+				"Cannot get parameter %s::%s of type %s, incompatible requested type %s.\n",
 				get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}

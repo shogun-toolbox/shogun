@@ -133,9 +133,7 @@ namespace shogun
 		Tag<int64_t> tag_int64(name);
 		Tag<float64_t> tag_float64(name);
 
-		if ($self->has(tag_t))
-			$self->put(tag_t, value);
-		else if ($self->has(tag_int32))
+		if ($self->has(tag_int32))
 			$self->put(tag_int32, (int32_t)value);
 		else if ($self->has(tag_int64))
 			$self->put(tag_int64, (int64_t)value);
@@ -152,12 +150,21 @@ namespace shogun
 		Tag<SGVector<float64_t>> tag_vec(name);
 		Tag<SGMatrix<float64_t>> tag_mat(name);
 	
-		if ($self->has(tag_mat))
-			$self->put(tag_mat, value);
-		else if ((value.num_rows==1 || value.num_cols==1) && $self->has(tag_vec))
-			$self->put(tag_vec, SGVector<float64_t>(value.data()));
+		if ((value.num_rows==1 || value.num_cols==1) && $self->has(tag_vec))
+		{
+			SGVector<float64_t> vec(value.data(), value.size(), false);
+			$self->put(tag_vec, vec);
+		}
 		else
 			$self->put(tag_mat, value);
+	}
+	
+	template <typename T, typename T2 = typename std::enable_if<std::is_same<SGMatrix<float64_t>, T>::value, T>::type>
+	T get_vector_as_matrix_dispatcher(const std::string& name)
+	{
+		SGVector<float64_t> vec = $self->get<SGVector<float64_t>>(name);
+		SGMatrix<float64_t> mat(vec.data(), 1, vec.vlen, false);
+		return mat;
 	}
 #endif // SWIGJAVA
 }
@@ -174,6 +181,14 @@ namespace shogun
 %template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #else // SWIGJAVA
 %template(put) CSGObject::put_vector_or_matrix_dispatcher<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#endif // SWIGJAVA
+
+%template(get_real) CSGObject::get<float64_t, void>;
+%template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
+#ifndef SWIGJAVA
+%template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
+#else // SWIGJAVA
+%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #endif // SWIGJAVA
 
 } // namespace shogun
