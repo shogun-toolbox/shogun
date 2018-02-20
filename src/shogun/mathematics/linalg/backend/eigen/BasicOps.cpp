@@ -253,6 +253,23 @@ T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	    .dot(typename SGVector<T>::EigenVectorXtMap(b));
 }
 
+/* Helper method to compute elementwise product with Eigen */
+template <typename MatrixType>
+void element_prod_eigen(
+    const MatrixType& A, const MatrixType& B,
+    typename SGMatrix<typename MatrixType::Scalar>::EigenMatrixXtMap& result,
+    bool transpose_A, bool transpose_B)
+{
+	if (transpose_A && transpose_B)
+		result = A.transpose().array() * B.transpose().array();
+	else if (transpose_A)
+		result = A.transpose().array() * B.array();
+	else if (transpose_B)
+		result = A.array() * B.transpose().array();
+	else
+		result = A.array() * B.array();
+}
+
 template <typename T>
 void LinalgBackendEigen::element_prod_impl(
     const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
@@ -262,14 +279,7 @@ void LinalgBackendEigen::element_prod_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-	if (transpose_A && transpose_B)
-		result_eig = a_eig.transpose().array() * b_eig.transpose().array();
-	else if (transpose_A)
-		result_eig = a_eig.transpose().array() * b_eig.array();
-	else if (transpose_B)
-		result_eig = a_eig.array() * b_eig.transpose().array();
-	else
-		result_eig = a_eig.array() * b_eig.array();
+	element_prod_eigen(a_eig, b_eig, result_eig, transpose_A, transpose_B);
 }
 
 template <typename T>
@@ -286,14 +296,7 @@ void LinalgBackendEigen::element_prod_impl(
 	Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
 	    b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
 
-	if (transpose_A && transpose_B)
-		result_eig = a_block.transpose().array() * b_block.transpose().array();
-	else if (transpose_A)
-		result_eig = a_block.transpose().array() * b_block.array();
-	else if (transpose_B)
-		result_eig = a_block.array() * b_block.transpose().array();
-	else
-		result_eig = a_block.array() * b_block.array();
+	element_prod_eigen(a_block, b_block, result_eig, transpose_A, transpose_B);
 }
 
 template <typename T>
