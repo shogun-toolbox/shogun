@@ -83,7 +83,7 @@ CSerializableFile::is_task_warn(char rw, const char* name,
 {
 	if (m_task == 'r' && m_reader == NULL) {
 		string_t dest_version;
-		strncpy(dest_version, "(unkown)", STRING_LEN);
+		strncpy(dest_version, "(unknown)", STRING_LEN);
 		m_reader = new_reader(dest_version, STRING_LEN);
 		if (m_reader == NULL) {
 			SG_WARNING("`%s' has file-version `%s', which is not "
