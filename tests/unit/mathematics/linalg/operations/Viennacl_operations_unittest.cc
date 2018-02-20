@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <shogun/lib/config.h>
+#include <shogun/base/range.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
@@ -165,11 +166,13 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-	SGMatrix<float64_t> A(3,3);
-	SGMatrix<float64_t> B(3,3);
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
 	SGMatrix<float64_t> A_gpu, B_gpu;
+	SGMatrix<float64_t> result;
 
-	for (index_t i = 0; i < 9; ++i)
+	for (auto i : range(m * m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
@@ -177,37 +180,75 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 
 	to_gpu(A, A_gpu);
 	to_gpu(B, B_gpu);
-	auto result_gpu = element_prod(A_gpu, B_gpu);
-	SGMatrix<float64_t> result;
-	from_gpu(result_gpu, result);
 
-	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(A[i]*B[i], result[i], 1e-15);
+	auto result_gpu = element_prod(A_gpu, B_gpu);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(i, j) * B(i, j), result(i, j), 1e-15);
+
+	result_gpu = element_prod(A_gpu, B_gpu, true, false);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(j, i) * B(i, j), result(i, j), 1e-15);
+
+	result_gpu = element_prod(A_gpu, B_gpu, true, false);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(i, j) * B(j, i), result(i, j), 1e-15);
+
+	result_gpu = element_prod(A_gpu, B_gpu, true, true);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(j, i) * B(j, i), result(i, j), 1e-15);
 }
 
 TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-	SGMatrix<float64_t> A(3,3);
-	SGMatrix<float64_t> B(3,3);
-	SGMatrix<float64_t> C(3,3);
-	SGMatrix<float64_t> A_gpu, B_gpu;
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
+	SGMatrix<float64_t> result(m, m);
+	SGMatrix<float64_t> A_gpu, B_gpu, result_gpu;
 
-	for (index_t i = 0; i < 9; ++i)
+	for (auto i : range(m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
-		C[i] = i;
 	}
 
 	to_gpu(A, A_gpu);
 	to_gpu(B, B_gpu);
-	element_prod(A_gpu, B_gpu, A_gpu);
-	from_gpu(A_gpu, A);
+	to_gpu(result, result_gpu);
 
-	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+	element_prod(A_gpu, B_gpu, result_gpu);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(i, j) * B(i, j), result(i, j), 1e-15);
+
+	element_prod(A_gpu, B_gpu, result_gpu, true, false);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(j, i) * B(i, j), result(i, j), 1e-15);
+
+	element_prod(A_gpu, B_gpu, result_gpu, false, true);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(i, j) * B(j, i), result(i, j), 1e-15);
+
+	element_prod(A_gpu, B_gpu, result_gpu, true, true);
+	from_gpu(result_gpu, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(A(j, i) * B(j, i), result(i, j), 1e-15);
 }
 
 TEST(LinalgBackendViennaCL, SGMatrix_logistic)
