@@ -80,7 +80,9 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "${number}f",
-        "MethodCall": "$object.$method($arguments)",
+        "MethodCall": {
+            "Default": "$object.$method($arguments)"
+        },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "shogun.$method($arguments)",
         "Identifier": "$identifier",

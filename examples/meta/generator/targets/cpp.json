@@ -90,7 +90,10 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "${number}f",
-        "MethodCall": "$object->$method($arguments)",
+        "MethodCall": {
+            "Default": "$object->$method($arguments)",
+            "get_real": "$object->get<float64_t>($arguments)"
+        },
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
