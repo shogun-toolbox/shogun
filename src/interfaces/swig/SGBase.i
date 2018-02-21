@@ -288,7 +288,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     }
     catch (shogun::ShogunException e)
     {
-        SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+        SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
         SWIG_fail;
 #endif
@@ -429,7 +429,7 @@ namespace shogun
                     SG_SERROR("File contains an HDF5 stream but " \
                             "Shogun was not compiled with HDF5" \
                             " support! -  cannot load file %s." \
-                            " (exception was %s)", e.get_exception_string());
+                            " (exception was %s)", e.what());
             }
 #endif
             $self->load_serializable(fstream);

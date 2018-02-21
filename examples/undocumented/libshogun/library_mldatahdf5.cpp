@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s", e.get_exception_string());
+		SG_SWARNING("%s", e.what());
 	}
 
 	SG_FREE(mat);

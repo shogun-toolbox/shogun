@@ -76,7 +76,7 @@ int main(int, char*[])
 	catch (ShogunException e)
 	{
 		// out of memory
-		SG_SPRINT(e.get_exception_string());
+		SG_SPRINT(e.what());
 		return 0;
 	}
 

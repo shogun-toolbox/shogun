@@ -9,21 +9,28 @@
 
 #include <shogun/lib/config.h>
 
+#include <stdexcept>
+#include <string>
+
 namespace shogun
 {
 /** @brief Class ShogunException defines an exception which is thrown whenever an
  * error inside of shogun occurs.
  */
-class ShogunException
+class ShogunException: public std::exception
 {
-	void init(const char* str);
-
 	public:
 		/** constructor
 		 *
 		 * @param str exception string
 		 */
-		ShogunException(const char* str);
+		explicit ShogunException(const std::string& what_arg);
+
+		/** constructor
+		 *
+		 * @param str exception string
+		 */
+		explicit ShogunException(const char* what_arg);
 
 		/** copy constructor
 		 *
@@ -35,15 +42,11 @@ class ShogunException
 		 */
         virtual ~ShogunException();
 
-		/** get exception string
-		 *
-		 * @return the exception string
-		 */
-		inline const char* get_exception_string() { return val; }
+		virtual const char* what() const noexcept override;
 
 	private:
 		/** exception string */
-		char* val;
+		std::string msg;
 };
 }
 #endif // _SHOGUN_EXCEPTION_H_
