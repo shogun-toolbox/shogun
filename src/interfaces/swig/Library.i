@@ -400,11 +400,26 @@ namespace shogun
 %include <shogun/lib/DynamicObjectArray.h>
 namespace shogun
 {
+%extend CDynamicObjectArray
+{
+    template <typename T, typename X = typename std::enable_if_t<std::is_same<SGVector<typename extract_value_type<T>::value_type>, T>::value>>
+    void append_element_vector(T v, const char* name="")
+    {
+        $self->append_element(v, name);
+    }
+
+    template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value>>
+    void append_element_matrix(T v, const char* name="")
+    {
+        $self->append_element(v, name);
+    }
+}
+
     /* Specialize DynamicObjectArray::append_element function */
 #ifdef USE_FLOAT64
+    %template(append_element_real_vector) CDynamicObjectArray::append_element_vector<SGVector<float64_t>, SGVector<float64_t>>;
+    %template(append_element_real_matrix) CDynamicObjectArray::append_element_matrix<SGMatrix<float64_t>, SGMatrix<float64_t>>;
     %template(append_element_real) CDynamicObjectArray::append_element<float64_t, float64_t>;
-    %template(append_element_real_vector) CDynamicObjectArray::append_element<SGVector<float64_t>, SGVector<float64_t>>;
-    %template(append_element_real_matrix) CDynamicObjectArray::append_element<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #ifdef SWIGOCTAVE
     /* (Octave converts single element arrays to scalars and our typemaps take that for real) */
     %extend CDynamicObjectArray {
@@ -418,9 +433,9 @@ namespace shogun
 #endif
 #endif
 #ifdef USE_FLOAT32
+    %template(append_element_float_vector) CDynamicObjectArray::append_element_vector<SGVector<float32_t>, SGVector<float32_t>>;
+    %template(append_element_float_matrix) CDynamicObjectArray::append_element_matrix<SGMatrix<float32_t>, SGMatrix<float32_t>>;
     %template(append_element_float) CDynamicObjectArray::append_element<float32_t, float32_t>;
-    %template(append_element_float_vector) CDynamicObjectArray::append_element<SGVector<float32_t>, SGVector<float32_t>>;
-    %template(append_element_float_matrix) CDynamicObjectArray::append_element<SGMatrix<float32_t>, SGMatrix<float32_t>>;
 #endif
 #ifdef USE_INT32
     %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;

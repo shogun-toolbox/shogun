@@ -71,12 +71,19 @@ public:
 	 * @param value Value to serialize as CSGObject.
 	 * @param value_name Name under which value is registered.
 	*/
-	CSerializable(T value, const char* value_name="")
+	CSerializable(T value, const char* value_name=""): CSGObject()
 	{
 		init();
 		m_value = value;
-		m_value_name = value_name;
+		//FIXME: add support for std::string serialization
 	}
+
+	/**
+	 * Get stored value
+	 *
+	 * @return stored value
+	 */
+	virtual T get_value() const { return m_value; }
 
 	/** @return name of the CSGObject, without C prefix */
 	virtual const char* get_name() const { return "Serializable"; }
@@ -86,18 +93,36 @@ private:
 	{
 		set_generic<typename extract_value_type<T>::value_type>();
 		m_value = 0;
-		m_value_name = "Unnamed";
-
 		SG_ADD(&m_value, "value", "Serialized value", MS_NOT_AVAILABLE);
 	}
 
 protected:
 	/** Serialized value. */
 	T m_value;
-
-	/** Name of serialized value */
-	const char* m_value_name;
 };
 
+// FIXME: once the class factory is refactored this should be dropped and
+// CSerializable should be use directly
+template<class T> class CVectorSerializable: public CSerializable<SGVector<T>>
+{
+public:
+	CVectorSerializable() : CSerializable<SGVector<T>>() {}
+	CVectorSerializable(SGVector<T> value, const char* value_name=""): CSerializable<SGVector<T>>(value, value_name) {}
+	virtual ~CVectorSerializable() {}
+
+	/** @return name of the CSGObject, without C prefix */
+	virtual const char* get_name() const { return "VectorSerializable"; }
+};
+
+template<class T> class CMatrixSerializable: public CSerializable<SGMatrix<T>>
+{
+public:
+	CMatrixSerializable() : CSerializable<SGMatrix<T>>() {}
+	CMatrixSerializable(SGMatrix<T> value, const char* value_name=""): CSerializable<SGMatrix<T>>(value, value_name) {}
+	virtual ~CMatrixSerializable() {}
+
+	/** @return name of the CSGObject, without C prefix */
+	virtual const char* get_name() const { return "MatrixSerializable"; }
+};
 };
 #endif // SHOGUN_SERIALIZABLE_H_

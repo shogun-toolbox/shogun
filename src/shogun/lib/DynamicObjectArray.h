@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, 
- *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev,
+ *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein,
  *          Fernando Iglesias, Björn Esser
  */
 
@@ -277,15 +277,25 @@ class CDynamicObjectArray : public CSGObject
 			return success;
 		}
 
-		template <typename T, typename T2 = typename std::enable_if<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
+		template <typename T, typename T2 = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 		inline bool append_element(T e, const char* name="")
 		{
 			auto serialized_element = new CSerializable<T>(e, name);
-			bool success = m_array.append_element(serialized_element);
-			if (success)
-				SG_REF(serialized_element);
+			return append_element(serialized_element);
+		}
 
-			return success;
+		template <typename T>
+		inline bool append_element(SGVector<T> e, const char* name="")
+		{
+			auto serialized_element = new CVectorSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
+		template <typename T>
+		inline bool append_element(SGMatrix<T> e, const char* name="")
+		{
+			auto serialized_element = new CMatrixSerializable<T>(e, name);
+			return append_element(serialized_element);
 		}
 
 		/** append array element to the end of array
