@@ -60,9 +60,13 @@ bool CLibSVM::train_machine(CFeatures* data)
 		}
 		kernel->init(data, data);
 	}
+	REQUIRE(kernel->get_num_vec_lhs()==m_labels->get_num_labels(),
+			"Number of training data (%d) must match number of labels (%d)\n",
+			kernel->get_num_vec_lhs(), m_labels->get_num_labels())
 
 	problem.l=m_labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", problem.l)
+
 
 	// set linear term
 	if (m_linear_term.vlen>0)
@@ -100,7 +104,6 @@ bool CLibSVM::train_machine(CFeatures* data)
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	ASSERT(kernel && kernel->has_features())
-	ASSERT(kernel->get_num_vec_lhs()==problem.l)
 
 	switch (solver_type)
 	{

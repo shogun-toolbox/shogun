@@ -28,15 +28,12 @@ Imagine we have files with training and test data. We create CDenseFeatures (her
 
 .. sgexample:: kernel_support_vector_machine.sg:create_features
 
-In order to run :sgclass:`CLibSVM`, we need to initialize a kernel like :sgclass:`CGaussianKernel` with training features and some parameters like :math:`C` and epsilon i.e. residual convergence parameter which is optional.
-
-.. sgexample:: kernel_support_vector_machine.sg:set_parameters
-
-We create an instance of the :sgclass:`CLibSVM` classifier by passing it regularization coefficient, kernel and labels.
+In order to run :sgclass:`CLibSVM`, we first need to initialize a :sgclass:`CKernel` instance, such as :sgclass:`CGaussianKernel`.
+We then create a :sgclass:`CKernelMachine` instance, here :sgclass:`CLibSVM`, and provide it with parameters like the regularization coefficient :math:`C`, the kernel, the training labels, and an optional residual convergence parameter epsilon.
 
 .. sgexample:: kernel_support_vector_machine.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
+Then we train it on training data and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
 
 .. sgexample:: kernel_support_vector_machine.sg:train_and_apply
 
