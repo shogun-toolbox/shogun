@@ -11,24 +11,21 @@ BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-real C = 1.0
-real epsilon = 0.001
-GaussianKernel gauss_kernel(features_train, features_train, 15)
+Kernel k = kernel("GaussianKernel", log_width=1.0074515102711323)
 #![set_parameters]
 
 #![create_instance]
-LibSVM svm(C, gauss_kernel, labels_train)
-svm.set_epsilon(epsilon)
+KernelMachine svm = kernel_machine("LibSVM", C1=1.0, C2=1.0, kernel=k, labels=labels_train, epsilon=0.001)
 #![create_instance]
 
 #![train_and_apply]
-svm.train()
+svm.train(features_train)
 BinaryLabels labels_predict = svm.apply_binary(features_test)
 #![train_and_apply]
 
 #![extract_weights_bias]
-RealVector alphas = svm.get_alphas()
-real b = svm.get_bias()
+RealVector alphas = svm.get_real_vector("m_alpha")
+real b = svm.get_real("m_bias")
 #![extract_weights_bias]
 
 #![evaluate_accuracy]
@@ -37,4 +34,4 @@ real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
-RealVector output = labels_predict.get_labels()
+RealVector output = labels_predict.get_real_vector("labels")
