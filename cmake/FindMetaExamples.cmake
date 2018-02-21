@@ -24,13 +24,18 @@ function(get_excluded_meta_examples)
 
     IF(NOT HAVE_NLOPT)
         LIST(APPEND EXCLUDED_META_EXAMPLES
-            gaussian_process/regression.sg)
+            gaussian_process/regression.sg
+            )
     ENDIF()
 
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
 			multiclass/logistic_regression.sg
-			)
+      statistical_testing/linear_time_maximum_mean_discrepancy.sg
+      statistical_testing/quadratic_time_maximum_mean_discrepancy.sg
+      gaussian_process/classifier.sg
+      gaussian_process/regression.sg
+      )
 	ENDIF()
 
 	IF(NOT HAVE_LAPACK)
@@ -44,7 +49,7 @@ function(get_excluded_meta_examples)
 			binary/multiple_kernel_learning.sg
 		)
 	ENDIF()
-
+  LIST(REMOVE_DUPLICATES EXCLUDED_META_EXAMPLES)
     SET(EXCLUDED_META_EXAMPLES ${EXCLUDED_META_EXAMPLES} PARENT_SCOPE)
 
 endfunction()
