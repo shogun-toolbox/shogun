@@ -1302,7 +1302,7 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 
 %typemap(throws) shogun::ShogunException
 {
-    PyErr_SetString(PyExc_RuntimeError, $1.get_exception_string());
+    PyErr_SetString(PyExc_RuntimeError, $1.what());
     SWIG_fail;
 }
 

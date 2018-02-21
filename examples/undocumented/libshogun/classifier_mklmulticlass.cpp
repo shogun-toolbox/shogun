@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Evgeniy Andreev, Alexander Binder, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Evgeniy Andreev, Alexander Binder,
  *          Sergey Lisitsyn
  */
 
@@ -349,7 +349,7 @@ int main()
 	}
 	catch(ShogunException & sh)
 	{
-		printf("%s",sh.get_exception_string());
+		printf("%s",sh.what());
 	}
 
 	exit_shogun();

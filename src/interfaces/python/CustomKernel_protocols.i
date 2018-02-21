@@ -562,7 +562,7 @@ static PyObject* class_name ## _cleanup_custom(PyObject *self, PyObject *args)
 		}
 		catch (shogun::ShogunException e)
 		{
-			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 
 			SWIG_fail;
 

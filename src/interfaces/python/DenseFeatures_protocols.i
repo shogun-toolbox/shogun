@@ -555,7 +555,7 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 		}
 		catch (shogun::ShogunException e)
 		{
-			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 
 			SWIG_fail;
 

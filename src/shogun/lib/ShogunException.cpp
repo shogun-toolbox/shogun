@@ -13,30 +13,27 @@
 
 using namespace shogun;
 
-void
-ShogunException::init(const char* str)
+ShogunException::ShogunException(const std::string& what_arg):
+	std::exception(),
+	msg(what_arg)
 {
-	size_t n = strlen(str) + 1;
-
-	val = (char*) malloc(n);
-	if (val)
-		strncpy(val, str, n);
-	else {
-		fprintf(stderr, "Could not even allocate memory for exception"
-				" - dying.\n");
-		exit(1);
-	}
 }
 
-ShogunException::ShogunException(const char* str)
-{
-#ifndef WIN32
-#endif
 
-	init(str);
+ShogunException::ShogunException(const char* what_arg):
+	std::exception(),
+	msg(what_arg)
+{
 }
 
 ShogunException::ShogunException(const ShogunException& orig)
-{ init(orig.val); }
+{ msg = orig.msg; }
 
-ShogunException::~ShogunException() { free(val); }
+ShogunException::~ShogunException()
+{
+}
+
+const char* ShogunException::what() const noexcept
+{
+	return msg.c_str();
+}
