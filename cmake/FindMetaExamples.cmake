@@ -49,8 +49,14 @@ function(get_excluded_meta_examples)
 			binary/multiple_kernel_learning.sg
 		)
 	ENDIF()
-  LIST(REMOVE_DUPLICATES EXCLUDED_META_EXAMPLES)
-    SET(EXCLUDED_META_EXAMPLES ${EXCLUDED_META_EXAMPLES} PARENT_SCOPE)
+  
+  # remove double entries to avoid errors due to "double" removing
+  LIST(LENGTH EXCLUDED_META_EXAMPLES NUM_EXCLUDED)
+  IF(NUM_EXCLUDED GREATER 0)
+    LIST(REMOVE_DUPLICATES EXCLUDED_META_EXAMPLES)
+  ENDIF()
+  
+  SET(EXCLUDED_META_EXAMPLES ${EXCLUDED_META_EXAMPLES} PARENT_SCOPE)
 
 endfunction()
 
