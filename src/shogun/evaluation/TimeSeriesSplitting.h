@@ -77,7 +77,7 @@ namespace shogun
 		index_t get_min_subset_size();
 
 		/** @return name of the SGSerializable */
-		virtual const char* get_name() const
+		virtual const char* get_name() const override
 		{
 			return "TimeSeriesSplitting";
 		}
