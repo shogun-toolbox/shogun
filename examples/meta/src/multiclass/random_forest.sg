@@ -3,6 +3,8 @@ CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
 CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
 Math:init_random(1)
+Parallel p = get_global_parallel()
+p.set_num_threads(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)
