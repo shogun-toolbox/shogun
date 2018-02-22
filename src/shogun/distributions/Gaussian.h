@@ -100,10 +100,9 @@ class CGaussian : public CDistribution
 		 * this distribution is a part
 		 *
 		 * @param alpha_k "belongingness" values of various data points
-		 * @param len length of alpha_k array
 		 * @return sum of values in alpha_k
 		 */
-		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
+		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
 
 		/** compute PDF
 		 *

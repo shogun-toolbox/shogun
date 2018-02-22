@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Weijie Lin, Alesis Novik, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Weijie Lin, Alesis Novik, Heiko Strathmann,
  *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Björn Esser
  */
 #include <shogun/lib/config.h>
@@ -48,8 +48,8 @@ void CGaussian::init()
 	{
 		case FULL:
 		case DIAG:
-			for (int32_t i=0; i<m_d.vlen; i++)
-				m_constant+=CMath::log(m_d.vector[i]);
+			for (const auto& v: m_d)
+				m_constant+=CMath::log(v);
 			break;
 		case SPHERICAL:
 			m_constant+=m_mean.vlen*CMath::log(m_d.vector[0]);
@@ -113,19 +113,17 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	return answer;
 }
 
-float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
+float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
 {
-	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
-	REQUIRE(
-	    dotdata, "dynamic cast from CFeatures to CDotFeatures returned NULL\n");
+	CDotFeatures* dotdata=features->as<CDotFeatures>();
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	// compute mean
-
 	float64_t alpha_k_sum=0;
 	SGVector<float64_t> mean(num_dim);
-	mean.fill_vector(mean.vector, mean.vlen, 0);
-	for (int32_t i = 0; i < len; i++)
+	linalg::zero(mean);
+
+	for (auto i: range(alpha_k.vlen))
 	{
 		alpha_k_sum+=alpha_k[i];
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
@@ -156,7 +154,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		cov_sum.zero();
 	}
 
-	for (int32_t j=0; j<len; j++)
+	for (auto j: range(alpha_k.vlen))
 	{
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
 		linalg::add(v, mean, v, -1.0, 1.0);
@@ -299,7 +297,6 @@ void CGaussian::set_d(const SGVector<float64_t> d)
 SGMatrix<float64_t> CGaussian::get_cov()
 {
 	SGMatrix<float64_t> cov(m_mean.vlen, m_mean.vlen);
-	cov.zero();
 
 	if (m_cov_type==FULL)
 	{
@@ -308,7 +305,6 @@ SGMatrix<float64_t> CGaussian::get_cov()
 
 		SGMatrix<float64_t> temp_holder(m_mean.vlen, m_mean.vlen);
 		SGMatrix<float64_t> diag_holder(m_mean.vlen, m_mean.vlen);
-		diag_holder.zero();
 		for (int32_t i = 0; i < m_d.vlen; i++)
 			diag_holder(i, i) = m_d.vector[i];
 #ifdef HAVE_LAPACK

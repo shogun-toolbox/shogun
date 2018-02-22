@@ -97,7 +97,7 @@ class CDiscreteDistribution : public CDistribution
 		 *
 		 * @param alpha_k "belongingness" values of various data points
 		 */
-		virtual void update_params_em(SGVector<float64_t> alpha_k)=0;
+		virtual void update_params_em(const SGVector<float64_t> alpha_k)=0;
 };
 }
 #endif /* _DISCRETEDISTRIBUTION_H__ */
