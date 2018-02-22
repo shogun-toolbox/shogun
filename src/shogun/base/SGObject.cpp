@@ -852,27 +852,27 @@ public:
 	{
 	}
 
-	virtual void on(bool* v)
+	virtual void on(const bool* v)
 	{
 		stream() << (*v ? "true" : "false");
 	}
-	virtual void on(int32_t* v)
+	virtual void on(const int32_t* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(int64_t* v)
+	virtual void on(const int64_t* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(float* v)
+	virtual void on(const float* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(double* v)
+	virtual void on(const double* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(CSGObject** v)
+	virtual void on(const CSGObject** v)
 	{
 		if (*v)
 		{
@@ -883,35 +883,47 @@ public:
 			stream() << "null";
 		}
 	}
-	virtual void on(SGVector<int>*)
+	virtual void on(const SGVector<int>* v)
 	{
-		stream() << "[...]";
+		to_string(v);
 	}
-	virtual void on(SGVector<float>*)
+	virtual void on(const SGVector<float>* v)
 	{
-		stream() << "[...]";
+		to_string(v);
 	}
-	virtual void on(SGVector<double>*)
+	virtual void on(const SGVector<double>* v)
 	{
-		stream() << "[...]";
+		to_string(v);
 	}
-	virtual void on(SGMatrix<int>*)
+	virtual void on(const SGMatrix<int>* mat)
 	{
-		stream() << "[...]";
+		to_string(mat);
 	}
-	virtual void on(SGMatrix<float>*)
+	virtual void on(const SGMatrix<float>* mat)
 	{
-		stream() << "[...]";
+		to_string(mat);
 	}
-	virtual void on(SGMatrix<double>* mat)
+	virtual void on(const SGMatrix<double>* mat)
 	{
-		stream() << "Matrix(" << mat->num_rows << "," << mat->num_cols << ")";
+		to_string(mat);
 	}
 
 private:
 	std::stringstream& stream()
 	{
 		return *m_stream;
+	}
+
+	template <class T>
+	void to_string(const SGMatrix<T>* m)
+	{
+		stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows << "," << m->num_cols << ")";
+	}
+
+	template <class T>
+	void to_string(const SGVector<T>* v)
+	{
+		stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen << ")";
 	}
 
 private:

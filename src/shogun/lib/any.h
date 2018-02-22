@@ -168,18 +168,18 @@ namespace shogun
 	public:
 		virtual ~AnyVisitor() = default;
 
-		virtual void on(bool*) = 0;
-		virtual void on(int32_t*) = 0;
-		virtual void on(int64_t*) = 0;
-		virtual void on(float*) = 0;
-		virtual void on(double*) = 0;
-		virtual void on(CSGObject**) = 0;
-		virtual void on(SGVector<int>*) = 0;
-		virtual void on(SGVector<float>*) = 0;
-		virtual void on(SGVector<double>*) = 0;
-		virtual void on(SGMatrix<int>*) = 0;
-		virtual void on(SGMatrix<float>*) = 0;
-		virtual void on(SGMatrix<double>*) = 0;
+		virtual void on(const bool*) = 0;
+		virtual void on(const int32_t*) = 0;
+		virtual void on(const int64_t*) = 0;
+		virtual void on(const float*) = 0;
+		virtual void on(const double*) = 0;
+		virtual void on(const CSGObject**) = 0;
+		virtual void on(const SGVector<int>*) = 0;
+		virtual void on(const SGVector<float>*) = 0;
+		virtual void on(const SGVector<double>*) = 0;
+		virtual void on(const SGMatrix<int>*) = 0;
+		virtual void on(const SGMatrix<float>*) = 0;
+		virtual void on(const SGMatrix<double>*) = 0;
 
 		void on(Empty*)
 		{
