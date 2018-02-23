@@ -1,9 +1,6 @@
 FROM debian:stretch
 MAINTAINER shogun@shogun-toolbox.org
 
-RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8A9CA30DB3C431E3
-RUN echo "deb http://ppa.launchpad.net/timsc/swig-3.0.12/ubuntu xenial main" | tee -a /etc/apt/sources.list
-
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
@@ -15,6 +12,10 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     openjdk-8-jdk ruby ruby-dev python-ply sphinx-doc python-pip \
     exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev lcov \
     protobuf-compiler libprotobuf-dev scala googletest
+
+RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8A9CA30DB3C431E3
+RUN echo "deb http://ppa.launchpad.net/timsc/swig-3.0.12/ubuntu xenial main" | tee -a /etc/apt/sources.list
+RUN apt-get update -qq && apt-get upgrade -y
 
 RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme codecov
 RUN gem install narray
