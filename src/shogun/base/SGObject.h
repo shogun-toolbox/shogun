@@ -358,7 +358,7 @@ public:
 					get_name(), _tag.name().c_str(),
 					exc.actual().c_str(), exc.expected().c_str());
 			}
-			ref_value(&value);
+			ref_value(value);
 			update_parameter(_tag, make_any(value));
 		}
 		else
@@ -374,12 +374,6 @@ public:
 	{
 		if (dynamic_cast<T*>(value))
 		{
-			if (has<T*>(name))
-			{
-				SG_REF(value);
-				T* old = get<T*>(name);
-				SG_UNREF(old);
-			}
 			put(Tag<T*>(name), (T*) value);
 			return true;
 		}
@@ -711,8 +705,13 @@ private:
 	void unset_global_objects();
 	void init();
 
-	static void ref_value(CSGObject* const* value);
-	static void ref_value(...);
+	/** Overloaded helper to increase reference counter */
+	static void ref_value(CSGObject* value) { SG_REF(value); }
+
+	/** Overloaded helper to increase reference counter
+	 * Here a no-op for non CSGobject pointer parameters */
+	template <typename T, std::enable_if_t<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>* = nullptr>
+	static void ref_value(T value) {}
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.

@@ -528,10 +528,10 @@ TEST(SGObject, watched_parameter)
 TEST(SGObject, watched_parameter_object)
 {
 	auto obj = some<CMockObject>();
-	Some<CMockObject> other_obj = some<CMockObject>();
+	auto other_obj = some<CMockObject>();
 
 	EXPECT_EQ(other_obj->ref_count(), 1);
-	obj->put("watched_object", dynamic_cast<CSGObject*>(other_obj.get()));
+	obj->put(Tag<CMockObject*>("watched_object"), other_obj.get());
 	EXPECT_EQ(other_obj->ref_count(), 2);
 	EXPECT_FALSE(other_obj->equals(obj));
 	obj = nullptr;

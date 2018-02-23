@@ -297,7 +297,7 @@ namespace shogun
 			        "Integer", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 
 			watch_param(
-			    "watched_object", (CSGObject**)&m_object,
+			    "watched_object", &m_object,
 			    AnyParameterProperties(
 			        "Object", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
 		}
@@ -306,6 +306,6 @@ namespace shogun
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
 
-		CSGObject* m_object = 0;
+		CMockObject* m_object = nullptr;
 	};
 }

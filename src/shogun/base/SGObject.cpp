@@ -841,15 +841,6 @@ bool CSGObject::has(const std::string& name) const
 	return has_parameter(BaseTag(name));
 }
 
-void CSGObject::ref_value(CSGObject* const* value)
-{
-	SG_REF(*value);
-}
-
-void CSGObject::ref_value(...)
-{
-}
-
 class ToStringVisitor : public AnyVisitor
 {
 public:
