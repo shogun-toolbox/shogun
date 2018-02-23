@@ -46,3 +46,7 @@ RUN cd /tmp;\
     cd build;\
     cmake ../;\
     make install;
+
+ADD https://launchpad.net/~timsc/+archive/ubuntu/swig-3.0.12/+files/swig3.0_3.0.12-ppa0-xenial1_amd64.deb /tmp/
+RUN cd /tmp;\
+    dpkg -i swig3.0_3.0.12-ppa0-xenial1_amd64.deb;
