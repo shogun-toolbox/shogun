@@ -11,7 +11,7 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     openjdk-8-jdk ruby ruby-dev python-ply sphinx-doc python-pip \
     exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev lcov \
-    protobuf-compiler libprotobuf-dev scala googletest
+    protobuf-compiler libprotobuf-dev scala googletest gnupg
 
 RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8A9CA30DB3C431E3
 RUN echo "deb http://ppa.launchpad.net/timsc/swig-3.0.12/ubuntu xenial main" | tee -a /etc/apt/sources.list
