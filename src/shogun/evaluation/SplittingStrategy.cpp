@@ -33,7 +33,7 @@ CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
 	reset_subsets();
 }
 
-void CSplittingStrategy::reset_subsets() const
+void CSplittingStrategy::reset_subsets()
 {
 	if (m_subset_indices)
 		SG_UNREF(m_subset_indices);
@@ -69,11 +69,14 @@ CSplittingStrategy::~CSplittingStrategy()
 	SG_UNREF(m_subset_indices);
 }
 
-const SGVector<index_t> CSplittingStrategy::validation(index_t subset_idx) const
+const SGVector<index_t>
+CSplittingStrategy::validation(const index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{
-		build_subsets();
+		SG_ERROR("Call %s::build_subsets() before accessing them! If this error"
+				" stays, its an implementation error of %s::build_subsets()\n",
+				get_name(), get_name());
 	}
 
 	/* construct SGVector copy from index vector */
@@ -91,11 +94,14 @@ const SGVector<index_t> CSplittingStrategy::validation(index_t subset_idx) const
 	return result;
 }
 
-const SGVector<index_t> CSplittingStrategy::train(index_t subset_idx) const
+const SGVector<index_t>
+CSplittingStrategy::train(const index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{
-		build_subsets();
+		SG_ERROR("Call %s::build_subsets() before accessing them! If this error"
+				" stays, its an implementation error of %s::build_subsets()\n",
+				get_name(), get_name());
 	}
 
 	CDynamicArray<index_t>* to_invert=(CDynamicArray<index_t>*)

@@ -33,9 +33,8 @@ class CLabels;
  * just have to be filled.
  * Every element represents one index subset.
  *
- * The method will be called whenever the first subset (for training or
- * validation) is requested. Calling the method again means that the
- * indices are rebuilt.
+ * The method will be called in the constructor of the derived classes.
+ * Calling the method again means that the indices are rebuilt.
  */
 class CSplittingStrategy: public CSGObject
 {
@@ -60,7 +59,7 @@ public:
 	 * @return newly created vector of subset indices of the specified
 	 * subset is written here.
 	 */
-	const SGVector<index_t> validation(index_t subset_idx) const;
+	const SGVector<index_t> validation(const index_t subset_idx) const;
 
 	/** generates a newly created SGVector<index_t> with inverse indices of the
 	 * subset with the desired index. inverse here means all other indices.
@@ -69,7 +68,7 @@ public:
 	 * @return newly created vector of the subset's inverse indices is
 	 * written here.
 	 */
-	const SGVector<index_t> train(index_t subset_idx) const;
+	const SGVector<index_t> train(const index_t subset_idx) const;
 
 	/** @return number of subsets. */
 	index_t get_num_subsets() const;
@@ -80,11 +79,11 @@ protected:
 	 * indices. Note that CDynamicArray<index_t> instances for every subset are
 	 * created in the constructor of this class - they just have to be filled.
 	 */
-	virtual void build_subsets() const = 0;
+	virtual void build_subsets() = 0;
 
 	/** resets the current subsets, meaning that all the arrays of indices will
 	 * be empty again. To be called before build_subsets. */
-	void reset_subsets() const;
+	void reset_subsets();
 
 private:
 	void init();
@@ -96,14 +95,14 @@ protected:
 	CLabels* m_labels;
 
 	/** subset indices */
-	mutable CDynamicObjectArray* m_subset_indices;
+	CDynamicObjectArray* m_subset_indices;
 
 	/** additional variable to store number of index subsets */
 	index_t m_num_subsets;
 
 	/** flag to check whether there is a set of index sets stored. If not,
 	 * call build_subsets() */
-	mutable bool m_is_filled;
+	bool m_is_filled;
 };
 }
 

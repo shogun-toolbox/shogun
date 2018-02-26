@@ -44,7 +44,7 @@ public:
 
 protected:
 	/** implementation of the standard cross-validation splitting strategy */
-	virtual void build_subsets() const;
+	virtual void build_subsets();
 };
 }
 

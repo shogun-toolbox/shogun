@@ -21,9 +21,10 @@ CCrossValidationSplitting::CCrossValidationSplitting(
 	CSplittingStrategy(labels, num_subsets)
 {
 	m_rng = sg_rand;
+	build_subsets();
 }
 
-void CCrossValidationSplitting::build_subsets() const
+void CCrossValidationSplitting::build_subsets()
 {
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();

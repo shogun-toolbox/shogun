@@ -89,7 +89,7 @@ namespace shogun
 		index_t m_min_subset_size;
 
 	protected:
-		void build_subsets() const override;
+		void build_subsets() override;
 
 	private:
 		void init();

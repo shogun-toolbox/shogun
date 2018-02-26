@@ -46,7 +46,7 @@ public:
 
 protected:
 	/** implementation of the stratified cross-validation splitting strategy */
-	virtual void build_subsets() const;
+	virtual void build_subsets();
 };
 }
 

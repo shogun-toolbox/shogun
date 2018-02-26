@@ -67,9 +67,10 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 	}
 
 	m_rng = sg_rand;
+	build_subsets();
 }
 
-void CStratifiedCrossValidationSplitting::build_subsets() const
+void CStratifiedCrossValidationSplitting::build_subsets()
 {
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();

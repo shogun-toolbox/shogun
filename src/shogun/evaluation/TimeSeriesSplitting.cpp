@@ -45,6 +45,7 @@ CTimeSeriesSplitting::CTimeSeriesSplitting(CLabels* labels, index_t num_subsets)
     : CSplittingStrategy(labels, num_subsets)
 {
 	init();
+	build_subsets();
 }
 
 void CTimeSeriesSplitting::init()
@@ -53,7 +54,7 @@ void CTimeSeriesSplitting::init()
 	m_min_subset_size = 1;
 }
 
-void CTimeSeriesSplitting::build_subsets() const
+void CTimeSeriesSplitting::build_subsets()
 {
 	reset_subsets();
 	m_is_filled = true;
@@ -99,6 +100,9 @@ void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
 	    "subsets and labels.",
 	    num_labels - (num_subsets - 1) * (num_labels / num_subsets) - 1);
 	m_min_subset_size = min_size;
+
+	// Rebuild subsets considering the new minimum subset size
+	build_subsets();
 }
 
 index_t CTimeSeriesSplitting::get_min_subset_size()

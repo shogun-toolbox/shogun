@@ -86,6 +86,7 @@ TEST(CrossValidationMMD, biased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	sg_rand->set_seed(12345);
 	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
@@ -98,6 +99,7 @@ TEST(CrossValidationMMD, biased_full)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
+	sg_rand->set_seed(12345);
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
 
@@ -179,6 +181,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	sg_rand->set_seed(12345);
 	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
@@ -191,6 +194,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
+	sg_rand->set_seed(12345);
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
 
@@ -272,6 +276,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	SG_UNREF(distance_instance);
 
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	sg_rand->set_seed(12345);
 	auto cv=CrossValidationMMD(n, m, num_folds, num_null_samples);
 	cv.m_stype=stype;
 	cv.m_alpha=alpha;
@@ -284,6 +289,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
+	sg_rand->set_seed(12345);
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
 
