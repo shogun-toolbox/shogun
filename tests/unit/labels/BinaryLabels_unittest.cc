@@ -35,27 +35,6 @@ public:
 	}
 };
 
-TEST_F(BinaryLabels, scores_to_probabilities)
-{
-	CBinaryLabels* labels=new CBinaryLabels(10);
-	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));
-
-	for (index_t i=0; i<labels->get_num_labels(); ++i)
-		labels->set_value(i%2==0 ? 1 : -1, i);
-
-	//labels->get_values().display_vector("scores");
-	// call with 0,0 to make the method compute sigmoid parameters itself
-	// g-test somehow does not allow std parameters
-	labels->scores_to_probabilities(0,0);
-
-	/* only two probabilities will be the result. Results from implementation that
-	 * comes with the original paper, see BinaryLabels documentation */
-	EXPECT_NEAR(labels->get_value(0), 0.8571428439385661, 10E-15);
-	EXPECT_NEAR(labels->get_value(1), 0.14285715606143384, 10E-15);
-
-	SG_UNREF(labels);
-}
-
 TEST_F(BinaryLabels, serialization)
 {
 	CBinaryLabels* labels = new CBinaryLabels(10);
