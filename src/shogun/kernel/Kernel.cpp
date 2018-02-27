@@ -926,16 +926,12 @@ void CKernel::register_params()   {
 	SG_ADD(&cache_size, "cache_size",
 	    "Cache size in MB.", MS_NOT_AVAILABLE);
 
-//	SG_ADD((CSGObject**) &lhs, "lhs",
-//      "Feature vectors to occur on left hand side.", MS_NOT_AVAILABLE);
-	m_parameters->add((CSGObject**)&lhs, "lhs", "Feature vectors to occur on left hand side.");
-	watch_param("lhs", &lhs, AnyParameterProperties("Feature vectors to occur on left hand side."));
-
-//	SG_ADD((CSGObject**) &rhs, "rhs",
-//      "Feature vectors to occur on right hand side.", MS_NOT_AVAILABLE);
-	m_parameters->add((CSGObject**)&rhs, "rhs", "Feature vectors to occur on right hand side.");
-	watch_param("rhs", &rhs, AnyParameterProperties("Feature vectors to occur on right hand side."));
-
+	SG_ADD(
+	    &lhs, "lhs", "Feature vectors to occur on left hand side.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &rhs, "rhs", "Feature vectors to occur on right hand side.",
+	    MS_NOT_AVAILABLE);
 	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",
 	    "If features on lhs are the same as on rhs.", MS_NOT_AVAILABLE);
 	SG_ADD(&num_lhs, "num_lhs", "Number of feature vectors on left hand side.",
