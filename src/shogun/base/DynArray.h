@@ -106,7 +106,7 @@ template <class T> class DynArray
 		 */
 		inline int32_t set_granularity(int32_t g)
 		{
-			g=std::max(g,1);
+			g = std::max(g, 1);
 			this->resize_granularity = g;
 			return g;
 		}
@@ -445,14 +445,17 @@ template <class T> class DynArray
 		void shuffle()
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(array[i], array[CMath::random(i, current_num_elements-1)]);
+				std::swap(
+				    array[i], 
+				    array[CMath::random(i, current_num_elements - 1)]);
 		}
 
 		/** randomizes the array with external random state */
 		void shuffle(CRandom * rand)
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
-				std::swap(array[i], array[rand->random(i, current_num_elements-1)]);
+				std::swap(
+				    array[i], array[rand->random(i, current_num_elements - 1)]);
 		}
 
 		/** set array with a constant */
