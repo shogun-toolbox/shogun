@@ -35,10 +35,10 @@
 #include <unordered_map>
 #include <memory>
 
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
 
 namespace shogun
 {
@@ -1019,7 +1019,9 @@ CSGObject* CSGObject::create_empty() const
 
 void CSGObject::put(const std::string& name, CSGObject* value)
 {
-	REQUIRE(value, "Cannot put %s::%s, no object provided.\n", get_name(), name.c_str());
+	REQUIRE(
+	    value, "Cannot put %s::%s, no object provided.\n", get_name(),
+	    name.c_str());
 
 	if (put_sgobject_type_dispatcher<CKernel>(name, value))
 		return;
@@ -1030,11 +1032,11 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 	if (put_sgobject_type_dispatcher<CLabels>(name, value))
 		return;
 
-
-	SG_ERROR("Cannot put object %s as parameter %s::%s of type %s, type does not match.\n",
-			  value->get_name(), get_name(), name.c_str(),
-			  self->map[BaseTag(name)].get_value().type().c_str());
-
+	SG_ERROR(
+	    "Cannot put object %s as parameter %s::%s of type %s, type does not "
+	    "match.\n",
+	    value->get_name(), get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
 }
 
 CSGObject* CSGObject::get(const std::string& name)
@@ -1048,9 +1050,9 @@ CSGObject* CSGObject::get(const std::string& name)
 	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
 		return result;
 
-
-	SG_ERROR("Cannot get parameter %s::%s of type %s as object, not object type.\n",
-			get_name(), name.c_str(), self->map[BaseTag(name)].get_value().type().c_str());
+	SG_ERROR(
+	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
+	    get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
 	return nullptr;
 }
-
