@@ -328,11 +328,5 @@ class CKernelMachine : public CMachine
 		/** array of ``support vectors'' (indices of feature objects) */
 		SGVector<int32_t> m_svs;
 };
-
-/** Creates kernel machine by its name
- *
- * @param name the name of the kernel machine to create
- */
-CKernelMachine* kernel_machine(const char* name);
 }
 #endif /* _KERNEL_MACHINE_H__ */

@@ -6,7 +6,6 @@
  *          Fernando Iglesias, Thoralf Klein
  */
 
-#include <shogun/base/class_list.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -652,9 +651,4 @@ void CKernelMachine::init()
 bool CKernelMachine::supports_locking() const
 {
 	return true;
-}
-
-CKernelMachine* shogun::kernel_machine(const char* name)
-{
-	return create_object<CKernelMachine>(name);
 }

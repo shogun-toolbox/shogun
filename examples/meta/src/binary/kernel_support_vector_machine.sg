@@ -15,7 +15,7 @@ Kernel k = kernel("GaussianKernel", log_width=1.0074515102711323)
 #![set_parameters]
 
 #![create_instance]
-KernelMachine svm = kernel_machine("LibSVM", C1=1.0, C2=1.0, kernel=k, labels=labels_train, epsilon=0.001)
+Machine svm = machine("LibSVM", C1=1.0, C2=1.0, kernel=k, labels=labels_train, epsilon=0.001)
 #![create_instance]
 
 #![train_and_apply]

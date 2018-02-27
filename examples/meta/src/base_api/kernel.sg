@@ -1,3 +1,0 @@
-Kernel k = kernel("GaussianKernel")
-
-k.get_name()

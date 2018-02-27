@@ -38,10 +38,10 @@ TEST(CreateObject,create_kernel)
     delete obj;
 }
 
-TEST(CreateObject, create_kernel_machine)
+TEST(CreateObject, create_machine)
 {
-	auto* obj = kernel_machine("LibSVM");
+	auto* obj = machine("LibSVM");
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(dynamic_cast<CKernelMachine*>(obj) != nullptr);
+	EXPECT_TRUE(dynamic_cast<CMachine*>(obj) != nullptr);
 	delete obj;
 }
