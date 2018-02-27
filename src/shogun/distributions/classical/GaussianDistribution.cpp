@@ -114,7 +114,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 	/* for easier to read code */
 	index_t num_samples=samples.num_cols;
 
-	float64_t const_part=-0.5 * m_dimension * CMath::log(2 * CMath::PI);
+	float64_t const_part = -0.5 * m_dimension * std::log(2 * CMath::PI);
 
 	/* determinant is product of diagonal elements of triangular matrix */
 	float64_t log_det_part=0;
@@ -168,4 +168,3 @@ void CGaussianDistribution::init()
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "
 			"depending on the factorization type.", MS_NOT_AVAILABLE);
 }
-

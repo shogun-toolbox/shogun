@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Sanuj Sharma, 
- *          Viktor Gal, Roman Votyakov, Wu Lin, Evgeniy Andreev, Weijie Lin, 
+ * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Sanuj Sharma,
+ *          Viktor Gal, Roman Votyakov, Wu Lin, Evgeniy Andreev, Weijie Lin,
  *          Björn Esser, Sergey Lisitsyn
  */
 
@@ -453,10 +453,10 @@ float64_t CStatistics::lnormal_cdf(float64_t x)
 		return -2.0*f-log_of_2;
 	}
 	else if (x<ERFC_CASE2)
-		return CMath::log(erfc8_weighted_sum(x))-log_of_2-x*x*0.5;
+		return std::log(erfc8_weighted_sum(x)) - log_of_2 - x * x * 0.5;
 
 	//id3 = ~id2 & ~id1; lp(id3) = log(erfc(-z(id3)/sqrt(2))/2);
-	return CMath::log(normal_cdf(x));
+	return std::log(normal_cdf(x));
 }
 
 float64_t CStatistics::erfc8_weighted_sum(float64_t x)
@@ -849,16 +849,16 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	/* initial Point and Initial Fun Value */
 	/* result parameters of sigmoid */
 	float64_t a = 0;
-	float64_t b = CMath::log((prior0 + 1.0) / (prior1 + 1.0));
+	float64_t b = std::log((prior0 + 1.0) / (prior1 + 1.0));
 	float64_t fval = 0.0;
 
 	for (index_t i = 0; i < length; ++i)
 	{
 		float64_t fApB = scores[i] * a + b;
 		if (fApB >= 0)
-			fval += t[i] * fApB + CMath::log(1 + CMath::exp(-fApB));
+			fval += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
 		else
-			fval += (t[i] - 1) * fApB + CMath::log(1 + CMath::exp(fApB));
+			fval += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
 	}
 
 	index_t it;
@@ -924,10 +924,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 			{
 				float64_t fApB = scores[i] * newA + newB;
 				if (fApB >= 0)
-					newf += t[i] * fApB + CMath::log(1 + CMath::exp(-fApB));
+					newf += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
 				else
-					newf +=
-					    (t[i] - 1) * fApB + CMath::log(1 + CMath::exp(fApB));
+					newf += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
 			}
 
 			/* Check sufficient decrease */
@@ -1018,16 +1017,16 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	/* initial Point and Initial Fun Value */
 	/* result parameters of sigmoid */
 	float64_t a=0;
-	float64_t b=CMath::log((prior0+1.0)/(prior1+1.0));
+	float64_t b = std::log((prior0 + 1.0) / (prior1 + 1.0));
 	float64_t fval=0.0;
 
 	for (index_t i=0; i<length; ++i)
 	{
 		float64_t fApB=scores[i]*a+b;
 		if (fApB>=0)
-			fval+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
+			fval += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
 		else
-			fval+=(t[i]-1)*fApB+CMath::log(1+CMath::exp(fApB));
+			fval += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
 	}
 
 	index_t it;
@@ -1093,9 +1092,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 			{
 				float64_t fApB=scores[i]*newA+newB;
 				if (fApB>=0)
-					newf+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
+					newf += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
 				else
-					newf+=(t[i]-1)*fApB+CMath::log(1+CMath::exp(fApB));
+					newf += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
 			}
 
 			/* Check sufficient decrease */

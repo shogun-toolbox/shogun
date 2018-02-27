@@ -105,7 +105,7 @@ float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 	REQUIRE(num_param==1,"number of parameters in mixture model is 1"
 	" (i.e. number of components). num_components should be 1. %d supplied\n",num_param)
 
-	return CMath::log(static_cast<float64_t>(get_num_components()));
+	return std::log(static_cast<float64_t>(get_num_components()));
 }
 
 float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)
@@ -124,7 +124,9 @@ float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
 		CDistribution* ith_comp=m_components->get_element(i)->as<CDistribution>();
-		log_likelihood_component[i]=ith_comp->get_log_likelihood_example(num_example)+CMath::log(m_weights[i]);
+		log_likelihood_component[i] =
+		    ith_comp->get_log_likelihood_example(num_example) +
+		    std::log(m_weights[i]);
 
 		SG_UNREF(ith_comp);
 	}

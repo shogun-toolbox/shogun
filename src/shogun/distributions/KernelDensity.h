@@ -142,7 +142,8 @@ public :
 		{
 			case K_GAUSSIAN:
 			{
-				return -0.5*dim* CMath::log(2*CMath::PI)-dim*CMath::log(width);
+				return -0.5 * dim * std::log(2 * CMath::PI) -
+				       dim * std::log(width);
 				break;
 			}
 			default:

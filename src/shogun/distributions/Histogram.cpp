@@ -128,7 +128,7 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 			free_feature_vector(vector, num_example, free_vec);
 
 		if (num_occurences>0)
-			deriv+=CMath::log((float64_t) num_occurences)-hist[num_param];
+			deriv += std::log((float64_t)num_occurences) - hist[num_param];
 		else
 			deriv=-CMath::INFTY;
 
@@ -157,4 +157,3 @@ SGVector<float64_t> CHistogram::get_histogram()
 {
 	return SGVector<float64_t>(hist,get_num_model_parameters(),false);
 }
-

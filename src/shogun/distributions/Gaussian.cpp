@@ -43,17 +43,17 @@ CGaussian::CGaussian(
 
 void CGaussian::init()
 {
-	m_constant=CMath::log(2*M_PI)*m_mean.vlen;
+	m_constant = std::log(2 * M_PI) * m_mean.vlen;
 	switch (m_cov_type)
 	{
 		case FULL:
 		case DIAG:
 			for (const auto& v: m_d)
-				m_constant+=CMath::log(v);
-			break;
-		case SPHERICAL:
-			m_constant+=m_mean.vlen*CMath::log(m_d.vector[0]);
-			break;
+			    m_constant += std::log(v);
+		    break;
+	    case SPHERICAL:
+		    m_constant += m_mean.vlen * std::log(m_d.vector[0]);
+		    break;
 	}
 }
 
