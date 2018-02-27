@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Björn Esser, Thoralf Klein, Heiko Strathmann, 
+ * Authors: Viktor Gal, Björn Esser, Thoralf Klein, Heiko Strathmann,
  *          Soeren Sonnenburg
  */
 #ifdef _WIN32
@@ -309,8 +309,8 @@ float64_t CRandom::sample_tail() const
 	float64_t m_R_reciprocal = 1.0 / m_R;
 	do
 	{
-	    x = -CMath::log(random_half_open()) * m_R_reciprocal;
-	    y = -CMath::log(random_half_open());
+		x = -std::log(random_half_open()) * m_R_reciprocal;
+		y = -std::log(random_half_open());
 	} while(y+y < x*x);
 	return m_R + x;
 }
@@ -327,7 +327,7 @@ float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
     // y=0 so it doesn't matter. Remember that a Gaussian effectively has a tail going
     // off into x == infinity, hence asking what is x when y=0 is an invalid question
     // in the context of this class.
-    return CMath::sqrt(-2.0 * CMath::log(y));
+	return CMath::sqrt(-2.0 * std::log(y));
 }
 
 void CRandom::reinit(uint32_t seed)

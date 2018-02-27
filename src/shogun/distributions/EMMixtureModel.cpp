@@ -52,7 +52,8 @@ float64_t CEMMixtureModel::expectation_step()
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
 		{
 			CDistribution* jth_component=data.components->get_element(j)->as<CDistribution>();
-			alpha_ij[j]=CMath::log(data.weights[j])+jth_component->get_log_likelihood_example(i);
+			alpha_ij[j] = std::log(data.weights[j]) +
+			              jth_component->get_log_likelihood_example(i);
 			SG_UNREF(jth_component);
 		};
 

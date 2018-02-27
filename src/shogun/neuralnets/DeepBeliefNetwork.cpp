@@ -425,7 +425,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 			for (int32_t i=0; i<m_layer_sizes->element(0); i++)
 				sum += CMath::exp(Out(i,j)-max);
 
-			float64_t normalizer = CMath::log(sum);
+			float64_t normalizer = std::log(sum);
 			for (int32_t k=0; k<m_layer_sizes->element(0); k++)
 				Out(k,j) = CMath::exp(Out(k,j)-max-normalizer);
 		}
@@ -641,4 +641,3 @@ void CDeepBeliefNetwork::init()
 
 	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", MS_NOT_AVAILABLE);
 }
-

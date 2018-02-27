@@ -296,7 +296,7 @@ float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t >
 	float64_t wv_term = 0;
 	for (int32_t i=0; i<m_num_hidden; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			wv_term += CMath::log(1.0+CMath::exp(wv_buffer(i,j)));
+			wv_term += std::log(1.0 + CMath::exp(wv_buffer(i, j)));
 
 	float64_t F = -1.0*(bv_term+wv_term)/m_batch_size;
 
@@ -444,7 +444,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	for (int32_t j=0; j<m_batch_size; j++)
 		visible(indices[j],j) = 1.0-visible(indices[j],j);
 
-	return m_num_visible*CMath::log(1.0/(1+CMath::exp(f1-f2)));
+	return m_num_visible * std::log(1.0 / (1 + CMath::exp(f1 - f2)));
 }
 
 void CRBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > result)
@@ -506,7 +506,7 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
 					sum += CMath::exp(result(i+offset,j)-max);
 
-				float64_t normalizer = CMath::log(sum);
+				float64_t normalizer = std::log(sum);
 
 				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
 					result(i+offset,j) =
@@ -662,4 +662,3 @@ void CRBM::init()
 	       "Number of Parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_params, "params", "Parameters", MS_NOT_AVAILABLE);
 }
-
