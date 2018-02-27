@@ -354,17 +354,19 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-					"Cannot set parameter %s::%s of type %s, incompatible provided type %s.\n",
-					get_name(), _tag.name().c_str(),
-					exc.actual().c_str(), exc.expected().c_str());
+					"Cannot set parameter %s::%s of type %s, incompatible "
+					"provided type %s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str());
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
-			SG_ERROR("Parameter %s::%s does not exist.\n",
-				get_name(), _tag.name().c_str());
+			SG_ERROR(
+				"Parameter %s::%s does not exist.\n", get_name(),
+				_tag.name().c_str());
 		}
 	}
 
@@ -374,7 +376,7 @@ public:
 	{
 		if (dynamic_cast<T*>(value))
 		{
-			put(Tag<T*>(name), (T*) value);
+			put(Tag<T*>(name), (T*)value);
 			return true;
 		}
 		return false;
@@ -417,7 +419,8 @@ public:
 	 * @param name name of the parameter
 	 * @param value value of the parameter, wrapped in smart pointer
 	 */
-	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
 	void put(const std::string& name, Some<T> value)
 	{
 		put(name, (CSGObject*)(value.get()));
@@ -429,7 +432,11 @@ public:
 	 * @param name name of the parameter
 	 * @param value value of the parameter along with type information
 	 */
-	template <typename T, typename T2 = typename std::enable_if<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>::type>
+	template <typename T,
+		      typename T2 = typename std::enable_if<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>::type>
 	void put(const std::string& name, T value)
 	{
 		put(Tag<T>(name), value);
@@ -452,7 +459,8 @@ public:
 		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Cannot get parameter %s::%s of type %s, incompatible requested type %s.\n",
+				"Cannot get parameter %s::%s of type %s, incompatible "
+				"requested type %s.\n",
 				get_name(), _tag.name().c_str(), exc.actual().c_str(),
 				exc.expected().c_str());
 		}
@@ -706,12 +714,21 @@ private:
 	void init();
 
 	/** Overloaded helper to increase reference counter */
-	static void ref_value(CSGObject* value) { SG_REF(value); }
+	static void ref_value(CSGObject* value)
+	{
+		SG_REF(value);
+	}
 
 	/** Overloaded helper to increase reference counter
 	 * Here a no-op for non CSGobject pointer parameters */
-	template <typename T, std::enable_if_t<!std::is_base_of<CSGObject, typename std::remove_pointer<T>::type>::value, T>* = nullptr>
-	static void ref_value(T value) {}
+	template <typename T,
+		      std::enable_if_t<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>* = nullptr>
+	static void ref_value(T value)
+	{
+	}
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.

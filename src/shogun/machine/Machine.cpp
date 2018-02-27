@@ -25,8 +25,7 @@ CMachine::CMachine()
 	SG_ADD((machine_int_t*) &m_solver_type, "solver_type",
 	       "Type of solver.", MS_NOT_AVAILABLE);
 
-	SG_ADD(&m_labels, "labels",
-	       "Labels to be used.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_labels, "labels", "Labels to be used.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_store_model_features, "store_model_features",
 	       "Should feature data of model be stored after training?", MS_NOT_AVAILABLE);
 	SG_ADD(&m_data_locked, "data_locked",
