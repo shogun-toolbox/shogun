@@ -11,16 +11,16 @@
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
-#include <shogun/lib/config.h>
-
-#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/LatentLabels.h>
+#include <shogun/base/class_list.h>
 #include <shogun/features/Features.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/LatentLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/StructuredLabels.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -455,5 +455,11 @@ class CMachine : public CSGObject
 		/** Mutex used to pause threads */
 		std::mutex m_mutex;
 };
+
+/** Creates machine by its name
+ *
+ * @param name the name of the machine to create
+ */
+CMachine* machine(const char* name);
 }
 #endif // _MACHINE_H__
