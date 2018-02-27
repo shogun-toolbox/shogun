@@ -46,12 +46,6 @@ matrix:
         - CMAKE_OPTIONS="-DINTERFACE_CSHARP=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
-    - compiler: clang
-      services: docker
-      env:
-        - CMAKE_OPTIONS="-DINTERFACE_LUA=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-        - CC=clang
-        - CXX=clang++
     - compiler: gcc
       services: docker
       env:
@@ -63,12 +57,6 @@ matrix:
         - CMAKE_OPTIONS="-DINTERFACE_R=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
-#    - compiler: clang
-#      services: docker
-#      env:
-#        - CMAKE_OPTIONS="-DScala=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-#        - CC=clang
-#        - CXX=clang++
   allow_failures:
     - compiler: gcc
       services: docker
