@@ -446,7 +446,7 @@ template <class T> class DynArray
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
-				    array[i],
+				    array[i], 
 				    array[CMath::random(i, current_num_elements - 1)]);
 		}
 
