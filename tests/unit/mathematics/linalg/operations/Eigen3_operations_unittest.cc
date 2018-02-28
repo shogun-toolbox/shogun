@@ -1734,7 +1734,7 @@ TEST(LinalgBackendEigen, SGMatrix_trace)
 	EXPECT_NEAR(trace(A), tr, 1e-15);
 }
 
-TEST(LinalgBackendEigen, SGMatrix_tract_dot)
+TEST(LinalgBackendEigen, SGMatrix_trace_dot)
 {
 	const index_t m = 2;
 	float64_t data_A[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194};
