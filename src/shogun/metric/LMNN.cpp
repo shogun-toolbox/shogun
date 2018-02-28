@@ -104,13 +104,10 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
 		// plus the number of current impostors to account for the margin
-		// trace of the product of two matrices computed fast using
-		// trace(A*B)=sum(A.*B')
 		SG_DEBUG("Computing objective.\n")
 		obj[iter] = m_regularization * cur_impostors.size();
-		obj[iter] += linalg::trace(
-		    linalg::element_prod(
-		        linalg::matrix_prod(L, L, true, false), gradient));
+		obj[iter] +=
+		    linalg::trace_dot(linalg::matrix_prod(L, L, true, false), gradient);
 
 		// Correct step size
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
