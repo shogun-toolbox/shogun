@@ -53,7 +53,7 @@ float64_t CInference::get_scale() const
 void CInference::set_scale(float64_t scale)
 {
 	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
-	m_log_scale=CMath::log(scale);
+	m_log_scale = std::log(scale);
 }
 
 SGMatrix<float64_t> CInference::get_multiclass_E()

@@ -80,12 +80,12 @@ void CHomogeneousKernelMap::init()
 						m_period = 6.64 * CMath::sqrt (static_cast<float64_t> (m_order))  + 7.24;
 						break;
 					case HomogeneousKernelIntersection:
-						m_period = 2.38 * CMath::log (m_order + 0.8) + 5.6;
-						break;
-				}
-				break;
-			case HomogeneousKernelMapWindowRectangular:
-				switch (m_kernel) {
+				        m_period = 2.38 * std::log(m_order + 0.8) + 5.6;
+				        break;
+			        }
+			        break;
+		    case HomogeneousKernelMapWindowRectangular:
+			    switch (m_kernel) {
 					case HomogeneousKernelChi2:
 						m_period = 8.80 * CMath::sqrt (m_order + 4.44) - 12.6;
 						break;
@@ -93,10 +93,10 @@ void CHomogeneousKernelMap::init()
 						m_period = 9.63 * CMath::sqrt (m_order + 1.00) - 2.93;
 						break;
 					case HomogeneousKernelIntersection:
-						m_period = 2.00 * CMath::log (m_order + 0.99) + 3.52;
-						break;
-				}
-				break;
+				        m_period = 2.00 * std::log(m_order + 0.99) + 3.52;
+				        break;
+			        }
+			        break;
 		}
 		m_period = CMath::max (m_period, 1.0) ;
 	}
@@ -143,7 +143,7 @@ void CHomogeneousKernelMap::init()
 			x = std::ldexp (mantissa, exponent);
 			xgamma = CMath::pow (x, m_gamma);
 			Lxgamma = L * xgamma;
-			Llogx = L * CMath::log (x);
+			Llogx = L * std::log(x);
 
 			*tablep++ = CMath::sqrt (Lxgamma * kappa[0]);
 			for (j = 1 ; j <= m_order; ++j) {
@@ -246,12 +246,15 @@ CHomogeneousKernelMap::get_spectrum(float64_t omega) const
 		case HomogeneousKernelChi2:
 			return 2.0 / (CMath::exp (CMath::PI * omega) + CMath::exp (-CMath::PI * omega)) ;
 		case HomogeneousKernelJS:
-			return (2.0 / CMath::log (4.0)) *
-				2.0 / (CMath::exp (CMath::PI * omega) + CMath::exp (-CMath::PI * omega)) /
-				(1 + 4 * omega*omega);
-		default:
-			/* throw exception */
-			throw ShogunException ("CHomogeneousKernelMap::get_spectrum: no valid kernel has been set!");
+		    return (2.0 / std::log(4.0)) * 2.0 /
+		           (CMath::exp(CMath::PI * omega) +
+		            CMath::exp(-CMath::PI * omega)) /
+		           (1 + 4 * omega * omega);
+	    default:
+		    /* throw exception */
+		    throw ShogunException(
+		        "CHomogeneousKernelMap::get_spectrum: no "
+		        "valid kernel has been set!");
 	}
 }
 

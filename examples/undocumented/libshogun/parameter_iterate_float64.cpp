@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	{
 
 		float64_t width=CMath::pow(2.0,k);
-		float64_t log_width=CMath::log(width/2.0)/2.0;
+		float64_t log_width = std::log(width / 2.0) / 2.0;
 
 		/* create parameter to change current kernel width */
 		Parameter* param=new Parameter();

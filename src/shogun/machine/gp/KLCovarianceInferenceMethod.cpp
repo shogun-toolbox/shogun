@@ -317,7 +317,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 			if (i<m_alpha.vlen/2)
 				m_alpha[i]=0;
 			else
-				m_alpha[i]=CMath::log(0.5);
+				m_alpha[i] = std::log(0.5);
 		}
 
 		index_t len=m_alpha.vlen/2;

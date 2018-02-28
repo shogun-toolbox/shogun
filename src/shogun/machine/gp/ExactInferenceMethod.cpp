@@ -137,9 +137,10 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 
 	// compute negative log of the marginal likelihood:
 	// nlZ=(y-m)'*alpha/2+sum(log(diag(L)))+n*log(2*pi*sigma^2)/2
-	float64_t result=(eigen_y-eigen_m).dot(eigen_alpha)/2.0+
-		eigen_L.diagonal().array().log().sum()+m_L.num_rows*
-		CMath::log(2*CMath::PI*CMath::sq(sigma))/2.0;
+	float64_t result =
+	    (eigen_y - eigen_m).dot(eigen_alpha) / 2.0 +
+	    eigen_L.diagonal().array().log().sum() +
+	    m_L.num_rows * std::log(2 * CMath::PI * CMath::sq(sigma)) / 2.0;
 
 	return result;
 }

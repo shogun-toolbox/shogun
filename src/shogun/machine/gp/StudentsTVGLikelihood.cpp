@@ -50,7 +50,7 @@ CStudentsTVGLikelihood::CStudentsTVGLikelihood()
 	: CNumericalVGLikelihood()
 {
 	m_log_sigma = 0.0;
-	m_log_df = CMath::log(2.0);
+	m_log_df = std::log(2.0);
 	init();
 }
 
@@ -60,8 +60,8 @@ CStudentsTVGLikelihood::CStudentsTVGLikelihood(float64_t sigma, float64_t df)
 	REQUIRE(sigma>0.0, "Scale parameter (%f) must be greater than zero\n", sigma);
 	REQUIRE(df>1.0, "Number of degrees of freedom (%f) must be greater than one\n", df);
 
-	m_log_sigma=CMath::log(sigma);
-	m_log_df=CMath::log(df-1.0);
+	m_log_sigma = std::log(sigma);
+	m_log_df = std::log(df - 1.0);
 	init();
 }
 

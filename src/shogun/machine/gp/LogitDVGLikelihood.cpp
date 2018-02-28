@@ -84,7 +84,8 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_objective_value()
 	for (index_t i=0; i<result.vlen; ++i)
 	{
 		float64_t lambda=m_lambda[i];
-		result[i]=lambda*CMath::log(lambda)+(1.0-lambda)*CMath::log(1.0-lambda);
+		result[i] =
+			lambda * std::log(lambda) + (1.0 - lambda) * std::log(1.0 - lambda);
 	}
 	return result;
 }
@@ -112,7 +113,7 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
 	for (index_t i=0; i<result.vlen; ++i)
 	{
 		float64_t lambda=m_lambda[i];
-		result[i]=CMath::log(lambda)-CMath::log(1.0-lambda);
+		result[i] = std::log(lambda) - std::log(1.0 - lambda);
 	}
 	return result;
 }

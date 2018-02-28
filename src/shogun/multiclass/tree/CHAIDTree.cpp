@@ -818,18 +818,18 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 			float64_t sum=0.;
 			for (int32_t v=0;v<fnum_cat;v++)
 			{
-				float64_t lterm=inum_cat*CMath::log(fnum_cat-v);
-				for (int32_t j=1;j<=v;j++)
-					lterm-=CMath::log(j);
+			    float64_t lterm = inum_cat * std::log(fnum_cat - v);
+			    for (int32_t j = 1; j <= v; j++)
+				    lterm -= std::log(j);
 
-				for (int32_t j=1;j<=fnum_cat-v;j++)
-					lterm-=CMath::log(j);
+			    for (int32_t j = 1; j <= fnum_cat - v; j++)
+				    lterm -= std::log(j);
 
-				if (v%2==0)
-					sum+=CMath::exp(lterm);
-				else
-					sum-=CMath::exp(lterm);
-			}
+			    if (v % 2 == 0)
+				    sum += CMath::exp(lterm);
+			    else
+				    sum -= CMath::exp(lterm);
+		    }
 
 			return sum*up_value;
 		}
@@ -993,7 +993,8 @@ float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVec
 	for (int32_t i=0;i<r;i++)
 	{
 		for (int32_t j=0;j<c;j++)
-			ret+=expmat_row_effects(i,j)*CMath::log(expmat_row_effects(i,j)/expmat_indep(i,j));
+			ret += expmat_row_effects(i, j) *
+			       std::log(expmat_row_effects(i, j) / expmat_indep(i, j));
 	}
 
 	return 2*ret;
