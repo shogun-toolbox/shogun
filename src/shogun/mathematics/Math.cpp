@@ -63,7 +63,7 @@ CMath::CMath()
     init_log_table();
 #else
 	int32_t i=0;
-	while ((float64_t)std::log(1+((float64_t)exp(-float64_t(i)))))
+	while ((float64_t)std::log(1 + ((float64_t)exp(-float64_t(i)))))
 		i++;
 
 	LOGRANGE=i;
@@ -105,7 +105,7 @@ int32_t CMath::determine_logaccuracy(int32_t range)
 void CMath::init_log_table()
 {
   for (int32_t i=0; i< LOGACCURACY*LOGRANGE; i++)
-    logtable[i]=std::log(1+exp(float64_t(-i)/float64_t(LOGACCURACY)));
+	  logtable[i] = std::log(1 + exp(float64_t(-i) / float64_t(LOGACCURACY)));
 }
 #endif
 
@@ -328,7 +328,8 @@ float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance
 	float64_t abs_tolerance = rel_tolerance;
 	if (abs(true_value)>0.0)
 	{
-		if (std::log(abs(true_value)) + std::log(rel_tolerance) < std::log(F_MIN_VAL64))
+		if (std::log(abs(true_value)) + std::log(rel_tolerance) <
+		    std::log(F_MIN_VAL64))
 			abs_tolerance = F_MIN_VAL64;
 		else
 			abs_tolerance = abs(true_value * rel_tolerance);

@@ -85,18 +85,19 @@ void CHomogeneousKernelMap::init()
 			        }
 			        break;
 		    case HomogeneousKernelMapWindowRectangular:
-			    switch (m_kernel) {
-					case HomogeneousKernelChi2:
-						m_period = 8.80 * CMath::sqrt (m_order + 4.44) - 12.6;
-						break;
-					case HomogeneousKernelJS:
-						m_period = 9.63 * CMath::sqrt (m_order + 1.00) - 2.93;
-						break;
-					case HomogeneousKernelIntersection:
-				        m_period = 2.00 * std::log(m_order + 0.99) + 3.52;
-				        break;
-			        }
-			        break;
+			    switch (m_kernel)
+			    {
+			    case HomogeneousKernelChi2:
+				    m_period = 8.80 * CMath::sqrt(m_order + 4.44) - 12.6;
+				    break;
+			    case HomogeneousKernelJS:
+				    m_period = 9.63 * CMath::sqrt(m_order + 1.00) - 2.93;
+				    break;
+			    case HomogeneousKernelIntersection:
+				    m_period = 2.00 * std::log(m_order + 0.99) + 3.52;
+				    break;
+			    }
+			    break;
 		}
 		m_period = CMath::max (m_period, 1.0) ;
 	}

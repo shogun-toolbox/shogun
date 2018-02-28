@@ -704,14 +704,6 @@ class CMath : public CSGObject
 			return std::log2(v);
 		}
 
-		/** Computes natural logarithm input
-		 * @param v input
-		 * @return log base e of v or ln(v)
-		 */
-
-
-		/// log(x), x being a complex128_t
-		COMPLEX128_STDMATH(log)
 
 		static inline index_t floor_log(index_t n)
 		{
@@ -1087,7 +1079,7 @@ class CMath : public CSGObject
 				}
 			}
 
-			return X0+std::log(SGVector<T>::sum(values_without_X0)+1);
+			return X0 + std::log(SGVector<T>::sum(values_without_X0) + 1);
 		}
 
 		/** Computes \f$\log(\frac{1}{n}\sum_{i=1}^n \exp(x_i))\f$ for given
@@ -1819,8 +1811,8 @@ class CMath : public CSGObject
 				return p;
 			diff = p - q;
 			if (diff > 0)
-				return diff > LOGRANGE? p : p + std::log(1 + exp(-diff));
-			return -diff > LOGRANGE? q : q + std::log(1 + exp(diff));
+				return diff > LOGRANGE ? p : p + std::log(1 + exp(-diff));
+			return -diff > LOGRANGE ? q : q + std::log(1 + exp(diff));
 		}
 #endif
 #ifdef USE_LOGSUMARRAY

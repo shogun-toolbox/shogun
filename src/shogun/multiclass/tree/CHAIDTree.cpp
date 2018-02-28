@@ -831,17 +831,22 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 				    sum -= CMath::exp(lterm);
 		    }
 
-			return sum*up_value;
-		}
-		case 1:
-		{
-			if (!is_missing)
-				return CMath::nchoosek(inum_cat-1,fnum_cat-1)*up_value;
-			else
-				return up_value*(CMath::nchoosek(inum_cat-2,fnum_cat-2)+fnum_cat*CMath::nchoosek(inum_cat-2,fnum_cat-1));
-		}
-		default:
-			SG_ERROR("Feature type must be either 0 (nominal) or 1 (ordinal). It is currently set as %d\n",ft)
+		    return sum * up_value;
+	    }
+	    case 1:
+	    {
+		    if (!is_missing)
+			    return CMath::nchoosek(inum_cat - 1, fnum_cat - 1) * up_value;
+		    else
+			    return up_value *
+			           (CMath::nchoosek(inum_cat - 2, fnum_cat - 2) +
+			            fnum_cat * CMath::nchoosek(inum_cat - 2, fnum_cat - 1));
+	    }
+	    default:
+		    SG_ERROR(
+		        "Feature type must be either 0 (nominal) or 1 (ordinal). It is "
+		        "currently set as %d\n",
+		        ft)
 	}
 
 	return 0.0;
