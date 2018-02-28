@@ -812,24 +812,31 @@ namespace shogun
 		 *
 		 * This operation works with CPU backends only.
 		 *
-		 * @param a First matrix block
-		 * @param b Second matrix block
+		 * @param A First matrix block
+		 * @param B Second matrix block
 		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
 		void element_prod(
-		    const Block<SGMatrix<T>>& a, const Block<SGMatrix<T>>& b,
-		    SGMatrix<T>& result)
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    SGMatrix<T>& result, bool transpose_A = false,
+		    bool transpose_B = false)
 		{
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
+
 			REQUIRE(
-			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.m_row_size,
-			    a.m_col_size, b.m_row_size, b.m_col_size);
+			    (num_rows == transpose_B ? B.m_col_size : B.m_row_size) &&
+			        (num_cols == transpose_B ? B.m_row_size : B.m_col_size),
+			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", A.m_row_size,
+			    A.m_col_size, B.m_row_size, B.m_col_size);
+
 			REQUIRE(
-			    a.m_row_size == result.num_rows &&
-			        a.m_col_size == result.num_cols,
+			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
-			    a.m_row_size, a.m_col_size, result.num_rows, result.num_cols);
+			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
 
 			REQUIRE(
 			    !result.on_gpu(),
@@ -837,7 +844,8 @@ namespace shogun
 	 		as matrix blocks are on CPU.\n",
 			    result.on_gpu());
 
-			sg_linalg->get_cpu_backend()->element_prod(a, b, result);
+			sg_linalg->get_cpu_backend()->element_prod(
+			    A, B, result, transpose_A, transpose_B);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise
@@ -848,21 +856,21 @@ namespace shogun
 		 *
 		 * @param A First matrix block
 		 * @param B Second matrix block
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T>
-		element_prod(const Block<SGMatrix<T>>& a, const Block<SGMatrix<T>>& b)
+		SGMatrix<T> element_prod(
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
-			REQUIRE(
-			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.m_row_size,
-			    a.m_col_size, b.m_row_size, b.m_col_size);
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
 
-			SGMatrix<T> result(a.m_row_size, a.m_col_size);
-			result.zero();
+			SGMatrix<T> result(num_rows, num_cols);
 
-			element_prod(a, b, result);
+			element_prod(A, B, result, transpose_A, transpose_B);
 
 			return result;
 		}
@@ -877,32 +885,30 @@ namespace shogun
 		 * @param a First matrix
 		 * @param b Second matrix
 		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
 		void element_prod(
-		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result)
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
+
 			REQUIRE(
-			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.num_rows,
-			    a.num_cols, b.num_rows, b.num_cols);
+			    (num_rows == transpose_B ? B.num_cols : B.num_rows) &&
+			        (num_cols == transpose_B ? B.num_rows : B.num_cols),
+			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", A.num_rows,
+			    A.num_cols, B.num_rows, B.num_cols);
+
 			REQUIRE(
-			    a.num_rows == result.num_rows && a.num_cols == result.num_cols,
+			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
-			    a.num_rows, a.num_cols, result.num_rows, result.num_cols);
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
 
-			REQUIRE(
-			    !(result.on_gpu() ^ a.on_gpu()),
-			    "Cannot operate with matrix result on_gpu (%d) and \
-			 matrix A on_gpu (%d).\n",
-			    result.on_gpu(), a.on_gpu());
-			REQUIRE(
-			    !(result.on_gpu() ^ b.on_gpu()),
-			    "Cannot operate with matrix result on_gpu (%d) and \
-			 matrix B on_gpu (%d).\n",
-			    result.on_gpu(), b.on_gpu());
-
-			infer_backend(a, b)->element_prod(a, b, result);
+			infer_backend(A, B, result)
+			    ->element_prod(A, B, result, transpose_A, transpose_B);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise
@@ -910,22 +916,25 @@ namespace shogun
 		 *
 		 * This version returns the result in a newly created matrix.
 		 *
-		 * @param a First matrix
-		 * @param b Second matrix
+		 * @param A First matrix
+		 * @param B Second matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T> element_prod(const SGMatrix<T>& a, const SGMatrix<T>& b)
+		SGMatrix<T> element_prod(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
-			REQUIRE(
-			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.num_rows,
-			    a.num_cols, b.num_rows, b.num_cols);
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
 
-			SGMatrix<T> result;
-			result = a.clone();
+			SGMatrix<T> result(num_rows, num_cols);
 
-			element_prod(a, b, result);
+			if (A.on_gpu())
+				to_gpu(result);
+			element_prod(A, B, result, transpose_A, transpose_B);
 
 			return result;
 		}

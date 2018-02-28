@@ -95,24 +95,33 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGMatrix)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
 
-#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
 	void LinalgBackendEigen::element_prod(                                     \
 	    const Container<Type>& a, const Container<Type>& b,                    \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		element_prod_impl(a, b, result);                                       \
 	}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
-#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD
+
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container)          \
+	void LinalgBackendEigen::element_prod(                                     \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
+	{                                                                          \
+		element_prod_impl(a, b, result, transpose_A, transpose_B);             \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	void LinalgBackendEigen::element_prod(                                     \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result)      \
-	    const                                                                  \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
+	    bool transpose_A, bool transpose_B) const                              \
 	{                                                                          \
-		element_prod_impl(a, b, result);                                       \
+		element_prod_impl(a, b, result, transpose_A, transpose_B);             \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
@@ -244,21 +253,39 @@ T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	    .dot(typename SGVector<T>::EigenVectorXtMap(b));
 }
 
+/* Helper method to compute elementwise product with Eigen */
+template <typename MatrixType>
+void element_prod_eigen(
+    const MatrixType& A, const MatrixType& B,
+    typename SGMatrix<typename MatrixType::Scalar>::EigenMatrixXtMap& result,
+    bool transpose_A, bool transpose_B)
+{
+	if (transpose_A && transpose_B)
+		result = A.transpose().array() * B.transpose().array();
+	else if (transpose_A)
+		result = A.transpose().array() * B.array();
+	else if (transpose_B)
+		result = A.array() * B.transpose().array();
+	else
+		result = A.array() * B.array();
+}
+
 template <typename T>
 void LinalgBackendEigen::element_prod_impl(
-    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+    bool transpose_A, bool transpose_B) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-	result_eig = a_eig.array() * b_eig.array();
+	element_prod_eigen(a_eig, b_eig, result_eig, transpose_A, transpose_B);
 }
 
 template <typename T>
 void LinalgBackendEigen::element_prod_impl(
     const linalg::Block<SGMatrix<T>>& a, const linalg::Block<SGMatrix<T>>& b,
-    SGMatrix<T>& result) const
+    SGMatrix<T>& result, bool transpose_A, bool transpose_B) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b.m_matrix;
@@ -269,7 +296,7 @@ void LinalgBackendEigen::element_prod_impl(
 	Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
 	    b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
 
-	result_eig = a_block.array() * b_block.array();
+	element_prod_eigen(a_block, b_block, result_eig, transpose_A, transpose_B);
 }
 
 template <typename T>

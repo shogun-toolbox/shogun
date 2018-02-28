@@ -158,20 +158,29 @@ namespace shogun
 #undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /** Implementation of @see LinalgBackendBase::element_prod */
-#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
 	virtual void element_prod(                                                 \
 	    const Container<Type>& a, const Container<Type>& b,                    \
 	    Container<Type>& result) const;
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
-#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD
+
+/** Implementation of @see LinalgBackendBase::element_prod */
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container)          \
+	virtual void element_prod(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const;
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 /** Implementation of @see LinalgBackendBase::element_prod */
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result)      \
-	    const;
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
+	    bool transpose_A, bool transpose_B) const;
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
@@ -498,14 +507,15 @@ namespace shogun
 		/** Eigen3 matrix in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    const SGMatrix<T>& a, const SGMatrix<T>& b,
-		    SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const;
 
 		/** Eigen3 matrix block in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
 		    const linalg::Block<SGMatrix<T>>& a,
-		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result) const;
+		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const;
 
 		/** Eigen3 vector in-place elementwise product method */
 		template <typename T>

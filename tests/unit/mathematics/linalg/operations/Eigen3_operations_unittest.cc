@@ -551,42 +551,73 @@ TEST(LinalgBackendEigen, eigensolver_symmetric)
 
 TEST(LinalgBackendEigen, SGMatrix_elementwise_product)
 {
-	const index_t nrows = 3;
-	const index_t ncols = 3;
-	SGMatrix<float64_t> A(nrows,ncols);
-	SGMatrix<float64_t> B(nrows,ncols);
-	SGMatrix<float64_t> C(nrows,ncols);
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
+	for (auto i : range(m * m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
 
-	C = element_prod(A, B);
+	auto result = element_prod(A, B);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, true, false);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, false, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, true, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
 {
-	const index_t nrows = 3;
-	const index_t ncols = 3;
-	SGMatrix<float64_t> A(nrows,ncols);
-	SGMatrix<float64_t> B(nrows,ncols);
-	SGMatrix<float64_t> C(nrows,ncols);
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
+	SGMatrix<float64_t> result(m, m);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
+	for (auto i : range(m * m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
-		C[i] = i;
 	}
 
-	element_prod(A, B, A);
-	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+	element_prod(A, B, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, true, false);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, false, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, true, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
@@ -597,23 +628,51 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 	SGMatrix<float64_t> A(nrows,ncols);
 	SGMatrix<float64_t> B(ncols,nrows);
 
-	for (index_t i = 0; i < nrows; ++i)
-		for (index_t j = 0; j < ncols; ++j)
+	for (auto i : range(nrows))
+		for (auto j : range(ncols))
 		{
 			A(i, j) = i * 10 + j + 1;
 			B(j, i) = i + j;
 		}
 
-	auto A_block = linalg::block(A, 0, 0, 2, 2);
-	auto B_block = linalg::block(B, 0, 0, 2, 2);
+	const auto m = 2;
+	auto A_block = linalg::block(A, 0, 0, m, m);
+	auto B_block = linalg::block(B, 0, 0, m, m);
 	auto result = element_prod(A_block, B_block);
 
-	ASSERT_EQ(result.num_rows, 2);
-	ASSERT_EQ(result.num_cols, 2);
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
 
-	for (index_t i = 0; i < 2; ++i)
-		for (index_t j = 0; j < 2; ++j)
+	for (auto i : range(m))
+		for (auto j : range(m))
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	result = element_prod(A_block, B_block, true, false);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A_block, B_block, false, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(j, i), 1E-15);
+
+	result = element_prod(A_block, B_block, true, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_elementwise_product)

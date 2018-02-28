@@ -308,20 +308,36 @@ namespace shogun
 #undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /**
- * Wrapper method of in-place matrix/vector elementwise product.
+ * Wrapper method of in-place vector elementwise product.
  *
  * @see linalg::element_prod
  */
-#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
 	virtual void element_prod(                                                 \
 	    const Container<Type>& a, const Container<Type>& b,                    \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
-#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD
+
+/**
+ * Wrapper method of in-place matrix elementwise product.
+ *
+ * @see linalg::element_prod
+ */
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container)          \
+	virtual void element_prod(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 /**
  * Wrapper method of in-place matrix block elementwise product.
@@ -331,8 +347,8 @@ namespace shogun
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
 	    const linalg::Block<Container<Type>>& a,                               \
-	    const linalg::Block<Container<Type>>& b, Container<Type>& result)      \
-	    const                                                                  \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
+	    bool transpose_A, bool transpose_B) const                              \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
