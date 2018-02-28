@@ -111,26 +111,9 @@ SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
 IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
 IF (${ANY_INTERFACE_ENABLED})
-	# SWIG3 is the minimum requirement because of C++11 support
-	SET(SWIG_VERSION_MINIMUM 3.0.0)
-
-	IF(INTERFACE_CSHARP)
-		# We require SWIG 3.0.7 to support functions with a few SGVector or
-		# SGMatrix arguments. The required SWIG feature is called
-		# "Support for special variable expansion in typemap attributes."
-		# and was introduced just in 3.0.7.
-		SET(SWIG_VERSION_MINIMUM 3.0.7)
-
-		# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
-		# typemapping created for earlier versions of SWIG.
-		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
-		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(INTERFACE_PYTHON)
-		# SWIG was broken for combining -builtin and -modernargs
-		# from v3.0.0 and until 3.0.4.  This bug was fixed in
-		# v3.0.5.  Make CMake emit an error and fail to configure.
-		SET(SWIG_VERSION_MINIMUM 3.0.5)
-	ENDIF()
+	# SWIG 3.0.12 is the minimum requirement because of c++11 and extending
+	# a class with template function
+	SET(SWIG_VERSION_MINIMUM 3.0.12)
 
 	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
