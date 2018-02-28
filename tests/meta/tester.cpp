@@ -46,7 +46,7 @@ int main(int argc, const char *argv[])
             fname_full_reference.c_str());
 
 	// allow for lossy serialization format
-	set_global_fequals_epsilon(1e-7);
+	set_global_fequals_epsilon(1e-6);
 	bool equal = a->equals(a_ref);
 
 	// print comparison output only if different as it it slow
