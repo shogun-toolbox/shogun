@@ -115,6 +115,13 @@ IF (${ANY_INTERFACE_ENABLED})
 	# a class with template function
 	SET(SWIG_VERSION_MINIMUM 3.0.12)
 
+	IF(INTERFACE_CSHARP)
+		# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
+		# typemapping created for earlier versions of SWIG.
+		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
+		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
+	ENDIF()
+
 	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
