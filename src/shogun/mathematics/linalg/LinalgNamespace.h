@@ -1700,7 +1700,7 @@ namespace shogun
 		template <typename T>
 		T trace_dot(const SGMatrix<T>& A, const SGMatrix<T>& B)
 		{
-			return sum(element_prod(A, transpose_matrix(B)));
+			return sum(element_prod(A, B, false, true));
 		}
 
 		/**
