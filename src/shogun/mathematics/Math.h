@@ -1,10 +1,10 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias, 
- *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Shashwat Lal Das, 
- *          Thoralf Klein, Wu Lin, Chiyuan Zhang, Harshit Syal, Evan Shelhamer, 
- *          Philippe Tillet, Björn Esser, Yuyu Zhang, Abhinav Agarwalla, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias,
+ *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Shashwat Lal Das,
+ *          Thoralf Klein, Wu Lin, Chiyuan Zhang, Harshit Syal, Evan Shelhamer,
+ *          Philippe Tillet, Björn Esser, Yuyu Zhang, Abhinav Agarwalla,
  *          Saurabh Goyal
  */
 
@@ -896,7 +896,8 @@ class CMath : public CSGObject
 			} while ((rand_s == 0) || (rand_s >= 1));
 
 			// the meat & potatos, and then the mean & standard deviation shifting...
-			ret = static_cast<float32_t>(rand_u*CMath::sqrt(-2.0*CMath::log(rand_s)/rand_s));
+			ret = static_cast<float32_t>(
+			    rand_u * CMath::sqrt(-2.0 * std::log(rand_s) / rand_s));
 			ret = std_dev*ret + mean;
 			return ret;
 		}
@@ -2107,7 +2108,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
 	template <class T>
 void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
-	if (6*n*size<13*size*CMath::log(size))
+	if (6 * n * size < 13 * size * std::log(size))
 		for (int32_t i=0; i<n; i++)
 			min(&output[i], &index[i], size-i);
 	else

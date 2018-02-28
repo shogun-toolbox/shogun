@@ -124,8 +124,8 @@ public:
 	static float64_t univariate_log_pdf(float64_t sample, float64_t mu = 0.0, float64_t sigma2 = 1.0)
 	{
 		REQUIRE(sigma2 > 0, "Variance should be positive\n");
-		return -0.5 * (CMath::pow(sample - mu, 2) / sigma2
-			+ CMath::log(2.0 * CMath::PI) + CMath::log(sigma2));
+		return -0.5 * (CMath::pow(sample - mu, 2) / sigma2 +
+			           std::log(2.0 * CMath::PI) + std::log(sigma2));
 	}
 private:
 
