@@ -446,8 +446,8 @@ template <class T> class DynArray
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
-					array[i], 
-					array[CMath::random(i, current_num_elements - 1)]);
+				    array[i],
+				    array[CMath::random(i, current_num_elements - 1)]);
 		}
 
 		/** randomizes the array with external random state */
@@ -455,7 +455,7 @@ template <class T> class DynArray
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
-					array[i], array[rand->random(i, current_num_elements - 1)]);
+				    array[i], array[rand->random(i, current_num_elements - 1)]);
 		}
 
 		/** set array with a constant */
