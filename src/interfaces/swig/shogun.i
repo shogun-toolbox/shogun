@@ -144,26 +144,26 @@ namespace shogun
 	}
 	
 #ifdef SWIGJAVA
-	template <typename T, typename T2 = typename std::enable_if<std::is_same<SGMatrix<float64_t>, T>::value, T>::type>
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
 	void put_vector_or_matrix_dispatcher(const std::string& name, T value)
 	{
-		Tag<SGVector<float64_t>> tag_vec(name);
-		Tag<SGMatrix<float64_t>> tag_mat(name);
+		Tag<SGVector<X>> tag_vec(name);
+		Tag<T> tag_mat(name);
 	
 		if ((value.num_rows==1 || value.num_cols==1) && $self->has(tag_vec))
 		{
-			SGVector<float64_t> vec(value.data(), value.size(), false);
+			SGVector<X> vec(value.data(), value.size(), false);
 			$self->put(tag_vec, vec);
 		}
 		else
 			$self->put(tag_mat, value);
 	}
 	
-	template <typename T, typename T2 = typename std::enable_if<std::is_same<SGMatrix<float64_t>, T>::value, T>::type>
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
 	T get_vector_as_matrix_dispatcher(const std::string& name)
 	{
-		SGVector<float64_t> vec = $self->get<SGVector<float64_t>>(name);
-		SGMatrix<float64_t> mat(vec.data(), 1, vec.vlen, false);
+		SGVector<X> vec = $self->get<SGVector<X>>(name);
+		T mat(vec.data(), 1, vec.vlen, false);
 		return mat;
 	}
 #endif // SWIGJAVA
@@ -180,7 +180,7 @@ namespace shogun
 %template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
 %template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #else // SWIGJAVA
-%template(put) CSGObject::put_vector_or_matrix_dispatcher<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+%template(put) CSGObject::put_vector_or_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #endif // SWIGJAVA
 
 %template(get_real) CSGObject::get<float64_t, void>;
@@ -188,7 +188,7 @@ namespace shogun
 #ifndef SWIGJAVA
 %template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
 #else // SWIGJAVA
-%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #endif // SWIGJAVA
 
 } // namespace shogun
