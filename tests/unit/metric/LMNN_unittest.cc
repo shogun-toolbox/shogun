@@ -8,9 +8,10 @@
  */
 #include <gtest/gtest.h>
 
-#include <shogun/metric/LMNN.h>
+#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/metric/LMNN.h>
 
 using namespace shogun;
 
@@ -60,6 +61,49 @@ TEST(LMNN,train_identity_init)
 	EXPECT_NEAR(L(1,1),1.00000080000000002,1e-5);
 
 	SG_UNREF(lmnn)
+}
+
+TEST(LMNN, train_termination)
+{
+	SGMatrix<float64_t> feat_mat(2, 4);
+	feat_mat(0, 0) = 0;
+	feat_mat(1, 0) = 0;
+	feat_mat(0, 1) = 0;
+	feat_mat(1, 1) = -1;
+	feat_mat(0, 2) = 1;
+	feat_mat(1, 2) = 1;
+	feat_mat(0, 3) = -1;
+	feat_mat(1, 3) = 1;
+
+	CDenseFeatures<float64_t>* features =
+	    new CDenseFeatures<float64_t>(feat_mat);
+
+	SGVector<float64_t> lab_vec(4);
+	lab_vec[0] = 0;
+	lab_vec[1] = 0;
+	lab_vec[2] = 1;
+	lab_vec[3] = 1;
+
+	CMulticlassLabels* labels = new CMulticlassLabels(lab_vec);
+
+	int32_t k = 1; // number of target neighbors per example
+	auto lmnn = some<CLMNN>(features, labels, k);
+
+	SGMatrix<float64_t> init_transform =
+	    SGMatrix<float64_t>::create_identity_matrix(2, 1);
+	lmnn->set_maxiter(1500);
+	lmnn->train(init_transform);
+
+	// check linear transform solution
+	SGMatrix<float64_t> L = lmnn->get_linear_transform();
+	EXPECT_NEAR(L(0, 0), 0.000041647483219, 1e-10);
+	EXPECT_NEAR(L(0, 1), 0, 1e-10);
+	EXPECT_NEAR(L(1, 0), 0, 1e-10);
+	EXPECT_NEAR(L(1, 1), 0.988162395685451, 1e-10);
+
+	// check number of iterations
+	auto stat = lmnn->get_statistics();
+	EXPECT_EQ(stat->obj.vlen, 1234);
 }
 
 TEST(LMNN,train_pca_init)
