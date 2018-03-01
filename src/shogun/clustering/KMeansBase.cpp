@@ -288,7 +288,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	Map<VectorXd> eigen_min_dist(min_dist.vector, min_dist.vlen);
 	float64_t sum=eigen_min_dist.sum();
 #endif //HAVE_LINALG
-	int32_t n_rands=2 + int32_t(CMath::log(k));
+	int32_t n_rands = 2 + int32_t(std::log(k));
 
 	/* Choose centers with weighted probability */
 	for(int32_t i=1; i<k; i++)

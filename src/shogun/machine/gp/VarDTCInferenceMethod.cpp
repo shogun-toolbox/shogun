@@ -148,9 +148,10 @@ float64_t CVarDTCInferenceMethod::get_negative_log_marginal_likelihood()
 	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
 
 	//F012 =-(model.n-model.m)*model.Likelihood.logtheta-0.5*model.n*log(2*pi)-(0.5/sigma2)*(model.yy)-sum(log(diag(La)));
-	float64_t neg_f012=(m_ktru.num_cols-m_ktru.num_rows)*CMath::log(m_sigma2)/2.0
-		+0.5*m_ktru.num_cols*CMath::log(2*CMath::PI)+
-		0.5*m_yy/(m_sigma2)-eigen_inv_La.diagonal().array().log().sum();
+	float64_t neg_f012 =
+	    (m_ktru.num_cols - m_ktru.num_rows) * std::log(m_sigma2) / 2.0 +
+	    0.5 * m_ktru.num_cols * std::log(2 * CMath::PI) +
+	    0.5 * m_yy / (m_sigma2)-eigen_inv_La.diagonal().array().log().sum();
 
 	//F3 = (0.5/sigma2)*(yKnmInvLmInvLa*yKnmInvLmInvLa');
 	float64_t neg_f3=-m_f3;

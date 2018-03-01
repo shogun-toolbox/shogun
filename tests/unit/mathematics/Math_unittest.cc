@@ -99,8 +99,8 @@ TEST(CMath, float64_tests)
 	EXPECT_NEAR(CMath::log10(a), 0.76202063570953693095, 1E-15);
 
 	// exp and log identities
-	EXPECT_NEAR(CMath::log(CMath::exp(a)), a, 1E-15);
-	EXPECT_NEAR(CMath::exp(CMath::log(a)), a, 1E-15);
+	EXPECT_NEAR(std::log(CMath::exp(a)), a, 1E-15);
+	EXPECT_NEAR(CMath::exp(std::log(a)), a, 1E-15);
 
 	// trigonometric functions
 	EXPECT_NEAR(CMath::sin(a), -0.48113603605414501097, 1E-15);

@@ -401,7 +401,7 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 	SG_UNREF(h);
 
 	for (index_t i=0; i<r.vlen; i++)
-		r[i]=CMath::log(r[i]);
+		r[i] = std::log(r[i]);
 
 	return r;
 }

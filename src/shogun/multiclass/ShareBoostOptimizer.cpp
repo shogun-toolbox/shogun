@@ -73,7 +73,7 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	float64_t objval = 0;
 	for (int32_t ii=0; ii < fea.num_cols; ++ii)
 	{
-		objval += CMath::log(optimizer->m_sb->m_rho_norm[ii]);
+		objval += std::log(optimizer->m_sb->m_rho_norm[ii]);
 	}
 	objval /= fea.num_cols;
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Wu Lin, Jacob Walker, Roman Votyakov, Pan Deng, Heiko Strathmann, 
+ * Authors: Wu Lin, Jacob Walker, Roman Votyakov, Pan Deng, Heiko Strathmann,
  *          Soumyajit De, Viktor Gal, Björn Esser, Soeren Sonnenburg
  */
 
@@ -165,7 +165,9 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 			}
 			col_index+=row_index;
 
-			SGVector<float64_t> row_vec=SGVector<float64_t>(m_log_weights.vector+total_offset,m_weights_rows-row_index,false);   
+			SGVector<float64_t> row_vec = SGVector<float64_t>(
+			    m_log_weights.vector + total_offset, m_weights_rows - row_index,
+			    false);
 			row_vec[0]=CMath::exp(row_vec[0]);
 
 			SGMatrix<float64_t> row_vec_r(row_vec.vector,row_vec.vlen,1,false);
@@ -182,7 +184,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 
 			if(row_index==col_index)
 				result*=row_vec[0];
-			row_vec[0]=CMath::log(row_vec[0]);
+			row_vec[0] = std::log(row_vec[0]);
 		}
 		else
 		{

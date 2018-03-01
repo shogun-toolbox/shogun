@@ -105,14 +105,14 @@ void CSparseInference::init()
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", MS_NOT_AVAILABLE);
 
-	m_log_ind_noise=CMath::log(1e-10);
+	m_log_ind_noise = std::log(1e-10);
 	m_inducing_features=SGMatrix<float64_t>();
 }
 
 void CSparseInference::set_inducing_noise(float64_t noise)
 {
 	REQUIRE(noise>0, "Noise (%f) for inducing points must be postive",noise);
-	m_log_ind_noise=CMath::log(noise);
+	m_log_ind_noise = std::log(noise);
 }
 
 float64_t CSparseInference::get_inducing_noise()

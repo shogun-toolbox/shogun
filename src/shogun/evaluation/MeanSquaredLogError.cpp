@@ -32,8 +32,8 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 			continue;
 		}
 
-		float64_t a=CMath::log(prediction+1);
-		float64_t b=CMath::log(truth+1);
+		float64_t a = std::log(prediction + 1);
+		float64_t b = std::log(truth + 1);
 		msle+=CMath::sq(a-b);
 	}
 	msle /= length;

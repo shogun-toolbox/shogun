@@ -85,7 +85,7 @@ public:
 	{
 		REQUIRE(sigma>0.0, "Standard deviation (%f) must be greater than zero\n",
 			sigma)
-		m_log_sigma=CMath::log(sigma);
+		m_log_sigma = std::log(sigma);
 	}
 
 	/** helper method used to specialize a base class instance

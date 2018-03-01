@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Heiko Strathmann, 
- *          Evan Shelhamer, Sergey Lisitsyn, Roman Votyakov, Jacob Walker, 
+ * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Heiko Strathmann,
+ *          Evan Shelhamer, Sergey Lisitsyn, Roman Votyakov, Jacob Walker,
  *          Wu Lin, Michele Mazzoni, Evgeniy Andreev, Viktor Gal
  */
 
@@ -56,7 +56,7 @@ void CCombinedKernel::init_subkernel_weights()
 	// log_sum_exp trick
 	float64_t max_coeff=eigen_log_wt.maxCoeff();
 	VectorXd tmp = eigen_log_wt.array() - max_coeff;
-	float64_t sum = CMath::log(tmp.array().exp().sum());
+	float64_t sum = std::log(tmp.array().exp().sum());
 	eigen_wt = tmp.array() - sum;
 	eigen_wt = eigen_wt.array().exp();
 	set_subkernel_weights(wt);
@@ -780,7 +780,8 @@ void CCombinedKernel::enable_subkernel_weight_learning()
 	for(index_t idx=0; idx<subkernel_log_weights.vlen; idx++)
 	{
 		ASSERT(subkernel_log_weights[idx]>0);//weight should be positive
-		subkernel_log_weights[idx]=CMath::log(subkernel_log_weights[idx]);//in log domain
+		subkernel_log_weights[idx] =
+		    std::log(subkernel_log_weights[idx]); // in log domain
 	}
 }
 
@@ -834,7 +835,7 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 				// log_sum_exp trick
 				float64_t max_coeff = eigen_log_wt.maxCoeff();
 				VectorXd tmp = eigen_log_wt.array() - max_coeff;
-				float64_t log_sum = CMath::log(tmp.array().exp().sum());
+				float64_t log_sum = std::log(tmp.array().exp().sum());
 
 				factor = subkernel_log_weights[index] - max_coeff - log_sum;
 				factor = CMath::exp(factor) - CMath::exp(factor*2.0);

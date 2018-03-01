@@ -166,7 +166,7 @@ void LinalgBackendEigen::softmax_impl(Container<T>& a) const
 	for (index_t j = 0; j < a.num_cols; ++j)
 	{
 		auto sum = (a_eig.col(j).array() - max).exp().sum();
-		T normalizer = (T)CMath::log(sum); // Has to use T instead of float
+		T normalizer = (T)std::log(sum); // Has to use T instead of float
 		a_eig.col(j) = (a_eig.col(j).array() - normalizer - max).exp();
 	}
 }

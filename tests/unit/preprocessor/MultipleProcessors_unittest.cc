@@ -41,7 +41,7 @@ TEST(MultipleProcessors, apply_to_feature_matrix)
 		float64_t* v_orig = orig.get_column_vector(i);
 		float64_t sum = SGVector<float64_t>::sum(v_orig, num_features);
 		for (index_t j = 0; j < num_features; j++) {
-			float64_t e = CMath::log(v_orig[j]/sum+1.0);
+			float64_t e = std::log(v_orig[j] / sum + 1.0);
 			EXPECT_DOUBLE_EQ(e, v[j]);
 		}
 	}

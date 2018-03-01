@@ -279,7 +279,7 @@ float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 		log_ratios[i] = (count-0.f)/(labels->get_num_labels()-0.f);
 
 		if (log_ratios[i] != 0)
-			log_ratios[i] = CMath::log(log_ratios[i]);
+			log_ratios[i] = std::log(log_ratios[i]);
 	}
 
 	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);

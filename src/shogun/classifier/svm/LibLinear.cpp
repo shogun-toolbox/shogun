@@ -1305,8 +1305,7 @@ void CLibLinear::solve_l2r_lr_dual(
 			double z = alpha_old;
 			if (C - z < 0.5 * C)
 				z = 0.1 * z;
-			double gp =
-			    a * (z - alpha_old) + sign * b + CMath::log(z / (C - z));
+			double gp = a * (z - alpha_old) + sign * b + std::log(z / (C - z));
 			Gmax = CMath::max(Gmax, CMath::abs(gp));
 
 			// Newton method on the sub-problem

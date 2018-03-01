@@ -256,8 +256,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 				s=x1*x1+x2*x2;
 			}
 
-			// =  x1/CMath::sqrt(val)* CMath::sqrt(-2*CMath::log(val));
-			randomcoeff_multiplicative[i*cur_dim_input_space+k] =  x1*CMath::sqrt(-2*CMath::log(s)/s )/kernelwidth;
+			// =  x1/CMath::sqrt(val)* CMath::sqrt(-2*std::log(val));
+			randomcoeff_multiplicative[i * cur_dim_input_space + k] =
+			    x1 * CMath::sqrt(-2 * std::log(s) / s) / kernelwidth;
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Heiko Strathmann, Viktor Gal, Weijie Lin, Björn Esser
  */
 
@@ -1127,10 +1127,11 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
+			block_weights[i - 1] = CMath::pow(std::log((float64_t)i), 2);
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
+			block_weights[i - 1] =
+			    i - degree + 1 + CMath::pow(std::log(degree + 1.0), 2);
 	}
 
 	return (block_weights!=NULL);

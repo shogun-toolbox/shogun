@@ -159,10 +159,14 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		float64_t lZ=CStatistics::lgamma((m_nu+1.0)/2.0)-CStatistics::lgamma(m_nu/2.0)-
-			CMath::log(m_nu*CMath::PI*CMath::sq(m_sigma))/2.0;
-		return CMath::exp(lZ-((m_nu+1.0)/2.0)*CMath::log(1.0+CMath::sq(x-m_mu)/
-			(m_nu*CMath::sq(m_sigma))));
+		float64_t lZ = CStatistics::lgamma((m_nu + 1.0) / 2.0) -
+			           CStatistics::lgamma(m_nu / 2.0) -
+			           std::log(m_nu * CMath::PI * CMath::sq(m_sigma)) / 2.0;
+		return CMath::exp(
+			lZ -
+			((m_nu + 1.0) / 2.0) *
+			    std::log(
+			        1.0 + CMath::sq(x - m_mu) / (m_nu * CMath::sq(m_sigma))));
 	}
 
 private:
@@ -277,7 +281,7 @@ CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df)
 void CStudentsTLikelihood::init()
 {
 	m_log_sigma=0.0;
-	m_log_df=CMath::log(2.0);
+	m_log_df = std::log(2.0);
 	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
@@ -631,7 +635,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	SG_UNREF(h);
 
 	for (index_t i=0; i<r.vlen; i++)
-		r[i]=CMath::log(r[i]);
+		r[i] = std::log(r[i]);
 
 	return r;
 }

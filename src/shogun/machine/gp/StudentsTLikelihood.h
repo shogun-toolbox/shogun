@@ -88,7 +88,7 @@ public:
 	void set_sigma(float64_t sigma)
 	{
 		REQUIRE(sigma>0.0, "Scale parameter (%f) must be greater than zero\n", sigma);
-		m_log_sigma=CMath::log(sigma);
+		m_log_sigma = std::log(sigma);
 	}
 
 	/** get degrees of freedom
@@ -104,7 +104,7 @@ public:
 	void set_degrees_freedom(float64_t df)
 	{
 		REQUIRE(df>1.0, "Number of degrees (%f) of freedom must be greater than one\n", df)
-		m_log_df=CMath::log(df-1);
+		m_log_df = std::log(df - 1);
 	}
 
 	/** helper method used to specialize a base class instance

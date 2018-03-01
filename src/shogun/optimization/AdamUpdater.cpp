@@ -57,7 +57,7 @@ void AdamUpdater::set_learning_rate(float64_t learning_rate)
 {
 	REQUIRE(learning_rate>0,"Learning_rate (%f) must be positive\n",
 		learning_rate);
-	m_log_learning_rate=CMath::log(learning_rate);
+	m_log_learning_rate = std::log(learning_rate);
 }
 
 void AdamUpdater::set_epsilon(float64_t epsilon)
@@ -90,7 +90,7 @@ void AdamUpdater::init()
 	m_decay_factor_first_moment=0.9;
 	m_decay_factor_second_moment=0.999;
 	m_epsilon=1e-8;
-	m_log_learning_rate=CMath::log(0.001);
+	m_log_learning_rate = std::log(0.001);
 	m_iteration_counter=0;
 	m_log_scale_pre_iteration=0;
 	m_gradient_first_moment=SGVector<float64_t>();
@@ -147,9 +147,16 @@ void AdamUpdater::update_variable(SGVector<float64_t> variable_reference,
 	}
 
 	m_iteration_counter++;
-	m_log_scale_pre_iteration=m_log_learning_rate+
-		0.5*CMath::log(1.0-CMath::pow(m_decay_factor_second_moment,(float64_t)m_iteration_counter))-
-		CMath::log(1.0-CMath::pow(m_decay_factor_first_moment,(float64_t)m_iteration_counter));
+	m_log_scale_pre_iteration =
+	    m_log_learning_rate +
+	    0.5 * std::log(
+	              1.0 - CMath::pow(
+	                        m_decay_factor_second_moment,
+	                        (float64_t)m_iteration_counter)) -
+	    std::log(
+	        1.0 -
+	        CMath::pow(
+	            m_decay_factor_first_moment, (float64_t)m_iteration_counter));
 
 	DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction,
 		learning_rate);
