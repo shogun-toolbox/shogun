@@ -56,8 +56,9 @@ public:
      */
     int32_t get_default_code_length(int32_t num_classes) const
     {
-        return static_cast<int32_t>(CMath::round(10 * CMath::log(static_cast<float64_t>(num_classes))));
-    }
+		return static_cast<int32_t>(
+			CMath::round(10 * std::log(static_cast<float64_t>(num_classes))));
+	}
 
 protected:
     int32_t   m_maxiter; ///< max number of iterations

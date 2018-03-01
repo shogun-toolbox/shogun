@@ -68,7 +68,8 @@ CModelSelectionParameters* build_complex_example_tree()
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
 			new CModelSelectionParameters("log_width");
-	param_gaussian_kernel_width->build_values(0.0, 0.5*CMath::log(2.0), R_LINEAR);
+	param_gaussian_kernel_width->build_values(
+	    0.0, 0.5 * std::log(2.0), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();

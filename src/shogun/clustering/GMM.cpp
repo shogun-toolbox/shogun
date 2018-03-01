@@ -163,12 +163,12 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 			{
 				logPxy[index_t(i * m_components.size() + j)] =
 				    m_components[j]->compute_log_PDF(v) +
-				    CMath::log(m_coefficients[j]);
+				    std::log(m_coefficients[j]);
 				logPx[i] +=
 				    CMath::exp(logPxy[index_t(i * m_components.size() + j)]);
 			}
 
-			logPx[i]=CMath::log(logPx[i]);
+			logPx[i] = std::log(logPx[i]);
 			log_likelihood_cur+=logPx[i];
 
 			for (int32_t j=0; j<int32_t(m_components.size()); j++)
@@ -231,12 +231,12 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 			{
 				logPxy[index_t(i * m_components.size() + j)] =
 				    m_components[j]->compute_log_PDF(v) +
-				    CMath::log(m_coefficients[j]);
+				    std::log(m_coefficients[j]);
 				logPx[i] +=
 				    CMath::exp(logPxy[index_t(i * m_components.size() + j)]);
 			}
 
-			logPx[i]=CMath::log(logPx[i]);
+			logPx[i] = std::log(logPx[i]);
 
 			for (int32_t j=0; j<int32_t(m_components.size()); j++)
 			{
@@ -264,7 +264,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		int32_t counter=0;
 		for (int32_t i=0; i<int32_t(m_components.size()); i++)
 		{
-			logPostSum[i]=CMath::log(logPostSum[i]);
+			logPostSum[i] = std::log(logPostSum[i]);
 			split_crit[i]=0;
 			split_ind[i]=i;
 			for (int32_t j=0; j<num_vectors; j++)
@@ -273,13 +273,15 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				    (logPost[index_t(j * m_components.size() + i)] -
 				     logPostSum[i] -
 				     logPxy[index_t(j * m_components.size() + i)] +
-				     CMath::log(m_coefficients[i])) *
+				     std::log(m_coefficients[i])) *
 				    (CMath::exp(logPost[index_t(j * m_components.size() + i)]) /
 				     CMath::exp(logPostSum[i]));
 			}
 			for (int32_t j=i+1; j<int32_t(m_components.size()); j++)
 			{
-				merge_crit[counter]=CMath::log(logPostSumSum[counter])-(0.5*CMath::log(logPostSum2[i]))-(0.5*CMath::log(logPostSum2[j]));
+				merge_crit[counter] = std::log(logPostSumSum[counter]) -
+				                      (0.5 * std::log(logPostSum2[i])) -
+				                      (0.5 * std::log(logPostSum2[j]));
 				merge_ind[counter]=i*m_components.size()+j;
 				counter++;
 			}
@@ -357,7 +359,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		{
 			init_logPxy[index_t(i * m_components.size() + j)] =
 			    m_components[j]->compute_log_PDF(v) +
-			    CMath::log(m_coefficients[j]);
+			    std::log(m_coefficients[j]);
 			init_logPx[i] +=
 			    CMath::exp(init_logPxy[index_t(i * m_components.size() + j)]);
 			if (j!=comp1 && j!=comp2 && j!=comp3)
@@ -367,8 +369,8 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 			}
 		}
 
-		init_logPx[i]=CMath::log(init_logPx[i]);
-		post_add[i] = CMath::log(
+		init_logPx[i] = std::log(init_logPx[i]);
+		post_add[i] = std::log(
 		    CMath::exp(
 		        init_logPxy[index_t(i * m_components.size() + comp1)] -
 		        init_logPx[i]) +
@@ -427,7 +429,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		float64_t new_d=0;
 		for (int32_t i=0; i<dim_n; i++)
 		{
-			new_d+=CMath::log(components[0]->get_d().vector[i]);
+			new_d += std::log(components[0]->get_d().vector[i]);
 			for (int32_t j=0; j<dim_n; j++)
 			{
 				if (i==j)
@@ -459,7 +461,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		float64_t new_d=0;
 		for (int32_t i=0; i<dim_n; i++)
 		{
-			new_d+=CMath::log(components[0]->get_d().vector[i]);
+			new_d += std::log(components[0]->get_d().vector[i]);
 		}
 		new_d=CMath::exp(new_d*(1./dim_n));
 		for (int32_t i=0; i<dim_n; i++)
@@ -498,11 +500,12 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
 			for (int32_t j=0; j<3; j++)
 			{
-				logPxy[i*3+j]=components[j]->compute_log_PDF(v)+CMath::log(coefficients[j]);
+				logPxy[i * 3 + j] = components[j]->compute_log_PDF(v) +
+				                    std::log(coefficients[j]);
 				logPx[i]+=CMath::exp(logPxy[i*3+j]);
 			}
 
-			logPx[i]=CMath::log(logPx[i]+init_logPx_fix[i]);
+			logPx[i] = std::log(logPx[i] + init_logPx_fix[i]);
 			log_likelihood_cur+=logPx[i];
 
 			for (int32_t j=0; j<3; j++)
@@ -660,7 +663,7 @@ float64_t CGMM::get_log_model_parameter(int32_t num_param)
 {
 	ASSERT(num_param==1)
 
-	return CMath::log(m_components.size());
+	return std::log(m_components.size());
 }
 
 index_t CGMM::get_num_components() const
@@ -696,7 +699,9 @@ float64_t CGMM::get_likelihood_example(int32_t num_example)
 	for (auto i: range(index_t(m_components.size())))
 	{
 		SGVector<float64_t> point= ((CDenseFeatures<float64_t>*) features)->get_feature_vector(num_example);
-		result+=CMath::exp(m_components[i]->compute_log_PDF(point)+CMath::log(m_coefficients[i]));
+		result += CMath::exp(
+		    m_components[i]->compute_log_PDF(point) +
+		    std::log(m_coefficients[i]));
 	}
 
 	return result;
@@ -801,10 +806,12 @@ SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 
 	for (auto i: range(index_t(m_components.size())))
 	{
-		answer.vector[i]=m_components[i]->compute_log_PDF(point)+CMath::log(m_coefficients[i]);
+		answer.vector[i] = m_components[i]->compute_log_PDF(point) +
+		                   std::log(m_coefficients[i]);
 		answer.vector[m_components.size()]+=CMath::exp(answer.vector[i]);
 	}
-	answer.vector[m_components.size()]=CMath::log(answer.vector[m_components.size()]);
+	answer.vector[m_components.size()] =
+	    std::log(answer.vector[m_components.size()]);
 
 	return answer;
 }

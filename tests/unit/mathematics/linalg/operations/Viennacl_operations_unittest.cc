@@ -135,7 +135,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_cross_entropy)
 
 	float64_t ref = 0;
 	for (int32_t i = 0; i < size; i++)
-		ref += A[i] * CMath::log(B[i] + 1e-30);
+		ref += A[i] * std::log(B[i] + 1e-30);
 	ref *= -1;
 
 	to_gpu(A, A_gpu);

@@ -115,7 +115,7 @@ void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 {
 	REQUIRE(weight>0, "Scalar (%f) weight should be positive\n",weight);
 	m_log_weights=SGVector<float64_t>(1);
-	m_log_weights.set_const(CMath::log(weight));
+	m_log_weights.set_const(std::log(weight));
 	m_ARD_type=KT_SCALAR;
 
 	m_weights_rows=1.0;
@@ -132,7 +132,7 @@ void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 	{
 		REQUIRE(weights[i]>0, "Each entry of vector weight (v[%d]=%f) should be positive\n",
 			i,weights[i]);
-		m_log_weights[i]=CMath::log(weights[i]);
+		m_log_weights[i] = std::log(weights[i]);
 	}
 	m_ARD_type=KT_DIAG;
 
@@ -162,7 +162,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 		REQUIRE(begin[i]>0, "The diagonal entry of matrix weight (w(%d,%d)=%f) should be positive\n",
 			i,i,begin[i]);
 		std::copy(begin+i,begin+weights.num_rows,m_log_weights.vector+offset);
-		m_log_weights[offset]=CMath::log(m_log_weights[offset]);
+		m_log_weights[offset] = std::log(m_log_weights[offset]);
 		offset+=weights.num_rows-i;
 	}
 }
@@ -216,7 +216,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 			weights[0]=CMath::exp(weights[0]);
 			SGMatrix<float64_t> rtmp(vec.vector+i,vec.vlen-i,1,false);
 			SGMatrix<float64_t> s=linalg::matrix_prod(weights,rtmp);
-			weights[0]=CMath::log(weights[0]);
+			weights[0] = std::log(weights[0]);
 			res[i]=s[0];
 			offset+=m_weights_rows-i;
 		}

@@ -132,11 +132,12 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
 	float64_t min_eig=m_eigen_solver->get_min_eigenvalue();
 
-	float64_t log_cond_number=CMath::log(max_eig)-CMath::log(min_eig);
+	float64_t log_cond_number = std::log(max_eig) - std::log(min_eig);
 	float64_t two_pi_sq=2.0*M_PI*M_PI;
 
-	int32_t num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
-			*CMath::log(m_desired_accuracy)/two_pi_sq);
+	int32_t num_shifts = static_cast<index_t>(
+		-1.5 * (log_cond_number + 6.0) * std::log(m_desired_accuracy) /
+		two_pi_sq);
 
 	return num_shifts;
 }
@@ -159,7 +160,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// k=$\frac{(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}-1}
 	// {(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}+1}$
 	float64_t k=(m_div-1)/(m_div+1);
-	float64_t L=-CMath::log(k)/PI;
+	float64_t L = -std::log(k) / PI;
 
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
@@ -204,7 +205,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 			m_weights[i]=dzdt;
 			break;
 		case OF_LOG:
-			m_weights[i]=2.0*CMath::log(w)*dzdt/w;
+			m_weights[i] = 2.0 * std::log(w) * dzdt / w;
 			break;
 		case OF_POLY:
 			SG_NOTIMPLEMENTED

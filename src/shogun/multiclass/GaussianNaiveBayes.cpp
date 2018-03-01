@@ -198,13 +198,15 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 			continue;
 		}
 		else
-			m_rates.vector[i] = CMath::log(m_label_prob.vector[i]);
+			m_rates.vector[i] = std::log(m_label_prob.vector[i]);
 
 		// product all conditional gaussian probabilities
 		for (k=0; k<m_dim; k++)
 			if (m_variances(k,i)!=0.0)
-				m_rates.vector[i]+= CMath::log(0.39894228/CMath::sqrt(m_variances(k, i))) -
-					0.5*CMath::sq(feature_vector.vector[k]-m_means(k, i))/(m_variances(k, i));
+				m_rates.vector[i] +=
+				    std::log(0.39894228 / CMath::sqrt(m_variances(k, i))) -
+				    0.5 * CMath::sq(feature_vector.vector[k] - m_means(k, i)) /
+				        (m_variances(k, i));
 	}
 
 	// find label with maximum rate

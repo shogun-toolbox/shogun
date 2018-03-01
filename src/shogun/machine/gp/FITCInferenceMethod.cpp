@@ -139,9 +139,11 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 
 	// compute negative log marginal likelihood:
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
-	float64_t result=eigen_chol_utr.diagonal().array().log().sum()+
-		(-eigen_t.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
-		 m_ktrtr_diag.vlen*CMath::log(2*CMath::PI))/2.0;
+	float64_t result =
+	    eigen_chol_utr.diagonal().array().log().sum() +
+	    (-eigen_t.array().log().sum() + eigen_r.dot(eigen_r) -
+	     eigen_be.dot(eigen_be) + m_ktrtr_diag.vlen * std::log(2 * CMath::PI)) /
+	        2.0;
 
 	return result;
 }

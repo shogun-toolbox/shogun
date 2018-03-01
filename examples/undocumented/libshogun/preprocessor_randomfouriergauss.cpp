@@ -353,7 +353,7 @@ for(int i=0; i<m ;++i)
 {
 	for(int l=0; l<i ;++l)
 	{
-		avgdist1+= -CMath::log(kertr1[i+l*m])*2.0/m/(m+1.0);
+		avgdist1 += -std::log(kertr1[i + l * m]) * 2.0 / m / (m + 1.0);
 	}
 }
 
@@ -373,7 +373,8 @@ for(int i=0; i<m ;++i)
 		}
 		else
 		{
-		avgdist2+= -CMath::log(std::max(kertr2[i+l*m],1e-10))*2.0/m/(m+1.0);
+			avgdist2 += -std::log(std::max(kertr2[i + l * m], 1e-10)) * 2.0 /
+				        m / (m + 1.0);
 		}
 	}
 }

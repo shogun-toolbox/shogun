@@ -50,7 +50,7 @@ CModelSelectionParameters* create_param_tree()
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
 			new CModelSelectionParameters("log_width");
-	gaussian_kernel_width->build_values(-CMath::log(2.0), 0.0, R_LINEAR, 1.0);
+	gaussian_kernel_width->build_values(-std::log(2.0), 0.0, R_LINEAR, 1.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
 

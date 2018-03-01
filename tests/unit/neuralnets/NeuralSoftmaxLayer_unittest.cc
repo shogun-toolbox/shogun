@@ -164,7 +164,7 @@ TEST(NeuralSoftmaxLayer, compute_error)
 	// manually compute error
 	float64_t error_ref = 0;
 	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
-		error_ref += y[i]*CMath::max(CMath::log(1e-50), CMath::log(A[i]));
+		error_ref += y[i] * CMath::max(std::log(1e-50), std::log(A[i]));
 	error_ref *= -1.0/x.num_cols;
 
 	// compare

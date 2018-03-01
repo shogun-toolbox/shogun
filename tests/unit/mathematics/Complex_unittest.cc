@@ -19,7 +19,7 @@ TEST(CMath, complex_test)
 	complex128_t a(5.0, 6.0), result;
 
 	EXPECT_NEAR(CMath::abs(a), 7.81024967590665439412, 1E-14);
-	result=CMath::log(a);
+	result = std::log(a);
 	EXPECT_NEAR(result.real(), 2.05543693208665567695, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.87605805059819341629, 1E-14);
 	result=CMath::log10(a);

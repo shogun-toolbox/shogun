@@ -154,10 +154,14 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		float64_t lZ=CStatistics::lgamma(m_nu/2.0+0.5)-CStatistics::lgamma(m_nu/2.0)-
-			CMath::log(m_nu*CMath::PI*CMath::sq(m_sigma))/2.0;
-		return CMath::exp(lZ-(m_nu/2.0+0.5)*CMath::log(1.0+CMath::sq(x-m_mu)/
-			(m_nu*CMath::sq(m_sigma))));
+		float64_t lZ = CStatistics::lgamma(m_nu / 2.0 + 0.5) -
+		               CStatistics::lgamma(m_nu / 2.0) -
+		               std::log(m_nu * CMath::PI * CMath::sq(m_sigma)) / 2.0;
+		return CMath::exp(
+		    lZ -
+		    (m_nu / 2.0 + 0.5) *
+		        std::log(
+		            1.0 + CMath::sq(x - m_mu) / (m_nu * CMath::sq(m_sigma))));
 	}
 
 private:

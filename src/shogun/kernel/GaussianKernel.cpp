@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Jacob Walker, Chiyuan Zhang, Wu Lin, 
- *          Heiko Strathmann, Roman Votyakov, Soumyajit De, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Jacob Walker, Chiyuan Zhang, Wu Lin,
+ *          Heiko Strathmann, Roman Votyakov, Soumyajit De, Viktor Gal,
  *          Tonmoy Saikia, Sergey Lisitsyn, Matt Aasted, Sanuj Sharma
  */
 
@@ -86,7 +86,7 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 void CGaussianKernel::set_width(float64_t w)
 {
 	REQUIRE(w>0, "width (%f) must be positive\n",w);
-	m_log_width=CMath::log(w/2.0)/2.0;
+	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
 float64_t CGaussianKernel::get_width() const
