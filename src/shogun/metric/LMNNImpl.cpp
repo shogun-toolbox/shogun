@@ -292,7 +292,7 @@ bool CLMNNImpl::check_termination(float64_t stepsize, const SGVector<float64_t> 
 
 	if (iter >= 10)
 	{
-		obj_threshold *= obj[iter-1];
+		obj_threshold *= obj[iter - 1];
 		for (int32_t i = 0; i < 3; ++i)
 		{
 			if (CMath::abs(obj[iter-i]-obj[iter-i-1]) >= obj_threshold)
