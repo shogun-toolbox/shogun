@@ -913,13 +913,42 @@ private:
 	template <class T>
 	void to_string(const SGMatrix<T>* m)
 	{
-		stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows << "," << m->num_cols << ")";
+		if (m)
+		{
+			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
+			         << "," << m->num_cols << "): [";
+			for (auto col : range(m->num_cols))
+			{
+				stream() << "[";
+				for (auto row : range(m->num_rows))
+				{
+					stream() << (*m)(row, col);
+					if (row < m->num_rows - 1)
+						stream() << ",";
+				}
+				stream() << "]";
+				if (col < m->num_cols)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
 	}
 
 	template <class T>
 	void to_string(const SGVector<T>* v)
 	{
-		stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen << ")";
+		if (v)
+		{
+			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
+			         << "): [";
+			for (auto i : range(v->vlen))
+			{
+				stream() << (*v)[i];
+				if (i < v->vlen - 1)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
 	}
 
 private:
