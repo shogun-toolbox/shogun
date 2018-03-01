@@ -333,6 +333,15 @@ public:
 	 */
 	void add(CSGObject** param,
 			 const char* name, const char* description="");
+
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
+	void add(T** param, const char* name, const char* description = "")
+	{
+		TSGDataType type(CT_SCALAR, ST_NONE, PT_SGOBJECT);
+		add_type(&type, (CSGObject**)param, name, description);
+	}
+
 	/** add param
 	 * @param param parameter itself
 	 * @param name name of parameter

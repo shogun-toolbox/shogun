@@ -24,8 +24,8 @@ CMachine::CMachine()
 	       "Maximum training time.", MS_NOT_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_solver_type, "solver_type",
 	       "Type of solver.", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_labels, "labels",
-	       "Labels to be used.", MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_labels, "labels", "Labels to be used.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_store_model_features, "store_model_features",
 	       "Should feature data of model be stored after training?", MS_NOT_AVAILABLE);
 	SG_ADD(&m_data_locked, "data_locked",
@@ -286,4 +286,9 @@ rxcpp::subscription CMachine::connect_to_signal_handler()
 		},
 	    [this]() { this->on_complete(); });
 	return get_global_signal()->get_observable()->subscribe(subscriber);
+}
+
+CMachine* shogun::machine(const char* name)
+{
+	return create_object<CMachine>(name);
 }

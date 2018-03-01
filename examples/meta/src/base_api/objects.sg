@@ -1,0 +1,4 @@
+Machine lib_svm = machine("LibSVM")
+Machine lda = machine("LDA")
+Kernel kernel_gaussian = kernel("GaussianKernel")
+Kernel kernel_linear = kernel("LinearKernel")

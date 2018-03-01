@@ -12,6 +12,7 @@
 
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -346,39 +347,100 @@ public:
 	{
 		if (has_parameter(_tag))
 		{
-			if(has<T>(_tag.name()))
+			try
 			{
-				ref_value(&value);
-				update_parameter(_tag, make_any(value));
+				any_cast<T>(get_parameter(_tag).get_value());
 			}
-			else
+			catch (const TypeMismatchException& exc)
 			{
-				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
-					_tag.name().c_str());
+				SG_ERROR(
+					"Cannot set parameter %s::%s of type %s, incompatible "
+					"provided type %s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str());
 			}
+			ref_value(value);
+			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
-			SG_ERROR("\"%s\" does not have a parameter with name \"%s\".\n",
-				get_name(), _tag.name().c_str());
+			SG_ERROR(
+				"Parameter %s::%s does not exist.\n", get_name(),
+				_tag.name().c_str());
 		}
 	}
 
-#define SGOBJECT_PUT_DECLARE(T)                                                \
-	/** Setter for a class parameter, identified by a name.                    \
-	 * Throws an exception if the class does not have such a parameter.        \
-	 *                                                                         \
-	 * @param name name of the parameter                                       \
-	 * @param value value of the parameter along with type information         \
-	 */                                                                        \
-	void put(const std::string& name, T const& value) throw(ShogunException);
+#ifndef SWIG
+	template <typename T>
+	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
+	{
+		if (dynamic_cast<T*>(value))
+		{
+			put(Tag<T*>(name), (T*)value);
+			return true;
+		}
+		return false;
+	}
 
-	SGOBJECT_PUT_DECLARE(int32_t)
-	SGOBJECT_PUT_DECLARE(float32_t)
-	SGOBJECT_PUT_DECLARE(float64_t)
-	SGOBJECT_PUT_DECLARE(SGVector<int32_t>)
-	SGOBJECT_PUT_DECLARE(SGVector<float64_t>)
-	SGOBJECT_PUT_DECLARE(CSGObject*)
+	template <typename T>
+	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	{
+		if (has<T*>(name))
+		{
+			T* result = get<T*>(name);
+			SG_REF(result)
+			return (CSGObject*)result;
+		}
+
+		return nullptr;
+	}
+#endif // SWIG
+
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
+	 */
+	void put(const std::string& name, CSGObject* value);
+
+	/** Untyped getter for an object class parameter, identified by a name.
+	 * Will attempt to get specified object of appropriate internal type.
+	 *
+	 * @param name name of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name);
+
+#ifndef SWIG
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter, wrapped in smart pointer
+	 */
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
+	void put(const std::string& name, Some<T> value)
+	{
+		put(name, (CSGObject*)(value.get()));
+	}
+#endif // SWIG
+
+	/** Typed setter for a non-object class parameter, identified by a name.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter along with type information
+	 */
+	template <typename T,
+		      typename T2 = typename std::enable_if<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>::type>
+	void put(const std::string& name, T value)
+	{
+		put(Tag<T>(name), value);
+	}
 
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -397,9 +459,10 @@ public:
 		catch (const TypeMismatchException& exc)
 		{
 			SG_ERROR(
-				"Get \"%s\" failed. Expected %s, got %s.\n",
-				_tag.name().c_str(), exc.expected().c_str(),
-				exc.actual().c_str());
+				"Cannot get parameter %s::%s of type %s, incompatible "
+				"requested type %s.\n",
+				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				exc.expected().c_str());
 		}
 		// we won't be there
 		return any_cast<T>(value);
@@ -650,8 +713,22 @@ private:
 	void unset_global_objects();
 	void init();
 
-	static void ref_value(CSGObject* const* value);
-	static void ref_value(...);
+	/** Overloaded helper to increase reference counter */
+	static void ref_value(CSGObject* value)
+	{
+		SG_REF(value);
+	}
+
+	/** Overloaded helper to increase reference counter
+	 * Here a no-op for non CSGobject pointer parameters */
+	template <typename T,
+		      std::enable_if_t<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>* = nullptr>
+	static void ref_value(T value)
+	{
+	}
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.

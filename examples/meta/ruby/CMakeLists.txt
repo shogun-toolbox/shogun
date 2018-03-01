@@ -1,11 +1,22 @@
 STRING(REGEX REPLACE "(.*)/narray.*$" "\\1" NARRAY_PATH ${NARRAY_LIB})
 
+LIST(APPEND EXCLUDED_RUBY_META_EXAMPLES
+			base_api-put_get
+)
+
 # add test case for each generated example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
     GET_META_EXAMPLE_VARS(${META_EXAMPLE} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
-    
+
+    # accound for blacklist
+    LIST(FIND EXCLUDED_RUBY_META_EXAMPLES ${EXAMPLE_NAME_WITH_DIR} EXCLUDED_EXAMPLE)
+    IF(NOT EXCLUDED_EXAMPLE EQUAL -1)
+		MESSAGE(WARNING "Skipping test for lua example " ${EXAMPLE_NAME_WITH_DIR})
+        CONTINUE()
+    ENDIF()
+
 	add_test(NAME generated_ruby-${EXAMPLE_NAME_WITH_DIR}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}
 			COMMAND ${RUBY_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.rb)

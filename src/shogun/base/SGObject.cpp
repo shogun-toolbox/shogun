@@ -35,6 +35,11 @@
 #include <unordered_map>
 #include <memory>
 
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
+
 namespace shogun
 {
 
@@ -836,15 +841,6 @@ bool CSGObject::has(const std::string& name) const
 	return has_parameter(BaseTag(name));
 }
 
-void CSGObject::ref_value(CSGObject* const* value)
-{
-	SG_REF(*value);
-}
-
-void CSGObject::ref_value(...)
-{
-}
-
 class ToStringVisitor : public AnyVisitor
 {
 public:
@@ -917,13 +913,42 @@ private:
 	template <class T>
 	void to_string(const SGMatrix<T>* m)
 	{
-		stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows << "," << m->num_cols << ")";
+		if (m)
+		{
+			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
+			         << "," << m->num_cols << "): [";
+			for (auto col : range(m->num_cols))
+			{
+				stream() << "[";
+				for (auto row : range(m->num_rows))
+				{
+					stream() << (*m)(row, col);
+					if (row < m->num_rows - 1)
+						stream() << ",";
+				}
+				stream() << "]";
+				if (col < m->num_cols)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
 	}
 
 	template <class T>
 	void to_string(const SGVector<T>* v)
 	{
-		stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen << ")";
+		if (v)
+		{
+			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
+			         << "): [";
+			for (auto i : range(v->vlen))
+			{
+				stream() << (*v)[i];
+				if (i < v->vlen - 1)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
 	}
 
 private:
@@ -1021,46 +1046,42 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
-namespace shogun
+void CSGObject::put(const std::string& name, CSGObject* value)
 {
-#define SGOBJECT_PUT_DEFINE(T)                                                 \
-	void CSGObject::put(const std::string& name, T const& value) throw(        \
-	    ShogunException)                                                       \
-	{                                                                          \
-		Tag<T> tag(name);                                                      \
-		put(tag, value);                                                       \
-	}
+	REQUIRE(
+	    value, "Cannot put %s::%s, no object provided.\n", get_name(),
+	    name.c_str());
 
-	SGOBJECT_PUT_DEFINE(SGVector<int32_t>)
-	SGOBJECT_PUT_DEFINE(SGVector<float64_t>)
-	SGOBJECT_PUT_DEFINE(CSGObject*)
+	if (put_sgobject_type_dispatcher<CKernel>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CDistance>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CFeatures>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CLabels>(name, value))
+		return;
 
-#define PUT_DEFINE_CHECK_AND_CAST(T)                                           \
-	else if (has(Tag<T>(name))) put(Tag<T>(name), (T)value);
+	SG_ERROR(
+	    "Cannot put object %s as parameter %s::%s of type %s, type does not "
+	    "match.\n",
+	    value->get_name(), get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+}
 
-/* Some target languages have problems with scalar numeric types, so allow to
- * convert all int/float types into each other.
- *
- * For example, Octave treats a=1.0 as an integer, and b=1.1 as a float.
- * Furthermore, if a user wants to set a registered 16bit integer using a
- * literal obj.put("16-bit-var", 2), might complain about a wrong type since
- * internally the int literal is represented at a different word length. */
-#define SGOBJECT_PUT_DEFINE_WITH_CONVERSION(numeric_t)                         \
-	void CSGObject::put(                                                       \
-	    const std::string& name,                                               \
-	    numeric_t const& value) throw(ShogunException)                         \
-	{                                                                          \
-		/* use correct type of possible, otherwise cast-convert */             \
-		if (has(Tag<numeric_t>(name)))                                         \
-			put(Tag<numeric_t>(name), value);                                  \
-		PUT_DEFINE_CHECK_AND_CAST(int32_t)                                     \
-		PUT_DEFINE_CHECK_AND_CAST(float32_t)                                   \
-		PUT_DEFINE_CHECK_AND_CAST(float64_t)                                   \
-		else /* if nothing works, moan about original type */                  \
-		    put(Tag<numeric_t>(name), value);                                  \
-	}
+CSGObject* CSGObject::get(const std::string& name)
+{
+	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CKernel>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CFeatures>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
+		return result;
 
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(int32_t)
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float32_t)
-	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float64_t)
-};
+	SG_ERROR(
+	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
+	    get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+	return nullptr;
+}
