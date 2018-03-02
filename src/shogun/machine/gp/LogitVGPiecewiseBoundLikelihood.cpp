@@ -469,12 +469,14 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 			if (CMath::abs(zl(r, c)) == CMath::INFTY)
 				m_pl(r, c) = 0;
 			else
-				m_pl(r, c) = CMath::exp(CGaussianDistribution::univariate_log_pdf(zl(r, c)));
+				m_pl(r, c) = std::exp(
+					CGaussianDistribution::univariate_log_pdf(zl(r, c)));
 
 			if (CMath::abs(zh(r, c)) == CMath::INFTY)
 				m_ph(r, c) = 0;
 			else
-				m_ph(r, c) = CMath::exp(CGaussianDistribution::univariate_log_pdf(zh(r, c)));
+				m_ph(r, c) = std::exp(
+					CGaussianDistribution::univariate_log_pdf(zh(r, c)));
 		}
 	}
 

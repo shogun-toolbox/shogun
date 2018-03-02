@@ -317,7 +317,7 @@ float64_t CRandom::sample_tail() const
 
 float64_t CRandom::GaussianPdfDenorm(float64_t x) const
 {
-	return CMath::exp(-(x*x * 0.5));
+	return std::exp(-(x * x * 0.5));
 }
 
 float64_t CRandom::GaussianPdfDenormInv(float64_t y) const

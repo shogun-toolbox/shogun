@@ -40,7 +40,7 @@ float64_t CExponentialLoss::loss(float64_t prediction, float64_t label)
 
 float64_t CExponentialLoss::loss(float64_t z)
 {
-	return CMath::exp(-z);
+	return std::exp(-z);
 }
 
 float64_t CExponentialLoss::first_derivative(float64_t prediction, float64_t label)

@@ -128,8 +128,9 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 	for (index_t i = 0; i < m_current_values.vlen; ++i)
 	{
 		float64_t fApB = m_current_values[i] * a + b;
-		m_current_values[i] = fApB >= 0 ? CMath::exp(-fApB) / (1.0 + CMath::exp(-fApB)) :
-		                      1.0 / (1 + CMath::exp(fApB));
+		m_current_values[i] = fApB >= 0
+		                          ? std::exp(-fApB) / (1.0 + std::exp(-fApB))
+		                          : 1.0 / (1 + std::exp(fApB));
 	}
 
 	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")

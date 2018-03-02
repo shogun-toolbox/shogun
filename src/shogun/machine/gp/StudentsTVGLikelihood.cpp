@@ -71,7 +71,9 @@ CStudentsTVGLikelihood::~CStudentsTVGLikelihood()
 
 void CStudentsTVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CStudentsTLikelihood(CMath::exp(m_log_sigma), CMath::exp(m_log_df)+1.0));
+	set_likelihood(
+		new CStudentsTLikelihood(
+		    std::exp(m_log_sigma), std::exp(m_log_df) + 1.0));
 }
 
 void CStudentsTVGLikelihood::init()

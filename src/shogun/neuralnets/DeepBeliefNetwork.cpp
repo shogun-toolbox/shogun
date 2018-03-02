@@ -412,7 +412,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	{
 		int32_t len = m_layer_sizes->element(index)*m_batch_size;
 		for (int32_t i=0; i<len; i++)
-				result[i] = 1.0/(1.0+CMath::exp(-1.0*result[i]));
+			result[i] = 1.0 / (1.0 + std::exp(-1.0 * result[i]));
 	}
 
 	if (index == 0 && m_visible_units_type==RBMVUT_SOFTMAX)
@@ -423,11 +423,11 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 		{
 			float64_t sum = 0;
 			for (int32_t i=0; i<m_layer_sizes->element(0); i++)
-				sum += CMath::exp(Out(i,j)-max);
+				sum += std::exp(Out(i, j) - max);
 
 			float64_t normalizer = std::log(sum);
 			for (int32_t k=0; k<m_layer_sizes->element(0); k++)
-				Out(k,j) = CMath::exp(Out(k,j)-max-normalizer);
+				Out(k, j) = std::exp(Out(k, j) - max - normalizer);
 		}
 	}
 
@@ -460,7 +460,7 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 
 	int32_t len = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<len; i++)
-		result[i] = 1.0/(1.0+CMath::exp(-1.0*result[i]));
+		result[i] = 1.0 / (1.0 + std::exp(-1.0 * result[i]));
 
 	if (sample_states && index>0)
 	{

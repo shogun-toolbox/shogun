@@ -62,13 +62,13 @@ void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
 		float64_t sum = 0;
 		for (int32_t i=0; i<m_num_neurons; i++)
 		{
-			sum += CMath::exp(m_activations[i+j*m_num_neurons]-max);
+			sum += std::exp(m_activations[i + j * m_num_neurons] - max);
 		}
 		float64_t normalizer = std::log(sum);
 		for (int32_t k=0; k<m_num_neurons; k++)
 		{
-			m_activations[k+j*m_num_neurons] =
-				CMath::exp(m_activations[k+j*m_num_neurons]-max-normalizer);
+			m_activations[k + j * m_num_neurons] = std::exp(
+			    m_activations[k + j * m_num_neurons] - max - normalizer);
 		}
 	}
 }

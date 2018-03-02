@@ -35,5 +35,5 @@ float64_t CGaussianCompactKernel::compute(int32_t idx_a, int32_t idx_b)
     if(result_multiplier<=0)
         return 0;
 
-    return CMath::pow(result_multiplier, power)*CMath::exp(-result);
+	return CMath::pow(result_multiplier, power) * std::exp(-result);
 }

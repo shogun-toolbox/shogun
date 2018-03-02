@@ -838,7 +838,7 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 				float64_t log_sum = std::log(tmp.array().exp().sum());
 
 				factor = subkernel_log_weights[index] - max_coeff - log_sum;
-				factor = CMath::exp(factor) - CMath::exp(factor*2.0);
+				factor = std::exp(factor) - std::exp(factor * 2.0);
 
 				Map<MatrixXd> eigen_res(result.matrix, result.num_rows, result.num_cols);
 				eigen_res = eigen_res * factor;

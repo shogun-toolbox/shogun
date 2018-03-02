@@ -89,7 +89,7 @@ TEST(NeuralLogisticLayer, compute_activations)
 			for (int32_t k=0; k<x.num_rows; k++)
 				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
 
-			A_ref(i,j) = 1/(1+CMath::exp(-1*A_ref(i,j)));
+			A_ref(i, j) = 1 / (1 + std::exp(-1 * A_ref(i, j)));
 		}
 	}
 

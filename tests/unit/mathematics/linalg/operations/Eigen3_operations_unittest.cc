@@ -767,7 +767,7 @@ TEST(LinalgBackendEigen, logistic)
 	linalg::logistic(A, B);
 
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(1.0/(1+CMath::exp(-1*A[i])), B[i], 1e-15);
+		EXPECT_NEAR(1.0 / (1 + std::exp(-1 * A[i])), B[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod)
@@ -1302,7 +1302,7 @@ TEST(LinalgBackendEigen, SGMatrix_softmax)
 		A[i] = i / 12;
 
 	for (index_t i = 0; i < 12; ++i)
-		ref[i] = CMath::exp(A[i]);
+		ref[i] = std::exp(A[i]);
 
 	for (index_t j = 0; j < ref.num_cols; ++j)
 	{

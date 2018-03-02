@@ -141,7 +141,7 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 	{
-		return CMath::exp(-distance(idx_a,idx_b));
+		return std::exp(-distance(idx_a, idx_b));
 	}
 
 public:

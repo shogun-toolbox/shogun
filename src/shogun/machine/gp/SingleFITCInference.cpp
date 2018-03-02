@@ -190,7 +190,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_noise(
 	SGMatrix<float64_t> R(m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_R(R.matrix, R.num_rows, R.num_cols);
 	//dKuui = 2*snu2; R = -dKuui*B;
-	float64_t factor=2.0*CMath::exp(m_log_ind_noise);
+	float64_t factor = 2.0 * std::exp(m_log_ind_noise);
 	eigen_R=-eigen_B*factor;
 
 	SGVector<float64_t> v(m_B.num_cols);
@@ -229,7 +229,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_featur
 	m_kernel->init(inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
 	//Kpu=1 in our setting
-	MatrixXd A=CMath::exp(m_log_scale*2.0)*eigen_BdK;
+	MatrixXd A = std::exp(m_log_scale * 2.0) * eigen_BdK;
 	for(int32_t lat_idx=0; lat_idx<A.rows(); lat_idx++)
 	{
 		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_idx*dim,dim);
@@ -242,7 +242,8 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_featur
 	m_kernel->init(inducing_features, inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
 	//Kpuu=1 in our setting
-	MatrixXd C=CMath::exp(m_log_scale*2.0)*(eigen_BdK*eigen_B.transpose());
+	MatrixXd C =
+	    std::exp(m_log_scale * 2.0) * (eigen_BdK * eigen_B.transpose());
 	for(int32_t lat_lidx=0; lat_lidx<C.rows(); lat_lidx++)
 	{
 		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_lidx*dim,dim);

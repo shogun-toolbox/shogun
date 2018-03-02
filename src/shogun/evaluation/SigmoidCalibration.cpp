@@ -195,8 +195,8 @@ SGVector<float64_t> CSigmoidCalibration::calibrate_values(
 	for (index_t i = 0; i < values.vlen; ++i)
 	{
 		float64_t fApB = values[i] * params.a + params.b;
-		values[i] = fApB >= 0 ? CMath::exp(-fApB) / (1.0 + CMath::exp(-fApB))
-		                      : 1.0 / (1 + CMath::exp(fApB));
+		values[i] = fApB >= 0 ? std::exp(-fApB) / (1.0 + std::exp(-fApB))
+		                      : 1.0 / (1 + std::exp(fApB));
 	}
 	return values;
 }

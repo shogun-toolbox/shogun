@@ -233,7 +233,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
 	eigen_K=eigen_K+m_noise_factor*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	Eigen::LDLT<Eigen::MatrixXd> ldlt;
-	ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
+	ldlt.compute(eigen_K * std::exp(m_log_scale * 2.0));
 
 	float64_t attempt_count=0;
 	MatrixXd Kernel_D=ldlt.vectorD();
@@ -250,7 +250,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInference::update_init_helper()
 		noise_factor*=m_exp_factor;
 		//updat the noise  eigen_K=eigen_K+noise_factor*(m_exp_factor^attempt_count)*Identity()
 		eigen_K=eigen_K+(noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
-		ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
+		ldlt.compute(eigen_K * std::exp(m_log_scale * 2.0));
 		Kernel_D=ldlt.vectorD();
 	}
 
@@ -380,7 +380,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_inference_method(const TPar
 	SGVector<float64_t> result(1);
 
 	result[0]=get_derivative_related_cov(m_ktrtr);
-	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
+	result[0] *= std::exp(m_log_scale * 2.0) * 2.0;
 
 	return result;
 }
@@ -403,7 +403,7 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_kernel(const TParameter* pa
 			dK=m_kernel->get_parameter_gradient(param, i);
 
 		result[i]=get_derivative_related_cov(dK);
-		result[i]*=CMath::exp(m_log_scale*2.0);
+		result[i] *= std::exp(m_log_scale * 2.0);
 	}
 
 	return result;

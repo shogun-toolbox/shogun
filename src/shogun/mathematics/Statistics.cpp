@@ -275,9 +275,9 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 
 #ifdef DEBUG_FISHER_TABLE
 	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p)
-	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p))
+	SG_SPRINT("exp_nonrand_p=%.18g\n", std::exp(nonrand_p))
 #endif // DEBUG_FISHER_TABLE
-	nonrand_p=CMath::exp(nonrand_p);
+	nonrand_p = std::exp(nonrand_p);
 
 	SG_FREE(log_denom_vec);
 	SG_FREE(x);
@@ -856,9 +856,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 	{
 		float64_t fApB = scores[i] * a + b;
 		if (fApB >= 0)
-			fval += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
+			fval += t[i] * fApB + std::log(1 + std::exp(-fApB));
 		else
-			fval += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
+			fval += (t[i] - 1) * fApB + std::log(1 + std::exp(fApB));
 	}
 
 	index_t it;
@@ -882,13 +882,13 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 			float64_t q;
 			if (fApB >= 0)
 			{
-				p = CMath::exp(-fApB) / (1.0 + CMath::exp(-fApB));
-				q = 1.0 / (1.0 + CMath::exp(-fApB));
+				p = std::exp(-fApB) / (1.0 + std::exp(-fApB));
+				q = 1.0 / (1.0 + std::exp(-fApB));
 			}
 			else
 			{
-				p = 1.0 / (1.0 + CMath::exp(fApB));
-				q = CMath::exp(fApB) / (1.0 + CMath::exp(fApB));
+				p = 1.0 / (1.0 + std::exp(fApB));
+				q = std::exp(fApB) / (1.0 + std::exp(fApB));
 			}
 
 			float64_t d2 = p * q;
@@ -924,9 +924,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 			{
 				float64_t fApB = scores[i] * newA + newB;
 				if (fApB >= 0)
-					newf += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
+					newf += t[i] * fApB + std::log(1 + std::exp(-fApB));
 				else
-					newf += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
+					newf += (t[i] - 1) * fApB + std::log(1 + std::exp(fApB));
 			}
 
 			/* Check sufficient decrease */
@@ -1024,9 +1024,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 	{
 		float64_t fApB=scores[i]*a+b;
 		if (fApB>=0)
-			fval += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
+			fval += t[i] * fApB + std::log(1 + std::exp(-fApB));
 		else
-			fval += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
+			fval += (t[i] - 1) * fApB + std::log(1 + std::exp(fApB));
 	}
 
 	index_t it;
@@ -1050,13 +1050,13 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 			float64_t q;
 			if (fApB>=0)
 			{
-				p=CMath::exp(-fApB)/(1.0+CMath::exp(-fApB));
-				q=1.0/(1.0+CMath::exp(-fApB));
+				p = std::exp(-fApB) / (1.0 + std::exp(-fApB));
+				q = 1.0 / (1.0 + std::exp(-fApB));
 			}
 			else
 			{
-				p=1.0/(1.0+CMath::exp(fApB));
-				q=CMath::exp(fApB)/(1.0+CMath::exp(fApB));
+				p = 1.0 / (1.0 + std::exp(fApB));
+				q = std::exp(fApB) / (1.0 + std::exp(fApB));
 			}
 
 			float64_t d2=p*q;
@@ -1092,9 +1092,9 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 			{
 				float64_t fApB=scores[i]*newA+newB;
 				if (fApB>=0)
-					newf += t[i] * fApB + std::log(1 + CMath::exp(-fApB));
+					newf += t[i] * fApB + std::log(1 + std::exp(-fApB));
 				else
-					newf += (t[i] - 1) * fApB + std::log(1 + CMath::exp(fApB));
+					newf += (t[i] - 1) * fApB + std::log(1 + std::exp(fApB));
 			}
 
 			/* Check sufficient decrease */

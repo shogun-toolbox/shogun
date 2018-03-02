@@ -54,7 +54,7 @@ void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
 	// apply logistic activation function
 	int32_t length = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<length; i++)
-		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
+		m_activations[i] = 1.0 / (1.0 + std::exp(-1.0 * m_activations[i]));
 }
 
 float64_t CNeuralLogisticLayer::compute_contraction_term(

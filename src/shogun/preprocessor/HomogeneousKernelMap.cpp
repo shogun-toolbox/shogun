@@ -245,11 +245,12 @@ CHomogeneousKernelMap::get_spectrum(float64_t omega) const
 		case HomogeneousKernelIntersection:
 			return (2.0 / CMath::PI) / (1 + 4 * omega*omega);
 		case HomogeneousKernelChi2:
-			return 2.0 / (CMath::exp (CMath::PI * omega) + CMath::exp (-CMath::PI * omega)) ;
-		case HomogeneousKernelJS:
+		    return 2.0 /
+		           (std::exp(CMath::PI * omega) + std::exp(-CMath::PI * omega));
+	    case HomogeneousKernelJS:
 		    return (2.0 / std::log(4.0)) * 2.0 /
-		           (CMath::exp(CMath::PI * omega) +
-		            CMath::exp(-CMath::PI * omega)) /
+		           (std::exp(CMath::PI * omega) +
+		            std::exp(-CMath::PI * omega)) /
 		           (1 + 4 * omega * omega);
 	    default:
 		    /* throw exception */

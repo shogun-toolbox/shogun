@@ -78,7 +78,8 @@ float64_t CPeriodicKernel::compute(int32_t idx_a, int32_t idx_b)
 	 k({\bf x},{\bf x'})= exp(-\frac{2sin^2(|{\bf x}-{\bf x'}|/p)}{l^2})
 	*/
 	float64_t sin_term=CMath::sin(M_PI*distance(idx_a,idx_b)/m_period);
-	return CMath::exp(-2*CMath::pow(sin_term, 2)/CMath::pow(m_length_scale,2));
+	return std::exp(
+	    -2 * CMath::pow(sin_term, 2) / CMath::pow(m_length_scale, 2));
 }
 
 void CPeriodicKernel::precompute_squared()

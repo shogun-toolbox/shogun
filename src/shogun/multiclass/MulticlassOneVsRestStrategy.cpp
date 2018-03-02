@@ -115,7 +115,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> ou
 	}
 
 	for (int32_t i=0; i<outputs.vlen; i++)
-		outputs[i] = CMath::exp(-As[i]*outputs[i]-Bs[i]);
+		outputs[i] = std::exp(-As[i] * outputs[i] - Bs[i]);
 
 	float64_t norm = SGVector<float64_t>::sum(outputs);
 	norm += 1E-10;

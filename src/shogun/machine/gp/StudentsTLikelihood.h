@@ -79,7 +79,10 @@ public:
 	 *
 	 * @return scale parameter
 	 */
-	float64_t get_sigma() const { return CMath::exp(m_log_sigma); }
+	float64_t get_sigma() const
+	{
+		return std::exp(m_log_sigma);
+	}
 
 	/** sets the scale parameter
 	 *
@@ -95,7 +98,10 @@ public:
 	 *
 	 * @return degrees of freedom
 	 */
-	float64_t get_degrees_freedom() const { return CMath::exp(m_log_df)+1; }
+	float64_t get_degrees_freedom() const
+	{
+		return std::exp(m_log_df) + 1;
+	}
 
 	/** set degrees of freedom
 	 *
