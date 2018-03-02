@@ -93,7 +93,7 @@ void CExponentialARDKernel::lazy_update_weights()
 			{
 				float64_t* begin=m_weights_raw.get_column_vector(i);
 				std::copy(m_log_weights.vector+offset,m_log_weights.vector+offset+m_weights_raw.num_rows-i,begin+i);
-				begin[i]=CMath::exp(begin[i]);
+				begin[i] = std::exp(begin[i]);
 				offset+=m_weights_raw.num_rows-i;
 			}
 		}
@@ -213,7 +213,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 		for (index_t i=0;i<m_weights_rows && i<m_weights_cols;i++)
 		{
 			SGMatrix<float64_t> weights(log_weights.vector+offset,1,m_weights_rows-i,false);
-			weights[0]=CMath::exp(weights[0]);
+			weights[0] = std::exp(weights[0]);
 			SGMatrix<float64_t> rtmp(vec.vector+i,vec.vlen-i,1,false);
 			SGMatrix<float64_t> s=linalg::matrix_prod(weights,rtmp);
 			weights[0] = std::log(weights[0]);
@@ -238,7 +238,7 @@ SGMatrix<float64_t> CExponentialARDKernel::compute_right_product(SGVector<float6
 	if (m_ARD_type==KT_SCALAR)
 	{
 		right=SGMatrix<float64_t>(vec.vector,vec.vlen,1,false);
-		scalar_weight*=CMath::exp(m_log_weights[0]);
+		scalar_weight *= std::exp(m_log_weights[0]);
 	}
 	else if (m_ARD_type==KT_DIAG || m_ARD_type==KT_FULL)
 		right=get_weighted_vector(vec);

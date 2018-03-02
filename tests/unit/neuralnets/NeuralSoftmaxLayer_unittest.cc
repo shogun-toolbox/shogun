@@ -89,7 +89,7 @@ TEST(NeuralSoftmaxLayer, compute_activations)
 			for (int32_t k=0; k<x.num_rows; k++)
 				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
 
-			A_ref(i,j) = CMath::exp(A_ref(i,j));
+			A_ref(i, j) = std::exp(A_ref(i, j));
 		}
 	}
 

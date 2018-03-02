@@ -63,7 +63,7 @@ CMath::CMath()
     init_log_table();
 #else
 	int32_t i=0;
-	while ((float64_t)std::log(1 + ((float64_t)exp(-float64_t(i)))))
+	while ((float64_t)std::log(1 + ((float64_t)std::exp(-float64_t(i)))))
 		i++;
 
 	LOGRANGE=i;
@@ -85,27 +85,34 @@ int32_t CMath::determine_logrange()
     float64_t acc=0;
     for (i=0; i<50; i++)
 	{
-		acc=((float64_t)log(1+((float64_t)exp(-float64_t(i)))));
+		acc = ((float64_t)log(1 + ((float64_t)std::exp(-float64_t(i)))));
 		if (acc<=(float64_t)LOG_TABLE_PRECISION)
 			break;
 	}
 
-    SG_SINFO("determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc)
-    return i;
+	SG_SINFO(
+	    "determined range for x in table log(1+std::exp(-x)) is:%d "
+	    "(error:%G)\n",
+	    i, acc)
+	return i;
 }
 
 int32_t CMath::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
-    SG_SINFO("determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range)
-    return range;
+	SG_SINFO(
+	    "determined accuracy for x in table log(1+std::exp(-x)) is:%d "
+	    "(error:%G)\n",
+	    range, 1.0 / (double)range)
+	return range;
 }
 
 //init log table of form log(1+exp(x))
 void CMath::init_log_table()
 {
   for (int32_t i=0; i< LOGACCURACY*LOGRANGE; i++)
-	  logtable[i] = std::log(1 + exp(float64_t(-i) / float64_t(LOGACCURACY)));
+	  logtable[i] =
+		  std::log(1 + std::exp(float64_t(-i) / float64_t(LOGACCURACY)));
 }
 #endif
 

@@ -75,7 +75,10 @@ public:
 	 *
 	 * @return noise standard deviation
 	 */
-	float64_t get_sigma() { return CMath::exp(m_log_sigma); }
+	float64_t get_sigma()
+	{
+		return std::exp(m_log_sigma);
+	}
 
 	/** sets the noise standard deviation
 	 *

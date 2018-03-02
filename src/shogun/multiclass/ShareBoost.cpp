@@ -143,7 +143,8 @@ void CShareBoost::compute_rho()
 		{ // j loop samples
 			int32_t label = lab->get_int_label(j);
 
-			m_rho(i,j) = CMath::exp((label == i) - m_pred(j, label) + m_pred(j, i));
+			m_rho(i, j) =
+			    std::exp((label == i) - m_pred(j, label) + m_pred(j, i));
 		}
 	}
 

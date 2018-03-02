@@ -487,8 +487,9 @@ void CSingleFITCLaplaceInferenceMethod::update_init()
 
 	SGMatrix<float64_t> cor_kuu(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_cor_kuu(cor_kuu.matrix, cor_kuu.num_rows, cor_kuu.num_cols);
-	eigen_cor_kuu=eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
-		m_kuu.num_rows, m_kuu.num_cols);
+	eigen_cor_kuu = eigen_kuu * std::exp(m_log_scale * 2.0) +
+		            std::exp(m_log_ind_noise) *
+		                MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols);
 	//R0 = chol_inv(Kuu+snu2*eye(nu)); m-by-m matrix
 	m_chol_R0=get_chol_inv(cor_kuu);
 	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
@@ -497,11 +498,12 @@ void CSingleFITCLaplaceInferenceMethod::update_init()
 	m_V=SGMatrix<float64_t>(m_chol_R0.num_cols, m_ktru.num_cols);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 
-	eigen_V=eigen_R0*(eigen_ktru*CMath::exp(m_log_scale*2.0));
+	eigen_V = eigen_R0 * (eigen_ktru * std::exp(m_log_scale * 2.0));
 	m_dg=SGVector<float64_t>(m_ktrtr_diag.vlen);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 	//d0 = diagK-sum(V.*V,1)';
-	eigen_dg=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)-(eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
+	eigen_dg = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) -
+		       (eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 
 	// get mean vector and create eigen representation of it
 	m_mean_f=m_mean->get_mean_vector(m_features);
@@ -701,9 +703,15 @@ void CSingleFITCLaplaceInferenceMethod::update_chol()
 	m_g=SGVector<float64_t>(m_dg.vlen);
 	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
 	//g = d/2 + sum(((R*R0)*P).^2,1)'/2
-	eigen_g=((eigen_dg.cwiseProduct(dd)).array()+
-		((eigen_tmp*eigen_R0)*(eigen_ktru*CMath::exp(m_log_scale*2.0))*dd.asDiagonal()
-		 ).array().pow(2).colwise().sum().transpose())/2;
+	eigen_g = ((eigen_dg.cwiseProduct(dd)).array() +
+		       ((eigen_tmp * eigen_R0) *
+		        (eigen_ktru * std::exp(m_log_scale * 2.0)) * dd.asDiagonal())
+		           .array()
+		           .pow(2)
+		           .colwise()
+		           .sum()
+		           .transpose()) /
+		      2;
 }
 
 void CSingleFITCLaplaceInferenceMethod::update_deriv()
@@ -837,7 +845,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_infere
 
 	// compute derivatives wrt scale for each kernel matrix
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
-	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
+	result[0] *= std::exp(m_log_scale * 2.0) * 2.0;
 	return result;
 }
 
@@ -913,7 +921,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel
 				deriv_tru.num_cols);
 
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
-		result[i]*=CMath::exp(m_log_scale*2.0);
+		result[i] *= std::exp(m_log_scale * 2.0);
 	}
 	SG_UNREF(inducing_features);
 	m_lock->unlock();
@@ -1044,7 +1052,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_induci
 	//b = (t1.*dlp-T'*(T*dlp))*2;
 	SGVector<float64_t> b(eigen_t1.rows());
 	Map<VectorXd> eigen_b(b.vector, b.vlen);
-	float64_t factor=2.0*CMath::exp(m_log_ind_noise);
+	float64_t factor = 2.0 * std::exp(m_log_ind_noise);
 	eigen_b=(eigen_t1.cwiseProduct(eigen_dlp)-eigen_B.transpose()*(eigen_B*eigen_dlp))*factor;
 
 	//KZb = mvmK(mvmZ(b,RVdd,t),V,d0);
@@ -1074,7 +1082,8 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_posterior_mean()
 	//time complexity of the following operation is O(m*n)
 	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	eigen_res=CMath::exp(m_log_scale*2.0)*eigen_Ktru.adjoint()*eigen_post_alpha;
+	eigen_res =
+		std::exp(m_log_scale * 2.0) * eigen_Ktru.adjoint() * eigen_post_alpha;
 
 	return res;
 }
@@ -1098,7 +1107,7 @@ SGMatrix<float64_t> CSingleFITCLaplaceInferenceMethod::get_posterior_covariance(
 	//FITC equivalent prior
 	MatrixXd prior=eigen_V.transpose()*eigen_V+diagonal_part;
 
-	MatrixXd tmp=CMath::exp(m_log_scale*2.0)*eigen_Ktru;
+	MatrixXd tmp = std::exp(m_log_scale * 2.0) * eigen_Ktru;
 	eigen_Sigma=prior-tmp.adjoint()*eigen_L*tmp;
 
 	/*

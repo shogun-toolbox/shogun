@@ -117,7 +117,7 @@ void CSparseInference::set_inducing_noise(float64_t noise)
 
 float64_t CSparseInference::get_inducing_noise()
 {
-	return CMath::exp(m_log_ind_noise);
+	return std::exp(m_log_ind_noise);
 }
 
 CSparseInference::~CSparseInference()
