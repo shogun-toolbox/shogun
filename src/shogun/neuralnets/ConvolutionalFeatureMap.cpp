@@ -116,8 +116,9 @@ void CConvolutionalFeatureMap::compute_activations(
 	{
 		for (int32_t i=0; i<m_output_num_neurons; i++)
 			for (int32_t j=0; j<batch_size; j++)
-				activations(i+m_row_offset,j) =
-					1.0/(1.0+CMath::exp(-1.0*activations(i+m_row_offset,j)));
+				activations(i + m_row_offset, j) =
+				    1.0 /
+				    (1.0 + std::exp(-1.0 * activations(i + m_row_offset, j)));
 	}
 	else if (m_activation_function==CMAF_RECTIFIED_LINEAR)
 	{

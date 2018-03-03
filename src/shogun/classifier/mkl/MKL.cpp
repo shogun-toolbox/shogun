@@ -775,7 +775,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			float64_t step=1.0;
 			do
 			{
-				del=del_old*CMath::exp(-step*gg/(hh*del+gg));
+				del = del_old * std::exp(-step * gg / (hh * del + gg));
 				elasticnet_dual(&ff, &gg, &hh, del, nm, num_kernels, ent_lambda);
 				step/=2;
 			} while(ff>ff_old+1e-4*gg_old*(del-del_old));
@@ -1053,7 +1053,8 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 				for( p=0; p<num_kernels; ++p )
 				{
 					if( inLogSpace )
-						newtBeta[p] = beta[p] * CMath::exp( + stepSize * newtDir[p] );
+						newtBeta[p] =
+						    beta[p] * std::exp(+stepSize * newtDir[p]);
 					else
 						newtBeta[p] = beta[p] + stepSize * newtDir[p];
 					if( !( newtBeta[p] >= epsBeta ) )

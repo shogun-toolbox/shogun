@@ -91,7 +91,7 @@ void CGaussianKernel::set_width(float64_t w)
 
 float64_t CGaussianKernel::get_width() const
 {
-	return CMath::exp(m_log_width*2.0)*2.0;
+	return std::exp(m_log_width * 2.0) * 2.0;
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
@@ -108,7 +108,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 			for (int j=0; j<num_lhs; j++)
 			{
 				float64_t element=distance(j, k);
-				derivative(j, k)=CMath::exp(-element)*element*2.0;
+				derivative(j, k) = std::exp(-element) * element * 2.0;
 			}
 		}
 		return derivative;
@@ -123,7 +123,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
     float64_t result=distance(idx_a, idx_b);
-    return CMath::exp(-result);
+	return std::exp(-result);
 }
 
 void CGaussianKernel::load_serializable_post() throw (ShogunException)

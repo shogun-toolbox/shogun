@@ -182,8 +182,10 @@ void CVarDTCInferenceMethod::update_chol()
 	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
 
 	//Lm = chol(model.Kmm + model.jitter*eye(model.m))
-	LLT<MatrixXd> Luu(eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
-		m_kuu.num_rows, m_kuu.num_cols));
+	LLT<MatrixXd> Luu(
+	    eigen_kuu * std::exp(m_log_scale * 2.0) +
+	    std::exp(m_log_ind_noise) *
+	        MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 	m_inv_Lm=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_inv_Lm(m_inv_Lm.matrix, m_inv_Lm.num_rows, m_inv_Lm.num_cols);
 	//invLm = Lm\eye(model.m); 
@@ -191,8 +193,9 @@ void CVarDTCInferenceMethod::update_chol()
 
 	m_Knm_inv_Lm=SGMatrix<float64_t>(m_ktru.num_cols, m_ktru.num_rows);
 	Map<MatrixXd> eigen_Knm_inv_Lm(m_Knm_inv_Lm.matrix, m_Knm_inv_Lm.num_rows, m_Knm_inv_Lm.num_cols);
-	//KnmInvLm = model.Knm*invLm;      
-	eigen_Knm_inv_Lm=(eigen_ktru.transpose()*CMath::exp(m_log_scale*2.0))*eigen_inv_Lm;
+	// KnmInvLm = model.Knm*invLm;
+	eigen_Knm_inv_Lm =
+	    (eigen_ktru.transpose() * std::exp(m_log_scale * 2.0)) * eigen_inv_Lm;
 
 	m_Tmm=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_C(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
@@ -216,8 +219,9 @@ void CVarDTCInferenceMethod::update_chol()
 		)*eigen_inv_Lm.transpose();
 
 	//TrK = - (0.5/sigma2)*(model.TrKnn  - sum(diag(C)) );
-	m_trk=-0.5/(m_sigma2)*(eigen_ktrtr_diag.array().sum()*CMath::exp(m_log_scale*2.0)
-		-eigen_C.diagonal().array().sum());
+	m_trk = -0.5 / (m_sigma2) *
+	        (eigen_ktrtr_diag.array().sum() * std::exp(m_log_scale * 2.0) -
+	         eigen_C.diagonal().array().sum());
 }
 
 void CVarDTCInferenceMethod::update_alpha()
@@ -274,9 +278,9 @@ void CVarDTCInferenceMethod::update_deriv()
 	//Tmm = sigma2*invA + yKnmInvA'*yKnmInvA;  
 	//Tmm = invKmm - Tmm;
 	MatrixXd Tmm=-eigen_L-eigen_alpha*eigen_alpha.transpose();
-	
-	//Tnm = model.Knm*Tmm;  
-	eigen_Tnm=(eigen_ktru.transpose()*CMath::exp(m_log_scale*2.0))*Tmm;
+
+	// Tnm = model.Knm*Tmm;
+	eigen_Tnm = (eigen_ktru.transpose() * std::exp(m_log_scale * 2.0)) * Tmm;
 
 	//Tmm = Tmm - (invLm*(C*invLm'))/sigma2; 
 	eigen_Tmm = Tmm - (eigen_inv_Lm*eigen_C*eigen_inv_Lm.transpose()/m_sigma2);
@@ -319,10 +323,13 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	//yKnmInvLmInvLainvLa = yKnmInvLmInvLa*invLa';
 	//sigma2aux = sigma2*sum(sum(invLa.*invLa))  + yKnmInvLmInvLainvLa*yKnmInvLmInvLainvLa';
-	float64_t sigma2aux= m_sigma2*eigen_inv_La.cwiseProduct(eigen_inv_La).array().sum()+
-		eigen_alpha.transpose()*(eigen_kuu*CMath::exp(m_log_scale*2.0)
-			+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
-		m_kuu.num_rows, m_kuu.num_cols))*eigen_alpha;
+	float64_t sigma2aux =
+	    m_sigma2 * eigen_inv_La.cwiseProduct(eigen_inv_La).array().sum() +
+	    eigen_alpha.transpose() *
+	        (eigen_kuu * std::exp(m_log_scale * 2.0) +
+	         std::exp(m_log_ind_noise) *
+	             MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols)) *
+	        eigen_alpha;
 	//Dlik_neg = - (model.n-model.m) + model.yy/sigma2 - 2*F3 - sigma2aux - 2*TrK;
 	
 	dlik[0]=(m_ktru.num_cols-m_ktru.num_rows)-m_yy/m_sigma2+2.0*m_f3+sigma2aux+2.0*m_trk;
@@ -354,7 +361,9 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_features
 		SGMatrix<float64_t> deriv_mat=m_kernel->get_parameter_gradient(param, lat_idx);
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		//DXunm/model.sigma2;
-		deriv_lat_col_vec+=eigen_deriv_mat*(-CMath::exp(m_log_scale*2.0)/m_sigma2*eigen_Tnm.col(lat_idx));
+		deriv_lat_col_vec +=
+		    eigen_deriv_mat *
+		    (-std::exp(m_log_scale * 2.0) / m_sigma2 * eigen_Tnm.col(lat_idx));
 	}
 
 	//symtric part (related to xu and xu)
@@ -366,7 +375,8 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_features
 		SGMatrix<float64_t> deriv_mat=m_kernel->get_parameter_gradient(param, lat_lidx);
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		//DXu
-		deriv_lat_col_vec+=eigen_deriv_mat*(-CMath::exp(m_log_scale*2.0)*eigen_Tmm.col(lat_lidx));
+		deriv_lat_col_vec += eigen_deriv_mat * (-std::exp(m_log_scale * 2.0) *
+		                                        eigen_Tmm.col(lat_lidx));
 	}
 	SG_UNREF(inducing_features);
 	m_lock->unlock();
@@ -383,7 +393,8 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_noise(
 
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	SGVector<float64_t> result(1);
-	result[0]=-0.5*CMath::exp(m_log_ind_noise)*eigen_Tmm.diagonal().array().sum();
+	result[0] =
+	    -0.5 * std::exp(m_log_ind_noise) * eigen_Tmm.diagonal().array().sum();
 	return result;
 }
 
@@ -427,8 +438,11 @@ SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_mean(
 		SGVector<float64_t> dmu=m_mean->get_parameter_derivative(m_features, param, i);
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 
-		result[i]=eigen_dmu.dot(eigen_ktru.transpose()*CMath::exp(m_log_scale*2.0)
-			*eigen_alpha+(eigen_m-eigen_y))/m_sigma2;
+		result[i] = eigen_dmu.dot(
+		                eigen_ktru.transpose() * std::exp(m_log_scale * 2.0) *
+		                    eigen_alpha +
+		                (eigen_m - eigen_y)) /
+		            m_sigma2;
 	}
 	return result;
 }

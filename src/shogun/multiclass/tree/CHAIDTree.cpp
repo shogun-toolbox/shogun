@@ -826,9 +826,9 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 				    lterm -= std::log(j);
 
 			    if (v % 2 == 0)
-				    sum += CMath::exp(lterm);
+				    sum += std::exp(lterm);
 			    else
-				    sum -= CMath::exp(lterm);
+				    sum -= std::exp(lterm);
 		    }
 
 		    return sum * up_value;

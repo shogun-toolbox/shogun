@@ -111,7 +111,7 @@ class CGaussian : public CDistribution
 		 */
 		virtual float64_t compute_PDF(SGVector<float64_t> point)
 		{
-			return CMath::exp(compute_log_PDF(point));
+			return std::exp(compute_log_PDF(point));
 		}
 
 		/** compute log PDF

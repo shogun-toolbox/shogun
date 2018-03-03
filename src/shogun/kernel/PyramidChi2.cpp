@@ -225,8 +225,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			}
 		}
 	}
-	result= CMath::exp(-result/width);
-
+	result = std::exp(-result / width);
 
 	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);

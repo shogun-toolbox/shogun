@@ -542,17 +542,6 @@ class CMath : public CSGObject
 		}
 		//@}
 
-		/** Computes e^x where e=2.71828 approx.
-		 * @param x exponent
-		 */
-		static inline float64_t exp(float64_t x)
-		{
-			return std::exp(x);
-		}
-
-		/// exp(x), x being a complex128_t
-		COMPLEX128_STDMATH(exp)
-
 		/**
 		 * @name Trignometric and Hyperbolic Functions
 		 */
@@ -1074,7 +1063,7 @@ class CMath : public CSGObject
 			{
 				if (from_idx!=min_index)
 				{
-					values_without_X0[to_idx]=exp(values[from_idx]-X0);
+					values_without_X0[to_idx] = std::exp(values[from_idx] - X0);
 					to_idx++;
 				}
 			}
@@ -1811,8 +1800,8 @@ class CMath : public CSGObject
 				return p;
 			diff = p - q;
 			if (diff > 0)
-				return diff > LOGRANGE ? p : p + std::log(1 + exp(-diff));
-			return -diff > LOGRANGE ? q : q + std::log(1 + exp(diff));
+				return diff > LOGRANGE ? p : p + std::log(1 + std::exp(-diff));
+			return -diff > LOGRANGE ? q : q + std::log(1 + std::exp(diff));
 		}
 #endif
 #ifdef USE_LOGSUMARRAY

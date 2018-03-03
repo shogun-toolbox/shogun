@@ -239,7 +239,7 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 
 	// evaluate probabilities
 	for (index_t idx=0; idx<p.vlen; idx++)
-		p[idx]=CMath::exp(p[idx]);
+		p[idx] = std::exp(p[idx]);
 
 	return p;
 }
