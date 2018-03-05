@@ -12,6 +12,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
+#include <shogun/base/some.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/LabelsFactory.h>
 #include <shogun/labels/LabelTypes.h>
@@ -20,6 +21,8 @@
 
 namespace shogun
 {
+class CBinaryLabels;
+
 /** @brief The class Labels models labels, i.e. class assignments of objects.
  *
  * Labels is the base class for general Label objects.
@@ -42,9 +45,17 @@ public:
 	/** default constructor */
 	CLabels();
 
+	/* Copy constructor */
+	CLabels(const CLabels& orig);
+
 	/** destructor */
 	virtual ~CLabels();
 
+
+#ifndef SWIG
+	/** Returns a new instance of labels of the specified type. */
+	virtual Some<CBinaryLabels> as_binary() const;
+#endif
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
 	 * possible with subset
@@ -122,7 +133,7 @@ public:
 	 *
 	 * @return confidences
 	 */
-	virtual SGVector<float64_t> get_values();
+	virtual SGVector<float64_t> get_values() const;
 
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy()
