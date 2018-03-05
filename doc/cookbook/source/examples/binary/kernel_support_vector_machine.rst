@@ -33,7 +33,7 @@ We then create a :sgclass:`CKernelMachine` instance, here :sgclass:`CLibSVM`, an
 
 .. sgexample:: kernel_support_vector_machine.sg:create_instance
 
-Then we train it on training data and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
+Then we train it on training data and apply it to test data. This gives :sgclass:`CLabels`, which we can extract the label vector from.
 
 .. sgexample:: kernel_support_vector_machine.sg:train_and_apply
 

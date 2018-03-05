@@ -12,15 +12,20 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted->get_label_type()==LT_BINARY)
-	ASSERT(ground_truth->get_label_type()==LT_BINARY)
+	REQUIRE(predicted->get_num_labels() == ground_truth->get_num_labels(),
+			"Number of predicted labels (%d) must be "
+				"equal to number of ground truth labels (%d)!\n", get_name(),
+				predicted->get_num_labels(), ground_truth->get_num_labels());
+
+	auto predicted_binary = predicted->as_binary();
+	auto ground_truth_binary = ground_truth->as_binary();
 
 	/* commented out: what if a machine only returns +1 in apply() ??
 	 * Heiko Strathamn */
 //	predicted->ensure_valid();
 
 	ground_truth->ensure_valid();
-	compute_scores((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
+	compute_scores(predicted_binary.get(),ground_truth_binary.get());
 	switch (m_type)
 	{
 		case ACCURACY:
@@ -82,15 +87,6 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 
 void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
-	ASSERT(ground_truth->get_label_type() == LT_BINARY)
-	ASSERT(predicted->get_label_type() == LT_BINARY)
-
-	if (predicted->get_num_labels()!=ground_truth->get_num_labels())
-	{
-		SG_ERROR("%s::compute_scores(): Number of predicted labels (%d) is not "
-				"equal to number of ground truth labels (%d)!\n", get_name(),
-				predicted->get_num_labels(), ground_truth->get_num_labels());
-	}
 	m_TP = 0.0;
 	m_FP = 0.0;
 	m_TN = 0.0;

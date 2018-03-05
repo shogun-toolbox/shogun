@@ -11,7 +11,7 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "auto $name = some<C$typeName>($arguments)$kwargs",
-        "Copy": "auto $name = $expr$kwargs",
+        "Copy": "auto $name = wrap($expr)$kwargs",
         "KeywordArguments": {
             "List": ";\n$elements",
             "Element": "$name->put(\"$keyword\", $expr)",
