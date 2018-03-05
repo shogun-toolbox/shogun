@@ -42,18 +42,11 @@ TEST(CreateObject,create)
     delete obj;
 }
 
-TEST(CreateObject,create_kernel)
+TEST(CreateObject,create_with_ptype)
 {
-    auto* obj = kernel("GaussianKernel");
+    auto* obj = create_object<CDenseFeatures<float64_t>>("DenseFeatures", PT_FLOAT64);
     EXPECT_TRUE(obj != nullptr);
-    EXPECT_TRUE(dynamic_cast<CKernel*>(obj) != nullptr);
+    EXPECT_TRUE(dynamic_cast<CDenseFeatures<float64_t>*>(obj) != nullptr);
+    EXPECT_EQ(obj->get_generic(), PT_FLOAT64);
     delete obj;
-}
-
-TEST(CreateObject, create_machine)
-{
-	auto* obj = machine("LibSVM");
-	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(dynamic_cast<CMachine*>(obj) != nullptr);
-	delete obj;
 }

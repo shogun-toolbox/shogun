@@ -287,8 +287,3 @@ rxcpp::subscription CMachine::connect_to_signal_handler()
 	    [this]() { this->on_complete(); });
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
-
-CMachine* shogun::machine(const char* name)
-{
-	return create_object<CMachine>(name);
-}
