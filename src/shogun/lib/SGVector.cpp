@@ -927,7 +927,7 @@ void SGVector<T>::scale(T alpha)
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	REQUIRE(loader, "Require a valid 'c FILE pointer'\n");
+	REQUIRE(loader, "No file provided.\n");
 	unref();
 
 	SG_SET_LOCALE_C;
