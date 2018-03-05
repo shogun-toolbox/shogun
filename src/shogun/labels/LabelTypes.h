@@ -24,5 +24,7 @@ enum ELabelType
 	LT_LATENT = 5,
 	/// sparse label class for multilabel classification (sets of labels)
 	LT_SPARSE_MULTILABEL = 6,
+	/// generic dense labels type
+	LT_DENSE_GENERIC = 7
 };
 #endif

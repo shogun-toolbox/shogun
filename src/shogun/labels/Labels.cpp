@@ -6,6 +6,9 @@
  */
 
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
@@ -15,6 +18,13 @@ CLabels::CLabels()
 	: CSGObject()
 {
 	init();
+}
+
+CLabels::CLabels(const CLabels& orig)
+{
+	m_current_values = orig.m_current_values;
+	m_subset_stack = orig.m_subset_stack;
+	SG_REF(m_subset_stack);
 }
 
 CLabels::~CLabels()
@@ -90,7 +100,31 @@ void CLabels::set_values(SGVector<float64_t> values)
 	m_current_values = values;
 }
 
-SGVector<float64_t> CLabels::get_values()
+SGVector<float64_t> CLabels::get_values() const
 {
 	return m_current_values;
+}
+
+Some<CBinaryLabels> CLabels::as_binary() const
+{
+	try
+	{
+		switch(get_label_type())
+		{
+		case LT_BINARY:
+			return Some<CBinaryLabels>::from_raw(new CBinaryLabels(*as<CBinaryLabels>()));
+		case LT_DENSE_GENERIC:
+			return CBinaryLabels::from(as<CDenseLabels>());
+		case LT_MULTICLASS:
+			return CBinaryLabels::from(as<CMulticlassLabels>());
+		default:
+			SG_NOTIMPLEMENTED
+		}
+	}
+	catch (const ShogunException& e)
+	{
+		SG_SERROR("Cannot convert %s to binary labels: \n", e.what(), get_name());
+	}
+
+	return Some<CBinaryLabels>::from_raw(nullptr);
 }

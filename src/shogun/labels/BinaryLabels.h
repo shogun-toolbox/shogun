@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 namespace shogun
 {
@@ -35,6 +36,9 @@ class CBinaryLabels : public CDenseLabels
 public:
 	/** default constructor */
 	CBinaryLabels();
+
+	/** Copy constructor */
+	CBinaryLabels(const CBinaryLabels& orig);
 
 	/** constructor
 	 *
@@ -112,6 +116,11 @@ public:
 	{
 		return "BinaryLabels";
 	}
+
+#ifndef SWIG
+	static Some<CBinaryLabels> from(const CDenseLabels* orig);
+	static Some<CBinaryLabels> from(const CMulticlassLabels* orig);
+#endif // SWIG
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy();
 #endif

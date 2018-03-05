@@ -16,9 +16,11 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/features/SubsetStack.h>
 
+
 namespace shogun
 {
 	class CFile;
+	class CBinaryLabels;
 
 /** @brief Dense integer or floating point labels
  *
@@ -33,6 +35,9 @@ class CDenseLabels : public CLabels
 	public:
 		/** default constructor */
 		CDenseLabels();
+
+		/** Copy constructor */
+		CDenseLabels(const CDenseLabels& orig);
 
 		/** constructor
 		 *
@@ -97,7 +102,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return labels, a copy if a subset is set
 		 */
-		SGVector<float64_t> get_labels();
+		SGVector<float64_t> get_labels() const;
 
 		/** get label
 		 *
@@ -106,7 +111,7 @@ class CDenseLabels : public CLabels
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		float64_t get_label(int32_t idx);
+		float64_t get_label(int32_t idx) const;
 
 		/** get label
 		 *
@@ -141,7 +146,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		SGVector<float64_t> get_labels_copy();
+		SGVector<float64_t> get_labels_copy() const;
 
  		/** Getter for labels
 		 *
@@ -256,7 +261,9 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type() const=0;
+		virtual ELabelType get_label_type() const override { return LT_DENSE_GENERIC; }
+
+		virtual const char* get_name() const override { return "DenseLabels"; }
 
 	public:
 		/** label designates classify reject */

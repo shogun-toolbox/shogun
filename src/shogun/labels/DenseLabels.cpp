@@ -14,12 +14,19 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+
 using namespace shogun;
 
 CDenseLabels::CDenseLabels()
 : CLabels()
 {
 	init();
+}
+
+CDenseLabels::CDenseLabels(const CDenseLabels& orig) : CLabels(orig)
+{
+	init();
+	m_labels = orig.m_labels;
 }
 
 CDenseLabels::CDenseLabels(int32_t num_lab)
@@ -77,7 +84,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 	m_labels = v;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels()
+SGVector<float64_t> CDenseLabels::get_labels() const
 {
 	if (m_subset_stack->has_subsets())
 		return get_labels_copy();
@@ -85,7 +92,7 @@ SGVector<float64_t> CDenseLabels::get_labels()
 	return m_labels;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels_copy()
+SGVector<float64_t> CDenseLabels::get_labels_copy() const
 {
 	if (!m_subset_stack->has_subsets())
 		return m_labels.clone();
@@ -179,7 +186,7 @@ bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 		return false;
 }
 
-float64_t CDenseLabels::get_label(int32_t idx)
+float64_t CDenseLabels::get_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
