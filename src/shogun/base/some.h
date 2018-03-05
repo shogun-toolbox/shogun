@@ -153,6 +153,11 @@ namespace shogun
 		return value;
 	}
 
+	inline const char* wrap(const char* ptr)
+	{
+		return ptr;
+	}
+
 	template <class T>
 	inline Some<T> wrap(T* ptr)
 	{
