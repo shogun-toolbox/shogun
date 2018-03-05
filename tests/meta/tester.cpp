@@ -39,21 +39,35 @@ int main(int argc, const char *argv[])
     SG_REF(a_ref);
 
     if (!a->load_serializable(f))
-        SG_SERROR("Error while deserializing the generated input: %s\n",
+        SG_SERROR("Error while loading the test input from %s\n",
             fname_full_generated.c_str());
     if (!a_ref->load_serializable(f_ref))
-        SG_SERROR("Error while deserializing the reference input: %s\n",
+        SG_SERROR("Error while loading the reference input from %s\n",
             fname_full_reference.c_str());
 
 	// allow for lossy serialization format
 	set_global_fequals_epsilon(1e-6);
-	bool equal = a->equals(a_ref);
+	bool loaded_equals_ref = a->equals(a_ref);
+
+	// it is unlikely that the above is true while this is false, however, we check
+	bool ref_equals_loaded = a_ref->equals(a);
 
 	// print comparison output only if different as it it slow
-	if (!equal)
+	if (!loaded_equals_ref || !ref_equals_loaded)
 	{
 		a->get_global_io()->set_loglevel(MSG_DEBUG);
-		a->equals(a_ref);
+		if (!loaded_equals_ref)
+		{
+			SG_SDEBUG("Test input different from reference input for %s\n", a->get_name());
+			a->equals(a_ref);
+		}
+		else
+		{
+			SG_SDEBUG("reference->equals(loaded) failed for %s.\n", a->get_name());
+			a_ref->equals(a);
+		}
+		SG_SDEBUG("For details, run: diff %s %s\n", fname_full_generated.c_str(),
+				fname_full_reference.c_str());
 	}
 
 	SG_UNREF(f);
@@ -62,6 +76,6 @@ int main(int argc, const char *argv[])
 	SG_UNREF(a_ref);
 
 	exit_shogun();
-    return equal != true;
+    return (loaded_equals_ref && ref_equals_loaded )!= true;
 }
 
