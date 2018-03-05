@@ -456,10 +456,5 @@ class CMachine : public CSGObject
 		std::mutex m_mutex;
 };
 
-/** Creates machine by its name
- *
- * @param name the name of the machine to create
- */
-CMachine* machine(const char* name);
 }
 #endif // _MACHINE_H__

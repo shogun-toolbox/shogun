@@ -1087,11 +1087,5 @@ class CKernel : public CSGObject
 		CKernelNormalizer* normalizer;
 };
 
-/** Creates kernel by its name
- *
- * @param name the name of the kernel to create
- */
-CKernel* kernel(const char* name);
-
 }
 #endif /* _KERNEL_H__ */

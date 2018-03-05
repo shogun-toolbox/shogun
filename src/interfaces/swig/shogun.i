@@ -115,14 +115,18 @@
 %include "Boost.i"
 
 %include "ParameterObserver.i"
+%include "factory.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
 #endif
 
+%pragma(java) moduleimports=%{
+import org.jblas.*;
+%}
+
 namespace shogun
 {
-
 %extend CSGObject
 {
 	template <typename T, typename U= typename std::enable_if_t<std::is_arithmetic<T>::value>>
