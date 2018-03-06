@@ -2,6 +2,7 @@ version: "{build}"
 
 cache:
   - C:\Users\appveyor\clcache
+  - third_party/GoogleMock -> cmake/external/GoogleTestNMock.cmake
 
 environment:
   matrix:
