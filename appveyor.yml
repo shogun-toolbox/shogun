@@ -1,13 +1,14 @@
 version: "{build}"
 
+cache:
+  - C:\Users\appveyor\clcache
+
 environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       VSVER: Visual Studio 14 2015 Win64
-      PYTHON: "C:\\Python27"
-# disable multiple builds until each build takes more than 30 minutes
-#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-#      VSVER: Visual Studio 15 2017 Win64
+      PYTHON: "3.6"
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
 
 platform:
   - x64
@@ -16,25 +17,20 @@ configuration:
   - Release
 
 install:
+  - set MINICONDA=C:\Miniconda36-x64
+  - set PATH=%MINICONDA%;%MINICONDA%/Scripts;%MINICONDA%/Library/bin;%PATH%
+  - call scripts\appveyor-setup.bat
   - git submodule -q update --init
-
-before_build:
-  - md %APPVEYOR_BUILD_FOLDER%\build
-  - cd %APPVEYOR_BUILD_FOLDER%\build
-  - cmake -G"%VSVER%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..
 
 build:
   verbosity: minimal
 
-# TODO: fix cmake script in order that building examples
-# triggers the build of shogun-static.vcxproj
 build_script:
-  - msbuild src\shogun\libshogun.vcxproj
-  - msbuild src\shogun\shogun.vcxproj
-  - msbuild src\shogun\shogun-static.vcxproj
-  - msbuild shogun.sln
+  - call scripts\msvc-build.bat
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build
   - ctest --output-on-failure -C %CONFIGURATION%
 
+after_build:
+  - clcache -s
