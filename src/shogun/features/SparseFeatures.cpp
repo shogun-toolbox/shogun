@@ -46,6 +46,7 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CDenseFeatures<ST>* dense)
+: CDotFeatures(0), feature_cache(NULL)
 {
 	init();
 
