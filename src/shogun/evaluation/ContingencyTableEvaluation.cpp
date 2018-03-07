@@ -12,10 +12,12 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	REQUIRE(predicted->get_num_labels() == ground_truth->get_num_labels(),
-			"Number of predicted labels (%d) must be "
-				"equal to number of ground truth labels (%d)!\n", get_name(),
-				predicted->get_num_labels(), ground_truth->get_num_labels());
+	REQUIRE(
+	    predicted->get_num_labels() == ground_truth->get_num_labels(),
+	    "Number of predicted labels (%d) must be "
+	    "equal to number of ground truth labels (%d)!\n",
+	    get_name(), predicted->get_num_labels(),
+	    ground_truth->get_num_labels());
 
 	auto predicted_binary = predicted->as_binary();
 	auto ground_truth_binary = ground_truth->as_binary();
@@ -25,7 +27,7 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 //	predicted->ensure_valid();
 
 	ground_truth->ensure_valid();
-	compute_scores(predicted_binary.get(),ground_truth_binary.get());
+	compute_scores(predicted_binary.get(), ground_truth_binary.get());
 	switch (m_type)
 	{
 		case ACCURACY:

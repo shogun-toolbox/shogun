@@ -6,11 +6,11 @@
  *          Chiyuan Zhang, Olivier NGuyen, Thoralf Klein
  */
 
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/base/range.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -160,9 +160,12 @@ Some<CBinaryLabels> CBinaryLabels::from(const CDenseLabels* orig)
 	auto labels = orig->get_labels();
 	for (auto i : range(labels.vlen))
 	{
-		if (!CMath::fequals(labels[i], 1.0, 0.0) && !CMath::fequals(labels[i], -1.0, 0.0))
+		if (!CMath::fequals(labels[i], 1.0, 0.0) &&
+		    !CMath::fequals(labels[i], -1.0, 0.0))
 		{
-			SG_SERROR("Label at index %d (%f), but must be either +1.0 or -1.0.\n", i, labels[i])
+			SG_SERROR(
+			    "Label at index %d (%f), but must be either +1.0 or -1.0.\n", i,
+			    labels[i])
 		}
 	}
 	auto result = Some<CBinaryLabels>::from_raw(new CBinaryLabels(labels));

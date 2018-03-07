@@ -11,10 +11,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
@@ -120,7 +120,7 @@ public:
 #ifndef SWIG
 	static Some<CBinaryLabels> from(const CDenseLabels* orig);
 	static Some<CBinaryLabels> from(const CMulticlassLabels* orig);
-#endif // SWIG
+#endif       // SWIG
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy();
 #endif

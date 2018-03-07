@@ -39,12 +39,16 @@ namespace shogun {
 	 *
 	 */
 	template <class T>
-	T* create_object(const char* name, EPrimitiveType pt=PT_NOT_GENERIC) throw (ShogunException)
+	T* create_object(
+	    const char* name,
+	    EPrimitiveType pt = PT_NOT_GENERIC) throw(ShogunException)
 	{
 		auto* object = create(name, pt);
 		if (!object)
 		{
-			SG_SERROR("Class %s with primitive type %s does not exist.\n", name, ptype(pt).c_str());
+			SG_SERROR(
+			    "Class %s with primitive type %s does not exist.\n", name,
+			    ptype(pt).c_str());
 		}
 		T* cast = nullptr;
 		try

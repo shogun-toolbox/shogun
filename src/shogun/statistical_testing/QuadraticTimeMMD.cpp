@@ -192,7 +192,8 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* sampl
 void CQuadraticTimeMMD::init()
 {
 	self=unique_ptr<Self>(new Self(*this));
-	self->multi_kernel=shared_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
+	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
+	    new CMultiKernelQuadraticTimeMMD(this));
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
