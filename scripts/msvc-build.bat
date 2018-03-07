@@ -9,4 +9,4 @@ cmake -G "%GENERATOR%" ^
       -DBUILD_META_EXAMPLES=OFF ^
       -DENABLE_TESTING=ON .. || exit /B
 
-cmake --build . --target install --config %CONFIGURATION% || exit /B
+cmake --build . --target install --config %CONFIGURATION% -- /maxcpucount:2 || exit /B
