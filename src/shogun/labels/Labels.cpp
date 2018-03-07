@@ -5,12 +5,12 @@
  *          Leon Kuchenbecker
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/DenseLabels.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
@@ -109,10 +109,11 @@ Some<CBinaryLabels> CLabels::as_binary() const
 {
 	try
 	{
-		switch(get_label_type())
+		switch (get_label_type())
 		{
 		case LT_BINARY:
-			return Some<CBinaryLabels>::from_raw(new CBinaryLabels(*as<CBinaryLabels>()));
+			return Some<CBinaryLabels>::from_raw(
+			    new CBinaryLabels(*as<CBinaryLabels>()));
 		case LT_DENSE_GENERIC:
 			return CBinaryLabels::from(as<CDenseLabels>());
 		case LT_MULTICLASS:
@@ -123,7 +124,8 @@ Some<CBinaryLabels> CLabels::as_binary() const
 	}
 	catch (const ShogunException& e)
 	{
-		SG_SERROR("Cannot convert %s to binary labels: \n", e.what(), get_name());
+		SG_SERROR(
+		    "Cannot convert %s to binary labels: \n", e.what(), get_name());
 	}
 
 	return Some<CBinaryLabels>::from_raw(nullptr);

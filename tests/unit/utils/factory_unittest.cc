@@ -1,9 +1,9 @@
+#include "utils/Utils.h"
 #include <shogun/base/class_list.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/util/factory.h>
-#include "utils/Utils.h"
 
 #include <gtest/gtest.h>
 
@@ -11,12 +11,12 @@ using namespace shogun;
 
 class GaussianKernel;
 
-TEST(Factory,kernel)
+TEST(Factory, kernel)
 {
-    auto* obj = kernel("GaussianKernel");
-    EXPECT_TRUE(obj != nullptr);
-    EXPECT_TRUE(dynamic_cast<CGaussianKernel*>(obj) != nullptr);
-    delete obj;
+	auto* obj = kernel("GaussianKernel");
+	EXPECT_TRUE(obj != nullptr);
+	EXPECT_TRUE(dynamic_cast<CGaussianKernel*>(obj) != nullptr);
+	delete obj;
 }
 
 TEST(Factory, machine)
@@ -29,7 +29,7 @@ TEST(Factory, machine)
 
 TEST(Factory, features_from_matrix)
 {
-	SGMatrix<float64_t> mat(2,3);
+	SGMatrix<float64_t> mat(2, 3);
 	auto* obj = features(mat);
 	EXPECT_TRUE(obj != nullptr);
 	EXPECT_TRUE(dynamic_cast<CDenseFeatures<float64_t>*>(obj) != nullptr);
@@ -40,10 +40,10 @@ TEST(Factory, features_dense_from_file)
 {
 	std::string filename = "Factory-features_from_file.XXXXXX";
 
-	SGMatrix<float64_t> mat(2,3);
+	SGMatrix<float64_t> mat(2, 3);
 	mat.set_const(1);
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	auto file_save=some<CCSVFile>(filename.c_str(), 'w');
+	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
 	mat.save(file_save);
 	file_save->close();
 
@@ -64,7 +64,7 @@ TEST(Factory, labels_from_file)
 	SGVector<float64_t> vec(3);
 	vec.set_const(1);
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	auto file_save=some<CCSVFile>(filename.c_str(), 'w');
+	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
 	vec.save(file_save);
 	file_save->close();
 

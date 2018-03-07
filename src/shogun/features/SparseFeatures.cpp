@@ -45,8 +45,9 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 	SG_REF(m_subset_stack);
 }
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(CDenseFeatures<ST>* dense)
-: CDotFeatures(0), feature_cache(NULL)
+template <class ST>
+CSparseFeatures<ST>::CSparseFeatures(CDenseFeatures<ST>* dense)
+	: CDotFeatures(0), feature_cache(NULL)
 {
 	init();
 

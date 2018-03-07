@@ -94,7 +94,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=binary_labels->get_label(i);
+		problem.y[i] = binary_labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
