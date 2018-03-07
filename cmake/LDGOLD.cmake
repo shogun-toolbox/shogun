@@ -3,11 +3,9 @@ CMAKE_DEPENDENT_OPTION(ENABLE_LDGOLD
     "Use GNU gold linker" ON
     "NOT WIN32;NOT APPLE" OFF)
 
-GetCompilers()
-
 set(LDGOLD_FOUND FALSE)
 if(ENABLE_LDGOLD)
-  execute_process(COMMAND ${C_COMPILER} -fuse-ld=gold -Wl,--version ERROR_QUIET OUTPUT_VARIABLE LD_VERSION)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version ERROR_QUIET OUTPUT_VARIABLE LD_VERSION)
   if(LD_VERSION MATCHES "GNU gold")
     set(LDGOLD_FOUND TRUE)
     message(STATUS "Linker: GNU gold")
@@ -22,7 +20,7 @@ set(DEFAULT_ENABLE_DEBUGFISSION FALSE)
 if(CMAKE_BUILD_TYPE STREQUAL Debug AND LDGOLD_FOUND)
     if (CCACHE_FOUND AND CCACHE_VERSION VERSION_LESS 3.2.3)
         # only ccache 3.2.3 and later supports DEBUGFISSION
-        # i.e. -gsplit-dwarf flag. see 
+        # i.e. -gsplit-dwarf flag. see
         # https://bugzilla.samba.org/show_bug.cgi?id=10005
         MESSAGE(WARNING "Debug Fission is available but your ccache does not supports it")
     else()
