@@ -2,9 +2,3 @@
 	path = data
 	url = git://github.com/shogun-toolbox/shogun-data.git
 	branch = master
-[submodule "debian"]
-	path = debian
-	url = git://github.com/shogun-toolbox/shogun-debian.git
-[submodule "gpl"]
-	path = src/gpl
-	url = git://github.com/shogun-toolbox/shogun-gpl.git
