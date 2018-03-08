@@ -9,7 +9,7 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdexcept>
+#include <exception>
 #include <string>
 
 namespace shogun
