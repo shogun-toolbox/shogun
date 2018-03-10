@@ -301,6 +301,7 @@ namespace shogun
 		{
 			auto cloned = clone_impl(maybe_most_important(), value);
 			mutable_value_of<decltype(cloned)>(storage) = cloned;
+			return cloned;
 		}
 
 		template <class T, class S>
