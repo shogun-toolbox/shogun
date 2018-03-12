@@ -34,6 +34,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <stdexcept>
 
 using namespace shogun;
@@ -74,6 +75,15 @@ public:
 	}
 
 	bool cloned = false;
+};
+
+class Object : public CSGObject
+{
+public:
+	virtual const char* get_name() const
+	{
+		return "Object";
+	}
 };
 
 TEST(Any, as)
@@ -495,4 +505,28 @@ TEST(Any, clone_array2d)
 	EXPECT_EQ(any_src, any_dst);
 
 	delete[] src;
+}
+
+TEST(Any, free_array_simple)
+{
+	auto size = 4;
+	auto array = SG_MALLOC(float, size);
+	any_detail::free_array(array, size);
+}
+
+TEST(Any, free_array_sgobject)
+{
+	CSGObject* obj = new Object();
+	SG_REF(obj);
+	auto size = 4;
+	auto array = SG_MALLOC(CSGObject*, size);
+	for (auto i = 0; i < size; ++i)
+	{
+		array[i] = obj;
+		SG_REF(obj);
+	}
+	EXPECT_EQ(obj->ref_count(), size + 1);
+	any_detail::free_array(array, size);
+	EXPECT_EQ(obj->ref_count(), 1);
+	SG_UNREF(obj);
 }

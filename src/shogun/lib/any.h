@@ -323,6 +323,22 @@ namespace shogun
 		{
 			return *ptr;
 		}
+
+		template <class T, class S>
+		inline auto free_array(T* ptr, S size)
+		{
+			SG_FREE(ptr);
+		}
+
+		template <class S>
+		inline auto free_array(CSGObject** ptr, S size)
+		{
+			for (S i = 0; i < size; ++i)
+			{
+				ptr[i]->unref();
+			}
+			SG_FREE(ptr);
+		}
 	}
 
 	using any_detail::typed_pointer;
@@ -352,7 +368,7 @@ namespace shogun
 		auto src = *(other.m_ptr);
 		auto len = *(other.m_length);
 		auto& dst = *(this->m_ptr);
-		SG_FREE(dst);
+		any_detail::free_array(dst, len);
 		dst = new T[len];
 		*(this->m_length) = len;
 		std::copy(src, src + len, dst);
@@ -383,7 +399,7 @@ namespace shogun
 		auto rows = *(other.m_rows);
 		auto cols = *(other.m_cols);
 		auto& dst = *(this->m_ptr);
-		SG_FREE(dst);
+		any_detail::free_array(dst, (rows * cols));
 		dst = new T[rows * cols];
 		*(this->m_rows) = rows;
 		*(this->m_cols) = cols;
