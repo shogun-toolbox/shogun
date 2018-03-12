@@ -48,7 +48,7 @@ namespace shogun {
 		{
 			SG_SERROR(
 			    "Class %s with primitive type %s does not exist.\n", name,
-			    ptype(pt).c_str());
+			    ptype_name(pt).c_str());
 		}
 		T* cast = nullptr;
 		try
