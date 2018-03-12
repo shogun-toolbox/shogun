@@ -352,7 +352,7 @@ namespace shogun
 		auto src = *(other.m_ptr);
 		auto len = *(other.m_length);
 		auto& dst = *(this->m_ptr);
-		delete[] dst;
+		SG_FREE(dst);
 		dst = new T[len];
 		*(this->m_length) = len;
 		std::copy(src, src + len, dst);
@@ -383,7 +383,7 @@ namespace shogun
 		auto rows = *(other.m_rows);
 		auto cols = *(other.m_cols);
 		auto& dst = *(this->m_ptr);
-		delete[] dst;
+		SG_FREE(dst);
 		dst = new T[rows * cols];
 		*(this->m_rows) = rows;
 		*(this->m_cols) = cols;
