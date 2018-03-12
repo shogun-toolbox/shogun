@@ -62,7 +62,7 @@ enum EPrimitiveType
  * @param pt primitive type
  * @return string for primitive type
  */
-std::string ptype(EPrimitiveType pt);
+std::string ptype_name(EPrimitiveType pt);
 #endif
 
 /** @brief Datatypes that shogun supports. */

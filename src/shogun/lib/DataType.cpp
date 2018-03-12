@@ -17,7 +17,7 @@ using namespace shogun;
 
 namespace shogun
 {
-	std::string ptype(EPrimitiveType pt)
+	std::string ptype_name(EPrimitiveType pt)
 	{
 		switch (pt)
 		{
