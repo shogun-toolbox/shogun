@@ -20,13 +20,6 @@ CLabels::CLabels()
 	init();
 }
 
-CLabels::CLabels(const CLabels& orig)
-{
-	m_current_values = orig.m_current_values;
-	m_subset_stack = orig.m_subset_stack;
-	SG_REF(m_subset_stack);
-}
-
 CLabels::~CLabels()
 {
 	SG_UNREF(m_subset_stack);
@@ -103,30 +96,4 @@ void CLabels::set_values(SGVector<float64_t> values)
 SGVector<float64_t> CLabels::get_values() const
 {
 	return m_current_values;
-}
-
-Some<CBinaryLabels> CLabels::as_binary() const
-{
-	try
-	{
-		switch (get_label_type())
-		{
-		case LT_BINARY:
-			return Some<CBinaryLabels>::from_raw(
-			    new CBinaryLabels(*as<CBinaryLabels>()));
-		case LT_DENSE_GENERIC:
-			return CBinaryLabels::from(as<CDenseLabels>());
-		case LT_MULTICLASS:
-			return CBinaryLabels::from(as<CMulticlassLabels>());
-		default:
-			SG_NOTIMPLEMENTED
-		}
-	}
-	catch (const ShogunException& e)
-	{
-		SG_SERROR(
-		    "Cannot convert %s to binary labels: \n", e.what(), get_name());
-	}
-
-	return Some<CBinaryLabels>::from_raw(nullptr);
 }

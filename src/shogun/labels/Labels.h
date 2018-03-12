@@ -52,16 +52,9 @@ namespace shogun
 		/** default constructor */
 		CLabels();
 
-		/* Copy constructor */
-		CLabels(const CLabels& orig);
-
 		/** destructor */
 		virtual ~CLabels();
 
-#ifndef SWIG
-		/** Returns a new instance of labels of the specified type. */
-		virtual Some<CBinaryLabels> as_binary() const;
-#endif
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset

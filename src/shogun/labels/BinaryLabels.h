@@ -37,9 +37,6 @@ public:
 	/** default constructor */
 	CBinaryLabels();
 
-	/** Copy constructor */
-	CBinaryLabels(const CBinaryLabels& orig);
-
 	/** constructor
 	 *
 	 * @param num_labels number of labels
@@ -117,13 +114,13 @@ public:
 		return "BinaryLabels";
 	}
 
-#ifndef SWIG
-	static Some<CBinaryLabels> from(const CDenseLabels* orig);
-	static Some<CBinaryLabels> from(const CMulticlassLabels* orig);
-#endif       // SWIG
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy();
 #endif
 };
+
+#ifndef SWIG
+Some<CBinaryLabels> binary_labels(CLabels* orig);
+#endif // SWIG
 }
 #endif

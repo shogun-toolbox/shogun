@@ -37,9 +37,6 @@ namespace shogun
 		/** default constructor */
 		CDenseLabels();
 
-		/** Copy constructor */
-		CDenseLabels(const CDenseLabels& orig);
-
 		/** constructor
 		 *
 		 * @param num_labels number of labels
