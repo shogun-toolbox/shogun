@@ -48,7 +48,6 @@ bool CLibSVM::train_machine(CFeatures* data)
 	struct svm_node* x_space;
 
 	ASSERT(m_labels && m_labels->get_num_labels())
-	auto binary_labels = m_labels->as_binary();
 
 	if (data)
 	{
@@ -92,9 +91,10 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
+	auto binary_labs = binary_labels(m_labels);
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i] = binary_labels->get_label(i);
+		problem.y[i] = binary_labs->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

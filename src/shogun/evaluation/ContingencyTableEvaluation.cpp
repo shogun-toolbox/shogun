@@ -19,8 +19,8 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	    get_name(), predicted->get_num_labels(),
 	    ground_truth->get_num_labels());
 
-	auto predicted_binary = predicted->as_binary();
-	auto ground_truth_binary = ground_truth->as_binary();
+	auto predicted_binary = binary_labels(predicted);
+	auto ground_truth_binary = binary_labels(ground_truth);
 
 	/* commented out: what if a machine only returns +1 in apply() ??
 	 * Heiko Strathamn */

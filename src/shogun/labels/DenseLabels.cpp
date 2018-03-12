@@ -22,12 +22,6 @@ CDenseLabels::CDenseLabels()
 	init();
 }
 
-CDenseLabels::CDenseLabels(const CDenseLabels& orig) : CLabels(orig)
-{
-	init();
-	m_labels = orig.m_labels;
-}
-
 CDenseLabels::CDenseLabels(int32_t num_lab)
 : CLabels()
 {

@@ -18,10 +18,6 @@ CBinaryLabels::CBinaryLabels() : CDenseLabels()
 {
 }
 
-CBinaryLabels::CBinaryLabels(const CBinaryLabels& orig) : CDenseLabels(orig)
-{
-}
-
 CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
 }
@@ -155,26 +151,53 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-Some<CBinaryLabels> CBinaryLabels::from(const CDenseLabels* orig)
+namespace shogun
 {
-	auto labels = orig->get_labels();
-	for (auto i : range(labels.vlen))
+	Some<CBinaryLabels> from_binary(CBinaryLabels* orig)
 	{
-		if (!CMath::fequals(labels[i], 1.0, 0.0) &&
-		    !CMath::fequals(labels[i], -1.0, 0.0))
+		return Some<CBinaryLabels>::from_raw(orig);
+	}
+
+	Some<CBinaryLabels> from_dense(CDenseLabels* orig)
+	{
+		auto labels = orig->get_labels();
+		for (auto i : range(labels.vlen))
+		{
+			if (!CMath::fequals(labels[i], 1.0, 0.0) &&
+			    !CMath::fequals(labels[i], -1.0, 0.0))
+			{
+				SG_SERROR(
+				    "Label[%d] is %f, but must be either +1.0 or -1.0.\n", i,
+				    labels[i])
+			}
+		}
+		auto result = new CBinaryLabels(labels);
+		result->set_values(orig->get_values());
+		return Some<CBinaryLabels>::from_raw(result);
+	}
+
+	Some<CBinaryLabels> binary_labels(CLabels* orig)
+	{
+		REQUIRE(orig, "No labels provided.\n");
+		try
+		{
+			switch (orig->get_label_type())
+			{
+			case LT_BINARY:
+				return from_binary(orig->as<CBinaryLabels>());
+			case LT_DENSE_GENERIC:
+				return from_dense(orig->as<CDenseLabels>());
+			default:
+				SG_SNOTIMPLEMENTED
+			}
+		}
+		catch (const ShogunException& e)
 		{
 			SG_SERROR(
-			    "Label at index %d (%f), but must be either +1.0 or -1.0.\n", i,
-			    labels[i])
+			    "Cannot convert %s to binary labels: \n", e.what(),
+			    orig->get_name());
 		}
-	}
-	auto result = Some<CBinaryLabels>::from_raw(new CBinaryLabels(labels));
-	result->set_values(orig->get_values());
-	return result;
-}
 
-Some<CBinaryLabels> CBinaryLabels::from(const CMulticlassLabels* orig)
-{
-	SG_SNOTIMPLEMENTED
-	return Some<CBinaryLabels>::from_raw(nullptr);
-}
+		return Some<CBinaryLabels>::from_raw(nullptr);
+	}
+} // namespace shogun
