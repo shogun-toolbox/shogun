@@ -71,11 +71,12 @@ namespace shogun
 		};
 #endif
 
-		/** Enable signal handler
+		/** Enable/Disable custon Shogun's signal handler
+		 * @param enable true to enable the handler, false otherwise.
 		*/
-		void enable_handler()
+		void enable_handler(bool enable)
 		{
-			m_active = true;
+			m_active = enable;
 		}
 		/**
 		 * Reset handler in case of multiple instantiation
