@@ -153,12 +153,12 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 
 namespace shogun
 {
-	Some<CBinaryLabels> from_binary(CBinaryLabels* orig)
+	Some<CBinaryLabels> binary_from_binary(CBinaryLabels* orig)
 	{
 		return Some<CBinaryLabels>::from_raw(orig);
 	}
 
-	Some<CBinaryLabels> from_dense(CDenseLabels* orig)
+	Some<CBinaryLabels> binary_from_dense(CDenseLabels* orig)
 	{
 		auto labels = orig->get_labels();
 		for (auto i : range(labels.vlen))
@@ -172,7 +172,6 @@ namespace shogun
 			}
 		}
 		auto result = new CBinaryLabels(labels);
-		result->set_values(orig->get_values());
 		return Some<CBinaryLabels>::from_raw(result);
 	}
 
@@ -184,9 +183,9 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_BINARY:
-				return from_binary(orig->as<CBinaryLabels>());
+				return binary_from_binary(orig->as<CBinaryLabels>());
 			case LT_DENSE_GENERIC:
-				return from_dense(orig->as<CDenseLabels>());
+				return binary_from_dense(orig->as<CDenseLabels>());
 			default:
 				SG_SNOTIMPLEMENTED
 			}
