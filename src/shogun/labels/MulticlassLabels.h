@@ -154,5 +154,9 @@ class CMulticlassLabels : public CDenseLabels
 		/** multiclass confidences */
 		SGMatrix<float64_t> m_multiclass_confidences;
 };
+
+#ifndef SWIG
+Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
+#endif // SWIG
 }
 #endif
