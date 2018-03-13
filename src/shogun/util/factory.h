@@ -11,6 +11,8 @@
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/kernel/Kernel.h>
+
 
 namespace shogun
 {
