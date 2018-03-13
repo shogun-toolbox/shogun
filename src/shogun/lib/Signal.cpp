@@ -14,7 +14,7 @@
 using namespace shogun;
 using namespace rxcpp;
 
-bool CSignal::m_active = false;
+bool CSignal::m_active = true;
 CSignal::SGSubjectS* CSignal::m_subject = new rxcpp::subjects::subject<int>();
 
 CSignal::SGObservableS* CSignal::m_observable =
@@ -32,9 +32,9 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-	/* If the handler is not enabled, then return */
+	/* If the handler is not enabled exit */
 	if (!m_active)
-		return;
+		exit(-1);
 
 	if (signal == SIGINT)
 	{
