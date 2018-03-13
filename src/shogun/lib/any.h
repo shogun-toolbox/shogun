@@ -123,6 +123,7 @@ namespace shogun
 			throw std::logic_error("Assignment not supported");
 		}
 		bool equals(const ArrayReference<T, S>& other) const;
+		void reset(const ArrayReference<T, S>& other);
 
 	private:
 		T** m_ptr;
@@ -146,6 +147,7 @@ namespace shogun
 			throw std::logic_error("Assignment not supported");
 		}
 		bool equals(const Array2DReference<T, S>& other) const;
+		void reset(const Array2DReference<T, S>& other);
 
 	private:
 		T** m_ptr;
@@ -261,7 +263,7 @@ namespace shogun
 		template <class T>
 		inline T clone_impl(general, T& value)
 		{
-			return value;
+			return T(value);
 		}
 
 		template <class T>
@@ -282,10 +284,9 @@ namespace shogun
 		}
 
 		template <class T>
-		inline auto clone(T& value)
-		    -> decltype(clone_impl(maybe_most_important(), value))
+		inline T& mutable_value_of(void** ptr)
 		{
-			return clone_impl(maybe_most_important(), value);
+			return *static_cast<T*>(*ptr);
 		}
 
 		template <class T>
@@ -295,15 +296,48 @@ namespace shogun
 		}
 
 		template <class T>
+		inline auto clone(void** storage, T& value)
+		    -> decltype(clone_impl(maybe_most_important(), value))
+		{
+			auto cloned = clone_impl(maybe_most_important(), value);
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
+			return cloned;
+		}
+
+		template <class T, class S>
+		inline auto clone(void** storage, const ArrayReference<T, S>& value)
+		{
+			auto existing = mutable_value_of<ArrayReference<T, S>>(storage);
+			existing.reset(value);
+		}
+
+		template <class T, class S>
+		inline auto clone(void** storage, const Array2DReference<T, S>& value)
+		{
+			auto existing = mutable_value_of<Array2DReference<T, S>>(storage);
+			existing.reset(value);
+		}
+
+		template <class T>
 		inline const T& value_of(T const* ptr)
 		{
 			return *ptr;
 		}
 
-		template <class T>
-		inline T& mutable_value_of(void** ptr)
+		template <class T, class S>
+		inline auto free_array(T* ptr, S size)
 		{
-			return *static_cast<T*>(*ptr);
+			SG_FREE(ptr);
+		}
+
+		template <class S>
+		inline auto free_array(CSGObject** ptr, S size)
+		{
+			for (S i = 0; i < size; ++i)
+			{
+				ptr[i]->unref();
+			}
+			SG_FREE(ptr);
 		}
 	}
 
@@ -329,6 +363,18 @@ namespace shogun
 	}
 
 	template <class T, class S>
+	void ArrayReference<T, S>::reset(const ArrayReference<T, S>& other)
+	{
+		auto src = *(other.m_ptr);
+		auto len = *(other.m_length);
+		auto& dst = *(this->m_ptr);
+		any_detail::free_array(dst, len);
+		dst = new T[len];
+		*(this->m_length) = len;
+		std::copy(src, src + len, dst);
+	}
+
+	template <class T, class S>
 	bool
 	Array2DReference<T, S>::equals(const Array2DReference<T, S>& other) const
 	{
@@ -346,6 +392,20 @@ namespace shogun
 		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
 	}
 
+	template <class T, class S>
+	void Array2DReference<T, S>::reset(const Array2DReference<T, S>& other)
+	{
+		auto src = *(other.m_ptr);
+		auto rows = *(other.m_rows);
+		auto cols = *(other.m_cols);
+		auto& dst = *(this->m_ptr);
+		any_detail::free_array(dst, (rows * cols));
+		dst = new T[rows * cols];
+		*(this->m_rows) = rows;
+		*(this->m_cols) = cols;
+		std::copy(src, src + (rows * cols), dst);
+	}
+
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
 	 * Policy defines how to handle this data. It works with a
@@ -361,11 +421,11 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
 
-		/** Clones value provided by v into storage
+		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
-		 * @param v pointer to value to clone
+		 * @param from pointer to value to clone
 		 */
-		virtual void clone(void** storage, const void* v) const = 0;
+		virtual void clone(void** storage, const void* from) const = 0;
 
 		/** Clears storage.
 		 * @param storage pointer to a pointer to storage
@@ -431,14 +491,13 @@ namespace shogun
 			*(storage) = new T(value_of(typed_pointer<T>(v)));
 		}
 
-		/** Clones value provided by v into storage
+		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
-		 * @param v pointer to value to clone
+		 * @param from pointer to value to clone
 		 */
-		virtual void clone(void** storage, const void* v) const
+		virtual void clone(void** storage, const void* from) const
 		{
-			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
-			mutable_value_of<decltype(cloned)>(storage) = cloned;
+			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
 
 		/** Clears storage.
@@ -522,14 +581,13 @@ namespace shogun
 			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
-		/** Clones value provided by v into storage
+		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
-		 * @param v pointer to value to clone
+		 * @param from pointer to value to clone
 		 */
-		virtual void clone(void** storage, const void* v) const
+		virtual void clone(void** storage, const void* from) const
 		{
-			auto cloned = any_detail::clone(value_of(typed_pointer<T>(v)));
-			mutable_value_of<decltype(cloned)>(storage) = cloned;
+			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
 
 		/** Clears storage.
