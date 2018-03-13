@@ -60,50 +60,6 @@ if(JINJA2_IMPORT_SUCCESS)
         COMMENT "Generating DynamicObjectArray_unittest_generated.cc")
     LIST(APPEND TEMPLATE_GENERATED_UNITTEST DynamicObjectArray_unittest_generated.cc)
 
-    ADD_CUSTOM_COMMAND(OUTPUT SerializationAscii_unittest.cc
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
-        SerializationAscii_unittest.cc
-        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating SerializationAscii_unittest.cc")
-    LIST(APPEND SERIALIZATION_UNITTEST SerializationAscii_unittest.cc)
-
-    ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
-        SerializationHDF5_unittest.cc
-        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating SerializationHDF5_unittest.cc")
-    LIST(APPEND SERIALIZATION_UNITTEST SerializationHDF5_unittest.cc)
-
-    ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
-        SerializationJSON_unittest.cc
-        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating SerializationJSON_unittest.cc")
-    LIST(APPEND SERIALIZATION_UNITTEST SerializationJSON_unittest.cc)
-
-    ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
-        SerializationXML_unittest.cc
-        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating SerializationXML_unittest.cc")
-    LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
-
     IF(NOT CTAGS_FOUND)
         MESSAGE("Please install Ctags for trained models serialization tests.")
     ELSEIF(NOT HAVE_HDF5)
