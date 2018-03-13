@@ -1,0 +1,38 @@
+CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
+CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
+
+#![create_features]
+RealFeatures combined_features(f_feats_train)
+BinaryLabels labels(f_labels_train)
+#![create_features]
+
+
+#![set_parameters]
+real C = 1.0
+real epsilon = 0.001
+#![set_parameters]
+
+#![create_instance]
+LibLinear svm(C, combined_features, labels)
+svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+svm.set_epsilon(epsilon)
+#![create_instance]
+
+#![create_cross_validation]
+StratifiedCrossValidationSplitting splitting_strategy(labels, 2)
+AccuracyMeasure evaluation_criterion()
+CrossValidation cross(svm, combined_features, labels, splitting_strategy, evaluation_criterion)
+cross.set_autolock(False)
+cross.set_num_runs(2)
+#![create_cross_validation]
+
+
+#![evaluate_and_get_result]
+CrossValidationResult result()
+result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+#![evaluate_and_get_result]
+
+#![get_results]
+real mean = result.get_mean()
+real stddev = result.get_std_dev()
+#![get_results]
