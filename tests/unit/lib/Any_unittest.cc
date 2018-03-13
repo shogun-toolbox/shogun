@@ -34,6 +34,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <stdexcept>
 
 using namespace shogun;
@@ -74,6 +75,15 @@ public:
 	}
 
 	bool cloned = false;
+};
+
+class Object : public CSGObject
+{
+public:
+	virtual const char* get_name() const
+	{
+		return "Object";
+	}
 };
 
 TEST(Any, as)
@@ -451,4 +461,72 @@ TEST(Any, array2d_ref)
 	delete[] src;
 	delete[] dst;
 	delete[] other;
+}
+
+TEST(Any, clone_array)
+{
+	int src_size = 3;
+	float* src = new float[src_size];
+	std::iota(src, src + src_size, 9);
+	auto any_src = make_any_ref(&src, &src_size);
+
+	float* dst = nullptr;
+	int dst_size = 0;
+	auto any_dst = make_any_ref(&dst, &dst_size);
+	any_dst.clone_from(any_src);
+
+	EXPECT_EQ(src_size, dst_size);
+	EXPECT_NE(src, dst);
+	EXPECT_NE(dst, nullptr);
+	EXPECT_EQ(any_src, any_dst);
+
+	delete[] src;
+}
+
+TEST(Any, clone_array2d)
+{
+	int src_rows = 5;
+	int src_cols = 4;
+	int src_size = src_rows * src_cols;
+	float* src = new float[src_size];
+	std::iota(src, src + src_size, 9);
+	auto any_src = make_any_ref(&src, &src_rows, &src_cols);
+
+	float* dst = nullptr;
+	int dst_rows = 0;
+	int dst_cols = 0;
+	auto any_dst = make_any_ref(&dst, &dst_rows, &dst_cols);
+	any_dst.clone_from(any_src);
+
+	EXPECT_EQ(src_rows, dst_rows);
+	EXPECT_EQ(src_cols, dst_cols);
+	EXPECT_NE(src, dst);
+	EXPECT_NE(dst, nullptr);
+	EXPECT_EQ(any_src, any_dst);
+
+	delete[] src;
+}
+
+TEST(Any, free_array_simple)
+{
+	auto size = 4;
+	auto array = SG_MALLOC(float, size);
+	any_detail::free_array(array, size);
+}
+
+TEST(Any, free_array_sgobject)
+{
+	CSGObject* obj = new Object();
+	SG_REF(obj);
+	auto size = 4;
+	auto array = SG_MALLOC(CSGObject*, size);
+	for (auto i = 0; i < size; ++i)
+	{
+		array[i] = obj;
+		SG_REF(obj);
+	}
+	EXPECT_EQ(obj->ref_count(), size + 1);
+	any_detail::free_array(array, size);
+	EXPECT_EQ(obj->ref_count(), 1);
+	SG_UNREF(obj);
 }
