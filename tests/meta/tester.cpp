@@ -69,7 +69,7 @@ int main(int argc, const char *argv[])
 		else
 		{
 			SG_SDEBUG(
-			    "reference->equals(loaded) failed for %s.\n", a->get_name());
+			    "Reference input different from test input for %s.\n", a->get_name());
 			a_ref->equals(a);
 		}
 		SG_SDEBUG(
