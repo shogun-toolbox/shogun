@@ -266,11 +266,11 @@ bool CCARTree::train_machine(CFeatures* data)
 	if (m_types_set)
 	{
 		REQUIRE(m_nominal.vlen==num_features,"Length of m_nominal vector (currently %d) should "
-			"be same as number of features in data (presently %d)",m_nominal.vlen,num_features)
+			"be same as number of features in data (presently %d).\n",m_nominal.vlen,num_features)
 	}
 	else
 	{
-		SG_WARNING("Feature types are not specified. All features are considered as continuous in training")
+		SG_WARNING("Feature types are not specified. All features are considered as continuous in training.\n")
 		m_nominal=SGVector<bool>(num_features);
 		m_nominal.fill_vector(m_nominal.vector,m_nominal.vlen,false);
 	}
