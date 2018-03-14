@@ -393,6 +393,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		default:
 			SG_ERROR("Unsupported label type\n");
 	}
+	SG_REF(predicted);
 
 	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
 	float64_t res = eval->evaluate(predicted, m_labels);
