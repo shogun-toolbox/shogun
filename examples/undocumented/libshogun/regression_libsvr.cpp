@@ -38,6 +38,7 @@ void test_libsvr()
 
 	/* shogun representation */
 	CLabels* labels_train=new CRegressionLabels(lab_train);
+	SG_REF(labels_train);
 	CLabels* labels_test=new CRegressionLabels(lab_test);
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
 			feat_train);
@@ -55,6 +56,7 @@ void test_libsvr()
 	/* predict */
 	CRegressionLabels* predicted_labels=CLabelsFactory::to_regression(
 			svm->apply(features_test));
+	SG_REF(predicted_labels);
 
 	/* evaluate */
 	CEvaluation* eval=new CMeanSquaredError();
@@ -66,6 +68,7 @@ void test_libsvr()
 	SG_UNREF(labels_test)
 	SG_UNREF(predicted_labels);
 	SG_UNREF(svm);
+	SG_UNREF(labels_train);
 }
 
 int main()
