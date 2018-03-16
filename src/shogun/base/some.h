@@ -123,7 +123,7 @@ namespace shogun
 	template <typename T>
 	bool Some<T>::operator!=(const Some<T>& other) const
 	{
-		return !((*this)==other);
+		return !((*this) == other);
 	}
 	template <class T>
 	T* Some<T>::get() const

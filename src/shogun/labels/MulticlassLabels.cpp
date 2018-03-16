@@ -1,7 +1,7 @@
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
 #include <set>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -203,10 +203,11 @@ namespace shogun
 		// For now, if we don't enforce this, there will be crashes as the
 		// class is used to index vectors
 		REQUIRE(
-				(*std::min_element(unique.begin(), unique.end())) == 0 &&
-				(*std::max_element(unique.begin(), unique.end())) == (index_t)unique.size()-1,
-				"Multiclass labels must be contiguous integers in [0, ..., num_classes -1].\n"
-				);
+		    (*std::min_element(unique.begin(), unique.end())) == 0 &&
+		        (*std::max_element(unique.begin(), unique.end())) ==
+		            (index_t)unique.size() - 1,
+		    "Multiclass labels must be contiguous integers in [0, ..., "
+		    "num_classes -1].\n");
 
 		auto labels = orig->get_labels();
 		auto result = new CMulticlassLabels(labels);
@@ -222,7 +223,8 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_MULTICLASS:
-				return multiclass_from_multiclass(orig->as<CMulticlassLabels>());
+				return multiclass_from_multiclass(
+				    orig->as<CMulticlassLabels>());
 			case LT_DENSE_GENERIC:
 				return multiclass_from_dense(orig->as<CDenseLabels>());
 			default:

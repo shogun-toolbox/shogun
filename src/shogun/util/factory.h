@@ -10,9 +10,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/labels/DenseLabels.h>
 #include <shogun/kernel/Kernel.h>
-
+#include <shogun/labels/DenseLabels.h>
 
 namespace shogun
 {

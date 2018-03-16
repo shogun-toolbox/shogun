@@ -91,7 +91,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	auto labels = regression_labels(m_labels);
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=labels->get_label(i);
+		problem.y[i] = labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
