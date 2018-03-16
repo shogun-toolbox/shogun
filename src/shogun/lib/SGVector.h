@@ -168,14 +168,14 @@ template<class T> class SGVector : public SGReferencedData
 		/** Check for pointer identity */
 		SG_FORCED_INLINE bool operator==(const SGVector<T>& other) const
 		{
-			if (vlen!=other.vlen)
+			if (vlen != other.vlen)
 				return false;
 
 			if (on_gpu())
 			{
 				if (!other.on_gpu())
 					return false;
-				if (gpu_ptr!=other.gpu_ptr)
+				if (gpu_ptr != other.gpu_ptr)
 					return false;
 			}
 

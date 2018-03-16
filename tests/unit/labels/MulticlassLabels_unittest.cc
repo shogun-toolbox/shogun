@@ -86,7 +86,6 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense)
 	EXPECT_NE(labels, labels2);
 	ASSERT_NE(labels2, nullptr);
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
-
 }
 
 TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
@@ -94,6 +93,6 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
 	// delete this test once multiclass labels dont need to be contiguous,
 	// i.e. [0,1,2,3,4,...], anymore
 	auto labels = some<CDenseLabels>(labels_true.size());
-	labels->set_labels({0,1,3});
+	labels->set_labels({0, 1, 3});
 	EXPECT_THROW(multiclass_labels(labels), ShogunException);
 }

@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 #include <gtest/gtest.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/base/range.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -23,7 +23,7 @@ public:
 	virtual void SetUp()
 	{
 		labels_regression = {1, -1.5, 20.6, 0.9};
-		scores = {2,3,4,5};
+		scores = {2, 3, 4, 5};
 	}
 
 	virtual void TearDown()
@@ -50,5 +50,3 @@ TEST_F(RegressionLabels, regression_labels_from_dense)
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
 	EXPECT_EQ(labels->get_values(), labels2->get_values());
 }
-
-

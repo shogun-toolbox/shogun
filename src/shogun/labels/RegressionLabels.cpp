@@ -61,7 +61,8 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_REGRESSION:
-				return regression_from_regression(orig->as<CRegressionLabels>());
+				return regression_from_regression(
+				    orig->as<CRegressionLabels>());
 			case LT_DENSE_GENERIC:
 				return regression_from_dense(orig->as<CDenseLabels>());
 			default:
@@ -78,4 +79,3 @@ namespace shogun
 		return Some<CRegressionLabels>::from_raw(nullptr);
 	}
 } // namespace shogun
-

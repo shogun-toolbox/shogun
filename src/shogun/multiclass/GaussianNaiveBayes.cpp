@@ -73,7 +73,8 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels)
-	SGVector<int32_t> train_labels = multiclass_labels(m_labels)->get_int_labels();
+	SGVector<int32_t> train_labels =
+	    multiclass_labels(m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// find minimal and maximal label
@@ -234,5 +235,7 @@ void CGaussianNaiveBayes::init()
 	SG_ADD(&m_label_prob, "m_label_prob",
 		"a priori probabilities of labels", MS_NOT_AVAILABLE);
 	SG_ADD(&m_rates, "m_rates", "label rates", MS_NOT_AVAILABLE);
-	SG_ADD((CFeatures**)&m_features, "features", "Training features", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    (CFeatures**)&m_features, "features", "Training features",
+	    MS_NOT_AVAILABLE);
 }

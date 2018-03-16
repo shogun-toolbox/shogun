@@ -6,11 +6,11 @@
  *
  * Written (W) 2012-2013 Heiko Strathmann
  */
+#include "utils/Utils.h"
 #include <gtest/gtest.h>
+#include <shogun/base/range.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/base/range.h>
-#include "utils/Utils.h"
 
 using namespace shogun;
 
@@ -29,10 +29,9 @@ public:
 
 		auto t = threshold;
 		labels_binary = SGVector<float64_t>(n);
-		std::transform(probabilities.begin(), probabilities.end(), labels_binary.begin(),
-		    [t](float64_t a) {
-			    return a > t ? 1 : -1;
-			});
+		std::transform(
+		    probabilities.begin(), probabilities.end(), labels_binary.begin(),
+		    [t](float64_t a) { return a > t ? 1 : -1; });
 	}
 
 	virtual void TearDown()
@@ -121,5 +120,3 @@ TEST_F(BinaryLabels, binary_labels_from_dense)
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
 	EXPECT_EQ(labels->get_values(), labels2->get_values());
 }
-
-
