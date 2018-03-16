@@ -1,9 +1,5 @@
-
-#
-#
 #  Cross Validation for Binary Classifier
-#
-#
+
 
 CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
 CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
@@ -56,11 +52,12 @@ real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
 
 
-#
-#
+
+
+
+
+
 # Cross Validation for Linear Regression
-#
-#
 
 CSVFile reg_feats_train("../../data/regression_1d_linear_features_train.dat")
 CSVFile reg_feats_test("../../data/regression_1d_linear_features_test.dat")
