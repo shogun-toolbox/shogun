@@ -49,6 +49,7 @@ namespace shogun
 	Some<CRegressionLabels> regression_from_dense(CDenseLabels* orig)
 	{
 		auto result = new CRegressionLabels(orig->get_labels());
+		result->set_values(orig->get_values());
 		return Some<CRegressionLabels>::from_raw(result);
 	}
 
