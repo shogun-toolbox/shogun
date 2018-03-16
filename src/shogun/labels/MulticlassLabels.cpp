@@ -198,6 +198,10 @@ namespace shogun
 	{
 		auto int_labels = orig->get_int_labels();
 		std::set<int32_t> unique(int_labels.begin(), int_labels.end());
+		// TODO: anything discrete should be a possible multiclasslabels.
+		// Once that is the case, this check can be removed
+		// For now, if we don't enforce this, there will be crashes as the
+		// class is used to index vectors
 		REQUIRE(
 				(*std::min_element(unique.begin(), unique.end())) == 0 &&
 				(*std::max_element(unique.begin(), unique.end())) == (index_t)unique.size()-1,

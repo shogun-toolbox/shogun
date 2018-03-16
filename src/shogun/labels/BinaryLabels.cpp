@@ -171,7 +171,9 @@ namespace shogun
 				    labels[i])
 			}
 		}
-		auto result = new CBinaryLabels(labels);
+		auto result = new CBinaryLabels();
+		result->set_labels(labels);
+		result->set_values(orig->get_values());
 		return Some<CBinaryLabels>::from_raw(result);
 	}
 

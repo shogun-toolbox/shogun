@@ -55,6 +55,8 @@ TEST(Factory, features_dense_from_file)
 	auto loaded_mat = cast->get_feature_matrix();
 	EXPECT_TRUE(loaded_mat.equals(mat));
 	delete obj;
+
+	EXPECT_EQ(std::remove(filename.c_str()), 0);
 }
 
 TEST(Factory, labels_from_file)
@@ -76,4 +78,6 @@ TEST(Factory, labels_from_file)
 	auto loaded_vec = cast->get_labels();
 	EXPECT_TRUE(loaded_vec.equals(vec));
 	delete obj;
+
+	EXPECT_EQ(std::remove(filename.c_str()), 0);
 }

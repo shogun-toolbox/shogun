@@ -83,6 +83,6 @@ int main(int argc, const char *argv[])
 	SG_UNREF(a_ref);
 
 	exit_shogun();
-	return (loaded_equals_ref && ref_equals_loaded) != true;
+	return !(loaded_equals_ref && ref_equals_loaded);
 }
 
