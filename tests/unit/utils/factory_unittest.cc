@@ -49,6 +49,7 @@ TEST(Factory, features_dense_from_file)
 
 	auto file_load = some<CCSVFile>(filename.c_str(), 'r');
 	auto* obj = features(file_load, PT_FLOAT64);
+	file_load->close();
 	EXPECT_TRUE(obj != nullptr);
 	auto* cast = dynamic_cast<CDenseFeatures<float64_t>*>(obj);
 	ASSERT_TRUE(cast != nullptr);
@@ -72,6 +73,7 @@ TEST(Factory, labels_from_file)
 
 	auto file_load = some<CCSVFile>(filename.c_str(), 'r');
 	auto* obj = labels(file_load);
+	file_load->close();
 	EXPECT_TRUE(obj != nullptr);
 	auto* cast = dynamic_cast<CDenseLabels*>(obj);
 	ASSERT_TRUE(cast != nullptr);
