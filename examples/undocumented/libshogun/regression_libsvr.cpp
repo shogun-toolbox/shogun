@@ -40,6 +40,7 @@ void test_libsvr()
 	CLabels* labels_train=new CRegressionLabels(lab_train);
 	SG_REF(labels_train);
 	CLabels* labels_test=new CRegressionLabels(lab_test);
+	SG_REF(labels_test);
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
 			feat_train);
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
