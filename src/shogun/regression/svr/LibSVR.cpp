@@ -88,10 +88,10 @@ bool CLibSVR::train_machine(CFeatures* data)
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
-	auto regression_lab = regression_labels(m_labels);
+	auto labels = regression_labels(m_labels);
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=regression_lab->get_label(i);
+		problem.y[i]=labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
