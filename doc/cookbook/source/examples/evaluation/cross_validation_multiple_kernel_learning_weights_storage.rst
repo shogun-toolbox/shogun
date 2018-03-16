@@ -1,10 +1,9 @@
 ============================================
 Cross Validation on Multiple Kernel Learning
 ============================================
+In this example, we illustrate how to use cross-validation with multiple kernel learning (MKL)
 
-For more information on Cross Validation, check :doc:`./cross_validation`.
-
-We will show an example of cross validation on Multiple Kernel Learning.
+For more information on cross-validation, check :doc:`./cross_validation`.
 
 -------
 Example
