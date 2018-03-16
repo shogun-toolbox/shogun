@@ -39,6 +39,18 @@ namespace shogun
 		 */
 		T* operator->() const;
 
+		/** Equality operator
+		 * @param other other element to compare with
+		 * @return true iff other's raw pointer equals own raw pointer
+		 */
+		bool operator==(const Some<T>& other) const;
+
+		/** Inequality operator
+		 * @param other other element to compare with
+		 * @return false iff other's raw pointer equals own raw pointer
+		 */
+		bool operator!=(const Some<T>& other) const;
+
 		/**
 		 * Get the raw pointer
 		 *
@@ -102,6 +114,16 @@ namespace shogun
 	T* Some<T>::operator->() const
 	{
 		return raw;
+	}
+	template <typename T>
+	bool Some<T>::operator==(const Some<T>& other) const
+	{
+		return raw == other.raw;
+	}
+	template <typename T>
+	bool Some<T>::operator!=(const Some<T>& other) const
+	{
+		return !((*this)==other);
 	}
 	template <class T>
 	T* Some<T>::get() const
