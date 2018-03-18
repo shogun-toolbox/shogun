@@ -279,8 +279,8 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0/std::sqrt(CMath::PI))*
-			((*m_f)(std::sqrt(2.0)*m_sigma*x+m_mu));
+		return (1.0 / std::sqrt(CMath::PI)) *
+		       ((*m_f)(std::sqrt(2.0) * m_sigma * x + m_mu));
 	}
 
 private:

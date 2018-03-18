@@ -422,7 +422,7 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(x)
 	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
@@ -469,7 +469,7 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(a*x)
 	CSigmoidFunction* g=new CSigmoidFunction(y[i]);

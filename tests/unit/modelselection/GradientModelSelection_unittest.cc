@@ -110,7 +110,7 @@ TEST(GradientModelSelection,select_model_exact_inference)
 
 	// compare hyperparameters with result from GPML toolbox
 	EXPECT_NEAR(scale, 3.778912324292096, 1E-3);
-	EXPECT_NEAR(std::sqrt(width/2.0), 2.024939917854716, 1E-3);
+	EXPECT_NEAR(std::sqrt(width / 2.0), 2.024939917854716, 1E-3);
 	EXPECT_NEAR(sigma, 1.862122012902403, 1E-3);
 
 	// cleanup
