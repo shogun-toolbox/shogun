@@ -630,7 +630,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->set_kernel(new CGaussianKernel(10, tau));
-		test_power_single[i]=mmd->compute_statistic()*(m+n)/m/n/std::sqrt(mmd->compute_variance_h1()+1E-5);
+		test_power_single[i] = mmd->compute_statistic() * (m + n) / m / n /
+		                       std::sqrt(mmd->compute_variance_h1() + 1E-5);
 	}
 
 	ASSERT_EQ(test_power_multiple.size(), test_power_single.size());

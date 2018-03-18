@@ -43,7 +43,7 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 
 	/* diagonal eigenvalue matrix */
 	SGMatrix<float64_t> L(2, 2);
-	L(0, 0)=std::sqrt(stretch);
+	L(0, 0) = std::sqrt(stretch);
 	L(1, 0)=0;
 	L(0, 1)=0;
 	L(1, 1)=1;

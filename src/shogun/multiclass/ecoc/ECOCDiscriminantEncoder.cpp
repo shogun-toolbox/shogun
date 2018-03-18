@@ -195,8 +195,8 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, 
         float64_t MI_i = 0;
         for (int j=0; j < 10; ++j)
             MI_i += (hist1[j]-hist2[j])*(hist1[j]-hist2[j]);
-        MI += std::sqrt(MI_i);
-    }
+		MI += std::sqrt(MI_i);
+	}
 
     return MI;
 }

@@ -313,7 +313,7 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		for (int j = 0; j < m_dim; j++)
 		{
-			sinvsqrt[j] = 1.0 / std::sqrt(scalings[k*m_dim + j]);
+			sinvsqrt[j] = 1.0 / std::sqrt(scalings[k * m_dim + j]);
 			m_slog[k] += std::log(scalings[k * m_dim + j]);
 		}
 
