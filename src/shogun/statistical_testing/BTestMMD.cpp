@@ -71,7 +71,7 @@ float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 	const index_t Ny=data_mgr.num_samples_at(1);
 	const index_t Bx=data_mgr.blocksize_at(0);
 	const index_t By=data_mgr.blocksize_at(1);
-	return Nx*Ny*statistic*CMath::sqrt((Bx+By)/float64_t(Nx+Ny))/(Nx+Ny);
+	return Nx*Ny*statistic*std::sqrt((Bx+By)/float64_t(Nx+Ny))/(Nx+Ny);
 }
 
 const float64_t CBTestMMD::normalize_variance(float64_t variance) const
@@ -90,7 +90,7 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
-			float64_t std_dev=CMath::sqrt(sigma_sq);
+			float64_t std_dev=std::sqrt(sigma_sq);
 			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 			break;
 		}
@@ -111,7 +111,7 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
-			float64_t std_dev=CMath::sqrt(sigma_sq);
+			float64_t std_dev=std::sqrt(sigma_sq);
 			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
 			break;
 		}

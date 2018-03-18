@@ -59,7 +59,7 @@ float64_t CAttenuatedEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	if (disable_sqrt)
 		return result;
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 void CAttenuatedEuclideanDistance::init()

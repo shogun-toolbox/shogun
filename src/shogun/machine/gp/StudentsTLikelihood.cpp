@@ -93,7 +93,7 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0 / (CMath::sqrt(2 * CMath::PI) * m_sigma)) *
+		return (1.0 / (std::sqrt(2 * CMath::PI) * m_sigma)) *
 			   std::exp(-CMath::sq(x - m_mu) / (2.0 * CMath::sq(m_sigma)));
 	}
 
@@ -642,7 +642,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	{
 		// set normal pdf parameters
 		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
+		f->set_sigma(std::sqrt(s2[i]));
 
 		// set Stundent's-t pdf parameters
 		g->set_mu(y[i]);
@@ -680,7 +680,7 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
 	CStudentsTPDF* g =
@@ -727,7 +727,7 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
 	CStudentsTPDF* g =

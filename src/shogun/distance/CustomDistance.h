@@ -167,7 +167,7 @@ class CCustomDistance: public CDistance
 			ASSERT(dm)
 			ASSERT(len>0)
 
-			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
+			int64_t cols = (int64_t) floor(-0.5 + std::sqrt(0.25+2*len));
 
 			int64_t int32_max=2147483647;
 

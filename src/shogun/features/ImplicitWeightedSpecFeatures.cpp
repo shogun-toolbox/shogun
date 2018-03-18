@@ -50,7 +50,7 @@ void CImplicitWeightedSpecFeatures::compute_normalization_const()
 	float64_t* factors=SG_MALLOC(float64_t, num_strings);
 
 	for (int32_t i=0; i<num_strings; i++)
-		factors[i]=1.0/CMath::sqrt(dot(i, this, i));
+		factors[i]=1.0/std::sqrt(dot(i, this, i));
 
 	normalization_factors=factors;
 	//CMath::display_vector(normalization_factors, num_strings, "n");
@@ -72,7 +72,7 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 		sum+=spec_weights[i];
 	}
 	for (i=0; i<degree; i++)
-		spec_weights[i]=CMath::sqrt(spec_weights[i]/sum);
+		spec_weights[i]=std::sqrt(spec_weights[i]/sum);
 
 	return spec_weights!=NULL;
 }
@@ -84,7 +84,7 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	SG_FREE(spec_weights);
 	spec_weights=SG_MALLOC(float64_t, degree);
 	for (int32_t i=0; i<degree; i++)
-		spec_weights[i]=CMath::sqrt(w[i]);
+		spec_weights[i]=std::sqrt(w[i]);
 	return true;
 }
 

@@ -72,7 +72,7 @@ float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 	if(s==0 || nx==0 || ny==0)
 		return 0;
 
-	d/=CMath::sqrt(nx*ny);
+	d/=std::sqrt(nx*ny);
 
 	// can only happen due to numerical problems
 	if (CMath::abs(d)>1.0)

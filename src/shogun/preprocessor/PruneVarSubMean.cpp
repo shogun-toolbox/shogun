@@ -92,7 +92,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		{
 			m_idx[j]=idx_ok[j] ;
 			new_mean[j]=m_mean[idx_ok[j]];
-			m_std[j]=CMath::sqrt(var[idx_ok[j]]);
+			m_std[j]=std::sqrt(var[idx_ok[j]]);
 		}
 		m_num_idx = num_ok;
 		SG_FREE(idx_ok);

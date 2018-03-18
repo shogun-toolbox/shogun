@@ -385,11 +385,11 @@ int32_t lbfgs(
     /*
        Make sure that the initial variables are not a minimizer.
      */
-    xnorm = CMath::sqrt(linalg::dot(x_wrap, x_wrap));
+    xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
     if (param.orthantwise_c == 0.) {
-        gnorm = CMath::sqrt(linalg::dot(g, g));
+        gnorm = std::sqrt(linalg::dot(g, g));
     } else {
-        gnorm = CMath::sqrt(linalg::dot(pg, pg));
+        gnorm = std::sqrt(linalg::dot(pg, pg));
     }
     if (xnorm < 1.0) xnorm = 1.0;
     if (gnorm / xnorm <= param.epsilon) {
@@ -400,7 +400,7 @@ int32_t lbfgs(
     /* Compute the initial step:
         step = 1.0 / sqrt(vecdot(d, d, n))
      */
-    step = 1.0 / CMath::sqrt(linalg::dot(d, d));
+    step = 1.0 / std::sqrt(linalg::dot(d, d));
 
     k = 1;
     end = 0;
@@ -433,11 +433,11 @@ int32_t lbfgs(
         }
 
         /* Compute x and g norms. */
-        xnorm = CMath::sqrt(linalg::dot(x_wrap, x_wrap));
+        xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
         if (param.orthantwise_c == 0.) {
-            gnorm = CMath::sqrt(linalg::dot(g, g));
+            gnorm = std::sqrt(linalg::dot(g, g));
         } else {
-            gnorm = CMath::sqrt(linalg::dot(pg, pg));
+            gnorm = std::sqrt(linalg::dot(pg, pg));
         }
 
         /* Report the progress. */

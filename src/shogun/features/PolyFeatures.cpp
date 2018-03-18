@@ -203,7 +203,7 @@ void CPolyFeatures::store_normalization_values()
 	m_normalization_values=SG_MALLOC(float32_t, num_vec);
 	for (int i=0; i<num_vec; i++)
 	{
-		float64_t tmp = CMath::sqrt(dot(i, this,i));
+		float64_t tmp = std::sqrt(dot(i, this,i));
 		if (tmp==0)
 			// trap division by zero
 			m_normalization_values[i]=1;

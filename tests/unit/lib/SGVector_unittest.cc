@@ -118,7 +118,7 @@ TEST(SGVectorTest,norm)
 	a.random(-50.0, 1024.0);
 
 	/* check l-2 norm */
-	float64_t l2_norm = CMath::sqrt(linalg::dot(a,a));
+	float64_t l2_norm = std::sqrt(linalg::dot(a,a));
 	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
 
 	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);

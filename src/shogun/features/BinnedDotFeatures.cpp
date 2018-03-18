@@ -109,7 +109,7 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	((CBinnedDotFeatures*) df)->m_features->free_feature_vector(vec2, vec_idx2);
 
 	if (m_fill && m_norm_one && sum1!=0 && sum2!=0)
-		result/=CMath::sqrt(sum1*sum2);
+		result/=std::sqrt(sum1*sum2);
 
 	return result;
 
@@ -154,7 +154,7 @@ float64_t CBinnedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	m_features->free_feature_vector(vec1, vec_idx1);
 
 	if (m_fill && m_norm_one && sum!=0)
-		result/=CMath::sqrt(sum);
+		result/=std::sqrt(sum);
 
 	return result;
 }
@@ -182,7 +182,7 @@ void CBinnedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 		if (alpha_correction==0.0)
 			return;
 
-		alpha/=CMath::sqrt(alpha_correction);
+		alpha/=std::sqrt(alpha_correction);
 	}
 
 	for (int32_t i=0; i<m_bins.num_cols; i++)

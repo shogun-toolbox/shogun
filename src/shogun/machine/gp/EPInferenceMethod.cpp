@@ -261,7 +261,7 @@ void CEPInferenceMethod::update()
 
 			// compute ttau and sqrt(ttau)
 			m_ttau[i]=CMath::max(1.0/s2-tau_n[i], 0.0);
-			m_sttau[i]=CMath::sqrt(m_ttau[i]);
+			m_sttau[i]=std::sqrt(m_ttau[i]);
 
 			// compute tnu
 			m_tnu[i]=mu/s2-nu_n[i];

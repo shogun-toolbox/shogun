@@ -29,7 +29,7 @@ TEST(CMath, complex_test)
 	EXPECT_NEAR(result.real(), 142.50190551820736573063, 1E-13);
 	EXPECT_NEAR(result.imag(), -41.46893678992289267171, 1E-13);
 
-	result=CMath::sqrt(a);
+	result=std::sqrt(a);
 	EXPECT_NEAR(result.real(), 2.53083481048315883655, 1E-14);
 	EXPECT_NEAR(result.imag(), 1.18537961765559618499, 1E-14);
 	result=CMath::pow(a, 0.25);

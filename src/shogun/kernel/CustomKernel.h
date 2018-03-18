@@ -166,7 +166,7 @@ class CCustomKernel: public CKernel
 			ASSERT(tri_kernel_matrix.vector)
 
 			int64_t len = tri_kernel_matrix.vlen;
-			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
+			int64_t cols = (int64_t) floor(-0.5 + std::sqrt(0.25+2*len));
 
 			if (cols*(cols+1)/2 != len)
 			{

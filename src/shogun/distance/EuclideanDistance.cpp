@@ -73,7 +73,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	result=m_lhs_squared_norms[idx_a]+m_rhs_squared_norms[idx_b]-2*result;
 	if (disable_sqrt)
 		return result;
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 void CEuclideanDistance::precompute_lhs()
@@ -169,7 +169,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	}
 
 	if (!disable_sqrt)
-		result=CMath::sqrt(result);
+		result=std::sqrt(result);
 
 	return result;
 }
