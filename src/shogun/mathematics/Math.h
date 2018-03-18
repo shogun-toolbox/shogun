@@ -374,15 +374,6 @@ class CMath : public CSGObject
 			return std::floor(d);
 		}
 
-		/** The value of x rounded upward (as a floating-point value)
-		 * @param d input decimal value
-		 * @return rounded off value
-		 */
-		static inline float64_t ceil(float64_t d)
-		{
-			return std::ceil(d);
-		}
-
 		/** Signum of input value
 		 * @param a input value
 		 * @return 1 if a>0, -1 if a<0
