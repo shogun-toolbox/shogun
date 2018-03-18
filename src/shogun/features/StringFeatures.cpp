@@ -1143,7 +1143,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		}
 		else
 		{
-			int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
+			int32_t offs = std::ceil(2.0 * sizeof(int32_t) / sizeof(ST));
 			features[i].string=SG_MALLOC(ST, len_compressed+offs);
 			features[i].slen=len_compressed+offs;
 			int32_t* feat32ptr=((int32_t*) (features[i].string));

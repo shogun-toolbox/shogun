@@ -84,7 +84,7 @@ TEST(CMath, float64_tests)
 	EXPECT_NEAR(CMath::round(7.5), 8.0, 1E-15);
 	EXPECT_NEAR(CMath::round(7.5-1E-15), 7.0, 1E-15);
 	EXPECT_NEAR(CMath::floor(8-1E-15), 7.0, 1E-15);
-	EXPECT_NEAR(CMath::ceil(7+1E-15), 8.0, 1E-15);
+	EXPECT_NEAR(std::ceil(7 + 1E-15), 8.0, 1E-15);
 
 	float64_t a=5.78123516567856743364;
 	// x^2, x^(1/2)

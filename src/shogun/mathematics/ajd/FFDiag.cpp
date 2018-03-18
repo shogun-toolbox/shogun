@@ -45,7 +45,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 			 W.data());
 
 		W.transposeInPlace();
-		int e = CMath::ceil(log2(W.array().abs().rowwise().sum().maxCoeff()));
+		int e = std::ceil(log2(W.array().abs().rowwise().sum().maxCoeff()));
 		int s = std::max(0,e-1);
 		W /= pow(2,s);
 
