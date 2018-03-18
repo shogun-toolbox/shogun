@@ -320,7 +320,7 @@ void CSNPFeatures::set_normalization_const(float64_t n)
 	if (n==0)
 	{
 		normalization_const=string_length;
-		normalization_const=CMath::sqrt(normalization_const);
+		normalization_const=std::sqrt(normalization_const);
 	}
 	else
 		normalization_const=n;

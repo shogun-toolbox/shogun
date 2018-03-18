@@ -391,12 +391,12 @@ SGVector<float64_t> CGaussian::sample()
 	case FULL:
 	case DIAG:
 		for (int32_t i = 0; i < m_mean.vlen; i++)
-			r_matrix(i, i) = CMath::sqrt(m_d.vector[i]);
+			r_matrix(i, i) = std::sqrt(m_d.vector[i]);
 
 		break;
 	case SPHERICAL:
 		for (int32_t i = 0; i < m_mean.vlen; i++)
-			r_matrix(i, i) = CMath::sqrt(m_d.vector[0]);
+			r_matrix(i, i) = std::sqrt(m_d.vector[0]);
 
 		break;
 	}

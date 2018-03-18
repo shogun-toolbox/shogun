@@ -176,7 +176,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	}
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
-	return should_normalize ? result / CMath::sqrt((float64_t) sv.size()) : result;
+	return should_normalize ? result / std::sqrt((float64_t) sv.size()) : result;
 }
 
 void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
@@ -188,7 +188,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		alpha = CMath::abs(alpha);
 
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
-	const float64_t value = should_normalize ? alpha / CMath::sqrt((float64_t) sv.size()) : alpha;
+	const float64_t value = should_normalize ? alpha / std::sqrt((float64_t) sv.size()) : alpha;
 
 	/** this vector will maintain the current n+k active tokens
 	 * in a circular manner */
