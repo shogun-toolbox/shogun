@@ -12,8 +12,10 @@ RegressionLabels labels_test(f_labels_test)
 
 #![create_kernel]
 PolyKernel poly_kernel(10,2)
-GaussianKernel gauss_kernel_1(2.0)
-GaussianKernel gauss_kernel_2(3.0)
+Kernel gauss_kernel_1 = kernel("GaussianKernel")
+k.set_width(2.0)
+Kernel gauss_kernel_2 = kernel("GaussianKernel")
+k.set_width(3.0)
 #![create_kernel]
 
 #![create_combined_train]

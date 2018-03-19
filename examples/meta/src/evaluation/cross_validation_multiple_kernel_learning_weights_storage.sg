@@ -12,16 +12,22 @@ BinaryLabels labels(f_labels)
 
 #![create_kernels]
 CombinedKernel kernel()
-GaussianKernel k_1(10, 0.1)
-GaussianKernel k_2(10, 1)
-GaussianKernel k_3(10, 2)
+Kernel k_1 = kernel("GaussianKernel")
+k_1.set_cache_size(10)
+k_1.set_width(0.1)
+Kernel k_2 = kernel("GaussianKernel")
+k_2.set_cache_size(10)
+k_2.set_width(1)
+Kernel k_3 = kernel("GaussianKernel")
+k_3.set_cache_size(10)
+k_3.set_width(2)
 kernel.append_kernel(k_1)
 kernel.append_kernel(k_2)
 kernel.append_kernel(k_3)
 #![create_kernels]
 
 #![create_classifier]
-LibSVM libsvm()
+KernelMachine libsvm = kernel_machine("LibSVM")
 MKLClassification svm(libsvm)
 svm.set_interleaved_optimization_enabled(False)
 svm.set_kernel(kernel)

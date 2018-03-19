@@ -12,7 +12,8 @@ RegressionLabels labels_test(f_labels_test)
 
 #![create_appropriate_kernel]
 real width = 1.0
-GaussianKernel kernel(width)
+Kernel kernel = kernel("GaussianKernel")
+kernel.set_width(width)
 #![create_appropriate_kernel]
 
 #![create_instance]

@@ -58,6 +58,7 @@ Running an example:
 
 ### Ruby
 This needs `shogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
+
     export RUBYLIB="path/to/shogun.rb:$RUBYLIB"
 
 Running an example:
