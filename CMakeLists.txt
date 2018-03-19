@@ -534,7 +534,6 @@ ENDIF()
 
 OPTION(ENABLE_TESTING "Enable testing" OFF)
 OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
-OPTION(TRAVIS_DISABLE_LIBSHOGUN_TESTS "Disable libshogun tests to speed up jobs on travis-ci" OFF)
 OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
@@ -566,11 +565,6 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
     IF(ENABLE_TESTING OR BUILD_EXAMPLES)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
-
-    # always build minimal example(s)
-    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/minimal)
-        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/minimal)
-    ENDIF()
 
 	IF(BUILD_META_EXAMPLES)
         # allow meta examples without adding examples dir itself

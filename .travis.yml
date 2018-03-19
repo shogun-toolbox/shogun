@@ -12,7 +12,7 @@ notifications:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 env:
   global:
-    - INTERFACE_TEST_OPTIONS="-DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_CPP=ON"
+    - INTERFACE_TEST_OPTIONS="-DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_META_CPP=ON"
 matrix:
   fast_finish: true
   include:
