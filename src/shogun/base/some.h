@@ -2,6 +2,7 @@
 #define __SG_SOME_H__
 
 #include <memory>
+#include <shogun/base/macros.h>
 
 namespace shogun
 {
@@ -170,24 +171,24 @@ namespace shogun
 	}
 
 	template <class T>
-	inline T wrap(const T& value)
+	SG_FORCED_INLINE T wrap(const T& value)
 	{
 		return value;
 	}
 
-	inline const char* wrap(const char* ptr)
+	SG_FORCED_INLINE const char* wrap(const char* ptr)
 	{
 		return ptr;
 	}
 
 	template <class T>
-	inline Some<T> wrap(T* ptr)
+	SG_FORCED_INLINE Some<T> wrap(T* ptr)
 	{
 		return Some<T>::from_raw(ptr);
 	}
 
 	template <class T>
-	inline Some<T> wrap(const Some<T>& other)
+	SG_FORCED_INLINE Some<T> wrap(const Some<T>& other)
 	{
 		return other;
 	}
