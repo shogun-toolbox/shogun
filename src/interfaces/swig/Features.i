@@ -614,3 +614,6 @@ namespace shogun
     %template(RealMatrixFeatures) MatrixFeatures<float64_t>;
 #endif
 }
+
+%include <shogun/features/ArrowFactory.h>
+

@@ -50,4 +50,6 @@
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/features/IndexFeatures.h>
+
+#include <shogun/features/ArrowFactory.h>
 %}

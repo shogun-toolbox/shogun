@@ -20,13 +20,14 @@
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>
+#include <arrow/python/pyarrow.h>
 }
 
 /* Functions to extract array attributes.
  */
 static bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
 static int array_type(const PyObject* a) { return (int) PyArray_TYPE((const PyArrayObject*)a); }
-static int array_dimensions(const PyObject* a)  { return PyArray_NDIM((const PyArrayObject *)a); }
+static int array_dimensions(const PyObject* a) { return PyArray_NDIM((const PyArrayObject *)a); }
 
 /* Given a PyObject, return a string describing its type.
  */
@@ -1079,5 +1080,22 @@ for factory in _FACTORIES:
     _swig_monkey_patch(sys.modules[__name__], factory, _internal_factory_wrapper(factory_private_name, factory))
 
 %}
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) std::shared_ptr<arrow::Table>
+{
+    $1 = arrow::py::is_table($input);
+}
+
+%typemap(in) std::shared_ptr<arrow::Table>
+{
+    auto status = arrow::py::unwrap_table($input, &$1);
+    if (!status.ok())
+        SWIG_fail;
+}
+
+%typemap(out) std::shared_ptr<arrow::Table>
+{
+    $result = arrow::py::wrap_table($1);
+}
 
 #endif /* HAVE_PYTHON */
