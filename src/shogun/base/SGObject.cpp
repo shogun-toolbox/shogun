@@ -673,28 +673,33 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 
 CSGObject* CSGObject::clone()
 {
-	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	CSGObject* copy = create_empty();
+	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), this);
+	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());
+	CSGObject* clone = create_empty();
+	SG_DEBUG("Empty instance of %s created at %p.\n", get_name(), clone);
 
 	REQUIRE(
-	    copy, "Could not create empty instance of %s. The reason for "
+	    clone, "Could not create empty instance of %s. The reason for "
 	          "this usually is that get_name() of the class returns something "
 	          "wrong, that a class has a wrongly set generic type, or that it "
 	          "lies outside the main source tree and does not have "
 	          "CSGObject::create_empty() overridden.\n",
 	    get_name());
 
-	SG_DEBUG("Cloning all parameters of %s\n", get_name());
-	if (!copy->clone_parameters(this))
+	for (const auto it : self->map)
 	{
-		SG_WARNING("Cloning parameters failed.\n");
-	}
-	else
-	{
-		SG_DEBUG("Done cloning.\n");
+		const BaseTag& tag = it.first;
+		const Any& own = it.second.get_value();
+
+		SG_SDEBUG(
+			"Cloning parameter %s::%s of type %s.\n", this->get_name(),
+			tag.name().c_str(), own.type().c_str());
+
+		clone->get_parameter(tag).get_value().clone_from(own);
 	}
 
-	return copy;
+	SG_DEBUG("Done cloning %s at %p, new object at %p.\n", get_name(), this, clone);
+	return clone;
 }
 
 bool CSGObject::clone_parameters(CSGObject* other)
@@ -868,6 +873,10 @@ public:
 	{
 		stream() << *v;
 	}
+	virtual void on(long double* v)
+	{
+		stream() << *v;
+	}
 	virtual void on(const CSGObject** v)
 	{
 		if (*v)
@@ -1006,13 +1015,13 @@ bool CSGObject::equals(const CSGObject* other) const
 	/* Assumption: objects of same type have same set of tags. */
 	for (const auto it : self->map)
 	{
-		auto tag = it.first;
-		auto own = it.second;
-		auto given = other->get_parameter(tag);
+		const BaseTag& tag = it.first;
+		const Any& own = it.second.get_value();
+		const Any& given = other->get_parameter(tag).get_value();
 
 		SG_SDEBUG(
 		    "Comparing parameter %s::%s of type %s.\n", this->get_name(),
-		    tag.name().c_str(), own.get_value().type().c_str());
+		    tag.name().c_str(), own.type().c_str());
 		if (own != given)
 		{
 			if (io->get_loglevel() <= MSG_DEBUG)
@@ -1022,11 +1031,11 @@ bool CSGObject::equals(const CSGObject* other) const
 
 				ss << "Own parameter " << this->get_name() << "::" << tag.name()
 				   << "=";
-				own.get_value().visit(visitor.get());
+				own.visit(visitor.get());
 
 				ss << " different from provided " << other->get_name()
 				   << "::" << tag.name() << "=";
-				given.get_value().visit(visitor.get());
+				given.visit(visitor.get());
 
 				SG_SDEBUG("%s\n", ss.str().c_str());
 			}
