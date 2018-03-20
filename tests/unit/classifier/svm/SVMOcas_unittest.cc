@@ -33,6 +33,7 @@ TEST(SVMOcasTest,train)
 	EXPECT_NEAR(objective, 0.024344632618686062, 1e-2);
 
 	CLabels* pred = ocas->apply(test_feats);
+	SG_REF(pred);
 	CAccuracyMeasure evaluate = CAccuracyMeasure();
 	evaluate.evaluate(pred, ground_truth);
 	EXPECT_GT(evaluate.get_accuracy(), 0.99);
