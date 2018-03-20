@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-
 enum ELabelType
 {
 	/// binary labels +1/-1
@@ -18,11 +17,14 @@ enum ELabelType
 	LT_MULTICLASS = 1,
 	/// real valued labels (e.g. for regression, classifier outputs)
 	LT_REGRESSION = 3,
-	/// structured labels (e.g. sequences, trees) used in Structured Output problems
+	/// structured labels (e.g. sequences, trees) used in Structured Output
+	/// problems
 	LT_STRUCTURED = 4,
 	/// latent latent labels
 	LT_LATENT = 5,
 	/// sparse label class for multilabel classification (sets of labels)
 	LT_SPARSE_MULTILABEL = 6,
+	/// generic dense labels type
+	LT_DENSE_GENERIC = 7
 };
 #endif

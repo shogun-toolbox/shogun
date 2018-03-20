@@ -5,9 +5,12 @@
  *          Leon Kuchenbecker
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/common.h>
 
 using namespace shogun;
 
@@ -90,7 +93,7 @@ void CLabels::set_values(SGVector<float64_t> values)
 	m_current_values = values;
 }
 
-SGVector<float64_t> CLabels::get_values()
+SGVector<float64_t> CLabels::get_values() const
 {
 	return m_current_values;
 }

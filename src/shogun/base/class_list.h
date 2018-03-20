@@ -7,9 +7,11 @@
 #ifndef __SG_CLASS_LIST_H__
 #define __SG_CLASS_LIST_H__
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/ShogunException.h>
 
 #include <shogun/io/SGIO.h>
 
@@ -37,19 +39,28 @@ namespace shogun {
 	 *
 	 */
 	template <class T>
-	T* create_object(const char* name)
+	T* create_object(
+	    const char* name,
+	    EPrimitiveType pt = PT_NOT_GENERIC) throw(ShogunException)
 	{
-		auto* object = create(name, PT_NOT_GENERIC);
+		auto* object = create(name, pt);
 		if (!object)
 		{
-			SG_SERROR("No such class %s", name);
+			SG_SERROR(
+			    "Class %s with primitive type %s does not exist.\n", name,
+			    ptype_name(pt).c_str());
 		}
-		auto* cast = dynamic_cast<T*>(object);
-		if (!cast)
+		T* cast = nullptr;
+		try
+		{
+			cast = object->as<T>();
+		}
+		catch (const ShogunException& e)
 		{
 			delete_object(object);
-			SG_SERROR("Type mismatch");
+			throw e;
 		}
+
 		cast->ref();
 		return cast;
 	}

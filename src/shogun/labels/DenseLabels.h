@@ -19,17 +19,20 @@
 namespace shogun
 {
 	class CFile;
+	class CBinaryLabels;
 
-/** @brief Dense integer or floating point labels
- *
- * DenseLabels here are always real-valued and thus applicable to classification
- * (cf.  CClassifier) and regression (cf. CRegression) problems.
- *
- * This class implements the shared functions for storing, and accessing label
- * (vectors).
- */
-class CDenseLabels : public CLabels
-{
+	/** @brief Dense integer or floating point labels
+	 *
+	 * DenseLabels here are always real-valued and thus applicable to
+	 * classification
+	 * (cf.  CClassifier) and regression (cf. CRegression) problems.
+	 *
+	 * This class implements the shared functions for storing, and accessing
+	 * label
+	 * (vectors).
+	 */
+	class CDenseLabels : public CLabels
+	{
 	public:
 		/** default constructor */
 		CDenseLabels();
@@ -97,7 +100,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return labels, a copy if a subset is set
 		 */
-		SGVector<float64_t> get_labels();
+		SGVector<float64_t> get_labels() const;
 
 		/** get label
 		 *
@@ -106,7 +109,7 @@ class CDenseLabels : public CLabels
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		float64_t get_label(int32_t idx);
+		float64_t get_label(int32_t idx) const;
 
 		/** get label
 		 *
@@ -141,13 +144,13 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		SGVector<float64_t> get_labels_copy();
+		SGVector<float64_t> get_labels_copy() const;
 
- 		/** Getter for labels
+		/** Getter for labels
 		 *
-		 * @return labels, or a copy of them if a subset is 
+		 * @return labels, or a copy of them if a subset is
 		 * set or if ST is not of type float64_t
-		 */ 
+		 */
 		template<typename ST>
 		SGVector<ST> get_labels_t()
 		{
@@ -256,7 +259,15 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type() const=0;
+		virtual ELabelType get_label_type() const override
+		{
+			return LT_DENSE_GENERIC;
+		}
+
+		virtual const char* get_name() const override
+		{
+			return "DenseLabels";
+		}
 
 	public:
 		/** label designates classify reject */

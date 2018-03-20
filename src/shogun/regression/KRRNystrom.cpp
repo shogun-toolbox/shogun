@@ -87,7 +87,7 @@ bool CKRRNystrom::solve_krr_system()
 	}
 
 	SGVector<float64_t> y=((CRegressionLabels*)m_labels)->get_labels();
-	if (y==NULL)
+	if (!y.data())
 		SG_ERROR("Labels not set.\n");
 	SGVector<int32_t> col=subsample_indices();
 	SGMatrix<float64_t> K_mm(m_num_rkhs_basis, m_num_rkhs_basis);

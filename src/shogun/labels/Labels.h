@@ -11,118 +11,129 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/labels/LabelsFactory.h>
-#include <shogun/labels/LabelTypes.h>
+#include <shogun/base/some.h>
 #include <shogun/features/SubsetStack.h>
+#include <shogun/labels/LabelTypes.h>
+#include <shogun/labels/LabelsFactory.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
-/** @brief The class Labels models labels, i.e. class assignments of objects.
- *
- * Labels is the base class for general Label objects.
- *
- * Label objects need to overload get_num_labels() and is_valid()
- *
- * (Multiple) Subsets (of subsets) are (partly) supported.
- * Sub-classes may want to overwrite the subset_changed_post() method which is
- * called automatically after each subset change. See method documentations to
- * see how behaviour is changed when subsets are active.
- * A subset is put onto a stack using the add_subset() method. The last added
- * subset may be removed via remove_subset(). There is also the possibility to
- * add subsets in place (this only stores one index vector in memory as opposed
- * to many when add_subset() is called many times) with add_subset_in_place().
- * The latter does not allow to remove such modifications one-by-one.
- */
-class CLabels : public CSGObject
-{
-public:
-	/** default constructor */
-	CLabels();
+	class CBinaryLabels;
 
-	/** destructor */
-	virtual ~CLabels();
-
-	/** Make sure the label is valid, otherwise raise SG_ERROR.
+	/** @brief The class Labels models labels, i.e. class assignments of
+	 * objects.
 	 *
-	 * possible with subset
-	*
-	* @param context optional message to convey the context
+	 * Labels is the base class for general Label objects.
+	 *
+	 * Label objects need to overload get_num_labels() and is_valid()
+	 *
+	 * (Multiple) Subsets (of subsets) are (partly) supported.
+	 * Sub-classes may want to overwrite the subset_changed_post() method which
+	 * is
+	 * called automatically after each subset change. See method documentations
+	 * to
+	 * see how behaviour is changed when subsets are active.
+	 * A subset is put onto a stack using the add_subset() method. The last
+	 * added
+	 * subset may be removed via remove_subset(). There is also the possibility
+	 * to
+	 * add subsets in place (this only stores one index vector in memory as
+	 * opposed
+	 * to many when add_subset() is called many times) with
+	 * add_subset_in_place().
+	 * The latter does not allow to remove such modifications one-by-one.
 	 */
-	virtual void ensure_valid(const char * context = NULL) = 0;
+	class CLabels : public CSGObject
+	{
+	public:
+		/** default constructor */
+		CLabels();
 
-	/** get number of labels, depending on whether a subset is set
-	 *
-	 * @return number of labels
-	 */
-	virtual int32_t get_num_labels() const = 0;
+		/** destructor */
+		virtual ~CLabels();
 
-	/** get label type
-	 *
-	 * @return label type (binary, multiclass, ...)
-	 */
-	virtual ELabelType get_label_type() const = 0;
+		/** Make sure the label is valid, otherwise raise SG_ERROR.
+		 *
+		 * possible with subset
+		*
+		* @param context optional message to convey the context
+		 */
+		virtual void ensure_valid(const char* context = NULL) = 0;
 
-	/** Adds a subset of indices on top of the current subsets (possibly
-	 * subset of subset). Every call causes a new active index vector
-	 * to be stored. Added subsets can be removed one-by-one. If this is not
-	 * needed, add_subset_in_place() should be used (does not store
-	 * intermediate index vectors)
-	 *
-	 * @param subset subset of indices to add
-	 * */
-	virtual void add_subset(SGVector<index_t> subset);
+		/** get number of labels, depending on whether a subset is set
+		 *
+		 * @return number of labels
+		 */
+		virtual int32_t get_num_labels() const = 0;
 
-	/** Sets/changes latest added subset. This allows to add multiple subsets
-	 * with in-place memory requirements. They cannot be removed one-by-one
-	 * afterwards, only the latest active can. If this is needed, use
-	 * add_subset(). If no subset is active, this just adds.
-	 *
-	 * @param subset subset of indices to replace the latest one with.
-	 * */
-	virtual void add_subset_in_place(SGVector<index_t> subset);
+		/** get label type
+		 *
+		 * @return label type (binary, multiclass, ...)
+		 */
+		virtual ELabelType get_label_type() const = 0;
 
-	/** removes that last added subset from subset stack, if existing
-	 * Calls subset_changed_post() afterwards */
-	virtual void remove_subset();
+		/** Adds a subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_subset(SGVector<index_t> subset);
 
-	/** removes all subsets
-	 * Calls subset_changed_post() afterwards */
-	virtual void remove_all_subsets();
+		/** Sets/changes latest added subset. This allows to add multiple
+		 * subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_subset(). If no subset is active, this just adds.
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_subset_in_place(SGVector<index_t> subset);
 
-	/**
-	 * @return subset stack
-	 */
-	virtual CSubsetStack* get_subset_stack();
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_subset();
 
-	/** set the confidence value for a particular label
-	 *
-	 * @param value value to set
-	 * @param idx label index whose conf. value is to be changed
-	 */
-	virtual void set_value(float64_t value, int32_t idx);
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_all_subsets();
 
-	/** get confidence value for a particular label
-	 *
-	 * @param idx label index
-	 * @return confidence value of label with index idx
-	 */
-	virtual float64_t get_value(int32_t idx);
+		/**
+		 * @return subset stack
+		 */
+		virtual CSubsetStack* get_subset_stack();
 
-	/** set confidence vector
-	 *
-	 * @param values to be set (should have zero length to disable
-	 * values or length must match the number of labels)
-	 */
-	virtual void set_values(SGVector<float64_t> values);
+		/** set the confidence value for a particular label
+		 *
+		 * @param value value to set
+		 * @param idx label index whose conf. value is to be changed
+		 */
+		virtual void set_value(float64_t value, int32_t idx);
 
-	/** get confidence vector
-	 *
-	 * @return confidences
-	 */
-	virtual SGVector<float64_t> get_values();
+		/** get confidence value for a particular label
+		 *
+		 * @param idx label index
+		 * @return confidence value of label with index idx
+		 */
+		virtual float64_t get_value(int32_t idx);
+
+		/** set confidence vector
+		 *
+		 * @param values to be set (should have zero length to disable
+		 * values or length must match the number of labels)
+		 */
+		virtual void set_values(SGVector<float64_t> values);
+
+		/** get confidence vector
+		 *
+		 * @return confidences
+		 */
+		virtual SGVector<float64_t> get_values() const;
 
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy()

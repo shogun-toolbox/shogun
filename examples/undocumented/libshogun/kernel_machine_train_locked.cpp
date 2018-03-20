@@ -90,6 +90,7 @@ void test()
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -103,6 +104,7 @@ void test()
 	indices.vector[2]=3;
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -115,6 +117,7 @@ void test()
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -125,6 +128,7 @@ void test()
 	svm->data_unlock();
 	svm->train();
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	ASSERT(eval->evaluate(output, labels)==1);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
