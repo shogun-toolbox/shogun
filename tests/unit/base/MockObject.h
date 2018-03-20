@@ -19,6 +19,7 @@ namespace shogun
 	public:
 		CCloneEqualsMockParameter()
 		{
+			SG_SDEBUG("Creating new %s, at %p.\n", get_name(), this)
 			m_was_cloned = false;
 			m_some_value = 1;
 
@@ -39,8 +40,8 @@ namespace shogun
 
 		virtual CSGObject* clone() override
 		{
-			auto* clone = CSGObject::clone();
-			((CCloneEqualsMockParameter*)clone)->m_was_cloned = true;
+			auto clone = CSGObject::clone()->as<CCloneEqualsMockParameter>();
+			clone->m_was_cloned = true;
 			return clone;
 		}
 

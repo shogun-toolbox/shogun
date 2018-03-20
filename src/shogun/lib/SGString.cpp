@@ -67,6 +67,14 @@ bool SGString<T>::equals(const SGString& other) const
 	return true;
 }
 
+template<class T>
+SGString<T> SGString<T>::clone() const
+{
+	SGString<T> result(slen);
+	sg_memcpy(result.string, string, sizeof(T)*slen);
+	return result;
+}
+
 template <class T>
 void SGString<T>::free_string()
 {
