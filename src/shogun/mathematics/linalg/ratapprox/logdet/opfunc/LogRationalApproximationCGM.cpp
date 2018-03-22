@@ -7,20 +7,18 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
+#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
-
-using namespace Eigen;
 
 namespace shogun
 {
 
 	CLogRationalApproximationCGM::CLogRationalApproximationCGM()
-	    : CRationalApproximation(NULL, NULL, 0, OF_LOG)
+	    : CRationalApproximation(nullptr, nullptr, 0, OF_LOG)
 	{
 		init();
 }
@@ -53,7 +51,7 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 	SG_UNREF(m_linear_solver);
 }
 
-float64_t CLogRationalApproximationCGM::solve(SGVector<float64_t> sample)
+float64_t CLogRationalApproximationCGM::compute(SGVector<float64_t> sample)
 {
 	SG_DEBUG("Entering\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
@@ -63,9 +61,6 @@ float64_t CLogRationalApproximationCGM::solve(SGVector<float64_t> sample)
 	if (m_negated_shifts.vector==NULL)
 	{
 		m_negated_shifts=SGVector<complex128_t>(m_shifts.vlen);
-		Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
-		Map<VectorXcd> negated_shifts(m_negated_shifts.vector, m_negated_shifts.vlen);
-		negated_shifts=-shifts;
 	}
 	REQUIRE(
 		m_linear_operator->get_dimension() == sample.vlen,
@@ -77,18 +72,8 @@ float64_t CLogRationalApproximationCGM::solve(SGVector<float64_t> sample)
 
 	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
 		m_linear_operator, sample, m_negated_shifts, m_weights);
-
-	Map<VectorXcd> v(vec.vector, vec.vlen);
-	v = -v;
-	// take out the imaginary part of the result before
-	// applying linear operator
 	SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
-
-	// perform dot product
-	Map<VectorXd> map_agg(agg.vector, agg.vlen);
-	Map<VectorXd> map_vector(sample.vector, sample.vlen);
-	float64_t result = map_vector.dot(map_agg);
-
+	float64_t result = linalg::dot(sample, agg);
 	result *= m_constant_multiplier;
 	return result;
 }

@@ -51,7 +51,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		result += op_func->solve(s);
+		result += op_func->compute(s);
 	}
 
 	EXPECT_NEAR(result, CStatistics::log_det(mat), 1E-15);

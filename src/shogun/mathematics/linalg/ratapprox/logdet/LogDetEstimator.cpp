@@ -4,7 +4,6 @@
  * Authors: Sunil Mahendrakar, Heiko Strathmann, Soumyajit De, Björn Esser
  */
 #include <shogun/base/Parallel.h>
-#include <shogun/base/progress.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
@@ -124,39 +123,26 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		m_trace_sampler->get_dimension());
 
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
-	index_t idx_row = 0;
-	index_t idx_col = 0;
 	SGVector<float64_t> samples(num_estimates);
 	samples.zero();
-	// for omp
-#pragma omp parallel for
-		for (index_t i = 0; i < num_estimates; i++)
+	// TO DO: use openmp like this here->#pragma omp parallel for reduction(+:
+	// samples[:num_estimates])
+	for (index_t i = 0; i < num_estimates; i++)
+	{
+		for (index_t j = 0; j < num_trace_samples; ++j)
 		{
-			for (index_t j = 0; j < num_trace_samples; ++j)
+			SG_INFO(
+				"Computing log-determinant trace sample %d/%d\n", j,
+				num_trace_samples);
+			// get the trace sampler vector
+			SGVector<float64_t> s = m_trace_sampler->sample(j);
+			// calculate the result for sample s
+			float64_t result = m_operator_log->compute(s);
 			{
-				SG_INFO(
-					"Computing log-determinant trace sample %d/%d\n", j,
-					num_trace_samples);
-				// get the trace sampler vector
-				SGVector<float64_t> s = m_trace_sampler->sample(j);
-				// calculate the result for sample s
-				float64_t result = m_operator_log->solve(s);
-#pragma omp critical // so that the dynamic array stays concurrent
-				{
-					samples[idx_col] += result;
-					idx_row++;
-					if (idx_row >= num_trace_samples)
-					{
-						idx_row = 0;
-						idx_col++;
-					}
-				}
+				samples[i] += result;
 			}
 		}
-
-
-
-
+		}
 
 	SG_INFO("Finished computing %d log-det estimates\n", num_estimates);
 
@@ -170,7 +156,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	SG_DEBUG("Entering...\n")
 
 	REQUIRE(m_operator_log, "Operator function is NULL\n");
-	// call the precompute of operator function zto compute all prerequisites
+	// call the precompute of operator function to compute all prerequisites
 	m_operator_log->precompute();
 
 	REQUIRE(m_trace_sampler, "Trace sampler is NULL\n");
@@ -180,28 +166,24 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	index_t num_trace_samples = m_trace_sampler->get_num_samples();
 	SGMatrix<float64_t> samples(num_trace_samples, num_estimates);
 
-	#pragma omp parallel for
-		for (index_t i = 0; i < num_estimates; i++)
+	// TO DO: use openmp #pragma omp parallel for reduction(+:
+	// samples[:num_estimates][:num_trace_samples])
+	for (index_t i = 0; i < num_estimates; i++)
+	{
+		for (index_t j = 0; j < num_trace_samples; ++j)
 		{
-			for (index_t j = 0; j < num_trace_samples; ++j)
+			SG_INFO(
+				"Computing log-determinant trace sample %d/%d\n", j,
+				num_trace_samples);
+			// get the trace sampler vector
+			SGVector<float64_t> s = m_trace_sampler->sample(j);
+			// solve the result for s
+			float64_t result = m_operator_log->compute(s);
 			{
-				SG_INFO(
-					"Computing log-determinant trace sample %d/%d\n", j,
-					num_trace_samples);
-				// get the trace sampler vector
-				SGVector<float64_t> s = m_trace_sampler->sample(j);
-				// solve the result for s
-				float64_t result = m_operator_log->solve(s);
-#pragma omp critical // aggregators array should be concurrent
-				{
-					samples(i, j) = result;
-				}
+				samples(i, j) = result;
 			}
 		}
-
-
-
-
+	}
 
 	SG_DEBUG("Leaving\n")
 	return samples;

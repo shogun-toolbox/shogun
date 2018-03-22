@@ -69,7 +69,6 @@ namespace shogun {
 	 *
 	 */
 	std::set<std::string> available_objects();
-
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

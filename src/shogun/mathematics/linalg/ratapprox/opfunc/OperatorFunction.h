@@ -71,15 +71,15 @@ public:
 	}
 
 	/**
-	 * abstract precompute method that must be called before using solve
+	 * purely virtual method that must be called before compute
 	 * for performing preliminary computations that are necessary.
 	 */
 	virtual void precompute() = 0;
 
 	/**
-	 * method that solves for a sample and returns the final result
+	 * Method that computes for a sample and returns the final result
 	 */
-	virtual float64_t solve(SGVector<T> sample) = 0;
+	virtual float64_t compute(SGVector<T> sample) = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

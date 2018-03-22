@@ -139,7 +139,7 @@ TEST(RationalApproximation, trace_accuracy)
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		result += op_func->solve(s);
+		result += op_func->compute(s);
 	}
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -290,7 +290,7 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		result += op_func->solve(s);
+		result += op_func->compute(s);
 	}
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)

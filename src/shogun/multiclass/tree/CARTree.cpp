@@ -273,8 +273,9 @@ bool CCARTree::train_machine(CFeatures* data)
 	}
 	else
 	{
-		SG_WARNING("Feature types are not specified. All features are "
-		           "considered as continuous in training.\n")
+		SG_WARNING(
+		    "Feature types are not specified. All features are "
+		    "considered as continuous in training.\n")
 		m_nominal=SGVector<bool>(num_features);
 		m_nominal.fill_vector(m_nominal.vector,m_nominal.vlen,false);
 	}

@@ -22,7 +22,7 @@ template<class T> class SGMatrix;
 /** @brief Class to create unbiased estimators of \f$log(\left|C\right|)=
  * trace(log(C))\f$. For each estimate, it samples trace vectors (one by one)
  * and calls solve of COperatorFunction, stores the resulting in
- * a vector, Then simply computes running averages over the estimates
+ * a vector, then simply computes running averages over the estimates
  */
 class CLogDetEstimator : public CSGObject
 {

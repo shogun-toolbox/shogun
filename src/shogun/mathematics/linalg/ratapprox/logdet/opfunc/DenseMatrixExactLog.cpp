@@ -12,9 +12,9 @@
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 #include <unsupported/Eigen/MatrixFunctions>
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
-
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
 
@@ -24,21 +24,19 @@ namespace shogun
 {
 
 	CDenseMatrixExactLog::CDenseMatrixExactLog()
-	    : COperatorFunction<float64_t>(NULL, OF_LOG)
+	    : COperatorFunction<float64_t>(nullptr, OF_LOG)
 	{
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-}
+	}
 
-CDenseMatrixExactLog::CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op)
-	: COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, OF_LOG)
-{
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-}
+	CDenseMatrixExactLog::CDenseMatrixExactLog(
+	    CDenseMatrixOperator<float64_t>* op)
+	    : COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, OF_LOG)
+	{
+	}
 
-CDenseMatrixExactLog::~CDenseMatrixExactLog()
-{
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
-}
+	CDenseMatrixExactLog::~CDenseMatrixExactLog()
+	{
+	}
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 void CDenseMatrixExactLog::precompute()
@@ -77,7 +75,7 @@ void CDenseMatrixExactLog::precompute()
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
-float64_t CDenseMatrixExactLog::solve(SGVector<float64_t> sample)
+float64_t CDenseMatrixExactLog::compute(SGVector<float64_t> sample)
 {
 	SG_DEBUG("Entering...\n");
 
@@ -85,13 +83,7 @@ float64_t CDenseMatrixExactLog::solve(SGVector<float64_t> sample)
 		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
 
 	SGVector<float64_t> vec = m_log_operator->apply(sample);
-
-	// compute the vector-vector dot product using Eigen3
-	Map<VectorXd> v(vec.vector, vec.vlen);
-	Map<VectorXd> s(sample.vector, sample.vlen);
-
-	float64_t result = s.dot(v);
-
+	float64_t result = linalg::dot(sample, vec);
 	SG_DEBUG("Leaving...\n");
 	return result;
 }

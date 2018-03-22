@@ -9,24 +9,20 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <typeinfo>
 
-using namespace Eigen;
-
 namespace shogun
 {
 
 	CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
-	    : CRationalApproximation(NULL, NULL, 0, OF_LOG)
+	    : CRationalApproximation(nullptr, nullptr, 0, OF_LOG)
 	{
 		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
@@ -40,8 +36,6 @@ CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
 
 	m_linear_solver=linear_solver;
 	SG_REF(m_linear_solver);
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CLogRationalApproximationIndividual::init()
@@ -55,13 +49,12 @@ void CLogRationalApproximationIndividual::init()
 CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
 {
 	SG_UNREF(m_linear_solver);
-
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
+float64_t
+CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
 {
-	SG_DEBUG("OperatorFunction::solve(): Entering..\n");
+	SG_DEBUG("Entering..\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
 
@@ -97,7 +90,7 @@ float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
 	else
 	{
 		// something weird happened
-		SG_ERROR("OperatorFunction::solve(): Unknown MatrixOperator given!\n");
+		SG_ERROR("Unknown MatrixOperator given!\n");
 	}
 
 	// create num_shifts number of jobs for current sample vector
@@ -120,34 +113,17 @@ float64_t CLogRationalApproximationIndividual::solve(SGVector<float64_t> sample)
 			break;
 		}
 
-		REQUIRE(
-			shifted_op, "OperatorFunction::solve():"
-			            "MatrixOperator typeinfo was not detected!\n");
+		REQUIRE(shifted_op, "MatrixOperator typeinfo was not detected!\n");
 
-		// move the shift inside the operator
-		// (see CRationalApproximation)
 		SGVector<complex128_t> diag=shifted_op->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
 			diag[j]-=m_shifts[i];
 		shifted_op->set_diagonal(diag);
 
 		SGVector<complex128_t> vec = m_linear_solver->solve(shifted_op, sample);
-
-		// multiply with the weight using Eigen3 and take negative
-		// (see CRationalApproximation for the formula)
-		Map<VectorXcd> v(vec.vector, vec.vlen);
-		v *= m_weights[i];
-		v = -v;
-
 		SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
-
-		// perform dot product
-		Map<VectorXd> map_agg(agg.vector, agg.vlen);
-		Map<VectorXd> map_vector(sample.vector, sample.vlen);
-		float64_t result = map_vector.dot(map_agg);
-
+		float64_t result = linalg::dot(sample, agg);
 		result *= m_constant_multiplier;
-
 		return result;
 }
 

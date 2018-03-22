@@ -104,9 +104,9 @@ public:
 	int32_t compute_num_shifts_from_accuracy();
 
 	/**
-	 *method that solves for a particular sample
+	 * Method that computes for a particular sample
 	 */
-	virtual float64_t solve(SGVector<float64_t> sample) = 0;
+	virtual float64_t compute(SGVector<float64_t> sample) = 0;
 
 	/** @return shifts */
 	SGVector<complex128_t> get_shifts() const;
