@@ -98,7 +98,7 @@ inline float dist_of_scale (int s)
 
 inline int get_scale(float d)
 {
-  return (int) CMath::ceil(il2 * log(d));
+	return (int)std::ceil(il2 * log(d));
 }
 
 template<class P>

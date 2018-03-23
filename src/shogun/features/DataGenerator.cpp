@@ -32,7 +32,7 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 {
 	int32_t points_per_class = num_points / num_classes;
 
-	int32_t grid_size = (int32_t ) CMath::ceil(CMath::sqrt((float64_t ) num_classes));
+	int32_t grid_size = (int32_t)std::ceil(CMath::sqrt((float64_t)num_classes));
 	float64_t cell_size = (float64_t ) 1 / grid_size;
 	SGVector<float64_t> grid_idx(dim);
 	for (index_t i=0; i<dim; i++)
