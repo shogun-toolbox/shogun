@@ -57,6 +57,8 @@ public:
 	float64_t get_auPRC();
 
 	/** get PRC
+	 * precision is dim0 (x)
+	 * recall is dim1 (y)
 	 * @return PRC graph matrix
 	 */
 	SGMatrix<float64_t> get_PRC();
