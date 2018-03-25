@@ -15,7 +15,6 @@
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -51,11 +50,12 @@ public:
 		else
 				generate_data_l2();
 
-		CLibLinear* ll = new CLibLinear();
+		auto ll = some<CLibLinear>();
 
-		CBinaryLabels* pred = NULL;
 		float64_t liblin_accuracy;
-		CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+		auto eval = some<CContingencyTableEvaluation>();
+
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -63,7 +63,7 @@ public:
 
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->train();
-		pred = ll->apply_binary(test_feats);
+		auto pred = ll->apply_binary(test_feats);
 		SG_REF(pred);
 
 		liblin_accuracy = eval->evaluate(pred, ground_truth);
@@ -84,11 +84,13 @@ public:
 		else
 				generate_data_l2_simple();
 
-		CLibLinear* ll = new CLibLinear();
+		auto ll = some<CLibLinear>();
 
-		CBinaryLabels* pred = NULL;
+
 		float64_t liblin_accuracy;
-		CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+		auto eval = some<CContingencyTableEvaluation>();
+
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -98,7 +100,7 @@ public:
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->train();
 
-		pred = ll->apply_binary(test_feats);
+		auto pred = ll->apply_binary(test_feats);
 		SG_REF(pred);
 		liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -144,6 +146,7 @@ protected:
 		*/
 
 		index_t num_samples = 50;
+		sg_rand->set_seed(5);
 		CMath::init_random(5);
 		SGMatrix<float64_t> data =
 			CDataGenerator::generate_gaussians(num_samples, 2, 2);
