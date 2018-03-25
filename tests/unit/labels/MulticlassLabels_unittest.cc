@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-class MulticlassLabelsTest : public ::testing::Test
+class MulticlassLabels : public ::testing::Test
 {
 public:
 	SGMatrix<float64_t> probabilities;
@@ -32,12 +32,7 @@ public:
 		probabilities(2, 1) = 0.8;
 		probabilities(2, 2) = 0.1;
 
-		SGVector<float64_t> labels_A(3);
-		labels_A[0] = 0;
-		labels_A[1] = 2;
-		labels_A[2] = 1;
-
-		labels_true = labels_A;
+		labels_true = {0, 2, 1};
 	}
 
 	virtual void TearDown()
@@ -45,7 +40,7 @@ public:
 	}
 };
 
-TEST_F(MulticlassLabelsTest, confidences)
+TEST_F(MulticlassLabels, confidences)
 {
 	const int n_labels = 3;
 	const int n_classes = 4;
@@ -74,4 +69,30 @@ TEST_F(MulticlassLabelsTest, confidences)
 		}
 	}
 	SG_UNREF(labels);
+}
+
+TEST_F(MulticlassLabels, multiclass_labels_from_multiclass)
+{
+	auto labels = some<CMulticlassLabels>(labels_true);
+	auto labels2 = multiclass_labels(labels);
+	EXPECT_EQ(labels.get(), labels2.get());
+}
+
+TEST_F(MulticlassLabels, multiclass_labels_from_dense)
+{
+	auto labels = some<CDenseLabels>(labels_true.size());
+	labels->set_labels(labels_true);
+	auto labels2 = multiclass_labels(labels);
+	EXPECT_NE(labels, labels2);
+	ASSERT_NE(labels2, nullptr);
+	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
+}
+
+TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
+{
+	// delete this test once multiclass labels dont need to be contiguous,
+	// i.e. [0,1,2,3,4,...], anymore
+	auto labels = some<CDenseLabels>(labels_true.size());
+	labels->set_labels({0, 1, 3});
+	EXPECT_THROW(multiclass_labels(labels), ShogunException);
 }

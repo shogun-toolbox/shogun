@@ -2,6 +2,7 @@
 #define __SG_SOME_H__
 
 #include <memory>
+#include <shogun/base/macros.h>
 
 namespace shogun
 {
@@ -38,6 +39,18 @@ namespace shogun
 		 * @return raw pointer (without SG_REF)
 		 */
 		T* operator->() const;
+
+		/** Equality operator
+		 * @param other other element to compare with
+		 * @return true iff other's raw pointer equals own raw pointer
+		 */
+		bool operator==(const Some<T>& other) const;
+
+		/** Inequality operator
+		 * @param other other element to compare with
+		 * @return false iff other's raw pointer equals own raw pointer
+		 */
+		bool operator!=(const Some<T>& other) const;
 
 		/**
 		 * Get the raw pointer
@@ -103,6 +116,16 @@ namespace shogun
 	{
 		return raw;
 	}
+	template <typename T>
+	bool Some<T>::operator==(const Some<T>& other) const
+	{
+		return raw == other.raw;
+	}
+	template <typename T>
+	bool Some<T>::operator!=(const Some<T>& other) const
+	{
+		return !((*this) == other);
+	}
 	template <class T>
 	T* Some<T>::get() const
 	{
@@ -148,19 +171,24 @@ namespace shogun
 	}
 
 	template <class T>
-	inline T wrap(const T& value)
+	SG_FORCED_INLINE T wrap(const T& value)
 	{
 		return value;
 	}
 
+	SG_FORCED_INLINE const char* wrap(const char* ptr)
+	{
+		return ptr;
+	}
+
 	template <class T>
-	inline Some<T> wrap(T* ptr)
+	SG_FORCED_INLINE Some<T> wrap(T* ptr)
 	{
 		return Some<T>::from_raw(ptr);
 	}
 
 	template <class T>
-	inline Some<T> wrap(const Some<T>& other)
+	SG_FORCED_INLINE Some<T> wrap(const Some<T>& other)
 	{
 		return other;
 	}

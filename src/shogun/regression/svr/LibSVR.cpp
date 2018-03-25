@@ -69,7 +69,6 @@ bool CLibSVR::train_machine(CFeatures* data)
 
 	ASSERT(kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_REGRESSION)
 
 	if (data)
 	{
@@ -89,9 +88,10 @@ bool CLibSVR::train_machine(CFeatures* data)
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
+	auto labels = regression_labels(m_labels);
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=((CRegressionLabels*) m_labels)->get_label(i);
+		problem.y[i] = labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

@@ -104,7 +104,7 @@ ENDMACRO()
 MACRO(AddLibShogunExample EXAMPLE_CPP)
 	STRING(REGEX REPLACE ".cpp\$" "" EXAMPLE "${EXAMPLE_CPP}")
 
-	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
+	add_executable(${EXAMPLE} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
 	if(WIN32)
 		target_link_libraries(${EXAMPLE} shogun::shogun-static ${SANITIZER_LIBRARY})
 	else()
@@ -113,7 +113,6 @@ MACRO(AddLibShogunExample EXAMPLE_CPP)
 	IF(SANITIZER_FLAGS)
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
-    add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 
 	# Add examples to the dependencies of modular interfaces to make sure
 	# nothing will infer with them being build single-threaded.

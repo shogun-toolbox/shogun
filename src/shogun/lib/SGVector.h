@@ -165,6 +165,26 @@ template<class T> class SGVector : public SGReferencedData
 
 		SGVector<T>& operator=(const SGVector<T>&);
 
+		/** Check for pointer identity */
+		SG_FORCED_INLINE bool operator==(const SGVector<T>& other) const
+		{
+			if (vlen != other.vlen)
+				return false;
+
+			if (on_gpu())
+			{
+				if (!other.on_gpu())
+					return false;
+				if (gpu_ptr != other.gpu_ptr)
+					return false;
+			}
+
+			if (vector != other.vector)
+				return false;
+
+			return true;
+		}
+
 		/** Cast to pointer */
 		operator T*() { return vector; }
 

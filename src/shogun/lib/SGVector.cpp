@@ -399,6 +399,9 @@ bool SGVector<T>::equals(const SGVector<T>& other) const
 	if (other.vlen!=vlen)
 		return false;
 
+	if (vector == other.vector)
+		return true;
+
 	for (index_t i=0; i<vlen; ++i)
 	{
 		if (other.vector[i]!=vector[i])
@@ -416,6 +419,9 @@ bool SGVector<T>::equals(const SGVector<T>& other) const
 		assert_on_cpu();                                                       \
 		if (other.vlen != vlen)                                                \
 			return false;                                                      \
+                                                                               \
+		if (vector == other.vector)                                            \
+			return true;                                                       \
                                                                                \
 		for (index_t i = 0; i < vlen; ++i)                                     \
 		{                                                                      \
@@ -927,7 +933,7 @@ void SGVector<T>::scale(T alpha)
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	REQUIRE(loader, "Require a valid 'c FILE pointer'\n");
+	REQUIRE(loader, "No file provided.\n");
 	unref();
 
 	SG_SET_LOCALE_C;

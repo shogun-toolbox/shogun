@@ -2,6 +2,7 @@ STRING(REGEX REPLACE "(.*)/narray.*$" "\\1" NARRAY_PATH ${NARRAY_LIB})
 
 LIST(APPEND EXCLUDED_RUBY_META_EXAMPLES
 			base_api-put_get
+      base_api-factory
 )
 
 # add test case for each generated example

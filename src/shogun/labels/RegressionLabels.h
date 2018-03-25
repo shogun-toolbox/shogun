@@ -65,5 +65,9 @@ class CRegressionLabels : public CDenseLabels
 		virtual CLabels* shallow_subset_copy();
 #endif
 };
+
+#ifndef SWIG
+Some<CRegressionLabels> regression_labels(CLabels* orig);
+#endif // SWIG
 }
 #endif

@@ -38,3 +38,44 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+namespace shogun
+{
+	Some<CRegressionLabels> regression_from_regression(CRegressionLabels* orig)
+	{
+		return Some<CRegressionLabels>::from_raw(orig);
+	}
+
+	Some<CRegressionLabels> regression_from_dense(CDenseLabels* orig)
+	{
+		auto result = new CRegressionLabels(orig->get_labels());
+		result->set_values(orig->get_values());
+		return Some<CRegressionLabels>::from_raw(result);
+	}
+
+	Some<CRegressionLabels> regression_labels(CLabels* orig)
+	{
+		REQUIRE(orig, "No labels provided.\n");
+		try
+		{
+			switch (orig->get_label_type())
+			{
+			case LT_REGRESSION:
+				return regression_from_regression(
+				    orig->as<CRegressionLabels>());
+			case LT_DENSE_GENERIC:
+				return regression_from_dense(orig->as<CDenseLabels>());
+			default:
+				SG_SNOTIMPLEMENTED
+			}
+		}
+		catch (const ShogunException& e)
+		{
+			SG_SERROR(
+			    "Cannot convert %s to regression labels: \n", e.what(),
+			    orig->get_name());
+		}
+
+		return Some<CRegressionLabels>::from_raw(nullptr);
+	}
+} // namespace shogun

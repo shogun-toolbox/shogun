@@ -206,6 +206,7 @@ TEST(LibLinear,train_L2R_LR)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -242,6 +243,7 @@ TEST(LibLinear,train_L2R_L2LOSS_SVC_DUAL)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -277,6 +279,7 @@ TEST(LibLinear,train_L2R_L2LOSS_SVC)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -312,6 +315,7 @@ TEST(LibLinear,train_L2R_L1LOSS_SVC_DUAL)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -347,6 +351,7 @@ TEST(LibLinear,train_L1R_L2LOSS_SVC)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -382,6 +387,7 @@ TEST(LibLinear,train_L1R_LR)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -417,6 +423,7 @@ TEST(LibLinear,train_L2R_LR_DUAL)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -452,6 +459,7 @@ TEST(LibLinear,train_L2R_LR_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -488,6 +496,7 @@ TEST(LibLinear,train_L2R_L2LOSS_SVC_DUAL_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -523,6 +532,7 @@ TEST(LibLinear,train_L2R_L2LOSS_SVC_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -558,6 +568,7 @@ TEST(LibLinear,train_L2R_L1LOSS_SVC_DUAL_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -593,6 +604,7 @@ TEST(LibLinear,train_L1R_L2LOSS_SVC_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -628,6 +640,7 @@ TEST(LibLinear,train_L1R_LR_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -663,6 +676,7 @@ TEST(LibLinear,train_L2R_LR_DUAL_BIAS)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
@@ -703,6 +717,7 @@ TEST(LibLinear,simple_set_train_L2R_LR)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -747,6 +762,7 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -790,6 +806,7 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -834,6 +851,7 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -877,6 +895,7 @@ TEST(LibLinear,simple_set_train_L1R_L2LOSS_SVC)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -920,6 +939,7 @@ TEST(LibLinear,simple_set_train_L1R_LR)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -963,6 +983,7 @@ TEST(LibLinear,simple_set_train_L2R_LR_DUAL)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1008,6 +1029,7 @@ TEST(LibLinear,simple_set_train_L2R_LR_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -1054,6 +1076,7 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1099,6 +1122,7 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1144,6 +1168,7 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1189,6 +1214,7 @@ TEST(LibLinear,simple_set_train_L1R_L2LOSS_SVC_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1234,6 +1260,7 @@ TEST(LibLinear,simple_set_train_L1R_LR_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
@@ -1279,6 +1306,7 @@ TEST(LibLinear,simple_set_train_L2R_LR_DUAL_BIAS)
 	ll->train();
 
 	pred = ll->apply_binary(test_feats);
+	SG_REF(pred);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)

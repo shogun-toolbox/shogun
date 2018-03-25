@@ -6,10 +6,11 @@
  *          Chiyuan Zhang, Olivier NGuyen, Thoralf Klein
  */
 
-#include <shogun/labels/DenseLabels.h>
+#include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -149,3 +150,55 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+namespace shogun
+{
+	Some<CBinaryLabels> binary_from_binary(CBinaryLabels* orig)
+	{
+		return Some<CBinaryLabels>::from_raw(orig);
+	}
+
+	Some<CBinaryLabels> binary_from_dense(CDenseLabels* orig)
+	{
+		auto labels = orig->get_labels();
+		for (auto i : range(labels.vlen))
+		{
+			if (!CMath::fequals(labels[i], 1.0, 0.0) &&
+			    !CMath::fequals(labels[i], -1.0, 0.0))
+			{
+				SG_SERROR(
+				    "Label[%d] is %f, but must be either +1.0 or -1.0.\n", i,
+				    labels[i])
+			}
+		}
+		auto result = new CBinaryLabels();
+		result->set_labels(labels);
+		result->set_values(orig->get_values());
+		return Some<CBinaryLabels>::from_raw(result);
+	}
+
+	Some<CBinaryLabels> binary_labels(CLabels* orig)
+	{
+		REQUIRE(orig, "No labels provided.\n");
+		try
+		{
+			switch (orig->get_label_type())
+			{
+			case LT_BINARY:
+				return binary_from_binary(orig->as<CBinaryLabels>());
+			case LT_DENSE_GENERIC:
+				return binary_from_dense(orig->as<CDenseLabels>());
+			default:
+				SG_SNOTIMPLEMENTED
+			}
+		}
+		catch (const ShogunException& e)
+		{
+			SG_SERROR(
+			    "Cannot convert %s to binary labels: \n", e.what(),
+			    orig->get_name());
+		}
+
+		return Some<CBinaryLabels>::from_raw(nullptr);
+	}
+} // namespace shogun

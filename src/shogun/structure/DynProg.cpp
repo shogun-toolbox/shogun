@@ -1176,18 +1176,24 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					/* if the transition is an ORF or we do computation with loss, we have to disable long transitions */
 					if ((m_orf_info.element(ii,0)!=-1) || (m_orf_info.element(j,1)!=-1) || (!long_transitions))
 					{
-						look_back.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						//look_back_orig.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						if (CMath::ceil(penij->get_max_value()) > max_look_back)
-						{
+					    look_back.set_element(
+					        std::ceil(penij->get_max_value()), j, ii);
+					    //look_back_orig.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
+					    if (std::ceil(penij->get_max_value()) > max_look_back)
+					    {
 							SG_DEBUG("%d %d -> value: %f\n", ii,j,penij->get_max_value())
-							max_look_back = (int32_t) (CMath::ceil(penij->get_max_value()));
-						}
+						    max_look_back =
+						        (int32_t)(std::ceil(penij->get_max_value()));
+					    }
 					}
 					else
 					{
-						look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), m_long_transition_threshold ), j, ii) ;
-						//look_back_orig.set_element( (int32_t)CMath::ceil(penij->get_max_value()), j, ii) ;
+					    look_back.set_element(
+					        CMath::min(
+					            (int32_t)std::ceil(penij->get_max_value()),
+					            m_long_transition_threshold),
+					        j, ii);
+					    //look_back_orig.set_element( (int32_t)CMath::ceil(penij->get_max_value()), j, ii) ;
 					}
 
 					if (penij->uses_svm_values())

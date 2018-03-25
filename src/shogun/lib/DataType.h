@@ -9,9 +9,9 @@
 #ifndef __DATATYPE_H__
 #define __DATATYPE_H__
 
-#include <shogun/lib/config.h>
-
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
 
@@ -57,6 +57,12 @@ enum EPrimitiveType
 	PT_COMPLEX128=14,
 	PT_UNDEFINED=15
 };
+
+/** Returns string representation of primitive type
+ * @param pt primitive type
+ * @return string for primitive type
+ */
+std::string ptype_name(EPrimitiveType pt);
 #endif
 
 /** @brief Datatypes that shogun supports. */

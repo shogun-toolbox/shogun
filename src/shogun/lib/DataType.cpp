@@ -15,6 +15,33 @@
 
 using namespace shogun;
 
+namespace shogun
+{
+	std::string ptype_name(EPrimitiveType pt)
+	{
+		switch (pt)
+		{
+		case PT_BOOL:
+			return "BOOL";
+		case PT_CHAR:
+			return "CHAR";
+		case PT_INT32:
+			return "INT32";
+		case PT_INT64:
+			return "INT64";
+		case PT_FLOAT32:
+			return "FLOAT32";
+		case PT_FLOAT64:
+			return "FLOAT64";
+		case PT_SGOBJECT:
+			return "SGOBJECT";
+		default:
+			SG_SNOTIMPLEMENTED
+			return "UNKNOWN";
+		}
+	}
+}
+
 TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype)
 {
