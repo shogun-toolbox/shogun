@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Fernando Iglesias, 
- *          Christopher Goldsworthy, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Fernando Iglesias,
+ *          Christopher Goldsworthy, Heiko Strathmann, Yuyu Zhang,
  *          Chiyuan Zhang
  */
 
@@ -58,7 +58,7 @@ namespace shogun
          *
          * @param context optional message to convey the context
 		 */
-		virtual void ensure_valid(const char* context=NULL);
+		void ensure_valid(const char* context=NULL) override;
 
 		/** load labels from file
 		 *
@@ -253,18 +253,18 @@ namespace shogun
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		int32_t get_num_labels() const override;
 
 		/** get label type
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type() const override
+		ELabelType get_label_type() const override
 		{
 			return LT_DENSE_GENERIC;
 		}
 
-		virtual const char* get_name() const override
+		const char* get_name() const override
 		{
 			return "DenseLabels";
 		}
@@ -284,7 +284,7 @@ namespace shogun
 	/**
 	* Specialization of get_labels for float64_t
 	* @return labels, or a copy of them if a subset
-	* is set 
+	* is set
 	*/
 	template<> inline
 	SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
