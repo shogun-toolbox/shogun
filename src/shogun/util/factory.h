@@ -36,7 +36,7 @@ namespace shogun
 		return features;
 	}
 
-	CFeatures* features(CFile* file, EPrimitiveType primitive_type)
+	CFeatures* features(CFile* file, EPrimitiveType primitive_type = PT_FLOAT64)
 	{
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
@@ -78,7 +78,7 @@ namespace shogun
 		return result;
 	}
 
-	CFile* csv_file(std::string fname, char rw)
+	CFile* csv_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CCSVFile(fname.c_str(), rw);
 		SG_REF(result);
