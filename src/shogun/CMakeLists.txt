@@ -458,7 +458,7 @@ IF (CTAGS_FOUND)
     ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
         COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
         # classes, enums, functions
-        --c++-kinds=cgp
+        --c++-kinds=cfgp
         --fields=+im
         --exclude=*.cpp
         --languages=c++
