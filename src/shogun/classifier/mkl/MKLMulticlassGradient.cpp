@@ -404,7 +404,7 @@ finalbeta=oldweights;
 	for( int32_t p=0; p<num_kernels; ++p )
 		preR += CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
 
-	const float64_t R = CMath::sqrt( preR / pnorm ) * epsRegul;
+	const float64_t R = std::sqrt( preR / pnorm ) * epsRegul;
 	if( !( R >= 0 ) )
 	{
 		SG_PRINT("MKL-direct: p = %.3f\n", pnorm )
@@ -418,7 +418,7 @@ finalbeta=oldweights;
 		}
 		SG_PRINT("MKL-direct: preR = %e\n", preR )
 		SG_PRINT("MKL-direct: preR/p = %e\n", preR/pnorm )
-		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/pnorm) )
+		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", std::sqrt(preR/pnorm) )
 		SG_PRINT("MKL-direct: R = %e\n", R )
 		SG_ERROR("Assertion R >= 0 failed!\n" )
 	}

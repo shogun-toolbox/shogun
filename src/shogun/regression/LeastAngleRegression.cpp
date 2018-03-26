@@ -71,7 +71,7 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 	}
 	else
 	{
-		ST r = CMath::sqrt(x0*x0+x1*x1) ;
+		ST r = std::sqrt(x0*x0+x1*x1) ;
 		ST sx0 = x0 / r;
 		ST sx1 = x1 / r;
 
@@ -211,7 +211,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 				// R isn't allocated yet
 				R=SGMatrix<ST>(1,1);
 				ST diag_k = map_X.col(i_max_corr).dot(map_X.col(i_max_corr));
-				R(0,0) = CMath::sqrt( diag_k);
+				R(0,0) = std::sqrt( diag_k);
 			}
 			else
 				R=cholesky_insert(X, X_active, R, i_max_corr, m_num_active);
@@ -235,7 +235,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 
 		// AA = 1/sqrt(GA1' * corr_sign_a)
 		ST AA = GA1.dot(map_corr_sign_a);
-		AA = 1/CMath::sqrt( AA);
+		AA = 1/std::sqrt( AA);
 		
 		typename SGVector<ST>::EigenVectorXt wA = AA*GA1;
 
@@ -391,7 +391,7 @@ SGMatrix<ST> CLeastAngleRegression::cholesky_insert(const SGMatrix<ST>& X,
 
 	// R' * R_k = (X' * X)_k = col_k, solving to get R_k
 	map_R.transpose().template triangularView<Lower>().template solveInPlace<OnTheLeft>(R_k);
-	ST R_kk = CMath::sqrt(diag_k - R_k.dot(R_k));
+	ST R_kk = std::sqrt(diag_k - R_k.dot(R_k));
 
 	SGMatrix<ST> R_new(num_active+1, num_active+1);
 	typename SGMatrix<ST>::EigenMatrixXtMap map_R_new(R_new.matrix, R_new.num_rows, R_new.num_cols);

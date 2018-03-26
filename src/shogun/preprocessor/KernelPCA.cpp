@@ -107,7 +107,7 @@ bool CKernelPCA::init(CFeatures* features)
 			auto vec = eigenvectors.get_column(idx);
 			linalg::scale(
 			    vec, vec,
-			    1.0 / CMath::sqrt(CMath::max(1e-16, eigenvalues[idx])));
+			    1.0 / std::sqrt(CMath::max(1e-16, eigenvalues[idx])));
 			m_transformation_matrix.set_column(i, vec);
 		}
 

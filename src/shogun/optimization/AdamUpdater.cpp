@@ -130,7 +130,7 @@ float64_t AdamUpdater::get_negative_descend_direction(float64_t variable,
 	m_gradient_second_moment[idx]=scale_second_moment;
 
 	float64_t res = std::exp(m_log_scale_pre_iteration) * scale_first_moment /
-	                (CMath::sqrt(scale_second_moment) + m_epsilon);
+	                (std::sqrt(scale_second_moment) + m_epsilon);
 	return res;
 }
 

@@ -234,7 +234,7 @@ struct VarianceH1
 			}
 			auto var_est=compute_variance_estimate();
 			auto mmd_est=compute_mmd_job(kernel_functor);
-			result[k]=mmd_est/CMath::sqrt(var_est+m_lambda);
+			result[k]=mmd_est/std::sqrt(var_est+m_lambda);
 		}
 
 		free_terms();

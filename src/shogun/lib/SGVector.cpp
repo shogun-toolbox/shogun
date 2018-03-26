@@ -682,7 +682,7 @@ int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -692,7 +692,7 @@ uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -702,7 +702,7 @@ int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -712,7 +712,7 @@ uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -722,7 +722,7 @@ int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -732,7 +732,7 @@ uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -742,7 +742,7 @@ int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -752,7 +752,7 @@ uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -762,7 +762,7 @@ float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -772,7 +772,7 @@ float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 	return cblas_dnrm2(n, v, 1);
 #else
 	SGVector<float64_t> wrapper(const_cast<float64_t*>(v), n, false);
-	return CMath::sqrt(linalg::dot(wrapper, wrapper));
+	return std::sqrt(linalg::dot(wrapper, wrapper));
 #endif
 }
 
@@ -783,7 +783,7 @@ floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -793,7 +793,7 @@ complex128_t SGVector<complex128_t>::twonorm(const complex128_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <class T>

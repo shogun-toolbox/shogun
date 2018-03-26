@@ -84,7 +84,7 @@ float64_t AdaGradUpdater::get_negative_descend_direction(float64_t variable,
 	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen, "The index (%d) is invalid\n", idx);
 	float64_t scale=m_gradient_accuracy[idx]+gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
-	float64_t res=m_build_in_learning_rate*gradient/CMath::sqrt(scale+m_epsilon);
+	float64_t res=m_build_in_learning_rate*gradient/std::sqrt(scale+m_epsilon);
 	return res;
 }
 

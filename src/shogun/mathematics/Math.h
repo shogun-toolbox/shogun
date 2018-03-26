@@ -169,7 +169,7 @@ class CMath : public CSGObject
 		{
 			float64_t a_real=a.real();
 			float64_t a_imag=a.imag();
-			return (CMath::sqrt(a_real*a_real+a_imag*a_imag));
+			return (std::sqrt(a_real*a_real+a_imag*a_imag));
 		}
 		//@}
 
@@ -866,7 +866,7 @@ class CMath : public CSGObject
 
 			// the meat & potatos, and then the mean & standard deviation shifting...
 			ret = static_cast<float32_t>(
-			    rand_u * CMath::sqrt(-2.0 * std::log(rand_s) / rand_s));
+			    rand_u * std::sqrt(-2.0 * std::log(rand_s) / rand_s));
 			ret = std_dev*ret + mean;
 			return ret;
 		}

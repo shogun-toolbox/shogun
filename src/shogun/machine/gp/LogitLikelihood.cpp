@@ -88,7 +88,7 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0 / (CMath::sqrt(2 * CMath::PI) * m_sigma)) *
+		return (1.0 / (std::sqrt(2 * CMath::PI) * m_sigma)) *
 			   std::exp(-CMath::sq(x - m_mu) / (2.0 * CMath::sq(m_sigma)));
 	}
 
@@ -384,7 +384,7 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 	{
 		// set normal pdf parameters
 		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
+		f->set_sigma(std::sqrt(s2[i]));
 
 		// set sigmoid parameters
 		g->set_a(y[i]);
@@ -422,7 +422,7 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(x)
 	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
@@ -469,7 +469,7 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
 	// create an object of f(x)=N(x|mu,sigma^2)
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of g(x)=sigmoid(a*x)
 	CSigmoidFunction* g=new CSigmoidFunction(y[i]);

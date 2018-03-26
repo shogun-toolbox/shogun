@@ -206,7 +206,7 @@ class CWDSVMOcas : public CMachine
 			for (int32_t i=0; i<degree; i++)
 				normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
-			normalization_const=CMath::sqrt(normalization_const);
+			normalization_const=std::sqrt(normalization_const);
 			SG_DEBUG("normalization_const:%f\n", normalization_const)
 		}
 

@@ -174,7 +174,7 @@ protected:
 		if (m_dist==D_MANHATTAN)
 			return dists;
 
-		return CMath::sqrt(dists);
+		return std::sqrt(dists);
 	}
 
 	/** distance between 2 vectors

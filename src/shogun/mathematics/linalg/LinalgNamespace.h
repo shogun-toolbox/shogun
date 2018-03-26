@@ -1375,7 +1375,7 @@ namespace shogun
 		T norm(const SGVector<T>& a)
 		{
 			REQUIRE(a.size() > 0, "Vector cannot be empty!\n");
-			return CMath::sqrt(dot(a, a));
+			return std::sqrt(dot(a, a));
 		}
 
 		/**

@@ -73,7 +73,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 		sum+=weights[i];
 	}
 	for (i=0; i<degree; i++)
-		weights[i]=CMath::sqrt(weights[i]/sum);
+		weights[i]=std::sqrt(weights[i]/sum);
 
 	return weights!=NULL;
 }
@@ -85,7 +85,7 @@ bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 	SG_FREE(weights);
 	weights = w.vector;
 	for (int32_t i=0; i<degree; i++)
-		weights[i]=CMath::sqrt(weights[i]);
+		weights[i]=std::sqrt(weights[i]);
 	return true;
 }
 
