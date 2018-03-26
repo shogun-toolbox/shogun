@@ -18,13 +18,6 @@ namespace shogun
 
 	CKernel* kernel(const std::string& name);
 	CMachine* machine(const std::string& name);
-	CFeatures*
-	features(CFile* file, EPrimitiveType primitive_type = PT_FLOAT64);
-	template <class T>
-	CFeatures* features(SGMatrix<T> mat);
-	CLabels* labels(CFile* file);
-
-	CFile* csv_file(std::string fname, char rw = 'r');
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
