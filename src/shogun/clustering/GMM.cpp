@@ -397,8 +397,9 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	float64_t alpha1=coefficients.vector[1]/(coefficients.vector[1]+coefficients.vector[2]);
 	float64_t alpha2=coefficients.vector[2]/(coefficients.vector[1]+coefficients.vector[2]);
 
-	float64_t noise_mag=SGVector<float64_t>::twonorm(components[0]->get_mean().vector, dim_n)*0.1/
-						CMath::sqrt((float64_t)dim_n);
+	float64_t noise_mag =
+	    SGVector<float64_t>::twonorm(components[0]->get_mean().vector, dim_n) *
+	    0.1 / std::sqrt((float64_t)dim_n);
 
 	SGVector<float64_t> mean(dim_n);
 	linalg::add(components[1]->get_mean(), components[2]->get_mean(), mean, alpha1, alpha2);
@@ -823,4 +824,3 @@ void CGMM::register_params()
 	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
 	m_parameters->add(&m_coefficients, "m_coefficients", "Mixture coefficients.");
 }
-

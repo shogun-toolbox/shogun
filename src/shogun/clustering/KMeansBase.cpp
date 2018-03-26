@@ -126,7 +126,7 @@ void CKMeansBase::compute_cluster_variances()
 			}
 		}
 
-		R.vector[i]=(0.7*CMath::sqrt(rmin1)+0.3*CMath::sqrt(rmin2));
+		R.vector[i] = (0.7 * std::sqrt(rmin1) + 0.3 * std::sqrt(rmin2));
 	}
 }
 
@@ -364,4 +364,3 @@ void CKMeansBase::init()
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
 	SG_ADD(&R, "R", "Cluster radiuses", MS_NOT_AVAILABLE);
 }
-

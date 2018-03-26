@@ -74,11 +74,15 @@ void CHomogeneousKernelMap::init()
 			case HomogeneousKernelMapWindowUniform:
 				switch (m_kernel) {
 					case HomogeneousKernelChi2:
-						m_period = 5.86 * CMath::sqrt (static_cast<float64_t> (m_order))  + 3.65;
-						break;
+				        m_period =
+				            5.86 * std::sqrt(static_cast<float64_t>(m_order)) +
+				            3.65;
+				        break;
 					case HomogeneousKernelJS:
-						m_period = 6.64 * CMath::sqrt (static_cast<float64_t> (m_order))  + 7.24;
-						break;
+				        m_period =
+				            6.64 * std::sqrt(static_cast<float64_t>(m_order)) +
+				            7.24;
+				        break;
 					case HomogeneousKernelIntersection:
 				        m_period = 2.38 * std::log(m_order + 0.8) + 5.6;
 				        break;
@@ -88,10 +92,10 @@ void CHomogeneousKernelMap::init()
 			    switch (m_kernel)
 			    {
 			    case HomogeneousKernelChi2:
-				    m_period = 8.80 * CMath::sqrt(m_order + 4.44) - 12.6;
+				    m_period = 8.80 * std::sqrt(m_order + 4.44) - 12.6;
 				    break;
 			    case HomogeneousKernelJS:
-				    m_period = 9.63 * CMath::sqrt(m_order + 1.00) - 2.93;
+				    m_period = 9.63 * std::sqrt(m_order + 1.00) - 2.93;
 				    break;
 			    case HomogeneousKernelIntersection:
 				    m_period = 2.00 * std::log(m_order + 0.99) + 3.52;
@@ -146,9 +150,9 @@ void CHomogeneousKernelMap::init()
 			Lxgamma = L * xgamma;
 			Llogx = L * std::log(x);
 
-			*tablep++ = CMath::sqrt (Lxgamma * kappa[0]);
+			*tablep++ = std::sqrt(Lxgamma * kappa[0]);
 			for (j = 1 ; j <= m_order; ++j) {
-				sqrt2kappaLxgamma = CMath::sqrt (2.0 * Lxgamma * kappa[j]);
+				sqrt2kappaLxgamma = std::sqrt(2.0 * Lxgamma * kappa[j]);
 				*tablep++ = sqrt2kappaLxgamma * CMath::cos (freq[j] * Llogx);
 				*tablep++ = sqrt2kappaLxgamma * CMath::sin (freq[j] * Llogx);
 			}

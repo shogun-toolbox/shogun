@@ -197,8 +197,8 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 				continue;
 			}
 
-			transformMatrix.col(i) /=
-			CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
+			transformMatrix.col(i) /= std::sqrt(
+			    eigenValues[i + max_dim_allowed - num_dim] * (num_vectors - 1));
 		}
 	}
 }
@@ -270,7 +270,8 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 				continue;
 			}
 
-			transformMatrix.col(i) /= CMath::sqrt(eigenValues[i] * (num_vectors - 1));
+			transformMatrix.col(i) /=
+			    std::sqrt(eigenValues[i] * (num_vectors - 1));
 		}
 	}
 }

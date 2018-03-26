@@ -37,7 +37,7 @@ void test_ev()
 	SGMatrix<float64_t>::display_matrix(A.matrix, A.num_rows, A.num_cols, "A");
 	SGVector<float64_t>::display_vector(ev.vector, ev.vlen, "eigenvalues");
 
-	float64_t sqrt22=CMath::sqrt(2.0)/2.0;
+	float64_t sqrt22 = std::sqrt(2.0) / 2.0;
 	float64_t eps=10E-16;
 
 	/* check for correct eigenvectors */
@@ -204,5 +204,3 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-
-
