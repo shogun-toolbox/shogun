@@ -1479,7 +1479,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 			rho+=zero_counts[i];
 
 		normwcw[i]+=normwc_const/CMath::sq(nr_class);
-		normwcw[i]=std::sqrt(normwcw[i]);
+		normwcw[i] = std::sqrt(normwcw[i]);
 	}
 
 	SGVector<float64_t>::display_vector(normwcw, nr_class, "normwcw");

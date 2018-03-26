@@ -680,7 +680,7 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
 	CStudentsTPDF* g =
@@ -727,7 +727,7 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
 	CStudentsTPDF* g =

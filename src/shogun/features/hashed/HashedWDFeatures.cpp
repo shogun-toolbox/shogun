@@ -262,7 +262,7 @@ void CHashedWDFeatures::set_normalization_const(float64_t n)
 		for (int32_t i=0; i<degree; i++)
 			normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
-		normalization_const=std::sqrt(normalization_const);
+		normalization_const = std::sqrt(normalization_const);
 	}
 	else
 		normalization_const=n;

@@ -161,7 +161,9 @@ public:
 		if (!m_computed)
 				SG_ERROR("Uninitialized, please call evaluate first")
 
-		return (m_TP*m_TN-m_FP*m_FN)/std::sqrt((m_TP+m_FP)*(m_TP+m_FN)*(m_TN+m_FP)*(m_TN+m_FN));
+		return (m_TP * m_TN - m_FP * m_FN) / std::sqrt(
+			                                     (m_TP + m_FP) * (m_TP + m_FN) *
+			                                     (m_TN + m_FP) * (m_TN + m_FN));
 	};
 
 	/** recall

@@ -1178,14 +1178,15 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 					    look_back.set_element(
 					        std::ceil(penij->get_max_value()), j, ii);
-					    //look_back_orig.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
+					    // look_back_orig.set_element(CMath::ceil(penij->get_max_value()),
+					    // j, ii) ;
 					    if (std::ceil(penij->get_max_value()) > max_look_back)
 					    {
-							SG_DEBUG("%d %d -> value: %f\n", ii,j,penij->get_max_value())
+						    SG_DEBUG("%d %d -> value: %f\n", ii,j,penij->get_max_value())
 						    max_look_back =
 						        (int32_t)(std::ceil(penij->get_max_value()));
 					    }
-					}
+				    }
 					else
 					{
 					    look_back.set_element(
@@ -1193,8 +1194,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					            (int32_t)std::ceil(penij->get_max_value()),
 					            m_long_transition_threshold),
 					        j, ii);
-					    //look_back_orig.set_element( (int32_t)CMath::ceil(penij->get_max_value()), j, ii) ;
-					}
+					    // look_back_orig.set_element(
+					    // (int32_t)CMath::ceil(penij->get_max_value()), j, ii)
+					    // ;
+				    }
 
 					if (penij->uses_svm_values())
 						use_svm=true ;

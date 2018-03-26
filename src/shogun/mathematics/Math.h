@@ -169,7 +169,7 @@ class CMath : public CSGObject
 		{
 			float64_t a_real=a.real();
 			float64_t a_imag=a.imag();
-			return (std::sqrt(a_real*a_real+a_imag*a_imag));
+			return (std::sqrt(a_real * a_real + a_imag * a_imag));
 		}
 		//@}
 

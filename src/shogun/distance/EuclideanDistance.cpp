@@ -169,7 +169,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	}
 
 	if (!disable_sqrt)
-		result=std::sqrt(result);
+		result = std::sqrt(result);
 
 	return result;
 }

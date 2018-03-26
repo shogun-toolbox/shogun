@@ -47,8 +47,8 @@ protected:
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)
             dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * CMath::abs(code[i]);
-        return std::sqrt(dist);
-    }
+		return std::sqrt(dist);
+	}
 };
 
 } /* shogun */

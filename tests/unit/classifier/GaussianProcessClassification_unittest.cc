@@ -2011,7 +2011,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
-	const float64_t scale=std::sqrt(497.3965463400368);
+	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
@@ -2155,7 +2155,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
-	const float64_t scale=std::sqrt(497.3965463400368);
+	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
@@ -2267,7 +2267,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
-	const float64_t scale=std::sqrt(5.114014937226176);
+	const float64_t scale = std::sqrt(5.114014937226176);
 	inf->set_scale(scale);
 
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
