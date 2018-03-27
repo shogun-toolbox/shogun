@@ -1743,9 +1743,6 @@ class CMath : public CSGObject
 		}
 #endif
 
-		/// checks whether a float is finite
-		static int is_finite(double f);
-
 		/// checks whether a float is infinity
 		static int is_infinity(double f);
 
@@ -1766,10 +1763,10 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!CMath::is_finite(p))
+			if (!std::isfinite(p))
 				return q;
 
-			if (!CMath::is_finite(q))
+			if (!std::isfinite(q))
 			{
 				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q)
 				return NOT_A_NUMBER;
@@ -1794,9 +1791,9 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!CMath::is_finite(p))
+			if (!std::isfinite(p))
 				return q;
-			if (!CMath::is_finite(q))
+			if (!std::isfinite(q))
 				return p;
 			diff = p - q;
 			if (diff > 0)

@@ -1061,7 +1061,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							if (seq_input!=NULL)
 							{
 								// just one plif
-								if (CMath::is_finite(seq_input->element(i,j,k)))
+								if (std::isfinite(seq_input->element(i,j,k)))
 									seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 								else
 									// keep infinity values
@@ -1072,7 +1072,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								if (k==0)
 								{
 									// just one plif
-									if (CMath::is_finite(m_seq_sparse1->get_feature(i,j)))
+									if (std::isfinite(m_seq_sparse1->get_feature(i,j)))
 										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
@@ -1081,7 +1081,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								if (k==1)
 								{
 									// just one plif
-									if (CMath::is_finite(m_seq_sparse2->get_feature(i,j)))
+									if (std::isfinite(m_seq_sparse2->get_feature(i,j)))
 										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values

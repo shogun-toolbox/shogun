@@ -221,11 +221,6 @@ int CMath::is_infinity(double f)
   return std::isinf(f);
 }
 
-int CMath::is_finite(double f)
-{
-  return std::isfinite(f);
-}
-
 bool CMath::strtof(const char* str, float32_t* float_result)
 {
 	ASSERT(str);
@@ -330,7 +325,7 @@ float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance
 {
 	REQUIRE(rel_tolerance > 0 && rel_tolerance < 1.0,
 		"Relative tolerance (%f) should be less than 1.0 and positive\n", rel_tolerance);
-	REQUIRE(is_finite(true_value),
+	REQUIRE(std::isfinite(true_value),
 		"The true_value should be finite\n");
 	float64_t abs_tolerance = rel_tolerance;
 	if (abs(true_value)>0.0)
