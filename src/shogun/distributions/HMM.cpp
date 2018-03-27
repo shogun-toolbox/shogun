@@ -3988,7 +3988,7 @@ bool CHMM::save_model(FILE* file)
 		for (i=0; i<N; i++)
 		{
 			if (i<N-1) {
-				if (CMath::is_finite(get_p(i)))
+				if (std::isfinite(get_p(i)))
 					fprintf(file, "%e,", (double)get_p(i));
 				else
 					fprintf(file, "%f,", NAN_REPLACEMENT);
