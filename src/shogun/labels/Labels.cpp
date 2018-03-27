@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Weijie Lin, Thoralf Klein, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Weijie Lin, Thoralf Klein,
  *          Leon Kuchenbecker
  */
 
@@ -16,6 +16,13 @@ using namespace shogun;
 
 CLabels::CLabels()
 	: CSGObject()
+{
+	init();
+}
+
+CLabels::CLabels(const CLabels& orig)
+	: CSGObject(orig),
+	m_current_values(orig.m_current_values)
 {
 	init();
 }

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
- *          Saurabh Mahindre, Fernando Iglesias, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
+ *          Saurabh Mahindre, Fernando Iglesias, Evgeniy Andreev, Yuyu Zhang,
  *          Chiyuan Zhang, Thoralf Klein
  */
 
@@ -73,6 +73,12 @@ public:
 	 * @param loader File object via which to load data
 	 */
 	CBinaryLabels(CFile * loader);
+
+	/** Cast constructor
+	 *
+	 * @param dense CDenseLabels containing the binary labels
+	 */
+	CBinaryLabels(const CDenseLabels& dense);
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
