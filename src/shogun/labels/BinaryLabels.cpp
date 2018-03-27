@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Saurabh Mahindre, Sergey Lisitsyn, 
- *          Soeren Sonnenburg, Fernando Iglesias, Evgeniy Andreev, 
+ * Authors: Heiko Strathmann, Saurabh Mahindre, Sergey Lisitsyn,
+ *          Soeren Sonnenburg, Fernando Iglesias, Evgeniy Andreev,
  *          Chiyuan Zhang, Olivier NGuyen, Thoralf Klein
  */
 
@@ -151,32 +151,14 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
+CBinaryLabels::CBinaryLabels(const CDenseLabels& dense):
+	CDenseLabels(dense)
+{
+	ensure_valid();
+}
+
 namespace shogun
 {
-	Some<CBinaryLabels> binary_from_binary(CBinaryLabels* orig)
-	{
-		return Some<CBinaryLabels>::from_raw(orig);
-	}
-
-	Some<CBinaryLabels> binary_from_dense(CDenseLabels* orig)
-	{
-		auto labels = orig->get_labels();
-		for (auto i : range(labels.vlen))
-		{
-			if (!CMath::fequals(labels[i], 1.0, 0.0) &&
-			    !CMath::fequals(labels[i], -1.0, 0.0))
-			{
-				SG_SERROR(
-				    "Label[%d] is %f, but must be either +1.0 or -1.0.\n", i,
-				    labels[i])
-			}
-		}
-		auto result = new CBinaryLabels();
-		result->set_labels(labels);
-		result->set_values(orig->get_values());
-		return Some<CBinaryLabels>::from_raw(result);
-	}
-
 	Some<CBinaryLabels> binary_labels(CLabels* orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
@@ -185,9 +167,11 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_BINARY:
-				return binary_from_binary(orig->as<CBinaryLabels>());
+				return Some<CBinaryLabels>::from_raw(orig->as<CBinaryLabels>());
 			case LT_DENSE_GENERIC:
-				return binary_from_dense(orig->as<CDenseLabels>());
+			{
+				return some<CBinaryLabels>(*(orig->as<CDenseLabels>()));
+			}
 			default:
 				SG_SNOTIMPLEMENTED
 			}
@@ -195,8 +179,8 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_SERROR(
-			    "Cannot convert %s to binary labels: \n", e.what(),
-			    orig->get_name());
+			    "Cannot convert %s to binary labels: %s\n",
+			    orig->get_name(), e.what());
 		}
 
 		return Some<CBinaryLabels>::from_raw(nullptr);

@@ -115,8 +115,6 @@ TEST_F(BinaryLabels, binary_labels_from_dense)
 	labels->set_labels(labels_binary);
 
 	auto labels2 = binary_labels(labels);
-	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2, nullptr);
-	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
-	EXPECT_EQ(labels->get_values(), labels2->get_values());
+	EXPECT_EQ(probabilities.size(), labels2->get_num_labels());
+	EXPECT_EQ(probabilities, labels2->get_values());
 }

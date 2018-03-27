@@ -43,6 +43,12 @@ namespace shogun
 		 */
 		CDenseLabels(int32_t num_labels);
 
+		/** copy constructor
+		 *
+		 * @param orig The dense labels to copy
+		 */
+		CDenseLabels(const CDenseLabels& orig);
+
 		/** constructor
 		 *
 		 * @param loader File object via which to load data

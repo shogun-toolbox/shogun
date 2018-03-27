@@ -189,12 +189,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 
 namespace shogun
 {
-	Some<CMulticlassLabels> multiclass_from_multiclass(CMulticlassLabels* orig)
-	{
-		return Some<CMulticlassLabels>::from_raw(orig);
-	}
-
-	Some<CMulticlassLabels> multiclass_from_dense(CDenseLabels* orig)
+	SG_FORCED_INLINE Some<CMulticlassLabels> to_multiclass(CDenseLabels* orig)
 	{
 		auto int_labels = orig->get_int_labels();
 		std::set<int32_t> unique(int_labels.begin(), int_labels.end());
@@ -209,10 +204,7 @@ namespace shogun
 		    "Multiclass labels must be contiguous integers in [0, ..., "
 		    "num_classes -1].\n");
 
-		auto labels = orig->get_labels();
-		auto result = new CMulticlassLabels(labels);
-
-		return Some<CMulticlassLabels>::from_raw(result);
+		return some<CMulticlassLabels>(orig->get_labels());
 	}
 
 	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
@@ -223,10 +215,9 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_MULTICLASS:
-				return multiclass_from_multiclass(
-				    orig->as<CMulticlassLabels>());
+				return Some<CMulticlassLabels>::from_raw(orig->as<CMulticlassLabels>());
 			case LT_DENSE_GENERIC:
-				return multiclass_from_dense(orig->as<CDenseLabels>());
+				return to_multiclass(orig->as<CDenseLabels>());
 			default:
 				SG_SNOTIMPLEMENTED
 			}
@@ -234,8 +225,8 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_SERROR(
-			    "Cannot convert %s to multiclass labels: \n", e.what(),
-			    orig->get_name());
+			    "Cannot convert %s to multiclass labels: %s\n",
+			    orig->get_name(), e.what());
 		}
 
 		return Some<CMulticlassLabels>::from_raw(nullptr);

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre, 
- *          Sergey Lisitsyn, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre,
+ *          Sergey Lisitsyn, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang,
  *          Thoralf Klein, Fernando Iglesias, Leon Kuchenbecker
  */
 
@@ -51,6 +51,9 @@ namespace shogun
 	public:
 		/** default constructor */
 		CLabels();
+
+		/** copy constructor */
+		CLabels(const CLabels& orig);
 
 		/** destructor */
 		virtual ~CLabels();

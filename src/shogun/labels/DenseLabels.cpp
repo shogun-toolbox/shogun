@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
  *          Fernando Iglesias, Michele Mazzoni, Chiyuan Zhang
  */
 
@@ -31,6 +31,14 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	linalg::zero(m_labels);
 	linalg::zero(m_current_values);
 }
+
+CDenseLabels::CDenseLabels(const CDenseLabels& orig):
+	CLabels(orig),
+	m_labels(orig.m_labels)
+{
+	init();
+}
+
 
 CDenseLabels::CDenseLabels(CFile* loader)
 : CLabels()
