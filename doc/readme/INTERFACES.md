@@ -3,7 +3,7 @@ Running Shogun from the interfaces
 
 We assume that installation (including the interfaces) was successful and all dependencies are installed. See [INSTALL.md](INSTALL.md) and our website.
 
-Note that setting some the enviromental variables should not be necessary in case you installed Shogun to the default folder or installed it from a binary package.
+Note that setting some of the environmental variables should not be necessary in case you installed Shogun to the default folder or installed it from a binary package.
 
 ## The shared library
 All interfaces require the Shogun library to be visible to your system.
@@ -16,14 +16,14 @@ On MacOS
 
     export DYLD_LIBRARY_PATH="path/to/libshogun.dylib:$DYLD_LIBRARY_PATH"
 
-Note that the `libshogun.*` was either copied to `path/to/shogun-install/lib/` when running `make install`.
+Note that `libshogun.*` was copied to `path/to/shogun-install/lib/` when running `make install`.
 You can also make it point to the build directory `path/to/build/src/shogun/` to make it available after a successful `make`.
 All subsequent settings can be set to the build dir or the installation dir.
 
 ## Interfaces
 
 We now describe how to run code that uses Shogun in all interfaces.
-For language specific defails how to import and use Shogun in all interfaces, see the examples on our website.
+For language specific defails on how to import and use Shogun in all interfaces, see the examples on our website.
 
 ### Native C++
 Make sure you read up on how to compile C/C++ code.
