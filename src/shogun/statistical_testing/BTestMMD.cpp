@@ -94,12 +94,12 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 		    float64_t std_dev = std::sqrt(sigma_sq);
 		    result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
 		    break;
-		}
-		default:
-		{
-			result=CHypothesisTest::compute_p_value(statistic);
-			break;
-		}
+	    }
+	    default:
+	    {
+		    result = CHypothesisTest::compute_p_value(statistic);
+		    break;
+	    }
 	}
 	return result;
 }
@@ -116,12 +116,12 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 		    result =
 		        1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
 		    break;
-		}
-		default:
-		{
-			result=CHypothesisTest::compute_threshold(alpha);
-			break;
-		}
+	    }
+	    default:
+	    {
+		    result = CHypothesisTest::compute_threshold(alpha);
+		    break;
+	    }
 	}
 	return result;
 }
