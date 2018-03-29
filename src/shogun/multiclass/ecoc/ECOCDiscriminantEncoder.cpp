@@ -198,7 +198,7 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, 
 		MI += std::sqrt(MI_i);
 	}
 
-    return MI;
+	return MI;
 }
 
 void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,

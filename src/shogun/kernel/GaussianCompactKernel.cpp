@@ -32,8 +32,8 @@ float64_t CGaussianCompactKernel::compute(int32_t idx_a, int32_t idx_b)
     float64_t result=distance(idx_a,idx_b);
 	float64_t result_multiplier = 1 - (std::sqrt(result)) / 3;
 
-	if(result_multiplier<=0)
-        return 0;
+	if (result_multiplier <= 0)
+		return 0;
 
 	return CMath::pow(result_multiplier, power) * std::exp(-result);
 }

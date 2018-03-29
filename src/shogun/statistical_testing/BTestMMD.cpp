@@ -92,8 +92,8 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 		{
 			float64_t sigma_sq=compute_variance();
 		    float64_t std_dev = std::sqrt(sigma_sq);
-		    result=1.0-CStatistics::normal_cdf(statistic, std_dev);
-			break;
+		    result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		    break;
 		}
 		default:
 		{
@@ -113,8 +113,9 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 		{
 			float64_t sigma_sq=compute_variance();
 		    float64_t std_dev = std::sqrt(sigma_sq);
-		    result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
-			break;
+		    result =
+		        1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		    break;
 		}
 		default:
 		{

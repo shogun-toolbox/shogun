@@ -78,12 +78,12 @@ void CHomogeneousKernelMap::init()
 				            5.86 * std::sqrt(static_cast<float64_t>(m_order)) +
 				            3.65;
 				        break;
-					case HomogeneousKernelJS:
+			        case HomogeneousKernelJS:
 				        m_period =
 				            6.64 * std::sqrt(static_cast<float64_t>(m_order)) +
 				            7.24;
 				        break;
-					case HomogeneousKernelIntersection:
+			        case HomogeneousKernelIntersection:
 				        m_period = 2.38 * std::log(m_order + 0.8) + 5.6;
 				        break;
 			        }

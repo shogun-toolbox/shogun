@@ -386,12 +386,15 @@ int32_t lbfgs(
        Make sure that the initial variables are not a minimizer.
      */
 	xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
-	if (param.orthantwise_c == 0.) {
+	if (param.orthantwise_c == 0.)
+	{
 		gnorm = std::sqrt(linalg::dot(g, g));
-	} else {
+	}
+	else
+	{
 		gnorm = std::sqrt(linalg::dot(pg, pg));
 	}
-    if (xnorm < 1.0) xnorm = 1.0;
+	if (xnorm < 1.0) xnorm = 1.0;
     if (gnorm / xnorm <= param.epsilon) {
         ret = LBFGS_ALREADY_MINIMIZED;
         goto lbfgs_exit;
@@ -403,7 +406,7 @@ int32_t lbfgs(
 	step = 1.0 / std::sqrt(linalg::dot(d, d));
 
 	k = 1;
-    end = 0;
+	end = 0;
     for (;;) {
         /* Store the current position and gradient vectors. */
         sg_memcpy(xp.vector, x, n*sizeof(float64_t));
@@ -434,13 +437,16 @@ int32_t lbfgs(
 
         /* Compute x and g norms. */
 		xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
-		if (param.orthantwise_c == 0.) {
+		if (param.orthantwise_c == 0.)
+		{
 			gnorm = std::sqrt(linalg::dot(g, g));
-		} else {
+		}
+		else
+		{
 			gnorm = std::sqrt(linalg::dot(pg, pg));
 		}
 
-        /* Report the progress. */
+		/* Report the progress. */
         if (cd.proc_progress) {
             if ((ret = cd.proc_progress(cd.instance, x, g, fx, xnorm, gnorm, step, cd.n, k, ls))) {
                 goto lbfgs_exit;
