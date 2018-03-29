@@ -124,6 +124,11 @@ SGMatrix<float64_t> Nystrom::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>&
 	return G_mm;
 }
 
+bool Nystrom::can_subsample_G_mm_from_G_mn() const
+{
+	return basis_is_subsampled_data();
+}
+
 SGMatrix<float64_t> Nystrom::compute_G_mn() const
 {
 	auto G_mn = m_kernel->dx_dy_all();
@@ -215,7 +220,7 @@ SGMatrix<float64_t> Nystrom::compute_system_matrix() const
 	if (m_lambda>0)
 	{
 		SGMatrix<float64_t> G_mm;
-		if (basis_is_subsampled_data())
+		if (can_subsample_G_mm_from_G_mn())
 		{
 			SG_SINFO("Sub-sampling kernel Hessians for basis.\n");
 			G_mm = subsample_G_mm_from_G_mn(G_mn);
