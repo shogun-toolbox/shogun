@@ -221,15 +221,15 @@ CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 include(external/StanMath)
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
-  $<INSTALL_INTERFACE:include/shogun/lib/external/stan1>
+  $<INSTALL_INTERFACE:include/shogun/lib/external/Stan>
 )
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
-  $<INSTALL_INTERFACE:include/shogun/lib/external/stan2>
+  $<INSTALL_INTERFACE:include/shogun/lib/external/Stan_Boost>
 )
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_CVODES}>
-  $<INSTALL_INTERFACE:include/shogun/lib/external/stan3>
+  $<INSTALL_INTERFACE:include/shogun/lib/external/Stan_Cvodes>
 )
 
 ####### LINALG
