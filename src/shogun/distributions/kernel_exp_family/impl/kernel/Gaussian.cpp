@@ -299,31 +299,9 @@ SGVector<float64_t> Gaussian::dx_dx(index_t idx_a, index_t idx_b) const
 	return result;
 }
 
-SGMatrix<float64_t> Gaussian::dx_dy_all() const
+SGVector<float64_t> Gaussian::dy_dy(index_t idx_a, index_t idx_b) const
 {
-	auto D = get_num_dimensions();
-	auto N_lhs = get_num_lhs();
-	auto N_rhs = get_num_rhs();
-	auto ND_lhs = N_lhs*D;
-	auto ND_rhs = N_rhs*D;
-
-	SGMatrix<float64_t> result(ND_lhs,ND_rhs);
-	Map<MatrixXd> eigen_result(result.matrix, ND_lhs,ND_rhs);
-
-	// TODO exploit symmetry computation
-	// TODO exploit symmetry in storage (Shognu lib?)
-	// TODO the assignment in matrix is not sequentially in memory, does it matter?
-#pragma omp parallel for
-	for (auto idx_a=0; idx_a<N_lhs; idx_a++)
-		for (auto idx_b=0; idx_b<N_rhs; idx_b++)
-		{
-			auto row_start = idx_a*D;
-			auto col_start = idx_b*D;
-			SGMatrix<float64_t> h=dx_dy(idx_a, idx_b);
-			eigen_result.block(row_start, col_start, D, D) = Map<MatrixXd>(h.matrix, D, D);
-		}
-
-	return result;
+	return dx_dx(idx_a, idx_b);
 }
 
 SGVector<float64_t> Gaussian::dx(index_t idx_a, index_t idx_b) const
@@ -341,6 +319,16 @@ SGVector<float64_t> Gaussian::dx(index_t idx_a, index_t idx_b) const
 	eigen_gradient = 2*k*eigen_diff/m_sigma;
 	return gradient;
 }
+
+SGVector<float64_t> Gaussian::dy(index_t idx_a, index_t idx_b) const
+{
+	auto D = get_num_dimensions();
+	auto res = dx(idx_a, idx_b);
+	auto eigen_res = Map<VectorXd>(res.vector, D);
+	eigen_res *= -1;
+	return res;
+}
+
 
 SGMatrix<float64_t> Gaussian::dx_i_dx_j_dx_k_dot_vec(index_t idx_a, index_t idx_b, const SGVector<float64_t>& vec) const
 {

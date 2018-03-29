@@ -76,6 +76,103 @@ index_t Base::get_num_rhs() const
 	return m_rhs.num_cols;
 }
 
+SGMatrix<float64_t> Base::kernel_all() const
+{
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+
+    SGMatrix<float64_t> result(N_lhs, N_rhs);
+
+#pragma omp parallel for
+    for (auto idx_a = 0; idx_a < N_lhs; ++idx_a) {
+        for (auto idx_b = 0; idx_b < N_rhs; ++idx_b) {
+            result.set_element(this->kernel(idx_a, idx_b), idx_a, idx_b);
+        }
+    }
+
+    return result;
+}
+
+SGMatrix<float64_t> Base::dx_all() const
+{
+    auto D = get_num_dimensions();
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+    auto ND_lhs = N_lhs*D;
+
+    SGMatrix<float64_t> result(ND_lhs, N_rhs);
+    Map<MatrixXd> eigen_result(result.matrix, ND_lhs, N_rhs);
+
+    // TODO exploit symmetry computation
+    // TODO exploit symmetry in storage (Shognu lib?)
+    // TODO the assignment in matrix is not sequentially in memory, does it matter?
+#pragma omp parallel for
+    for (auto idx_a=0; idx_a<N_lhs; idx_a++)
+        for (auto idx_b=0; idx_b<N_rhs; idx_b++)
+        {
+            auto row_start = idx_a*D;
+            auto col_start = idx_b;
+            SGVector<float64_t> h = dx(idx_a, idx_b);
+            eigen_result.block(row_start, col_start, D, 1) = Map<MatrixXd>(h.vector, D, 1);
+        }
+
+    return result;
+}
+
+SGMatrix<float64_t> Base::dy_all() const
+{
+    auto D = get_num_dimensions();
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+    auto ND_rhs = N_rhs*D;
+
+    SGMatrix<float64_t> result(N_lhs, ND_rhs);
+    Map<MatrixXd> eigen_result(result.matrix, N_lhs, ND_rhs);
+
+    // TODO exploit symmetry computation
+    // TODO exploit symmetry in storage (Shognu lib?)
+    // TODO the assignment in matrix is not sequentially in memory, does it matter?
+#pragma omp parallel for
+    for (auto idx_a=0; idx_a<N_lhs; idx_a++)
+        for (auto idx_b=0; idx_b<N_rhs; idx_b++)
+        {
+            auto row_start = idx_a;
+            auto col_start = idx_b*D;
+            SGVector<float64_t> h = dy(idx_a, idx_b);
+            eigen_result.block(row_start, col_start, 1, D) = Map<MatrixXd>(h.vector, 1, D);
+        }
+
+    return result;
+}
+
+SGMatrix<float64_t> Base::dx_dy_all() const
+{
+    auto D = get_num_dimensions();
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+    auto ND_lhs = N_lhs*D;
+    auto ND_rhs = N_rhs*D;
+
+    SGMatrix<float64_t> result(ND_lhs,ND_rhs);
+    Map<MatrixXd> eigen_result(result.matrix, ND_lhs,ND_rhs);
+
+    // TODO exploit symmetry computation
+    // TODO exploit symmetry in storage (Shognu lib?)
+    // TODO the assignment in matrix is not sequentially in memory, does it matter?
+#pragma omp parallel for
+    for (auto idx_a=0; idx_a<N_lhs; idx_a++)
+        for (auto idx_b=0; idx_b<N_rhs; idx_b++)
+        {
+            auto row_start = idx_a*D;
+            auto col_start = idx_b*D;
+            SGMatrix<float64_t> h=dx_dy(idx_a, idx_b);
+            eigen_result.block(row_start, col_start, D, D) = Map<MatrixXd>(h.matrix, D, D);
+        }
+
+    return result;
+}
+
+
 Base::Base()
 {
 }

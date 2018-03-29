@@ -65,17 +65,27 @@ public :
 	index_t get_num_rhs() const;
 
 	virtual float64_t kernel(index_t idx_a, index_t idx_b) const=0;
+	virtual SGMatrix<float64_t> kernel_all() const;
+
 	virtual SGMatrix<float64_t> dx_dy_dy(index_t idx_a, index_t idx_b) const=0;
 	virtual float64_t dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const=0;
+
 	virtual SGMatrix<float64_t> dx_dy(index_t idx_a, index_t idx_b) const=0;
-	virtual SGMatrix<float64_t> dx_dy_all() const=0;
+	virtual SGMatrix<float64_t> dx_dy_all() const;
 
 	virtual SGVector<float64_t> dx(index_t a, index_t idx_b) const=0;
+	virtual SGMatrix<float64_t> dx_all() const;
+
+	virtual SGVector<float64_t> dy(index_t a, index_t idx_b) const=0;
+	virtual SGMatrix<float64_t> dy_all() const;
+
 	virtual SGVector<float64_t> dx_dx(index_t a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_i_dx_i_dx_j(index_t a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_i_dx_j(index_t a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_i_dx_j_dx_k_dot_vec(index_t idx_a, index_t idx_b, const SGVector<float64_t>& vec) const=0;
 	virtual SGMatrix<float64_t> dx_i_dx_j_dx_k_dx_k_row_sum(index_t idx_a, index_t idx_b) const=0;
+
+	virtual SGVector<float64_t> dy_dy(index_t a, index_t idx_b) const=0;
 
 	// old develop code
 	virtual SGMatrix<float64_t> dx_dx_dy_dy(index_t idx_a, index_t idx_b) const=0;

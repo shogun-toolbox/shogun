@@ -64,9 +64,10 @@ public :
 	virtual SGMatrix<float64_t> dx_dy_dy(index_t idx_a, index_t idx_b) const;
 	virtual float64_t dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_dy(index_t idx_a, index_t idx_b) const;
-	virtual SGMatrix<float64_t> dx_dy_all() const;
 	virtual SGVector<float64_t> dx(index_t a, index_t idx_b) const;
+	virtual SGVector<float64_t> dy(index_t a, index_t idx_b) const;
 	virtual SGVector<float64_t> dx_dx(index_t a, index_t idx_b) const;
+	virtual SGVector<float64_t> dy_dy(index_t a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_i_dx_i_dx_j(index_t a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_i_dx_j(index_t a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_dx_dy_dy(index_t idx_a, index_t idx_b) const;
