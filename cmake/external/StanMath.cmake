@@ -1,9 +1,12 @@
+set(STAN_STABLE_RELEASE 4b1a10bc877d941bbe0a12c198526807be27167a)
+
 include(ExternalProject)
 ExternalProject_Add(
 	StanMath
 	PREFIX ${CMAKE_BINARY_DIR}/StanMath
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/StanMath
 	GIT_REPOSITORY https://github.com/stan-dev/math
+	GIT_TAG ${STAN_STABLE_RELEASE}
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ""
 	INSTALL_COMMAND ""
