@@ -72,6 +72,8 @@ public :
 	virtual SGMatrix<float64_t> compute_G_mm() const;
 	virtual SGVector<float64_t> compute_h() const;
 
+	virtual float64_t log_pdf(index_t idx_test) const;
+
 protected:
 
 	float64_t m_lambda_l2;

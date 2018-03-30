@@ -127,3 +127,16 @@ SGVector<float64_t> Lite::compute_h() const
 
 	return h;
 }
+
+
+float64_t Lite::log_pdf(index_t idx_test) const
+{
+	auto N_basis = get_num_basis();
+
+	float64_t beta_sum = 0;
+	for (auto idx = 0; idx < N_basis; ++idx)
+	{
+		beta_sum += m_beta[idx] * m_kernel->kernel(idx, idx_test);
+	}
+	return beta_sum;
+}
