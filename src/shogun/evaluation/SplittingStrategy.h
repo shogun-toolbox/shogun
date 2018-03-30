@@ -59,7 +59,7 @@ public:
 	 * @return newly created vector of subset indices of the specified
 	 * subset is written here.
 	 */
-	const SGVector<index_t> validation(const index_t subset_idx) const;
+	const SGVector<index_t> validation(index_t subset_idx) const;
 
 	/** generates a newly created SGVector<index_t> with inverse indices of the
 	 * subset with the desired index. inverse here means all other indices.
@@ -68,7 +68,7 @@ public:
 	 * @return newly created vector of the subset's inverse indices is
 	 * written here.
 	 */
-	const SGVector<index_t> train(const index_t subset_idx) const;
+	const SGVector<index_t> train(index_t subset_idx) const;
 
 	/** @return number of subsets. */
 	index_t get_num_subsets() const;

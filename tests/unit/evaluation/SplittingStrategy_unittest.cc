@@ -306,9 +306,7 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 			labels->set_label(i, CMath::random(-10.0, 10.0));
 
 		CTimeSeriesSplitting* splitting =
-		    new CTimeSeriesSplitting(labels, num_subsets);
-
-		splitting->set_min_subset_size(min_subset_size);
+		    new CTimeSeriesSplitting(labels, num_subsets, min_subset_size);
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
@@ -344,9 +342,7 @@ TEST(SplittingStrategy, timeseries_subsets_future_leak)
 			labels->set_label(i, CMath::random(-10.0, 10.0));
 
 		CTimeSeriesSplitting* splitting =
-		    new CTimeSeriesSplitting(labels, num_subsets);
-
-		splitting->set_min_subset_size(min_subset_size);
+		    new CTimeSeriesSplitting(labels, num_subsets, min_subset_size);
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{

@@ -64,14 +64,10 @@ namespace shogun
 		 * @param labels labels to be (possibly) used for splitting
 		 * @param num_subsets desired number of subsets, the labels are split
 		 * into
+		 * @param min_subset_size the minimum subset size for test set
 		 */
-		CTimeSeriesSplitting(CLabels* labels, index_t num_subsets);
-
-		/** Sets the minimum subset size for subsets. If forecasting h-step
-		 * ahead, set min_size to h.
-		 *
-		 * @param min_size Minimum subset size. */
-		void set_min_subset_size(index_t min_size);
+		CTimeSeriesSplitting(
+		    CLabels* labels, index_t num_subsets, index_t min_subset_size = 1);
 
 		/** @return Minimum subset size. */
 		index_t get_min_subset_size();
@@ -85,14 +81,21 @@ namespace shogun
 		/** Custom rng if using cross validation across different threads */
 		CRandom* m_rng;
 
-		/**  The minimum subset size for test set.*/
-		index_t m_min_subset_size;
-
 	protected:
 		void build_subsets() override;
 
 	private:
 		void init();
+		void init(index_t min_subset_size);
+
+		/** Sets the minimum subset size for subsets. If forecasting h-step
+		 * ahead, set min_size to h.
+		 *
+		 * @param min_size Minimum subset size. */
+		void set_min_subset_size(index_t min_size);
+
+		/**  The minimum subset size for test set.*/
+		index_t m_min_subset_size;
 	};
 }
 
