@@ -63,6 +63,7 @@ public :
 	index_t get_num_dimensions() const;
 	index_t get_num_lhs() const;
 	index_t get_num_rhs() const;
+	bool is_symmetric() const;
 
 	virtual float64_t kernel(index_t idx_a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> kernel_all() const;

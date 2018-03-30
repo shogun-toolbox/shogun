@@ -76,6 +76,12 @@ index_t Base::get_num_rhs() const
 	return m_rhs.num_cols;
 }
 
+bool Base::is_symmetric() const
+{
+    return !m_rhs.matrix;
+}
+
+
 SGMatrix<float64_t> Base::kernel_all() const
 {
     auto N_lhs = get_num_lhs();
@@ -83,10 +89,18 @@ SGMatrix<float64_t> Base::kernel_all() const
 
     SGMatrix<float64_t> result(N_lhs, N_rhs);
 
+    bool is_sym = is_symmetric();
+
+    // TODO exploit symmetry in storage (Shognu lib?)
+    // TODO the assignment in matrix is not sequentially in memory, does it matter?
+    // TODO parallel jobs are of differing sizes...
 #pragma omp parallel for
     for (auto idx_a = 0; idx_a < N_lhs; ++idx_a) {
-        for (auto idx_b = 0; idx_b < N_rhs; ++idx_b) {
-            result.set_element(this->kernel(idx_a, idx_b), idx_a, idx_b);
+        for (auto idx_b = (is_sym ? idx_a : 0); idx_b < N_rhs; ++idx_b) {
+            auto k = this->kernel(idx_a, idx_b);
+            result.set_element(k, idx_a, idx_b);
+            if (is_sym && idx_b != idx_a)
+                result.set_element(k, idx_b, idx_a);
         }
     }
 
@@ -103,9 +117,6 @@ SGMatrix<float64_t> Base::dx_all() const
     SGMatrix<float64_t> result(ND_lhs, N_rhs);
     Map<MatrixXd> eigen_result(result.matrix, ND_lhs, N_rhs);
 
-    // TODO exploit symmetry computation
-    // TODO exploit symmetry in storage (Shognu lib?)
-    // TODO the assignment in matrix is not sequentially in memory, does it matter?
 #pragma omp parallel for
     for (auto idx_a=0; idx_a<N_lhs; idx_a++)
         for (auto idx_b=0; idx_b<N_rhs; idx_b++)
@@ -129,8 +140,6 @@ SGMatrix<float64_t> Base::dy_all() const
     SGMatrix<float64_t> result(N_lhs, ND_rhs);
     Map<MatrixXd> eigen_result(result.matrix, N_lhs, ND_rhs);
 
-    // TODO exploit symmetry computation
-    // TODO exploit symmetry in storage (Shognu lib?)
     // TODO the assignment in matrix is not sequentially in memory, does it matter?
 #pragma omp parallel for
     for (auto idx_a=0; idx_a<N_lhs; idx_a++)
@@ -152,21 +161,25 @@ SGMatrix<float64_t> Base::dx_dy_all() const
     auto N_rhs = get_num_rhs();
     auto ND_lhs = N_lhs*D;
     auto ND_rhs = N_rhs*D;
+    bool is_sym = is_symmetric();
 
     SGMatrix<float64_t> result(ND_lhs,ND_rhs);
     Map<MatrixXd> eigen_result(result.matrix, ND_lhs,ND_rhs);
 
-    // TODO exploit symmetry computation
     // TODO exploit symmetry in storage (Shognu lib?)
     // TODO the assignment in matrix is not sequentially in memory, does it matter?
+    // TODO parallel jobs are of differing sizes...
 #pragma omp parallel for
     for (auto idx_a=0; idx_a<N_lhs; idx_a++)
-        for (auto idx_b=0; idx_b<N_rhs; idx_b++)
+        for (auto idx_b = (is_sym ? idx_a : 0); idx_b<N_rhs; idx_b++)
         {
             auto row_start = idx_a*D;
             auto col_start = idx_b*D;
-            SGMatrix<float64_t> h=dx_dy(idx_a, idx_b);
-            eigen_result.block(row_start, col_start, D, D) = Map<MatrixXd>(h.matrix, D, D);
+            SGMatrix<float64_t> h = dx_dy(idx_a, idx_b);
+            auto eigen_h = Map<MatrixXd>(h.matrix, D, D);
+            eigen_result.block(row_start, col_start, D, D) = eigen_h;
+            if (is_sym && idx_b != idx_a)
+                eigen_result.block(col_start, row_start, D, D) = eigen_h.transpose();
         }
 
     return result;
