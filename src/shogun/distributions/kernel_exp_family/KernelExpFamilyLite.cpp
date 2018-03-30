@@ -94,3 +94,16 @@ void CKernelExpFamilyLite::fit()
 {
 	m_impl->fit();
 }
+
+SGVector<index_t> CKernelExpFamilyLite::get_basis_inds() const
+{
+	return static_cast<kernel_exp_family_impl::Lite *>(m_impl)->get_basis_inds();
+}
+
+SGMatrix<float64_t> CKernelExpFamilyLite::get_matrix(const char* name)
+{
+	if (!strcmp(name, "basis"))
+		return static_cast<kernel_exp_family_impl::Lite *>(m_impl)->get_basis();
+	else
+		return CKernelExpFamily::get_matrix(name);
+}

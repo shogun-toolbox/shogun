@@ -65,6 +65,9 @@ public :
 
 	virtual void fit();
 
+	virtual SGMatrix<float64_t> get_basis() const;
+	virtual SGVector<index_t> get_basis_inds() const;
+
 	// modularisation of the fit method
 	virtual bool basis_is_subsampled_data() const { return m_basis_inds.vlen; }
 	virtual index_t get_system_size() const;

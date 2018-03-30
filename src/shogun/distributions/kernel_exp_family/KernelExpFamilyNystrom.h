@@ -62,6 +62,8 @@ public :
 
 	virtual const char* get_name() const { return "KernelExpFamilyNystrom"; }
 
+    virtual SGVector<index_t> get_basis_inds() const;
+    virtual SGMatrix<float64_t> get_matrix(const char* name="");
 };
 
 }

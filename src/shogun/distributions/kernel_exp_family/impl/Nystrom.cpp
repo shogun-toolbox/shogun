@@ -98,6 +98,16 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 	m_lambda_l2 = lambda_l2;
 }
 
+SGMatrix<float64_t> Nystrom::get_basis() const
+{
+	return m_basis;
+}
+SGVector<index_t> Nystrom::get_basis_inds() const
+{
+	return m_basis_inds;
+}
+
+
 index_t Nystrom::get_system_size() const
 {
 	auto m = get_num_basis();

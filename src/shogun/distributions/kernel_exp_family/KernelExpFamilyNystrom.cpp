@@ -139,3 +139,17 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 	m_impl = new kernel_exp_family_impl::NystromD(data, basis_mask,
 			kernel, lambda, lambda_l2);
 }
+
+
+SGVector<index_t> CKernelExpFamilyNystrom::get_basis_inds() const
+{
+	return static_cast<kernel_exp_family_impl::Nystrom *>(m_impl)->get_basis_inds();
+}
+
+SGMatrix<float64_t> CKernelExpFamilyNystrom::get_matrix(const char* name)
+{
+	if (!strcmp(name, "basis"))
+		return static_cast<kernel_exp_family_impl::Nystrom *>(m_impl)->get_basis();
+	else
+		return CKernelExpFamily::get_matrix(name);
+}
