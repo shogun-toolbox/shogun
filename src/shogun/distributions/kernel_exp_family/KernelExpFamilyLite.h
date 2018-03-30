@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2016 Heiko Strathmann
+ * Written (w) 2018 Dougal Sutherland
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
