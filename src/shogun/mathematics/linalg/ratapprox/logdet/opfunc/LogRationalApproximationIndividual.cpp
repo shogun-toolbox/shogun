@@ -94,7 +94,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
 		SG_ERROR("Unknown MatrixOperator given!\n");
 	}
 
-  SGVector<complex128_t> agg(sample.vlen);
+	SGVector<complex128_t> agg(sample.vlen);
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
@@ -124,12 +124,13 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
 		// multiply with the weight using Eigen3 and take negative
 		// (see CRationalApproximation for the formula)
 		Map<VectorXcd> v(vec.vector, vec.vlen);
-		v*=m_weights[i];
-		v=-v;
-		//aggregate the result
-		agg+=vec;
+		v *= m_weights[i];
+		v = -v;
+		// aggregate the result
+		agg += vec;
 	}
-	float64_t result = linalg::dot(sample, m_linear_operator->apply(agg.get_imag()));
+	float64_t result =
+		linalg::dot(sample, m_linear_operator->apply(agg.get_imag()));
 	result *= m_constant_multiplier;
 	return result;
 }
