@@ -16,6 +16,7 @@
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <typeinfo>
 
+using namespace Eigen;
 namespace shogun
 {
 
@@ -93,6 +94,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
 		SG_ERROR("Unknown MatrixOperator given!\n");
 	}
 
+  SGVector<complex128_t> agg(sample.vlen);
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
@@ -113,19 +115,22 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
 			break;
 		}
 
-		REQUIRE(shifted_op, "MatrixOperator typeinfo was not detected!\n");
-
 		SGVector<complex128_t> diag=shifted_op->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
 			diag[j]-=m_shifts[i];
 		shifted_op->set_diagonal(diag);
 
 		SGVector<complex128_t> vec = m_linear_solver->solve(shifted_op, sample);
-		SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
-		float64_t result = linalg::dot(sample, agg);
-		result *= m_constant_multiplier;
-		return result;
-}
-
+		// multiply with the weight using Eigen3 and take negative
+		// (see CRationalApproximation for the formula)
+		Map<VectorXcd> v(vec.vector, vec.vlen);
+		v*=m_weights[i];
+		v=-v;
+		//aggregate the result
+		agg+=vec;
+	}
+	float64_t result = linalg::dot(sample, m_linear_operator->apply(agg.get_imag()));
+	result *= m_constant_multiplier;
+	return result;
 }
 }

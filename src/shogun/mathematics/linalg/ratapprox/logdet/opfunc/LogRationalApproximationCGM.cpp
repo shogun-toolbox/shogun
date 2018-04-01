@@ -14,6 +14,7 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 
+using namespace Eigen;
 namespace shogun
 {
 
@@ -53,29 +54,30 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 
 float64_t CLogRationalApproximationCGM::compute(SGVector<float64_t> sample)
 {
-	SG_DEBUG("Entering\n");
-	REQUIRE(sample.vector, "Sample is not initialized!\n");
-	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
+  SG_DEBUG("Entering\n");
+  REQUIRE(sample.vector, "Sample is not initialized!\n");
+  REQUIRE(m_linear_operator, "Operator is not initialized!\n");
 
-	// we need to take the negation of the shifts for this case
-	if (m_negated_shifts.vector==NULL)
-	{
-		m_negated_shifts=SGVector<complex128_t>(m_shifts.vlen);
-	}
-	REQUIRE(
-		m_linear_operator->get_dimension() == sample.vlen,
-		"Dimension mismatch! %d vs %d\n", m_linear_operator->get_dimension(),
-		sample.vlen);
-	REQUIRE(
-		m_negated_shifts.vlen == m_weights.vlen,
-		"Number of shifts and weights are not equal!\n");
+  // we need to take the negation of the shifts for this case
+  if (m_negated_shifts.vector==NULL)
+  {
+    m_negated_shifts=SGVector<complex128_t>(m_shifts.vlen);
+    Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
+    Map<VectorXcd> negated_shifts(m_negated_shifts.vector, m_negated_shifts.vlen);
+    negated_shifts=-shifts;
+  }
 
-	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
-		m_linear_operator, sample, m_negated_shifts, m_weights);
-	SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
-	float64_t result = linalg::dot(sample, agg);
-	result *= m_constant_multiplier;
-	return result;
+  SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
+    m_linear_operator, sample, m_negated_shifts, m_weights);
+
+	// Take negative (see CRationalApproximation for the formula)	
+  Map<VectorXcd> v(vec.vector, vec.vlen);
+  v=-v;
+
+  SGVector<float64_t> agg = m_linear_operator->apply(vec.get_imag());
+  float64_t result = linalg::dot(sample, agg);
+  result *= m_constant_multiplier;
+  return result;
 }
 
 }
