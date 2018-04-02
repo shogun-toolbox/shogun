@@ -151,8 +151,7 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-CBinaryLabels::CBinaryLabels(const CDenseLabels& dense):
-	CDenseLabels(dense)
+CBinaryLabels::CBinaryLabels(const CDenseLabels& dense) : CDenseLabels(dense)
 {
 	ensure_valid();
 }
@@ -179,8 +178,8 @@ namespace shogun
 		catch (const ShogunException& e)
 		{
 			SG_SERROR(
-			    "Cannot convert %s to binary labels: %s\n",
-			    orig->get_name(), e.what());
+			    "Cannot convert %s to binary labels: %s\n", orig->get_name(),
+			    e.what());
 		}
 
 		return Some<CBinaryLabels>::from_raw(nullptr);

@@ -32,13 +32,11 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	linalg::zero(m_current_values);
 }
 
-CDenseLabels::CDenseLabels(const CDenseLabels& orig):
-	CLabels(orig),
-	m_labels(orig.m_labels)
+CDenseLabels::CDenseLabels(const CDenseLabels& orig)
+    : CLabels(orig), m_labels(orig.m_labels)
 {
 	init();
 }
-
 
 CDenseLabels::CDenseLabels(CFile* loader)
 : CLabels()

@@ -21,8 +21,7 @@ CLabels::CLabels()
 }
 
 CLabels::CLabels(const CLabels& orig)
-	: CSGObject(orig),
-	m_current_values(orig.m_current_values)
+    : CSGObject(orig), m_current_values(orig.m_current_values)
 {
 	init();
 }

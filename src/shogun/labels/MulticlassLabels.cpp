@@ -215,7 +215,8 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_MULTICLASS:
-				return Some<CMulticlassLabels>::from_raw(orig->as<CMulticlassLabels>());
+				return Some<CMulticlassLabels>::from_raw(
+				    orig->as<CMulticlassLabels>());
 			case LT_DENSE_GENERIC:
 				return to_multiclass(orig->as<CDenseLabels>());
 			default:

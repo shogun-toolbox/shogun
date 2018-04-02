@@ -455,6 +455,5 @@ class CMachine : public CSGObject
 		/** Mutex used to pause threads */
 		std::mutex m_mutex;
 };
-
 }
 #endif // _MACHINE_H__
