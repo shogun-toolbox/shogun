@@ -1134,7 +1134,7 @@ TEST(LinalgBackendEigen, SGVector_norm)
 		v[i] = i;
 		gt += i * i;
 	}
-	gt = CMath::sqrt(gt);
+	gt = std::sqrt(gt);
 
 	auto result = norm(v);
 

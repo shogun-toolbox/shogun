@@ -105,7 +105,7 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		// see Hyvarinen (13.6) p.267 Here WX is white and data
 		// in X has been projected onto a subspace by PCA
 		WX = K * SPX;
-		WX *= CMath::sqrt((float64_t)p);
+		WX *= std::sqrt((float64_t)p);
 	}
 	else
 	{

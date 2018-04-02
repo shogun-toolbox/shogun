@@ -256,9 +256,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 				s=x1*x1+x2*x2;
 			}
 
-			// =  x1/CMath::sqrt(val)* CMath::sqrt(-2*std::log(val));
+			// =  x1/std::sqrt(val)* std::sqrt(-2*std::log(val));
 			randomcoeff_multiplicative[i * cur_dim_input_space + k] =
-			    x1 * CMath::sqrt(-2 * std::log(s) / s) / kernelwidth;
+			    x1 * std::sqrt(-2 * std::log(s) / s) / kernelwidth;
 		}
 	}
 
@@ -368,7 +368,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
 	}
 
-	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+	float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
 	SGVector<float64_t> res(cur_dim_feature_space);
 
 	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
@@ -401,7 +401,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 	{
 		SGMatrix<float64_t> res(cur_dim_feature_space,num_vectors);
 
-		float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+		float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
 
 		for (int32_t vec = 0; vec < num_vectors; vec++)
 		{

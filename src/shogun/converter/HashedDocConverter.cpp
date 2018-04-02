@@ -169,7 +169,7 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	/** Normalizing vector */
 	if (should_normalize)
 	{
-		float64_t norm_const = CMath::sqrt((float64_t) document.size());
+		float64_t norm_const = std::sqrt((float64_t)document.size());
 		for (index_t i=0; i<sparse_doc_rep.num_feat_entries; i++)
 			sparse_doc_rep.features[i].entry /= norm_const;
 	}

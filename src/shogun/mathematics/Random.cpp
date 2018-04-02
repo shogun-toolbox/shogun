@@ -327,7 +327,7 @@ float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
     // y=0 so it doesn't matter. Remember that a Gaussian effectively has a tail going
     // off into x == infinity, hence asking what is x when y=0 is an invalid question
     // in the context of this class.
-	return CMath::sqrt(-2.0 * std::log(y));
+	return std::sqrt(-2.0 * std::log(y));
 }
 
 void CRandom::reinit(uint32_t seed)

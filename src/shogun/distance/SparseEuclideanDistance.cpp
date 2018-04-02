@@ -67,7 +67,7 @@ float64_t CSparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,
 		(CSparseFeatures<float64_t>*) rhs, sq_rhs, idx_b);
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 void CSparseEuclideanDistance::init()

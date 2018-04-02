@@ -117,7 +117,7 @@ SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 
 float64_t CStatistics::std_deviation(SGVector<float64_t> values)
 {
-	return CMath::sqrt(variance(values));
+	return std::sqrt(variance(values));
 }
 
 SGVector<float64_t> CStatistics::matrix_std_deviation(
@@ -125,7 +125,7 @@ SGVector<float64_t> CStatistics::matrix_std_deviation(
 {
 	SGVector<float64_t> var=CStatistics::matrix_variance(values, col_wise);
 	for (index_t i=0; i<var.vlen; ++i)
-		var[i]=CMath::sqrt(var[i]);
+		var[i] = std::sqrt(var[i]);
 
 	return var;
 }

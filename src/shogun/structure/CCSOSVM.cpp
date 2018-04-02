@@ -382,7 +382,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
 		}
 
-		z_k_norm = CMath::sqrt(linalg::dot(m_w, m_w));
+		z_k_norm = std::sqrt(linalg::dot(m_w, m_w));
 		m_w.vec1_plus_scalar_times_vec2(m_w.vector, rho/(1+rho), w_b.vector, w_b.vlen);
 
 		/* detect if step size too small */

@@ -191,8 +191,9 @@ int main()
 
 	// ************************************************************
 	// set parameters of the preprocessor
-	// ******************************** !!!!!!!!!!!!!!!!! CMath::sqrt(rbf_width/2.0)
-	rfgauss->set_kernelwidth( CMath::sqrt(rbf_width/2.0) );
+	// ******************************** !!!!!!!!!!!!!!!!!
+	// std::sqrt(rbf_width/2.0)
+	rfgauss->set_kernelwidth(std::sqrt(rbf_width / 2.0));
 	rfgauss->set_dim_input_space(dims);
 	rfgauss->set_dim_feature_space(randomfourier_featurespace_dim);
 

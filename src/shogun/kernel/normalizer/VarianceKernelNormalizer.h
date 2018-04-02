@@ -69,7 +69,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 			k->rhs=old_rhs;
 
 			meandiff=1.0/(diag_mean-overall_mean);
-			sqrt_meandiff=CMath::sqrt(meandiff);
+			sqrt_meandiff = std::sqrt(meandiff);
 
 			return true;
 		}

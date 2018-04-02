@@ -127,7 +127,7 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 			for (int32_t j=0; j<spec_size; j++)
 				n+=CMath::sq(k_spectrum[i][j]);
 
-			n=CMath::sqrt(n);
+			n = std::sqrt(n);
 
 			for (int32_t j=0; j<spec_size; j++)
 				k_spectrum[i][j]/=n;

@@ -41,7 +41,7 @@ namespace shogun
 #ifdef USE_FLOAT32
 %rename(normal_random_float32) CMath::normal_random(float32_t,float32_t);
 %rename(random_float32) CMath::random(float32_t,float32_t);
-%rename(sqrt_float32) CMath::sqrt(float32_t);
+%rename(sqrt_float32) std::sqrt(float32_t);
 #endif
 
 #ifdef USE_FLOAT64
@@ -49,7 +49,7 @@ namespace shogun
 %rename(pow_float64_int32) CMath::pow(float64_t,int32_t);
 %rename(pow_float64_float64) CMath::pow(float64_t,float64_t);
 %rename(random_float64) CMath::random(float64_t,float64_t);
-%rename(sqrt_float64) CMath::sqrt(float64_t);
+%rename(sqrt_float64) std::sqrt(float64_t);
 }
 #endif
 

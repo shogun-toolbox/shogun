@@ -102,7 +102,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	if (disable_sqrt)
 		return result;
 	else
-		return CMath::sqrt(result);
+		return std::sqrt(result);
 }
 
 void CMahalanobisDistance::init()

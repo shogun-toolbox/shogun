@@ -241,7 +241,7 @@ void CLMNNImpl::gradient_step(
 		// keep only the elements in the diagonal of M
 		auto m = M.get_diagonal_vector();
 		for (auto i : range(m.vlen))
-			m[i] = m > 0 ? CMath::sqrt(m[i]) : 0.0;
+			m[i] = m > 0 ? std::sqrt(m[i]) : 0.0;
 
 		// return to representation in L
 		SGMatrix<float64_t>::create_diagonal_matrix(L.matrix, m.vector, m.vlen);
