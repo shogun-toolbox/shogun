@@ -28,7 +28,7 @@ svm.set_epsilon(epsilon)
 
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
+StratifiedCrossValidationSplitting splitting_strategy(labels_train, 5)
 AccuracyMeasure evaluation_criterion()
 CrossValidation cross(svm, features_train, labels_train, splitting_strategy, evaluation_criterion)
 cross.set_autolock(False)
@@ -80,7 +80,7 @@ LinearRidgeRegression lrr(tau, reg_features_train, reg_labels_train)
 
 #![create_cross_validation_REGRESSION]
 MeanSquaredError MSE_evaluation()
-CrossValidationSplitting split_strategy(reg_labels_train, 2)
+CrossValidationSplitting split_strategy(reg_labels_train, 5)
 CrossValidation crossReg(lrr, reg_features_train, reg_labels_train, split_strategy, MSE_evaluation)
 crossReg.set_autolock(False)
 crossReg.set_num_runs(2)
@@ -93,8 +93,8 @@ result = CrossValidationResult:obtain_from_generic(crossReg.evaluate())
 
 
 #![get_results_REGRESSION]
-real cv_mean_mse = result.get_mean()
-real cv_stddev_mse = result.get_std_dev()
+result.get_mean()
+result.get_std_dev()
 #![get_results_REGRESSION]
 
 
@@ -104,5 +104,5 @@ lrr.train()
 
 #![evaluate_error_REGRESSION]
 RegressionLabels reg_labels_predict = lrr.apply_regression(reg_features_test)
-real mse = MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
+MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
 #![evaluate_error_REGRESSION]
