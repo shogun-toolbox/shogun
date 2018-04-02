@@ -145,8 +145,10 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 			}
 			else // for the case when m_initialization_mode = RE_NORMAL
 			{
-				map_params[i] = CMath::normal_random(0.0,
-					CMath::sqrt(2.0/(m_input_height*m_input_width*m_input_num_channels)));
+				map_params[i] = CMath::normal_random(
+				    0.0, std::sqrt(
+				             2.0 / (m_input_height * m_input_width *
+				                    m_input_num_channels)));
 				// initialize b=0
 				map_param_regularizable[i] = 0;
 			}

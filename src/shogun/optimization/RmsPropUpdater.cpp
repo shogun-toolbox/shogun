@@ -98,7 +98,8 @@ float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t scale=m_decay_factor*m_gradient_accuracy[idx]+
 		(1.0-m_decay_factor)*gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
-	float64_t res=m_build_in_learning_rate*gradient/CMath::sqrt(scale+m_epsilon);
+	float64_t res =
+	    m_build_in_learning_rate * gradient / std::sqrt(scale + m_epsilon);
 	return res;
 }
 

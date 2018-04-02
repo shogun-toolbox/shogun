@@ -83,7 +83,7 @@ float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
 {
 	ASSERT(m_pwm.num_cols == len)
-	float64_t score = std::log(1 / (m_sigma * CMath::sqrt(2 * M_PI))) -
+	float64_t score = std::log(1 / (m_sigma * std::sqrt(2 * M_PI))) -
 	                  CMath::sq(pos - m_mean) / (2 * CMath::sq(m_sigma));
 
 	for (int32_t i=0; i<m_pwm.num_cols; i++)

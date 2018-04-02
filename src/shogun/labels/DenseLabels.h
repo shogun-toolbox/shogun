@@ -64,7 +64,7 @@ namespace shogun
          *
          * @param context optional message to convey the context
 		 */
-		void ensure_valid(const char* context=NULL) override;
+		void ensure_valid(const char* context = NULL) override;
 
 		/** load labels from file
 		 *
@@ -287,18 +287,18 @@ namespace shogun
 		SGVector<float64_t> m_labels;
 };
 
-	/**
-	* Specialization of get_labels for float64_t
-	* @return labels, or a copy of them if a subset
-	* is set
-	*/
-	template<> inline
-	SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
-	{
-		if (m_subset_stack->has_subsets())
-			return get_labels_copy_t<float64_t>();
+/**
+* Specialization of get_labels for float64_t
+* @return labels, or a copy of them if a subset
+* is set
+*/
+template <>
+inline SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
+{
+	if (m_subset_stack->has_subsets())
+		return get_labels_copy_t<float64_t>();
 
-		return m_labels;
+	return m_labels;
 	}
 }
 #endif

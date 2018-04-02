@@ -392,7 +392,7 @@ void CScatterSVM::compute_norm_wc()
 	}
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
-		norm_wc[i]=CMath::sqrt(norm_wc[i]);
+		norm_wc[i] = std::sqrt(norm_wc[i]);
 
 	SGVector<float64_t>::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
 }
