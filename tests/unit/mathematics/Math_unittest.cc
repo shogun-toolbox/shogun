@@ -180,7 +180,7 @@ TEST(CMath, strtofloat)
 	EXPECT_TRUE(CMath::is_nan(float_result));
 
 	EXPECT_TRUE(CMath::strtof("inf", &float_result));
-	EXPECT_TRUE(CMath::is_infinity(float_result));
+	EXPECT_TRUE(std::isinf(float_result));
 
 	EXPECT_TRUE(CMath::strtof("-inf", &float_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, float_result);
@@ -196,7 +196,7 @@ TEST(CMath, strtodouble)
 	EXPECT_TRUE(CMath::is_nan(double_result));
 
 	EXPECT_TRUE(CMath::strtod("inf", &double_result));
-	EXPECT_TRUE(CMath::is_infinity(double_result));
+	EXPECT_TRUE(std::isinf(double_result));
 
 	EXPECT_TRUE(CMath::strtod("-inf", &double_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, double_result);
@@ -212,7 +212,7 @@ TEST(CMath, strtolongdouble)
 	EXPECT_TRUE(CMath::is_nan(long_double_result));
 
 	EXPECT_TRUE(CMath::strtold("inf", &long_double_result));
-	EXPECT_TRUE(CMath::is_infinity(long_double_result));
+	EXPECT_TRUE(std::isinf(long_double_result));
 
 	EXPECT_TRUE(CMath::strtold("-inf", &long_double_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, long_double_result);

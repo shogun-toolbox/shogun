@@ -216,11 +216,6 @@ int CMath::is_nan(double f)
   return std::isnan(f);
 }
 
-int CMath::is_infinity(double f)
-{
-  return std::isinf(f);
-}
-
 int CMath::is_finite(double f)
 {
   return std::isfinite(f);

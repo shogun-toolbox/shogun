@@ -189,7 +189,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	float64_t cost = SGVector<float64_t>::sum(value);
 
-	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+	if (CMath::is_nan(cost) || std::isinf(cost))
 	{
 		if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
 			return cost;

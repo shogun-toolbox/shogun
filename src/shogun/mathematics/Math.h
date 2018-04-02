@@ -1737,9 +1737,6 @@ class CMath : public CSGObject
 		/// checks whether a float is finite
 		static int is_finite(double f);
 
-		/// checks whether a float is infinity
-		static int is_infinity(double f);
-
 		/// checks whether a float is nan
 		static int is_nan(double f);
 
