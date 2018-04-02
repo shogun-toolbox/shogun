@@ -50,10 +50,12 @@ public:
 		else
 				generate_data_l2();
 
-		auto ll = some<CLibLinear>();
+		auto ll = new CLibLinear();
+		SG_REF(ll);
 
 		float64_t liblin_accuracy;
-		auto eval = some<CContingencyTableEvaluation>();
+		auto eval = new CContingencyTableEvaluation();
+		SG_REF(eval);
 
 
 
@@ -84,11 +86,13 @@ public:
 		else
 				generate_data_l2_simple();
 
-		auto ll = some<CLibLinear>();
+		auto ll = new CLibLinear();
+		SG_REF(ll);
 
 
 		float64_t liblin_accuracy;
-		auto eval = some<CContingencyTableEvaluation>();
+		auto eval = new CContingencyTableEvaluation();
+		SG_REF(eval);
 
 
 
@@ -147,7 +151,7 @@ protected:
 
 		index_t num_samples = 50;
 		sg_rand->set_seed(5);
-		CMath::init_random(5);
+
 		SGMatrix<float64_t> data =
 			CDataGenerator::generate_gaussians(num_samples, 2, 2);
 		CDenseFeatures<float64_t> features(data);
@@ -172,6 +176,8 @@ protected:
 
 		train_feats = (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
 		test_feats =  (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
+		SG_REF(train_feats);
+		SG_REF(test_feats);
 
 		if (type == "L1")
 		{
