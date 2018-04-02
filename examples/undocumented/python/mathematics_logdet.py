@@ -27,7 +27,6 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		from shogun.Mathematics import ProbingSampler
 		from shogun.Mathematics import LogDetEstimator
 		from shogun.Mathematics import Statistics
-		from shogun.Library import SerialComputationEngine
 
 		# creating the linear operator, eigen-solver
 		op=RealSparseMatrixOperator(A.tocsc())
@@ -50,8 +49,6 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		lin_solver=CGMShiftedFamilySolver()
 		lin_solver.set_iteration_limit(max_iter_lin)
 
-		# computation engine
-		engine=SerialComputationEngine()
 
 		# set the desired accuracy tighter to obtain better results
 		# this determines the number of contour points in conformal mapping of
@@ -59,7 +56,7 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		desired_accuracy=1E-5
 
 		# creating the log-linear-operator function
-		op_func=LogRationalApproximationCGM(op, engine, eig_solver, lin_solver,\
+		op_func=LogRationalApproximationCGM(op,  eig_solver, lin_solver,\
 			desired_accuracy)
 
 		# set the trace sampler to be probing sampler, in which samples are obtained
@@ -68,7 +65,7 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		trace_sampler=ProbingSampler(op)
 
 		# estimating log-det
-		log_det_estimator=LogDetEstimator(trace_sampler, op_func, engine)
+		log_det_estimator=LogDetEstimator(trace_sampler, op_func)
 
 		# set the number of samples as required
 		estimates=log_det_estimator.sample(num_samples)
