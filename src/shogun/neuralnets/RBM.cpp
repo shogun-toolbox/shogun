@@ -35,6 +35,7 @@
 
 
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -137,7 +138,7 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 
 	int32_t counter = 0;
 
-	auto pb = progress(range(0， max_num_epochs));
+	auto pb = progress(range(0, max_num_epochs));
 
 	for (int32_t i=0; i<max_num_epochs; i++)
 	{
