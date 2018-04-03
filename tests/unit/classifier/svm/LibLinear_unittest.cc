@@ -151,7 +151,6 @@ protected:
 	void generate_data_l1()
 	{
 		generate_data_l2();
-		//Transpose the train_feats matrix
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
 		SG_UNREF(old_train_feats);
@@ -190,7 +189,6 @@ protected:
 	void generate_data_l1_simple()
 	{
 		generate_data_l2_simple();
-		//transpose train_feats matrix
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
 		SG_UNREF(old_train_feats);
