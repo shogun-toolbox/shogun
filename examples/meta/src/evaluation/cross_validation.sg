@@ -5,6 +5,8 @@ CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat
 CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
 CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+Math:init_random(2)
+
 
 
 #![create_features]
@@ -28,7 +30,7 @@ svm.set_epsilon(epsilon)
 
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels_train, 5)
+StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
 AccuracyMeasure evaluation_criterion()
 CrossValidation cross(svm, features_train, labels_train, splitting_strategy, evaluation_criterion)
 cross.set_autolock(False)
@@ -63,6 +65,9 @@ CSVFile reg_feats_train("../../data/regression_1d_linear_features_train.dat")
 CSVFile reg_feats_test("../../data/regression_1d_linear_features_test.dat")
 CSVFile reg_lab_train("../../data/regression_1d_linear_labels_train.dat")
 CSVFile reg_lab_test("../../data/regression_1d_linear_labels_test.dat")
+Math:init_random(2)
+
+
 
 #![create_features_REGRESSION]
 RealFeatures reg_features_train(reg_feats_train)
@@ -80,7 +85,7 @@ LinearRidgeRegression lrr(tau, reg_features_train, reg_labels_train)
 
 #![create_cross_validation_REGRESSION]
 MeanSquaredError MSE_evaluation()
-CrossValidationSplitting split_strategy(reg_labels_train, 5)
+CrossValidationSplitting split_strategy(reg_labels_train, 2)
 CrossValidation crossReg(lrr, reg_features_train, reg_labels_train, split_strategy, MSE_evaluation)
 crossReg.set_autolock(False)
 crossReg.set_num_runs(2)
@@ -93,8 +98,8 @@ result = CrossValidationResult:obtain_from_generic(crossReg.evaluate())
 
 
 #![get_results_REGRESSION]
-result.get_mean()
-result.get_std_dev()
+real cv_mean_mse = result.get_mean()
+real cv_stddev_mse = result.get_std_dev()
 #![get_results_REGRESSION]
 
 
@@ -104,5 +109,5 @@ lrr.train()
 
 #![evaluate_error_REGRESSION]
 RegressionLabels reg_labels_predict = lrr.apply_regression(reg_features_test)
-MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
+real mse = MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
 #![evaluate_error_REGRESSION]
