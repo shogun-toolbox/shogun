@@ -138,9 +138,7 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 
 	int32_t counter = 0;
 
-	auto pb = progress(range(0, max_num_epochs));
-
-	for (int32_t i=0; i<max_num_epochs; i++)
+	for (auto i : progress(range(0, max_num_epochs)))
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{
@@ -176,10 +174,7 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 			}
 			counter ++;
 		}
-
-		pb.print_progress();
 	}
-	pb.complete();
 }
 
 void CRBM::sample(int32_t num_gibbs_steps,
