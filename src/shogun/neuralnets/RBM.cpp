@@ -136,6 +136,9 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 		buffer = SGMatrix<float64_t>(m_num_hidden, m_batch_size);
 
 	int32_t counter = 0;
+
+	auto pb = progress(range(0， max_num_epochs));
+
 	for (int32_t i=0; i<max_num_epochs; i++)
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
@@ -172,7 +175,10 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 			}
 			counter ++;
 		}
+
+		pb.print_progress();
 	}
+	pb.complete();
 }
 
 void CRBM::sample(int32_t num_gibbs_steps,
