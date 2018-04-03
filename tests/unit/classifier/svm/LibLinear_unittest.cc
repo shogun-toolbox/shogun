@@ -151,7 +151,9 @@ protected:
 	void generate_data_l1()
 	{
 		generate_data_l2();
+		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
+		SG_UNREF(old_train_feats);
 		SG_REF(train_feats);
 	}
 	void generate_data_l2_simple()
@@ -187,7 +189,9 @@ protected:
 	void generate_data_l1_simple()
 	{
 		generate_data_l2_simple();
+		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
+		SG_UNREF(old_train_feats);
 		SG_REF(train_feats);
 	}
 };
