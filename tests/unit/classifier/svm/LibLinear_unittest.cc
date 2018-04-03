@@ -1,9 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors:
- *	Written (W) 2014 pl8787
- *	Refactored (R) 2018 Elfarouk Yasser
+ * Authors: pl8787, Elfarouk Yasser
  */
 
 #include <shogun/classifier/svm/LibLinear.h>
