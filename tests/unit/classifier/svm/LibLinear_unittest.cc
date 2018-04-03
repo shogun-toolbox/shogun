@@ -1,11 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2014 pl8787
+ * Authors:
+ *	Written (W) 2014 pl8787
+ *	Refactored (R) 2018 Elfarouk Yasser
  */
+
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
@@ -86,7 +86,7 @@ public:
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
 		if (C_value)
-				ll->set_C(0.1,0.1); //Only in the case of L2R_L1LOSS_SVC_DUAL
+			ll->set_C(0.1,0.1); //Only in the case of L2R_L1LOSS_SVC_DUAL
 		ll->set_labels(ground_truth);
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->train();
@@ -98,12 +98,12 @@ public:
 
 		if (!biasEnable)
 		{
-			for(int i=0;i<t_w.vlen;i++)
+			for (auto i : range(t_w.vlen))
 				EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
 		}
 		else
 		{
-			for(int i=0;i<t_w.vlen;i++)
+			for (auto i : range(t_w.vlen))
 				EXPECT_NEAR(ll->get_w()[i], t_w[i], 4e-5);
 			EXPECT_NEAR(ll->get_bias(), t_w[2], 4e-5);
 		}
@@ -115,19 +115,7 @@ public:
 	}
 
 protected:
-	void transpose_feats_matrix()
-	{
-		//Transpose train_feats matrix
-		SGMatrix<float64_t> train_matrix = train_feats->get_feature_matrix();
-		SGMatrix<float64_t>::transpose_matrix(train_matrix.matrix,
-				train_matrix.num_rows, train_matrix.num_cols);
-
-		SG_UNREF(train_feats);
-		train_feats = new CDenseFeatures<float64_t>(train_matrix);
-		SG_REF(train_feats);
-
-	}
-	void initialize_train_and_test_and_ground()
+	void generate_data_l2()
 	{
 		index_t num_samples = 50;
 		sg_rand->set_seed(5);
@@ -164,20 +152,17 @@ protected:
 	}
 	void generate_data_l1()
 	{
-		initialize_train_and_test_and_ground();
-
-
-		transpose_feats_matrix();
-
+		generate_data_l2();
+		//Transpose the train_feats matrix
+		auto old_train_feats = train_feats;
+		train_feats = train_feats->get_transposed();
+		SG_UNREF(old_train_feats);
+		SG_REF(train_feats);
 	}
-	void generate_data_l2()
-	{
-		initialize_train_and_test_and_ground();
-	}
-	void initialize_train_and_test_and_ground_simple()
+	void generate_data_l2_simple()
 	{
 		SGMatrix<float64_t> train_data(2, 10);
-		SGMatrix<float64_t> test_data(2, 10); //Always 2x10, doesn't matter l1 or l2
+		SGMatrix<float64_t> test_data(2, 10);
 
 		index_t num_samples = 10;
 		SGVector<int32_t> x{0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9};
@@ -206,13 +191,12 @@ protected:
 	}
 	void generate_data_l1_simple()
 	{
-			initialize_train_and_test_and_ground_simple();
-
-			transpose_feats_matrix();
-	}
-	void generate_data_l2_simple()
-	{
-			initialize_train_and_test_and_ground_simple();
+		generate_data_l2_simple();
+		//transpose train_feats matrix
+		auto old_train_feats = train_feats;
+		train_feats = train_feats->get_transposed();
+		SG_UNREF(old_train_feats);
+		SG_REF(train_feats);
 	}
 };
 
@@ -315,12 +299,6 @@ TEST_F(LibLinear, train_L2R_LR_DUAL_BIAS)
 	// bias, and not l1
 	train_with_solver(liblinear_solver_type, true, false);
 }
-
-/*
-* --------------------------------
-*	Simple set tests start from here
-* --------------------------------
-*/
 
 TEST_F(LibLinear, simple_set_train_L2R_LR)
 {
