@@ -168,7 +168,7 @@ void CNeuralLinearLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows != 0)
 	{
-		// sqaured error measure
+		// squared error measure
 		// local_gradients = activations-targets
 		int32_t length = m_num_neurons*m_batch_size;
 		for (int32_t i=0; i<length; i++)
@@ -188,7 +188,7 @@ float64_t CNeuralLinearLayer::compute_error(SGMatrix<float64_t> targets)
 	float64_t sum = 0;
 	int32_t length = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<length; i++)
-		sum += (targets[i]-m_activations[i])*(targets[i]-m_activations[i]);
+		sum += std::pow(targets[i]-m_activations[i], 2);
 	sum *= (0.5/m_batch_size);
 	return sum;
 }
@@ -232,4 +232,3 @@ void CNeuralLinearLayer::compute_contraction_term_gradients(
 	for (int32_t i=m_num_neurons; i<parameters.vlen; i++)
 			gradients[i] += 2*contraction_coefficient*parameters[i];
 }
-

@@ -42,20 +42,20 @@ namespace shogun
 /** @brief Recurrent Neural layer with linear neurons, with an identity activation
  * function. can be used as a hidden layer or an output layer
  *
- * Each neuron in the layer is connected to all the neurons in all the input 
+ * Each neuron in the layer is connected to all the neurons in all the input
  * and hidden layers that connect into this layer.
  *
  * The hidden state at time step t is computed according to the previous hidden state
  * and the input at the current state as:
  *
- * \f$ h_t = f(W x_t + U s_t_-_1) + b_h \f$ where \f$ b_h \f$ is the bias vector of 
- * the hidden layer, \f$ W \f$ is the weights matrix between this layer and the input layer, 
+ * \f$ h_t = f(W x_t + U s_t_-_1 + b_h) \f$ where \f$ b_h \f$ is the bias vector of
+ * the hidden layer, \f$ W \f$ is the weights matrix between this layer and the input layer,
  * and \f$ U \f$ is the weights matrix between this hidden layer and itself
  *
  * The output layer is computed as:
  *
- * \f$ y_t = f(V h_t) + b_y \f$ where \f$ b_y \f$ is the bias vector of the output layer, 
- * \f$ h_t \f$ is the value of the hidden states at the current time step and \f$ V \f$ is 
+ * \f$ y_t = f(V h_t + b_y) \f$ where \f$ b_y \f$ is the bias vector of the output layer,
+ * \f$ h_t \f$ is the value of the hidden states at the current time step and \f$ V \f$ is
  * the weights matrix between this hidden layer and the output layer
  *
  */
@@ -68,8 +68,10 @@ public:
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
+	 * @param time_series_length length of time series for this layer
+	 * @param output_dim outpit size of this layer
 	 */
-	CNeuralRecurrentLayer(int32_t num_neurons);
+	CNeuralRecurrentLayer(int32_t num_neurons, int32_t time_series_length, int32_t output_dim);
 
 	virtual ~CNeuralRecurrentLayer() {}
 
@@ -124,8 +126,8 @@ public:
 	virtual void compute_activations(SGVector<float64_t> parameters,
 			CDynamicObjectArray* layers);
 
-	/** Computes the gradients that are relevent to this layer:
-	 *- The gradients of the error with respect to the layer's parameters
+	/** Computes the gradients that are relevant to this layer:
+	 * -The gradients of the error with respect to the layer's parameters
 	 * -The gradients of the error with respect to the layer's inputs
 	 *
 	 * Input gradients for layer i that connects into this layer as input are
@@ -166,7 +168,7 @@ public:
 	 *
 	 * @return layer's activations
 	 */
-	virtual SGMatrix<float64_t> get_hidden_states() { return m_hidden_states; }
+	virtual std::vector<SGMatrix<float64_t>> get_hidden_states() { return m_hidden_states; }
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.
@@ -189,10 +191,28 @@ private:
 
 protected:
 
-	/** hidden states in this layer
-	 * size num_neurons * batch_size
-	 */
-	SGMatrix<float64_t> m_hidden_states;
+	/** Snapshots of hidden states in this layer to compute the gradient
+	 *  over whole input sequence
+	 *  vector is of size m_time_series_length,
+	 *  each hidden state is num_neurons * num_neurons
+ 	 */
+	std::vector<SGMatrix<float64_t>> m_hidden_states;
+
+ 	/** Length of each time series
+ 	*/
+ 	int32_t m_time_series_length;
+
+ 	/** Current activation in hidden
+ 	*/
+ 	SGMatrix<float64_t> m_hidden_activation;
+
+ 	/** Dimention of the output  (so the final output is m_time_series_length * m_output_dim * batch_size)
+ 	*/
+ 	int32_t m_output_dim;
+
+ 	/** Snapshots of outputs
+ 	*/
+ 	std::vector<SGMatrix<float64_t>> m_outputs;
 
 };
 

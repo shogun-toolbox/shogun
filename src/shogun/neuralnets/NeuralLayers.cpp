@@ -78,9 +78,9 @@ CNeuralLayers* CNeuralLayers::leaky_rectified_linear(int32_t size)
 	return with_layer(new CNeuralLeakyRectifiedLinearLayer(size));
 }
 
-CNeuralLayers* CNeuralLayers::recurrent(int32_t size)
+CNeuralLayers* CNeuralLayers::recurrent(int32_t size, int32_t time_series_length, int32_t output_dim)
 {
-	return with_layer(new CNeuralRecurrentLayer(size));
+	return with_layer(new CNeuralRecurrentLayer(size, time_series_length, output_dim));
 }
 
 CNeuralLayers* CNeuralLayers::softmax(int32_t size)

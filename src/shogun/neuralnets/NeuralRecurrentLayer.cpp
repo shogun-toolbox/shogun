@@ -43,9 +43,11 @@ CNeuralRecurrentLayer::CNeuralRecurrentLayer() : CNeuralLinearLayer()
 {
 }
 
-CNeuralRecurrentLayer::CNeuralRecurrentLayer(int32_t num_neurons):
+CNeuralRecurrentLayer::CNeuralRecurrentLayer(int32_t num_neurons, int32_t time_series_length, int32_t output_dim):
 CNeuralLinearLayer(num_neurons)
 {
+	m_time_series_length = time_series_length;
+ 	m_output_dim = output_dim;
 }
 
 void CNeuralRecurrentLayer::initialize_neural_layer(CDynamicObjectArray* layers,
@@ -61,15 +63,38 @@ void CNeuralRecurrentLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 		m_num_parameters += m_num_neurons * m_input_sizes[i];
 		// U: hidden to hidden weights, shape [m_num_neurons, m_num_neurons]
 		m_num_parameters += m_num_neurons * m_num_neurons;
-		// V: hidden to output weights, shape [m_input_size, m_num_neurons]
-		m_num_parameters += m_input_sizes[i] * m_num_neurons;
+		// V: hidden to output weights, shape [m_output_dim, m_num_neurons]
+  	m_num_parameters += m_output_dim * m_num_neurons;
+	}
+
+ // Initialize all hidden states
+	m_hidden_states = std::vector<SGMatrix<float64_t>>(m_time_series_length);
+	for (int i = 0; i < m_time_series_length; i++) {
+		m_hidden_states[i] = SGMatrix<float64_t>(m_num_neurons, m_num_neurons);
 	}
 }
 
 void CNeuralRecurrentLayer::set_batch_size(int32_t batch_size)
 {
-	CNeuralLayer::set_batch_size(batch_size);
-	m_hidden_states = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	m_batch_size = batch_size;
+
+	m_activations = SGMatrix<float64_t>(m_output_dim, m_batch_size);
+	m_hidden_activation = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+
+	// TODO implement dropout
+	// m_dropout_mask = SGMatrix<bool>(m_num_neurons, m_batch_size);
+
+	m_outputs = std::vector<SGMatrix<float64_t>>(m_time_series_length);
+	for (int i = 0; i < m_time_series_length; i++) {
+		m_outputs[i] = SGMatrix<float64_t>(m_output_dim, batch_size);
+	}
+	// TODO finish this
+	//if (!is_input())
+	//{
+	//	m_activation_gradients =
+	//		SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	//	m_local_gradients = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	//}
 }
 
 void CNeuralRecurrentLayer::initialize_parameters(SGVector<float64_t> parameters,
@@ -85,6 +110,8 @@ void CNeuralRecurrentLayer::initialize_parameters(SGVector<float64_t> parameters
 		// parameter_regularizable[i] = (i >= m_num_neurons);
 	}
 }
+// VERY BIG TODO: Figure out how to manage input from multiple layers
+// Now we assume that we only have 1 input layer
 
 void CNeuralRecurrentLayer::compute_activations(SGVector<float64_t> parameters,
 		CDynamicObjectArray* layers)
@@ -95,40 +122,44 @@ void CNeuralRecurrentLayer::compute_activations(SGVector<float64_t> parameters,
 	typedef Eigen::Map<Eigen::MatrixXd> EMappedMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EMappedVector;
 
-	EMappedMatrix  A(m_activations.matrix, m_num_neurons, m_batch_size);
-	EMappedMatrix  H(m_hidden_states.matrix, m_num_neurons, m_batch_size);
+	EMappedMatrix  A(m_activations.matrix, m_output_dim, m_batch_size);
+	EMappedMatrix  H(m_hidden_activation.matrix, m_num_neurons, m_batch_size);
 	EMappedVector  Bh(hidden_biases, m_num_neurons);
 	EMappedVector  By(output_biases, m_num_neurons);
 
-	A.colwise() = By;
-	H.colwise() = Bh;
-
 	int32_t weights_index_offset = m_num_neurons * 2;
-	for (int32_t l=0; l<m_input_indices.vlen; l++)
-	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(m_input_indices[l]);
+
+	for (int i = 0; i < m_time_series_length; i++) {
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 
-		weights_index_offset += m_num_neurons * m_input_sizes[l];
+		weights_index_offset += m_num_neurons * m_input_sizes[0];
 		float64_t* hidden_weights = parameters.vector + weights_index_offset;
 
 		weights_index_offset += m_num_neurons * m_num_neurons;
 		float64_t* output_weights = parameters.vector + weights_index_offset;
-		weights_index_offset += m_num_neurons * m_input_sizes[l];
+		weights_index_offset += m_num_neurons * m_input_sizes[0];
 
-		EMappedMatrix W(weights, m_num_neurons, m_input_sizes[l]);
-		EMappedMatrix Wxh(weights, m_num_neurons, m_input_sizes[l]);
+		EMappedMatrix Wxh(weights, m_num_neurons, m_input_sizes[0]);
 		EMappedMatrix Whh(hidden_weights, m_num_neurons, m_num_neurons);
-		EMappedMatrix Why(output_weights, m_input_sizes[l], m_num_neurons);
+		EMappedMatrix Why(output_weights, m_input_sizes[0], m_num_neurons);
+
+		CNeuralLayer* layer =
+			(CNeuralLayer*)layers->element(m_input_indices[0]);
+
 		EMappedMatrix X(layer->get_activations().matrix,
 				layer->get_num_neurons(), m_batch_size);
 
-		// TODO: Need to pass through activation function
-		// Either tanh or ReLU
-		// H += Wxh * X + Whh * H;
-		// A += Why * H;
+		// TODO Maybe do something to be able to choose ReLU instead,
+		// but ReLU kill too much gradient when unrolling the recursion
+		// in backprop
+		H += (Wxh * X + Whh * H).colwise() + Bh;
+		H = H.unaryExpr<float64_t(*)(float64_t)>(&std::tanh);
+		// Using copy constructor
+		m_hidden_states[i] = SGMatrix<float64_t>(&m_hidden_activation);
+		A += (Why * H).colwise() + By;
+		// Using copy constructor
+		m_outputs[i] = SGMatrix<float64_t>(&m_activations);
 		SG_UNREF(layer);
 	}
 }
@@ -152,7 +183,8 @@ float64_t CNeuralRecurrentLayer::compute_error(SGMatrix<float64_t> targets)
 
 void CNeuralRecurrentLayer::init()
 {
-	SG_ADD(&m_hidden_states, "hidden_states",
-	       "Hidden States", MS_NOT_AVAILABLE);
+	for (int32_t i = 0; i < m_time_series_length; i++) {
+		SG_ADD(&m_hidden_states[i], "hidden_states",
+		       "Hidden States", MS_NOT_AVAILABLE);
+	}
 }
-

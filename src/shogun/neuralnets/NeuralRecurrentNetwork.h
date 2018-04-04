@@ -121,7 +121,7 @@ protected:
 	virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, int32_t j=-1);
 
 	/** Applies backpropagation to compute the gradients of the error with
-	 * repsect to every parameter in the network.
+	 * respect to every parameter in the network.
 	 *
 	 * @param inputs inputs to the network, a matrix of size
 	 * m_num_inputs*m_batch_size

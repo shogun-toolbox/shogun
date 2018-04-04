@@ -52,9 +52,9 @@ void CNeuralTanhLayer::compute_activations(SGVector<float64_t> parameters,
 	CNeuralLinearLayer::compute_activations(parameters, layers);
 
 	int32_t len = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<len; i++)
+	for (int32_t i = 0; i < len; i++)
 	{
-		m_activations[i] = CMath::tanh(m_activations[i]);
+		m_activations[i] = std::tanh(m_activations[i]);
 	}
 }
 
@@ -63,8 +63,11 @@ void CNeuralTanhLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 	CNeuralLinearLayer::compute_local_gradients(targets);
 
 	int32_t length = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<length; i++)
+
+
+	// TODO: What about upstream gradients? Revisit it later and fix tests
+	for (int32_t i = 0; i < length; i++)
 	{
-		m_local_gradients[i] *= (1.0 - CMath::sq(m_activations[i]));
+		m_local_gradients[i] *= (1.0 - std::pow(m_activations[i], 2));
 	}
 }

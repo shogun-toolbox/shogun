@@ -106,8 +106,10 @@ public:
 	 * @ref CNeuralRecurrentLayer
 	 *
 	 * @param size the size of the recurrent hidden layer
+	 * @param time_series_length length of time series for this layer
+	 * @param output_dim outpit size of this layer
 	 */
-	CNeuralLayers* recurrent(int32_t size);
+	CNeuralLayers* recurrent(int32_t size, int32_t time_series_length, int32_t output_dim);
 
 	/** Adds softmax neural layer.
 	 *

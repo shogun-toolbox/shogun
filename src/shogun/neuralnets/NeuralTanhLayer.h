@@ -81,7 +81,7 @@ public:
 	 */
 	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
 
-	virtual const char* get_name() const { return "NeuralSoftmaxLayer"; }
+	virtual const char* get_name() const { return "NeuralTanhLayer"; }
 };
 
 }
