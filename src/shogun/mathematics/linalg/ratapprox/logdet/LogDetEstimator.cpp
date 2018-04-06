@@ -165,6 +165,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	index_t num_trace_samples = m_trace_sampler->get_num_samples();
 	SGMatrix<float64_t> samples(num_trace_samples, num_estimates);
 
+#pragma omp parallel for
 	for (index_t i = 0; i < num_estimates; ++i)
 	{
 		for (index_t j = 0; j < num_trace_samples; ++j)
