@@ -185,8 +185,7 @@ TEST(MultilabelModel, argmax)
 	y_2_expected[0] = 0;
 	y_2_expected[1] = 1;
 
-	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_1->argmax);
+	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 	SGVector<float64_t> psi_truth_1 = ret_1->psi_truth;
 
@@ -210,8 +209,7 @@ TEST(MultilabelModel, argmax)
 
 	EXPECT_EQ(ret_1->delta, 1);
 
-	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_2->argmax);
+	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 	SGVector<float64_t> psi_truth_2 = ret_2->psi_truth;
 
@@ -238,8 +236,7 @@ TEST(MultilabelModel, argmax)
 	CResultSet * ret_3 = model->argmax(w, 0, false);
 	CResultSet * ret_4 = model->argmax(w, 1, false);
 
-	CSparseMultilabel * y_3 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_3->argmax);
+	CSparseMultilabel * y_3 = ret_3->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_3 = y_3->get_data();
 	SGVector<float64_t> psi_pred_3 = ret_3->psi_pred;
 
@@ -261,8 +258,7 @@ TEST(MultilabelModel, argmax)
 		}
 	}
 
-	CSparseMultilabel * y_4 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_4->argmax);
+	CSparseMultilabel * y_4 = ret_4->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_4 = y_4->get_data();
 	SGVector<float64_t> psi_pred_4 = ret_4->psi_pred;
 

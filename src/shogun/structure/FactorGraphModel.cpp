@@ -228,11 +228,11 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
+	CFactorGraphFeatures* mf = m_features->as<CFactorGraphFeatures>();
 	CFactorGraph* fg = mf->get_sample(feat_idx);
 
 	// ground truth states
-	CFactorGraphObservation* fg_states = CFactorGraphObservation::obtain_from_generic(y);
+	CFactorGraphObservation* fg_states = y->as<CFactorGraphObservation>();
 	SGVector<int32_t> states = fg_states->get_data();
 
 	// initialize psi
@@ -281,7 +281,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
+	CFactorGraphFeatures* mf = m_features->as<CFactorGraphFeatures>();
 	CFactorGraph* fg = mf->get_sample(feat_idx);
 
 	// prepare factor graph
@@ -310,8 +310,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	ret->psi_computed = true;
 
 	// y_truth
-	CFactorGraphObservation* y_truth =
-		CFactorGraphObservation::obtain_from_generic(m_labels->get_label(feat_idx));
+	CFactorGraphObservation* y_truth = m_labels->get_label(feat_idx)->as<CFactorGraphObservation>();
 
 	SGVector<int32_t> states_gt = y_truth->get_data();
 
@@ -375,8 +374,8 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 float64_t CFactorGraphModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
-	CFactorGraphObservation* y_truth = CFactorGraphObservation::obtain_from_generic(y1);
-	CFactorGraphObservation* y_pred = CFactorGraphObservation::obtain_from_generic(y2);
+	CFactorGraphObservation* y_truth = y1->as<CFactorGraphObservation>();
+	CFactorGraphObservation* y_pred = y2->as<CFactorGraphObservation>();
 	SGVector<int32_t> s_truth = y_truth->get_data();
 	SGVector<int32_t> s_pred = y_pred->get_data();
 

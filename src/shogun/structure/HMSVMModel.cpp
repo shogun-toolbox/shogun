@@ -68,7 +68,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	int32_t D = mf->get_num_features();
 
 	// Get the sequence of labels
-	CSequence* label_seq = CSequence::obtain_from_generic(y);
+	CSequence* label_seq = y->as<CSequence>();
 
 	// Initialize psi
 	SGVector< float64_t > psi(get_dim());
@@ -228,8 +228,7 @@ CResultSet* CHMSVMModel::argmax(
 	// If argmax used while training, add to E the loss matrix (loss-augmented inference)
 	if ( training )
 	{
-		CSequence* ytrue =
-			CSequence::obtain_from_generic(m_labels->get_label(feat_idx));
+		CSequence* ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
 
 		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i (%d) and the length of its corresponding label y^i "
@@ -344,8 +343,8 @@ CResultSet* CHMSVMModel::argmax(
 
 float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
-	CSequence* seq1 = CSequence::obtain_from_generic(y1);
-	CSequence* seq2 = CSequence::obtain_from_generic(y2);
+	CSequence* seq1 = y1->as<CSequence>();
+	CSequence* seq2 = y2->as<CSequence>();
 
 	// Compute the Hamming loss, number of distinct elements in the sequences
 	return m_state_model->loss(seq1, seq2);
@@ -448,7 +447,7 @@ bool CHMSVMModel::check_training_setup() const
 	int32_t state;
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_labels() ; ++i )
 	{
-		seq = CSequence::obtain_from_generic(hmsvm_labels->get_label(i));
+		seq = hmsvm_labels->get_label(i)->as<CSequence>();
 
 		SGVector<int32_t> seq_data = seq->get_data();
 		for ( int32_t j = 0 ; j < seq_data.size() ; ++j )

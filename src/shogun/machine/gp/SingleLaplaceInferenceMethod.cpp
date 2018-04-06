@@ -209,9 +209,8 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 
 			if (m_obj->m_model->get_model_type()==LT_STUDENTST)
 			{
-				CStudentsTLikelihood* lik=CStudentsTLikelihood::obtain_from_generic(m_obj->m_model);
+				CStudentsTLikelihood* lik = m_obj->m_model->as<CStudentsTLikelihood>();
 				df=lik->get_degrees_freedom();
-				SG_UNREF(lik);
 			}
 			else
 				df=1;

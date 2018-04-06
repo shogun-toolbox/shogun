@@ -73,8 +73,8 @@ TEST(MixtureModel,gaussian_mixture_model)
 	CMixtureModel* mix=new CMixtureModel(comps,weights);
 	mix->train(feats);
 
-	CDistribution* distr=CDistribution::obtain_from_generic(comps->get_element(0));
-	CGaussian* outg=CGaussian::obtain_from_generic(distr);
+	CDistribution* distr = comps->get_element(0)->as<CDistribution>();
+	CGaussian* outg = distr->as<CGaussian>();
 	SGVector<float64_t> m=outg->get_mean();
 	SGMatrix<float64_t> cov=outg->get_cov();
 
@@ -85,8 +85,8 @@ TEST(MixtureModel,gaussian_mixture_model)
 	SG_UNREF(outg);
 	SG_UNREF(distr);
 
-	distr=CDistribution::obtain_from_generic(comps->get_element(1));
-	outg=CGaussian::obtain_from_generic(distr);
+	distr = comps->get_element(1)->as<CDistribution>();
+	outg = distr->as<CGaussian>();
 	m=outg->get_mean();
 	cov=outg->get_cov();
 
@@ -94,7 +94,6 @@ TEST(MixtureModel,gaussian_mixture_model)
 	EXPECT_NEAR(cov(0,0),1.095106568,eps);
 
 	SG_UNREF(outg);
-	SG_UNREF(distr);
 	SG_UNREF(mix)
 }
 

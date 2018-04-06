@@ -246,8 +246,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_1->argmax);
+	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
@@ -275,8 +274,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	CResultSet * ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_2->argmax);
+	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
@@ -357,8 +355,7 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_1->argmax);
+	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
@@ -382,8 +379,7 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	CResultSet * ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
-	                                  ret_2->argmax);
+	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
