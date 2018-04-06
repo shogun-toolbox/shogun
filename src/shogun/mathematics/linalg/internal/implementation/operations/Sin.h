@@ -72,7 +72,7 @@ struct sin : public ocl_operation
 	 */
 	return_type operator () (T& val) const
 	{
-		return CMath::sin(val);
+		return std::sin(val);
 	}
 
 	/** Eigen3 matrix type */
@@ -123,7 +123,7 @@ struct sin<complex128_t>
 	 */
 	return_type operator () (complex128_t& val) const
 	{
-		return CMath::sin(val);
+		return std::sin(val);
 	}
 };
 

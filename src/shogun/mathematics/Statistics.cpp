@@ -561,7 +561,7 @@ float64_t CStatistics::dlgamma(float64_t x)
 	{
 		// use reflection formula
 		x=1.0-x;
-		result=CMath::PI/CMath::tan(CMath::PI*x);
+		result = CMath::PI / std::tan(CMath::PI * x);
 	}
 
 	// make x>7 for approximation
