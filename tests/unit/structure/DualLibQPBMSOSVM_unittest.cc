@@ -124,7 +124,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 
 	for (int32_t i=0; i<num_feat; ++i)
 	{
-		CRealNumber* rn = CRealNumber::obtain_from_generic( out->get_label(i) );
+		CRealNumber* rn = out->get_label(i)->as<CRealNumber>();
 		error+=(rn->value==labs.get_element(i)) ? 0.0 : 1.0;
 		SG_UNREF(rn);
 	}

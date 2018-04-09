@@ -112,9 +112,8 @@ SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// compute diagonal vector: sW=1/sigma
 	SGVector<float64_t> result(m_features->get_num_vectors());
@@ -153,9 +152,8 @@ void CFITCInferenceMethod::update_chol()
 	//time complexits O(m^2*n)
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// eigen3 representation of covariance matrix of inducing features (m_kuu)
 	// and training features (m_ktru)
@@ -418,9 +416,8 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	SGVector<float64_t> result(1);
 

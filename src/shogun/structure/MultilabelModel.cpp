@@ -69,7 +69,7 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 
 	SGVector<float64_t> x = ((CDotFeatures *)m_features)->
 	                        get_computed_dot_feature_vector(feat_idx);
-	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(y);
+	CSparseMultilabel * slabel = y->as<CSparseMultilabel>();
 	ASSERT(slabel != NULL);
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
@@ -86,8 +86,8 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 
 float64_t CMultilabelModel::delta_loss(CStructuredData * y1, CStructuredData * y2)
 {
-	CSparseMultilabel * y1_slabel = CSparseMultilabel::obtain_from_generic(y1);
-	CSparseMultilabel * y2_slabel = CSparseMultilabel::obtain_from_generic(y2);
+	CSparseMultilabel * y1_slabel = y1->as<CSparseMultilabel>();
+	CSparseMultilabel * y2_slabel = y2->as<CSparseMultilabel>();
 
 	ASSERT(y1_slabel != NULL);
 	ASSERT(y2_slabel != NULL);
