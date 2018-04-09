@@ -108,10 +108,10 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 
 	/* rotation matrix */
 	SGMatrix<float64_t> rot=SGMatrix<float64_t>(2,2);
-	rot(0, 0)=CMath::cos(angle);
-	rot(0, 1)=-CMath::sin(angle);
-	rot(1, 0)=CMath::sin(angle);
-	rot(1, 1)=CMath::cos(angle);
+	rot(0, 0) = std::cos(angle);
+	rot(0, 1) = -std::sin(angle);
+	rot(1, 0) = std::sin(angle);
+	rot(1, 1) = std::cos(angle);
 
 	/* generate signal in each dimension which is an equal mixture of two
 	 * Gaussians */

@@ -31,7 +31,7 @@ namespace {
 
 	float64_t gx(float64_t x)
 	{
-		return CMath::tanh(x*alpha);
+		return std::tanh(x * alpha);
 	}
 
 	float64_t g_x(float64_t x)

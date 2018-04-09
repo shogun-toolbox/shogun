@@ -66,7 +66,7 @@ TEST(GaussianProcessRegression,apply_regression)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */
@@ -129,7 +129,7 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */
@@ -253,7 +253,7 @@ TEST(GaussianProcessRegression, get_mean_vector)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */
@@ -310,7 +310,7 @@ TEST(GaussianProcessRegression, get_variance_vector_1)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */

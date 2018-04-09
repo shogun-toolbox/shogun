@@ -109,7 +109,7 @@ TEST(InferenceMethod, compute_gradient)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);

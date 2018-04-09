@@ -63,7 +63,7 @@ TEST(ExactInferenceMethod,get_cholesky)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */
@@ -118,7 +118,7 @@ TEST(ExactInferenceMethod,get_alpha)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */
@@ -168,7 +168,7 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 
 	for (index_t i=0; i<n; ++i)
 	{
-		Y[i]=CMath::sin(X(0, i));
+		Y[i] = std::sin(X(0, i));
 	}
 
 	/* shogun representation */

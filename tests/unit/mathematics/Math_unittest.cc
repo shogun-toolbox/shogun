@@ -103,23 +103,23 @@ TEST(CMath, float64_tests)
 	EXPECT_NEAR(std::exp(std::log(a)), a, 1E-15);
 
 	// trigonometric functions
-	EXPECT_NEAR(CMath::sin(a), -0.48113603605414501097, 1E-15);
-	EXPECT_NEAR(CMath::sinh(a), 162.07812441272406545067, 1E-13);
-	EXPECT_NEAR(CMath::asin(a-5.0), 0.89664205584230471935, 1E-15);
-	EXPECT_NEAR(CMath::cos(a), 0.87664594609802681813, 1E-15);
-	EXPECT_NEAR(CMath::cosh(a), 162.08120931541219533756, 1E-15);
-	EXPECT_NEAR(CMath::acos(a-5.0), 0.67415427095259194967, 1E-15);
-	EXPECT_NEAR(CMath::tan(a), -0.54883734784344084812, 1E-15);
-	EXPECT_NEAR(CMath::tanh(a), 0.99998096693194016282, 1E-15);
-	EXPECT_NEAR(CMath::atan(a), 1.39951769800256187182, 1E-15);
+	EXPECT_NEAR(std::sin(a), -0.48113603605414501097, 1E-15);
+	EXPECT_NEAR(std::sinh(a), 162.07812441272406545067, 1E-13);
+	EXPECT_NEAR(std::asin(a - 5.0), 0.89664205584230471935, 1E-15);
+	EXPECT_NEAR(std::cos(a), 0.87664594609802681813, 1E-15);
+	EXPECT_NEAR(std::cosh(a), 162.08120931541219533756, 1E-15);
+	EXPECT_NEAR(std::acos(a - 5.0), 0.67415427095259194967, 1E-15);
+	EXPECT_NEAR(std::tan(a), -0.54883734784344084812, 1E-15);
+	EXPECT_NEAR(std::tanh(a), 0.99998096693194016282, 1E-15);
+	EXPECT_NEAR(std::atan(a), 1.39951769800256187182, 1E-15);
 
 	// trigonometric identities
-	EXPECT_NEAR(CMath::sq(CMath::sin(a))+CMath::sq(CMath::cos(a)),
-		1.0, 1E-15);
-	EXPECT_NEAR(CMath::sq(1.0/CMath::cos(a))-CMath::sq(CMath::tan(a)),
-		1.0, 1E-15);
-	EXPECT_NEAR(CMath::sq(1.0/CMath::sin(a))-CMath::sq(1.0/CMath::tan(a)),
-		1.0, 1E-15);
+	EXPECT_NEAR(CMath::sq(std::sin(a)) + CMath::sq(std::cos(a)), 1.0, 1E-15);
+	EXPECT_NEAR(
+	    CMath::sq(1.0 / std::cos(a)) - CMath::sq(std::tan(a)), 1.0, 1E-15);
+	EXPECT_NEAR(
+	    CMath::sq(1.0 / std::sin(a)) - CMath::sq(1.0 / std::tan(a)), 1.0,
+	    1E-15);
 
 	// misc
 	SGVector<float64_t> vec(10);
