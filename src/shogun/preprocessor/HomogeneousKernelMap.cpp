@@ -153,8 +153,8 @@ void CHomogeneousKernelMap::init()
 			*tablep++ = std::sqrt(Lxgamma * kappa[0]);
 			for (j = 1 ; j <= m_order; ++j) {
 				sqrt2kappaLxgamma = std::sqrt(2.0 * Lxgamma * kappa[j]);
-				*tablep++ = sqrt2kappaLxgamma * CMath::cos (freq[j] * Llogx);
-				*tablep++ = sqrt2kappaLxgamma * CMath::sin (freq[j] * Llogx);
+				*tablep++ = sqrt2kappaLxgamma * std::cos(freq[j] * Llogx);
+				*tablep++ = sqrt2kappaLxgamma * std::sin(freq[j] * Llogx);
 			}
 		} /* next mantissa */
 	} /* next exponent */
@@ -268,7 +268,7 @@ inline float64_t
 CHomogeneousKernelMap::sinc(float64_t x) const
 {
 	if (x == 0.0) return 1.0 ;
-	return CMath::sin (x) / x;
+	return std::sin(x) / x;
 }
 
 inline float64_t

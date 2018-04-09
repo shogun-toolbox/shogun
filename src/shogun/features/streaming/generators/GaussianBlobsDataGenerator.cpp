@@ -36,10 +36,10 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 
 	/* precompute cholesky decomposition, start with rotation matrix */
 	SGMatrix<float64_t> R(2, 2);
-	R(0, 0)=CMath::cos(angle);
-	R(0, 1)=-CMath::sin(angle);
-	R(1, 0)=CMath::sin(angle);
-	R(1, 1)=CMath::cos(angle);
+	R(0, 0) = std::cos(angle);
+	R(0, 1) = -std::sin(angle);
+	R(1, 0) = std::sin(angle);
+	R(1, 1) = std::cos(angle);
 
 	/* diagonal eigenvalue matrix */
 	SGMatrix<float64_t> L(2, 2);

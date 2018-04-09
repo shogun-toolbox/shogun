@@ -75,7 +75,7 @@ const char* CRandomFourierDotFeatures::get_name() const
 float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx)
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
-	return CMath::cos(dot_result) * constant;
+	return std::cos(dot_result) * constant;
 }
 
 SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector()

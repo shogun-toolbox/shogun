@@ -32,8 +32,8 @@ void test_libsvr()
 	{
 		feat_train[i]=CMath::random(0.0, x_range);
 		feat_test[i]=(float64_t)i/n*x_range;
-		lab_train[i]=CMath::sin(feat_train[i]);
-		lab_test[i]=CMath::sin(feat_test[i]);
+		lab_train[i] = std::sin(feat_train[i]);
+		lab_test[i] = std::sin(feat_test[i]);
 	}
 
 	/* shogun representation */

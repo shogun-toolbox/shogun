@@ -33,7 +33,7 @@ void test()
 	{
 		X[i]=CMath::random(0.0, x_range);
 		X_test[i]=(float64_t)i / n*x_range;
-		Y[i]=CMath::sin(X[i]);
+		Y[i] = std::sin(X[i]);
 	}
 
 	/* shogun representation */
