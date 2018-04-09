@@ -56,7 +56,7 @@ CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
 void CMulticlassSOLabels::add_label(CStructuredData* label)
 {
         SG_REF(label);
-        float64_t value = CRealNumber::obtain_from_generic(label)->value;
+        float64_t value = label->as<CRealNumber>()->value;
         SG_UNREF(label);
 
 	//ensure_valid_sdt(label);
@@ -73,7 +73,7 @@ void CMulticlassSOLabels::add_label(CStructuredData* label)
 bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
 {
         SG_REF(label);
-        float64_t value = CRealNumber::obtain_from_generic(label)->value;
+        float64_t value = label->as<CRealNumber>()->value;
         SG_UNREF(label);
 
 	// ensure_valid_sdt(label);

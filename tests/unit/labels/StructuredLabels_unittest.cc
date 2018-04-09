@@ -29,15 +29,15 @@ TEST(StructuredLabels, add_label)
 
 	EXPECT_EQ(3, l->get_num_labels());
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(0));
+	real_number = l->get_label(0)->as<CRealNumber>();
 	EXPECT_EQ(3, real_number->value);
 	SG_UNREF(real_number);
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(1));
+	real_number = l->get_label(1)->as<CRealNumber>();
 	EXPECT_EQ(7, real_number->value);
 	SG_UNREF(real_number);
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(2));
+	real_number = l->get_label(2)->as<CRealNumber>();
 	EXPECT_EQ(13, real_number->value);
 	SG_UNREF(real_number);
 
@@ -59,15 +59,15 @@ TEST(StructuredLabels, set_label)
 
 	EXPECT_EQ(3, l->get_num_labels());
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(0));
+	real_number = l->get_label(0)->as<CRealNumber>();
 	EXPECT_EQ(3, real_number->value);
 	SG_UNREF(real_number);
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(1));
+	real_number = l->get_label(1)->as<CRealNumber>();
 	EXPECT_EQ(23, real_number->value);
 	SG_UNREF(real_number);
 
-	real_number = CRealNumber::obtain_from_generic(l->get_label(2));
+	real_number = l->get_label(2)->as<CRealNumber>();
 	EXPECT_EQ(13, real_number->value);
 	SG_UNREF(real_number);
 

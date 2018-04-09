@@ -40,7 +40,7 @@ CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n")
 
-	CLatentFeatures* lf = CLatentFeatures::obtain_from_generic(data);
+	CLatentFeatures* lf = data->as<CLatentFeatures>();
 	m_model->set_features(lf);
 
 	return apply_latent();

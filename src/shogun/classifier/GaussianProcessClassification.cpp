@@ -120,10 +120,8 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			CSingleFITCLaplaceInferenceMethod* fitc_method=
-				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
+			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			data=fitc_method->get_inducing_features();
-			SG_UNREF(fitc_method);
 #else
 			SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -156,10 +154,8 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			CSingleFITCLaplaceInferenceMethod* fitc_method=
-				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
+			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			fitc_method->set_inducing_features(data);
-			SG_UNREF(fitc_method);
 #else
 			SG_ERROR("Single FITC Laplace inference only supported under GPL.\n")
 #endif //USE_GPL_SHOGUN

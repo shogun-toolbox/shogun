@@ -104,9 +104,8 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// compute diagonal vector: sW=1/sigma
 	SGVector<float64_t> result(m_features->get_num_vectors());
@@ -121,9 +120,8 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// create eigen representation of alpha and L
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
@@ -178,9 +176,8 @@ SGMatrix<float64_t> CExactInferenceMethod::get_posterior_covariance()
 void CExactInferenceMethod::update_chol()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	/* check whether to allocate cholesky memory */
 	if (!m_L.matrix || m_L.num_rows!=m_ktrtr.num_rows)
@@ -198,9 +195,8 @@ void CExactInferenceMethod::update_chol()
 void CExactInferenceMethod::update_alpha()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// get labels and mean vector and create eigen representation
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
@@ -252,9 +248,8 @@ void CExactInferenceMethod::update_cov()
 	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
 	    eigen_K * std::exp(m_log_scale * 2.0));
 
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 	eigen_V = eigen_V/sigma;
 
 	// compute covariance matrix of the posterior: Sigma = K - V^T * V
@@ -265,9 +260,8 @@ void CExactInferenceMethod::update_cov()
 void CExactInferenceMethod::update_deriv()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// create eigen representation of derivative matrix and cholesky
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -328,9 +322,8 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 			m_model->get_name(), param->m_name)
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);

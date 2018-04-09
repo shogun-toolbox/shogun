@@ -545,8 +545,8 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 		CStructuredData* y_truth = fg_labels_train->get_label(i);
 		acc_loss_sgd += model->delta_loss(y_truth, y_pred);
 
-		CFactorGraphObservation* y_t = CFactorGraphObservation::obtain_from_generic(y_truth);
-		CFactorGraphObservation* y_p = CFactorGraphObservation::obtain_from_generic(y_pred);
+		CFactorGraphObservation* y_t = y_truth->as<CFactorGraphObservation>();
+		CFactorGraphObservation* y_p = y_pred->as<CFactorGraphObservation>();
 
 		SGVector<int32_t> s_t = y_t->get_data();
 		SGVector<int32_t> s_p = y_p->get_data();

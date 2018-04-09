@@ -168,9 +168,8 @@ float64_t CVarDTCInferenceMethod::get_negative_log_marginal_likelihood()
 void CVarDTCInferenceMethod::update_chol()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 	m_sigma2=sigma*sigma;
 
 	//m-by-m matrix
@@ -266,9 +265,8 @@ void CVarDTCInferenceMethod::update_deriv()
 	Map<MatrixXd> eigen_Tmm(m_Tmm.matrix, m_Tmm.num_rows, m_Tmm.num_cols);
 	Map<MatrixXd> eigen_Tnm(m_Tnm.matrix, m_Tnm.num_rows, m_Tnm.num_cols);
 
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
 	m_sigma2=sigma*sigma;
 
 	//invLmInvLa = invLm*invLa;  

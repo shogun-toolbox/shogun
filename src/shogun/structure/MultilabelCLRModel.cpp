@@ -58,7 +58,7 @@ SGVector<float64_t> CMultilabelCLRModel::get_joint_feature_vector(
 	psi.zero();
 
 	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	int32_t num_pos_labels = (CSparseMultilabel::obtain_from_generic(y))->
+	int32_t num_pos_labels = (y->as<CSparseMultilabel>())->
 	                         get_data().vlen;
 	int32_t num_neg_labels = num_classes - num_pos_labels;
 
@@ -93,8 +93,8 @@ SGVector<float64_t> CMultilabelCLRModel::get_joint_feature_vector(
 
 float64_t CMultilabelCLRModel::delta_loss(CStructuredData * y1, CStructuredData * y2)
 {
-	CSparseMultilabel * y1_slabel = CSparseMultilabel::obtain_from_generic(y1);
-	CSparseMultilabel * y2_slabel = CSparseMultilabel::obtain_from_generic(y2);
+	CSparseMultilabel * y1_slabel = y1->as<CSparseMultilabel>();
+	CSparseMultilabel * y2_slabel = y2->as<CSparseMultilabel>();
 
 	ASSERT(y1_slabel != NULL);
 	ASSERT(y2_slabel != NULL);
@@ -185,8 +185,7 @@ CResultSet * CMultilabelCLRModel::argmax(SGVector<float64_t> w, int32_t feat_idx
 	{
 		plus_minus_one.set_const(-1);
 
-		CSparseMultilabel * y_true = CSparseMultilabel::obtain_from_generic(
-		                                     multi_labs->get_label(feat_idx));
+		CSparseMultilabel * y_true = multi_labs->get_label(feat_idx)->as<CSparseMultilabel>();
 		SGVector<int32_t> y_true_data = y_true->get_data();
 
 		for (index_t i = 0; i < y_true_data.vlen; i++)

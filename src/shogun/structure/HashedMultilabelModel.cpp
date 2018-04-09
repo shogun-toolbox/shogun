@@ -100,7 +100,7 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_sparse_joint_feature_vecto
 	SGSparseVector<float64_t> vec = ((CSparseFeatures<float64_t> *)m_features)->
 	                                get_sparse_feature_vector(feat_idx);
 
-	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(y);
+	CSparseMultilabel * slabel = y->as<CSparseMultilabel>();
 	ASSERT(slabel != NULL);
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
@@ -131,8 +131,8 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_sparse_joint_feature_vecto
 float64_t CHashedMultilabelModel::delta_loss(CStructuredData * y1,
                 CStructuredData * y2)
 {
-	CSparseMultilabel * y1_slabel = CSparseMultilabel::obtain_from_generic(y1);
-	CSparseMultilabel * y2_slabel = CSparseMultilabel::obtain_from_generic(y2);
+	CSparseMultilabel * y1_slabel = y1->as<CSparseMultilabel>();
+	CSparseMultilabel * y2_slabel = y2->as<CSparseMultilabel>();
 
 	ASSERT(y1_slabel != NULL);
 	ASSERT(y2_slabel != NULL);
@@ -253,8 +253,7 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 
 	float64_t score = 0, total_score = 0;
 
-	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(
-	                                     multi_labs->get_label(feat_idx));
+	CSparseMultilabel * slabel = multi_labs->get_label(feat_idx)->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel->get_data();
 	SGVector<float64_t> y_truth = CMultilabelSOLabels::to_dense(
 	                                      slabel, m_num_classes, 1, 0);

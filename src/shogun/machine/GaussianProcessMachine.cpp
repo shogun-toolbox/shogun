@@ -89,7 +89,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 
 	// get kernel and compute kernel matrix: K(feat, data)*scale^2
 	CKernel* training_kernel=m_method->get_kernel();
-	CKernel* kernel=CKernel::obtain_from_generic(training_kernel->clone());
+	CKernel* kernel = training_kernel->clone()->as<CKernel>();
 	SG_UNREF(training_kernel);
 
 	kernel->init(feat, data);
@@ -153,7 +153,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	// get kernel and compute kernel matrix: K(data, data)*scale^2
 	CKernel* training_kernel=m_method->get_kernel();
-	CKernel* kernel=CKernel::obtain_from_generic(training_kernel->clone());
+	CKernel* kernel = training_kernel->clone()->as<CKernel>();
 	SG_UNREF(training_kernel);
 	kernel->init(data, data);
 
