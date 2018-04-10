@@ -33,7 +33,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 		Y->remove_subset();
 
 		// subset for predicting
-		SGVector<index_t> subset_indices = split->validation(i);
+		SGVector<index_t> subset_indices = split->test(i);
 		X->add_subset(subset_indices);
 		Y->add_subset(subset_indices);
 

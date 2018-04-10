@@ -21,7 +21,7 @@ class CLabels;
 
 /** @brief Abstract base class for all splitting types.
  * Takes a CLabels instance and generates a desired number of subsets which
- * can be accessed by their indices via the methods train() and validation().
+ * can be accessed by their indices via the methods train() and test().
  *
  * When being extended, the abstract method build_subsets() has to be
  * implemented. Its implementations must call reset_subsets() before and set
@@ -59,7 +59,7 @@ public:
 	 * @return newly created vector of subset indices of the specified
 	 * subset is written here.
 	 */
-	const SGVector<index_t> validation(index_t subset_idx) const;
+	const SGVector<index_t> test(index_t subset_idx) const;
 
 	/** generates a newly created SGVector<index_t> with inverse indices of the
 	 * subset with the desired index. inverse here means all other indices.

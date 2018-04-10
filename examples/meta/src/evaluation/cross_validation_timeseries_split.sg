@@ -11,6 +11,6 @@ TimeSeriesSplitting splitting(labels, num_subsets, min_subset_size)
 #![set parameters]
 
 #![generate subsets and inverse (aka test labels and train labels)]
-IntVector test_labels_indices = splitting.validation(1)
+IntVector test_labels_indices = splitting.test(1)
 IntVector train_labels_indices = splitting.train(1)
 #![generate subsets and inverse (aka test labels and train labels)]

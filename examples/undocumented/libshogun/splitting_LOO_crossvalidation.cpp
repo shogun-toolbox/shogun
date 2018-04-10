@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 		{
 			//SG_SPRINT("subset %d\n", i);
 
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			SGVector<index_t>::display_vector(subset.vector, subset.vlen, "subset indices");

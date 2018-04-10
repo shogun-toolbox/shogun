@@ -46,7 +46,7 @@ TEST(SplittingStrategy,standard)
 
 		for (index_t i=0; i<num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
@@ -126,7 +126,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 
 		for (index_t i=0; i<num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
@@ -199,7 +199,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 		for (index_t i=0; i<num_classes; ++i)
 		{
 			/* count number of elements for this class */
-			SGVector<index_t> temp = splitting->validation(0);
+			SGVector<index_t> temp = splitting->test(0);
 			int32_t count=0;
 			int32_t total_count=0;
 			for (index_t j=0; j<temp.vlen; ++j)
@@ -211,7 +211,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 			/* check all subsets for same ratio */
 			for (index_t j=0; j<num_subsets; ++j)
 			{
-				SGVector<index_t> subset = splitting->validation(j);
+				SGVector<index_t> subset = splitting->test(j);
 				int32_t temp_count=0;
 				for (index_t k=0; k<subset.vlen; ++k)
 				{
@@ -255,7 +255,7 @@ TEST(SplittingStrategy,LOO)
 
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
@@ -310,7 +310,7 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			/* Subset size should be atleat min_subset_size */
@@ -346,7 +346,7 @@ TEST(SplittingStrategy, timeseries_subsets_future_leak)
 
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			/* check future leak into test set */

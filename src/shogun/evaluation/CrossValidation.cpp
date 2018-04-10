@@ -177,8 +177,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			m_machine->train_locked(inverse_subset_indices);
 
 			/* feature subset for testing */
-			SGVector<index_t> subset_indices =
-			    m_splitting_strategy->validation(i);
+			SGVector<index_t> subset_indices = m_splitting_strategy->test(i);
 
 			/* evtl. update xvalidation output class */
 			fold->set_train_indices(inverse_subset_indices);
@@ -298,8 +297,7 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* set feature subset for testing (subset method that stores
 			 * pointer) */
-			SGVector<index_t> subset_indices =
-			    m_splitting_strategy->validation(i);
+			SGVector<index_t> subset_indices = m_splitting_strategy->test(i);
 			features->add_subset(subset_indices);
 
 			/* set label subset for testing */

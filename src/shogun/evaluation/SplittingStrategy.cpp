@@ -69,7 +69,7 @@ CSplittingStrategy::~CSplittingStrategy()
 	SG_UNREF(m_subset_indices);
 }
 
-const SGVector<index_t> CSplittingStrategy::validation(index_t subset_idx) const
+const SGVector<index_t> CSplittingStrategy::test(index_t subset_idx) const
 {
 	if (!m_is_filled)
 	{

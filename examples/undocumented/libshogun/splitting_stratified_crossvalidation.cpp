@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 		for (index_t i=0; i<num_subsets; ++i)
 		{
-			SGVector<index_t> subset = splitting->validation(i);
+			SGVector<index_t> subset = splitting->test(i);
 			SGVector<index_t> inverse = splitting->train(i);
 
 			SG_SPRINT("subset %d\n", i);
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 			SG_SPRINT("checking class %d\n", i);
 
 			/* count number of elements for this class */
-			SGVector<index_t> temp = splitting->validation(0);
+			SGVector<index_t> temp = splitting->test(0);
 			int32_t count=0;
 			for (index_t j=0; j<temp.vlen; ++j)
 			{
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 			/* check all subsets for same ratio */
 			for (index_t j=0; j<num_subsets; ++j)
 			{
-				SGVector<index_t> subset = splitting->validation(j);
+				SGVector<index_t> subset = splitting->test(j);
 				int32_t temp_count=0;
 				for (index_t k=0; k<subset.vlen; ++k)
 				{

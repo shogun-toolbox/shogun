@@ -43,7 +43,6 @@ public:
 	CRandom * m_rng;
 
 protected:
-	/** implementation of the standard cross-validation splitting strategy */
 	virtual void build_subsets();
 };
 }
