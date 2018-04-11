@@ -53,7 +53,7 @@ public:
 	/**
 	 * method that solves the result for a sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample);
+	virtual float64_t compute(SGVector<float64_t> sample) const;
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -64,9 +64,6 @@ public:
 private:
 	/** the linear solver for solving complex systems */
 	CCGMShiftedFamilySolver* m_linear_solver;
-
-	/** negated shifts to pass to CG-M linear solver */
-	SGVector<complex128_t> m_negated_shifts;
 
 	/** initialize with default values and register params */
 	void init();

@@ -79,7 +79,7 @@ public:
 	/**
 	 * Method that computes for a sample and returns the final result
 	 */
-	virtual float64_t compute(SGVector<T> sample) = 0;
+	virtual float64_t compute(SGVector<T> sample) const = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

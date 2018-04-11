@@ -106,7 +106,7 @@ public:
 	/**
 	 * Method that computes for a particular sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample) = 0;
+	virtual float64_t compute(SGVector<float64_t> sample) const = 0;
 
 	/** @return shifts */
 	SGVector<complex128_t> get_shifts() const;
