@@ -51,8 +51,7 @@ namespace shogun
 
 		void copy_array(CSGObject** begin, CSGObject** end, CSGObject** dst)
 		{
-			std::transform(
-			    begin, end, dst, [](auto each) { return copy_object(each); });
+			std::transform(begin, end, dst, copy_object);
 		}
 
 #ifndef REAL_COMPARE_IMPL
