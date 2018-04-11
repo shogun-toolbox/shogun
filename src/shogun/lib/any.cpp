@@ -40,6 +40,21 @@ namespace shogun
 	namespace any_detail
 	{
 
+		inline CSGObject* copy_object(CSGObject* object)
+		{
+			if (!object)
+			{
+				return nullptr;
+			}
+			return object->clone();
+		}
+
+		void copy_array(CSGObject** begin, CSGObject** end, CSGObject** dst)
+		{
+			std::transform(
+			    begin, end, dst, [](auto each) { return copy_object(each); });
+		}
+
 #ifndef REAL_COMPARE_IMPL
 #define REAL_COMPARE_IMPL(real_t)                                              \
 	template <>                                                                \

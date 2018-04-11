@@ -349,18 +349,12 @@ namespace shogun
 		}
 
 		template <class T>
-		inline auto copy_array(T* begin, T* end, T* dst)
+		inline void copy_array(T* begin, T* end, T* dst)
 		{
 			std::copy(begin, end, dst);
 		}
 
-		template <class T>
-		inline auto copy_array(T** begin, T** end, T** dst)
-		    -> decltype((void)begin[0]->clone())
-		{
-			std::transform(
-			    begin, end, dst, [](auto each) { return each->clone(); });
-		}
+		void copy_array(CSGObject** begin, CSGObject** end, CSGObject** dst);
 	}
 
 	using any_detail::typed_pointer;
