@@ -739,5 +739,16 @@ namespace shogun
 	{
 		return PRange<T>(range, *sg_io, prefix, mode, condition);
 	}
+
+	/** Creates @ref PRange given a range that uses the global SGIO
+	 *
+	 * @param range range used
+	 * @param condition premature stopping condition
+	 */
+	template <typename T>
+	inline PRange<T> progress(Range<T> range, std::function<bool()> condition)
+	{
+		return PRange<T>(range, *sg_io, "PROGRESS: ", UTF8, condition);
+	}
 };
 #endif /* __SG_PROGRESS_H__ */
