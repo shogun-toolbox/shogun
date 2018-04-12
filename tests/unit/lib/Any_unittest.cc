@@ -84,6 +84,11 @@ public:
 	{
 		return "Object";
 	}
+
+	CSGObject* create_empty() const override
+	{
+		return new Object();
+	}
 };
 
 TEST(Any, as)
@@ -501,6 +506,60 @@ TEST(Any, clone_array2d)
 	EXPECT_EQ(src_rows, dst_rows);
 	EXPECT_EQ(src_cols, dst_cols);
 	EXPECT_NE(src, dst);
+	EXPECT_NE(dst, nullptr);
+	EXPECT_EQ(any_src, any_dst);
+
+	delete[] src;
+}
+
+TEST(Any, clone_array_sgobject)
+{
+	int src_len = 3;
+	CSGObject** src = new CSGObject*[src_len];
+	std::generate(src, src + src_len, []() { return new Object(); });
+	auto any_src = make_any_ref(&src, &src_len);
+
+	CSGObject** dst = nullptr;
+	int dst_len = 0;
+	auto any_dst = make_any_ref(&dst, &dst_len);
+	any_dst.clone_from(any_src);
+
+	EXPECT_EQ(src_len, dst_len);
+	EXPECT_NE(src, dst);
+	for (int i = 0; i < dst_len; i++)
+	{
+		EXPECT_NE(src[i], dst[i]);
+		EXPECT_TRUE(src[i]->equals(dst[i]));
+	}
+	EXPECT_NE(dst, nullptr);
+	EXPECT_EQ(any_src, any_dst);
+
+	delete[] src;
+}
+
+TEST(Any, clone_array2d_sgobject)
+{
+	int src_rows = 5;
+	int src_cols = 4;
+	int src_size = src_rows * src_cols;
+	CSGObject** src = new CSGObject*[src_size];
+	std::generate(src, src + src_size, []() { return new Object(); });
+	auto any_src = make_any_ref(&src, &src_rows, &src_cols);
+
+	int dst_rows = 0;
+	int dst_cols = 0;
+	CSGObject** dst = nullptr;
+	auto any_dst = make_any_ref(&dst, &dst_rows, &dst_cols);
+	any_dst.clone_from(any_src);
+
+	EXPECT_EQ(src_rows, dst_rows);
+	EXPECT_EQ(src_cols, dst_cols);
+	EXPECT_NE(src, dst);
+	for (int i = 0; i < dst_rows * dst_cols; i++)
+	{
+		EXPECT_NE(src[i], dst[i]);
+		EXPECT_TRUE(src[i]->equals(dst[i]));
+	}
 	EXPECT_NE(dst, nullptr);
 	EXPECT_EQ(any_src, any_dst);
 
