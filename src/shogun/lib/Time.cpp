@@ -89,6 +89,7 @@ float64_t CTime::stop(bool verbose)
 }
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#pragma comment(lib, "winmm")
 int gettimeofday(struct timeval* tp, void* tzp)
 {
     DWORD t;
