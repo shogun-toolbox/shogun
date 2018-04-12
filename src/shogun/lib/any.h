@@ -327,18 +327,34 @@ namespace shogun
 		template <class T, class S>
 		inline auto free_array(T* ptr, S size)
 		{
+			if (!ptr)
+			{
+				return;
+			}
 			SG_FREE(ptr);
 		}
 
 		template <class S>
 		inline auto free_array(CSGObject** ptr, S size)
 		{
+			if (!ptr)
+			{
+				return;
+			}
 			for (S i = 0; i < size; ++i)
 			{
 				ptr[i]->unref();
 			}
 			SG_FREE(ptr);
 		}
+
+		template <class T>
+		inline void copy_array(T* begin, T* end, T* dst)
+		{
+			std::copy(begin, end, dst);
+		}
+
+		void copy_array(CSGObject** begin, CSGObject** end, CSGObject** dst);
 	}
 
 	using any_detail::typed_pointer;
@@ -371,7 +387,7 @@ namespace shogun
 		any_detail::free_array(dst, len);
 		dst = new T[len];
 		*(this->m_length) = len;
-		std::copy(src, src + len, dst);
+		any_detail::copy_array(src, src + len, dst);
 	}
 
 	template <class T, class S>
@@ -403,7 +419,7 @@ namespace shogun
 		dst = new T[rows * cols];
 		*(this->m_rows) = rows;
 		*(this->m_cols) = cols;
-		std::copy(src, src + (rows * cols), dst);
+		any_detail::copy_array(src, src + (rows * cols), dst);
 	}
 
 	/** @brief An interface for a policy to store a value.
