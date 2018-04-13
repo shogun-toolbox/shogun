@@ -3,7 +3,7 @@
 # This software is distributed under BSD 3-clause license (see LICENSE file).
 #
 # Authors: Viktor Gal, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De,
-#          Björn Esser, Heiko Strathmann,  Michele Mazzoni
+#          Bjoern Esser, Heiko Strathmann,  Michele Mazzoni
 
 
 def get_class_list_content(class_list_file):
