@@ -351,10 +351,12 @@ namespace shogun
 		template <class T>
 		inline void copy_array(T* begin, T* end, T* dst)
 		{
-			std::copy(begin, end, dst);
+			std::transform(begin, end, dst, [](T value) {
+				return static_cast<T>(
+				    clone_impl(maybe_most_important(), value));
+			});
 		}
 
-		void copy_array(CSGObject** begin, CSGObject** end, CSGObject** dst);
 	}
 
 	using any_detail::typed_pointer;

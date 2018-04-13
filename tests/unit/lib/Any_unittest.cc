@@ -515,11 +515,11 @@ TEST(Any, clone_array2d)
 TEST(Any, clone_array_sgobject)
 {
 	int src_len = 3;
-	CSGObject** src = new CSGObject*[src_len];
+	Object** src = new Object*[src_len];
 	std::generate(src, src + src_len, []() { return new Object(); });
 	auto any_src = make_any_ref(&src, &src_len);
 
-	CSGObject** dst = nullptr;
+	Object** dst = nullptr;
 	int dst_len = 0;
 	auto any_dst = make_any_ref(&dst, &dst_len);
 	any_dst.clone_from(any_src);
@@ -542,13 +542,13 @@ TEST(Any, clone_array2d_sgobject)
 	int src_rows = 5;
 	int src_cols = 4;
 	int src_size = src_rows * src_cols;
-	CSGObject** src = new CSGObject*[src_size];
+	Object** src = new Object*[src_size];
 	std::generate(src, src + src_size, []() { return new Object(); });
 	auto any_src = make_any_ref(&src, &src_rows, &src_cols);
 
 	int dst_rows = 0;
 	int dst_cols = 0;
-	CSGObject** dst = nullptr;
+	Object** dst = nullptr;
 	auto any_dst = make_any_ref(&dst, &dst_rows, &dst_cols);
 	any_dst.clone_from(any_src);
 
