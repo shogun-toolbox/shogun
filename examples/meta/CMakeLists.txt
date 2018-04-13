@@ -121,6 +121,10 @@ LIST(APPEND DISABLED_INTERFACES INTERFACE_R)
 # see https://github.com/shogun-toolbox/shogun/issues/3018
 LIST(APPEND DISABLED_INTERFACES INTERFACE_LUA)
 
+# temporarily disabled. While the interface fully works, the new API does not
+# there is a potential bug in swig that needs fixing first
+# see https://github.com/shogun-toolbox/shogun/issues/4177
+LIST(APPEND DISABLED_INTERFACES INTERFACE_RUBY)
 
 FOREACH(interface ${AVAILABLE_INTERFACES})
     list(FIND DISABLED_INTERFACES ${interface} disabled)
