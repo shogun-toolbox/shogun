@@ -1,14 +1,8 @@
 #!/usr/bin/env python
-"""
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+# This software is distributed under BSD 3-clause license (see LICENSE file).
+#
+# Authors: Soeren Sonnenburg, Gunnar Raetsch
 
-Written (W) 2007,2011 Gunnar Raetsch
-Written (W) 2006-2009 Soeren Sonnenburg
-Copyright (C) 2006-2010 Fraunhofer Institute FIRST and Max-Planck-Society
-"""
 
 try:
 	import os

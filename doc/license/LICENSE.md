@@ -1,4 +1,4 @@
-Copyright (c) 2017, Shogun Machine Learning Toolbox developers <shogun-team@shogun-toolbox.org>
+Copyright (c) Shogun Machine Learning Toolbox developers <shogun-team@shogun-toolbox.org>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -38,9 +38,9 @@ Statistics on Shogun's development activity can be found at [ohloh](https://www.
 ### Free
 
  * Shogun is community-based and non-commercial.
- * Shogun is currently released under the GPLv3 licencse. 
- Shogun is moving towards BSD compatibility with optional GPL parts.
- This means companies can use the code without having to turn their code-base to GPL.
+ * Shogun is distributed under BSD 3-clause license (see LICENSE file), with
+   optional GPL3 components.
+ * Shogun can be used in commercial applications without restrictions.
 
 ### Good (it's what Shogun aims for)
 

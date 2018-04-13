@@ -1,23 +1,8 @@
 #!/usr/bin/env python
 
-#############################################################################################
-#                                                                                           #
-#    This program is free software; you can redistribute it and/or modify                   #
-#    it under the terms of the GNU General Public License as published by                   #
-#    the Free Software Foundation; either version 3 of the License, or                      #
-#    (at your option) any later version.                                                    #
-#                                                                                           #
-#    This program is distributed in the hope that it will be useful,                        #
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
-#    GNU General Public License for more details.                                           #
-#                                                                                           #
-#    You should have received a copy of the GNU General Public License                      #
-#    along with this program; if not, see http://www.gnu.org/licenses                       #
-#    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
-#    Fifth Floor, Boston, MA 02110-1301  USA                                                #
-#                                                                                           #
-#############################################################################################
+# This software is distributed under BSD 3-clause license (see LICENSE file).
+#
+# Authors: Soeren Sonnenburg
 
 import sys
 from distutils.core import setup, Extension
@@ -60,7 +45,7 @@ setup (name = 'easysvm',
        description = 'easysvm - A front end to the shogun toolbox',
        author = ['Cheng Soon Ong', 'Gunnar Raetsch' ],
        author_email = ['chengsoon.ong@tuebingen.mpg.de','gunnar.raetsch@tuebingen.mpg.de'],
-       license='GPLv3',
+       license='3-clause BSD',
        url = 'http://www.fml.tuebingen.mpg.de/raetsch/projects/easysvm',
        py_modules=['esvm.datafuncs','esvm.mldata','esvm.mldata_arff','esvm.experiment','esvm.parse',\
                    'esvm.plots','esvm.poim','esvm.utils','splicesites.utils'],
