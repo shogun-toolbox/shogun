@@ -33,7 +33,7 @@ Description: SHOGUN - is a new machine learning toolbox with focus on large
         into different feature types. Chains of preprocessors (e.g.  substracting the
         mean) can be attached to each feature object allowing for on-the-fly
         pre-processing.
-License: GPL Version 3 or later.
+License: BSD 3-clause license (see LICENSE file).
 URL: http://www.shogun-toolbox.org
 Built: $RVERSION; $PLATFORM; $OSTYPE;
 EOF

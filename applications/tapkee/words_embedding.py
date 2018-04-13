@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
+# This software is distributed under BSD 3-clause license (see LICENSE file).
 #
-# Written (W) 2011 Sergey Lisitsyn
-# Copyright (C) 2011 Sergey Lisitsyn
+# Authors: Sergey Lisitsyn
 
 from numpy import *
 from pylab import *

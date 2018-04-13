@@ -76,10 +76,7 @@ Note that some folders are submodules that can be checked out with
 
 ## License
 ----------
-Shogun is generally licensed under the GPL3, with
-code borrowed from various external libraries, and optional
-parts that are neither compatible with GPL nor BSD.
-It is possible to compile a BSD3 compatible build of Shogun.
-
+Shogun is distributed under BSD 3-clause license (see LICENSE file), with
+optional GPL3 components.
 See doc/licenses for details.
 

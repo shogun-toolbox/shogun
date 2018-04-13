@@ -13,6 +13,6 @@ Shogun is and open-source machine learning library that offers a wide range of e
 #### Shogun is open source
 
 * Free software, community-based development and machine learning education.
-* GPLv3 license and working towards BSD compatibility.
+* Commercially friendly BSD 3-clause license
 
 Keep reading to find out more about Shogun's mission, features, and history [here](http://shogun.ml/mission).
