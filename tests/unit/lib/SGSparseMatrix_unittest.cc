@@ -1,11 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
- * Written (W) 2015 Yingrui Chang, Fernando Iglesias
+ * Authors: Yingrui Chang, Soumyajit De, Fernando Iglesias, Soeren Sonnenburg, 
+ *          Evgeniy Andreev, Viktor Gal, Thoralf Klein, Wuwei Lin, Björn Esser, 
+ *          Pan Deng
  */
 
 #include <gtest/gtest.h>

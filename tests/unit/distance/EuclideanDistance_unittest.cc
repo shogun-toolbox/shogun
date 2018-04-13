@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Fernando J. Iglesias Garcia
- * Written (W) 2016 Soumyajit De
+ * Authors: Saurabh Mahindre, Soeren Sonnenburg, Fernando Iglesias, 
+ *          Soumyajit De, Björn Esser
  */
 
 #include <shogun/distance/EuclideanDistance.h>
