@@ -351,7 +351,7 @@ namespace shogun
 		template <class T>
 		inline void copy_array(T* begin, T* end, T* dst)
 		{
-			std::transform(begin, end, dst, [](T value) {
+			std::transform(begin, end, dst, [](const T& value) {
 				return static_cast<T>(
 				    clone_impl(maybe_most_important(), value));
 			});
