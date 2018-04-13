@@ -22,7 +22,7 @@ ENDIF()
 OPTION(LIBSHOGUN_BUILD_STATIC "Build libshogun static library")
 OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
 set(INCLUDE_INSTALL_DIR include)
-set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib/external)
+set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party)
 
 if (MSVC)
   SET(LIBSHOGUN_BUILD_STATIC ON
@@ -164,7 +164,7 @@ IF(MSVC)
     include(external/MSIntTypes)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
       $<BUILD_INTERFACE:${MSINTTYPES_INCLUDE_DIR}>
-      $<INSTALL_INTERFACE:include/shogun/lib/external/MSIntTypes>
+      $<INSTALL_INTERFACE:include/shogun/third_party/MSIntTypes>
     )
   ENDIF()
 
@@ -172,7 +172,7 @@ IF(MSVC)
   include(external/MSDirent)
   SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
     $<BUILD_INTERFACE:${MSDIRENT_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include/shogun/lib/external/MSDirent>
+    $<INSTALL_INTERFACE:include/shogun/third_party/MSDirent>
   )
 
   target_link_libraries(shogun PUBLIC winmm)
@@ -223,7 +223,7 @@ IF(NOT EIGEN3_FOUND)
   include(external/Eigen3)
   SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
     $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include/shogun/lib/external/eigen>
+    $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
   )
 ELSE()
   # eigen3 bug related to aliasing operators and self-storing.
@@ -247,7 +247,7 @@ IF(NOT rxcpp_FOUND)
     include(external/rxcpp)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
             $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
-            $<INSTALL_INTERFACE:include/shogun/lib/external/rxcpp>
+            $<INSTALL_INTERFACE:include/shogun/third_party/rxcpp>
             )
 ELSE()
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})

@@ -21,10 +21,4 @@ if(NOT EXISTS "${rxcpp_INCLUDE_DIR}")
 endif()
 
 include(FindPackageHandleStandardArgs)
-mark_as_advanced(rxcpp_INCLUDE_DIR)
-
-if(EXISTS "${rxcpp_INCLUDE_DIR}")
-    set(rxcpp_FOUND 1)
-else()
-    set(rxcpp_FOUND 0)
-endif()
+find_package_handle_standard_args(rxcpp REQUIRED_VARS rxcpp_INCLUDE_DIR)
