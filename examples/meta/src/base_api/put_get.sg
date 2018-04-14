@@ -1,5 +1,5 @@
 KNN knn()
-knn.put("m_k", 2)
+knn.put("k", 2)
 
 Kernel k = kernel("GaussianKernel")
 k.put("log_width", 2.1)
