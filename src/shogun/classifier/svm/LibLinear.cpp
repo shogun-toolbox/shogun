@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, Liang Pang, 
  *          Heiko Strathmann, Weijie Lin, Youssef Emad El-Din, Thoralf Klein, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 #include <shogun/lib/config.h>
 

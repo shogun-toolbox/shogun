@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Björn Esser
+ * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/lib/Hash.h>

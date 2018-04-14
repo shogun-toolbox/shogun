@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Kevin Hughes, Soeren Sonnenburg, Evgeniy Andreev, Viktor Gal, 
- *          Björn Esser, Pan Deng
+ *          Bjoern Esser, Pan Deng
  */
 
 #include <shogun/base/init.h>

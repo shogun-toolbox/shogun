@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Saurabh Mahindre, Soeren Sonnenburg, Fernando Iglesias, 
- *          Soumyajit De, Björn Esser
+ *          Soumyajit De, Bjoern Esser
  */
 
 #include <shogun/distance/EuclideanDistance.h>

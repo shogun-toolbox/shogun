@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Philippe Tillet, Sergey Lisitsyn, Viktor Gal, Fernando Iglesias, 
- *          Björn Esser, Soeren Sonnenburg, Saurabh Goyal
+ *          Bjoern Esser, Soeren Sonnenburg, Saurabh Goyal
  */
 
 #ifndef _NEAREST_CENTROID_H__

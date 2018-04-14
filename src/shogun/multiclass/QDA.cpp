@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Kevin Hughes, Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni, 
- *          Heiko Strathmann, Sanuj Sharma, Weijie Lin, Björn Esser, 
+ *          Heiko Strathmann, Sanuj Sharma, Weijie Lin, Bjoern Esser, 
  *          Youssef Emad El-Din, Sourav Singh, Pan Deng
  */
 

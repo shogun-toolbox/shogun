@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Yuyu Zhang, Björn Esser, Evangelos Anagnostopoulos
+ * Authors: Yuyu Zhang, Bjoern Esser, Evangelos Anagnostopoulos
  */
 
 #ifndef _RANDOMKITCHENSINKS_DOT_FEATURES_H__

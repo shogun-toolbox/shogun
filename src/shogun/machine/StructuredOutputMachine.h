@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Shell Hu, Yuyu Zhang, Thoralf Klein, 
- *          Björn Esser, Sergey Lisitsyn, Viktor Gal
+ *          Bjoern Esser, Sergey Lisitsyn, Viktor Gal
  */
 
 #ifndef _STRUCTURED_OUTPUT_MACHINE__H__

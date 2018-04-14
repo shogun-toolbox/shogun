@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Sunil Mahendrakar, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Sunil Mahendrakar, Heiko Strathmann, Bjoern Esser
  */
 
 #ifndef CG_M_SHIFTED_FAMILY_SOLVER_H_

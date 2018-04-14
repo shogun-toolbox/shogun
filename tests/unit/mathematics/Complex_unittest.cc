@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Viktor Gal, syashakash, Grigorii Guz, Björn Esser, 
+ * Authors: Soumyajit De, Viktor Gal, syashakash, Grigorii Guz, Bjoern Esser, 
  *          Akash Shivram, Soeren Sonnenburg, Sergey Lisitsyn, Shubham Shukla
  */
 #include <gtest/gtest.h>

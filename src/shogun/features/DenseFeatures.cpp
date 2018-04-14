@@ -4,7 +4,7 @@
  * Authors: Soeren Sonnenburg, Saurabh Mahindre, Soumyajit De, Heiko Strathmann,
  *          Sergey Lisitsyn, Sanuj Sharma, Chiyuan Zhang, Viktor Gal,
  *          Michele Mazzoni, Vladislav Horbatiuk, Kevin Hughes, Weijie Lin,
- *          Fernando Iglesias, Björn Esser, Evgeniy Andreev,
+ *          Fernando Iglesias, Bjoern Esser, Evgeniy Andreev,
  *          Christopher Goldsworthy
  */
 

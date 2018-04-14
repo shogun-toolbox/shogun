@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev, 
- *          Weijie Lin, Fernando Iglesias, Björn Esser, Sergey Lisitsyn
+ *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _SVM_H___

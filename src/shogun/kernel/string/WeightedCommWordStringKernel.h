@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Yuyu Zhang, Björn Esser, Sergey Lisitsyn
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _WEIGHTEDCOMMWORDSTRINGKERNEL_H___

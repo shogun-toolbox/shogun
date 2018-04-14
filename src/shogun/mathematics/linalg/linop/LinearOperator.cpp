@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Sunil Mahendrakar, Björn Esser
+ * Authors: Soumyajit De, Sunil Mahendrakar, Bjoern Esser
  */
 
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>

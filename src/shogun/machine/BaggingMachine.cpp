@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Saurabh Mahindre, Heiko Strathmann, Thoralf Klein, 
- *          Olivier NGuyen, Björn Esser, Weijie Lin
+ *          Olivier NGuyen, Bjoern Esser, Weijie Lin
  */
 
 #include <shogun/ensemble/CombinationRule.h>

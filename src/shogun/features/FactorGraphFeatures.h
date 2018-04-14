@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Yuyu Zhang, Björn Esser, Shell Hu
+ * Authors: Yuyu Zhang, Bjoern Esser, Shell Hu
  */
 
 #ifndef __FACTORGRAPH_FEATURES_H__

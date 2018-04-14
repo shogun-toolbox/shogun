@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Chiyuan Zhang, Shell Hu, Sergey Lisitsyn, 
- *          Björn Esser, Sanuj Sharma
+ *          Bjoern Esser, Sanuj Sharma
  */
 
 #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>

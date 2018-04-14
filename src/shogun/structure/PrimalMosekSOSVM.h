@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shell Hu, Fernando Iglesias, Viktor Gal, Yuyu Zhang, 
- *          Sergey Lisitsyn, Björn Esser
+ *          Sergey Lisitsyn, Bjoern Esser
  */
 
 #ifndef _PRIMAL_MOSEK_SOSVM__H__

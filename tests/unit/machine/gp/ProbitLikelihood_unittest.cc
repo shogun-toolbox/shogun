@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Roman Votyakov, Wu Lin, Pan Deng, Björn Esser, Sanuj Sharma
+ * Authors: Roman Votyakov, Wu Lin, Pan Deng, Bjoern Esser, Sanuj Sharma
  */
 
 #include <shogun/lib/config.h>

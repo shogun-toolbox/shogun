@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evgeniy Andreev, Soeren Sonnenburg, Viktor Gal, Thoralf Klein, 
- *          Björn Esser, Saurabh Goyal
+ *          Bjoern Esser, Saurabh Goyal
  */
 #include <shogun/io/ProtobufFile.h>
 

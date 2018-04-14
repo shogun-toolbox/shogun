@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Thoralf Klein, Björn Esser
+ * Authors: Heiko Strathmann, Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/mathematics/Statistics.h>

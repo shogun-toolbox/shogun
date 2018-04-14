@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Saurabh Goyal, Chiyuan Zhang, Björn Esser
+ * Authors: Soeren Sonnenburg, Saurabh Goyal, Chiyuan Zhang, Bjoern Esser
  */
 
 #ifndef MKLMulticlassGRADIENT_H_

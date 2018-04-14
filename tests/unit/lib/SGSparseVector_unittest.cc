@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Heiko Strathmann, Soumyajit De, Björn Esser, 
+ * Authors: Thoralf Klein, Heiko Strathmann, Soumyajit De, Bjoern Esser, 
  *          Viktor Gal
  */
 

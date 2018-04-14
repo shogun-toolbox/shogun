@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Saurabh Mahindre, Thoralf Klein, Sahil Chaddha, Soeren Sonnenburg, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <gtest/gtest.h>

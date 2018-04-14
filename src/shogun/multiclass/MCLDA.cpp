@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Kevin Hughes, Heiko Strathmann, Michele Mazzoni, Soumyajit De, 
- *          Weijie Lin, Björn Esser, Soeren Sonnenburg, Sanuj Sharma
+ *          Weijie Lin, Bjoern Esser, Soeren Sonnenburg, Sanuj Sharma
  */
 
 #include <shogun/lib/common.h>

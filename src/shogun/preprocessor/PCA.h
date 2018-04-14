@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
  *          Evgeniy Andreev, Marc Zimmermann, Viktor Gal, Evan Shelhamer, 
- *          Björn Esser, Sanuj Sharma
+ *          Bjoern Esser, Sanuj Sharma
  */
 
 #ifndef PCA_H_

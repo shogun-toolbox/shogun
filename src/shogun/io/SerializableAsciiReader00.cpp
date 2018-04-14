@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann, Viktor Gal, 
- *          Thoralf Klein, Björn Esser
+ *          Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/io/SerializableAsciiReader00.h>

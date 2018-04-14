@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Yuyu Zhang, Björn Esser
+ * Authors: Evangelos Anagnostopoulos, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef _RANDOMFOURIER_DOTFEATURES__H__

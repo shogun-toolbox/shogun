@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Yuyu Zhang, Viktor Gal, Fernando Iglesias, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef GAUSSIANNAIVEBAYES_H_

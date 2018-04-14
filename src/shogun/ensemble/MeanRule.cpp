@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Viktor Gal
+ * Authors: Bjoern Esser, Viktor Gal
  */
 
 #include <shogun/ensemble/MeanRule.h>

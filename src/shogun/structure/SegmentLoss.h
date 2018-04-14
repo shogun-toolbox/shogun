@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 #ifndef __SEGMENT_LOSS__
 #define __SEGMENT_LOSS__

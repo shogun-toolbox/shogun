@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Björn Esser, Evangelos Anagnostopoulos
+ * Authors: Thoralf Klein, Bjoern Esser, Evangelos Anagnostopoulos
  */
 
 #include <shogun/features/LBPPyrDotFeatures.h>

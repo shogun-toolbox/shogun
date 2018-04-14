@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sunil Mahendrakar, Soumyajit De, Björn Esser
+ * Authors: Sunil Mahendrakar, Soumyajit De, Bjoern Esser
  */
 
 #ifndef LINEAR_SOLVER_H_

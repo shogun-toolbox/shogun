@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Thoralf Klein, Shell Hu, Björn Esser, 
+ * Authors: Fernando Iglesias, Thoralf Klein, Shell Hu, Bjoern Esser, 
  *          Viktor Gal
  */
 

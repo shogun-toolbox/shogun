@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Soeren Sonnenburg, Thoralf Klein, Björn Esser
+ * Authors: Evgeniy Andreev, Soeren Sonnenburg, Thoralf Klein, Bjoern Esser
  */
 
 #include <stdlib.h>

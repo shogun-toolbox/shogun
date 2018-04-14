@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Evgeniy Andreev, Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal,
- *          Thoralf Klein, Björn Esser, Soumyajit De
+ *          Thoralf Klein, Bjoern Esser, Soumyajit De
  */
 
 #ifndef _SPARSEFEATURES__H__

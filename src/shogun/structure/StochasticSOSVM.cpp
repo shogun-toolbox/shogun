@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Abinash Panda, Shell Hu, Soeren Sonnenburg, Fernando Iglesias, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/mathematics/Math.h>

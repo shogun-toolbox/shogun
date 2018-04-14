@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Björn Esser
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/features/TOPFeatures.h>

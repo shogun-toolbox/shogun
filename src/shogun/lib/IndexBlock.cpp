@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Björn Esser, Sergey Lisitsyn
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <shogun/lib/IndexBlock.h>

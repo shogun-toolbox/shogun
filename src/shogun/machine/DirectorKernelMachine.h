@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Tejas Jogi, Evgeniy Andreev, Soeren Sonnenburg, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _DIRECTORKERNELMACHINE_H___

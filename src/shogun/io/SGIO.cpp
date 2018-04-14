@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Giovanni De Toni, Viktor Gal, Heiko Strathmann, 
- *          Thoralf Klein, Evangelos Anagnostopoulos, Weijie Lin, Björn Esser, 
+ *          Thoralf Klein, Evangelos Anagnostopoulos, Weijie Lin, Bjoern Esser, 
  *          Saurabh Goyal
  */
 

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu, 
- *          Thoralf Klein, Björn Esser, Sanuj Sharma
+ *          Thoralf Klein, Bjoern Esser, Sanuj Sharma
  */
 
 #include <shogun/structure/CCSOSVM.h>

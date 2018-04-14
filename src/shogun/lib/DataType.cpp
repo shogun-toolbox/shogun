@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Thoralf Klein, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <string.h>

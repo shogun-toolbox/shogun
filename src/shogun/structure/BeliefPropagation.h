@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Shell Hu, Yuyu Zhang, Björn Esser
+ * Authors: Viktor Gal, Shell Hu, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef __BELIEF_PROPAGATION_H__

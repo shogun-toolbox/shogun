@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Sergey Lisitsyn, Chiyuan Zhang, Heiko Strathmann, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef STOCHASTICPROXIMITYEMBEDDING_H_

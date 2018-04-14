@@ -3,7 +3,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Abhinav Rai, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/lib/config.h>

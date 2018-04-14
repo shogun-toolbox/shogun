@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
- *          Evgeniy Andreev, Evan Shelhamer, Björn Esser
+ *          Evgeniy Andreev, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/io/SGIO.h>

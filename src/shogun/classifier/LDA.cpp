@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Michele Mazzoni, Björn Esser, Fernando Iglesias, Abhijeet Kislay, 
+ *          Michele Mazzoni, Bjoern Esser, Fernando Iglesias, Abhijeet Kislay, 
  *          Viktor Gal, Evan Shelhamer, Giovanni De Toni, 
  *          Christopher Goldsworthy
  */

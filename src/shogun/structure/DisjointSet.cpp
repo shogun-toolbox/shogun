@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Björn Esser
+ * Authors: Shell Hu, Bjoern Esser
  */
 
 #include <shogun/structure/DisjointSet.h>

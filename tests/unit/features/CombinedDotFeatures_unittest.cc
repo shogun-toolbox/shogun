@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Soeren Sonnenburg, 
- *          Björn Esser, Viktor Gal
+ *          Bjoern Esser, Viktor Gal
  */
 
 #include <shogun/features/DenseFeatures.h>

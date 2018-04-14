@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Heiko Strathmann, Björn Esser, Viktor Gal
+ * Authors: Jiaolong Xu, Heiko Strathmann, Bjoern Esser, Viktor Gal
  */
 #include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN

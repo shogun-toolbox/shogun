@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, Thoralf Klein, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef INDEXBLOCK_H_

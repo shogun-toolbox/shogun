@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, 
- *          Yuyu Zhang, Björn Esser, Sanuj Sharma
+ *          Yuyu Zhang, Bjoern Esser, Sanuj Sharma
  */
 
 #ifndef _MULTITASKKERNELTREENORMALIZER_H___

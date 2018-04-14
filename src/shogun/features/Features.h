@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Saurabh Mahindre, Evgeniy Andreev, Wu Lin, Vladislav Horbatiuk,
- *          Yuyu Zhang, Björn Esser, Soumyajit De
+ *          Yuyu Zhang, Bjoern Esser, Soumyajit De
  */
 
 #ifndef _CFEATURES__H__

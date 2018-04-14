@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Heiko Strathmann, Björn Esser, Sergey Lisitsyn
+ * Authors: Kevin Hughes, Heiko Strathmann, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef APPROXJOINTDIAGONALIZER_H_

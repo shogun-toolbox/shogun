@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Björn Esser
+ * Authors: Soumyajit De, Bjoern Esser
  */
 
 #include <shogun/lib/common.h>

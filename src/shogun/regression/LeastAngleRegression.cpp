@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, 
  *          Saurabh Mahindre, Christopher Goldsworthy, Chiyuan Zhang, 
- *          Viktor Gal, Abhinav Rai, Björn Esser, Weijie Lin, Pan Deng
+ *          Viktor Gal, Abhinav Rai, Bjoern Esser, Weijie Lin, Pan Deng
  */
 
 #include <shogun/lib/config.h>

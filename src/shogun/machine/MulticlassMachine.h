@@ -3,7 +3,7 @@
  *
  * Authors: Sergey Lisitsyn, Chiyuan Zhang, Soeren Sonnenburg, 
  *          Fernando Iglesias, Jiaolong Xu, Heiko Strathmann, Evan Shelhamer, 
- *          Yuyu Zhang, Shell Hu, Thoralf Klein, Björn Esser
+ *          Yuyu Zhang, Shell Hu, Thoralf Klein, Bjoern Esser
  */
 
 #ifndef _MULTICLASSMACHINE_H___

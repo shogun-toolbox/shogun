@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Viktor Gal, Evgeniy Andreev, Evan Shelhamer, 
- *          Sergey Lisitsyn, Björn Esser
+ *          Sergey Lisitsyn, Bjoern Esser
  */
 
 #include <shogun/preprocessor/PruneVarSubMean.h>

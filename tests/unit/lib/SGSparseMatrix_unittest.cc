@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Yingrui Chang, Soumyajit De, Fernando Iglesias, Soeren Sonnenburg, 
- *          Evgeniy Andreev, Viktor Gal, Thoralf Klein, Wuwei Lin, Björn Esser, 
+ *          Evgeniy Andreev, Viktor Gal, Thoralf Klein, Wuwei Lin, Bjoern Esser, 
  *          Pan Deng
  */
 

@@ -1,9 +1,9 @@
 """
 Shogun demo, based on PyQT Demo by Eli Bendersky
 
-Christian Widmer
-Soeren Sonnenburg
-License: GPLv3
+# This software is distributed under BSD 3-clause license (see LICENSE file).
+#
+# Authors: Christian Widmer, Soeren Sonnenburg
 """
 import numpy
 import sys, os, csv

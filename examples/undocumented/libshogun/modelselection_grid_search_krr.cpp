@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Jacob Walker, Soumyajit De, Björn Esser, 
+ * Authors: Heiko Strathmann, Jacob Walker, Soumyajit De, Bjoern Esser, 
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 

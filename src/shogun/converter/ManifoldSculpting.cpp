@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Vladislav Horbatiuk, Björn Esser
+ * Authors: Heiko Strathmann, Vladislav Horbatiuk, Bjoern Esser
  */
 
 #include <shogun/converter/ManifoldSculpting.h>

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Philippe Tillet, Soeren Sonnenburg, Björn Esser, Sergey Lisitsyn
+ * Authors: Philippe Tillet, Soeren Sonnenburg, Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <shogun/classifier/NearestCentroid.h>

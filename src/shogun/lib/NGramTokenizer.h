@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Yuyu Zhang, Björn Esser
+ * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef _NGRAMTOKENIZER__H__

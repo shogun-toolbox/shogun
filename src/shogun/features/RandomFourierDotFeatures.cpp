@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Björn Esser
+ * Authors: Evangelos Anagnostopoulos, Bjoern Esser
  */
 
 #include <shogun/base/Parameter.h>

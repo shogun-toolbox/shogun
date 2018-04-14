@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soeren Sonnenburg, Björn Esser, Chiyuan Zhang
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Bjoern Esser, Chiyuan Zhang
  */
 
 #include "MKLMulticlassOptimizationBase.h"

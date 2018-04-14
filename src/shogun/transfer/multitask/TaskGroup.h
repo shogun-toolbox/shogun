@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Yuyu Zhang, Björn Esser
+ * Authors: Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef TASKGROUP_H_

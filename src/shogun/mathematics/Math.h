@@ -4,7 +4,7 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias,
  *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Shashwat Lal Das,
  *          Thoralf Klein, Wu Lin, Chiyuan Zhang, Harshit Syal, Evan Shelhamer,
- *          Philippe Tillet, Björn Esser, Yuyu Zhang, Abhinav Agarwalla,
+ *          Philippe Tillet, Bjoern Esser, Yuyu Zhang, Abhinav Agarwalla,
  *          Saurabh Goyal
  */
 

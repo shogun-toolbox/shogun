@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Fernando Iglesias, Heiko Strathmann, Yuyu Zhang, 
- *          Olivier NGuyen, Björn Esser, Thoralf Klein, Soeren Sonnenburg, 
+ *          Olivier NGuyen, Bjoern Esser, Thoralf Klein, Soeren Sonnenburg, 
  *          Soumyajit De
  */
 

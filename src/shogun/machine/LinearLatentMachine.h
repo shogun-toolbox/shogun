@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Yuyu Zhang, Thoralf Klein, Sergey Lisitsyn, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef __LATENTLINEARMACHINE_H__

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Yuyu Zhang, Björn Esser, Chiyuan Zhang
+ * Authors: Yuyu Zhang, Bjoern Esser, Chiyuan Zhang
  */
 
 #ifndef ECOCFORESTENCODER_H__

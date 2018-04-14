@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Evgeniy Andreev, Björn Esser, Soeren Sonnenburg, 
+ * Authors: Jiaolong Xu, Evgeniy Andreev, Bjoern Esser, Soeren Sonnenburg, 
  *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer, 
  *          Abhinav Agarwalla
  */

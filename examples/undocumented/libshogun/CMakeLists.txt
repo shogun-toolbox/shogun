@@ -11,6 +11,7 @@ IF (NOT USE_GPL_SHOGUN)
 	"modelselection_grid_search_string_kernel.cpp"
 	"parameter_modsel_parameters.cpp"
 	"classifier_svmlight_string_features_precomputed_kernel.cpp"
+	"classifier_larank.cpp"
 	)
 ENDIF()
 

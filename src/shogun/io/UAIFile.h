@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Abinash Panda, Abhinav Agarwalla, Björn Esser, 
+ * Authors: Heiko Strathmann, Abinash Panda, Abhinav Agarwalla, Bjoern Esser, 
  *          Sergey Lisitsyn
  */
 

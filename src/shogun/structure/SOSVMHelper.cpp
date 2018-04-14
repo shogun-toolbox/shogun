@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Björn Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu, 
+ * Authors: Shell Hu, Bjoern Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu, 
  *          Sanuj Sharma
  */
 

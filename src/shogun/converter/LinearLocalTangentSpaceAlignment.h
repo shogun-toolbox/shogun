@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Evan Shelhamer, Björn Esser
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Evan Shelhamer, Bjoern Esser
  */
 
 #ifndef LINEARLOCALTANGENTSPACEALIGNMENT_H_

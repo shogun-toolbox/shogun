@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Soeren Sonnenburg, Evgeniy Andreev, Thoralf Klein, 
- *          Fernando Iglesias, Björn Esser
+ *          Fernando Iglesias, Bjoern Esser
  */
 
 #include <shogun/labels/LatentLabels.h>

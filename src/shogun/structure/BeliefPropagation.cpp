@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Soeren Sonnenburg, Björn Esser
+ * Authors: Shell Hu, Soeren Sonnenburg, Bjoern Esser
  */
 
 #include <shogun/structure/BeliefPropagation.h>

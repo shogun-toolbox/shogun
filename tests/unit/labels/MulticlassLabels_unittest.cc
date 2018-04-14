@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Heiko Strathmann, Olivier NGuyen, Sergey Lisitsyn, Viktor Gal, 
- *          Björn Esser, Thoralf Klein
+ *          Bjoern Esser, Thoralf Klein
  */
 
 #include <shogun/labels/MulticlassLabels.h>

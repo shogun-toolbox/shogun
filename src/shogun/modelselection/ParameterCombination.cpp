@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Jacob Walker, Soeren Sonnenburg, Heiko Strathmann, Wu Lin, 
- *          Roman Votyakov, Björn Esser, Esben Sorig, Sanuj Sharma
+ *          Roman Votyakov, Bjoern Esser, Esben Sorig, Sanuj Sharma
  */
 
 #include <shogun/modelselection/ParameterCombination.h>

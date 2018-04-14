@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Sunil Mahendrakar, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Sunil Mahendrakar, Heiko Strathmann, Bjoern Esser
  */
 
 #ifndef LOG_RATIONAL_APPROXIMATION_CGM_H_

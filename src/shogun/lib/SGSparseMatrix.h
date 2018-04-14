@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Soumyajit De, Sergey Lisitsyn, Yingrui Chang, 
  *          Evgeniy Andreev, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
- *          Fernando Iglesias, Björn Esser
+ *          Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef __SGSPARSEMATRIX_H__

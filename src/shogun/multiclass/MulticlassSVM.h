@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Chiyuan Zhang, Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
- *          Yuyu Zhang, Fernando Iglesias, Björn Esser
+ *          Yuyu Zhang, Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef _MULTICLASSSVM_H___

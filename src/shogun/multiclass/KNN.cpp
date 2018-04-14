@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Fernando Iglesias, Giovanni De Toni, 
  *          Saurabh Mahindre, Sergey Lisitsyn, Weijie Lin, Heiko Strathmann, 
- *          Evgeniy Andreev, Viktor Gal, Björn Esser
+ *          Evgeniy Andreev, Viktor Gal, Bjoern Esser
  */
 
 #include <shogun/base/Parameter.h>
@@ -325,9 +325,13 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	}
 	case KNN_COVER_TREE:
 	{
+#ifdef SG_GPL_ONLY
 		solver = new CCoverTreeKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
 		SG_REF(solver);
 		break;
+#else
+		SG_GPL_ONLY
+#endif // SG_GPL_ONLY
 	}
 #ifdef HAVE_CXX11
 	case KNN_LSH:

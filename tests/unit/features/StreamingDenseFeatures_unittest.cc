@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Thoralf Klein, Giovanni De Toni, Soumyajit De, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _WIN32

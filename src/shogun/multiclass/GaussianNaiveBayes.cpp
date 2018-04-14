@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg, 
- *          Thoralf Klein, Björn Esser
+ *          Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/base/progress.h>

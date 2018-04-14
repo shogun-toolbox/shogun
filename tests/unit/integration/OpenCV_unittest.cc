@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Abhijeet Kislay, Björn Esser
+ * Authors: Abhijeet Kislay, Bjoern Esser
  */
 
 #include <shogun/lib/config.h>

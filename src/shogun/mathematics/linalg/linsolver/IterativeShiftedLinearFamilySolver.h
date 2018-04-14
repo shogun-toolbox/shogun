@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Sunil Mahendrakar, Björn Esser
+ * Authors: Soumyajit De, Sunil Mahendrakar, Bjoern Esser
  */
 
 #ifndef ITERATIVE_SHIFTED_LINEAR_FAMILY_SOLVER_H_

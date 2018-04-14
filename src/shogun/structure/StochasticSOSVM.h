@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shell Hu, Soeren Sonnenburg, Fernando Iglesias, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef __STOCHASTIC_SOSVM_H__

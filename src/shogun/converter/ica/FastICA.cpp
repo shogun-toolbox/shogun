@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Weijie Lin, Heiko Strathmann, Björn Esser
+ * Authors: Kevin Hughes, Weijie Lin, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/converter/ica/FastICA.h>

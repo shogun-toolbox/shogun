@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sunil Mahendrakar, Heiko Strathmann, Soumyajit De, Björn Esser
+ * Authors: Sunil Mahendrakar, Heiko Strathmann, Soumyajit De, Bjoern Esser
  */
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/SGMatrix.h>

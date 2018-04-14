@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef __RANDOM_H__

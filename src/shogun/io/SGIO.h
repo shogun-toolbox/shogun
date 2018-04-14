@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Viktor Gal, Giovanni De Toni, Sergey Lisitsyn,
  *          Heiko Strathmann, Yuyu Zhang, Shashwat Lal Das, Thoralf Klein,
- *          Björn Esser, Evangelos Anagnostopoulos, Sanuj Sharma,
+ *          Bjoern Esser, Evangelos Anagnostopoulos, Sanuj Sharma,
  *          Saurabh Goyal
  */
 

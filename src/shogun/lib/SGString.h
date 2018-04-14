@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker, Thoralf Klein, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 #ifndef __SGSTRING_H__
 #define __SGSTRING_H__

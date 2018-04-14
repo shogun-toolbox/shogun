@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, 
- *          Youssef Emad El-Din, Evgeniy Andreev, Thoralf Klein, Björn Esser
+ *          Youssef Emad El-Din, Evgeniy Andreev, Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/machine/LinearMachine.h>

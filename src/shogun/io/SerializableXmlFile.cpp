@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann, Björn Esser
+ * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/lib/config.h>

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Björn Esser
+ * Authors: Sergey Lisitsyn, Bjoern Esser
  */
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>

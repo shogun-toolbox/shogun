@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
- *          Heiko Strathmann, Björn Esser
+ *          Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/converter/Isomap.h>

@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, 
  *          Sergey Lisitsyn, Soumyajit De, Shashwat Lal Das, Fernando Iglesias, 
- *          Björn Esser, Wu Lin
+ *          Bjoern Esser, Wu Lin
  */
 
 #include <shogun/features/Features.h>

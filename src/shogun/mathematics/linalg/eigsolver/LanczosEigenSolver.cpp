@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Heiko Strathmann, Soumyajit De, Sunil Mahendrakar, Viktor Gal, 
- *          Thoralf Klein, Björn Esser
+ *          Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/lib/common.h>

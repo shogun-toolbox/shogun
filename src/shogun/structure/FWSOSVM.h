@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Shell Hu
+ * Authors: Bjoern Esser, Shell Hu
  */
 
 #ifndef __FW_SOSVM_H__

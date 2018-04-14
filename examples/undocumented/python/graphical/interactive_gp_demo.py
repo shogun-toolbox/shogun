@@ -1,21 +1,12 @@
+# This software is distributed under BSD 3-clause license (see LICENSE file).
 #
-# This program is free software you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation either version 3 of the License, or
-# (at your option) any later version.
-#
-# Written (C) 2012 Heiko Strathmann, based on interactive_svm_demo by Christian
-# Widmer which itself is based on PyQT Demo by Eli Bendersky
-#
+# Authors: Heiko Strathmann, Cameron Lai
 
 """
 Shogun Gaussian processes demo based on interactive SVM demo by Christian \
 Widmer and Soeren Sonnenburg which itself is based on PyQT Demo by Eli Bendersky
 
 Work to be done on parameter (e.g. kernel width) optimization.
-
-Heiko Strathmann/Cameron Lai
-License: GPLv3
 """
 import sys, os, csv
 import scipy as SP

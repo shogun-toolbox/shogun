@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
- *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Björn Esser
+ *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/classifier/svm/OnlineSVMSGD.h>

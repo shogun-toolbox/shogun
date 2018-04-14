@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soumyajit De, Björn Esser
+ * Authors: Heiko Strathmann, Soumyajit De, Bjoern Esser
  */
 
 #ifndef DIRECT_EIGEN_SOLVER_H_

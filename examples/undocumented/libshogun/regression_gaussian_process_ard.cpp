@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Jacob Walker, Sergey Lisitsyn, Roman Votyakov, Viktor Gal, 
- *          Björn Esser, Pan Deng
+ *          Bjoern Esser, Pan Deng
  */
 
 #include <shogun/lib/config.h>

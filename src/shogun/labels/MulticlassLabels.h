@@ -4,7 +4,7 @@
  * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
  *          Saurabh Mahindre, Olivier NGuyen, Thoralf Klein, Giovanni De Toni, 
  *          Heiko Strathmann, Michele Mazzoni, Evgeniy Andreev, Yuyu Zhang, 
- *          Chiyuan Zhang, Viktor Gal, Björn Esser
+ *          Chiyuan Zhang, Viktor Gal, Bjoern Esser
  */
 
 #ifndef _MULTICLASS_LABELS__H__

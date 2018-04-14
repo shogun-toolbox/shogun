@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Thoralf Klein, Björn Esser
+ * Authors: Shell Hu, Thoralf Klein, Bjoern Esser
  */
 
 #include <shogun/structure/FactorType.h>

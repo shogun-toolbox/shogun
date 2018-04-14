@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Viktor Gal
+ * Authors: Bjoern Esser, Viktor Gal
  */
 
 #ifndef _DIRECTOR_LATENT_MODEL_H_

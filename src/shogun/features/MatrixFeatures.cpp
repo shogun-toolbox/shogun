@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Heiko Strathmann, Vladislav Horbatiuk, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/features/MatrixFeatures.h>

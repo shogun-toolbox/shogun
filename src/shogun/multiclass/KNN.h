@@ -3,7 +3,7 @@
  *
  * Authors: Fernando Iglesias, Soeren Sonnenburg, Saurabh Mahindre, 
  *          Sergey Lisitsyn, Heiko Strathmann, Evgeniy Andreev, Yuyu Zhang, 
- *          Weijie Lin, Björn Esser, Saurabh Goyal
+ *          Weijie Lin, Bjoern Esser, Saurabh Goyal
  */
 
 #ifndef _KNN_H__
@@ -20,7 +20,9 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/BruteKNNSolver.h>
 #include <shogun/multiclass/KDTreeKNNSolver.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/CoverTreeKNNSolver.h>
+#endif
 #include <shogun/multiclass/LSHKNNSolver.h>
 
 namespace shogun

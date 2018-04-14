@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Thoralf Klein, Sanuj Sharma, Fernando Iglesias, Soeren Sonnenburg, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/structure/MulticlassSOLabels.h>

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
