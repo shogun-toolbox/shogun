@@ -17,6 +17,3 @@ ExternalProject_Add(
 	)
 
 add_dependencies(libshogun Eigen3)
-
-UNSET(C_COMPILER)
-UNSET(CXX_COMPILER)
