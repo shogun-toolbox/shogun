@@ -1,14 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * this code is inspired from
- * examples/documented/libshogun/classifier_latent_svm.cpp
- * it serves the purpose of instanciating and wrapping shogun::CLatenModel.
- *
- * Written (W) 2012 Christian Montanari
+ * Authors: Sergey Lisitsyn
  */
 
 %include "Latent.i"
