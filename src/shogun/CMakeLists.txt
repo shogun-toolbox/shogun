@@ -136,11 +136,6 @@ IF (${USE_GPL_SHOGUN})
     target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
 ENDIF()
 
-# add bundled libraries to dependency
-if(SHOGUN_DEPENDS)
-  add_dependencies(libshogun ${SHOGUN_DEPENDS})
-endif()
-
 # add target for static library if enabled
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
@@ -332,7 +327,7 @@ ENDIF()
 include(external/RapidJSON)
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${RAPIDJSON_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include/shogun/lib/external/eigen>
+  $<INSTALL_INTERFACE:include/shogun/third_party/rapidjson>
 )
 
 SHOGUN_DEPENDENCIES(
@@ -436,6 +431,10 @@ IF(NOT HAVE_ARC4RANDOM)
     endif()
 ENDIF()
 
+# add bundled libraries to dependency
+if(SHOGUN_DEPENDS)
+  add_dependencies(libshogun ${SHOGUN_DEPENDS})
+endif()
 
 ################## linker optimisations
 OPTION(INCREMENTAL_LINKING "Enable incremantal linking")
