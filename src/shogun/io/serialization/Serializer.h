@@ -17,6 +17,7 @@ namespace shogun
 		virtual ~CSerializer();
 		virtual void attach(Some<COutputStream> stream);
 		virtual void write(Some<CSGObject> object) = 0;
+		Some<COutputStream> stream() const;
 
 	private:
 		Some<COutputStream> m_stream;

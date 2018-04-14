@@ -19,3 +19,9 @@ void CSerializer::attach(Some<COutputStream> stream)
 {
 	m_stream = stream;
 }
+
+Some<COutputStream> CSerializer::stream() const
+{
+	REQUIRE(m_stream, "Serializer has no stream, attach() it to a stream");
+	return m_stream;
+}

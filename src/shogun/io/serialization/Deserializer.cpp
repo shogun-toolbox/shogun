@@ -19,3 +19,9 @@ void CDeserializer::attach(Some<CInputStream> stream)
 {
 	m_stream = stream;
 }
+
+Some<CInputStream> CDeserializer::stream() const
+{
+	REQUIRE(m_stream, "Deserializer has no stream, attach() it to a stream");
+	return m_stream;
+}
