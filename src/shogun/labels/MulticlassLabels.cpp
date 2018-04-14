@@ -191,20 +191,36 @@ namespace shogun
 {
 	SG_FORCED_INLINE Some<CMulticlassLabels> to_multiclass(CDenseLabels* orig)
 	{
-		auto int_labels = orig->get_int_labels();
-		std::set<int32_t> unique(int_labels.begin(), int_labels.end());
-		// TODO: anything discrete should be a possible multiclasslabels.
-		// Once that is the case, this check can be removed
-		// For now, if we don't enforce this, there will be crashes as the
-		// class is used to index vectors
-		REQUIRE(
-		    (*std::min_element(unique.begin(), unique.end())) == 0 &&
-		        (*std::max_element(unique.begin(), unique.end())) ==
-		            (index_t)unique.size() - 1,
-		    "Multiclass labels must be contiguous integers in [0, ..., "
-		    "num_classes -1].\n");
+		auto result_vector = orig->get_labels();
+		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
+		// potentially convert to [0,1, ..., num_classes-1] if not in that form
+		// TODO: remove this once multiclass labels can be any discrete set
+		auto min = (*std::min_element(unique.begin(), unique.end()));
+		auto max = (*std::max_element(unique.begin(), unique.end()));
+		if (!(min == 0 && max == (index_t)unique.size() - 1))
+		{
+			// print conversion table for users
+			SG_SWARNING(
+			    "Converting non-contiguous multiclass labels to "
+			    "contiguous version:\n",
+			    unique.size() - 1);
+			std::for_each(
+			    unique.begin(), unique.end(), [&unique](int32_t old_label) {
+				    auto new_label =
+				        std::distance(unique.begin(), unique.find(old_label));
+				    SG_SWARNING("Converting %d to %d.\n", old_label, new_label);
+				});
 
-		return some<CMulticlassLabels>(orig->get_labels());
+			SGVector<float64_t> converted(result_vector.vlen);
+			std::transform(
+			    result_vector.begin(), result_vector.end(), converted.begin(),
+			    [&unique](int32_t old_label) {
+				    return std::distance(
+				        unique.begin(), unique.find(old_label));
+				});
+			result_vector = converted;
+		}
+		return some<CMulticlassLabels>(result_vector);
 	}
 
 	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
