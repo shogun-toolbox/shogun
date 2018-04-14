@@ -406,6 +406,7 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(
 void CDotFeatures::init()
 {
 	set_property(FP_DOT);
-	m_parameters->add(&combined_weight, "combined_weight",
-					  "Feature weighting in combined dot features.");
+	SG_ADD(
+	    &combined_weight, "combined_weight",
+	    "Feature weighting in combined dot features.", MS_NOT_AVAILABLE);
 }

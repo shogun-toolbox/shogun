@@ -63,9 +63,10 @@ void COnlineLibLinear::init()
 	Cn=1;
 	use_bias=false;
 
-	m_parameters->add(&C1, "C1",  "C Cost constant 1.");
-	m_parameters->add(&C2, "C2",  "C Cost constant 2.");
-	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(
+	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
 
 	PG = 0;
 	PGmax_old = CMath::INFTY;

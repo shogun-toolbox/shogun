@@ -1729,7 +1729,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	num_symbols=0.0;
 	original_num_symbols=0;
 
-	m_parameters->add((CSGObject**) &alphabet, "alphabet");
+	SG_ADD(&alphabet, "alphabet", "Alphabet used.", MS_NOT_AVAILABLE);
 
 	m_parameters->add_vector(&features, &num_vectors, "features",
 			"This contains the array of features.");
@@ -1741,16 +1741,21 @@ template<class ST> void CStringFeatures<ST>::init()
 			"Created by sliding window.");
 	watch_param("single_string", &single_string, &length_of_single_string);
 
-	m_parameters->add(&max_string_length, "max_string_length",
-			"Length of longest string.");
-	m_parameters->add(&num_symbols, "num_symbols",
-			"Number of used symbols.");
-	m_parameters->add(&original_num_symbols, "original_num_symbols",
-			"Original number of used symbols.");
-	m_parameters->add(&order, "order",
-			"Order used in higher order mapping.");
-	m_parameters->add(&preprocess_on_get, "preprocess_on_get",
-			"Preprocess on-the-fly?");
+	SG_ADD(
+		&max_string_length, "max_string_length", "Length of longest string.",
+		MS_NOT_AVAILABLE);
+	SG_ADD(
+		&num_symbols, "num_symbols", "Number of used symbols.",
+		MS_NOT_AVAILABLE);
+	SG_ADD(
+		&original_num_symbols, "original_num_symbols",
+		"Original number of used symbols.", MS_NOT_AVAILABLE);
+	SG_ADD(
+		&order, "order", "Order used in higher order mapping.",
+		MS_NOT_AVAILABLE);
+	SG_ADD(
+		&preprocess_on_get, "preprocess_on_get", "Preprocess on-the-fly?",
+		MS_NOT_AVAILABLE);
 
 	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
 	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);

@@ -259,10 +259,12 @@ void CDistance::init()
 	num_lhs=0;
 	num_rhs=0;
 
-	m_parameters->add((CSGObject**) &lhs, "lhs",
-					  "Feature vectors to occur on left hand side.");
-	m_parameters->add((CSGObject**) &rhs, "rhs",
-					  "Feature vectors to occur on right hand side.");
+	SG_ADD(
+	    &lhs, "lhs", "Feature vectors to occur on left hand side.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &rhs, "rhs", "Feature vectors to occur on right hand side.",
+	    MS_NOT_AVAILABLE);
 }
 
 template <class T>

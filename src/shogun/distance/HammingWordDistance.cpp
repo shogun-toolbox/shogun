@@ -169,6 +169,7 @@ float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 void CHammingWordDistance::init()
 {
 	use_sign = false;
-	m_parameters->add(&use_sign, "use_sign",
-			"If signum(counts) is used instead of counts.");
+	SG_ADD(
+	    &use_sign, "use_sign", "If signum(counts) is used instead of counts.",
+	    MS_NOT_AVAILABLE);
 }

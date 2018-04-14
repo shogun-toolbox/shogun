@@ -726,13 +726,11 @@ void CAlphabet::init()
 	memset(maptable_to_char, 0, sizeof (maptable_to_char));
 	memset(histogram, 0, sizeof (histogram));
 
-
-	m_parameters->add((machine_int_t*) &alphabet, "alphabet",
-					  "Alphabet enum.");
-	m_parameters->add(&num_symbols, "num_symbols",
-					  "Number of symbols.");
-	m_parameters->add(&num_bits, "num_bits",
-					  "Number of bits.");
+	SG_ADD(
+	    (machine_int_t*)&alphabet, "alphabet", "Alphabet enum.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&num_symbols, "num_symbols", "Number of symbols.", MS_NOT_AVAILABLE);
+	SG_ADD(&num_bits, "num_bits", "Number of bits.", MS_NOT_AVAILABLE);
 
 	/* We don't need to serialize the mapping tables / they can be computed
 	 * after de-serializing. Lets not serialize the histogram for now. Doesn't

@@ -822,6 +822,8 @@ void CGMM::register_params()
 {
 	//TODO serialization broken
 	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
-	m_parameters->add(&m_coefficients, "m_coefficients", "Mixture coefficients.");
+	SG_ADD(
+	    &m_coefficients, "m_coefficients", "Mixture coefficients.",
+	    MS_NOT_AVAILABLE);
 }
 

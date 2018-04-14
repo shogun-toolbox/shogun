@@ -46,6 +46,7 @@ EFeatureClass CDummyFeatures::get_feature_class() const
 
 void CDummyFeatures::init()
 {
-	m_parameters->add(&num_vectors, "num_vectors",
-			"Number of feature vectors.");
+	SG_ADD(
+	    &num_vectors, "num_vectors", "Number of feature vectors.",
+	    MS_NOT_AVAILABLE);
 }

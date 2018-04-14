@@ -116,9 +116,9 @@ void CLinearLatentMachine::init()
 	m_max_iter = 400;
 	m_model = NULL;
 
-	m_parameters->add(&m_C, "C",  "Cost constant.");
-	m_parameters->add(&m_epsilon, "epsilon", "Convergence precision.");
-	m_parameters->add(&m_max_iter, "max_iter", "Maximum iterations.");
-	m_parameters->add((CSGObject**) &m_model, "latent_model", "Latent Model.");
+	SG_ADD(&m_C, "C", "Cost constant.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iter, "max_iter", "Maximum iterations.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_model, "latent_model", "Latent Model.", MS_NOT_AVAILABLE);
 }
 
