@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Chiyuan Zhang, Yuyu Zhang, Björn Esser, 
+ * Authors: Saurabh Mahindre, Chiyuan Zhang, Yuyu Zhang, Bjoern Esser, 
  *          Soeren Sonnenburg, Soumyajit De, Sanuj Sharma
  */
 

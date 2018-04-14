@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Sergey Lisitsyn, Björn Esser
+ * Authors: Evangelos Anagnostopoulos, Sergey Lisitsyn, Bjoern Esser
  */
 
 #include <shogun/converter/HashedDocConverter.h>

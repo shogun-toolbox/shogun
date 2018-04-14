@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Björn Esser
+ * Authors: Viktor Gal, Bjoern Esser
  */
 
 #include <shogun/base/init.h>

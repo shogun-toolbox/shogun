@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Jacob Walker, Heiko Strathmann, Evgeniy Andreev, 
- *          Björn Esser, Leon Kuchenbecker
+ *          Bjoern Esser, Leon Kuchenbecker
  */
 
 #include <shogun/modelselection/ModelSelectionParameters.h>

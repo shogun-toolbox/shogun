@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Björn Esser, Yuyu Zhang
+ * Authors: Shell Hu, Bjoern Esser, Yuyu Zhang
  */
 
 #ifndef __SOSVM_HELPER_H__

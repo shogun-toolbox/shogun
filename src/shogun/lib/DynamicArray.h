@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, 
  *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein, 
- *          Fernando Iglesias, Björn Esser
+ *          Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef _DYNAMIC_ARRAY_H_

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Viktor Gal, Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, 
- *          Sergey Lisitsyn, Björn Esser, Saurabh Goyal
+ *          Sergey Lisitsyn, Bjoern Esser, Saurabh Goyal
  */
 
 #ifndef _PNORM_ONE__H__

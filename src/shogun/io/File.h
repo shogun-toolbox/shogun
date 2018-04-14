@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Sergey Lisitsyn, 
  *          Yuyu Zhang, Chiyuan Zhang, Thoralf Klein, Evan Shelhamer, 
- *          Björn Esser, Abhinav Agarwalla
+ *          Bjoern Esser, Abhinav Agarwalla
  */
 
 #ifndef __FILE_H__

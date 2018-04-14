@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Thoralf Klein, Sergey Lisitsyn, Heiko Strathmann, 
- *          Chiyuan Zhang, Viktor Gal, Björn Esser
+ *          Chiyuan Zhang, Viktor Gal, Bjoern Esser
  */
 
 #include <shogun/io/File.h>

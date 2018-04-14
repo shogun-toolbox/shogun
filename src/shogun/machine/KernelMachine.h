@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Tejas Jogi, 
  *          Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, Chiyuan Zhang, 
- *          Weijie Lin, Fernando Iglesias, Björn Esser, Thoralf Klein, 
+ *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Thoralf Klein, 
  *          Saurabh Goyal
  */
 

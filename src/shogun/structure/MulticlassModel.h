@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Shell Hu, Yuyu Zhang, Thoralf Klein, 
- *          Sergey Lisitsyn, Björn Esser, Viktor Gal
+ *          Sergey Lisitsyn, Bjoern Esser, Viktor Gal
  */
 
 #ifndef _MULTICLASS_MODEL__H__

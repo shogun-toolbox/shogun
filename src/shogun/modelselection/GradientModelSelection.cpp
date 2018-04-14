@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Jacob Walker, Wu Lin, Heiko Strathmann, Roman Votyakov, Viktor Gal, 
- *          Weijie Lin, Fernando Iglesias, Sergey Lisitsyn, Björn Esser, 
+ *          Weijie Lin, Fernando Iglesias, Sergey Lisitsyn, Bjoern Esser, 
  *          Soeren Sonnenburg
  */
 

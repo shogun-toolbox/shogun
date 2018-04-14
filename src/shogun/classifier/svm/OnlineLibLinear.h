@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Chiyuan Zhang, 
  *          Thoralf Klein, Shashwat Lal Das, Viktor Gal, Fernando Iglesias, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _ONLINELIBLINEAR_H__

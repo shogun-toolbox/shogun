@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser
+ * Authors: Bjoern Esser
  */
 
 #include <shogun/base/init.h>

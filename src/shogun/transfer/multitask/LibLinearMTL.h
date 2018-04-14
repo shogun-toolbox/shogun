@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Christian Widmer, Thoralf Klein, Soeren Sonnenburg, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _LIBLINEARMTL_H___

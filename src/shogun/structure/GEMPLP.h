@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Jiaolong Xu, Björn Esser, Yori Zwols
+ * Authors: Heiko Strathmann, Jiaolong Xu, Bjoern Esser, Yori Zwols
  */
 
 #ifndef __GEMPLP_H__

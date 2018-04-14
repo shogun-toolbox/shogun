@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Michele Mazzoni, Evgeniy Andreev, 
  *          Fernando Iglesias, Yuyu Zhang, Heiko Strathmann, Thoralf Klein, 
- *          Evan Shelhamer, Björn Esser, Alesis Novik, Giovanni De Toni
+ *          Evan Shelhamer, Bjoern Esser, Alesis Novik, Giovanni De Toni
  */
 
 #ifndef _DOTFEATURES_H___

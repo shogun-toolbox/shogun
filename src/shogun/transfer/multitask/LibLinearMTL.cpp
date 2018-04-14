@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn, 
- *          Soeren Sonnenburg, Björn Esser
+ *          Soeren Sonnenburg, Bjoern Esser
  */
 
 #include <vector>

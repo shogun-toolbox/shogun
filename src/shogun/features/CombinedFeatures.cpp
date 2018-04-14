@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos, 
- *          Vladislav Horbatiuk, Evgeniy Andreev, Evan Shelhamer, Björn Esser
+ *          Vladislav Horbatiuk, Evgeniy Andreev, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/features/CombinedFeatures.h>

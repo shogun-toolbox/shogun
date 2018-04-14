@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre,
  *          Sergey Lisitsyn, Evan Shelhamer, Soumyajit De, Fernando Iglesias,
- *          Björn Esser, parijat
+ *          Bjoern Esser, parijat
  */
 
 #include <shogun/clustering/KMeans.h>

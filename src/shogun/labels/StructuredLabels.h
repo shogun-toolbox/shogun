@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Thoralf Klein, Evgeniy Andreev, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _STRUCTURED_LABELS__H__

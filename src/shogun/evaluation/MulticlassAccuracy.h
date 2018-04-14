@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Yuyu Zhang, Chiyuan Zhang, 
- *          Evan Shelhamer, Björn Esser, Roman Votyakov
+ *          Evan Shelhamer, Bjoern Esser, Roman Votyakov
  */
 
 #ifndef MULTICLASSACCURACY_H_

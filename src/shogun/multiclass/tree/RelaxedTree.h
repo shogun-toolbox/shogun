@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef RELAXEDTREE_H__

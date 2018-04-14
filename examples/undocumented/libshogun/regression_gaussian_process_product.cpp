@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Jacob Walker, Sergey Lisitsyn, 
- *          Viktor Gal, Björn Esser, Roman Votyakov, Pan Deng
+ *          Viktor Gal, Bjoern Esser, Roman Votyakov, Pan Deng
  */
 
 

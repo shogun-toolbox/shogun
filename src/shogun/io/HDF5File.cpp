@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Soumyajit De, Viktor Gal, Thoralf Klein, 
- *          Evan Shelhamer, Björn Esser, Abhinav Agarwalla
+ *          Evan Shelhamer, Bjoern Esser, Abhinav Agarwalla
  */
 
 #include <shogun/lib/config.h>

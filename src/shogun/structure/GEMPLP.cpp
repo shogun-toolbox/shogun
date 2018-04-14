@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Sanuj Sharma, Björn Esser, Yori Zwols
+ * Authors: Jiaolong Xu, Sanuj Sharma, Bjoern Esser, Yori Zwols
  */
 
 #include <shogun/structure/GEMPLP.h>

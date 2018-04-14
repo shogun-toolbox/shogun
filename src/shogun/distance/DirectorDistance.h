@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, 
- *          Viktor Gal, Sergey Lisitsyn, Björn Esser
+ *          Viktor Gal, Sergey Lisitsyn, Bjoern Esser
  */
 
 #ifndef _DIRECTORDISTANCE_H___

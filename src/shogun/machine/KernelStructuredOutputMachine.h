@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Yuyu Zhang, Shell Hu, Thoralf Klein, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__

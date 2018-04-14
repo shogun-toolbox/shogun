@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shashwat Lal Das, Fernando Iglesias, Yuyu Zhang, Saurabh Goyal, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef _LOSSFUNCTION_H__

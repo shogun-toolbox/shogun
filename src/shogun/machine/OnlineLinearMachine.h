@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Shashwat Lal Das, Thoralf Klein, 
  *          Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, Viktor Gal, Weijie Lin, 
- *          Björn Esser, Saurabh Goyal
+ *          Bjoern Esser, Saurabh Goyal
  */
 
 #ifndef _ONLINELINEARCLASSIFIER_H__

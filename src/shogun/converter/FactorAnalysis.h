@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Kunal Arora, Heiko Strathmann, Fernando Iglesias, 
+ * Authors: Bjoern Esser, Kunal Arora, Heiko Strathmann, Fernando Iglesias, 
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Björn Esser
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/kernel/SphericalKernel.h>

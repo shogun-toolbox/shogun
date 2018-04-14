@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Heiko Strathmann, Thoralf Klein, Björn Esser
+ * Authors: Kevin Hughes, Heiko Strathmann, Thoralf Klein, Bjoern Esser
  */
 
 #ifndef ICACONVERTER_H_

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Björn Esser,
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Bjoern Esser,
  *          Viktor Gal
  */
 

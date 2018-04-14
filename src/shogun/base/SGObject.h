@@ -4,7 +4,7 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang,
  *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang,
- *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
+ *          Viktor Gal, Bjoern Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
 #ifndef __SGOBJECT_H__

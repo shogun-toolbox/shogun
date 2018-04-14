@@ -3,7 +3,7 @@
  *
  * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
  *          Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, Thoralf Klein, 
- *          Evan Shelhamer, Youssef Emad El-Din, Björn Esser, Sanuj Sharma, 
+ *          Evan Shelhamer, Youssef Emad El-Din, Bjoern Esser, Sanuj Sharma, 
  *          Saurabh Goyal
  */
 

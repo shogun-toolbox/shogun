@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos, 
- *          Vladislav Horbatiuk, Yuyu Zhang, Evgeniy Andreev, Björn Esser
+ *          Vladislav Horbatiuk, Yuyu Zhang, Evgeniy Andreev, Bjoern Esser
  */
 
 #ifndef _CCOMBINEDFEATURES__H__

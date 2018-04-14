@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Jiaolong Xu, Björn Esser
+ * Authors: Shell Hu, Jiaolong Xu, Bjoern Esser
  */
 
 #include <shogun/structure/MAPInference.h>
