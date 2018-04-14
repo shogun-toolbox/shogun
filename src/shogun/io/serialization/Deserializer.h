@@ -15,8 +15,9 @@ namespace shogun
 	public:
 		CDeserializer();
 		virtual ~CDeserializer();
-		virtual void attach(Some<CInputStream> stream) = 0;
+		virtual void attach(Some<CInputStream> stream);
 		virtual Some<CSGObject> read() = 0;
+		Some<CInputStream> stream() const;
 
 	private:
 		Some<CInputStream> m_stream;
