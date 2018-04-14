@@ -1,21 +1,24 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann
+ * Authors: Heiko Strathmann, Fernando Iglesias
  */
 #ifndef FACTORY_H_
 #define FACTORY_H_
 
 #include <shogun/base/class_list.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/machine/Machine.h>
 
 namespace shogun
 {
 
+	CDistance* distance(const std::string& name);
 	CKernel* kernel(const std::string& name);
 	CMachine* machine(const std::string& name);
 
@@ -25,6 +28,7 @@ namespace shogun
 		return create_object<T>(name.c_str());                                 \
 	}
 
+	BASE_CLASS_FACTORY(CDistance, distance)
 	BASE_CLASS_FACTORY(CKernel, kernel)
 	BASE_CLASS_FACTORY(CMachine, machine)
 

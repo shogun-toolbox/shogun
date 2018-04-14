@@ -259,12 +259,8 @@ void CDistance::init()
 	num_lhs=0;
 	num_rhs=0;
 
-	SG_ADD(
-	    &lhs, "lhs", "Feature vectors to occur on left hand side.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(
-	    &rhs, "rhs", "Feature vectors to occur on right hand side.",
-	    MS_NOT_AVAILABLE);
+	SG_ADD(&lhs, "lhs", "Left hand side features.", MS_NOT_AVAILABLE);
+	SG_ADD(&rhs, "rhs", "Right hand side features.", MS_NOT_AVAILABLE);
 }
 
 template <class T>
