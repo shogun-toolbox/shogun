@@ -702,37 +702,6 @@ CSGObject* CSGObject::clone()
 	return clone;
 }
 
-bool CSGObject::clone_parameters(CSGObject* other)
-{
-	REQUIRE(other, "Provided instance must be non-empty.\n");
-	index_t num_parameters = m_parameters->get_num_parameters();
-
-	REQUIRE(other->m_parameters->get_num_parameters() == num_parameters,
-		"Number of parameters of provided instance (%d) must match this instance (%d).\n",
-		other->m_parameters->get_num_parameters(), num_parameters);
-	REQUIRE(!strcmp(other->get_name(), get_name()),
-		"Name of provided instance (%s) must match this instance (%s).\n",
-		other->get_name(), get_name());
-
-	for (index_t i=0; i<num_parameters; ++i)
-	{
-		SG_DEBUG("Cloning parameter \"%s\" at index %d into this instance\n",
-				other->m_parameters->get_parameter(i)->m_name, i);
-
-		if (!other->m_parameters->get_parameter(i)->copy(m_parameters->get_parameter(i)))
-		{
-			SG_WARNING("Cloning parameter \"%s\" (at index %d) of provided instance %s"
-				" into parameter \"%s\" of this instance %s failed.\n",
-				other->m_parameters->get_parameter(i)->m_name, i,
-				other->get_name(), m_parameters->get_parameter(i)->m_name,
-				get_name());
-			return false;
-		}
-	}
-
-	return true;
-}
-
 void CSGObject::create_parameter(
     const BaseTag& _tag, const AnyParameter& parameter)
 {
