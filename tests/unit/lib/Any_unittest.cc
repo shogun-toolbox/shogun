@@ -589,3 +589,50 @@ TEST(Any, free_array_sgobject)
 	EXPECT_EQ(obj->ref_count(), 1);
 	SG_UNREF(obj);
 }
+
+TEST(Any, reset_array_reference)
+{
+	Object* obj = new Object();
+	SG_REF(obj);
+	auto size = 4;
+	auto array = SG_MALLOC(Object*, size);
+	for (auto i = 0; i < size; ++i)
+	{
+		array[i] = obj;
+		SG_REF(obj);
+	}
+	EXPECT_EQ(obj->ref_count(), size + 1);
+
+	Object** src_array = nullptr;
+	int src_size = 0;
+
+	auto array_ref = ArrayReference<Object*, int>(&array, &size);
+	array_ref.reset(ArrayReference<Object*, int>(&src_array, &src_size));
+	EXPECT_EQ(obj->ref_count(), 1);
+	SG_UNREF(obj);
+}
+
+TEST(Any, reset_array2d_reference)
+{
+	Object* obj = new Object();
+	SG_REF(obj);
+	auto rows = 4;
+	auto cols = 3;
+	auto array = SG_MALLOC(Object*, rows * cols);
+	for (auto i = 0; i < rows * cols; ++i)
+	{
+		array[i] = obj;
+		SG_REF(obj);
+	}
+	EXPECT_EQ(obj->ref_count(), rows * cols + 1);
+
+	Object** src_array = nullptr;
+	int src_rows = 0;
+	int src_cols = 0;
+
+	auto array_ref = Array2DReference<Object*, int>(&array, &rows, &cols);
+	array_ref.reset(
+	    Array2DReference<Object*, int>(&src_array, &src_rows, &src_cols));
+	EXPECT_EQ(obj->ref_count(), 1);
+	SG_UNREF(obj);
+}
