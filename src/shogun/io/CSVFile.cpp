@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evgeniy Andreev, Soeren Sonnenburg, Thoralf Klein, Viktor Gal, 
- *          Fernando Iglesias, Sergey Lisitsyn, Björn Esser
+ *          Fernando Iglesias, Sergey Lisitsyn, Bjoern Esser
  */
 
 #include <shogun/io/CSVFile.h>

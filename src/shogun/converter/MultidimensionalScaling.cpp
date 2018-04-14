@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
- *          Evan Shelhamer, Chiyuan Zhang, Björn Esser
+ *          Evan Shelhamer, Chiyuan Zhang, Bjoern Esser
  */
 
 #include <shogun/converter/MultidimensionalScaling.h>

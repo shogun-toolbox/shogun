@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Thoralf Klein, Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, 
- *          Vladislav Horbatiuk, Björn Esser, Sergey Lisitsyn
+ *          Vladislav Horbatiuk, Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <shogun/features/streaming/StreamingSparseFeatures.h>

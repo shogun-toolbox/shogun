@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Saurabh Mahindre, 
- *          Sergey Lisitsyn, Björn Esser, Evan Shelhamer, Yuyu Zhang, 
+ *          Sergey Lisitsyn, Bjoern Esser, Evan Shelhamer, Yuyu Zhang, 
  *          Fernando Iglesias, parijat
  */
 

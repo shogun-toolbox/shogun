@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Thoralf Klein, Yuyu Zhang, Björn Esser
+ * Authors: Sergey Lisitsyn, Thoralf Klein, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef INDEXBLOCKGROUP_H_

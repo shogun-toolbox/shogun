@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal, 
- *          Sergey Lisitsyn, Björn Esser, Sanuj Sharma, Saurabh Goyal
+ *          Sergey Lisitsyn, Bjoern Esser, Sanuj Sharma, Saurabh Goyal
  */
 
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>

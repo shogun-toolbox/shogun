@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Jacob Walker, Heiko Strathmann, Viktor Gal, 
- *          Björn Esser, Sergey Lisitsyn, Roman Votyakov, Pan Deng
+ *          Bjoern Esser, Sergey Lisitsyn, Roman Votyakov, Pan Deng
  */
 
 #ifdef USE_GPL_SHOGUN

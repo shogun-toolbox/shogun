@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Evan Shelhamer, 
- *          Sergey Lisitsyn, Björn Esser, Leon Kuchenbecker
+ *          Sergey Lisitsyn, Bjoern Esser, Leon Kuchenbecker
  */
 #ifndef __MKL_H__
 #define __MKL_H__

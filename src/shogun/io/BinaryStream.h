@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Thoralf Klein, Heiko Strathmann, Yuyu Zhang, 
- *          Evan Shelhamer, Björn Esser
+ *          Evan Shelhamer, Bjoern Esser
  */
 
 #ifndef __BINARYSTREAM_H__

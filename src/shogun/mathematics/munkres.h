@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Björn Esser, Chiyuan Zhang, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Bjoern Esser, Chiyuan Zhang, Yuyu Zhang, 
  *          Sergey Lisitsyn
  */
 

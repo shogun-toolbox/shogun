@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Björn Esser
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef __PLIFARRAY_H__

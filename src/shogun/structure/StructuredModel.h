@@ -3,7 +3,7 @@
  *
  * Authors: Fernando Iglesias, Abinash Panda, Sergey Lisitsyn, 
  *          Soeren Sonnenburg, Shell Hu, Thoralf Klein, Michal Uricar, 
- *          Yuyu Zhang, Björn Esser, Viktor Gal
+ *          Yuyu Zhang, Bjoern Esser, Viktor Gal
  */
 
 #ifndef _STRUCTURED_MODEL__H__

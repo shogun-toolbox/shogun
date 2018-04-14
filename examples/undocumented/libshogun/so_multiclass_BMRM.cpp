@@ -3,7 +3,7 @@
  *
  * Authors: Michal Uricar, Fernando Iglesias, Soeren Sonnenburg, 
  *          Heiko Strathmann, Evgeniy Andreev, Shell Hu, Thoralf Klein, 
- *          Björn Esser, Sergey Lisitsyn, Sanuj Sharma, Viktor Gal
+ *          Bjoern Esser, Sergey Lisitsyn, Sanuj Sharma, Viktor Gal
  */
 
 #include <shogun/lib/config.h>

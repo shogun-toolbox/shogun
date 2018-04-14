@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Fernando Iglesias, Björn Esser, Sergey Lisitsyn
+ * Authors: Jiaolong Xu, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef __GRAPH_CUT_H__

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
- *          Fernando Iglesias, Evan Shelhamer, Björn Esser
+ *          Fernando Iglesias, Evan Shelhamer, Bjoern Esser
  */
 
 #ifndef _SVRLight_H___

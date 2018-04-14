@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Thoralf Klein, Viktor Gal, Dawei Chen, Vladimir Perić, 
- *          Sergey Lisitsyn, Björn Esser
+ *          Sergey Lisitsyn, Bjoern Esser
  */
 
 #include <shogun/base/init.h>

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Saurabh Mahindre, Heiko Strathmann, Viktor Gal, parijat, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #include <shogun/labels/MulticlassLabels.h>

@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Liu Zhengyang, Viktor Gal, Thoralf Klein, Abhinav Agarwalla, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 #ifndef __MLDATA_HDF5_FILE_H__
 #define __MLDATA_HDF5_FILE_H__

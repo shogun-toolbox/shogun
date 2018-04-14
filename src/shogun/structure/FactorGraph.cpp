@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shell Hu, Soeren Sonnenburg, Sanuj Sharma, Fernando Iglesias, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #include <shogun/structure/FactorGraph.h>

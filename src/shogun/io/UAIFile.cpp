@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Abinash Panda, Luis Franca, Björn Esser, Sergey Lisitsyn
+ * Authors: Abinash Panda, Luis Franca, Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <shogun/io/UAIFile.h>

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Chiyuan Zhang, Soeren Sonnenburg, Sergey Lisitsyn
+ * Authors: Bjoern Esser, Chiyuan Zhang, Soeren Sonnenburg, Sergey Lisitsyn
  */
 
 #include <shogun/mathematics/munkres.h>

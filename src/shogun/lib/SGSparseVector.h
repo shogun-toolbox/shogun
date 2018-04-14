@@ -3,7 +3,7 @@
  *
  * Authors: Thoralf Klein, Soeren Sonnenburg, Christian Widmer, 
  *          Heiko Strathmann, Viktor Gal, Sergey Lisitsyn, Soumyajit De, 
- *          Yuyu Zhang, Fernando Iglesias, Björn Esser, Abinash Panda
+ *          Yuyu Zhang, Fernando Iglesias, Bjoern Esser, Abinash Panda
  */
 
 #ifndef __SGSPARSEVECTOR_H__

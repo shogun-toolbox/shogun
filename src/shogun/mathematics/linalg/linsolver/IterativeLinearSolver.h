@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Sunil Mahendrakar, Björn Esser, Thoralf Klein
+ * Authors: Soumyajit De, Sunil Mahendrakar, Bjoern Esser, Thoralf Klein
  */
 
 #ifndef ITERATIVE_LINEAR_SOLVER_H_

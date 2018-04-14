@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Shell Hu, Abinash Panda, Viktor Gal, 
- *          Björn Esser, Sergey Lisitsyn, Soeren Sonnenburg, Sanuj Sharma
+ *          Bjoern Esser, Sergey Lisitsyn, Soeren Sonnenburg, Sanuj Sharma
  */
 
 #ifdef USE_MOSEK

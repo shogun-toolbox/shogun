@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Sergey Lisitsyn, Yuyu Zhang, Björn Esser
+ * Authors: Fernando Iglesias, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef __STATE_MODEL_H__

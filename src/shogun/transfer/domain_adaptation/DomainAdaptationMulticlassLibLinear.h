@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Björn Esser
+ * Authors: Sergey Lisitsyn, Bjoern Esser
  */
 
 #ifndef _DOMAINADAPTATIONMULTICLASSLIBLINEAR_H___

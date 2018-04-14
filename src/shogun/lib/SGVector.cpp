@@ -4,7 +4,7 @@
  * Authors: Soeren Sonnenburg, Viktor Gal, Heiko Strathmann, Fernando Iglesias, 
  *          Sanuj Sharma, Pan Deng, Sergey Lisitsyn, Thoralf Klein, 
  *          Soumyajit De, Michele Mazzoni, Evgeniy Andreev, Chiyuan Zhang, 
- *          Björn Esser, Weijie Lin, Khaled Nasr, Koen van de Sande, 
+ *          Bjoern Esser, Weijie Lin, Khaled Nasr, Koen van de Sande, 
  *          Somya Anand
  */
 

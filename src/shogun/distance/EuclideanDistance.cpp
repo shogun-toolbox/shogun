@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Saurabh Mahindre, Soumyajit De, Chiyuan Zhang, Viktor Gal, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #include <shogun/lib/common.h>

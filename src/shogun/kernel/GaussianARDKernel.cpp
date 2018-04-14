@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Wu Lin, Jacob Walker, Roman Votyakov, Pan Deng, Heiko Strathmann,
- *          Soumyajit De, Viktor Gal, Björn Esser, Soeren Sonnenburg
+ *          Soumyajit De, Viktor Gal, Bjoern Esser, Soeren Sonnenburg
  */
 
 #include <shogun/kernel/GaussianARDKernel.h>

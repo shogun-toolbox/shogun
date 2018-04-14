@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev, 
- *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Björn Esser
+ *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/base/init.h>

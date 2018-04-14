@@ -1,3 +1,4 @@
+#ifdef USE_GPL_SHOGUN
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -5,6 +6,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
+
 
 TEST(LaRank,train)
 {
@@ -83,3 +85,4 @@ TEST(LaRank,train)
 	SG_UNREF(output_test);
 	SG_UNREF(svm);
 }
+#endif // USE_GPL_SHOGUN

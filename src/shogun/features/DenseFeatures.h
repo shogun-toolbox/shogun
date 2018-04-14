@@ -3,7 +3,7 @@
  *
  * Authors: Soumyajit De, Heiko Strathmann, Saurabh Mahindre, Soeren Sonnenburg,
  *          Vladislav Horbatiuk, Yuyu Zhang, Kevin Hughes, Evgeniy Andreev,
- *          Thoralf Klein, Fernando Iglesias, Björn Esser, Sergey Lisitsyn
+ *          Thoralf Klein, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _DENSEFEATURES__H__

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Yuyu Zhang, Fernando Iglesias, Björn Esser, 
+ * Authors: Shell Hu, Yuyu Zhang, Fernando Iglesias, Bjoern Esser, 
  *          Sergey Lisitsyn, Jiaolong Xu
  */
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Yuyu Zhang, Björn Esser, Viktor Gal
+ * Authors: Evangelos Anagnostopoulos, Yuyu Zhang, Bjoern Esser, Viktor Gal
  */
 
 #ifndef _STREAMING_HASHED_DENSEFEATURES__H__
