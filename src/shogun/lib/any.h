@@ -329,23 +329,28 @@ namespace shogun
 		{
 			if (!ptr)
 			{
-				return;
+				return 0;
 			}
 			SG_FREE(ptr);
+			return 0;
 		}
 
-		template <class S>
-		inline auto free_array(CSGObject** ptr, S size)
+		void free_object(CSGObject* obj);
+
+		template <class T, class S>
+		inline auto free_array(T** ptr, S size) -> decltype(ptr[0]->unref())
 		{
 			if (!ptr)
 			{
-				return;
+				return 0;
 			}
 			for (S i = 0; i < size; ++i)
 			{
-				ptr[i]->unref();
+				free_object(ptr[i]);
 			}
+
 			SG_FREE(ptr);
+			return 0;
 		}
 
 		template <class T>
@@ -386,7 +391,8 @@ namespace shogun
 		auto src = *(other.m_ptr);
 		auto len = *(other.m_length);
 		auto& dst = *(this->m_ptr);
-		any_detail::free_array(dst, len);
+		auto own_len = *(this->m_length);
+		any_detail::free_array(dst, own_len);
 		dst = new T[len];
 		*(this->m_length) = len;
 		any_detail::copy_array(src, src + len, dst);
@@ -417,11 +423,13 @@ namespace shogun
 		auto rows = *(other.m_rows);
 		auto cols = *(other.m_cols);
 		auto& dst = *(this->m_ptr);
-		any_detail::free_array(dst, (rows * cols));
-		dst = new T[rows * cols];
+		auto own_rows = *(this->m_rows);
+		auto own_cols = *(this->m_cols);
+		any_detail::free_array(dst, ((long)own_rows * own_cols));
+		dst = new T[(long)rows * cols];
 		*(this->m_rows) = rows;
 		*(this->m_cols) = cols;
-		any_detail::copy_array(src, src + (rows * cols), dst);
+		any_detail::copy_array(src, src + ((long)rows * cols), dst);
 	}
 
 	/** @brief An interface for a policy to store a value.

@@ -63,5 +63,10 @@ namespace shogun
 			return CMath::fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&
 			       CMath::fequals(lhs.imag(), rhs.imag(), LDBL_EPSILON);
 		}
+
+		void free_object(CSGObject* obj)
+		{
+			SG_UNREF(obj);
+		}
 	}
 }
