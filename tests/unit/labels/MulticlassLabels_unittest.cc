@@ -92,5 +92,12 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
 	// i.e. [0,1,2,3,4,...], anymore
 	auto labels = some<CDenseLabels>(labels_true.size());
 	labels->set_labels({0, 1, 3});
-	EXPECT_THROW(multiclass_labels(labels), ShogunException);
+	auto converted = multiclass_labels(labels);
+	ASSERT_NE(converted, nullptr);
+	EXPECT_TRUE(converted->get_labels().equals({0, 1, 2}));
+
+	labels->set_labels({-1, 1, 1});
+	auto converted2 = multiclass_labels(labels);
+	ASSERT_NE(converted2, nullptr);
+	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
 }
