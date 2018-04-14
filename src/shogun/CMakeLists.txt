@@ -138,11 +138,6 @@ IF (${USE_GPL_SHOGUN})
     target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
 ENDIF()
 
-# add bundled libraries to dependency
-if(SHOGUN_DEPENDS)
-  add_dependencies(libshogun ${SHOGUN_DEPENDS})
-endif()
-
 # add target for static library if enabled
 if (LIBSHOGUN_BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
@@ -409,7 +404,7 @@ ENDIF()
 include(external/RapidJSON)
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${RAPIDJSON_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include/shogun/lib/external/eigen>
+  $<INSTALL_INTERFACE:include/shogun/third_party/rapidjson>
 )
 
 SHOGUN_DEPENDENCIES(
@@ -533,6 +528,11 @@ OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
 #kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
 OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
+
+# add bundled libraries to dependency
+if(SHOGUN_DEPENDS)
+  add_dependencies(libshogun ${SHOGUN_DEPENDS})
+endif()
 
 OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
 ################## linker optimisations
