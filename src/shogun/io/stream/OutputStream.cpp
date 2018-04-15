@@ -7,7 +7,7 @@
 
 using namespace shogun;
 
-COutputStream::COutputStream()
+COutputStream::COutputStream() : CSGObject()
 {
 }
 
