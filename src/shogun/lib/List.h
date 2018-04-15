@@ -53,12 +53,8 @@ class CListElement :public CSGObject
 	private:
 		void init()
 		{
-			m_parameters->add(&data, "data", "Data of this element.");
-			m_parameters->add((CSGObject**) &next, "next",
-					"Next element in list.");
-			m_model_selection_parameters->add((CSGObject**) &next, "next",
-					"Next element in list.");
-			m_model_selection_parameters->add(&data, "data", "Data of this element.");
+			SG_ADD(&data, "data", "Data of this element.", MS_NOT_AVAILABLE);
+			SG_ADD(&next, "next", "Next element in list.", MS_NOT_AVAILABLE);
 		}
 
 	public:

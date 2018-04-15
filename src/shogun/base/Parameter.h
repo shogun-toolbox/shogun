@@ -56,31 +56,6 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
-	/** copy primitive type from source to target
-	 *
-	 * @param ptype the primitive type
-	 * @param source from where to copy
-	 * @param target where to copy to
-	 */
-	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
-
-	/** copy structured type from source to target
-	 *
-	 * @param stype the structured type
-	 * @param ptype the primitive type that the structured objects use
-	 * @param source from where to copy
-	 * @param target where to copy to
-	 */
-	static bool copy_stype(EStructType stype, EPrimitiveType ptype,
-				void* source, void* target);
-
-	/** copy this to parameter target
-	 *
-	 * @param target where this should be copied to
-	 */
-	bool copy(TParameter* target);
-
-
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 

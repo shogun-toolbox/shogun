@@ -41,6 +41,9 @@ public:
 	/** @return true iff content is equal */
 	bool equals(const SGString& other) const;
 
+	/** Clone string */
+	SGString<T> clone() const;
+
 	/** free string */
 	void free_string();
 
