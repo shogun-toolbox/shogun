@@ -325,13 +325,13 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	}
 	case KNN_COVER_TREE:
 	{
-#ifdef SG_GPL_ONLY
+#ifdef USE_GPL_SHOGUN
 		solver = new CCoverTreeKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
 		SG_REF(solver);
 		break;
 #else
 		SG_GPL_ONLY
-#endif // SG_GPL_ONLY
+#endif // USE_GPL_SHOGUN
 	}
 #ifdef HAVE_CXX11
 	case KNN_LSH:
