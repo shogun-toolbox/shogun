@@ -16,6 +16,7 @@ namespace shogun
 		virtual ~CInputStream();
 
 		virtual void read(void* buffer, size_t size) = 0;
+		virtual char read() = 0;
 	};
 }
 
