@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Björn Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
  *          Sergey Lisitsyn, Viktor Gal
  */
 

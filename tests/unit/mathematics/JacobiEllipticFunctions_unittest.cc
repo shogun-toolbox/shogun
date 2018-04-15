@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Viktor Gal, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Viktor Gal, Heiko Strathmann, Bjoern Esser
  */
 
 #include <gtest/gtest.h>

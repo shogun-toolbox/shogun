@@ -199,11 +199,8 @@ TYPED_TEST(SGObjectClone, basic_checks)
 	ASSERT_NE(clone, nullptr);
 	EXPECT_EQ(clone->ref_count(), 1);
 
-	auto clone_casted = dynamic_cast<CCloneEqualsMock<TypeParam>*>(clone);
+	auto clone_casted = clone->as<CCloneEqualsMock<TypeParam>>();
 	ASSERT_NE(clone_casted, nullptr);
-
-	EXPECT_NE(clone_casted->m_object, obj->m_object);
-	EXPECT_EQ(clone_casted->m_object->m_was_cloned, true);
 
 	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
 
@@ -233,6 +230,35 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 	obj->m_raw_matrix_basic[0] -= 1;
 	obj->m_raw_vector_sg_string[0].string[0] -= 1;
 	obj->m_raw_vector_object[0]->m_some_value -= 1;
+
+	CSGObject* clone = obj->clone();
+	EXPECT_TRUE(clone->equals(obj));
+
+	SG_UNREF(clone);
+}
+
+TYPED_TEST(SGObjectClone, not_just_copied_pointer)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	CSGObject* clone = obj->clone();
+	auto clone_casted = clone->as<CCloneEqualsMock<TypeParam>>();
+	ASSERT_NE(clone_casted, nullptr);
+
+	EXPECT_NE(clone_casted->m_object, obj->m_object);
+	EXPECT_NE(clone_casted->m_raw_vector_basic, obj->m_raw_vector_basic);
+	EXPECT_NE(clone_casted->m_raw_vector_sg_string, obj->m_raw_vector_sg_string);
+
+	EXPECT_NE(clone_casted->m_raw_vector_object, obj->m_raw_vector_object);
+	for (auto i : range(obj->m_raw_vector_object_len))
+		EXPECT_NE(clone_casted->m_raw_vector_object[i], obj->m_raw_vector_object[i]);
+
+	SG_UNREF(clone);
+}
+
+TYPED_TEST(SGObjectClone, equals_other_has_null_param)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	SG_UNREF(obj->m_object);
 
 	CSGObject* clone = obj->clone();
 	EXPECT_TRUE(clone->equals(obj));
@@ -534,6 +560,6 @@ TEST(SGObject, watched_parameter_object)
 	obj->put(Tag<CMockObject*>("watched_object"), other_obj.get());
 	EXPECT_EQ(other_obj->ref_count(), 2);
 	EXPECT_FALSE(other_obj->equals(obj));
-	obj = nullptr;
+	obj = empty<CMockObject>();
 	EXPECT_EQ(other_obj->ref_count(), 1);
 }

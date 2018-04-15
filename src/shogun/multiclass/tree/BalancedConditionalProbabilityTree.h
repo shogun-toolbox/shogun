@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Björn Esser, Yuyu Zhang
+ * Authors: Chiyuan Zhang, Bjoern Esser, Yuyu Zhang
  */
 
 #ifndef BALANCEDCONDITIONALPROBABILITYTREE_H__

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Evangelos Anagnostopoulos
+ * Authors: Bjoern Esser, Evangelos Anagnostopoulos
  */
 
 #include <shogun/features/RandomKitchenSinksDotFeatures.h>
@@ -75,7 +75,9 @@ void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
 
 	SG_ADD((CSGObject** ) &feats, "feats", "Features to work on",
 			MS_NOT_AVAILABLE);
-	m_parameters->add(&random_coeff, "random_coeff", "Random function parameters");
+	SG_ADD(
+		&random_coeff, "random_coeff", "Random function parameters",
+		MS_NOT_AVAILABLE);
 }
 
 int32_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const

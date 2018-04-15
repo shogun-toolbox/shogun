@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
- *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Björn Esser
+ *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
@@ -204,14 +204,17 @@ void COnlineSVMSGD::init()
 	loss=new CHingeLoss();
 	SG_REF(loss);
 
-	m_parameters->add(&C1, "C1",  "Cost constant 1.");
-	m_parameters->add(&C2, "C2",  "Cost constant 2.");
-	m_parameters->add(&lambda, "lambda", "Regularization parameter.");
-	m_parameters->add(&wscale, "wscale",  "W scale");
-	m_parameters->add(&bscale, "bscale",  "b scale");
-	m_parameters->add(&epochs, "epochs",  "epochs");
-	m_parameters->add(&skip, "skip",  "skip");
-	m_parameters->add(&count, "count",  "count");
-	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
-	m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&lambda, "lambda", "Regularization parameter.", MS_AVAILABLE);
+	SG_ADD(&wscale, "wscale", "W scale", MS_NOT_AVAILABLE);
+	SG_ADD(&bscale, "bscale", "b scale", MS_NOT_AVAILABLE);
+	SG_ADD(&epochs, "epochs", "epochs", MS_NOT_AVAILABLE);
+	SG_ADD(&skip, "skip", "skip", MS_NOT_AVAILABLE);
+	SG_ADD(&count, "count", "count", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &use_regularized_bias, "use_regularized_bias",
+	    "Indicates if bias is regularized.", MS_NOT_AVAILABLE);
 }

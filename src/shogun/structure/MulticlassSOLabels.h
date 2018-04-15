@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Soeren Sonnenburg, Thoralf Klein, Yuyu Zhang, 
- *          Björn Esser, Sergey Lisitsyn
+ *          Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _MULTICLASS_SO_LABELS__H__

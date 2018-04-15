@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Chiyuan Zhang, Sergey Lisitsyn, Yuyu Zhang, Viktor Gal, 
- *          Fernando Iglesias, Björn Esser
+ *          Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef CONDITIONALPROBABILITYTREE_H__

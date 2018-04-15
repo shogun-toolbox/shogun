@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, Björn Esser
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/lib/config.h>
@@ -63,10 +63,9 @@ void CDomainAdaptationSVMLinear::init(CLinearMachine* pre_svm, float64_t B_param
 	is_presvm_sane();
 
     // serialization code
-	m_parameters->add((CSGObject**) &presvm, "presvm", "SVM to regularize against");
-	m_parameters->add(&B, "B",  "Regularization strenth B.");
-	m_parameters->add(&train_factor, "train_factor",  "train_factor");
-
+	SG_ADD(&presvm, "presvm", "SVM to regularize against", MS_AVAILABLE);
+	SG_ADD(&B, "B", "Regularization strenth B.", MS_AVAILABLE);
+	SG_ADD(&train_factor, "train_factor", "train_factor", MS_AVAILABLE);
 }
 
 

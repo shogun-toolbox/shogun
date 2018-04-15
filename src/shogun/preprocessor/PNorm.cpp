@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Soeren Sonnenburg, Evgeniy Andreev, Björn Esser, 
+ * Authors: Viktor Gal, Soeren Sonnenburg, Evgeniy Andreev, Bjoern Esser, 
  *          Sergey Lisitsyn
  */
 
@@ -108,7 +108,7 @@ double CPNorm::get_pnorm () const
 
 void CPNorm::register_param ()
 {
-	m_parameters->add (&m_p, "norm", "P-norm parameter");
+	SG_ADD(&m_p, "norm", "P-norm parameter", MS_AVAILABLE);
 }
 
 inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const

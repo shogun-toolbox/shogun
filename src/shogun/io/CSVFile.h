@@ -3,7 +3,7 @@
  *
  * Authors: Evgeniy Andreev, Fernando Iglesias, Sergey Lisitsyn, 
  *          Heiko Strathmann, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
- *          Björn Esser, Soeren Sonnenburg
+ *          Bjoern Esser, Soeren Sonnenburg
  */
 
 #ifndef __CSVFILE_H__

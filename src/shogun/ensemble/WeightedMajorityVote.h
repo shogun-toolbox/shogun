@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Yuyu Zhang, Björn Esser, Viktor Gal
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Bjoern Esser, Viktor Gal
  */
 
 #ifndef _WEIGHTED_MAJORITY_VOTE_H_

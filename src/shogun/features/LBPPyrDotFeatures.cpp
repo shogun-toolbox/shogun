@@ -3,7 +3,7 @@
  *
  * Authors: Vojtech Franc, Soeren Sonnenburg, Evangelos Anagnostopoulos,
  *          Vladislav Horbatiuk, Evgeniy Andreev, Viktor Gal, Weijie Lin,
- *          Evan Shelhamer, Björn Esser, Sergey Lisitsyn, Sanuj Sharma
+ *          Evan Shelhamer, Bjoern Esser, Sergey Lisitsyn, Sanuj Sharma
  */
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/mathematics/Math.h>

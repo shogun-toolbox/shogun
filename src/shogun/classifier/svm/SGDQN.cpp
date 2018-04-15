@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni, 
- *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Björn Esser
+ *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/classifier/svm/SGDQN.h>
@@ -224,9 +224,9 @@ void CSGDQN::init()
 	loss=new CHingeLoss();
 	SG_REF(loss);
 
-	m_parameters->add(&C1, "C1",  "Cost constant 1.");
-	m_parameters->add(&C2, "C2",  "Cost constant 2.");
-	m_parameters->add(&epochs, "epochs",  "epochs");
-	m_parameters->add(&skip, "skip",  "skip");
-	m_parameters->add(&count, "count",  "count");
+	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&epochs, "epochs", "epochs", MS_AVAILABLE);
+	SG_ADD(&skip, "skip", "skip", MS_NOT_AVAILABLE);
+	SG_ADD(&count, "count", "count", MS_NOT_AVAILABLE);
 }

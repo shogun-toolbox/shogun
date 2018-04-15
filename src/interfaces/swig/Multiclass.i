@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Sergey Lisitsyn
- * Copyright (C) 2012 Sergey Lisitsyn
+ * Authors: Heiko Strathmann, Saloni Nigam, Sergey Lisitsyn
  */
 
 /* Remove C Prefix */
@@ -59,6 +55,7 @@
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MulticlassLibSVM) CMulticlassLibSVM;
+
 %rename(LaRank) CLaRank;
 %rename(ScatterSVM) CScatterSVM;
 %rename(GMNPSVM) CGMNPSVM;
@@ -126,11 +123,11 @@ namespace shogun
 %include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 %include <shogun/multiclass/MulticlassLogisticRegression.h>
 %include <shogun/multiclass/MulticlassOCAS.h>
+%include <shogun/multiclass/LaRank.h>
 #endif // USE_GPL_SHOGUN
 %include <shogun/multiclass/MulticlassLibLinear.h>
 %include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/multiclass/MulticlassLibSVM.h>
-%include <shogun/multiclass/LaRank.h>
 %include <shogun/multiclass/ScatterSVM.h>
 %include <shogun/multiclass/GMNPSVM.h>
 %include <shogun/multiclass/KNN.h>

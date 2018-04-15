@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn,
- *          Heiko Strathmann, Viktor Gal, Weijie Lin, Björn Esser
+ *          Heiko Strathmann, Viktor Gal, Weijie Lin, Bjoern Esser
  */
 
 #include <shogun/base/Parallel.h>

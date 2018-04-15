@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, 
  *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias, 
- *          Björn Esser, Sergey Lisitsyn
+ *          Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _DYNARRAY_H_

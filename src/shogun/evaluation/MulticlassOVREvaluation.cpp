@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Björn Esser, Sergey Lisitsyn, Soeren Sonnenburg
+ * Authors: Bjoern Esser, Sergey Lisitsyn, Soeren Sonnenburg
  */
 
 #include <shogun/evaluation/MulticlassOVREvaluation.h>

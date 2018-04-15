@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evgeniy Andreev, Tejas Jogi, Soeren Sonnenburg, Yuyu Zhang, 
- *          Viktor Gal, Björn Esser
+ *          Viktor Gal, Bjoern Esser
  */
 
 #ifndef _DIRECTORLINEARMACHINE_H___

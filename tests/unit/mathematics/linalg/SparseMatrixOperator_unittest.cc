@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Viktor Gal, Pan Deng, Björn Esser
+ * Authors: Soumyajit De, Viktor Gal, Pan Deng, Bjoern Esser
  */
 #include <gtest/gtest.h>
 #include <shogun/lib/common.h>

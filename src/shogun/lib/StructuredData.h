@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Yuyu Zhang, Björn Esser
+ * Authors: Fernando Iglesias, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef _STRUCTUREDDATA_H__

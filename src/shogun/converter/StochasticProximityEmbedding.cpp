@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Chiyuan Zhang, Heiko Strathmann, Björn Esser
+ *          Chiyuan Zhang, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/converter/StochasticProximityEmbedding.h>

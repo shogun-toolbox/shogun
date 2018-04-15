@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, 
- *          Evan Shelhamer, Björn Esser, Sergey Lisitsyn
+ *          Evan Shelhamer, Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef _BINNED_DOTFEATURES_H___

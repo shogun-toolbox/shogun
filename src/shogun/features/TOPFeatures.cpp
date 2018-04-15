@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Björn Esser
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/features/TOPFeatures.h>
@@ -367,6 +367,10 @@ void CTOPFeatures::init()
 	//TODO serialize HMMs
 	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
 	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
-	m_parameters->add(&neglinear, "neglinear", "If negative HMM is a LinearHMM");
-	m_parameters->add(&poslinear, "poslinear", "If positive HMM is a LinearHMM");
+	SG_ADD(
+	    &neglinear, "neglinear", "If negative HMM is a LinearHMM",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &poslinear, "poslinear", "If positive HMM is a LinearHMM",
+	    MS_NOT_AVAILABLE);
 }

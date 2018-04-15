@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
  *          Evgeniy Andreev, Vladislav Horbatiuk, Evan Shelhamer, Yuyu Zhang, 
- *          Thoralf Klein, Fernando Iglesias, Björn Esser
+ *          Thoralf Klein, Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef _CSTRINGFEATURES__H__

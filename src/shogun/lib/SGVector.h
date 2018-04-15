@@ -4,7 +4,7 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Fernando Iglesias, Viktor Gal, 
  *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Koen van de Sande, 
  *          Pan Deng, Chiyuan Zhang, Thoralf Klein, Khaled Nasr, 
- *          Evgeniy Andreev, Michele Mazzoni, Björn Esser, Yuyu Zhang
+ *          Evgeniy Andreev, Michele Mazzoni, Bjoern Esser, Yuyu Zhang
  */
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Soeren Sonnenburg, Björn Esser
+ * Authors: Viktor Gal, Soeren Sonnenburg, Bjoern Esser
  */
 
 #ifndef __CCSOSVM_H__

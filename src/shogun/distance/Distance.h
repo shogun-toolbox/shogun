@@ -4,7 +4,7 @@
  * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn, 
  *          Saurabh Mahindre, Chiyuan Zhang, Michele Mazzoni, Evgeniy Andreev, 
  *          Evan Shelhamer, Yuyu Zhang, Heiko Strathmann, Thoralf Klein, 
- *          Björn Esser, Soumyajit De, Saurabh Goyal
+ *          Bjoern Esser, Soumyajit De, Saurabh Goyal
  */
 
 #ifndef _DISTANCE_H___

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/lib/config.h>
@@ -57,9 +57,6 @@ template<class T>
 void CDenseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
-
-		this->m_parameters->add(&m_operator, "dense_matrix",
-				"The dense matrix of the linear operator");
 	}
 
 template<class T>

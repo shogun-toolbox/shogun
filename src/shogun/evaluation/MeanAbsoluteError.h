@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Roman Votyakov, Evan Shelhamer, Yuyu Zhang, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef MEANABSOLUTEERROR_H_

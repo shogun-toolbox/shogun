@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sanuj Sharma, Björn Esser, Shell Hu, Viktor Gal
+ * Authors: Sanuj Sharma, Bjoern Esser, Shell Hu, Viktor Gal
  */
 
 #include <shogun/mathematics/Math.h>

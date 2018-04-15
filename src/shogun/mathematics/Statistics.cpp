@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Sanuj Sharma,
  *          Viktor Gal, Roman Votyakov, Wu Lin, Evgeniy Andreev, Weijie Lin,
- *          Björn Esser, Sergey Lisitsyn
+ *          Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <algorithm>

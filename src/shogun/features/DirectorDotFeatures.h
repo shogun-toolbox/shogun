@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Björn Esser, 
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Bjoern Esser, 
  *          Sergey Lisitsyn
  */
 

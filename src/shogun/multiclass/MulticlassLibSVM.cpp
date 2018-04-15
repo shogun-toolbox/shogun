@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, 
- *          Björn Esser, Leon Kuchenbecker
+ *          Bjoern Esser, Leon Kuchenbecker
  */
 
 #include <shogun/multiclass/MulticlassLibSVM.h>

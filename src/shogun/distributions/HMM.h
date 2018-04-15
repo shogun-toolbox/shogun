@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Evan Shelhamer, Elijah Rippeth, Saurabh Goyal, 
- *          Björn Esser
+ *          Bjoern Esser
  */
 
 #ifndef __CHMM_H__

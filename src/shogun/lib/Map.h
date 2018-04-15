@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evgeniy Andreev, Jacob Walker, Sergey Lisitsyn, Soeren Sonnenburg, 
- *          Yuyu Zhang, Björn Esser, Wu Lin
+ *          Yuyu Zhang, Bjoern Esser, Wu Lin
  */
 
 #ifndef _MAP_H_

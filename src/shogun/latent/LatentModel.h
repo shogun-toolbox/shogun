@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Sergey Lisitsyn, Yuyu Zhang, Björn Esser
+ * Authors: Viktor Gal, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser
  */
 
 #ifndef __LATENTMODEL_H__

@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
  *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, 
- *          Björn Esser, Evangelos Anagnostopoulos
+ *          Bjoern Esser, Evangelos Anagnostopoulos
  */
 
 #ifndef _COMBINEDDOTFEATURES_H___

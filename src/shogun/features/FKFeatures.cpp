@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Björn Esser, Sergey Lisitsyn
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Bjoern Esser, Sergey Lisitsyn
  */
 
 #include <shogun/features/FKFeatures.h>
@@ -255,5 +255,5 @@ void CFKFeatures::init()
 	//TODO serialize HMMs
 	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
 	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
-	m_parameters->add(&weight_a, "weight_a", "Class prior.");
+	SG_ADD(&weight_a, "weight_a", "Class prior.", MS_NOT_AVAILABLE);
 }

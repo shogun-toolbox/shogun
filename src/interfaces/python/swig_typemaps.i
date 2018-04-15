@@ -1,20 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * This code is inspired by the python numpy.i typemaps, from John Hunter
- * and Bill Spotz that in turn is based on enthought/kiva/agg/src/numeric.i,
- * author unknown.
- *
- * It goes further by supporting strings of arbitrary types, sparse matrices
- * and ways to return arbitrariliy shaped matrices.
- *
- * Written (W) 2006-2009,2011 Soeren Sonnenburg
- * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2011 Berlin Institute of Technology
- * Copyright (C) 2012 Evgeniy Andreev (gsomix)
+ * Authors: Viktor Gal, Sergey Lisitsyn
  */
 
 %include "DenseFeatures_protocols.i"

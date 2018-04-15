@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Björn Esser
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Bjoern Esser
  */
 #include <shogun/kernel/string/OligoStringKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>

@@ -3,7 +3,7 @@
  *
  * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Roman Votyakov, 
  *          Fernando Iglesias, Sanuj Sharma, Sergey Lisitsyn, Wu Lin, 
- *          Evgeniy Andreev, Björn Esser, Saurabh Goyal
+ *          Evgeniy Andreev, Bjoern Esser, Saurabh Goyal
  */
 
 #ifndef __STATISTICS_H_

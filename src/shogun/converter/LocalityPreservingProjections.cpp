@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
- *          Evan Shelhamer, Björn Esser
+ *          Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/converter/LocalityPreservingProjections.h>

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Heiko Strathmann, Fernando Iglesias, Björn Esser, 
+ * Authors: Kevin Hughes, Heiko Strathmann, Fernando Iglesias, Bjoern Esser, 
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 

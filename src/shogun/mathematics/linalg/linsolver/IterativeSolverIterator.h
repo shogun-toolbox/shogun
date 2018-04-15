@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Heiko Strathmann, Bjoern Esser
  */
 
 #ifndef ITERATIVE_SOLVER_ITERATOR_H_

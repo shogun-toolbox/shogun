@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Fernando Iglesias, Björn Esser
+ * Authors: Jiaolong Xu, Fernando Iglesias, Bjoern Esser
  */
 
 #include <shogun/structure/GraphCut.h>

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Roman Votyakov, Heiko Strathmann, Wu Lin, Pan Deng, Björn Esser
+ * Authors: Roman Votyakov, Heiko Strathmann, Wu Lin, Pan Deng, Bjoern Esser
  */
 
 #ifdef USE_GPL_SHOGUN

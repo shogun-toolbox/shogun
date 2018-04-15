@@ -4,7 +4,7 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang,
  *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang,
- *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
+ *          Viktor Gal, Bjoern Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
 #ifndef __SGOBJECT_H__
@@ -697,15 +697,6 @@ protected:
 	 * @return empty instance of own type
 	 */
 	virtual CSGObject* create_empty() const;
-
-	/** Iteratively clones all parameters of the provided instance into this instance.
-	 * This will fail if the objects have different sets of registered parameters,
-	 * or if they have a different type as defined by get_name().
-	 *
-	 * @param other object whose parameters are to be cloned into this instance
-	 * @return true if cloning was successful
-	 */
-	bool clone_parameters(CSGObject* other);
 
 private:
 	void set_global_objects();

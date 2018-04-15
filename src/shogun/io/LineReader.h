@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evgeniy Andreev, Thoralf Klein, Heiko Strathmann, Yuyu Zhang, 
- *          Fernando Iglesias, Björn Esser, Soeren Sonnenburg, Saurabh Goyal
+ *          Fernando Iglesias, Bjoern Esser, Soeren Sonnenburg, Saurabh Goyal
  */
 
 #ifndef __LINE_READER_H__

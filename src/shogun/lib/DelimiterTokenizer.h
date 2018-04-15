@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Evgeniy Andreev, 
- *          Yuyu Zhang, Fernando Iglesias, Björn Esser
+ *          Yuyu Zhang, Fernando Iglesias, Bjoern Esser
  */
 
 #ifndef _DELIMITERTOKENIZER__H__

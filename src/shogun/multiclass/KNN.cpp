@@ -3,7 +3,7 @@
  *
  * Authors: Soeren Sonnenburg, Fernando Iglesias, Giovanni De Toni, 
  *          Saurabh Mahindre, Sergey Lisitsyn, Weijie Lin, Heiko Strathmann, 
- *          Evgeniy Andreev, Viktor Gal, Björn Esser
+ *          Evgeniy Andreev, Viktor Gal, Bjoern Esser
  */
 
 #include <shogun/base/Parameter.h>
@@ -61,11 +61,11 @@ void CKNN::init()
 
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
-	SG_ADD(&m_k, "m_k", "Parameter k", MS_NOT_AVAILABLE);
-	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
-	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
-	SG_ADD(&m_leaf_size, "m_leaf_size", "Leaf size for KDTree", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_knn_solver, "m_knn_solver", "Algorithm to solve knn", MS_NOT_AVAILABLE);
+	SG_ADD(&m_k, "k", "Parameter k", MS_NOT_AVAILABLE);
+	SG_ADD(&m_q, "q", "Parameter q", MS_AVAILABLE);
+	SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
+	SG_ADD(&m_leaf_size, "leaf_size", "Leaf size for KDTree", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_knn_solver, "knn_solver", "Algorithm to solve knn", MS_NOT_AVAILABLE);
 }
 
 CKNN::~CKNN()
@@ -325,9 +325,13 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	}
 	case KNN_COVER_TREE:
 	{
+#ifdef USE_GPL_SHOGUN
 		solver = new CCoverTreeKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
 		SG_REF(solver);
 		break;
+#else
+		SG_GPL_ONLY
+#endif // USE_GPL_SHOGUN
 	}
 #ifdef HAVE_CXX11
 	case KNN_LSH:

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Heiko Strathmann, Björn Esser
+ * Authors: Soumyajit De, Heiko Strathmann, Bjoern Esser
  */
 
 #include <shogun/lib/config.h>
@@ -63,16 +63,6 @@ template<class T>
 void CSparseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
-
-		this->m_parameters->add_vector(&m_operator.sparse_matrix,
-				&m_operator.num_vectors, "sparse_matrix",
-				"The sparse matrix of the linear operator.");
-		this->watch_param(
-		    "sparse_matrix", &m_operator.sparse_matrix,
-		    &m_operator.num_vectors);
-
-		this->m_parameters->add(&m_operator.num_features,
-				"m_operator.num_features", "Number of features.");
 	}
 
 template<class T>

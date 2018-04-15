@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Thoralf Klein, Björn Esser, Viktor Gal
+ * Authors: Evgeniy Andreev, Thoralf Klein, Bjoern Esser, Viktor Gal
  */
 
 #include <shogun/io/LineReader.h>

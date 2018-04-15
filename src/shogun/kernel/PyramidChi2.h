@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Evan Shelhamer, 
- *          Björn Esser, Sergey Lisitsyn
+ *          Bjoern Esser, Sergey Lisitsyn
  */
 
 #ifndef PYRAMIDCHI2_H_
