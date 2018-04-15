@@ -907,6 +907,11 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 	return (CCombinedKernel*)kernel;
 }
 
+CCombinedKernel* CCombinedKernel::obtain_from_generic(Some<CSGObject> object)
+{
+return CCombinedKernel::obtain_from_generic((CKernel*)object.get());
+}
+
 CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 {
 	CList* return_list = new CList(true);

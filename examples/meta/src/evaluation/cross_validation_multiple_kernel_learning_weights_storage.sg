@@ -56,6 +56,7 @@ MKLClassification machine = fold.get_trained_machine()
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = machine.get("kernel")
-RealVector w = k.get_subkernel_weights()
+SGObject k = machine.get("kernel")
+CombinedKernel ck = CombinedKernel:obtain_from_generic(k)
+RealVector w = ck.get_subkernel_weights()
 #![get_weights]

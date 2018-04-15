@@ -366,6 +366,9 @@ class CCombinedKernel : public CKernel
 		 */
 		static CCombinedKernel* obtain_from_generic(CKernel* kernel);
 
+        // TODO: remove
+		static CCombinedKernel* obtain_from_generic(Some<CSGObject> object);
+
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
