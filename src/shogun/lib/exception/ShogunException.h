@@ -45,7 +45,7 @@ namespace shogun
 
 		virtual const char* what() const noexcept override;
 
-	private:
+	protected:
 		/** exception string */
 		std::string msg;
 	};

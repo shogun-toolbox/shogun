@@ -15,7 +15,9 @@ namespace shogun
 		COutputStream();
 		virtual ~COutputStream();
 
-		virtual void write(void* buffer, size_t size) = 0;
+		virtual void close() = 0;
+		virtual void flush() = 0;
+		virtual void write(const void* buffer, size_t size) = 0;
 	};
 }
 

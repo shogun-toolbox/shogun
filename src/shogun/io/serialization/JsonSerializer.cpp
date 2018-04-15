@@ -9,7 +9,6 @@
 
 using namespace shogun;
 
-// TODO: buffering
 struct COutputStreamAdapter
 {
 	typedef char Ch;
@@ -20,6 +19,7 @@ struct COutputStreamAdapter
 
 	void Flush()
 	{
+		m_stream->flush();
 	}
 
 	COutputStream* m_stream;
@@ -40,5 +40,6 @@ void CJsonSerializer::write(Some<CSGObject> object)
 	writer.StartObject();
 	writer.Key("name");
 	writer.String(object->get_name());
+	//writer.String(object.get());
 	writer.EndObject();
 }

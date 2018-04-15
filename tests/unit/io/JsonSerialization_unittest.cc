@@ -14,12 +14,16 @@ public:
 	CDummyOutputStream() : COutputStream(), m_buffer()
 	{
 	}
-	void write(void* buffer, size_t size)
+
+	void close() override {}
+	void flush() override {}
+
+	void write(const void* buffer, size_t size) override
 	{
 		std::copy(
 		    (char*)buffer, (char*)buffer + size, std::back_inserter(m_buffer));
 	}
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DummyOutputStream";
 	}

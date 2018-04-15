@@ -10,12 +10,15 @@
 #if defined(__GNUC__) || defined(__APPLE__)
 #define SG_FORCED_INLINE inline __attribute__((always_inline))
 #define SG_FORCED_PACKED __attribute__((__packed__))
+#define SG_ATTRIBUTE_UNUSED __attribute__((unused))
 #elif defined(_MSC_VER)
 #define SG_FORCED_INLINE __forceinline
 #define SG_FORCED_PACKED
+#define SG_ATTRIBUTE_UNUSED
 #else
 #define SG_FORCED_INLINE
 #define SG_FORCED_PACKED
+#define SG_ATTRIBUTE_UNUSED
 #endif
 
 // a quick macro for making sure that an object
