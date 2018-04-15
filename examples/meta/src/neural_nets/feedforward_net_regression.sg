@@ -14,10 +14,10 @@ RegressionLabels labels_test(f_labels_test)
 
 #![add_layers]
 int dimensions = features_train.get_num_features()
-NeuralLayers layers() 
-layers = layers.input(dimensions)
-layers = layers.rectified_linear(20)
-layers = layers.linear(1)
+NeuralLayers layers()
+layers.input(dimensions)
+layers.rectified_linear(20)
+layers.linear(1)
 DynamicObjectArray all_layers = layers.done()
 #![add_layers]
 

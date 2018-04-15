@@ -165,7 +165,7 @@ TEST_F(TrainedModelSerializationTest, {{test_name}})
 
 	machine->train();
 
-	auto predictions=Some<CLabels>(machine->apply(test_feats));
+	auto predictions=wrap<CLabels>(machine->apply(test_feats));
 
 	std::string filename;
 	ASSERT_TRUE(serialize_machine(machine, filename, {{store_model_features}}));
@@ -173,7 +173,7 @@ TEST_F(TrainedModelSerializationTest, {{test_name}})
 	auto deserialized_machine=some<{{class}}>();
 	ASSERT_TRUE(deserialize_machine(deserialized_machine, filename));
 
-	auto deserialized_predictions=Some<CLabels>(deserialized_machine->apply(test_feats));
+	auto deserialized_predictions=wrap<CLabels>(deserialized_machine->apply(test_feats));
 	
 	// allow for lossy serialization format
 	set_global_fequals_epsilon(1e-6);
