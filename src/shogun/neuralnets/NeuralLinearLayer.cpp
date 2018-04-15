@@ -89,7 +89,7 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(m_input_indices[l]);
+			(CNeuralLayer*)layers->get_element(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
@@ -133,7 +133,7 @@ void CNeuralLinearLayer::compute_gradients(
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(m_input_indices[l]);
+			(CNeuralLayer*)layers->get_element(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		float64_t* weight_gradients = parameter_gradients.vector +

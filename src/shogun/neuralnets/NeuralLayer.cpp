@@ -66,7 +66,7 @@ void CNeuralLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 
 	for (int32_t i=0; i<m_input_sizes.vlen; i++)
 	{
-		CNeuralLayer* layer = (CNeuralLayer*)layers->element(m_input_indices[i]);
+		CNeuralLayer* layer = (CNeuralLayer*)layers->get_element(m_input_indices[i]);
 		m_input_sizes[i] = layer->get_num_neurons();
 		SG_UNREF(layer);
 	}

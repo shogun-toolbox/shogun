@@ -111,6 +111,21 @@ SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 }
 
 template <class T>
+SGMatrix<T>::SGMatrix(const std::initializer_list<std::initializer_list<T>>& list):
+	SGReferencedData(),
+	num_rows((*list.begin()).size()),
+	num_cols(list.size()),
+	gpu_ptr(nullptr)
+{
+	matrix = SG_CALLOC(T, ((int64_t) num_rows)*num_cols);
+	m_on_gpu.store(false, std::memory_order_release);
+	int64_t curr_pos = 0;
+	for (const auto& r: list)
+		for (const auto& c: r)
+			matrix[curr_pos++] = c;
+}
+
+template <class T>
 SGMatrix<T>::operator EigenMatrixXtMap() const
 {
 	assert_on_cpu();

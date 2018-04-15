@@ -5,7 +5,7 @@
 
 #include <shogun/io/stream/InputStream.h>
 
-using namespace shogun;
+using namespace shogun::io;
 
 CInputStream::CInputStream() : CSGObject()
 {

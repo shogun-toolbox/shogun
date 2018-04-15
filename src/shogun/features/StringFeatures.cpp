@@ -2,7 +2,9 @@
 #include <shogun/base/progress.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/MemoryMappedFile.h>
-#include <shogun/io/SGIO.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/fs/Path.h>
+#include <shogun/io/ShogunErrc.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/Preprocessor.h>
@@ -10,7 +12,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef _WIN32
@@ -767,102 +768,64 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 {
 	remove_all_subsets();
 
-	struct dirent **namelist;
-	int32_t n;
+	std::vector<std::string> children;
+	auto fs_registry = io::FileSystemRegistry::instance();
+	REQUIRE(!fs_registry->is_directory(dirname),
+		"Specified path ('%s') is not a directory!", dirname);
+	auto r = fs_registry->get_children(dirname, &children);
+	if (r)
+		throw io::to_system_error(r);
 
-	SGIO::set_dirname(dirname);
-
-	SG_DEBUG("dirname '%s'\n", dirname)
-
-#ifdef _WIN32
-	TCHAR search_dir[MAX_PATH];
-	WIN32_FIND_DATA ffd;
-	LARGE_INTEGER filesize;
-	HANDLE h_find = INVALID_HANDLE_VALUE;
-
-	StringCchCopy(search_dir, MAX_PATH, dirname);
-	StringCchCat(search_dir, MAX_PATH, TEXT("\\*"));
-
-	h_find = FindFirstFile(search_dir, &ffd);
-	if (INVALID_HANDLE_VALUE == h_find)
+	if (children.size() <= 0)
 	{
-		SG_ERROR("Error finding finds in %s\n", dirname)
-		return false;
-	}
-
-	std::vector<struct dirent*> files;
-	do
-	{
-		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_NORMAL)
-		{
-			struct dirent* d = SG_MALLOC(struct dirent, 1);
-			StringCchCopy(d->d_name, MAX_PATH, ffd.cFileName);
-			files.push_back(d);
-			n++;
-		}
-	}
-	while (FindNextFile(h_find, &ffd) != 0);
-	namelist = &files[0];
-	FindClose(h_find);
-#else
-	n=scandir(dirname, &namelist, &SGIO::filter, alphasort);
-#endif
-	if (n <= 0)
-	{
-		SG_ERROR("error calling scandir - no files found\n")
+		SG_ERROR("error calling scandir - no files found\n");
 		return false;
 	}
 	else
 	{
-		SGString<ST>* strings=NULL;
-
 		int32_t num=0;
 		int32_t max_len=-1;
 
 		//usually n==num_vec, but it might not in race conditions
 		//(file perms modified, file erased)
-		strings=SG_MALLOC(SGString<ST>, n);
-
-		for (int32_t i=0; i<n; i++)
+		SGString<ST>* strings = SG_MALLOC(SGString<ST>, children.size());
+		for (auto v: children)
 		{
-			char* fname=SGIO::concat_filename(namelist[i]->d_name);
+			auto fname = io::join_path(dirname, v);
 
-			struct stat s;
-			off_t filesize=0;
-
-			if (!stat(fname, &s) && s.st_size>0)
+			if (fs_registry->file_exists(fname))
 			{
-				filesize=s.st_size/sizeof(ST);
+				auto filesize = fs_registry->get_file_size(fname);
 
-				FILE* f=fopen(fname, "ro");
-				if (f)
+				std::unique_ptr<io::RandomAccessFile> file;
+				if (fs_registry->new_random_access_file(fname, &file))
 				{
-					ST* str=SG_MALLOC(ST, filesize);
-					SG_DEBUG("%s:%ld\n", fname, (int64_t) filesize)
-					if (fread(str, sizeof(ST), filesize, f)!=(size_t) filesize)
+					//FIXME!
+					ST* str = SG_MALLOC(ST, filesize);
+					SG_DEBUG("%s:%ld\n", fname.c_str(), (int64_t) filesize)
+					std::string_view result;
+					std::string buffer;
+					buffer.resize(filesize);
+					if (file->read(0, filesize, &result, &(buffer[0])))
 						SG_ERROR("failed to read file\n")
-					strings[num].string=str;
-					strings[num].slen=filesize;
-					max_len=CMath::max(max_len, strings[num].slen);
+					strings[num].string = str;
+					strings[num].slen = filesize;
+					max_len=std::max(max_len, strings[num].slen);
 
-					num++;
-					fclose(f);
+					++num;
 				}
 			}
 			else
-				SG_ERROR("empty or non readable file \'%s\'\n", fname)
-
-			SG_FREE(namelist[i]);
+				SG_ERROR("The provided file does not exist: \'%s\'\n", fname.c_str());
 		}
-		SG_FREE(namelist);
 
 		if (num>0 && strings)
 		{
 			set_features(strings, num, max_len);
 			return true;
 		}
-	}
 
+	}
 	return false;
 }
 

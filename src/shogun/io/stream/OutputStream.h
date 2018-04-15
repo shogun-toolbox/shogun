@@ -9,14 +9,19 @@
 
 namespace shogun
 {
-	class COutputStream : public CSGObject
+	namespace io
 	{
-	public:
-		COutputStream();
-		virtual ~COutputStream();
+		class COutputStream : public CSGObject
+		{
+		public:
+			COutputStream();
+			virtual ~COutputStream();
 
-		virtual void write(void* buffer, size_t size) = 0;
-	};
+			virtual std::error_condition close() = 0;
+			virtual std::error_condition flush() = 0;
+			virtual std::error_condition write(const void* buffer, int64_t size) = 0;
+		};
+	}
 }
 
 #endif

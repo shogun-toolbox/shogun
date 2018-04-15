@@ -1050,3 +1050,9 @@ std::string CSGObject::string_enum_reverse_lookup(
 	    });
 	return enum_map_it->first;
 }
+
+void CSGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
+{
+	auto p = get_parameter(_tag);
+	p.get_value().visit(v);
+}

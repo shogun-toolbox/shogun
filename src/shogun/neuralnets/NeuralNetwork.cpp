@@ -736,7 +736,7 @@ SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(int32_t i)
 
 CNeuralLayer* CNeuralNetwork::get_layer(int32_t i)
 {
-	CNeuralLayer* layer = (CNeuralLayer*)m_layers->element(i);
+	CNeuralLayer* layer = (CNeuralLayer*)m_layers->get_element(i);
 	// needed because m_layers->element(i) increases the reference count of
 	// layer i
 	SG_UNREF(layer);

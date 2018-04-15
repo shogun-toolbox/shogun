@@ -6,6 +6,7 @@
 #include <shogun/io/serialization/Deserializer.h>
 
 using namespace shogun;
+using namespace shogun::io;
 
 CDeserializer::CDeserializer() : CSGObject(), m_stream(empty<CInputStream>())
 {

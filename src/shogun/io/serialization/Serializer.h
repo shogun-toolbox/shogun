@@ -10,18 +10,21 @@
 
 namespace shogun
 {
-	class CSerializer : public CSGObject
+	namespace io
 	{
-	public:
-		CSerializer();
-		virtual ~CSerializer();
-		virtual void attach(Some<COutputStream> stream);
-		virtual void write(Some<CSGObject> object) = 0;
-		Some<COutputStream> stream() const;
+		class CSerializer : public CSGObject
+		{
+		public:
+			CSerializer();
+			virtual ~CSerializer();
+			virtual void attach(Some<COutputStream> stream);
+			virtual void write(Some<CSGObject> object) = 0;
+			Some<COutputStream> stream() const;
 
-	private:
-		Some<COutputStream> m_stream;
-	};
+		private:
+			Some<COutputStream> m_stream;
+		};
+	}
 }
 
 #endif
