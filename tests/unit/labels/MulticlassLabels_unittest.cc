@@ -82,7 +82,7 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense)
 	labels->set_labels(labels_true);
 	auto labels2 = multiclass_labels(labels);
 	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2, nullptr);
+	ASSERT_NE(labels2.get(), nullptr);
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
 }
 
@@ -93,11 +93,11 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
 	auto labels = some<CDenseLabels>(labels_true.size());
 	labels->set_labels({0, 1, 3});
 	auto converted = multiclass_labels(labels);
-	ASSERT_NE(converted, nullptr);
+	ASSERT_NE(converted.get(), nullptr);
 	EXPECT_TRUE(converted->get_labels().equals({0, 1, 2}));
 
 	labels->set_labels({-1, 1, 1});
 	auto converted2 = multiclass_labels(labels);
-	ASSERT_NE(converted2, nullptr);
+	ASSERT_NE(converted2.get(), nullptr);
 	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
 }

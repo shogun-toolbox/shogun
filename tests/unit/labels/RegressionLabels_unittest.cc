@@ -43,7 +43,7 @@ TEST_F(RegressionLabels, regression_labels_from_dense)
 
 	auto labels2 = regression_labels(labels);
 	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2, nullptr);
+	ASSERT_NE(labels2.get(), nullptr);
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
 	EXPECT_EQ(labels->get_values(), labels2->get_values());
 }

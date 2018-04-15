@@ -560,6 +560,6 @@ TEST(SGObject, watched_parameter_object)
 	obj->put(Tag<CMockObject*>("watched_object"), other_obj.get());
 	EXPECT_EQ(other_obj->ref_count(), 2);
 	EXPECT_FALSE(other_obj->equals(obj));
-	obj = nullptr;
+	obj = empty<CMockObject>();
 	EXPECT_EQ(other_obj->ref_count(), 1);
 }
