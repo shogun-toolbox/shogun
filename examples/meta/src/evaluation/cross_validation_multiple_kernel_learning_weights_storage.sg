@@ -41,22 +41,21 @@ cross.subscribe_to_parameters(mkl_obs)
 #[!create_observer]
 
 #![evaluate_and_get_result]
-CrossValidationResult result()
-result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+CrossValidationResult result = cross.evaluate()
 #![evaluate_and_get_result]
 
 #![get_results]
-real mean = result.get_mean()
-real stddev = result.get_std_dev()
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
 #![get_results]
 
 #![get_fold_machine]
 CrossValidationStorage obs = mkl_obs.get_observation(0)
 CrossValidationFoldStorage fold = obs.get_fold(0)
-MKLClassification machine = MKLClassification:obtain_from_generic(fold.get_trained_machine())
+MKLClassification machine = fold.get_trained_machine()
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = CombinedKernel:obtain_from_generic(machine.get_kernel())
+CombinedKernel k = machine.get("kernel")
 RealVector w = k.get_subkernel_weights()
 #![get_weights]

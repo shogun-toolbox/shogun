@@ -18,7 +18,6 @@ Features converted = ica.apply(features)
 
 #![extract]
 RealMatrix mixing_matrix = ica.get_mixing_matrix()
-RealFeatures casted = RealFeatures:obtain_from_generic(converted)
-RealMatrix unmixed_signal = casted.get_feature_matrix()
+RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
 #![extract]
 

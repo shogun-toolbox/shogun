@@ -36,9 +36,9 @@ TEST(Some,reassignment)
     CGaussianKernel* raw = new CGaussianKernel();
     EXPECT_EQ(1, kernel->ref_count());
     EXPECT_EQ(0, raw->ref_count());
-    kernel = raw;
-    EXPECT_TRUE(kernel->equals(raw));
-    EXPECT_EQ(1, kernel->ref_count());
+	kernel.reset(raw);
+	EXPECT_TRUE(kernel->equals(raw));
+	EXPECT_EQ(0, kernel->ref_count());
 }
 
 TEST(Some,self_assignment)
@@ -63,7 +63,7 @@ TEST(Some, get_method)
 {
 	auto raw = new CGaussianKernel();
 	SG_REF(raw);
-	auto kernel = Some<CGaussianKernel>(raw);
+	auto kernel = wrap(raw);
 	EXPECT_TRUE(raw == kernel.get());
 	EXPECT_EQ(2, raw->ref_count());
 	SG_UNREF(raw);

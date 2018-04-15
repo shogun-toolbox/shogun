@@ -14,10 +14,10 @@ BinaryLabels labels_test(f_labels_test)
 
 #![add_layers]
 int num_feats = features_train.get_num_features()
-NeuralLayers layers() 
-layers = layers.input(num_feats)
-layers = layers.rectified_linear(10)
-layers = layers.softmax(2)
+NeuralLayers layers()
+layers.input(num_feats)
+layers.rectified_linear(10)
+layers.softmax(2)
 DynamicObjectArray all_layers = layers.done()
 #![add_layers]
 

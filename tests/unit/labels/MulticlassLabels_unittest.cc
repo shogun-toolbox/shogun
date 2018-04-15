@@ -82,7 +82,7 @@ TEST_F(MulticlassLabels, multiclass_labels_from_dense)
 	labels->set_labels(labels_true);
 	auto labels2 = multiclass_labels(labels);
 	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2, nullptr);
+	ASSERT_NE(labels2.get(), nullptr);
 	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
 }
 
