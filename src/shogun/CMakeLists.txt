@@ -171,13 +171,6 @@ IF(MSVC)
     )
   ENDIF()
 
-  # bundle dirent
-  include(external/MSDirent)
-  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
-    $<BUILD_INTERFACE:${MSDIRENT_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include/shogun/third_party/MSDirent>
-  )
-
   target_link_libraries(shogun PUBLIC winmm)
   target_link_libraries(shogun_deps INTERFACE winmm)
 ENDIF()
@@ -357,6 +350,11 @@ SHOGUN_DEPENDENCIES(
   CONFIG_FLAG USE_GLPK)
 
 SHOGUN_DEPENDENCIES(
+  LIBRARY LibArchive
+  SCOPE PRIVATE
+  CONFIG_FLAG HAVE_LIBARCHIVE)
+
+SHOGUN_DEPENDENCIES(
   LIBRARY CPLEX
   SCOPE PRIVATE
   CONFIG_FLAG USE_CPLEX)
@@ -396,23 +394,6 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
     set_source_files_properties(${name}.pb.cc PROPERTIES GENERATED ON)
     target_sources(libshogun PRIVATE ${name}.pb.cc)
   ENDFOREACH()
-ENDIF()
-
-# JSON
-OPTION(BUNDLE_JSON "Bundle JSON" OFF)
-IF(BUNDLE_JSON)
-  # FIXME: BUNDLING IS NOT PROPER!
-  # see how eigen is being done
-  include(external/JSON)
-  SET(HAVE_JSON 1)
-  LIST(APPEND INCLUDES ${JSON_INCLUDE_DIRS})
-  SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${JSON_LDFLAGS})
-ELSE()
-  SHOGUN_DEPENDENCIES(
-    LIBRARY JSON
-    SCOPE PUBLIC
-    CONFIG_FLAG HAVE_JSON
-    VERSION 0.11)
 ENDIF()
 
 # RapidJSON

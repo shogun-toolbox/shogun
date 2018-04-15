@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Giovanni De Toni, Viktor Gal, Heiko Strathmann, 
- *          Thoralf Klein, Evangelos Anagnostopoulos, Weijie Lin, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Giovanni De Toni, Viktor Gal, Heiko Strathmann,
+ *          Thoralf Klein, Evangelos Anagnostopoulos, Weijie Lin, Bjoern Esser,
  *          Saurabh Goyal
  */
 
@@ -16,7 +16,6 @@
 
 #include <stdarg.h>
 #include <ctype.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <io.h>
@@ -41,12 +40,6 @@ const char* SGIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0",
 const char* SGIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
-
-/// file name buffer
-char SGIO::file_buffer[FBUFSIZE];
-
-/// directory name buffer
-char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
     : target(stdout), show_progress(false), location_info(MSG_NONE),
@@ -268,36 +261,6 @@ uint32_t SGIO::ulong_of_substring(substring s)
 uint32_t SGIO::ss_length(substring s)
 {
 	return (s.end - s.start);
-}
-
-char* SGIO::concat_filename(const char* filename)
-{
-#ifdef WIN32
-	if (snprintf(file_buffer, FBUFSIZE, "%s\\%s", directory_name, filename) > FBUFSIZE)
-#else
-	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-#endif
-		SG_SERROR("filename too long")
-
-	SG_SDEBUG("filename=\"%s\"\n", file_buffer)
-	return file_buffer;
-}
-
-int SGIO::filter(CONST_DIRENT_T* d)
-{
-	if (d)
-	{
-		char* fname=concat_filename(d->d_name);
-
-		if (!access(fname, R_OK))
-		{
-			struct stat s;
-			if (!stat(fname, &s) && S_ISREG(s.st_mode))
-				return 1;
-		}
-	}
-
-	return 0;
 }
 
 SGIO::~SGIO()

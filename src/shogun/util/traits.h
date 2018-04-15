@@ -107,3 +107,4 @@ namespace shogun
 	} // namespace traits
 } // namespace shogun
 #endif
+

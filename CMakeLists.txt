@@ -88,6 +88,22 @@ IF(NOT HAVE_IF_INIT)
 	MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with if init-statements support!")
 ENDIF()
 
+CHECK_CXX_SOURCE_COMPILES("
+#include <string>
+#include <string_view>
+
+int main()
+{
+  char array[3] = {'B', 'a', 'r'};
+  std::string_view array_v(array, std::size(array));
+  return 0;
+}
+" HAVE_STD_STRING_VIEW)
+
+IF(NOT HAVE_STD_STRING_VIEW)
+	MESSAGE(FATAL_ERROR "Compiling shogun requires a compiler with string_view support!")
+ENDIF()
+
 ############# minimum library versions ###################
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 

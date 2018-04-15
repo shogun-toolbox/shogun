@@ -955,6 +955,7 @@ public:
 	std::string string_enum_reverse_lookup(
 			const std::string& param, machine_int_t value) const;
 
+	void visit_parameter(const BaseTag& _tag, AnyVisitor* v) const;
 protected:
 	/** Returns an empty instance of own type.
 	 *

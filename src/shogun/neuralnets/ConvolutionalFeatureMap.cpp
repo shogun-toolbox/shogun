@@ -95,7 +95,7 @@ void CConvolutionalFeatureMap::compute_activations(
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(input_indices[l]);
+			(CNeuralLayer*)layers->get_element(input_indices[l]);
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 
@@ -170,7 +170,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(input_indices[l]);
+			(CNeuralLayer*)layers->get_element(input_indices[l]);
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 

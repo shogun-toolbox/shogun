@@ -7,17 +7,24 @@
 
 #include <shogun/base/SGObject.h>
 
+#include <string>
+
 namespace shogun
 {
-	class CInputStream : public CSGObject
+	namespace io
 	{
-	public:
-		CInputStream();
-		virtual ~CInputStream();
+		class CInputStream : public CSGObject
+		{
+		public:
+			CInputStream();
+			virtual ~CInputStream();
 
-		virtual void read(void* buffer, size_t size) = 0;
-		virtual char read() = 0;
-	};
+			virtual std::error_condition read(std::string* buffer, int64_t size) = 0;
+			virtual std::error_condition skip(int64_t bytes) = 0;
+			virtual int64_t tell() const = 0;
+			virtual void reset() = 0;
+		};
+	}
 }
 
 #endif

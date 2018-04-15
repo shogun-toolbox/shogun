@@ -9,18 +9,21 @@
 
 namespace shogun
 {
-	class CJsonSerializer : public CSerializer
+	namespace io
 	{
-	public:
-		CJsonSerializer();
-		virtual ~CJsonSerializer();
-		virtual void write(Some<CSGObject> object);
-
-		virtual const char* get_name() const
+		class CJsonSerializer : public CSerializer
 		{
-			return "JsonSerializer";
-		}
-	};
+		public:
+			CJsonSerializer();
+			~CJsonSerializer() override;
+			void write(Some<CSGObject> object) override;
+
+			const char* get_name() const override
+			{
+				return "JsonSerializer";
+			}
+		};
+	}
 }
 
 #endif

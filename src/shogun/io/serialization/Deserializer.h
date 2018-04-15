@@ -10,18 +10,21 @@
 
 namespace shogun
 {
-	class CDeserializer : public CSGObject
+	namespace io
 	{
-	public:
-		CDeserializer();
-		virtual ~CDeserializer();
-		virtual void attach(Some<CInputStream> stream);
-		virtual Some<CSGObject> read() = 0;
-		Some<CInputStream> stream() const;
+		class CDeserializer : public CSGObject
+		{
+		public:
+			CDeserializer();
+			virtual ~CDeserializer();
+			virtual void attach(Some<CInputStream> stream);
+			virtual Some<CSGObject> read() = 0;
+			Some<CInputStream> stream() const;
 
-	private:
-		Some<CInputStream> m_stream;
-	};
+		private:
+			Some<CInputStream> m_stream;
+		};
+	}
 }
 
 #endif

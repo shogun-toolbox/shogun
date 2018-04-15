@@ -83,7 +83,7 @@ void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* lay
 		SGVector< int32_t > input_indices)
 {
 	CNeuralLayer* first_input_layer =
-		(CNeuralLayer*)layers->element(input_indices[0]);
+		(CNeuralLayer*)layers->get_element(input_indices[0]);
 
 	m_input_width = first_input_layer->get_width();
 	m_input_height = first_input_layer->get_height();
@@ -109,7 +109,7 @@ void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* lay
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->element(input_indices[l]);
+			(CNeuralLayer*)layers->get_element(input_indices[l]);
 
 		m_input_num_channels += layer->get_num_neurons()/(m_input_height*m_input_width);
 
