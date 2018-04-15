@@ -8,6 +8,7 @@
 
 #include <shogun/base/class_list.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/evaluation/Evaluation.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
@@ -19,6 +20,7 @@ namespace shogun
 {
 
 	CDistance* distance(const std::string& name);
+	CEvaluation* evaluation(const std::string& name);
 	CKernel* kernel(const std::string& name);
 	CMachine* machine(const std::string& name);
 
@@ -28,6 +30,7 @@ namespace shogun
 		return create_object<T>(name.c_str());                                 \
 	}
 
+	BASE_CLASS_FACTORY(CEvaluation, evaluation)
 	BASE_CLASS_FACTORY(CDistance, distance)
 	BASE_CLASS_FACTORY(CKernel, kernel)
 	BASE_CLASS_FACTORY(CMachine, machine)
