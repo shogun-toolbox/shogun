@@ -7,7 +7,7 @@
 
 using namespace shogun;
 
-CSerializer::CSerializer() : m_stream(nullptr)
+CSerializer::CSerializer() : CSGObject(), m_stream(empty<COutputStream>())
 {
 }
 
@@ -17,7 +17,7 @@ CSerializer::~CSerializer()
 
 void CSerializer::attach(Some<COutputStream> stream)
 {
-	m_stream = stream;
+    m_stream = stream;
 }
 
 Some<COutputStream> CSerializer::stream() const

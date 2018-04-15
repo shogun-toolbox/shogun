@@ -7,7 +7,7 @@
 
 using namespace shogun;
 
-CDeserializer::CDeserializer() : m_stream(nullptr)
+CDeserializer::CDeserializer() : CSGObject(), m_stream(empty<CInputStream>())
 {
 }
 
