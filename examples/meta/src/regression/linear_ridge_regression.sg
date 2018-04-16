@@ -1,42 +1,41 @@
-CSVFile f_feats_train("../../data/regression_1d_linear_features_train.dat")
-CSVFile f_feats_test("../../data/regression_1d_linear_features_test.dat")
-CSVFile f_labels_train("../../data/regression_1d_linear_labels_train.dat")
-CSVFile f_labels_test("../../data/regression_1d_linear_labels_test.dat")
+File f_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
-RegressionLabels labels_train(f_labels_train)
-RegressionLabels labels_test(f_labels_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-real tau = 0.001
-LinearRidgeRegression lrr(tau, features_train, labels_train)
+Machine lrr = machine("LinearRidgeRegression", tau=0.001, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
-lrr.train()
-RegressionLabels labels_predict = lrr.apply_regression(features_test)
-real bias = lrr.get_bias()
+lrr.train(features_train)
+Labels labels_predict = lrr.apply(features_test)
+real b = lrr.get_real("bias")
 #![train_and_apply]
 
 #[!disable_bias]
-lrr.set_compute_bias(False)
+lrr.put("compute_bias", False)
 #[!disable_bias]
 
 #[!set_bias_manually]
-lrr.set_bias(bias)
+lrr.put("bias", b)
 #[!set_bias_manually]
 
 #[!extract_w]
-RealVector weights = lrr.get_w()
+RealVector w = lrr.get_real_vector("w")
 #[!extract_w]
 
 #![evaluate_error]
-MeanSquaredError eval()
+Evaluation eval = evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
-RealVector output = labels_test.get_labels()
+RealVector output = labels_test.get_real_vector("labels")

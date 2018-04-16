@@ -41,7 +41,7 @@ cross.subscribe_to_parameters(mkl_obs)
 #[!create_observer]
 
 #![evaluate_and_get_result]
-CrossValidationResult result = cross.evaluate()
+EvaluationResult result = cross.evaluate()
 #![evaluate_and_get_result]
 
 #![get_results]

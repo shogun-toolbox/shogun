@@ -121,6 +121,10 @@ class CHierarchical : public CDistanceMachine
 
 		virtual bool train_require_labels() const { return false; }
 
+	private:
+		/** Register all parameters */
+		void register_parameters();
+
 	protected:
 		/// the number of merges in hierarchical clustering
 		int32_t merges;

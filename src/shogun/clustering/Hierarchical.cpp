@@ -29,6 +29,7 @@ CHierarchical::CHierarchical()
 : CDistanceMachine(), merges(3), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
+	register_parameters();
 }
 
 CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
@@ -36,6 +37,20 @@ CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
 	set_distance(d);
+	register_parameters();
+}
+
+static int PAIRS_DIM_0 = 2;
+
+void CHierarchical::register_parameters()
+{
+	watch_param("merges", &merges);
+	watch_param("dimensions", &dimensions);
+	watch_param("assignment_size", &assignment_size);
+	watch_param("assignment", &assignment, &table_size);
+	watch_param("table_size", &table_size);
+	watch_param("pairs", &pairs, &PAIRS_DIM_0, &merges);
+	watch_param("merge_distance", &merge_distance, &merges);
 }
 
 CHierarchical::~CHierarchical()
