@@ -24,7 +24,7 @@ namespace shogun
 	/** @brief Class Signal implements signal handling to e.g. allow CTRL+C to
 	 * cancel a long running process.
 	 *
-	 * -# A signal handler is attached to trap the SIGINT signal.
+	 * -A signal handler is attached to trap the SIGINT signal.
 	 *  Pressing CTRL+C or sending the SIGINT (kill ...) signal to the shogun
 	 *  process will make shogun print a message asking the user to choose an
 	 *  option bewteen: immediately exit the running method and fall back to
@@ -78,6 +78,15 @@ namespace shogun
 		{
 			m_active = enable;
 		}
+
+		/** Set the handler as interactive (the user will select what to do)
+		 *  @param enable true to enable interactive mode, false otherwise.
+		 */
+		void interactive(bool enable)
+		{
+			m_interactive = enable;
+		}
+
 		/**
 		 * Reset handler in case of multiple instantiation
 		 */
@@ -87,8 +96,14 @@ namespace shogun
 		virtual const char* get_name() const { return "Signal"; }
 
 	private:
+
+		static int interactive_signal();
+
 		/** Active signal */
 		static bool m_active;
+
+		/** Interactive handler */
+		static bool m_interactive;
 
 	public:
 		/** Observable */

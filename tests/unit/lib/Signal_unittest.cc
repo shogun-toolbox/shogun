@@ -41,33 +41,41 @@
 using namespace shogun;
 using namespace rxcpp;
 
-TEST(Signal, return_to_prompt_test)
+void death_test()
 {
 	CSignal tmp;
+	std::signal(SIGINT, tmp.handler);
+	tmp.interactive(false);
+
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
-	    [&on_next_v](int v) { on_next_v = 1; }, [&]() { on_complete_v = 1; });
+			[&on_next_v](int v) { on_next_v = 1; }, [&]() { on_complete_v = 1; });
 
 	tmp.get_observable()->subscribe(sub);
-	tmp.get_subscriber()->on_completed();
+	std::raise(SIGINT);
 
-	EXPECT_TRUE(on_complete_v == 1);
-	EXPECT_TRUE(on_next_v == 0);
 	CSignal::reset_handler();
+}
+
+TEST(SignalDeathTest, return_to_prompt_test)
+{
+	EXPECT_EXIT(death_test(), ::testing::ExitedWithCode(0), "");
 }
 
 TEST(Signal, prematurely_stop_computation_test)
 {
-
 	CSignal tmp;
+	std::signal(SIGQUIT, tmp.handler);
+	tmp.interactive(false);
+
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
 	    [&](int v) { on_next_v++; }, [&]() { on_complete_v++; });
 
 	tmp.get_observable()->subscribe(sub);
-	tmp.get_subscriber()->on_next(SG_BLOCK_COMP);
+	std::raise(SIGQUIT);
 
 	EXPECT_TRUE(on_next_v == 1);
 	EXPECT_TRUE(on_complete_v == 0);
@@ -76,8 +84,10 @@ TEST(Signal, prematurely_stop_computation_test)
 
 TEST(Signal, pause_computation_test)
 {
-
 	CSignal tmp;
+	std::signal(SIGTSTP, tmp.handler);
+	tmp.interactive(false);
+
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
@@ -90,7 +100,7 @@ TEST(Signal, pause_computation_test)
 	    [&]() { on_complete_v++; });
 
 	tmp.get_observable()->subscribe(sub);
-	tmp.get_subscriber()->on_next(SG_PAUSE_COMP);
+	std::raise(SIGTSTP);
 
 	EXPECT_TRUE(on_next_v == 2);
 	EXPECT_TRUE(on_complete_v == 0);
