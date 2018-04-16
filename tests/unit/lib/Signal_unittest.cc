@@ -41,68 +41,49 @@
 using namespace shogun;
 using namespace rxcpp;
 
-void death_test()
-{
+class SignalFixture : public ::testing::Test {
+protected:
+	virtual void SetUp() {
+
+		CSignal::reset_handler();
+		on_next_v = 0;
+		on_complete_v = 0;
+		std::signal(SIGINT, tmp.handler);
+		std::signal(SIGQUIT, tmp.handler);
+		std::signal(SIGTSTP, tmp.handler);
+		tmp.interactive(false);
+		auto sub = rxcpp::make_subscriber<int>(
+				[&](int v) {
+					if (v == SG_PAUSE_COMP)
+						on_next_v += 2;
+					else
+						on_next_v++;
+				},
+				[&]() { on_complete_v++; fprintf(stderr,"Application Killed");});
+
+		tmp.get_observable()->subscribe(sub);
+	}
+
 	CSignal tmp;
-	std::signal(SIGINT, tmp.handler);
-	tmp.interactive(false);
+	int on_next_v;
+	int on_complete_v;
+};
 
-	int on_next_v = 0;
-	int on_complete_v = 0;
-	auto sub = rxcpp::make_subscriber<int>(
-			[&on_next_v](int v) { on_next_v = 1; }, [&]() { on_complete_v = 1; });
-
-	tmp.get_observable()->subscribe(sub);
-	std::raise(SIGINT);
-
-	CSignal::reset_handler();
+TEST_F(SignalFixture, return_to_prompt_test)
+{
+	EXPECT_EXIT({std::raise(SIGINT);}, ::testing::ExitedWithCode(0), "Application Killed");
 }
 
-TEST(SignalDeathTest, return_to_prompt_test)
+TEST_F(SignalFixture, prematurely_stop_computation_test)
 {
-	EXPECT_EXIT(death_test(), ::testing::ExitedWithCode(0), "");
-}
-
-TEST(Signal, prematurely_stop_computation_test)
-{
-	CSignal tmp;
-	std::signal(SIGQUIT, tmp.handler);
-	tmp.interactive(false);
-
-	int on_next_v = 0;
-	int on_complete_v = 0;
-	auto sub = rxcpp::make_subscriber<int>(
-	    [&](int v) { on_next_v++; }, [&]() { on_complete_v++; });
-
-	tmp.get_observable()->subscribe(sub);
 	std::raise(SIGQUIT);
-
 	EXPECT_TRUE(on_next_v == 1);
 	EXPECT_TRUE(on_complete_v == 0);
-	CSignal::reset_handler();
 }
 
-TEST(Signal, pause_computation_test)
+TEST_F(SignalFixture, pause_computation_test)
 {
-	CSignal tmp;
-	std::signal(SIGTSTP, tmp.handler);
-	tmp.interactive(false);
-
-	int on_next_v = 0;
-	int on_complete_v = 0;
-	auto sub = rxcpp::make_subscriber<int>(
-	    [&](int v) {
-		    if (v == SG_PAUSE_COMP)
-			    on_next_v += 2;
-		    else
-			    on_next_v++;
-		},
-	    [&]() { on_complete_v++; });
-
-	tmp.get_observable()->subscribe(sub);
 	std::raise(SIGTSTP);
-
 	EXPECT_TRUE(on_next_v == 2);
 	EXPECT_TRUE(on_complete_v == 0);
-	CSignal::reset_handler();
 }

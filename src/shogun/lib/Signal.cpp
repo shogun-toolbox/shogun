@@ -87,7 +87,7 @@ void CSignal::handler(int signal)
 			m_subscriber->on_next(SG_BLOCK_COMP);
 			break;
 		case SIGTSTP:
-			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
+			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...\n")
 			m_subscriber->on_next(SG_PAUSE_COMP);
 			break;
 		default:
