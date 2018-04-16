@@ -122,7 +122,10 @@ class CHierarchical : public CDistanceMachine
 		virtual bool train_require_labels() const { return false; }
 
 	private:
-		/** Register all parameters */
+		/** Initialize attributes */
+		void init();
+
+		/** Register all parameters (aka this class' attributes) */
 		void register_parameters();
 
 	protected:
@@ -132,20 +135,20 @@ class CHierarchical : public CDistanceMachine
 		/// number of dimensions
 		int32_t dimensions;
 
-		/// size of assignment table
-		int32_t assignment_size;
-
 		/// cluster assignment for the num_points
 		int32_t* assignment;
+		int32_t assignment_len;
 
 		/// size of the below tables
 		int32_t table_size;
 
 		/// tuples of i/j
 		int32_t* pairs;
+		int32_t pairs_len;
 
 		/// distance at which pair i/j was added
 		float64_t* merge_distance;
+		int32_t merge_distance_len;
 };
 }
 #endif

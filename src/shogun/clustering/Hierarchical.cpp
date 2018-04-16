@@ -26,31 +26,42 @@ struct pair
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CHierarchical::CHierarchical()
-: CDistanceMachine(), merges(3), dimensions(0), assignment(NULL),
-	table_size(0), pairs(NULL), merge_distance(NULL)
+: CDistanceMachine()
 {
+	init();
 	register_parameters();
 }
 
 CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
-: CDistanceMachine(), merges(merges_), dimensions(0), assignment(NULL),
-	table_size(0), pairs(NULL), merge_distance(NULL)
+: CDistanceMachine()
 {
+	init();
+	merges = merges_;
 	set_distance(d);
 	register_parameters();
 }
 
-static int PAIRS_DIM_0 = 2;
+void CHierarchical::init()
+{
+	merges = 3;
+	dimensions = 0;
+	assignment = NULL;
+	assignment_len = 0;
+	table_size = 0;
+	pairs = NULL;
+	pairs_len = 0;
+	merge_distance = NULL;
+	merge_distance_len = 0;
+}
 
 void CHierarchical::register_parameters()
 {
 	watch_param("merges", &merges);
 	watch_param("dimensions", &dimensions);
-	watch_param("assignment_size", &assignment_size);
-	watch_param("assignment", &assignment, &table_size);
+	watch_param("assignment", &assignment, &assignment_len);
 	watch_param("table_size", &table_size);
-	watch_param("pairs", &pairs, &PAIRS_DIM_0, &merges);
-	watch_param("merge_distance", &merge_distance, &merges);
+	watch_param("pairs", &pairs, &pairs_len);
+	watch_param("merge_distance", &merge_distance, &merge_distance_len);
 }
 
 CHierarchical::~CHierarchical()
@@ -82,10 +93,12 @@ bool CHierarchical::train_machine(CFeatures* data)
 
 	SG_FREE(merge_distance);
 	merge_distance=SG_MALLOC(float64_t, num);
+	merge_distance_len=num;
 	SGVector<float64_t>::fill_vector(merge_distance, num, -1.0);
 
 	SG_FREE(assignment);
 	assignment=SG_MALLOC(int32_t, num);
+	assignment_len = num;
 	SGVector<int32_t>::range_fill_vector(assignment, num);
 
 	SG_FREE(pairs);
@@ -155,7 +168,6 @@ bool CHierarchical::train_machine(CFeatures* data)
 	}
 	pb.complete();
 
-	assignment_size=num;
 	table_size=l-1;
 	ASSERT(table_size>0)
 	SG_FREE(distances);

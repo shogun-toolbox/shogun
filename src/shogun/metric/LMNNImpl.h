@@ -81,7 +81,7 @@ class CLMNNImpl
 		static void check_training_setup(CFeatures* features, const CLabels* labels, SGMatrix<float64_t>& init_transform);
 
 		/**
-		 * for each feature in x, find its target neighbors; this is, its k
+		 * for each feature in x, find its target neighbors; that is, its k
 		 * nearest neighbors with the same label as indicated by y
 		 */
 		static SGMatrix<index_t> find_target_nn(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, int32_t k);
