@@ -171,7 +171,7 @@ public:
 
 // list of classes that (currently) cannot be instantiated
 std::set<std::string> sg_object_all_ignores = {"ParseBuffer", "Set",
-                                               "TreeMachine", "Hierarchical"};
+                                               "TreeMachine"};
 
 // template arguments for SGObject
 // TODO: SGString doesn't support complex128_t, so omitted here
