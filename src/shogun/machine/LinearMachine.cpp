@@ -2,7 +2,8 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, 
- *          Youssef Emad El-Din, Evgeniy Andreev, Thoralf Klein, Bjoern Esser
+ *          Youssef Emad El-Din, Evgeniy Andreev, Thoralf Klein, Bjoern Esser,
+ *          Fernando Iglesias
  */
 
 #include <shogun/machine/LinearMachine.h>
@@ -43,8 +44,8 @@ void CLinearMachine::init()
 
 	SG_ADD(&m_w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &features, "features", "Feature object.",
-	    MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &features, "features", "Feature object.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_compute_bias, "compute_bias", "Whether bias is computed.", MS_NOT_AVAILABLE);
 }
 
 

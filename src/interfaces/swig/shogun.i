@@ -174,6 +174,7 @@ namespace shogun
 %template(put) CSGObject::put_scalar_dispatcher<int64_t, int64_t>;
 #endif // SWIGJAVA
 %template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
+%template(put) CSGObject::put_scalar_dispatcher<bool, bool>;
 
 
 #ifndef SWIGJAVA
