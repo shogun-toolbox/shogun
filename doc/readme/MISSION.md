@@ -19,11 +19,7 @@ Statistics on Shogun's development activity can be found at [ohloh](https://www.
  you can use the toolbox through a unified interface ([SWIG](http://www.swig.org/)) from C++, Python, Octave, R, Java, Lua, C#, Ruby, etc. see the [examples](http://shogun.ml/examples).
  Thus Shogun is independent of trends in computing languages and importantly, this allows you to use Shogun as a vehicle to expose your algorithm to multiple communities.
  * Shogun runs natively under Linux/Unix, MacOS, and Windows.
- * Anyone can try Shogun with minimal effort, for free: 
- simply by connecting to a [jupyter](http://jupyter.org/) notebook, users can run Shogun in the [cloud](https://cloud.shogun.ml/hub/home).
- Shogun offers this service for free through external donations.
  * Shogun comes with binary installation packages for a growing number of systems.
- You can also download our [Docker image](https://hub.docker.com/r/shogun/) and run the Shogun cloud locally.
  * Shogun does not re-invent the wheel, but offers bindings to other sophisticated libraries including, 
  [LibSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/)/[LibLinear](http://www.csie.ntu.edu.tw/~cjlin/liblinear/), 
  [SVMLight](http://svmlight.joachims.org/), 
