@@ -93,8 +93,10 @@ namespace shogun
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
 
-		// Set up signal handler
+		// Set up signal handlers
 		std::signal(SIGINT, sg_signal->handler);
+		std::signal(SIGTSTP, sg_signal->handler);
+		std::signal(SIGQUIT, sg_signal->handler);
 
 		init_from_env();
 	}
