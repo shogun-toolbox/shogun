@@ -14,6 +14,7 @@
 
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
+%rename(EvaluationResult) CEvaluationResult;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ClusteringEvaluation) CClusteringEvaluation;
 %rename(ClusteringAccuracy) CClusteringAccuracy;
