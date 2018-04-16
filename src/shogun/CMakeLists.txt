@@ -219,6 +219,7 @@ CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 
 #Stan math
 include(external/StanMath)
+
 SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
   $<INSTALL_INTERFACE:include/shogun/lib/external/Stan>
