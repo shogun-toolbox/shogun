@@ -4,8 +4,6 @@
  * Authors: Viktor Gal, Sergey Lisitsyn
  */
 
-%include "DenseFeatures_protocols.i"
-%include "CustomKernel_protocols.i"
 %include "DenseLabels_protocols.i"
 %include "SGVector_protocols.i"
 
@@ -854,12 +852,6 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 	int feats_type=$1->get_feature_type();
 
 	switch (feats_class){
-	case C_DENSE:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CDenseFeatures, feats_type)
-		break;
-	}
-
 	case C_SPARSE:
 	{
 		FEATURES_BY_TYPECODE($result, $1, shogun::CSparseFeatures, feats_type)

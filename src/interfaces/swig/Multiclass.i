@@ -34,18 +34,6 @@
 %rename(ECOCStrategy) CECOCStrategy;
 %rename(ECOCEncoder) CECOCEncoder;
 %rename(ECOCDecoder) CECOCDecoder;
-%rename(ECOCOVREncoder) CECOCOVREncoder;
-%rename(ECOCOVOEncoder) CECOCOVOEncoder;
-%rename(ECOCRandomSparseEncoder) CECOCRandomSparseEncoder;
-%rename(ECOCRandomDenseEncoder) CECOCRandomDenseEncoder;
-%rename(ECOCDiscriminantEncoder) CECOCDiscriminantEncoder;
-%rename(ECOCForestEncoder) CECOCForestEncoder;
-%rename(ECOCSimpleDecoder) CECOCSimpleDecoder;
-%rename(ECOCHDDecoder) CECOCHDDecoder;
-%rename(ECOCIHDDecoder) CECOCIHDDecoder;
-%rename(ECOCEDDecoder) CECOCEDDecoder;
-%rename(ECOCAEDDecoder) CECOCAEDDecoder;
-%rename(ECOCLLBDecoder) CECOCLLBDecoder;
 
 #ifdef USE_GPL_SHOGUN
 %rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
@@ -105,18 +93,6 @@ namespace shogun
 
 %include <shogun/multiclass/ecoc/ECOCEncoder.h>
 %include <shogun/multiclass/ecoc/ECOCDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
-%include <shogun/multiclass/ecoc/ECOCOVOEncoder.h>
-%include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
-%include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
-%include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
-%include <shogun/multiclass/ecoc/ECOCForestEncoder.h>
-%include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCEDDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCAEDDecoder.h>
-%include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCStrategy.h>
 
 #ifdef USE_GPL_SHOGUN

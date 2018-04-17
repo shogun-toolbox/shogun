@@ -20,11 +20,6 @@
 }
 #endif
 
-#ifndef SWIGPYTHON
-#define PROTOCOLS_CUSTOMKERNEL(class_name, type_name, format_str, typecode)
-#define EXTEND_CUSTOMKERNEL(class_name, type_name, typecode)
-#endif
-
 /* Remove C Prefix */
 %rename(Kernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
@@ -42,7 +37,6 @@
 %rename(CommWordStringKernel) CCommWordStringKernel;
 %rename(ConstKernel) CConstKernel;
 
-PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(CustomKernel) CCustomKernel;
 
 %rename(DiagKernel) CDiagKernel;
@@ -231,5 +225,3 @@ namespace shogun
 %include <shogun/machine/gp/GaussianARDSparseKernel.h>
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
 %include <shogun/kernel/PeriodicKernel.h>
-
-EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)

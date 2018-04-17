@@ -571,10 +571,6 @@ fail:
 	return NULL;
 }
 
-NUMERIC_DENSEFEATURES(class_name, type_name, format_str, add, Add)
-NUMERIC_DENSEFEATURES(class_name, type_name, format_str, sub, Subtract)
-NUMERIC_DENSEFEATURES(class_name, type_name, format_str, mul, Multiply)
-
 static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER | Py_TPFLAGS_BASETYPE;
 %}
 

@@ -12,7 +12,6 @@
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/features/DummyFeatures.h>
@@ -33,10 +32,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/labels/MultilabelLabels.h>
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/FKFeatures.h>
-#include <shogun/features/TOPFeatures.h>
 #include <shogun/features/SNPFeatures.h>
 #include <shogun/features/WDFeatures.h>
 #include <shogun/features/hashed/HashedWDFeatures.h>

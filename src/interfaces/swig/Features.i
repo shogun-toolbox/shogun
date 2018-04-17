@@ -40,9 +40,7 @@
 #endif
 
 #ifndef SWIGPYTHON
-#define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
 #define PROTOCOLS_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
-#define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 #endif
 
 /* Remove C Prefix */
@@ -81,7 +79,6 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %rename(StructuredLabels) CStructuredLabels;
 %rename(LatentLabels) CLatentLabels;
 %rename(MultilabelLabels) CMultilabelLabels;
-%rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
 %rename(SNPFeatures) CSNPFeatures;
@@ -319,82 +316,6 @@ namespace shogun
 #endif
 }
 
-/* Templated Class DenseFeatures */
-%include <shogun/features/DenseFeatures.h>
-namespace shogun
-{
-#ifdef USE_BOOL
-	// something wrong with git
-	PROTOCOLS_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
-	%template(BoolFeatures) CDenseFeatures<bool>;
-	EXTEND_DENSEFEATURES(BoolFeatures, bool, NPY_BOOL)
-#endif
-
-#ifdef USE_CHAR
-	PROTOCOLS_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
-	%template(CharFeatures) CDenseFeatures<char>;
-	EXTEND_DENSEFEATURES(CharFeatures, char, NPY_STRING)
-#endif
-
-#ifdef USE_UINT8
-	PROTOCOLS_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
-	%template(ByteFeatures) CDenseFeatures<uint8_t>;
-	EXTEND_DENSEFEATURES(ByteFeatures, uint8_t, NPY_UINT8)
-#endif
-
-#ifdef USE_UINT16
-	PROTOCOLS_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
-	%template(WordFeatures) CDenseFeatures<uint16_t>;
-	EXTEND_DENSEFEATURES(WordFeatures, uint16_t, NPY_UINT16)
-#endif
-
-#ifdef USE_INT16
-	PROTOCOLS_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
-	%template(ShortFeatures) CDenseFeatures<int16_t>;
-	EXTEND_DENSEFEATURES(ShortFeatures, int16_t, NPY_INT16)
-#endif
-
-#ifdef USE_INT32
-	PROTOCOLS_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
-	%template(IntFeatures)  CDenseFeatures<int32_t>;
-	EXTEND_DENSEFEATURES(IntFeatures, int32_t, NPY_INT32)
-#endif
-
-#ifdef USE_UINT32
-	PROTOCOLS_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
-	%template(UIntFeatures)  CDenseFeatures<uint32_t>;
-	EXTEND_DENSEFEATURES(UIntFeatures, uint32_t, NPY_UINT32)
-#endif
-
-#ifdef USE_INT64
-	PROTOCOLS_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
-	%template(LongIntFeatures) CDenseFeatures<int64_t>;
-	EXTEND_DENSEFEATURES(LongIntFeatures, int64_t, NPY_INT64)
-#endif
-
-#ifdef USE_UINT64
-	PROTOCOLS_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
-	%template(ULongIntFeatures) CDenseFeatures<uint64_t>;
-	EXTEND_DENSEFEATURES(ULongIntFeatures, uint64_t, NPY_UINT64)
-#endif
-
-#ifdef USE_FLOATMAX
-	%template(LongRealFeatures) CDenseFeatures<floatmax_t>;
-#endif
-
-#ifdef USE_FLOAT32
-	PROTOCOLS_DENSEFEATURES(ShortRealFeatures, float32_t, "f\0", NPY_FLOAT32)
-	%template(ShortRealFeatures) CDenseFeatures<float32_t>;
-	EXTEND_DENSEFEATURES(ShortRealFeatures, float32_t, NPY_FLOAT32)
-#endif
-
-#ifdef USE_FLOAT64
-	PROTOCOLS_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
-	%template(RealFeatures) CDenseFeatures<float64_t>;
-	EXTEND_DENSEFEATURES(RealFeatures, float64_t, NPY_FLOAT64)
-#endif
-}
-
 /* Templated Class StreamingDenseFeatures */
 %include <shogun/features/streaming/StreamingDenseFeatures.h>
 namespace shogun
@@ -506,9 +427,6 @@ namespace shogun
 %include <shogun/labels/StructuredLabels.h>
 %include <shogun/labels/MultilabelLabels.h>
 
-%include <shogun/features/RealFileFeatures.h>
-%include <shogun/features/FKFeatures.h>
-%include <shogun/features/TOPFeatures.h>
 %include <shogun/features/SNPFeatures.h>
 %include <shogun/features/WDFeatures.h>
 %include <shogun/features/hashed/HashedWDFeatures.h>
