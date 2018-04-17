@@ -1,10 +1,10 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Viktor Gal, Heiko Strathmann, Fernando Iglesias, 
- *          Sanuj Sharma, Pan Deng, Sergey Lisitsyn, Thoralf Klein, 
- *          Soumyajit De, Michele Mazzoni, Evgeniy Andreev, Chiyuan Zhang, 
- *          Bjoern Esser, Weijie Lin, Khaled Nasr, Koen van de Sande, 
+ * Authors: Soeren Sonnenburg, Viktor Gal, Heiko Strathmann, Fernando Iglesias,
+ *          Sanuj Sharma, Pan Deng, Sergey Lisitsyn, Thoralf Klein,
+ *          Soumyajit De, Michele Mazzoni, Evgeniy Andreev, Chiyuan Zhang,
+ *          Bjoern Esser, Weijie Lin, Khaled Nasr, Koen van de Sande,
  *          Somya Anand
  */
 
@@ -19,13 +19,14 @@
 #include <limits>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>
+
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -978,8 +979,6 @@ template <class T>
 template <class Archive>
 void SGVector<T>::cereal_save(Archive& ar) const
 {
-	ar(cereal::make_nvp(
-		"ReferencedData", cereal::base_class<SGReferencedData>(this)));
 	ar(cereal::make_nvp("length", vlen));
 	for (index_t i = 0; i < vlen; ++i)
 		ar(vector[i]);
@@ -989,9 +988,7 @@ template <>
 template <class Archive>
 void SGVector<complex128_t>::cereal_save(Archive& ar) const
 {
-	ar(cereal::base_class<SGReferencedData>(this));
 	ar(cereal::make_nvp("length", vlen));
-
 	float64_t* temp = reinterpret_cast<float64_t*>(vector);
 	for (index_t i = 0; i < vlen * 2; ++i)
 		ar(temp[i]);
@@ -1001,9 +998,6 @@ template <class T>
 template <class Archive>
 void SGVector<T>::cereal_load(Archive& ar)
 {
-	unref();
-	ar(cereal::base_class<SGReferencedData>(this));
-
 	ar(vlen);
 	vector = SG_MALLOC(T, vlen);
 	for (index_t i = 0; i < vlen; ++i)
@@ -1014,9 +1008,6 @@ template <>
 template <class Archive>
 void SGVector<complex128_t>::cereal_load(Archive& ar)
 {
-	unref();
-	ar(cereal::base_class<SGReferencedData>(this));
-
 	ar(vlen);
 	vector = SG_MALLOC(complex128_t, vlen);
 	float64_t* temp = reinterpret_cast<float64_t*>(vector);

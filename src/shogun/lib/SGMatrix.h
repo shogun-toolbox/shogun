@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Soumyajit De, Sergey Lisitsyn, 
- *          Pan Deng, Khaled Nasr, Michele Mazzoni, Viktor Gal, 
- *          Fernando Iglesias, Thoralf Klein, Chiyuan Zhang, Koen van de Sande, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Soumyajit De, Sergey Lisitsyn,
+ *          Pan Deng, Khaled Nasr, Michele Mazzoni, Viktor Gal,
+ *          Fernando Iglesias, Thoralf Klein, Chiyuan Zhang, Koen van de Sande,
  *          Roman Votyakov
  */
 #ifndef __SGMATRIX_H__

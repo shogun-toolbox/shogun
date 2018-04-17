@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang,
  *          Evangelos Anagnostopoulos
  */
 #ifndef __SGREFERENCED_DATA_H__
@@ -40,14 +40,6 @@ class SGReferencedData
 		 * @return reference count
 		 */
 		int32_t ref_count();
-
-#ifndef SWIG // SWIG should skip this part
-		template <class Archive>
-		void cereal_save(Archive& ar) const;
-
-		template <class Archive>
-		void cereal_load(Archive& ar);
-#endif //#ifndef SWIG // SWIG should skip this part
 
 	protected:
 		/** copy refcount */

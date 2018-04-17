@@ -2,7 +2,9 @@
 #define __ANYPARAMETER_H__
 
 #include <shogun/lib/any.h>
+#include <shogun/io/CerealVisitor.h>
 
+#include <memory>
 #include <string>
 
 namespace shogun
@@ -67,7 +69,7 @@ namespace shogun
 		template<class Archive>
 		void serialize(Archive& ar)
 		{
-			ar(m_model_selection, m_gradient);
+			ar(m_description, m_model_selection, m_gradient);
 		}
 
 	private:
@@ -122,14 +124,20 @@ namespace shogun
 			return !(*this == other);
 		}
 
-		/** serialize the object using cereal
-		 *
-		 * @param ar Archive type
-		 */
-		template<class Archive>
-		void serialize(Archive& ar)
+		template <class Archive>
+		void cereal_save(Archive& ar) const
 		{
-			ar(m_value, m_properties);
+			std::unique_ptr<CerealWriterVisitor<Archive>> visitor(new CerealWriterVisitor<Archive>(ar));
+			m_value.visit(visitor.get());
+			ar(m_properties);
+		}
+
+		template <class Archive>
+		void cereal_load(Archive& ar)
+		{
+			std::unique_ptr<CerealReaderVisitor<Archive>> visitor(new CerealReaderVisitor<Archive>(ar));
+			m_value.visit(visitor.get());
+			ar(m_properties);
 		}
 
 	private:

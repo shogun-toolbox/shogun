@@ -244,74 +244,6 @@ int32_t CSGObject::unref()
 	}
 }
 
-void CSGObject::save_binary(const char* filename) const
-{
-	std::ofstream os(filename);
-	cereal::BinaryOutputArchive archive(os);
-	archive(cereal::make_nvp(this->get_name(), *this));
-}
-
-void CSGObject::save_json(const char* filename) const
-{
-	std::ofstream os(filename);
-	cereal::JSONOutputArchive archive(os);
-	archive(cereal::make_nvp(this->get_name(), *this));
-}
-
-void CSGObject::save_xml(const char* filename) const
-{
-	std::ofstream os(filename);
-	cereal::XMLOutputArchive archive(os);
-	archive(cereal::make_nvp(this->get_name(), *this));
-}
-
-void CSGObject::load_binary(const char* filename)
-{
-	std::ifstream is(filename);
-	cereal::BinaryInputArchive archive(is);
-	archive(*this);
-}
-
-void CSGObject::load_json(const char* filename)
-{
-	std::ifstream is(filename);
-	cereal::JSONInputArchive archive(is);
-	archive(*this);
-}
-
-void CSGObject::load_xml(const char* filename)
-{
-	std::ifstream is(filename);
-	cereal::XMLInputArchive archive(is);
-	archive(*this);
-}
-
-template <class Archive>
-void CSGObject::cereal_save(Archive& ar) const
-{
-	for (const auto& it : self->map)
-		ar(cereal::make_nvp(it.first.name(), it.second));
-}
-template void CSGObject::cereal_save<cereal::BinaryOutputArchive>(
-    cereal::BinaryOutputArchive& ar) const;
-template void CSGObject::cereal_save<cereal::JSONOutputArchive>(
-    cereal::JSONOutputArchive& ar) const;
-template void CSGObject::cereal_save<cereal::XMLOutputArchive>(
-    cereal::XMLOutputArchive& ar) const;
-
-template <class Archive>
-void CSGObject::cereal_load(Archive& ar)
-{
-	for (auto& it : self->map)
-		ar(it.second);
-}
-template void CSGObject::cereal_load<cereal::BinaryInputArchive>(
-    cereal::BinaryInputArchive& ar);
-template void
-CSGObject::cereal_load<cereal::JSONInputArchive>(cereal::JSONInputArchive& ar);
-template void
-CSGObject::cereal_load<cereal::XMLInputArchive>(cereal::XMLInputArchive& ar);
-
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
@@ -899,23 +831,23 @@ public:
 	{
 	}
 
-	virtual void on(const bool* v)
+	virtual void on(bool* v)
 	{
 		stream() << (*v ? "true" : "false");
 	}
-	virtual void on(const int32_t* v)
+	virtual void on(int32_t* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(const int64_t* v)
+	virtual void on(int64_t* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(const float* v)
+	virtual void on(float* v)
 	{
 		stream() << *v;
 	}
-	virtual void on(const double* v)
+	virtual void on(double* v)
 	{
 		stream() << *v;
 	}
@@ -923,7 +855,7 @@ public:
 	{
 		stream() << *v;
 	}
-	virtual void on(const CSGObject** v)
+	virtual void on(CSGObject** v)
 	{
 		if (*v)
 		{
@@ -934,27 +866,27 @@ public:
 			stream() << "null";
 		}
 	}
-	virtual void on(const SGVector<int>* v)
+	virtual void on(SGVector<int>* v)
 	{
 		to_string(v);
 	}
-	virtual void on(const SGVector<float>* v)
+	virtual void on(SGVector<float>* v)
 	{
 		to_string(v);
 	}
-	virtual void on(const SGVector<double>* v)
+	virtual void on(SGVector<double>* v)
 	{
 		to_string(v);
 	}
-	virtual void on(const SGMatrix<int>* mat)
+	virtual void on(SGMatrix<int>* mat)
 	{
 		to_string(mat);
 	}
-	virtual void on(const SGMatrix<float>* mat)
+	virtual void on(SGMatrix<float>* mat)
 	{
 		to_string(mat);
 	}
-	virtual void on(const SGMatrix<double>* mat)
+	virtual void on(SGMatrix<double>* mat)
 	{
 		to_string(mat);
 	}
@@ -966,7 +898,7 @@ private:
 	}
 
 	template <class T>
-	void to_string(const SGMatrix<T>* m)
+	void to_string(SGMatrix<T>* m)
 	{
 		if (m)
 		{
@@ -990,7 +922,7 @@ private:
 	}
 
 	template <class T>
-	void to_string(const SGVector<T>* v)
+	void to_string(SGVector<T>* v)
 	{
 		if (v)
 		{

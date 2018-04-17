@@ -12,7 +12,6 @@
 #include <shogun/io/File.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <limits>
@@ -24,6 +23,7 @@
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>
 
+#include <shogun/mathematics/eigen3.h>
 namespace shogun
 {
 
@@ -1232,7 +1232,6 @@ template <class T>
 template <class Archive>
 void SGMatrix<T>::cereal_save(Archive& ar) const
 {
-	ar(cereal::base_class<SGReferencedData>(this));
 	ar(cereal::make_nvp("num_rows", num_rows));
 	ar(cereal::make_nvp("num_cols", num_cols));
 
@@ -1244,7 +1243,6 @@ template <>
 template <class Archive>
 void SGMatrix<complex128_t>::cereal_save(Archive& ar) const
 {
-	ar(cereal::base_class<SGReferencedData>(this));
 	ar(cereal::make_nvp("num_rows", num_rows));
 	ar(cereal::make_nvp("num_cols", num_cols));
 
@@ -1257,9 +1255,6 @@ template <class T>
 template <class Archive>
 void SGMatrix<T>::cereal_load(Archive& ar)
 {
-	unref();
-	ar(cereal::base_class<SGReferencedData>(this));
-
 	ar(num_rows);
 	ar(num_cols);
 	matrix = SG_MALLOC(T, num_rows * num_cols);
@@ -1271,9 +1266,6 @@ template <>
 template <class Archive>
 void SGMatrix<complex128_t>::cereal_load(Archive& ar)
 {
-	unref();
-	ar(cereal::base_class<SGReferencedData>(this));
-
 	ar(num_rows);
 	ar(num_cols);
 	matrix = SG_MALLOC(complex128_t, num_rows * num_cols);

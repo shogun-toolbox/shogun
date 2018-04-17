@@ -141,55 +141,67 @@ public:
 	virtual ~CSGObject();
 
 #ifndef SWIG // SWIG should skip this part
-		     /** serializes the SGObject to a binary file
-		      *
-		      * @param filename Binary archive filename
-		      */
-	void save_binary(const char* filename) const;
-
-	/** serializes the SGObject to a JSON file
-	 *
-	 * @param filename JSON archive filename
-	 */
-	void save_json(const char* filename) const;
-
-	/** serializes the SGObject to a XML file
-	 *
-	 * @param filename XML archive filename
-	 */
-	void save_xml(const char* filename) const;
-
-	/** loads SGObject from a Binary file
-	 *
-	 * @param filename Binary archive filename
-	 */
-	void load_binary(const char* filename);
-
-	/** loads SGObject from a JSON file
-	 *
-	 * @param filename JSON archive filename
-	 */
-	void load_json(const char* filename);
-
-	/** loads SGObject from a XML file
-	 *
-	 * @param filename XML archive filename
-	 */
-	void load_xml(const char* filename);
-
 	/** serializes SGObject parameters to Archive with Cereal
 	 *
 	 * @param ar Archive
 	 */
 	template <class Archive>
-	void cereal_save(Archive& ar) const;
+	void cereal_save(Archive& ar) const
+	{
+		std::string class_name(get_name());
+		ar(class_name, m_generic);
+		auto param_names = parameter_names();
+		ar(param_names.size());
+		for (auto param_name: param_names)
+		{
+			ar(param_name);
+			BaseTag tag(param_name);
+			ar(get_parameter(tag));
+		}
+	}
 
 	/** loads SGObject parameters from Archive with Cereal
 	 *
 	 * @param ar Archive
 	 */
 	template <class Archive>
-	void cereal_load(Archive& ar);
+	void cereal_load(Archive& ar)
+	{
+		size_t num_param_names;
+		try
+		{
+			ar(num_param_names);
+		}
+		catch(const std::exception& e)
+		{
+			std::string name;
+			EPrimitiveType p_type;
+			ar(name, p_type);
+
+			if (name.compare(std::string(get_name())) != 0)
+				throw ShogunException(
+					"cannot deserialize the object from file as num parameters does not match!");
+			ar(num_param_names);
+		}
+		auto param_names = parameter_names();
+		if (param_names.size() != num_param_names)
+			throw ShogunException(
+				"cannot deserialize the object from file as num parameters does not match!");
+
+		for (size_t i = 0; i < num_param_names; ++i)
+		{
+			std::string param_name;
+			ar(param_name);
+			if (!has(param_name))
+				throw ShogunException(
+					"cannot deserialize the object from file!");
+
+			BaseTag tag(param_name);
+			auto parameter = get_parameter(tag);
+			ar(parameter);
+			update_parameter(tag, parameter.get_value());
+		}
+	}
 #endif // #ifndef SWIG // SWIG should skip this part
 
 	/** increase reference counter

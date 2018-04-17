@@ -19,7 +19,6 @@
 #include <string>
 
 namespace shogun {
-	class CSGObject;
 
 	/** new shogun instance
 	 * @param sgserializable_name
