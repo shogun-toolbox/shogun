@@ -75,11 +75,14 @@ public:
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
+	/** Default constructor */
+	CLeastAngleRegression();
+
 	/** default constructor
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
 	 * */
-	CLeastAngleRegression(bool lasso = true);
+	CLeastAngleRegression(bool lasso);
 
 	/** default destructor */
 	virtual ~CLeastAngleRegression();
@@ -216,6 +219,10 @@ protected:
 	#endif
 
 private:
+
+	/** Initialize and register parameters */
+	void init();
+
 	/**
 	* A templated specialization of the train_machine method
 	* @param data training data

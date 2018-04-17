@@ -49,11 +49,6 @@ CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab)
 	init();
 
 	m_num_rkhs_basis=m;
-
-	int32_t n=kernel->get_num_vec_lhs();
-
-	REQUIRE(m_num_rkhs_basis <= n, "Number of sampled rows (%d) must be \
-less than number of data points (%d)\n", m_num_rkhs_basis, n);
 }
 
 void CKRRNystrom::init()
@@ -73,6 +68,17 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 	CMath::qsort(col.vector, m_num_rkhs_basis);
 
 	return col;
+}
+
+bool CKRRNystrom::train_machine(CFeatures* data)
+{
+	REQUIRE(data, "No features provided.\n");
+
+	int32_t n=data->get_num_vectors();
+
+	REQUIRE(m_num_rkhs_basis <= n, "Number of sampled rows (%d) must be "
+			"less than number of data points (%d).\n", m_num_rkhs_basis, n);
+	return CKernelRidgeRegression::train_machine(data);
 }
 
 bool CKRRNystrom::solve_krr_system()

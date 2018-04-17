@@ -14,19 +14,30 @@
 using namespace shogun;
 
 CAveragedPerceptron::CAveragedPerceptron()
-: CLinearMachine(), learn_rate(0.1), max_iter(1000)
+: CLinearMachine()
 {
+	init();
+
 }
 
 CAveragedPerceptron::CAveragedPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine(), learn_rate(.1), max_iter(1000)
+: CLinearMachine()
 {
 	set_features(traindat);
 	set_labels(trainlab);
+	init();
 }
 
 CAveragedPerceptron::~CAveragedPerceptron()
 {
+}
+
+void CAveragedPerceptron::init()
+{
+	max_iter = 1000;
+	learn_rate = 0.1;
+	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", MS_AVAILABLE);
+	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
 }
 
 bool CAveragedPerceptron::train_machine(CFeatures* data)

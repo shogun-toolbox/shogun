@@ -345,6 +345,15 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
+		/** Throws an error, as features are immutable */
+		template <typename T>
+		void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
+		{
+			SG_ERROR(
+				"Cannot put %s::%s, features are immutable.\n", get_name(),
+				_tag.name().c_str());
+		}
+
 #ifndef SWIG // SWIG should skip this part
 		virtual CFeatures* shallow_subset_copy()
 		{

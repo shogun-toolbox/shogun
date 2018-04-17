@@ -5,8 +5,8 @@ CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
 Math:init_random(1)
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
 #![create_features]
@@ -18,7 +18,8 @@ ft[1] = False
 #![set_attribute_types]
 
 #![create_instance]
-CARTree classifier(ft,enum EProblemType.PT_MULTICLASS, 5, True)
+Machine classifier = machine("CARTree", nominal = ft,mode = enum EProblemType.PT_MULTICLASS, folds=5, apply_cv_pruning=True)
+
 classifier.set_labels(labels_train)
 #![create_instance]
 

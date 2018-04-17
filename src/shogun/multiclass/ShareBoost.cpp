@@ -30,24 +30,27 @@ CShareBoost::CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels 
 
 void CShareBoost::init_sb_params()
 {
-	SG_ADD(&m_nonzero_feas, "m_nonzero_feas", "Number of non-zero features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nonzero_feas, "nonzero_feas", "Number of non-zero features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_activeset, "active_set", "Selected features", MS_NOT_AVAILABLE);
 }
 
 SGVector<int32_t> CShareBoost::get_activeset()
 {
-	return m_activeset.clone();
+	return m_activeset;
 }
 
 bool CShareBoost::train_machine(CFeatures* data)
 {
-	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t>*>(m_features);
 	if (data)
 		set_features(data);
+	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t>*>(m_features);
 
 	if (m_features == NULL)
 		SG_ERROR("No features given for training\n")
 	if (m_labels == NULL)
 		SG_ERROR("No labels given for training\n")
+
+	init_strategy();
 
 	if (m_nonzero_feas <= 0)
 		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n")

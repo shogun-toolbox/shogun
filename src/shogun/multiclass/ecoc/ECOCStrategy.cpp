@@ -16,7 +16,7 @@ CECOCStrategy::CECOCStrategy() : CMulticlassStrategy()
 }
 
 CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder)
-    : CMulticlassStrategy()
+	: CMulticlassStrategy()
 {
     init();
     m_encoder=encoder;
@@ -30,8 +30,8 @@ void CECOCStrategy::init()
     m_encoder=NULL;
     m_decoder=NULL;
 
-    SG_ADD((CSGObject **)&m_encoder, "encoder", "ECOC Encoder", MS_NOT_AVAILABLE);
-    SG_ADD((CSGObject **)&m_decoder, "decoder", "ECOC Decoder", MS_NOT_AVAILABLE);
+    SG_ADD(&m_encoder, "encoder", "ECOC Encoder", MS_NOT_AVAILABLE);
+    SG_ADD(&m_decoder, "decoder", "ECOC Decoder", MS_NOT_AVAILABLE);
 }
 
 CECOCStrategy::~CECOCStrategy()

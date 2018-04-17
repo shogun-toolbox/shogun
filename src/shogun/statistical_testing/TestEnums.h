@@ -66,6 +66,5 @@ enum EKernelSelectionMethod
 	KSM_CROSS_VALIDATION,
 	KSM_AUTO = KSM_MAXIMIZE_POWER
 };
-
 }
 #endif // TEST_ENUMS_H_

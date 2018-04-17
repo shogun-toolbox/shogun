@@ -4,21 +4,20 @@ CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
 CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 RegressionLabels labels_train(f_labels_train)
 RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
-real width = 1.0
-GaussianKernel kernel(features_train, features_train, width)
+Kernel k = kernel("GaussianKernel", lhs=features_train, rhs=features_train, log_width=0.0)
 ZeroMean mean_function()
 #![create_appropriate_kernel_and_mean_function]
 
 #![create_instance]
 GaussianLikelihood gauss_likelihood()
-ExactInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood)
+ExactInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood)
 GaussianProcessRegression gp_regression(inference_method)
 #![create_instance]
 

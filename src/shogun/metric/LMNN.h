@@ -41,7 +41,7 @@ class CLMNN : public CSGObject
 		 * @param labels labels of the features
 		 * @param k number of target neighbours per example
 		 */
-		CLMNN(CDenseFeatures<float64_t>* features, CMulticlassLabels* labels, int32_t k);
+		CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k);
 
 		/** destructor */
 		virtual ~CLMNN();

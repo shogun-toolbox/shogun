@@ -4,19 +4,19 @@ CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat"
 CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_instance]
-ShareBoost shareboost(features_train, labels_train, 2)
+Machine shareboost = machine("ShareBoost", labels=labels_train, nonzero_feas=2)
 #![create_instance]
 
 #![train_and_apply]
-shareboost.train()
-RealSubsetFeatures features_test_sub(features_test, shareboost.get_activeset())
+shareboost.train(features_train)
+Features features_test_sub = features_subset(features_test, shareboost.get_int_vector("active_set"))
 MulticlassLabels labels_predict = shareboost.apply_multiclass(features_test_sub)
 #![train_and_apply]
 

@@ -10,11 +10,16 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+
 
 namespace shogun
 {
@@ -23,6 +28,10 @@ namespace shogun
 	CEvaluation* evaluation(const std::string& name);
 	CKernel* kernel(const std::string& name);
 	CMachine* machine(const std::string& name);
+	CMulticlassStrategy* multiclass_strategy(const std::string& name);
+	CECOCEncoder* ecoc_encoder(const std::string& name);
+	CECOCDecoder* ecoc_decoder(const std::string& name);
+
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -34,6 +43,9 @@ namespace shogun
 	BASE_CLASS_FACTORY(CDistance, distance)
 	BASE_CLASS_FACTORY(CKernel, kernel)
 	BASE_CLASS_FACTORY(CMachine, machine)
+	BASE_CLASS_FACTORY(CMulticlassStrategy, multiclass_strategy)
+	BASE_CLASS_FACTORY(CECOCEncoder, ecoc_encoder)
+	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -62,6 +74,28 @@ namespace shogun
 		}
 		else
 			SG_SERROR("Cannot load features from %s.\n", file->get_name());
+
+		SG_REF(result);
+		return result;
+	}
+
+	/** Factory for CDenseSubsetFeatures.
+	 * TODO: Should be removed once the concept of feature views has arrived
+	 */
+	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
+			EPrimitiveType primitive_type = PT_FLOAT64)
+	{
+		CFeatures* result;
+		REQUIRE(base_features, "No base features provided.\n");
+
+		switch (primitive_type)
+		{
+		case PT_FLOAT64:
+			result = new CDenseSubsetFeatures<float64_t>(base_features->as<CDenseFeatures<float64_t>>(), indices);
+			break;
+		default:
+			SG_SNOTIMPLEMENTED
+		}
 
 		SG_REF(result);
 		return result;
