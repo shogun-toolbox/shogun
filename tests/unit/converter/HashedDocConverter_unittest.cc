@@ -1,4 +1,4 @@
-#include <shogun/converter/HashedDocConverter.h>
+#include <shogun/preprocessor/HashedDocConverter.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>

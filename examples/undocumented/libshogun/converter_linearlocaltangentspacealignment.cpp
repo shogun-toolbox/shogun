@@ -8,7 +8,7 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
+#include <shogun/preprocessor/LinearLocalTangentSpaceAlignment.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

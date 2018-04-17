@@ -145,6 +145,9 @@ public:
 	/** Destructor */
 	virtual ~CFeatureSelection();
 
+	/** initialize preprocessor with features */
+	virtual bool init(CFeatures* features) = 0;
+	
 	/** Generic interface for applying the feature selection preprocessor.
 	 * Acts as a wrapper which decides which actual method to call based on the
 	 * algorithm specified.

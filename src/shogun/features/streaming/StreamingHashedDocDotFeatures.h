@@ -11,7 +11,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/lib/Tokenizer.h>
-#include <shogun/converter/HashedDocConverter.h>
+#include <shogun/preprocessor/HashedDocConverter.h>
 #include <shogun/io/streaming/InputParser.h>
 #include <shogun/io/streaming/StreamingFileFromStringFeatures.h>
 

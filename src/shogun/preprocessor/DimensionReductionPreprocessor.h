@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/converter/EmbeddingConverter.h>
+#include <shogun/preprocessor/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 

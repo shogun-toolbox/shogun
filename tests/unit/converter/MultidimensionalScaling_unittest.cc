@@ -1,4 +1,4 @@
-#include <shogun/converter/MultidimensionalScaling.h>
+#include <shogun/preprocessor/MultidimensionalScaling.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>

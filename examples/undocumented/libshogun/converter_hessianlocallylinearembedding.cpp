@@ -8,7 +8,7 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/HessianLocallyLinearEmbedding.h>
+#include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

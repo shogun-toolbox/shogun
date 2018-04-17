@@ -8,7 +8,7 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/Isomap.h>
+#include <shogun/preprocessor/Isomap.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

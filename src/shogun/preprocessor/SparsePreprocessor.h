@@ -36,6 +36,9 @@ public:
 	 */
 	CSparsePreprocessor() : CPreprocessor() {}
 
+	/** initialize preprocessor with features */
+	virtual bool init(CFeatures* features) = 0;
+	
 	/** generic interface for applying the preprocessor. used as a wrapper
 	 * for apply_to_sparse_feature_matrix() method
 	 *
@@ -66,6 +69,11 @@ public:
 	/// return a type of preprocessor
 	virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
 
+	/** clean-up. should be called (if necessary) after processing */
+	virtual void cleanup() = 0;
+
+	/** @return type of objects preprocessor can deal with */
+	virtual EFeatureType get_feature_type() = 0;
 };
 }
 #endif

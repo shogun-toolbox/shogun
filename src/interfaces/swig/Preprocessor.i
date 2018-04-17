@@ -28,10 +28,41 @@
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
 
+%rename(EmbeddingConverter) CEmbeddingConverter;
+#ifdef USE_GPL_SHOGUN
+%rename(NeighborhoodPreservingEmbedding) CNeighborhoodPreservingEmbedding;
+%rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
+%rename(LinearLocalTangentSpaceAlignment) CLinearLocalTangentSpaceAlignment;
+%rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
+%rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
+%rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
+%rename(LaplacianEigenmaps) CLaplacianEigenmaps;
+%rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
+#endif //USE_GPL_SHOGUN
+%rename(LocalityPreservingProjections) CLocalityPreservingProjections;
+%rename(MultidimensionalScaling) CMultidimensionalScaling;
+%rename(Isomap) CIsomap;
+%rename(DiffusionMaps) CDiffusionMaps;
+%rename(FactorAnalysis) CFactorAnalysis;
+%rename(TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
+%rename(ManifoldSculpting) CManifoldSculpting;
+%rename(HashedDocConverter) CHashedDocConverter;
+%rename(ICAConverter) CICAConverter;
+%rename(Jade) CJade;
+%rename(SOBI) CSOBI;
+%rename(FFSep) CFFSep;
+%rename(JediSep) CJediSep;
+%rename(UWedgeSep) CUWedgeSep;
+%rename(FastICA) CFastICA;
+
 %newobject shogun::CFeatureSelection::apply;
 %newobject shogun::CFeatureSelection::remove_feats;
 
 %newobject shogun::CKernelPCA::apply_to_string_features;
+
+%newobject shogun::CEmbeddingConverter::apply;
+%newobject shogun::*::embed_kernel;
+%newobject shogun::*::embed_distance;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
@@ -140,3 +171,30 @@ namespace shogun
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
+
+%include <shogun/preprocessor/EmbeddingConverter.h>
+#ifdef USE_GPL_SHOGUN
+%include <shogun/preprocessor/LocallyLinearEmbedding.h>
+%include <shogun/preprocessor/NeighborhoodPreservingEmbedding.h>
+%include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
+%include <shogun/preprocessor/LinearLocalTangentSpaceAlignment.h>
+%include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
+%include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
+%include <shogun/preprocessor/StochasticProximityEmbedding.h>
+#endif //USE_GPL_SHOGUN
+%include <shogun/preprocessor/LaplacianEigenmaps.h>
+%include <shogun/preprocessor/LocalityPreservingProjections.h>
+%include <shogun/preprocessor/MultidimensionalScaling.h>
+%include <shogun/preprocessor/Isomap.h>
+%include <shogun/preprocessor/DiffusionMaps.h>
+%include <shogun/preprocessor/FactorAnalysis.h>
+%include <shogun/preprocessor/TDistributedStochasticNeighborEmbedding.h>
+%include <shogun/preprocessor/ManifoldSculpting.h>
+%include <shogun/preprocessor/HashedDocConverter.h>
+%include <shogun/preprocessor/ica/ICAConverter.h>
+%include <shogun/preprocessor/ica/Jade.h>
+%include <shogun/preprocessor/ica/SOBI.h>
+%include <shogun/preprocessor/ica/FFSep.h>
+%include <shogun/preprocessor/ica/JediSep.h>
+%include <shogun/preprocessor/ica/UWedgeSep.h>
+%include <shogun/preprocessor/ica/FastICA.h>

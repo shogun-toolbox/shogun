@@ -1,5 +1,5 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/converter/EmbeddingConverter.h>
+#include <shogun/preprocessor/EmbeddingConverter.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclideanDistance.h>
 
