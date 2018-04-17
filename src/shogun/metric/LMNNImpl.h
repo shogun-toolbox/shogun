@@ -78,7 +78,9 @@ class CLMNNImpl
 		 * check feature and label size, dimensions of the initial transform, etc
 		 * if the initial transform has not been initialized, do it using PCA
 		 */
-		static void check_training_setup(CFeatures* features, const CLabels* labels, SGMatrix<float64_t>& init_transform);
+		static void check_training_setup(
+		    CFeatures* features, CLabels* labels,
+		    SGMatrix<float64_t>& init_transform, int32_t k);
 
 		/**
 		 * for each feature in x, find its target neighbors; that is, its k
@@ -160,6 +162,13 @@ class CLMNNImpl
 		 */
 		static CEuclideanDistance* setup_distance(CDenseFeatures<float64_t>* x, std::vector<index_t>& a, std::vector<index_t>& b);
 
+		/**
+		 * check that k is less than the minimum number of examples in any
+		 * class.
+		 * k must be less than the number of examples in any class because each
+		 * example needs k other examples (the nearest ones) of the same class
+		 */
+		static void check_maximum_k(CLabels* labels, int32_t k);
 
 }; /* class CLMNNImpl */
 

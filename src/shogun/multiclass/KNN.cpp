@@ -110,6 +110,11 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 {
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
+
+	REQUIRE(
+	    n >= m_k,
+	    "K (%d) must not be larger than the number of examples (%d).\n", m_k, n)
+
 	//distances to train data
 	SGVector<float64_t> dists(m_train_labels.vlen);
 	//indices to train data

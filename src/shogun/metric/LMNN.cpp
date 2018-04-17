@@ -1,7 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Heiko Strathmann, Giovanni De Toni, Viktor Gal
+ * Authors: Fernando Iglesias, Heiko Strathmann, Giovanni De Toni, Viktor Gal,
+ * Wuwei Lin
  */
 
 #include <shogun/metric/LMNN.h>
@@ -53,7 +54,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	SG_DEBUG("Entering CLMNN::train().\n")
 
 	// Check training data and arguments, initializing, if necessary, init_transform
-	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform);
+	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform, m_k);
 
 	// Initializations
 
