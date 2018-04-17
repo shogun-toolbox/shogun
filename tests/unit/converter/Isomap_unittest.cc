@@ -2,7 +2,7 @@
 #include <set>
 #include <queue>
 
-#include <shogun/converter/Isomap.h>
+#include <shogun/preprocessor/Isomap.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>

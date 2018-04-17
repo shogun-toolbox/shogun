@@ -1,4 +1,4 @@
-#include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
+#include <shogun/preprocessor/TDistributedStochasticNeighborEmbedding.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <gtest/gtest.h>

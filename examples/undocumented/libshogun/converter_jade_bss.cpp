@@ -19,7 +19,7 @@ using namespace shogun;
 // during compilation of an example.
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/Jade.h>
+#include <shogun/preprocessor/ica/Jade.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 #include <shogun/evaluation/ica/AmariIndex.h>
 

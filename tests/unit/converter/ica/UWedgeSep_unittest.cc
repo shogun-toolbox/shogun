@@ -4,7 +4,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/UWedgeSep.h>
+#include <shogun/preprocessor/ica/UWedgeSep.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;

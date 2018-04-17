@@ -1,4 +1,4 @@
-#include <shogun/converter/ManifoldSculpting.h>
+#include <shogun/preprocessor/ManifoldSculpting.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <gtest/gtest.h>

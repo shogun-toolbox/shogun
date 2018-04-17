@@ -5,7 +5,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/JediSep.h>
+#include <shogun/preprocessor/ica/JediSep.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/converter/ica/FFSep.h>
+#include <shogun/preprocessor/ica/FFSep.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;

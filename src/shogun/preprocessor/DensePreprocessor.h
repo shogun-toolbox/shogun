@@ -33,6 +33,8 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 */
 		CDensePreprocessor();
 
+		/** initialize preprocessor with features */
+		virtual bool init(CFeatures* features) = 0;
 		/** generic interface for applying the preprocessor. used as a wrapper
 		 * for apply_to_feature_matrix() method
 		 *
@@ -57,6 +59,9 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const;
+
+		/** clean-up. should be called (if necessary) after processing */
+		virtual void cleanup() = 0;
 
 };
 

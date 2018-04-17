@@ -25,4 +25,31 @@
 #include <shogun/preprocessor/SortWordString.h>
 
 #include <shogun/preprocessor/FeatureSelection.h>
+
+#include <shogun/preprocessor/EmbeddingConverter.h>
+#ifdef USE_GPL_SHOGUN
+#include <shogun/preprocessor/LocallyLinearEmbedding.h>
+#include <shogun/preprocessor/NeighborhoodPreservingEmbedding.h>
+#include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
+#include <shogun/preprocessor/LinearLocalTangentSpaceAlignment.h>
+#include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
+#include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
+#include <shogun/preprocessor/StochasticProximityEmbedding.h>
+#endif //USE_GPL_SHOGUN
+#include <shogun/preprocessor/LaplacianEigenmaps.h>
+#include <shogun/preprocessor/LocalityPreservingProjections.h>
+#include <shogun/preprocessor/MultidimensionalScaling.h>
+#include <shogun/preprocessor/Isomap.h>
+#include <shogun/preprocessor/DiffusionMaps.h>
+#include <shogun/preprocessor/FactorAnalysis.h>
+#include <shogun/preprocessor/TDistributedStochasticNeighborEmbedding.h>
+#include <shogun/preprocessor/ManifoldSculpting.h>
+#include <shogun/preprocessor/HashedDocConverter.h>
+#include <shogun/preprocessor/ica/ICAConverter.h>
+#include <shogun/preprocessor/ica/Jade.h>
+#include <shogun/preprocessor/ica/SOBI.h>
+#include <shogun/preprocessor/ica/FFSep.h>
+#include <shogun/preprocessor/ica/JediSep.h>
+#include <shogun/preprocessor/ica/UWedgeSep.h>
+#include <shogun/preprocessor/ica/FastICA.h>
 %}

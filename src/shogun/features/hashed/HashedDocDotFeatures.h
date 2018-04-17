@@ -11,7 +11,7 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/converter/HashedDocConverter.h>
+#include <shogun/preprocessor/HashedDocConverter.h>
 #include <shogun/lib/Tokenizer.h>
 
 namespace shogun {

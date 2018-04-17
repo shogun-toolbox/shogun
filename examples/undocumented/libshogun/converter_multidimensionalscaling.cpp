@@ -8,7 +8,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/MultidimensionalScaling.h>
+#include <shogun/preprocessor/MultidimensionalScaling.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

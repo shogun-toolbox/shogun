@@ -81,7 +81,7 @@ public:
 	}
 
 	/** initialize preprocessor with features */
-	virtual bool init(CFeatures* features)=0;
+	//virtual bool init(CFeatures* features)=0;
 
 	/** generic interface for applying the preprocessor. sub-classes may use
 	 * this method as a wrapper to specific implementations
@@ -92,16 +92,19 @@ public:
 	virtual CFeatures* apply(CFeatures* features)=0;
 
 	/** clean-up. should be called (if necessary) after processing */
-	virtual void cleanup()=0;
+	//virtual void cleanup()=0;
 
 	/** @return type of objects preprocessor can deal with */
-	virtual EFeatureType get_feature_type()=0;
+	//virtual EFeatureType get_feature_type()=0;
 
 	/** @return class of features preprocessor deals with */
-	virtual EFeatureClass get_feature_class()=0;
+	//virtual EFeatureClass get_feature_class()=0;
 
 	/** @return the actual type of the preprocessor */
-	virtual EPreprocessorType get_type() const=0;
+	//virtual EPreprocessorType get_type() const=0;
+
+	/** get name */
+	virtual const char* get_name() const { return "Preprocessor"; }
 };
 }
 #endif // PREPROCESSOR_H_
