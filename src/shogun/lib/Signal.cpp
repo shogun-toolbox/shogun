@@ -49,10 +49,10 @@ int CSignal::interactive_signal()
 			what_action=SIGINT;
 			break;
 		case 'C':
-			what_action=SIGTSTP;
+			what_action=SIGQUIT;
 			break;
 		case 'P':
-			what_action=SIGQUIT;
+			what_action=SIGTSTP;
 			break;
 		default:
 			break;
