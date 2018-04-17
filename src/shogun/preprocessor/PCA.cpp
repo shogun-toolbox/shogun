@@ -85,7 +85,8 @@ bool CPCA::init(CFeatures* features)
 									->get_feature_matrix();
 		int32_t num_vectors = feature_matrix.num_cols;
 		int32_t num_features = feature_matrix.num_rows;
-		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
+		SG_INFO(
+		    "num_examples: %d num_features: %d\n", num_vectors, num_features)
 
 		// max target dim allowed
 		int32_t max_dim_allowed = CMath::min(num_vectors, num_features);
@@ -134,7 +135,7 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 	cov_mat = fmatrix*fmatrix.transpose();
 	cov_mat /= (num_vectors-1);
 
-	SG_INFO("Computing Eigenvalues ... ")
+	SG_INFO("Computing Eigenvalues\n")
 	// eigen value computed
 	SelfAdjointEigenSolver<MatrixXd> eigenSolve =
 			SelfAdjointEigenSolver<MatrixXd>(cov_mat);
@@ -171,7 +172,7 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 			}
 			break;
 	};
-	SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+	SG_INFO("Reducing from %i to %i features\n", num_features, num_dim)
 
 	m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 	Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
@@ -188,10 +189,12 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
 									m_eigenvalue_zero_tolerance))
 			{
-				SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
-					"Eigenvalue within a tolerance of %E around 0) at "
-					"dimension %d. Consider reducing its dimension.",
-					m_eigenvalue_zero_tolerance, i+max_dim_allowed-num_dim+1)
+				SG_WARNING(
+				    "Covariance matrix has almost zero Eigenvalue (ie "
+				    "Eigenvalue within a tolerance of %E around 0) at "
+				    "dimension %d. Consider reducing its dimension.\n",
+				    m_eigenvalue_zero_tolerance,
+				    i + max_dim_allowed - num_dim + 1)
 
 				transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
 				continue;
@@ -246,7 +249,7 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 			}
 			break;
 	};
-	SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+	SG_INFO("Reducing from %i to %i features...\n", num_features, num_dim)
 
 	// right singular vectors form eigenvectors
 	m_transformation_matrix = SGMatrix<float64_t>(num_features, num_dim);
@@ -308,7 +311,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			feature_matrix.block(0,0,num_dim,num_vectors) =
 					transform_matrix.transpose()*feature_matrix;
 
-			SG_INFO("Form matrix of target dimension")
+			SG_INFO("Form matrix of target dimension\n")
 			for (int32_t col=0; col<num_vectors; col++)
 			{
 				for (int32_t row=0; row<num_dim; row++)
