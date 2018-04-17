@@ -125,12 +125,12 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
 	SGVector<float64_t> samples(num_estimates);
 	samples.zero();
-	float64_t result=0.0;
+	float64_t result = 0.0;
 
-#pragma omp parallel for reduction(+:result)
+#pragma omp parallel for reduction(+ : result)
 	for (index_t i = 0; i < num_estimates; ++i)
 	{
-		result=0.0;
+		result = 0.0;
 		for (index_t j = 0; j < num_trace_samples; ++j)
 		{
 			SG_INFO(

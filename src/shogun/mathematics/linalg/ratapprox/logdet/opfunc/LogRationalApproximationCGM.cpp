@@ -49,7 +49,8 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 	SG_UNREF(m_linear_solver);
 }
 
-float64_t CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
+float64_t
+CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 {
 	SG_DEBUG("Entering\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
@@ -59,10 +60,8 @@ float64_t CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) cons
 
 	SGVector<complex128_t> negated_shifts(m_shifts.vlen);
 	Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
-	Map<VectorXcd> negated_shifts_(
-		negated_shifts.vector, negated_shifts.vlen);
+	Map<VectorXcd> negated_shifts_(negated_shifts.vector, negated_shifts.vlen);
 	negated_shifts_ = -shifts;
-
 
 	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
 		m_linear_operator, sample, negated_shifts, m_weights);
