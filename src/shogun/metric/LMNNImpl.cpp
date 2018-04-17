@@ -6,7 +6,10 @@
 
 #include <shogun/metric/LMNNImpl.h>
 
+#include <algorithm>
 #include <iterator>
+#include <unordered_map>
+
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/preprocessor/PCA.h>
@@ -32,8 +35,9 @@ bool CImpostorNode::operator<(const CImpostorNode& rhs) const
 		return example < rhs.example;
 }
 
-void CLMNNImpl::check_training_setup(CFeatures* features, const CLabels* labels,
-		SGMatrix<float64_t>& init_transform)
+void CLMNNImpl::check_training_setup(
+    CFeatures* features, CLabels* labels, SGMatrix<float64_t>& init_transform,
+    int32_t k)
 {
 	REQUIRE(features->has_property(FP_DOT),
 			"LMNN can only be applied to features that support dot products\n")
@@ -56,6 +60,47 @@ void CLMNNImpl::check_training_setup(CFeatures* features, const CLabels* labels,
 			init_transform.num_rows==init_transform.num_cols,
 			"The initial transform must be a square matrix of size equal to the "
 			"number of features\n")
+
+	check_maximum_k(labels, k);
+}
+
+void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
+{
+	CMulticlassLabels* y = CLabelsFactory::to_multiclass(labels);
+	SGVector<int32_t> int_labels = y->get_int_labels();
+
+	// back-up initial values because they will be overwritten by unique
+	std::vector<int32_t> int_labels_vec;
+	std::copy(
+	    int_labels.begin(), int_labels.end(),
+	    std::back_inserter(int_labels_vec));
+
+	std::sort(int_labels.begin(), int_labels.end());
+	auto unique_end = std::unique(int_labels.begin(), int_labels.end());
+
+	std::vector<int32_t> labels_histogram(
+	    std::distance(int_labels.begin(), unique_end), 0);
+
+	std::unordered_map<int32_t, int32_t> label_to_index;
+	{
+		int32_t next_index = 0;
+		for (auto begin = int_labels.begin(); begin != unique_end; begin++)
+			label_to_index.insert({*begin, next_index++});
+	}
+
+	for (auto int_label : int_labels_vec)
+	{
+		labels_histogram[label_to_index[int_label]] += 1;
+	}
+
+	int32_t min_num_examples =
+	    *std::min_element(labels_histogram.begin(), labels_histogram.end());
+	REQUIRE(
+	    min_num_examples > k,
+	    "The minimum number of examples of any class (%d) must be larger "
+	    "than k (%d); it must be at least k+1 because any example needs "
+	    "k *other* neighbors of the same class.",
+	    min_num_examples, k)
 }
 
 SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
