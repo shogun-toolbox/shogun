@@ -8,7 +8,7 @@
 
 #include <shogun/features/DenseFeatures.h>
 
-
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -128,9 +128,8 @@ CFeatures* CFastICA::apply(CFeatures* features)
 
 	W = sym_decorrelation(W);
 
-	int iter = 0;
 	float64_t lim = tol+1;
-	while (lim > tol && iter < max_iter)
+	for (auto i : progress(range(0, max_iter),[&] { return lim > tol; }))
 	{
 		MatrixXd wtx = W * WX;
 
@@ -144,8 +143,6 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		lim = ((W1 * W.transpose()).diagonal().cwiseAbs().array() - 1).abs().maxCoeff();
 
 		W = W1;
-
-		iter++;
 	}
 
 	// Unmix
