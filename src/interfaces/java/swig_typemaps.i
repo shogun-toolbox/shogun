@@ -12,7 +12,7 @@
  * Heiko Strathmann
  */
 
-%include <java/enums.swg>
+%include <java/enumtypeunsafe.swg>
 
 #ifdef HAVE_JBLAS
 %pragma(java) jniclassimports=%{

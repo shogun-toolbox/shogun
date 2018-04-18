@@ -34,9 +34,6 @@ CMulticlassMachine::CMulticlassMachine(
 	SG_REF(machine);
 	m_machine = machine;
 	register_parameters();
-
-	if (labs)
-		init_strategy();
 }
 
 CMulticlassMachine::~CMulticlassMachine()
@@ -48,14 +45,13 @@ CMulticlassMachine::~CMulticlassMachine()
 void CMulticlassMachine::set_labels(CLabels* lab)
 {
     CMachine::set_labels(lab);
-    if (lab)
-        init_strategy();
+
 }
 
 void CMulticlassMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
+	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy", MS_NOT_AVAILABLE);
+	SG_ADD(&m_machine, "machine", "The base machine", MS_NOT_AVAILABLE);
 }
 
 void CMulticlassMachine::init_strategy()
@@ -239,6 +235,7 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
 	ASSERT(m_multiclass_strategy)
+	init_strategy();
 
 	if ( !data && !is_ready() )
 		SG_ERROR("Please provide training data.\n")

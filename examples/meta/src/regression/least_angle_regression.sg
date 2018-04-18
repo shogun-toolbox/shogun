@@ -4,8 +4,8 @@ CSVFile f_labels_train("../../data/regression_1d_linear_labels_train.dat")
 CSVFile f_labels_test("../../data/regression_1d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 RegressionLabels labels_train(f_labels_train)
 RegressionLabels labels_test(f_labels_test)
 #![create_features]
@@ -22,19 +22,16 @@ Normalize.apply_to_feature_matrix(features_test)
 #![preprocess_features]
 
 #![create_instance]
-real lamda1 = 0.01
-LeastAngleRegression lars(False)
-lars.set_features(features_train)
-lars.set_labels(labels_train)
-lars.set_max_l1_norm(lamda1)
+real lamda1 = 0.01 
+Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=lamda1)
 #![create_instance]
 
 #![train_and_apply]
-lars.train()
+lars.train(features_train)
 RegressionLabels labels_predict = lars.apply_regression(features_test)
 
 #[!extract_w]
-RealVector weights = lars.get_w()
+RealVector weights = lars.get_real_vector("w")
 #[!extract_w]
 
 #![evaluate_error]

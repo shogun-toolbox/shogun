@@ -21,7 +21,7 @@ CLMNN::CLMNN()
 	SG_REF(m_statistics);
 }
 
-CLMNN::CLMNN(CDenseFeatures<float64_t>* features, CMulticlassLabels* labels, int32_t k)
+CLMNN::CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k)
 {
 	init();
 

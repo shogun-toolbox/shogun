@@ -6,15 +6,15 @@ CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
 Math:init_random(1)
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 RegressionLabels labels_train(f_labels_train)
 RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![add_layers]
-int dimensions = features_train.get_num_features()
-NeuralLayers layers()
+int dimensions = features_train.get_int("num_features")
+NeuralLayers layers() 
 layers.input(dimensions)
 layers.rectified_linear(20)
 layers.linear(1)

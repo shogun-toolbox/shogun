@@ -1514,17 +1514,17 @@ void CCARTree::init()
 	m_sorted_features=SGMatrix<float64_t>();
 	m_sorted_indices=SGMatrix<index_t>();
 
-	SG_ADD(&m_pre_sort, "m_pre_sort", "presort", MS_NOT_AVAILABLE);
-	SG_ADD(&m_sorted_features, "m_sorted_features", "sorted feats", MS_NOT_AVAILABLE);
-	SG_ADD(&m_sorted_indices, "m_sorted_indices", "sorted indices", MS_NOT_AVAILABLE);
-	SG_ADD(&m_nominal, "m_nominal", "feature types", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights, "m_weights", "weights", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights_set, "m_weights_set", "weights set", MS_NOT_AVAILABLE);
-	SG_ADD(&m_types_set, "m_types_set", "feature types set", MS_NOT_AVAILABLE);
-	SG_ADD(&m_apply_cv_pruning, "m_apply_cv_pruning", "apply cross validation pruning", MS_NOT_AVAILABLE);
-	SG_ADD(&m_folds, "m_folds", "number of subsets for cross validation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_depth, "m_max_depth", "max allowed tree depth", MS_NOT_AVAILABLE)
-	SG_ADD(&m_min_node_size, "m_min_node_size", "min allowed node size", MS_NOT_AVAILABLE)
-	SG_ADD(&m_label_epsilon, "m_label_epsilon", "epsilon for labels", MS_NOT_AVAILABLE)
-	SG_ADD((machine_int_t*)&m_mode, "m_mode", "problem type (multiclass or regression)", MS_NOT_AVAILABLE)
+	SG_ADD(&m_pre_sort, "pre_sort", "presort", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sorted_features, "sorted_features", "sorted feats", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sorted_indices, "sorted_indices", "sorted indices", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nominal, "nominal", "feature types", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights, "weights", "weights", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights_set, "weights_set", "weights set", MS_NOT_AVAILABLE);
+	SG_ADD(&m_types_set, "types_set", "feature types set", MS_NOT_AVAILABLE);
+	SG_ADD(&m_apply_cv_pruning, "apply_cv_pruning", "apply cross validation pruning", MS_NOT_AVAILABLE);
+	SG_ADD(&m_folds, "folds", "number of subsets for cross validation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_depth, "max_depth", "max allowed tree depth", MS_NOT_AVAILABLE)
+	SG_ADD(&m_min_node_size, "min_node_size", "min allowed node size", MS_NOT_AVAILABLE)
+	SG_ADD(&m_label_epsilon, "label_epsilon", "epsilon for labels", MS_NOT_AVAILABLE)
+	SG_ADD((machine_int_t*)&m_mode, "mode", "problem type (multiclass or regression)", MS_NOT_AVAILABLE)
 }

@@ -4,8 +4,8 @@ CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat"
 CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 BinaryLabels labels_train(f_labels_train)
 BinaryLabels labels_test(f_labels_test)
 #![create_features]
@@ -13,20 +13,17 @@ BinaryLabels labels_test(f_labels_test)
 #![set_parameters]
 real learn_rate=1.0
 int max_iter=1000
-AveragedPerceptron perceptron(features_train, labels_train)
-perceptron.set_learn_rate(learn_rate)
-perceptron.set_max_iter(max_iter)
+Machine perceptron = machine("AveragedPerceptron", labels=labels_train, learn_rate=learn_rate, max_iter=max_iter)
 #![set_parameters]
 
 #![train_and_apply]
-perceptron.train()
-perceptron.set_features(features_test)
-Labels labels_predict = perceptron.apply()
+perceptron.train(features_train)
+Labels labels_predict = perceptron.apply(features_test)
 #![train_and_apply]
 
 #![extract_weights]
-RealVector weights = perceptron.get_w()
-real bias = perceptron.get_bias()
+RealVector weights = perceptron.get_real_vector("w")
+real bias = perceptron.get_real("bias")
 #![extract_weights]
 
 #![evaluate_accuracy]

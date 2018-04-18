@@ -82,8 +82,8 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	auto nystrom=some<CKRRNystrom>(tau, num_vectors, kernel, labels);
 	auto krr=some<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
-	nystrom->train();
-	krr->train();
+	nystrom->train(features);
+	krr->train(features);
 
 	SGVector<float64_t> alphas=nystrom->get_alphas();
 	SGVector<float64_t> alphas_krr=krr->get_alphas();
@@ -146,8 +146,8 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	auto nystrom=some<CKRRNystrom>(tau, num_basis_rkhs, kernel, labels);
 	auto krr=some<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
-	nystrom->train();
-	krr->train();
+	nystrom->train(features);
+	krr->train(features);
 
 	auto result = Some<CRegressionLabels>::from_raw(
 	    nystrom->apply_regression(test_features));

@@ -17,15 +17,27 @@
 using namespace shogun;
 
 CPerceptron::CPerceptron()
-: CLinearMachine(), learn_rate(0.1), max_iter(1000), m_initialize_hyperplane(true)
+: CLinearMachine()
 {
+	init();
 }
 
 CPerceptron::CPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine(), learn_rate(0.1), max_iter(1000), m_initialize_hyperplane(true)
+: CLinearMachine()
 {
+	init();
 	set_features(traindat);
 	set_labels(trainlab);
+}
+
+void CPerceptron::init()
+{
+	max_iter = 1000;
+	learn_rate = 0.1;
+	m_initialize_hyperplane = true;
+	SG_ADD(&max_iter, "initialize_hyperplane", "Whether to initialize hyperplane.", MS_AVAILABLE);
+	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", MS_AVAILABLE);
+	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
 }
 
 CPerceptron::~CPerceptron()

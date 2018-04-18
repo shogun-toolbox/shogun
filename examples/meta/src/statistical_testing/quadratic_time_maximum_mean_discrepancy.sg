@@ -2,8 +2,8 @@ CSVFile f_features_p("../../data/two_sample_test_gaussian.dat")
 CSVFile f_features_q("../../data/two_sample_test_laplace.dat")
 
 #![create_features]
-RealFeatures features_p(f_features_p)
-RealFeatures features_q(f_features_q)
+Features features_p = features(f_features_p)
+Features features_q = features(f_features_q)
 #![create_features]
 
 #![create_instance]

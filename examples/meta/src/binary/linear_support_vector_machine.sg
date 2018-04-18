@@ -4,8 +4,8 @@ CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat"
 CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 BinaryLabels labels_train(f_labels_train)
 BinaryLabels labels_test(f_labels_test)
 #![create_features]
@@ -16,19 +16,17 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-LibLinear svm(C, features_train, labels_train)
-svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
-svm.set_epsilon(epsilon)
+Machine svm = machine("LibLinear", C1=C, C2=C, labels=labels_train, epsilon=epsilon, liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC, use_bias=True)
 #![create_instance]
 
 #![train_and_apply]
-svm.train()
+svm.train(features_train)
 BinaryLabels labels_predict = svm.apply_binary(features_test)
 #![train_and_apply]
 
 #![extract_weights_bias]
-RealVector w = svm.get_w()
-real b = svm.get_bias()
+RealVector w = svm.get_real_vector("w")
+real b = svm.get_real("bias")
 #![extract_weights_bias]
 
 #![evaluate_accuracy]

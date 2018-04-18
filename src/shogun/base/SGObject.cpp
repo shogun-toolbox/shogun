@@ -35,10 +35,16 @@
 #include <unordered_map>
 #include <memory>
 
+#include <shogun/machine/Machine.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
+
 
 namespace shogun
 {
@@ -1030,6 +1036,8 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 	    value, "Cannot put %s::%s, no object provided.\n", get_name(),
 	    name.c_str());
 
+	if (put_sgobject_type_dispatcher<CMachine>(name, value))
+		return;
 	if (put_sgobject_type_dispatcher<CKernel>(name, value))
 		return;
 	if (put_sgobject_type_dispatcher<CDistance>(name, value))
@@ -1037,6 +1045,12 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 	if (put_sgobject_type_dispatcher<CFeatures>(name, value))
 		return;
 	if (put_sgobject_type_dispatcher<CLabels>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CECOCEncoder>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CECOCDecoder>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CMulticlassStrategy>(name, value))
 		return;
 
 	SG_ERROR(
@@ -1056,6 +1070,7 @@ CSGObject* CSGObject::get(const std::string& name)
 		return result;
 	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
 		return result;
+
 
 	SG_ERROR(
 	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
