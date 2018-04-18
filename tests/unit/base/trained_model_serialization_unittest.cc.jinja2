@@ -121,10 +121,9 @@ TEST_F(TrainedModelSerializationTest, {{class}})
 	auto machine=some<{{class}}>();
 	load_data(machine->get_machine_problem_type());
 
-	machine->set_features(train_feats);
 	machine->set_labels(train_labels);
 
-	machine->train();
+	machine->train(train_feats);
 
 	/* to avoid serialization of the data */
 //	machine->set_features(NULL);
@@ -159,11 +158,10 @@ TEST_F(TrainedModelSerializationTest, {{test_name}})
 	load_data(machine->get_machine_problem_type());
 
 	CGaussianKernel *kernel=new CGaussianKernel(2.0);
-	kernel->init(train_feats, train_feats);
 	machine->set_kernel(kernel);
 	machine->set_labels(train_labels);
 
-	machine->train();
+	machine->train(train_feats);
 
 	auto predictions=wrap<CLabels>(machine->apply(test_feats));
 
