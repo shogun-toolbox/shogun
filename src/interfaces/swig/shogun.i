@@ -144,19 +144,61 @@ namespace shogun
 	}
 	
 #ifdef SWIGJAVA
+	// templated since otherwise SWIG doesn't match the typemap for SGMatrix
+	// for the DoubleMatrix hack, X = float64_t and T = SGMatrix<X>
 	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
-	void put_vector_or_matrix_dispatcher(const std::string& name, T value)
+	void put_vector_or_matrix_from_double_matrix_dispatcher(const std::string& name, T mat)
 	{
-		Tag<SGVector<X>> tag_vec(name);
-		Tag<T> tag_mat(name);
+		Tag<T> tag_input_mat(name);
+		Tag<SGVector<X>> tag_vec_X(name);
+		Tag<SGVector<int32_t>> tag_vec_int32(name);
+		Tag<SGVector<bool>> tag_vec_bool(name);
 	
-		if ((value.num_rows==1 || value.num_cols==1) && $self->has(tag_vec))
+		// simplest case: types are as given
+		if ($self->has(tag_input_mat))
 		{
-			SGVector<X> vec(value.data(), value.size(), false);
-			$self->put(tag_vec, vec);
+			$self->put(tag_input_mat, mat);
+			return;
 		}
+	
+		// tag didnt match: either it was vector, or has different inner type
+	
+		// definitely a matrix, might need to convert values
+		if (mat.num_rows>1 && mat.num_cols>1)
+		{
+			// TODO once needed
+		}
+		// maybe input was vector
 		else
-			$self->put(tag_mat, value);
+		{
+			// vector with correct inner type
+			if ($self->has(tag_vec_X))
+			{
+				SGVector<X> vec(mat.data(), mat.size(), false);
+				$self->put(tag_vec_X, vec);
+				return;
+			}
+			// below are vectors which needs to be converted
+			else if ($self->has(tag_vec_int32))
+			{
+				SGVector<int32_t> vec(mat.size());
+				std::transform(mat.begin(), mat.end(), vec.begin(),
+						[](X e) { return (int32_t)e; });
+				$self->put(tag_vec_int32, vec);
+				return;
+			}
+			else if ($self->has(tag_vec_bool))
+			{
+				SGVector<bool> vec(mat.size());
+				std::transform(mat.begin(), mat.end(), vec.begin(),
+						[](X e) { return (bool)e; });
+				$self->put(tag_vec_bool, vec);
+				return;
+			}
+		}
+		
+		// final fall-back in case user did a mistake
+		$self->put(tag_input_mat, mat);
 	}
 	
 	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
@@ -177,19 +219,24 @@ namespace shogun
 %template(put) CSGObject::put_scalar_dispatcher<bool, bool>;
 
 
+%template(put) CSGObject::put<SGVector<bool>, SGVector<bool>>;
 #ifndef SWIGJAVA
+%template(put) CSGObject::put<SGVector<int32_t>, SGVector<int32_t>>;
 %template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
 %template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
 #else // SWIGJAVA
-%template(put) CSGObject::put_vector_or_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(put) CSGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #endif // SWIGJAVA
 
 %template(get_real) CSGObject::get<float64_t, void>;
+%template(get_int) CSGObject::get<int32_t, void>;
 %template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
 #ifndef SWIGJAVA
 %template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
+%template(get_int_vector) CSGObject::get<SGVector<int32_t>, void>;
 #else // SWIGJAVA
 %template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+%template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
 
 } // namespace shogun

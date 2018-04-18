@@ -94,6 +94,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	ASSERT(m_features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
 	ASSERT(m_multiclass_strategy)
+	init_strategy();
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();

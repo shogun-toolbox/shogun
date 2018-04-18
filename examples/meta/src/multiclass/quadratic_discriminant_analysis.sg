@@ -4,25 +4,23 @@ CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat"
 CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
 MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_instance]
-QDA qda(features_train, labels_train, 0.0001, True)
+Machine qda = machine("QDA", labels=labels_train, m_tolerance=0.0001, m_store_covs=True)
 #![create_instance]
 
 #![train_and_apply]
-qda.train()
+qda.train(features_train)
 MulticlassLabels labels_predict = qda.apply_multiclass(features_test)
 #![train_and_apply]
 
 #![extract_mean_and_cov]
-int classlabel = 1
-RealVector m = qda.get_mean(classlabel)
-RealMatrix c = qda.get_cov(classlabel)
+RealMatrix m = qda.get_real_matrix("m_means")
 #![extract_mean_and_cov]
 
 #![evaluate_accuracy]

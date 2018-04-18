@@ -20,6 +20,9 @@ namespace shogun
 class CECOCRandomDenseEncoder: public CECOCEncoder
 {
 public:
+	/** Default constructor */
+	CECOCRandomDenseEncoder();
+
     /** constructor
      * @param maxiter max number of iterations
      * @param codelen code length, if set to zero, will be computed automatically via get_default_code_length
@@ -27,7 +30,7 @@ public:
      *
      * @see get_default_code_length
      */
-    CECOCRandomDenseEncoder(int32_t maxiter=10000, int32_t codelen=0, float64_t pposone=0.5);
+    CECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone);
 
     /** destructor */
     virtual ~CECOCRandomDenseEncoder() {}

@@ -75,6 +75,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	init_linear_term();
 
 	if (data)
 	{

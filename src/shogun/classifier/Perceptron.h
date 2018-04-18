@@ -71,6 +71,9 @@ class CPerceptron : public CLinearMachine
 		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
+		/** registers and initializes parameters */
+			void init();
+
 		/** train classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or

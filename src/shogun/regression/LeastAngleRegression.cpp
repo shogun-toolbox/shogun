@@ -23,14 +23,31 @@ using namespace Eigen;
 using namespace shogun;
 using namespace std;
 
-CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
-	CLinearMachine(), m_lasso(lasso),
-	m_max_nonz(0), m_max_l1_norm(0)
+
+CLeastAngleRegression::CLeastAngleRegression() :
+	CLinearMachine()
 {
-	set_epsilon(CMath::MACHINE_EPSILON);
+	init();
+}
+
+CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
+	CLinearMachine()
+{
+	init();
+
+	m_lasso = lasso;
+}
+
+void CLeastAngleRegression::init()
+{
+	m_lasso = true;
+	m_max_nonz = 0;
+	m_max_l1_norm = 0;
+	m_epsilon = CMath::MACHINE_EPSILON;
 	SG_ADD(&m_epsilon, "epsilon", "Epsilon for early stopping", MS_AVAILABLE);
 	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
 	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
+	SG_ADD(&m_lasso, "lasso", "Max l1-norm of estimator", MS_AVAILABLE);
 }
 
 CLeastAngleRegression::~CLeastAngleRegression()

@@ -60,6 +60,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
+	init_strategy();
 
 	m_num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_vectors = m_labels->get_num_labels();

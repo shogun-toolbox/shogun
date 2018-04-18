@@ -43,6 +43,72 @@ using namespace internal;
 using std::unique_ptr;
 using std::shared_ptr;
 
+namespace shogun
+{
+EStatisticType statistic_type(machine_int_t method)
+{
+	if (method == ST_UNBIASED_FULL)
+		return ST_UNBIASED_FULL;
+	else if (method == ST_UNBIASED_INCOMPLETE)
+		return ST_UNBIASED_INCOMPLETE;
+	else if (method == ST_BIASED_FULL)
+		return ST_BIASED_FULL;
+	else
+	{
+		SG_SERROR("Unknown statistic type %d.\n", method);
+		return ST_UNBIASED_FULL;
+	}
+}
+
+EVarianceEstimationMethod variance_estimation_method(machine_int_t method)
+{
+	if (method == VEM_DIRECT)
+		return VEM_DIRECT;
+	else if (method == VEM_PERMUTATION)
+		return VEM_PERMUTATION;
+	else
+	{
+		SG_SERROR("Unknown variance estimation method %d.\n", method);
+		return VEM_PERMUTATION;
+	}
+}
+
+ENullApproximationMethod null_approximation_method(machine_int_t method)
+{
+	if (method == NAM_PERMUTATION)
+		return NAM_PERMUTATION;
+	else if (method == NAM_MMD1_GAUSSIAN)
+		return NAM_MMD1_GAUSSIAN;
+	else if (method == NAM_MMD2_SPECTRUM)
+		return NAM_MMD2_SPECTRUM;
+	else if (method == NAM_MMD2_GAMMA)
+		return NAM_MMD2_GAMMA;
+	else
+	{
+		SG_SERROR("Unknown null approximation method %d.\n", method);
+		return NAM_MMD2_GAMMA;
+	}
+}
+
+
+EKernelSelectionMethod kernel_selection_method(machine_int_t method)
+{
+	if (method == KSM_MEDIAN_HEURISTIC)
+		return KSM_MEDIAN_HEURISTIC;
+	else if (method == KSM_MAXIMIZE_MMD)
+		return KSM_MAXIMIZE_MMD;
+	else if (method == KSM_MAXIMIZE_POWER)
+		return KSM_MAXIMIZE_POWER;
+	else if (method == KSM_CROSS_VALIDATION)
+		return KSM_CROSS_VALIDATION;
+	else
+	{
+		SG_SERROR("Unknown kernel selection method %d.\n", method);
+		return KSM_AUTO;
+	}
+}
+}
+
 struct CMMD::Self
 {
 	Self()
@@ -86,16 +152,16 @@ CMMD::~CMMD()
 	cleanup();
 }
 
-void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted)
+void CMMD::set_kernel_selection_strategy(machine_int_t method, bool weighted)
 {
-	self->strategy->use_method(method)
+	self->strategy->use_method(kernel_selection_method(method))
 		.use_weighted(weighted);
 }
 
-void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs,
+void CMMD::set_kernel_selection_strategy(machine_int_t method, index_t num_runs,
 	index_t num_folds, float64_t alpha)
 {
-	self->strategy->use_method(method)
+	self->strategy->use_method(kernel_selection_method(method))
 		.use_num_runs(num_runs)
 		.use_num_folds(num_folds)
 		.use_alpha(alpha);
@@ -136,9 +202,9 @@ index_t CMMD::get_num_null_samples() const
 	return self->num_null_samples;
 }
 
-void CMMD::set_statistic_type(EStatisticType stype)
+void CMMD::set_statistic_type(machine_int_t stype)
 {
-	self->stype=stype;
+	self->stype=statistic_type(stype);
 }
 
 EStatisticType CMMD::get_statistic_type() const
@@ -146,9 +212,9 @@ EStatisticType CMMD::get_statistic_type() const
 	return self->stype;
 }
 
-void CMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
+void CMMD::set_null_approximation_method(machine_int_t nmethod)
 {
-	self->null_approximation_method=nmethod;
+	self->null_approximation_method=null_approximation_method(nmethod);
 }
 
 ENullApproximationMethod CMMD::get_null_approximation_method() const

@@ -3,7 +3,7 @@ CSVFile f_feats("../../data/ica_2_sources.dat")
 Math:init_random(1)
 
 #![create_features]
-RealFeatures features(f_feats)
+Features feats = features(f_feats)
 #![create_features]
 
 #![set_parameters]
@@ -13,12 +13,11 @@ ica.set_tol(0.00001)
 #![set_parameters]
 
 #![apply_convert]
-Features converted = ica.apply(features)
+Features converted = ica.apply(feats)
 #![apply_convert]
 
 #![extract]
 RealMatrix mixing_matrix = ica.get_mixing_matrix()
-RealFeatures casted = RealFeatures:obtain_from_generic(converted)
-RealMatrix unmixed_signal = casted.get_feature_matrix()
+RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
 #![extract]
 

@@ -65,6 +65,8 @@ class CAveragedPerceptron : public CLinearMachine
 		virtual const char* get_name() const { return "AveragedPerceptron"; }
 
 protected:
+		/** registers and initializes parameters */
+		void init();
 
 		/** train classifier
 		 *

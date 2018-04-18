@@ -69,6 +69,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	ASSERT(m_features)
 	ASSERT(m_labels)
 	ASSERT(m_multiclass_strategy)
+	init_strategy();
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();

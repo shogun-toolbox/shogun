@@ -21,10 +21,10 @@ matrix[0,1] = 0.1
 matrix[1,0] = 0.2
 matrix[1,1] = 0.4
 
-RealFeatures features()
-features.put("feature_matrix", matrix)
-RealMatrix matrix2 = features.get_real_matrix("feature_matrix")
-features.put("feature_matrix", matrix2)
+# TODO: replace this with another class that has matrix parameters as features are immutable
+#Features feats = features("DenseFeatures", enum EPrimitiveType.PT_FLOAT64, feature_matrix=matrix)
+#RealMatrix matrix2 = feats.get_real_matrix("feature_matrix")
+#feats.put("feature_matrix", matrix2)
 
 EuclideanDistance distance()
 knn.put("distance", distance)
