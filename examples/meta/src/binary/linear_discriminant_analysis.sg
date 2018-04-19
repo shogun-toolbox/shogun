@@ -1,13 +1,13 @@
-CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
-CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
-CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
-CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-BinaryLabels labels_train(f_labels_train)
-BinaryLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
@@ -16,17 +16,15 @@ Machine lda = machine("LDA", labels=labels_train)
 
 #![train_and_apply]
 lda.train(features_train)
-BinaryLabels labels_predict = lda.apply_binary(features_test)
+Labels labels_predict = lda.apply(features_test)
+RealVector labels = labels_predict.get_real_vector("labels")
 #![train_and_apply]
 
 #![extract_weights]
-RealVector w = lda.get_real_vector("w")
+RealVector weights = lda.get_real_vector("w")
 #![extract_weights]
 
 #![evaluate_accuracy]
-AccuracyMeasure eval()
+Evaluation eval = evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
-
-#additional integration testing variables
-RealVector output = labels_predict.get_labels()
