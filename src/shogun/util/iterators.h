@@ -47,6 +47,7 @@ namespace shogun
 			using iterator_category = std::random_access_iterator_tag;
 
 			explicit RandomIterator(pointer ptr) : m_ptr(ptr) {}
+			RandomIterator() : m_ptr(nullptr) {}
 
 			RandomIterator& operator++() { m_ptr++; return *this; }
 			RandomIterator operator++(int) { RandomIterator retval = *this; m_ptr++; return retval;}
