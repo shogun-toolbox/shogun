@@ -43,6 +43,7 @@
 #include <string.h>
 #include <string>
 #include <typeinfo>
+#include <type_traits>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
 #endif
