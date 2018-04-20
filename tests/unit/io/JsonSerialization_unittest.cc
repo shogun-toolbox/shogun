@@ -1,10 +1,12 @@
+#include <gtest/gtest.h>
+
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 
 #include <algorithm>
 #include <iostream>
 
-#include <gtest/gtest.h>
+#include "base/MockObject.h"
 
 using namespace shogun;
 
@@ -34,8 +36,14 @@ private:
 
 TEST(JsonSerialization, basic_serializer)
 {
+	auto obj = some<CMockObject>();
+	auto child = some<CMockObject>();
+	obj->put("watched_int", 10);
+
 	auto serializer = some<CJsonSerializer>();
 	auto stream = some<CDummyOutputStream>();
 	serializer->attach(stream);
-	serializer->write(serializer);
+	serializer->write(obj);
+
+	//EXPECT_EQ();
 }

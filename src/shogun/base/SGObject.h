@@ -33,6 +33,8 @@
  */
 namespace shogun
 {
+class CDeserializer;
+class CSerializer;
 class RefCount;
 class SGIO;
 class Parallel;
@@ -215,6 +217,10 @@ public:
 	 *	@param prefix prefix for members
 	 */
 	virtual void print_serializable(const char* prefix="");
+
+
+	virtual void serialize(CSerializer* s) const;
+	virtual void deserialize(CDeserializer* ds);
 
 	/** Save this object to file.
 	 *

@@ -2,7 +2,7 @@
 #define __NULL_FILE_SYSTEM_H__
 
 #include <shogun/io/fs/FileSystem.h>
-#include <shogun/lib/ShogunNotImplementedException.h>
+#include <shogun/lib/exception/ShogunNotImplementedException.h>
 
 namespace shogun
 {

@@ -13,10 +13,10 @@ namespace shogun
 	{
 	public:
 		CJsonSerializer();
-		virtual ~CJsonSerializer();
-		virtual void write(Some<CSGObject> object);
+		~CJsonSerializer() override;
+		void write(Some<CSGObject> object) override;
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "JsonSerializer";
 		}
