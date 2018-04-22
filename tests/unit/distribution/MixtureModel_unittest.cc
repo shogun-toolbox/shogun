@@ -28,10 +28,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/features/DenseFeatures.h>
+#include <shogun/base/some.h>
 #include <shogun/distributions/MixtureModel.h>
 #include <shogun/distributions/Gaussian.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -48,20 +49,20 @@ TEST(MixtureModel,gaussian_mixture_model)
 	for (int32_t i=100;i<400;i++)
 		data(0,i)=CMath::randn_double()+10;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=some<CDenseFeatures<float64_t>>(data);
 
-	CDynamicObjectArray* comps=new CDynamicObjectArray();
+	auto comps=some<CDynamicObjectArray>();
 	SGVector<float64_t> mean1(1);
 	mean1[0]=5;
 	SGMatrix<float64_t> cov1(1,1);
 	cov1(0,0)=5;
-	CGaussian* g1=new CGaussian(mean1,cov1,DIAG);
+	auto g1=some<CGaussian>(mean1,cov1,DIAG);
 
 	SGVector<float64_t> mean2(1);
 	mean2[0]=4;
 	SGMatrix<float64_t> cov2(1,1);
 	cov2(0,0)=3;
-	CGaussian* g2=new CGaussian(mean2,cov2,DIAG);
+	auto g2=some<CGaussian>(mean2,cov2,DIAG);
 
 	comps->push_back(g1);
 	comps->push_back(g2);
@@ -70,7 +71,7 @@ TEST(MixtureModel,gaussian_mixture_model)
 	weights[0]=0.5;
 	weights[1]=0.5;
 
-	CMixtureModel* mix=new CMixtureModel(comps,weights);
+	auto mix=some<CMixtureModel>(comps,weights);
 	mix->train(feats);
 
 	CDistribution* distr = comps->get_element(0)->as<CDistribution>();
@@ -82,9 +83,6 @@ TEST(MixtureModel,gaussian_mixture_model)
 	EXPECT_NEAR(m[0],9.863760378,eps);
 	EXPECT_NEAR(cov(0,0),0.956568199,eps);
 
-	SG_UNREF(outg);
-	SG_UNREF(distr);
-
 	distr = comps->get_element(1)->as<CDistribution>();
 	outg = distr->as<CGaussian>();
 	m=outg->get_mean();
@@ -92,9 +90,6 @@ TEST(MixtureModel,gaussian_mixture_model)
 
 	EXPECT_NEAR(m[0],-0.208122793,eps);
 	EXPECT_NEAR(cov(0,0),1.095106568,eps);
-
-	SG_UNREF(outg);
-	SG_UNREF(mix)
 }
 
 #endif /* HAVE_LAPACK */
