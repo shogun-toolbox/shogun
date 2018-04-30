@@ -370,32 +370,6 @@ public:
 		}
 	}
 
-#ifndef SWIG
-	template <typename T>
-	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
-	{
-		if (dynamic_cast<T*>(value))
-		{
-			put(Tag<T*>(name), (T*)value);
-			return true;
-		}
-		return false;
-	}
-
-	template <typename T>
-	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
-	{
-		if (has<T*>(name))
-		{
-			T* result = get<T*>(name);
-			SG_REF(result)
-			return (CSGObject*)result;
-		}
-
-		return nullptr;
-	}
-#endif // SWIG
-
 	/** Untyped setter for an object class parameter, identified by a name.
 	 * Will attempt to convert passed object to appropriate type.
 	 *
@@ -539,6 +513,30 @@ public:
 	void list_observable_parameters();
 
 protected:
+	template <typename T>
+	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
+	{
+		if (dynamic_cast<T*>(value))
+		{
+			put(Tag<T*>(name), (T*)value);
+			return true;
+		}
+		return false;
+	}
+
+	template <typename T>
+	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	{
+		if (has<T*>(name))
+		{
+			T* result = get<T*>(name);
+			SG_REF(result)
+			return (CSGObject*)result;
+		}
+
+		return nullptr;
+	}
+
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
