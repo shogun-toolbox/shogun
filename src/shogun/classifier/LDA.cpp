@@ -49,7 +49,7 @@ void CLDA::init()
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",
 	    "Method used for LDA calculation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", MS_AVAILABLE);
 	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm", MS_NOT_AVAILABLE);
 }
 
@@ -105,16 +105,16 @@ template <typename ST>
 bool CLDA::solver_svd()
 {
 	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
-  auto labels = multiclass_labels(m_labels);
-  REQUIRE(labels->get_num_classes()==2, "Number of classes exceeds 2 for binary classifier: %d provided\n", labels->get_num_classes())
+	auto labels = multiclass_labels(m_labels);
+	REQUIRE(
+	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
+	    labels->get_num_classes())
 
 	// keep just one dimension to do binary classification
 	const index_t projection_dim = 1;
 	auto solver = std::unique_ptr<LDACanVarSolver<ST>>(
 	    new LDACanVarSolver<ST>(
-	        dense_feat,
-	        labels,
-	        projection_dim, m_gamma, m_bdc_svd));
+	        dense_feat, labels, projection_dim, m_gamma, m_bdc_svd));
 
 	SGVector<ST> w_st(solver->get_eigenvectors());
 
@@ -140,15 +140,14 @@ template <typename ST>
 bool CLDA::solver_classic()
 {
 	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
-  auto labels = multiclass_labels(m_labels);
-  REQUIRE(labels->get_num_classes()==2, "Number of classes exceeds 2 for binary classifier: %d provided\n", labels->get_num_classes())
-  index_t num_feat = dense_feat->get_num_features();
+	auto labels = multiclass_labels(m_labels);
+	REQUIRE(
+	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
+	    labels->get_num_classes())
+	index_t num_feat = dense_feat->get_num_features();
 
 	auto solver = std::unique_ptr<LDASolver<ST>>(
-	    new LDASolver<ST>(
-	        dense_feat,
-          labels,
-	        m_gamma));
+	    new LDASolver<ST>(dense_feat, labels, m_gamma));
 
 	auto class_mean = solver->get_class_mean();
 	auto class_count = solver->get_class_count();

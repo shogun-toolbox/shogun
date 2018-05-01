@@ -96,33 +96,23 @@ typedef ::testing::Types<float32_t, float64_t, floatmax_t> FloatTypes;
 TYPED_TEST_CASE(LDATest, FloatTypes);
 
 template <typename ST>
-void test_with_method(SGVector<ST> &projection, SGVector<ST> &w, ELDAMethod method)
+void test_with_method(
+    SGVector<ST>& projection, SGVector<ST>& w, ELDAMethod method)
 {
 	SGVector<float64_t> lab;
 	SGMatrix<float64_t> feat;
 
-	CBinaryLabels* labels;
-	CDenseFeatures<float64_t>* features;
-
 	generate_test_data<float64_t>(lab, feat);
 
-	labels = new CBinaryLabels(lab);
-	features = new CDenseFeatures<float64_t>(feat);
+	auto features = some<CDenseFeatures<float64_t>>(feat);
+	auto labels = some<CBinaryLabels>(lab);
 
-	SG_REF(labels);
-	SG_REF(features);
+	auto lda = some<CLDA>(0, features, labels, method);
+	lda->train();
 
-	CLDA lda(0, features, labels, method);
-	lda.train();
-
-	CRegressionLabels* results=(lda.apply_regression(features));
-	SG_REF(results);
-	projection=results->get_labels();
-	w = lda.get_w();
-	SG_UNREF(results);
-
-	SG_UNREF(features);
-	SG_UNREF(labels);
+	auto results = lda->apply_regression(features);
+	projection = results->get_labels();
+	w = lda->get_w();
 }
 
 template <typename ST>
@@ -206,27 +196,15 @@ TEST(LDA, DISABLED_CheckProjection_SVD)
 // label type exception test
 TEST(LDA, num_classes_in_labels_exception)
 {
-	SGVector<float64_t> lab;
-	SGMatrix<float64_t> feat;
-
-	CDenseLabels* labels;
-	CDenseFeatures<float64_t>* features;
-
-	generate_test_data<float64_t>(lab, feat);
-	labels = new CDenseLabels();
-	lab[0]=2;
+	SGVector<float64_t> lab{1, -1, 2};
+	SGMatrix<float64_t> feat(1, 3);
+	auto labels = some<CDenseLabels>();
 	labels->set_labels(lab);
-	features = new CDenseFeatures<float64_t>(feat);
-
-	SG_REF(labels);
-	SG_REF(features);
-
-	CLDA lda(0, features, labels, SVD_LDA);
-
-	EXPECT_THROW(lda.train(), ShogunException);
-
-	SG_UNREF(features);
-	SG_UNREF(labels);
+	auto features = some<CDenseFeatures<float64_t>>(feat);
+	auto lda = some<CLDA>(0, features, labels, SVD_LDA);
+	// should throw an incorrect number of classes exception (expected value is
+	// 2)
+	EXPECT_THROW(lda->train(), ShogunException);
 }
 
 //FLD template testing
@@ -238,5 +216,5 @@ TYPED_TEST(LDATest, check_eigenvectors_fld)
 //SVD template testing
 TYPED_TEST(LDATest, check_eigenvectors_svd)
 {
-check_eigenvectors_svd<TypeParam>();
+	check_eigenvectors_svd<TypeParam>();
 }
