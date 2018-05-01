@@ -72,8 +72,9 @@ TEST(LinearTimeMMD, biased_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
@@ -116,8 +117,9 @@ TEST(LinearTimeMMD, unbiased_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
@@ -160,8 +162,9 @@ TEST(LinearTimeMMD, incomplete_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
@@ -204,8 +207,9 @@ TEST(LinearTimeMMD, biased_different_null_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
@@ -248,8 +252,9 @@ TEST(LinearTimeMMD, unbiased_different_null_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
@@ -292,8 +297,9 @@ TEST(LinearTimeMMD, compute_variance_null)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -331,8 +337,9 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -371,8 +378,9 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -411,8 +419,9 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);

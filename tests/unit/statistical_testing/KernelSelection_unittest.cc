@@ -55,7 +55,9 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -91,7 +93,9 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
@@ -127,7 +131,9 @@ TEST(
 	auto feats_p = gen_p->get_streamed_features(m);
 	auto feats_q = gen_q->get_streamed_features(n);
 
-	auto mmd = some<CQuadraticTimeMMD>(feats_p, feats_q);
+	auto mmd = some<CQuadraticTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i = 0, sigma = -5; i < num_kernels; ++i, sigma += 1)
 	{
@@ -155,7 +161,9 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -194,7 +202,9 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -227,7 +237,9 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -260,7 +272,9 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -305,7 +319,9 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_null_approximation_method(NAM_PERMUTATION);
 	mmd->set_num_null_samples(10);
@@ -344,7 +360,9 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CLinearTimeMMD>(feats_p, feats_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
@@ -375,7 +393,9 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
@@ -407,7 +427,9 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
+	auto mmd=some<CLinearTimeMMD>();
+	mmd->set_p(gen_p);
+	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);

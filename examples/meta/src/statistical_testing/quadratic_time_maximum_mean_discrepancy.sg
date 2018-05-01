@@ -7,9 +7,11 @@ Features features_q = features(f_features_q)
 #![create_features]
 
 #![create_instance]
-QuadraticTimeMMD mmd(features_p, features_q)
-GaussianKernel kernel(10, 1)
-mmd.set_kernel(kernel)
+QuadraticTimeMMD mmd()
+mmd.set_p(features_p)
+mmd.set_q(features_q)
+Kernel k = kernel("GaussianKernel", log_width = 1.0)
+mmd.set_kernel(k)
 real alpha = 0.05
 #![create_instance]
 

@@ -52,13 +52,6 @@ CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest()
 	self=std::unique_ptr<Self>(new Self(TwoSampleTest::num_kernels));
 }
 
-CTwoSampleTest::CTwoSampleTest(CFeatures* samples_from_p, CFeatures* samples_from_q) : CTwoDistributionTest()
-{
-	self=std::unique_ptr<Self>(new Self(TwoSampleTest::num_kernels));
-	set_p(samples_from_p);
-	set_q(samples_from_q);
-}
-
 CTwoSampleTest::~CTwoSampleTest()
 {
 }

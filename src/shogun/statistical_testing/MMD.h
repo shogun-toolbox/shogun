@@ -123,14 +123,6 @@ public:
 	/** Default constructor */
 	CMMD();
 
-	/**
-	 * Convenience constructor that initializes the samples from two distributions.
-	 *
-	 * @param samples_from_p Samples from \f$p\f$
-	 * @param samples_from_q Samples from \f$q\f$
-	 */
-	CMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
 	/** Destructor */
 	virtual ~CMMD();
 

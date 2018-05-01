@@ -80,8 +80,9 @@ TEST(QuadraticTimeMMD, biased_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_kernel(kernel);
 
@@ -123,8 +124,9 @@ TEST(QuadraticTimeMMD, unbiased_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_kernel(kernel);
 
@@ -166,8 +168,9 @@ TEST(QuadraticTimeMMD, incomplete_same_num_samples)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	mmd->set_kernel(kernel);
 
@@ -198,8 +201,9 @@ TEST(QuadraticTimeMMD, unbiased_different_num_samples)
 	// shoguns kernel width is different
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_kernel(kernel);
 
@@ -231,8 +235,9 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 	// shoguns kernel width is different
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_kernel(kernel);
 
@@ -272,7 +277,9 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	float64_t var=mmd->compute_variance_h0();
@@ -308,7 +315,9 @@ TEST(QuadraticTimeMMD, compute_variance_h1)
 
 	CGaussianKernel* kernel=new CGaussianKernel(10, sigma*sigma*2);
 
-	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 	float64_t var=mmd->compute_variance_h1();
 	EXPECT_NEAR(var, 0.017511, 1E-6);
@@ -334,16 +343,17 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
 	// stream some data from generator
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	index_t num_null_samples=10;
@@ -373,16 +383,17 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
 	// stream some data from generator
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	index_t num_null_samples=10;
@@ -412,16 +423,17 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
 	// stream some data from generator
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	index_t num_null_samples=10;
@@ -451,16 +463,17 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
 	// stream some data from generator
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	index_t num_null_samples=10;
@@ -497,14 +510,16 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
 
 	index_t num_null_samples=10;
@@ -536,10 +551,12 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
@@ -574,10 +591,12 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
@@ -612,11 +631,14 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
+
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
@@ -654,16 +676,20 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* feat_p=gen_p->get_streamed_features(m);
-	CFeatures* feat_q=gen_q->get_streamed_features(n);
+	CFeatures* features_p=gen_p->get_streamed_features(m);
+	CFeatures* features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	auto mmd=some<CQuadraticTimeMMD>();
+	mmd->set_p(features_p);
+	mmd->set_q(features_q);
 	mmd->set_num_null_samples(num_null_samples);
+
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->multikernel()->add_kernel(new CGaussianKernel(cache_size, tau));
 	}
+
 	sg_rand->set_seed(12345);
 	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
 	mmd->multikernel()->cleanup();

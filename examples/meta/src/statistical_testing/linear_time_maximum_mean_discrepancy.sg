@@ -3,12 +3,12 @@ GaussianBlobsDataGenerator features_q()
 
 #![create_instance]
 LinearTimeMMD mmd()
-GaussianKernel kernel(10, 1)
-mmd.set_kernel(kernel)
 mmd.set_p(features_p)
 mmd.set_q(features_q)
 mmd.set_num_samples_p(1000)
 mmd.set_num_samples_q(1000)
+Kernel k = kernel("GaussianKernel", log_width = 1.0)
+mmd.set_kernel(k)
 real alpha = 0.05
 #![create_instance]
 
