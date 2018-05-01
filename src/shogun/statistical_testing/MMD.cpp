@@ -134,11 +134,6 @@ CMMD::CMMD() : CTwoSampleTest()
 	init();
 }
 
-CMMD::CMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CTwoSampleTest(samples_from_p, samples_from_q)
-{
-	init();
-}
-
 void CMMD::init()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)

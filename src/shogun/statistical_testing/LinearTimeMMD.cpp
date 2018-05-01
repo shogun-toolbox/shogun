@@ -46,12 +46,6 @@ CLinearTimeMMD::CLinearTimeMMD() : CStreamingMMD()
 {
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CStreamingMMD()
-{
-	set_p(samples_from_p);
-	set_q(samples_from_q);
-}
-
 CLinearTimeMMD::~CLinearTimeMMD()
 {
 }

@@ -61,14 +61,6 @@ public:
 	/** Default constructor */
 	CTwoSampleTest();
 
-	/**
-	 * Convenience constructor that initializes the samples from two distributions.
-	 *
-	 * @param samples_from_p Samples from \f$p\f$
-	 * @param samples_from_q Samples from \f$q\f$
-	 */
-	CTwoSampleTest(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
 	/** Destructor */
 	virtual ~CTwoSampleTest();
 
