@@ -184,11 +184,6 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
 	init();
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD(samples_from_p, samples_from_q)
-{
-	init();
-}
-
 void CQuadraticTimeMMD::init()
 {
 	self=unique_ptr<Self>(new Self(*this));

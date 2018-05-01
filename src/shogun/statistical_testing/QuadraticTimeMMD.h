@@ -102,15 +102,6 @@ public:
 	/** Default constructor */
 	CQuadraticTimeMMD();
 
-	/**
-	 * Convenience constructor. Initializes the features representing samples
-	 * from both the distributions.
-	 *
-	 * @param samples_from_p Samples from p.
-	 * @param samples_from_q Samples from q.
-	 */
-	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
 	/** Destructor */
 	virtual ~CQuadraticTimeMMD();
 
