@@ -378,6 +378,14 @@ public:
 	 */
 	void put(const std::string& name, CSGObject* value);
 
+	/** Untyped appender for an array object class parameter, identified by a
+	 * name.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
+	 */
+	void add(const std::string& name, CSGObject* value);
+
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Will attempt to get specified object of appropriate internal type.
 	 *
@@ -398,6 +406,13 @@ public:
 	void put(const std::string& name, Some<T> value)
 	{
 		put(name, (CSGObject*)(value.get()));
+	}
+
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
+	void add(const std::string& name, Some<T> value)
+	{
+		add(name, (CSGObject*)(value.get()));
 	}
 #endif // SWIG
 

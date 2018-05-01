@@ -741,8 +741,7 @@ void CCombinedKernel::init()
 	kernel_array=new CDynamicObjectArray();
 	SG_REF(kernel_array);
 
-	SG_ADD((CSGObject**) &kernel_array, "kernel_array", "Array of kernels.",
-	    MS_AVAILABLE);
+	SG_ADD(&kernel_array, "kernel_array", "Array of kernels.", MS_AVAILABLE);
 
 	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
 		 "Support vector index.");
