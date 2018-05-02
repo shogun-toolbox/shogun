@@ -1060,6 +1060,49 @@ void CSGObject::put(const std::string& name, CSGObject* value)
 	    self->map[BaseTag(name)].get_value().type().c_str());
 }
 
+void CSGObject::add(const std::string& name, CSGObject* value)
+{
+	REQUIRE(
+	    value, "Cannot add to %s::%s, no object provided.\n", get_name(),
+	    name.c_str());
+
+	Tag<CDynamicObjectArray*> tag_array_sg(name);
+	if (has(tag_array_sg))
+	{
+		auto array = get(tag_array_sg);
+		if (!array)
+		{
+			SG_ERROR(
+			    "Cannot add object %s to parameters %s::%s of type %s, array "
+			    "is not instantiated.\n",
+			    value->get_name(), get_name(), name.c_str(),
+			    self->map[BaseTag(name)].get_value().type().c_str());
+		}
+
+		array->push_back(value);
+		return;
+	}
+
+	Tag<std::vector<CKernel*>> tag_array_kernel(name);
+	if (has(tag_array_kernel))
+	{
+		SG_NOTIMPLEMENTED
+		// TODO implement & test and dispatch for all base class types
+		if (auto* casted = dynamic_cast<CKernel*>(value))
+		{
+			auto array = get(tag_array_kernel);
+			array.push_back(casted);
+		}
+		return;
+	}
+
+	SG_ERROR(
+	    "Cannot add object %s to parameters %s::%s of type %s, there is no"
+	    " such array of parameters.\n",
+	    value->get_name(), get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+}
+
 CSGObject* CSGObject::get(const std::string& name)
 {
 	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
