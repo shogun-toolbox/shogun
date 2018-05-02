@@ -46,13 +46,16 @@ class CListElement;
 class CCombinedKernel : public CKernel
 {
 	public:
+		/** Default constructor */
+		CCombinedKernel();
+
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param append_subkernel_weights if subkernel weights shall be
 		 *        appended
 		 */
-		CCombinedKernel(int32_t size=10, bool append_subkernel_weights=false);
+		CCombinedKernel(int32_t size, bool append_subkernel_weights);
 
 		virtual ~CCombinedKernel();
 
@@ -156,6 +159,32 @@ class CCombinedKernel : public CKernel
 				unset_property(KP_LINADD);
 
 			return kernel_array->insert_element(k, idx);
+		}
+
+		/** check if all sub-kernels have given property
+		 *
+		 * @param p kernel property
+		 * @return if kernel has given property
+		 */
+		virtual bool has_property(EKernelProperty p) override
+		{
+			if (p != KP_LINADD)
+				return CKernel::has_property(p);
+
+			if (!kernel_array || !kernel_array->get_num_elements())
+				return false;
+
+			bool all_linadd = true;
+			for (auto i : range(kernel_array->get_num_elements()))
+			{
+				auto cur = kernel_array->get_element(i);
+				all_linadd &= ((CKernel*)cur)->has_property(p);
+				SG_UNREF(cur);
+				if (!all_linadd)
+					break;
+			}
+
+			return all_linadd;
 		}
 
 		/** append kernel to the end of the array

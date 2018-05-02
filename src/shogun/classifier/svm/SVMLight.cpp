@@ -230,7 +230,6 @@ bool CSVMLight::train_machine(CFeatures* data)
         SG_ERROR("SVM_light can not proceed without initialized kernel!\n")
 
 	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	ASSERT(kernel->get_num_vec_lhs()==m_labels->get_num_labels())
 
 	// in case of LINADD enabled kernels cleanup!
@@ -310,7 +309,8 @@ void CSVMLight::svm_learn()
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
 	ASSERT(m_labels)
-	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
+
+	SGVector<int32_t> lab = binary_labels(m_labels)->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen)
 	int32_t* label=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
