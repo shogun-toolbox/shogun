@@ -13,24 +13,28 @@
 
 using namespace shogun;
 
-CPolyKernel::CPolyKernel()
-: CDotKernel(0), degree(0), inhomogene(false)
+CPolyKernel::CPolyKernel() : CDotKernel(0)
 {
 	init();
 
 }
 
-CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
-: CDotKernel(size), degree(d), inhomogene(i)
+CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i) : CDotKernel(size)
 {
 	init();
+	degree = d;
+	inhomogene = i;
 }
 
 CPolyKernel::CPolyKernel(
-	CDotFeatures* l, CDotFeatures* r, int32_t d, bool i, int32_t size)
-: CDotKernel(size), degree(d), inhomogene(i)
+    CDotFeatures* l, CDotFeatures* r, int32_t d, bool i, int32_t size)
+    : CDotKernel(size)
 {
 	init();
+
+	degree = d;
+	inhomogene = i;
+
 	init(l,r);
 }
 
@@ -62,6 +66,9 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CPolyKernel::init()
 {
+	degree = 0;
+	inhomogene = false;
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(&degree, "degree", "Degree of polynomial kernel", MS_AVAILABLE);
 	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.",

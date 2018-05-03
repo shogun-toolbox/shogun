@@ -22,15 +22,15 @@
 using namespace shogun;
 using namespace Eigen;
 
+CCombinedKernel::CCombinedKernel() : CKernel()
+{
+	init();
+}
+
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), append_subkernel_weights(asw)
 {
 	init();
-
-	if (append_subkernel_weights)
-		SG_INFO("(subkernel weights are appended)\n")
-
-	SG_INFO("Combined kernel created (%p)\n", this)
 }
 
 CCombinedKernel::~CCombinedKernel()
@@ -40,8 +40,6 @@ CCombinedKernel::~CCombinedKernel()
 
 	cleanup();
 	SG_UNREF(kernel_array);
-
-	SG_INFO("Combined kernel deleted (%p).\n", this)
 }
 
 void CCombinedKernel::init_subkernel_weights()
@@ -736,6 +734,7 @@ void CCombinedKernel::init()
 	sv_weight=NULL;
 	subkernel_weights_buffer=NULL;
 	initialized=false;
+	append_subkernel_weights = false;
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_array=new CDynamicObjectArray();
