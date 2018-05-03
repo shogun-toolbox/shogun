@@ -36,7 +36,6 @@ void CMKLClassification::init_training()
 {
 	REQUIRE(m_labels, "Labels not set.\n");
 	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
-	REQUIRE(m_labels->get_label_type() == LT_BINARY, "Labels must be binary.\n");
 }
 
 CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)

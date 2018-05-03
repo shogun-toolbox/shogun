@@ -718,7 +718,10 @@ class CKernel : public CSGObject
 		 * @param p kernel property
 		 * @return if kernel has given property
 		 */
-		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
+		inline virtual bool has_property(EKernelProperty p)
+		{
+			return (properties & p) != 0;
+		}
 
 		/** for optimizable kernels, i.e. kernels where the weight
 		 * vector can be computed explicitly (if it fits into memory)
