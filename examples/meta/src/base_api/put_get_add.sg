@@ -29,12 +29,9 @@ matrix[1,1] = 0.4
 Distance dist = distance("EuclideanDistance")
 knn.put("distance", dist)
 
-SGObject dist2 = knn.get("distance")
-knn.put("distance", dist2)
-
 LibSVM svm()
 svm.put("kernel", k)
-SGObject k2 = svm.get("kernel")
+Kernel k2 = kernel(svm.get("kernel"))
 svm.put("kernel", k2)
 
 CSVFile f_feats("../../data/regression_1d_sinc_features_train.dat")

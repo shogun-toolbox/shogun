@@ -12,6 +12,7 @@
 
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/base_types.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -38,6 +39,7 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
+class CDynamicObjectArray;
 
 template <class T, class K> class CMap;
 
@@ -354,7 +356,7 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-					"Cannot set parameter %s::%s of type %s, incompatible "
+					"Cannot put parameter %s::%s of type %s, incompatible "
 					"provided type %s.\n",
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str());
@@ -370,21 +372,67 @@ public:
 		}
 	}
 
-	/** Untyped setter for an object class parameter, identified by a name.
-	 * Will attempt to convert passed object to appropriate type.
+	/** Typed setter for an object class parameter of a Shogun base class type,
+	 * identified by a name.
 	 *
 	 * @param name name of the parameter
 	 * @param value value of the parameter
 	 */
-	void put(const std::string& name, CSGObject* value);
+	template <class T,
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
+		      class Z = void>
+	void put(const std::string& name, T* value)
+	{
+		put(Tag<T*>(name), value);
+	}
 
-	/** Untyped appender for an array object class parameter, identified by a
-	 * name.
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter
-	 */
-	void add(const std::string& name, CSGObject* value);
+	/** Typed appender for an object class parameter of a Shogun base class
+	* type,
+	* identified by a name.
+	*
+	* @param name name of the parameter
+	* @param value value of the parameter
+	*/
+	template <class T,
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	void add(const std::string& name, T* value)
+	{
+		REQUIRE(
+			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
+			name.c_str());
+
+		Tag<CDynamicObjectArray*> tag_array_sg(name);
+		if (has(tag_array_sg))
+		{
+			auto array = get(tag_array_sg);
+			if (!array)
+			{
+				SG_ERROR(
+					"Cannot add object %s to parameters %s::%s, array "
+					"is not instantiated.\n",
+					value->get_name(), get_name(), name.c_str());
+			}
+
+			push_back(array, value);
+			return;
+		}
+
+		Tag<std::vector<T*>> tag_vector(name);
+		if (has(tag_vector))
+		{
+			// TODO this needs test once we have std::vector parameters
+			SG_NOTIMPLEMENTED
+			auto array = get(tag_vector);
+			array.push_back(value);
+			return;
+		}
+
+		SG_ERROR(
+		    "Cannot add object %s to parameters %s::%s of type %s, there is no"
+		    " such array of parameters.\n",
+		    value->get_name(), get_name(), name.c_str(),
+			demangled_type<T>().c_str());
+	}
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Will attempt to get specified object of appropriate internal type.
@@ -395,24 +443,29 @@ public:
 	CSGObject* get(const std::string& name);
 
 #ifndef SWIG
-	/** Untyped setter for an object class parameter, identified by a name.
-	 * Will attempt to convert passed object to appropriate type.
+	/** Typed setter for an object class parameter of a Shogun base class type,
+	 * identified by a name.
 	 *
 	 * @param name name of the parameter
-	 * @param value value of the parameter, wrapped in smart pointer
+	 * @param value value of the parameter
 	 */
-	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
-		                                   T>* = nullptr>
+	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
 	void put(const std::string& name, Some<T> value)
 	{
-		put(name, (CSGObject*)(value.get()));
+		put(name, value.get());
 	}
 
-	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
-		                                   T>* = nullptr>
+	/** Typed appender for an object class parameter of a Shogun base class
+	* type,
+	* identified by a name.
+	*
+	* @param name name of the parameter
+	* @param value value of the parameter
+	*/
+	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
 	void add(const std::string& name, Some<T> value)
 	{
-		add(name, (CSGObject*)(value.get()));
+		add(name, value.get());
 	}
 #endif // SWIG
 
@@ -528,17 +581,6 @@ public:
 	void list_observable_parameters();
 
 protected:
-	template <typename T>
-	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
-	{
-		if (dynamic_cast<T*>(value))
-		{
-			put(Tag<T*>(name), (T*)value);
-			return true;
-		}
-		return false;
-	}
-
 	template <typename T>
 	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
 	{
@@ -797,6 +839,9 @@ protected:
 	void register_observable_param(
 		const std::string& name, const SG_OBS_VALUE_TYPE type,
 		const std::string& description);
+
+private:
+	void push_back(CDynamicObjectArray* array, CSGObject* value);
 
 public:
 	/** io */
