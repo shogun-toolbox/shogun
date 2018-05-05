@@ -76,7 +76,7 @@ Note that some folders are submodules that can be checked out with
 
 ## License
 ----------
-Shogun is distributed under [BSD 3-clause license](https://github.com/shogun-toolbox/shogun/blob/master/doc/license/LICENSE.md), with
+Shogun is distributed under [BSD 3-clause license](doc/license/LICENSE.md), with
 optional GPL3 components.
-See [doc/licenses](https://github.com/shogun-toolbox/shogun/tree/master/doc/license) for details.
+See [doc/licenses](doc/license) for details.
 
