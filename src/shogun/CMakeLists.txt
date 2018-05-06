@@ -217,6 +217,22 @@ CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 
 ############################ external dependencies
 
+#Stan math
+include(external/StanMath)
+
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/Stan>
+)
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/Stan_Boost>
+)
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+  $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_CVODES}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/Stan_Cvodes>
+)
+
 ####### LINALG
 FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
 IF(NOT EIGEN3_FOUND)
