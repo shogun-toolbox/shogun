@@ -88,6 +88,7 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 
 	SG_UNREF(m_labels);
 	m_labels=new CBinaryLabels(num_vec);
+	SG_REF(m_labels);
 	((CBinaryLabels*) m_labels)->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
