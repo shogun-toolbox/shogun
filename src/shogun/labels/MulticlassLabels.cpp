@@ -235,6 +235,8 @@ namespace shogun
 				    orig->as<CMulticlassLabels>());
 			case LT_DENSE_GENERIC:
 				return to_multiclass(orig->as<CDenseLabels>());
+			case LT_BINARY:
+				return to_multiclass(orig->as<CBinaryLabels>());
 			default:
 				SG_SNOTIMPLEMENTED
 			}

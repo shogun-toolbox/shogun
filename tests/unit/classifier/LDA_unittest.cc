@@ -96,63 +96,23 @@ typedef ::testing::Types<float32_t, float64_t, floatmax_t> FloatTypes;
 TYPED_TEST_CASE(LDATest, FloatTypes);
 
 template <typename ST>
-void FLD_test(SGVector<ST> &projection_FLD, SGVector<ST> &w_FLD)
+void test_with_method(
+    SGVector<ST>& projection, SGVector<ST>& w, ELDAMethod method)
 {
 	SGVector<float64_t> lab;
 	SGMatrix<float64_t> feat;
 
-	CBinaryLabels* labels;
-	CDenseFeatures<float64_t>* features;
-
 	generate_test_data<float64_t>(lab, feat);
 
-	labels = new CBinaryLabels(lab);
-	features = new CDenseFeatures<float64_t>(feat);
+	auto features = some<CDenseFeatures<float64_t>>(feat);
+	auto labels = some<CBinaryLabels>(lab);
 
-	SG_REF(labels);
-	SG_REF(features);
+	auto lda = some<CLDA>(0, features, labels, method);
+	lda->train();
 
-	CLDA lda_FLD(0, features, labels, FLD_LDA);
-	lda_FLD.train();
-
-	CRegressionLabels* results_FLD=(lda_FLD.apply_regression(features));
-	SG_REF(results_FLD);
-	projection_FLD=results_FLD->get_labels();
-	w_FLD = lda_FLD.get_w();
-	SG_UNREF(results_FLD);
-
-	SG_UNREF(features);
-	SG_UNREF(labels);
-}
-
-template <typename ST>
-void SVD_test(SGVector<ST> &projection_SVD, SGVector<ST> &w_SVD)
-{
-	SGVector<float64_t> lab;
-	SGMatrix<float64_t> feat;
-
-	CBinaryLabels* labels;
-	CDenseFeatures<float64_t>* features;
-
-	generate_test_data<float64_t>(lab, feat);
-
-	labels = new CBinaryLabels(lab);
-	features = new CDenseFeatures<float64_t>(feat);
-
-	SG_REF(labels);
-	SG_REF(features);
-
-	CLDA lda_SVD(0, features, labels, SVD_LDA);
-	lda_SVD.train();
-
-	CRegressionLabels* results_SVD=lda_SVD.apply_regression(features);
-	SG_REF(results_SVD);
-	projection_SVD=results_SVD->get_labels();
-	w_SVD=lda_SVD.get_w();
-	SG_UNREF(results_SVD);
-	
-	SG_UNREF(features);
-	SG_UNREF(labels);
+	auto results = lda->apply_regression(features);
+	projection = results->get_labels();
+	w = lda->get_w();
 }
 
 template <typename ST>
@@ -161,7 +121,7 @@ void check_eigenvectors_fld()
 	SGVector<float64_t> projection_FLD;
 	SGVector<float64_t> w_FLD;
 
-	FLD_test<float64_t>(projection_FLD, w_FLD);
+	test_with_method<float64_t>(projection_FLD, w_FLD, FLD_LDA);
 
 	// normalize 'w' since the magnitude is irrelevant
 	w_FLD = linalg::scale(w_FLD, 1.0 / linalg::norm(w_FLD));
@@ -179,7 +139,7 @@ TEST(LDA, DISABLED_CheckProjection_FLD)
 	SGVector<float64_t> projection_FLD;
 	SGVector<float64_t> w_FLD;
 
-	FLD_test<float64_t>(projection_FLD, w_FLD);
+	test_with_method<float64_t>(projection_FLD, w_FLD, FLD_LDA);
 
 	// No need of checking the binary labels if the following passes.
 	float64_t epsilon=0.00000001;
@@ -201,7 +161,7 @@ void check_eigenvectors_svd()
 	SGVector<float64_t> projection_SVD;
 	SGVector<float64_t> w_SVD;
 
-	SVD_test<float64_t>(projection_SVD, w_SVD);
+	test_with_method<float64_t>(projection_SVD, w_SVD, SVD_LDA);
 
 	// comparing against the eigenvectors of the CanonVar implementation
 	// in the brml toolbox, MATLAB.
@@ -216,7 +176,7 @@ TEST(LDA, DISABLED_CheckProjection_SVD)
 	SGVector<float64_t> projection_SVD;
 	SGVector<float64_t> w_SVD;
 
-	FLD_test<float64_t>(projection_SVD, w_SVD);
+	test_with_method<float64_t>(projection_SVD, w_SVD, FLD_LDA);
 
 	//comparing agianst the projections from the CanonVar implementation
 	//in the brml toolbox, MATLAB.
@@ -231,6 +191,20 @@ TEST(LDA, DISABLED_CheckProjection_SVD)
 	EXPECT_NEAR(+6.81301359, projection_SVD[7], epsilon);
 	EXPECT_NEAR(+6.90668279, projection_SVD[8], epsilon);
 	EXPECT_NEAR(+7.96084156, projection_SVD[9], epsilon);
+}
+
+// label type exception test
+TEST(LDA, num_classes_in_labels_exception)
+{
+	SGVector<float64_t> lab{1, -1, 2};
+	SGMatrix<float64_t> feat(1, 3);
+	auto labels = some<CDenseLabels>();
+	labels->set_labels(lab);
+	auto features = some<CDenseFeatures<float64_t>>(feat);
+	auto lda = some<CLDA>(0, features, labels, SVD_LDA);
+	// should throw an incorrect number of classes exception (expected value is
+	// 2)
+	EXPECT_THROW(lda->train(), ShogunException);
 }
 
 //FLD template testing
