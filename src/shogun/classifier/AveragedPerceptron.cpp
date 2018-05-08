@@ -43,7 +43,6 @@ void CAveragedPerceptron::init()
 bool CAveragedPerceptron::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
@@ -54,7 +53,7 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	ASSERT(features)
 	bool converged=false;
 	int32_t iter=0;
-	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
+	SGVector<int32_t> train_labels = binary_labels(m_labels)->get_int_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

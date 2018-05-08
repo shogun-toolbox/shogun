@@ -51,7 +51,7 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	int32_t k = optimizer->m_sb->m_multiclass_strategy->get_num_classes();
 
 	SGMatrix<float64_t> fea = optimizer->m_sb->m_fea;
-	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(optimizer->m_sb->m_labels);
+	auto lab = multiclass_labels(optimizer->m_sb->m_labels);
 
 	// compute gradient
 	for (int32_t i=0; i < m; ++i)

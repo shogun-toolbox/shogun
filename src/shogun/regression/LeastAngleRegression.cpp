@@ -104,9 +104,6 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 
 bool CLeastAngleRegression::train_machine(CFeatures* data)
 {
-	REQUIRE(m_labels->get_label_type() == LT_REGRESSION, "Provided labels (%s) are of type (%d) - they should be regression labels (%d) instead.\n"
-		, m_labels->get_name(), m_labels->get_label_type(), LT_REGRESSION, m_labels->get_label_type())
-
 	if (!data)
 	{
 		REQUIRE(features, "No features provided.\n")
@@ -155,7 +152,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	m_is_active.resize(n_fea);
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
-	SGVector<ST> y = ((CRegressionLabels*) m_labels)->template get_labels_t<ST>();
+	SGVector<ST> y = regression_labels(m_labels)->template get_labels_t<ST>();
 	typename SGVector<ST>::EigenVectorXtMap map_y(y.vector, y.size());
 
 	// transpose(X) is more convenient to work with since we care

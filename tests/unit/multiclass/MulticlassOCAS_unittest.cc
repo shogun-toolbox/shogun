@@ -28,6 +28,7 @@ TEST(MulticlassOCASTest,train)
   mocas->train();
 
   CMulticlassLabels* pred = (CMulticlassLabels*)mocas->apply(test_feats);
+  SG_REF(pred);
   CMulticlassAccuracy evaluate = CMulticlassAccuracy();
   float64_t result = evaluate.evaluate(pred, ground_truth);
   EXPECT_GT(result, 0.99);

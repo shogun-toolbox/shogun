@@ -44,12 +44,11 @@ void test()
 	lda->train();
 
 	// Classify and display output
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(lda->apply());
+	auto output = multiclass_labels(lda->apply());
 	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels());
 
 	// Free memory
-	SG_UNREF(output);
 	SG_UNREF(lda);
 #endif
 }

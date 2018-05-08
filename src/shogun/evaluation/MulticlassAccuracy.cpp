@@ -15,15 +15,16 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
-	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
-	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 	int32_t length = predicted->get_num_labels();
+	auto predicted_mc = multiclass_labels(predicted);
+	auto ground_truth_mc = multiclass_labels(ground_truth);
 	int32_t correct = 0;
 	if (m_ignore_rejects)
 	{
 		for (int32_t i=0; i<length; i++)
 		{
-			if (((CMulticlassLabels*) predicted)->get_int_label(i)==((CMulticlassLabels*) ground_truth)->get_int_label(i))
+			if (predicted_mc->get_int_label(i) ==
+			    ground_truth_mc->get_int_label(i))
 				correct++;
 		}
 		return ((float64_t)correct)/length;
@@ -33,11 +34,11 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 		int32_t total = length;
 		for (int32_t i=0; i<length; i++)
 		{
-			int32_t predicted_label = ((CMulticlassLabels*) predicted)->get_int_label(i);
+			int32_t predicted_label = predicted_mc->get_int_label(i);
 
-			if (predicted_label==((CMulticlassLabels*) predicted)->REJECTION_LABEL)
+			if (predicted_label == predicted_mc->REJECTION_LABEL)
 				total--;
-			else if (predicted_label==((CMulticlassLabels*) ground_truth)->get_int_label(i))
+			else if (predicted_label == ground_truth_mc->get_int_label(i))
 				correct++;
 		}
 		m_rejects_num = length-total;

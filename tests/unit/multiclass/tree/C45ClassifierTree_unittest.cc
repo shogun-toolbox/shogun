@@ -496,6 +496,8 @@ TEST(C45ClassifierTree, tree_prune_categorical_attributes)
 	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
 	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
 	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+	SG_REF(train_lab);
+	SG_REF(validation_lab);
 
 	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
 	c45tree->set_labels(train_lab);
@@ -581,8 +583,10 @@ TEST(C45ClassifierTree, tree_prune_continuous_attributes)
 
 	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
 	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
+	SG_REF(train_lab);
 	CDenseFeatures<float64_t>* validation_features=new CDenseFeatures<float64_t>(validation_data);
 	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+	SG_REF(validation_lab);
 
 	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
 	c45tree->set_labels(train_lab);

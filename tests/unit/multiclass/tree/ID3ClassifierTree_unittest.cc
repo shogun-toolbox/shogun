@@ -278,6 +278,8 @@ TEST(ID3ClassifierTree, tree_prune)
 	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
 	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
 	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+	SG_REF(train_lab);
+	SG_REF(validation_lab);
 
 	CID3ClassifierTree* id3tree=new CID3ClassifierTree();
 	id3tree->set_labels(train_lab);
@@ -304,6 +306,7 @@ TEST(ID3ClassifierTree, tree_prune)
 	EXPECT_EQ(1.0,res_vector[14]);
 	EXPECT_EQ(1.0,res_vector[15]);
 
+	SG_UNREF(train_lab);
 	SG_UNREF(train_features);
 	SG_UNREF(validation_lab);
 	SG_UNREF(result);

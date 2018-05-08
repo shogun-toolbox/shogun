@@ -530,14 +530,16 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		SG_UNREF(right_child);
 	}
 
-	SG_UNREF(children);
+	SG_UNREF(children)
 
 	CMulticlassLabels* predicted_unpruned=apply_multiclass_from_current_node(feats, current);
+	SG_REF(predicted_unpruned);
 	SGVector<float64_t> pruned_labels=SGVector<float64_t>(feature_matrix.num_cols);
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 		pruned_labels[i]=current->data.class_label;
 
 	CMulticlassLabels* predicted_pruned=new CMulticlassLabels(pruned_labels);
+	SG_REF(predicted_pruned);
 
 	CMulticlassAccuracy* accuracy=new CMulticlassAccuracy();
 	float64_t unpruned_accuracy=accuracy->evaluate(predicted_unpruned, gnd_truth);

@@ -74,7 +74,6 @@ bool CLibLinear::train_machine(CFeatures* data)
 {
 
 	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	init_linear_term();
 
 	if (data)
@@ -142,9 +141,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 	double Cp = get_C1();
 	double Cn = get_C2();
 
+	auto labels = binary_labels(m_labels);
 	for (int32_t i = 0; i < prob.l; i++)
 	{
-		prob.y[i] = ((CBinaryLabels*)m_labels)->get_int_label(i);
+		prob.y[i] = labels->get_int_label(i);
 		if (prob.y[i] == +1)
 			Cs[i] = get_C1();
 		else if (prob.y[i] == -1)

@@ -6,8 +6,8 @@ CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-BinaryLabels labels_train(f_labels_train)
-BinaryLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![set_parameters]
