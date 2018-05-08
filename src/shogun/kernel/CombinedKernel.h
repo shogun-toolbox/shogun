@@ -166,7 +166,7 @@ class CCombinedKernel : public CKernel
 		 * @param p kernel property
 		 * @return if kernel has given property
 		 */
-		virtual bool has_property(EKernelProperty p) override
+		virtual bool has_property(EKernelProperty p)
 		{
 			if (p != KP_LINADD)
 				return CKernel::has_property(p);
