@@ -100,14 +100,14 @@ CMulticlassLabels* CCHAIDTree::apply_multiclass(CFeatures* data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
-	return CLabelsFactory::to_multiclass(apply_tree(data));
+	return apply_tree(data)->as<CMulticlassLabels>();
 }
 
 CRegressionLabels* CCHAIDTree::apply_regression(CFeatures* data)
 {
 	REQUIRE(data, "Data required for regression in apply_regression\n")
 
-	return CLabelsFactory::to_regression(apply_tree(data));
+	return apply_tree(data)->as<CRegressionLabels>();
 }
 
 void CCHAIDTree::set_weights(SGVector<float64_t> w)
