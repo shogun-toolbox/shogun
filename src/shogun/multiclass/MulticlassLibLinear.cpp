@@ -18,12 +18,14 @@ using namespace shogun;
 CMulticlassLibLinear::CMulticlassLibLinear() :
 	CLinearMulticlassMachine()
 {
+	register_parameters();
 	init_defaults();
 }
 
 CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
 	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),features,NULL,labs)
 {
+	register_parameters();
 	init_defaults();
 	set_C(C);
 }
