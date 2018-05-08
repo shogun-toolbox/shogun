@@ -26,11 +26,11 @@ matrix[1,1] = 0.4
 #RealMatrix matrix2 = feats.get_real_matrix("feature_matrix")
 #feats.put("feature_matrix", matrix2)
 
-EuclideanDistance distance()
-knn.put("distance", distance)
+Distance dist = distance("EuclideanDistance")
+knn.put("distance", dist)
 
-SGObject distance2 = knn.get("distance")
-knn.put("distance", distance2)
+SGObject dist2 = knn.get("distance")
+knn.put("distance", dist2)
 
 LibSVM svm()
 svm.put("kernel", k)
