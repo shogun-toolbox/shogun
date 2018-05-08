@@ -39,23 +39,24 @@ TEST(KNN, brute_solver)
 	test.random(0, classes*num-1);
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
-	
+
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
-	CFeatures* features_test = (CFeatures*) features->clone();	
+	CFeatures* features_test = (CFeatures*)features->clone();
 	CLabels* labels_test = (CLabels*) labels->clone();
 
 	int32_t k=4;
-	CEuclideanDistance* distance = new CEuclideanDistance();	
+	CEuclideanDistance* distance = new CEuclideanDistance();
 	CKNN* knn=new CKNN (k, distance, labels, KNN_BRUTE);
 	SG_REF(knn);
 
 	features->add_subset(train);
-	labels->add_subset(train);	
+	labels->add_subset(train);
 	knn->train(features);
 
 	features_test->add_subset(test);
 	labels_test->add_subset(test);
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features_test));
+	CMulticlassLabels* output =
+	    knn->apply(features_test)->as<CMulticlassLabels>();
 	SG_REF(output);
 	features_test->remove_subset();
 
@@ -86,21 +87,22 @@ TEST(KNN, kdtree_solver)
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
-	CFeatures* features_test = (CFeatures*) features->clone();	
+	CFeatures* features_test = (CFeatures*)features->clone();
 	CLabels* labels_test = (CLabels*) labels->clone();
 
 	int32_t k=4;
-	CEuclideanDistance* distance = new CEuclideanDistance();	
+	CEuclideanDistance* distance = new CEuclideanDistance();
 	CKNN* knn=new CKNN (k, distance, labels, KNN_KDTREE);
 	SG_REF(knn);
 
 	features->add_subset(train);
-	labels->add_subset(train);	
+	labels->add_subset(train);
 	knn->train(features);
 
 	features_test->add_subset(test);
 	labels_test->add_subset(test);
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features_test));
+	CMulticlassLabels* output =
+	    knn->apply(features_test)->as<CMulticlassLabels>();
 	SG_REF(output);
 	features_test->remove_subset();
 
@@ -132,21 +134,22 @@ TEST(KNN, lsh_solver)
 
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
-	CFeatures* features_test = (CFeatures*) features->clone();	
+	CFeatures* features_test = (CFeatures*)features->clone();
 	CLabels* labels_test = (CLabels*) labels->clone();
 
 	int32_t k=4;
-	CEuclideanDistance* distance = new CEuclideanDistance();	
+	CEuclideanDistance* distance = new CEuclideanDistance();
 	CKNN* knn=new CKNN (k, distance, labels, KNN_LSH);
 	SG_REF(knn);
 
 	features->add_subset(train);
-	labels->add_subset(train);	
+	labels->add_subset(train);
 	knn->train(features);
 
 	features_test->add_subset(test);
 	labels_test->add_subset(test);
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features_test));
+	CMulticlassLabels* output =
+	    knn->apply(features_test)->as<CMulticlassLabels>();
 	SG_REF(output);
 	features_test->remove_subset();
 

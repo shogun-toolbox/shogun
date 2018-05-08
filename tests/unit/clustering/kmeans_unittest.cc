@@ -43,7 +43,8 @@ TEST(KMeans, manual_center_initialization_test)
 	{
 		clustering->train(features);
 
-		CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
+		CMulticlassLabels* result =
+		    clustering->apply()->as<CMulticlassLabels>();
 
 		EXPECT_EQ(0.000000, result->get_label(0));
 		EXPECT_EQ(0.000000, result->get_label(1));

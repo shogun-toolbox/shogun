@@ -66,7 +66,7 @@ void CLMNNImpl::check_training_setup(
 
 void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 {
-	CMulticlassLabels* y = CLabelsFactory::to_multiclass(labels);
+	CMulticlassLabels* y = multiclass_labels(labels);
 	SGVector<int32_t> int_labels = y->get_int_labels();
 
 	// back-up initial values because they will be overwritten by unique

@@ -28,7 +28,7 @@ TEST(MCLDA, train_and_apply)
 	SG_REF(lda);
 	lda->train();
 
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(lda->apply());
+	CMulticlassLabels* output = lda->apply()->as<CMulticlassLabels>();
 	SG_REF(output);
 
 	// Test

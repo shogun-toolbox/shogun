@@ -28,7 +28,7 @@ TEST(QDA, train_and_apply)
 	SG_REF(qda);
 	qda->train();
 
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(qda->apply());
+	CMulticlassLabels* output = qda->apply()->as<CMulticlassLabels>();
 	SG_REF(output);
 
 	// Test

@@ -29,29 +29,6 @@ namespace shogun
 class CLabelsFactory : public CSGObject
 {
 public:
-	/** specialize a base class instance to CBinaryLabels
-	 *
-	 * @param base_labels its dynamic type must be CBinaryLabels
-	 */
-	static CBinaryLabels* to_binary(CLabels* base_labels);
-
-	/** specialize a base class instance to CLatentLabels
-	 *
-	 * @param base_labels its dynamic type must be CLatentLabels
-	 */
-	static CLatentLabels* to_latent(CLabels* base_labels);
-
-	/** specialize a base class instance to CMulticlassLabels
-	 *
-	 * @param base_labels its dynamic type must be CMulticlassLabels
-	 */
-	static CMulticlassLabels* to_multiclass(CLabels* base_labels);
-
-	/** specialize a base class instance to CRegressionLabels
-	 *
-	 * @param base_labels its dynamic type must be CRegressionLabels
-	 */
-	static CRegressionLabels* to_regression(CLabels* base_labels);
 
 	/** specialize a base class instance to CStructuredLabels
 	 *
