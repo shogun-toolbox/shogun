@@ -76,7 +76,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
-	int32_t N = CLabelsFactory::to_structured(m_labels)->get_num_labels();
+	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
 
 	SG_DEBUG("M=%d, N =%d.\n", M, N);
 

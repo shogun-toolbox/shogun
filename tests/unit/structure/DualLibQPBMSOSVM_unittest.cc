@@ -112,7 +112,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	ASSERT_LE(res.nzA, 8u);
 	ASSERT_LE(res.exitflag, 0);
 
-	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
+	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
 	SG_REF(out);
 
 	// Compute error
