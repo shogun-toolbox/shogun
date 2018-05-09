@@ -96,7 +96,7 @@ class CLMNNImpl
 		static ImpostorsSetType find_impostors(
 		    CDenseFeatures<float64_t>* x, CMulticlassLabels* y,
 		    const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
-		    const uint32_t iter, const uint32_t correction);
+		    const int32_t iter, const int32_t correction);
 
 		/** update the gradient using the last transition in the impostors sets */
 		static void update_gradient(
@@ -110,14 +110,14 @@ class CLMNNImpl
 		    float64_t stepsize, bool diagonal);
 
 		/** correct step size depending on the last fluctuation of the objective */
-		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);
+		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const int32_t iter);
 
 		/**
 		 * check if the training should terminate; this can happen due to e.g. convergence reached
 		 * (the step size became too small or the objective in the last iterations is roughly constant),
 		 * or maximum number of iterations reached
 		 */
-		static bool check_termination(float64_t stepsize, const SGVector<float64_t> obj, uint32_t iter, uint32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold);
+		static bool check_termination(float64_t stepsize, const SGVector<float64_t> obj, int32_t iter, int32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold);
 
 	private:
 

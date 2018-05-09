@@ -79,7 +79,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Last active set of impostors computed exactly, current and previous impostors sets
 	ImpostorsSetType exact_impostors, cur_impostors, prev_impostors;
 	// Iteration counter
-	uint32_t iter = 0;
+	int32_t iter = 0;
 	// Criterion for termination
 	bool stop = false;
 	// Make space for the training statistics
@@ -206,23 +206,23 @@ void CLMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
 	m_stepsize_threshold = stepsize_threshold;
 }
 
-uint32_t CLMNN::get_maxiter() const
+int32_t CLMNN::get_maxiter() const
 {
 	return m_maxiter;
 }
 
-void CLMNN::set_maxiter(const uint32_t maxiter)
+void CLMNN::set_maxiter(const int32_t maxiter)
 {
 	REQUIRE(maxiter>0, "The number of maximum iterations must be larger than zero\n")
 	m_maxiter = maxiter;
 }
 
-uint32_t CLMNN::get_correction() const
+int32_t CLMNN::get_correction() const
 {
 	return m_correction;
 }
 
-void CLMNN::set_correction(const uint32_t correction)
+void CLMNN::set_correction(const int32_t correction)
 {
 	m_correction = correction;
 }
