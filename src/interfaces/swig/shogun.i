@@ -253,4 +253,8 @@ PUT_ADD(CECOCEncoder)
 PUT_ADD(CECOCDecoder)
 PUT_ADD(CMulticlassStrategy)
 
+%template(kernel) kernel<float64_t, float64_t>;
+%template(features) features<float64_t>;
+
+
 } // namespace shogun

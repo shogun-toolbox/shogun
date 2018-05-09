@@ -13,13 +13,13 @@
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
-
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {
@@ -100,6 +100,15 @@ namespace shogun
 			SG_SNOTIMPLEMENTED
 		}
 
+		SG_REF(result);
+		return result;
+	}
+
+	template <typename T, typename T2 = typename std::enable_if_t<
+	                          std::is_floating_point<T>::value>>
+	CKernel* kernel(SGMatrix<T> kernel_matrix)
+	{
+		CKernel* result = new CCustomKernel(kernel_matrix);
 		SG_REF(result);
 		return result;
 	}
