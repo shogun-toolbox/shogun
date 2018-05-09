@@ -174,7 +174,7 @@ void test(int32_t num_samples)
 
 #ifdef USE_MOSEK
 	// Evaluation PrimalMosek
-	CStructuredLabels* labels_primcp = CLabelsFactory::to_structured(primcp->apply());
+	CStructuredLabels* labels_primcp = primcp->apply()->as<CStructuredLabels>();
 	SG_REF(labels_primcp);
 
 	float64_t acc_loss_primcp = 0.0;
@@ -194,7 +194,7 @@ void test(int32_t num_samples)
 #endif
 
 	// Evaluation BMRM
-	CStructuredLabels* labels_bmrm = CLabelsFactory::to_structured(bmrm->apply());
+	CStructuredLabels* labels_bmrm = bmrm->apply()->as<CStructuredLabels>();
 	SG_REF(labels_bmrm);
 
 	float64_t acc_loss_bmrm = 0.0;
@@ -213,7 +213,7 @@ void test(int32_t num_samples)
 	SG_SPRINT("bmrm solver: average training loss = %f\n", ave_loss_bmrm);
 
 	// Evaluation SGD
-	CStructuredLabels* labels_sgd = CLabelsFactory::to_structured(sgd->apply());
+	CStructuredLabels* labels_sgd = sgd->apply()->as<CStructuredLabels>();
 	SG_REF(labels_sgd);
 
 	float64_t acc_loss_sgd = 0.0;
@@ -232,7 +232,7 @@ void test(int32_t num_samples)
 	SG_SPRINT("sgd solver: average training loss = %f\n", ave_loss_sgd);
 
 	// Evaluation FW
-	CStructuredLabels* labels_fw = CLabelsFactory::to_structured(fw->apply());
+	CStructuredLabels* labels_fw = fw->apply()->as<CStructuredLabels>();
 	SG_REF(labels_fw);
 
 	float64_t acc_loss_fw = 0.0;

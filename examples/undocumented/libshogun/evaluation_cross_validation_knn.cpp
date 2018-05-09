@@ -50,7 +50,7 @@ void test_cross_validation()
 
 	/* train and output */
 	knn->train(features);
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features));
+	CMulticlassLabels* output=knn->apply(features)->as<CMulticlassLabels>();
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 

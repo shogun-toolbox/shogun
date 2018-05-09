@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 	svm->train();
 
 	// classify data points
-	CBinaryLabels* out_labels = CLabelsFactory::to_binary(svm->apply());
+	CBinaryLabels* out_labels = svm->apply()->as<CBinaryLabels>();
 
 	/*convert scores to calibrated probabilities  by fitting a sigmoid function
 	using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 	See BinaryLabels documentation for details*/
 	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
 	sigmoid_calibration->fit_binary(
-	    out_labels, CLabelsFactory::to_binary(labels));
+	    out_labels, labels->as<CBinaryLabels>();
 	CBinaryLabels* calibrated_labels =
 	    sigmoid_calibration->calibrate_binary(out_labels);
 

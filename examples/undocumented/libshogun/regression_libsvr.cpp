@@ -55,8 +55,7 @@ void test_libsvr()
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels=CLabelsFactory::to_regression(
-			svm->apply(features_test));
+	CRegressionLabels* predicted_labels=svm->apply(features_test)->as<CRegressionLabels>();
 	SG_REF(predicted_labels);
 
 	/* evaluate */

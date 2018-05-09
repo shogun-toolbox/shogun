@@ -95,7 +95,7 @@ samples, labels = gen_data(ftype_all, num_samples)
 parameter_list = [[samples,labels,w_all,ftype_all]]
 
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
-	from shogun import SOSVMHelper, LabelsFactory
+	from shogun import SOSVMHelper
 	from shogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
 	from shogun import StochasticSOSVM, FWSOSVM
 	try:

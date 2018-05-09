@@ -26,7 +26,7 @@ int main(int argc, char ** argv)
 	sosvm->train();
 //	sosvm->get_w().display_vector("w");
 
-	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
+	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
 
 	ASSERT( out->get_num_labels() == labels->get_num_labels() );
 

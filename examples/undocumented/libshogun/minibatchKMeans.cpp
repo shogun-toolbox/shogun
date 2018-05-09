@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	CKMeans* clustering=new CKMeans(2, distance, true);
 
 	clustering->train(features);
-	CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
+	CMulticlassLabels* result=clustering->apply()->as<CMulticlassLabels>();
 
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	clustering->set_train_method(KMM_MINI_BATCH);
 	clustering->set_mbKMeans_params(2,10);
 	clustering->train(features);
-	result=CLabelsFactory::to_multiclass(clustering->apply());
+	result=clustering->apply()->as<CMulticlassLabels>();
 
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));

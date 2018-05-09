@@ -50,7 +50,7 @@ void test_cross_validation()
 
 	/* train and output */
 	svm->train(features);
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(svm->apply(features));
+	CMulticlassLabels* output=svm->apply(features)->as<CMulticlassLabels>();
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 

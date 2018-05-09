@@ -246,7 +246,7 @@ void tester()
 	SG_SPRINT("finished svm training\n");
 
 	//starting svm testing on training data
-	CMulticlassLabels* res=CLabelsFactory::to_multiclass(tsvm->apply());
+	CMulticlassLabels* res=tsvm->apply()->as<CMulticlassLabels>();
 	ASSERT(res);
 
 	float64_t err=0;
@@ -308,7 +308,7 @@ void tester()
 	tsvm->set_kernel(tker);
 
 	//compute classification error, check mem
-	CMulticlassLabels* tres=CLabelsFactory::to_multiclass(tsvm->apply());
+	CMulticlassLabels* tres=tsvm->apply()->as<CMulticlassLabels>();
 
 	float64_t terr=0;
 	for(int32_t i=0; i<numdatatest;++i)
