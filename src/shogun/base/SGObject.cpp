@@ -16,6 +16,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/io/SerializableFile.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
@@ -1030,79 +1031,6 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
-void CSGObject::put(const std::string& name, CSGObject* value)
-{
-	REQUIRE(
-	    value, "Cannot put %s::%s, no object provided.\n", get_name(),
-	    name.c_str());
-
-	if (put_sgobject_type_dispatcher<CMachine>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CKernel>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CDistance>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CFeatures>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CLabels>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CECOCEncoder>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CECOCDecoder>(name, value))
-		return;
-	if (put_sgobject_type_dispatcher<CMulticlassStrategy>(name, value))
-		return;
-
-	SG_ERROR(
-	    "Cannot put object %s as parameter %s::%s of type %s, type does not "
-	    "match.\n",
-	    value->get_name(), get_name(), name.c_str(),
-	    self->map[BaseTag(name)].get_value().type().c_str());
-}
-
-void CSGObject::add(const std::string& name, CSGObject* value)
-{
-	REQUIRE(
-	    value, "Cannot add to %s::%s, no object provided.\n", get_name(),
-	    name.c_str());
-
-	Tag<CDynamicObjectArray*> tag_array_sg(name);
-	if (has(tag_array_sg))
-	{
-		auto array = get(tag_array_sg);
-		if (!array)
-		{
-			SG_ERROR(
-			    "Cannot add object %s to parameters %s::%s of type %s, array "
-			    "is not instantiated.\n",
-			    value->get_name(), get_name(), name.c_str(),
-			    self->map[BaseTag(name)].get_value().type().c_str());
-		}
-
-		array->push_back(value);
-		return;
-	}
-
-	Tag<std::vector<CKernel*>> tag_array_kernel(name);
-	if (has(tag_array_kernel))
-	{
-		SG_NOTIMPLEMENTED
-		// TODO implement & test and dispatch for all base class types
-		if (auto* casted = dynamic_cast<CKernel*>(value))
-		{
-			auto array = get(tag_array_kernel);
-			array.push_back(casted);
-		}
-		return;
-	}
-
-	SG_ERROR(
-	    "Cannot add object %s to parameters %s::%s of type %s, there is no"
-	    " such array of parameters.\n",
-	    value->get_name(), get_name(), name.c_str(),
-	    self->map[BaseTag(name)].get_value().type().c_str());
-}
-
 CSGObject* CSGObject::get(const std::string& name)
 {
 	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
@@ -1120,4 +1048,10 @@ CSGObject* CSGObject::get(const std::string& name)
 	    get_name(), name.c_str(),
 	    self->map[BaseTag(name)].get_value().type().c_str());
 	return nullptr;
+}
+
+void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)
+{
+	ASSERT(array);
+	array->push_back(value);
 }

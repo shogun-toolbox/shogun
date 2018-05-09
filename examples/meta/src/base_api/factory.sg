@@ -2,6 +2,7 @@ Machine lib_svm = machine("LibSVM")
 Machine lda = machine("LDA")
 Kernel kernel_gaussian = kernel("GaussianKernel")
 Kernel kernel_linear = kernel("LinearKernel")
+Kernel kernel_from_object = kernel(kernel_gaussian)
 
 RealMatrix real_matrix(2,2)
 Features features_from_matrix = features(real_matrix)

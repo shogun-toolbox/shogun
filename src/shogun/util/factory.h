@@ -32,11 +32,14 @@ namespace shogun
 	CECOCEncoder* ecoc_encoder(const std::string& name);
 	CECOCDecoder* ecoc_decoder(const std::string& name);
 
-
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
 	{                                                                          \
 		return create_object<T>(name.c_str());                                 \
+	}                                                                          \
+	T* factory_name(CSGObject* obj)                                            \
+	{                                                                          \
+		return obj->as<T>();                                                   \
 	}
 
 	BASE_CLASS_FACTORY(CEvaluation, evaluation)
