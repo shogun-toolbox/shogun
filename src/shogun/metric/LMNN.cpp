@@ -60,7 +60,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 	// cast is safe, check_training_setup ensures features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
-	CMulticlassLabels* y = CLabelsFactory::to_multiclass(m_labels);
+	CMulticlassLabels* y = multiclass_labels(m_labels);
 	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
 
 	auto& L = init_transform;
