@@ -1,11 +1,18 @@
+RealMatrix real_matrix(2,2)
+
 Machine lib_svm = machine("LibSVM")
 Machine lda = machine("LDA")
 Kernel kernel_gaussian = kernel("GaussianKernel")
 Kernel kernel_linear = kernel("LinearKernel")
 Kernel kernel_from_object = kernel(kernel_gaussian)
+Kernel kernel_custom_from_matrix = kernel(real_matrix)
 
-RealMatrix real_matrix(2,2)
 Features features_from_matrix = features(real_matrix)
+
+IntVector dims(2)
+dims[0] = 0
+dims[1] = 1
+Features features_with_subset = features_subset(features_from_matrix, dims)
 
 File features_file = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
 Features features_from_file = features(features_file)
