@@ -25,7 +25,7 @@ traindat, label_traindat = gen_data(M,N,dim)
 parameter_list = [[traindat,label_traindat]]
 
 def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=label_traindat):
-	from shogun import MulticlassSOLabels, LabelsFactory
+	from shogun import MulticlassSOLabels
 	from shogun import RealFeatures
 	from shogun import SOSVMHelper
 	try:
@@ -46,11 +46,11 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	bmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
+	bmrm_out = sosvm.apply()
 	count = 0
 	for i in range(bmrm_out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(bmrm_out.get_label(i))
-		if yi_pred.value == label_train_multiclass[i]:
+		yi_pred = bmrm_out.get_real_vector("labels_vector")[i]
+		if yi_pred == label_train_multiclass[i]:
 			count = count + 1
 
 	#print("BMRM: Correct classification rate: %0.2f" % ( 100.0*count/bmrm_out.get_num_labels() ))
@@ -65,11 +65,11 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	ppbmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
+	ppbmrm_out = sosvm.apply()
 	count = 0
 	for i in range(ppbmrm_out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(ppbmrm_out.get_label(i))
-		if yi_pred.value == label_train_multiclass[i]:
+		yi_pred = ppbmrm_out.get_real_vector("labels_vector")[i]
+		if yi_pred == label_train_multiclass[i]:
 			count = count + 1
 
 	#print("PPBMRM: Correct classification rate: %0.2f" % ( 100.0*count/ppbmrm_out.get_num_labels() ))
@@ -81,11 +81,11 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	p3bmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
+	p3bmrm_out = sosvm.apply()
 	count = 0
 	for i in range(p3bmrm_out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(p3bmrm_out.get_label(i))
-		if yi_pred.value == label_train_multiclass[i]:
+		yi_pred = p3bmrm_out.get_real_vector("labels_vector")[i]
+		if yi_pred == label_train_multiclass[i]:
 			count = count + 1
 
 	#print("P3BMRM: Correct classification rate: %0.2f" % ( 100.0*count/p3bmrm_out.get_num_labels() ))

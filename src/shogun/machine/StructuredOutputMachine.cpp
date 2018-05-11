@@ -65,7 +65,7 @@ void CStructuredOutputMachine::set_labels(CLabels* lab)
 {
 	CMachine::set_labels(lab);
 	REQUIRE(m_model != NULL, "please call set_model() before set_labels()\n");
-	m_model->set_labels(CLabelsFactory::to_structured(lab));
+	m_model->set_labels(lab->as<CStructuredLabels>());
 }
 
 void CStructuredOutputMachine::set_features(CFeatures* f)

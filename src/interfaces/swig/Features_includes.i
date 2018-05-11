@@ -25,7 +25,6 @@
 #include <shogun/features/RandomKitchenSinksDotFeatures.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/LabelsFactory.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/LatentLabels.h>

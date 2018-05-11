@@ -227,8 +227,7 @@ int main(int argc, char * argv[])
 	SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
 			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
-	CStructuredLabels* out =
-		CLabelsFactory::to_structured(sosvm->apply());
+	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
 	SG_REF(out);
 
 	SG_SPRINT("\n");

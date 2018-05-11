@@ -88,7 +88,8 @@ int main(int argv, char** argc)
 
 				t = clock();
 				timer->start();
-				CBinaryLabels* predicted = CLabelsFactory::to_binary(lin_svm->apply());
+				CBinaryLabels* predicted =
+				    lin_svm->apply()->as<CBinaryLabels>();
 				timer->stop();
 				t = clock() - t;
 				float64_t auPRC = evaluator->evaluate(predicted, labels);
@@ -116,7 +117,7 @@ int main(int argv, char** argc)
 
 			t = clock();
 			timer->start();
-			CBinaryLabels* predicted = CLabelsFactory::to_binary(svm->apply());
+			CBinaryLabels* predicted = svm->apply()->as<CBinaryLabels>();
 			timer->stop();
 			t = clock() - t;
 			float64_t auPRC = evaluator->evaluate(predicted, labels);

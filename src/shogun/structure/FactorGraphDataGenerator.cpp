@@ -534,7 +534,7 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	sgd->train();
 
 	// 3.1 Evaluation
-	CStructuredLabels* labels_sgd = CLabelsFactory::to_structured(sgd->apply());
+	CStructuredLabels* labels_sgd = sgd->apply()->as<CStructuredLabels>();
 	SG_REF(labels_sgd);
 	float64_t ave_loss_sgd = 0.0;
 	float64_t acc_loss_sgd = 0.0;
