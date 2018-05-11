@@ -49,15 +49,26 @@ void CStoppableSGObject::reset_computation_variables()
 void CStoppableSGObject::on_next()
 {
 	m_cancel_computation.store(true);
+	on_next_impl();
 }
 
 void CStoppableSGObject::on_pause()
 {
 	m_pause_computation_flag.store(true);
-	/* Here there should be the actual code*/
+	on_pause_impl();
 	resume_computation();
 }
 
 void CStoppableSGObject::on_complete()
+{
+	on_complete_impl();
+}
+void CStoppableSGObject::on_next_impl()
+{
+}
+void CStoppableSGObject::on_pause_impl()
+{
+}
+void CStoppableSGObject::on_complete_impl()
 {
 }

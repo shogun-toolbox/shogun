@@ -66,30 +66,37 @@ namespace shogun
 		}
 #endif
 
-		/** connect the machine instance to the signal handler */
-		rxcpp::subscription connect_to_signal_handler();
-
-		/** reset the computation variables */
-		void reset_computation_variables();
-
-		/** The action which will be done when the user decides to
-		* premature stop the CMachine execution */
-		virtual void on_next();
-
-		/** The action which will be done when the user decides to
-		* pause the CMachine execution */
-		virtual void on_pause();
-
-		/** The action which will be done when the user decides to
-		* return to prompt and terminate the program execution */
-		virtual void on_complete();
-
 		virtual const char* get_name() const
 		{
 			return "StoppableSGObject";
 		}
 
 	protected:
+		/** connect the machine instance to the signal handler */
+		rxcpp::subscription connect_to_signal_handler();
+
+		/** reset the computation variables */
+		void reset_computation_variables();
+
+		/** sets cancel computation flag */
+		void on_next();
+
+		/** The action which will be done when the user decides to
+		* premature stop the CMachine execution */
+		virtual void on_next_impl();
+
+		/** sets pause computation flag and resumes after action is complete */
+		void on_pause();
+
+		/** The action which will be done when the user decides to
+		* pause the CMachine execution */
+		virtual void on_pause_impl();
+
+		/** These actions which will be done when the user decides to
+		* return to prompt and terminate the program execution */
+		void on_complete();
+		virtual void on_complete_impl();
+
 		/** Cancel computation */
 		std::atomic<bool> m_cancel_computation;
 
