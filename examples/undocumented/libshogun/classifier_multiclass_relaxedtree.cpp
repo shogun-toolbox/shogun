@@ -51,7 +51,6 @@ int main(int argc, char** argv)
 	machine->set_machine_for_confusion_matrix(svm);
 	machine->train(features);
 
-
 	CMulticlassLabels* output = machine->apply()->as<CMulticlassLabels>();
 
 	CMulticlassAccuracy *evaluator = new CMulticlassAccuracy();

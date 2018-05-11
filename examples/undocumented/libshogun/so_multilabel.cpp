@@ -160,12 +160,13 @@ int main(int argc, char ** argv)
 	SG_REF(test_labels);
 	test_labels->set_sparse_labels(test_multilabels);
 
-	CStructuredLabels * out = sgd->apply(test_features)->as<CStructuredLabels>();
+	CStructuredLabels* out = sgd->apply(test_features)->as<CStructuredLabels>();
 
-	CStructuredLabels * bout = bundle->apply(test_features)->as<CStructuredLabels>();
+	CStructuredLabels* bout =
+	    bundle->apply(test_features)->as<CStructuredLabels>();
 
-	CStructuredLabels * sout = sosvm->apply(test_features)->as<CStructuredLabels>();
-
+	CStructuredLabels* sout =
+	    sosvm->apply(test_features)->as<CStructuredLabels>();
 
 	CStructuredAccuracy * evaluator = new CStructuredAccuracy();
 	SG_REF(evaluator);

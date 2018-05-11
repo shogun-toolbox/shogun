@@ -63,7 +63,7 @@ void test_cross_validation()
 
 	/* train and output */
 	krr->train(features);
-	CRegressionLabels* output= krr->apply()->as<CRegressionLabels>();
+	CRegressionLabels* output = krr->apply()->as<CRegressionLabels>();
 	SG_REF(output);
 	for (index_t i=0; i<num_vectors; ++i)
 	{

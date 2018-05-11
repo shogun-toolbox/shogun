@@ -88,7 +88,8 @@ int main(int argv, char** argc)
 
 				t = clock();
 				timer->start();
-				CBinaryLabels* predicted = lin_svm->apply()->as<CBinaryLabels>();
+				CBinaryLabels* predicted =
+				    lin_svm->apply()->as<CBinaryLabels>();
 				timer->stop();
 				t = clock() - t;
 				float64_t auPRC = evaluator->evaluate(predicted, labels);

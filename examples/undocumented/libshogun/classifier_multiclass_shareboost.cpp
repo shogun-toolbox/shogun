@@ -50,7 +50,8 @@ int main(int argc, char** argv)
 
 	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(features, machine->get_activeset());
 	SG_REF(subset_fea);
-	CMulticlassLabels* output = machine->apply(subset_fea)->as<CMulticlassLabels>();
+	CMulticlassLabels* output =
+	    machine->apply(subset_fea)->as<CMulticlassLabels>();
 
 	int32_t correct = 0;
 	for (int32_t i=0; i < output->get_num_labels(); ++i)

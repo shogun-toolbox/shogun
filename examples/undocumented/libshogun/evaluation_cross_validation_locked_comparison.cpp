@@ -74,7 +74,7 @@ void test_cross_validation()
 	/* train and output the normal way */
 	SG_SPRINT("starting normal training\n");
 	svm->train(features);
-	CBinaryLabels* output=svm->apply(features)->as<CBinaryLabels>();
+	CBinaryLabels* output = svm->apply(features)->as<CBinaryLabels>();
 	SG_REF(output);
 
 	/* evaluation criterion */
