@@ -63,7 +63,7 @@ Firstly, we import the training data, training labels, test data, and test label
 
 .. sgexample:: cross_validation.sg:create_features_REGRESSION
 
-Next,we initialize a splitting strategy :sgclass:`CCrossValidationSplitting` (Do not use :sgclass:`CStratifiedCrossValidationSplitting`
+Next, we initialize a splitting strategy :sgclass:`CCrossValidationSplitting` (Do not use :sgclass:`CStratifiedCrossValidationSplitting`
 with regression), which is needed to divide the dataset into :math:`k-` folds for the :math:`k-` fold cross validation. We also have to decide on an
 evaluation criterion class (from :sgclass:`CEvaluation`) to evaluate the performance of the trained models. Here, we use :sgclass:`CMeanSquaredError`.
 We then instantiate a :sgclass:`CCrossValidation` instance and set the number of cross validation's runs.
