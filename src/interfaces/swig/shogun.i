@@ -252,5 +252,6 @@ PUT_ADD(CLabels)
 PUT_ADD(CECOCEncoder)
 PUT_ADD(CECOCDecoder)
 PUT_ADD(CMulticlassStrategy)
+PUT_ADD(CCombinationRule)
 
 } // namespace shogun
