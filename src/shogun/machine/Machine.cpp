@@ -14,9 +14,10 @@
 using namespace shogun;
 
 CMachine::CMachine()
-    : CSGObject(), m_max_train_time(0), m_labels(NULL), m_solver_type(ST_AUTO),
-      m_cancel_computation(false), m_pause_computation_flag(false)
+    : CStoppableSGObject(), m_max_train_time(0), m_labels(NULL),
+      m_solver_type(ST_AUTO)
 {
+	init_stoppable();
 	m_data_locked=false;
 	m_store_model_features=false;
 
@@ -272,18 +273,4 @@ CLatentLabels* CMachine::apply_locked_latent(SGVector<index_t> indices)
 	SG_ERROR("apply_locked_latent(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
-}
-
-rxcpp::subscription CMachine::connect_to_signal_handler()
-{
-	// Subscribe this algorithm to the signal handler
-	auto subscriber = rxcpp::make_subscriber<int>(
-	    [this](int i) {
-		    if (i == SG_PAUSE_COMP)
-			    this->on_pause();
-		    else
-			    this->on_next();
-		},
-	    [this]() { this->on_complete(); });
-	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
