@@ -132,7 +132,7 @@ int main(int argv, char** argc)
 	/** Training completed */
 
 	/** Evaluating */
-	CBinaryLabels* predicted = CLabelsFactory::to_binary(svm->apply());
+	CBinaryLabels* predicted = svm->apply()->as<CBinaryLabels>();
 	CPRCEvaluation* prc_evaluator = new CPRCEvaluation();
 	CROCEvaluation* roc_evaluator = new CROCEvaluation();
 	CAccuracyMeasure* accuracy_evaluator = new CAccuracyMeasure();
@@ -156,7 +156,7 @@ int main(int argv, char** argc)
 		r_feats = new CRandomFourierDotFeatures(s_feats, D, KernelName::GAUSSIAN, width, w);
 		CBinaryLabels* test_labels = new CBinaryLabels(label);
 
-		predicted = CLabelsFactory::to_binary(svm->apply(r_feats));
+		predicted = svm->apply(r_feats)->as<CBinaryLabels>();
 		auROC = roc_evaluator->evaluate(predicted, test_labels);
 		auPRC = prc_evaluator->evaluate(predicted, test_labels);
 		accuracy = accuracy_evaluator->evaluate(predicted, test_labels);

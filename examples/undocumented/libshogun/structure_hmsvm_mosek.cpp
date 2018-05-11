@@ -1,5 +1,4 @@
 #include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/LabelsFactory.h>
 #include <shogun/structure/HMSVMModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/structure/TwoStateModel.h>
@@ -26,7 +25,7 @@ int main(int argc, char ** argv)
 	sosvm->train();
 //	sosvm->get_w().display_vector("w");
 
-	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
+	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
 
 	ASSERT( out->get_num_labels() == labels->get_num_labels() );
 

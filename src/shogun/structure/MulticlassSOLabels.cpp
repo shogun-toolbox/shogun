@@ -101,6 +101,9 @@ void CMulticlassSOLabels::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_labels_set, "m_num_labels_set", "The number of assigned labels",
 			MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_labels_vector, "labels_vector", "The labels vector",
+	    MS_NOT_AVAILABLE);
 
 	m_num_classes = 0;
 	m_num_labels_set = 0;

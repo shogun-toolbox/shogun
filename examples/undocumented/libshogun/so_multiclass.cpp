@@ -130,9 +130,9 @@ int main(int argc, char ** argv)
 	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", t1);
 	SG_SPRINT(">>>> BMRM trained in %9.4f\n", t2-t1);
 	SG_SPRINT(">>>> SGD trained in %9.4f\n", t3-t2);
-	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
-	CStructuredLabels* bout = CLabelsFactory::to_structured(bundle->apply());
-	CStructuredLabels* sout = CLabelsFactory::to_structured(sgd->apply());
+	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
+	CStructuredLabels* bout = bundle->apply()->as<CStructuredLabels>();
+	CStructuredLabels* sout = sgd->apply()->as<CStructuredLabels>();
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -149,7 +149,7 @@ int main(int argc, char ** argv)
 
 	// Train the multiclass machine using the data passed in the constructor
 	mc_svm->train();
-	CMulticlassLabels* mout = CLabelsFactory::to_multiclass(mc_svm->apply());
+	CMulticlassLabels* mout = mc_svm->apply()->as<CMulticlassLabels>();
 
 	SGVector< float64_t > w = sosvm->get_w();
 	for ( int32_t i = 0 ; i < w.vlen ; ++i )

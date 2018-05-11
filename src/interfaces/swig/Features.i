@@ -20,16 +20,6 @@
 %newobject copy_dimension_subset(SGVector<index_t> indices);
 %newobject get_streamed_features(index_t num_elements);
 
-
-/* methods in the labels factory do a conversion only - but need to be ref'd for modular interfaces */
-%newobject shogun::CLabelsFactory::to_binary(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_latent(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_multiclass(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_regression(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_structured(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_multilabel_output(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_multiclass_structured(CLabels* base_labels);
-
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDotFeatures;
 %feature("director:except") {
@@ -64,7 +54,6 @@
 %rename(RandomKitchenSinksDotFeatures) CRandomKitchenSinksDotFeatures;
 %rename(RandomFourierDotFeatures) CRandomFourierDotFeatures;
 %rename(Labels) CLabels;
-%rename(LabelsFactory) CLabelsFactory;
 
 PROTOCOLS_DENSELABELS(CDenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(DenseLabels) CDenseLabels;
@@ -497,7 +486,6 @@ namespace shogun
 %include <shogun/features/RandomFourierDotFeatures.h>
 
 %include <shogun/labels/Labels.h>
-%include <shogun/labels/LabelsFactory.h>
 %include <shogun/labels/DenseLabels.h>
 %include <shogun/labels/BinaryLabels.h>
 %include <shogun/labels/LatentLabels.h>

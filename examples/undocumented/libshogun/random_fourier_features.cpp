@@ -79,7 +79,7 @@ int main(int argv, char** argc)
 
 	lin_svm->train();
 
-	CBinaryLabels* predicted = CLabelsFactory::to_binary(lin_svm->apply());
+	CBinaryLabels* predicted = lin_svm->apply()->as<CBinaryLabels>();
 
 	CPRCEvaluation* evaluator = new CPRCEvaluation();
 	float64_t auPRC = evaluator->evaluate(predicted, labels);

@@ -320,7 +320,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 	SG_SPRINT("SGD trained in %9.4f\n", t2);
 
 	// Evaluation SGD
-	CStructuredLabels * labels_sgd = CLabelsFactory::to_structured(sgd->apply());
+	CStructuredLabels* labels_sgd = sgd->apply()->as<CStructuredLabels>();
 	SG_REF(labels_sgd);
 
 	float64_t ave_loss_sgd = 0.0;
@@ -342,7 +342,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 
 		sgd->set_features(fg_feats_test);
 		sgd->set_labels(fg_labels_test);
-		labels_sgd = CLabelsFactory::to_structured(sgd->apply());
+		labels_sgd = sgd->apply()->as<CStructuredLabels>();
 
 		evaluate(model, num_sample_test, labels_sgd, fg_labels_test, ave_loss_sgd);
 		SG_REF(labels_sgd);

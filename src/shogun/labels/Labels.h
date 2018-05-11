@@ -15,7 +15,6 @@
 #include <shogun/base/some.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/labels/LabelTypes.h>
-#include <shogun/labels/LabelsFactory.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 
