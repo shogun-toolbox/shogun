@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	machine->train(features);
 
 
-	CMulticlassLabels* output = CLabelsFactory::to_multiclass(machine->apply());
+	CMulticlassLabels* output = machine->apply()->as<CMulticlassLabels>();
 
 	CMulticlassAccuracy *evaluator = new CMulticlassAccuracy();
 	SG_SPRINT("Accuracy = %.4f\n", evaluator->evaluate(output, labels));
