@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Fernando Iglesias, Viktor Gal, 
- *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Koen van de Sande, 
- *          Pan Deng, Chiyuan Zhang, Thoralf Klein, Khaled Nasr, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Fernando Iglesias, Viktor Gal,
+ *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Koen van de Sande,
+ *          Pan Deng, Chiyuan Zhang, Thoralf Klein, Khaled Nasr,
  *          Evgeniy Andreev, Michele Mazzoni, Bjoern Esser, Yuyu Zhang
  */
 #ifndef __SGVECTOR_H__

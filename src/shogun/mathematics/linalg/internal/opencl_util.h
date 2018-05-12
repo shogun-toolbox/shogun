@@ -47,10 +47,8 @@
 
 #include <string>
 
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #include <initializer_list>
 #include <shogun/mathematics/linalg/internal/implementation/operations/Parameter.h>
-#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 
 namespace shogun
 {
@@ -242,7 +240,6 @@ inline std::string replace_all(std::string str, const std::string& from, const s
 	return str;
 }
 
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 /**
  * This method can be used to pass custom operations to be performed by OpenCL
  * element-wise for GPU vectors/matrices. The users can pass a format-string
@@ -266,7 +263,6 @@ inline std::string format(const char* str, std::initializer_list<shogun::linalg:
 		fmt=replace_all(fmt, "{"+i->m_name+"}", *i);
 	return fmt.append("\n");
 }
-#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 
 } // ocl
 

@@ -9,6 +9,8 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
+#include <type_traits>
+
 #include <shogun/lib/config.h>
 #include <shogun/base/macros.h>
 #include <shogun/lib/common.h>
@@ -33,12 +35,27 @@ SG_FORCED_INLINE void* sg_memcpy(InputIt dest, OutputIt src, size_t count)
 /* wrappers for malloc, free, realloc, calloc */
 
 /* overload new() / delete */
-void* operator new(size_t size) throw (std::bad_alloc);
+void* operator new(size_t size);
 void operator delete(void *p) throw();
 
 /* overload new[] / delete[] */
-void* operator new[](size_t size) throw(std::bad_alloc);
+void* operator new[](size_t size);
 void operator delete[](void *p) throw();
+
+#ifdef HAVE_ALIGNED_MALLOC
+#ifdef HAVE_STD_ALIGNED_ALLOC
+void* operator new(size_t count, std::align_val_t al);
+void* operator new[](size_t count, std::align_val_t al);
+void operator delete(void *p, std::align_val_t al);
+void operator delete[](void *p, std::align_val_t al);
+#endif // HAVE_STD_ALIGNED_ALLOC
+
+#ifdef TRACE_MEMORY_ALLOCS
+#define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al, __FILE__, __LINE__)
+#else
+#define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al)
+#endif //TRACE_MEMORY_ALLOCS
+#endif // HAVE_ALIGNED_MALLOC
 
 #ifdef TRACE_MEMORY_ALLOCS
 #define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len), __FILE__, __LINE__)
@@ -55,9 +72,9 @@ void operator delete[](void *p) throw();
 
 namespace shogun
 {
-	template <class T> class SGVector;
-	template <class T> class SGSparseVector;
-	template <class T> class SGMatrix;
+	class SGReferencedData;
+	template<class T>
+	using is_sg_referenced = typename std::is_base_of<SGReferencedData, T>;
 
 #ifdef TRACE_MEMORY_ALLOCS
 void* sg_malloc(size_t size, const char* file, int line);
@@ -78,35 +95,81 @@ template <class T> T* sg_generic_realloc(T* ptr, size_t old_len, size_t len, con
 	return (T*) sg_realloc(ptr, sizeof(T)*len, file, line);
 }
 
-void  sg_free(void* ptr);
+void sg_free(void* ptr);
 template <class T> void sg_generic_free(T* ptr)
 {
 	sg_free((void*) ptr);
 }
 #else //TRACE_MEMORY_ALLOCS
+
 void* sg_malloc(size_t size);
-template <class T> T* sg_generic_malloc(size_t len)
+template <class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_malloc(size_t len)
 {
 	return (T*) sg_malloc(sizeof(T)*len);
 }
 
+template<class T, std::enable_if_t<is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_malloc(size_t len)
+{
+	return new T[len]();
+}
+
 void* sg_realloc(void* ptr, size_t size);
-template <class T> T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
+template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
 {
 	return (T*) sg_realloc(ptr, sizeof(T)*len);
 }
 
+template<class T, std::enable_if_t<is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
+{
+	T* new_ptr = new T[len]();
+	size_t min_len=old_len;
+	if (len<min_len)
+		min_len=len;
+	for (size_t i=0; i<min_len; i++)
+		new_ptr[i]=ptr[i];
+	delete[] ptr;
+	return new_ptr;
+}
+
 void* sg_calloc(size_t num, size_t size);
-template <class T> T* sg_generic_calloc(size_t len)
+template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_calloc(size_t len)
 {
 	return (T*) sg_calloc(len, sizeof(T));
 }
 
-void  sg_free(void* ptr);
-template <class T> void sg_generic_free(T* ptr)
+template<class T, std::enable_if_t<is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_generic_calloc(size_t len)
+{
+	return new T[len]();
+}
+
+void sg_free(void* ptr);
+template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
+void sg_generic_free(T* ptr)
 {
 	sg_free(ptr);
 }
+
+template<class T, std::enable_if_t<is_sg_referenced<T>::value, T>* = nullptr>
+void sg_generic_free(T* ptr)
+{
+	delete[] ptr;
+}
+
+#ifdef HAVE_ALIGNED_MALLOC
+void* sg_aligned_malloc(size_t size, size_t al);
+template <class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
+T* sg_aligned_malloc(size_t len, size_t al)
+{
+	return (T*) sg_aligned_malloc(sizeof(T)*len, al);
+}
+#endif // HAVE_ALIGNED_MALLOC
+
 #endif //TRACE_MEMORY_ALLOCS
 #ifdef TRACE_MEMORY_ALLOCS
 /** @brief memory block */
@@ -130,7 +193,7 @@ class MemoryBlock
 		/** copy constructor
 		 * @param b b
 		 */
-	MemoryBlock(const MemoryBlock &b);
+		MemoryBlock(const MemoryBlock &b);
 
 		/** equality
 		 * @param b b
@@ -150,66 +213,6 @@ class MemoryBlock
 };
 void list_memory_allocs();
 #endif
-
-#ifdef TRACE_MEMORY_ALLOCS
-#define SG_SPECIALIZED_MALLOC(type)																\
-template<> type* sg_generic_malloc<type >(size_t len, const char* file, int line);				\
-template<> type* sg_generic_calloc<type >(size_t len, const char* file, int line);				\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len, const char* file, int line);	\
-template<> void sg_generic_free<type >(type* ptr);
-#else // TRACE_MEMORY_ALLOCS
-#define SG_SPECIALIZED_MALLOC(type)													\
-template<> type* sg_generic_malloc<type >(size_t len);								\
-template<> type* sg_generic_calloc<type >(size_t len);								\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len);	\
-template<> void sg_generic_free<type >(type* ptr);
-#endif // TRACE_MEMORY_ALLOCS
-
-SG_SPECIALIZED_MALLOC(SGVector<bool>)
-SG_SPECIALIZED_MALLOC(SGVector<char>)
-SG_SPECIALIZED_MALLOC(SGVector<int8_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int16_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGVector<complex128_t>)
-
-SG_SPECIALIZED_MALLOC(SGSparseVector<bool>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<char>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int8_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int16_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<complex128_t>)
-
-SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
-SG_SPECIALIZED_MALLOC(SGMatrix<char>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<complex128_t>)
-#undef SG_SPECIALIZED_MALLOC
 
 void* get_copy(void* src, size_t len);
 char* get_strdup(const char* str);

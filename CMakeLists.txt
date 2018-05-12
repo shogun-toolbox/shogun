@@ -282,34 +282,6 @@ IF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
 	SET(SWIG_CXX_COMPILER_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${SWIG_CXX_COMPILER_FLAGS}")
 ENDIF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
 
-###### MALLOC LIBRARY ###########
-SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
-if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
-	include(external/Jemalloc)
-
-	SET(USE_JEMALLOC 1)
-	LIST(INSERT INCLUDES 0 ${Jemalloc_INCLUDE_DIR})
-	SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Jemalloc_LIBRARIES})
-elseif(MALLOC_REPLACEMENT MATCHES "TCMalloc")
-	include(external/TCMalloc)
-
-	SET(USE_TCMALLOC 1)
-	LIST(INSERT INCLUDES 0 ${TCMalloc_INCLUDE_DIR})
-	SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${TCMalloc_LIBRARIES})
-elseif(MALLOC_REPLACEMENT MATCHES "Hoard")
-	find_package(Hoard)
-	if (Hoard_FOUND)
-		SET(USE_HOARD 1)
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Hoard_LIBRARIES})
-	else ()
-	message(FATAL_ERROR "Unable to use hoard malloc: library not found")
-	endif ()
-else()
-	message(STATUS "Using system's malloc")
-endif()
-
 ############### VERSION #####################
 FILE(STRINGS "${CMAKE_SOURCE_DIR}/NEWS" NEWS LIMIT_COUNT 5)
 STRING(REGEX REPLACE ".*SHOGUN Release version ([0-9.]*).*" "\\1" VERSION "${NEWS}")
@@ -364,37 +336,6 @@ SET(SVMLightWarning "${SVMLightWarning}\nThe SVMlight license can be found in LI
 SET(SVMLightWarning "${SVMLightWarning}\nyou do not know or cannot agree to the licensing terms expressed in")
 SET(SVMLightWarning "${SVMLightWarning}\nLICENSE.SVMlight press ctrl+c to abort configure now.")
 SET(SVMLightWarning "${SVMLightWarning}\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-#Trace memory allocs
-OPTION(TRACE_MEMORY_ALLOCS "Memory allocation tracing" OFF)
-
-# HMM
-OPTION(USE_HMMDEBUG "HMM cache" OFF)
-
-OPTION(USE_HMMCACHE "HMM cache" ON)
-
-OPTION(USE_HMMPARALLEL "Parallel structures in hmm training" OFF)
-IF(USE_HMMPARALLEL)
-	SET(USE_HMMPARALLEL_STRUCTURES 1)
-ENDIF()
-
-# Viterbi path debug
-OPTION(USE_PATHDEBUG "Viterbi path debugging" OFF)
-
-# big states
-OPTION(USE_BIGSTATES "Big (16bit) state" ON)
-
-#kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
-OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
-
-# PRNG settings
-SET(MEXP "19937" CACHE STRING "PRNG Mersenne exponent")
-SET(SFMT_MEXP ${MEXP})
-SET(DSFMT_MEXP ${MEXP})
-
-OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
-
-OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
 ######################### LIBRARIES #########################
 

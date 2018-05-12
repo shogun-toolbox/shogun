@@ -103,11 +103,7 @@ ENDIF()
 
 # c++
 IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${TRAVIS_DISABLE_META_CPP})
-    IF(HAVE_CXX0X OR HAVE_CXX11)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
-    ELSE()
-        MESSAGE(WARNING "Skipping C++ meta examples; requires a c++11 compatible compiler.")
-    ENDIF()
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
 ENDIF()
 
 ########### test all the enabled interfaces & install their files to examples

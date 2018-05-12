@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Viktor Gal, Soumyajit De, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Viktor Gal, Soumyajit De,
  *          Weijie Lin, Bjoern Esser, Sergey Lisitsyn, Thoralf Klein
  */
 
@@ -87,18 +87,25 @@ void MemoryBlock::set_sgobject()
 }
 #endif
 
-#ifdef HAVE_CXX11
-void* operator new(size_t size)
-#else
-void* operator new(size_t size) throw (std::bad_alloc)
-#endif
+SG_FORCED_INLINE bool allocation_error(void *p, size_t size, const char* op_str)
 {
-#if defined(USE_JEMALLOC)
-	void *p=je_malloc(size);
-#elif defined(USE_TCMALLOC)
+	const size_t buf_len=128;
+	char buf[buf_len];
+	size_t written=snprintf(buf, buf_len,
+		"Out of memory error, tried to allocate %lld bytes using %s.", (long long int) size, op_str);
+	if (written<buf_len)
+		throw ShogunException(buf);
+	else
+		throw ShogunException("Out of memory error");
+}
+
+#ifndef USE_JEMALLOC
+void* operator new(size_t size)
+{
+#if defined(USE_TCMALLOC)
 	void *p=tc_malloc(size);
 #else
-	void *p=malloc(size);
+	void *p=std::malloc(size);
 #endif
 
 #ifdef TRACE_MEMORY_ALLOCS
@@ -106,17 +113,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 		sg_mallocs->add(p, MemoryBlock(p,size));
 #endif
 	if (!p)
-	{
-		const size_t buf_len=128;
-		char buf[buf_len];
-		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using new().\n", (long long int) size);
-		if (written<buf_len)
-			throw ShogunException(buf);
-		else
-			throw ShogunException("Out of memory error using new.\n");
-	}
-
+		allocation_error(p, size, "new()");
 	return p;
 }
 
@@ -127,64 +124,63 @@ void operator delete(void *p) throw()
 		sg_mallocs->remove(p);
 #endif
 
-#if defined(USE_JEMALLOC)
-	je_free(p);
-#elif defined(USE_TCMALLOC)
+#if defined(USE_TCMALLOC)
 	tc_free(p);
 #else
-	free(p);
+	std::free(p);
 #endif
 }
 
-#ifdef HAVE_CXX11
 void* operator new[](size_t size)
-#else
-void* operator new[](size_t size) throw(std::bad_alloc)
-#endif
 {
-#if defined(USE_JEMALLOC)
-	void *p=je_malloc(size);
-#elif defined(USE_TCMALLOC)
-	void *p=tc_malloc(size);
+	return ::operator new(size);
+}
+
+void operator delete[](void *p) throw()
+{
+	::operator delete(p);
+}
+
+#ifdef HAVE_STD_ALIGNED_ALLOC
+void* operator new(size_t size, std::align_val_t al)
+{
+	std::size_t align = (std::size_t)al;
+	/* C11: the value of size shall be an integral multiple of alignment.  */
+	if (std::size_t rem = size & (align - 1))
+		size += align - rem;
+#if defined(USE_TCMALLOC)
+	void *p = tc_new_aligned_nothrow(size, align);
 #else
-	void *p=malloc(size);
+	void *p = std::aligned_alloc(size, align);
 #endif
 
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size));
 #endif
-
 	if (!p)
-	{
-		const size_t buf_len=128;
-		char buf[buf_len];
-		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using new[].\n", (long long int) size);
-		if (written<buf_len)
-			throw ShogunException(buf);
-		else
-			throw ShogunException("Out of memory error using new[].\n");
-	}
+		allocation_error(p, size, "new");
 
 	return p;
 }
 
-void operator delete[](void *p) throw()
+void* operator new[](size_t size, std::align_val_t al)
 {
-#ifdef TRACE_MEMORY_ALLOCS
-	if (sg_mallocs)
-		sg_mallocs->remove(p);
-#endif
-
-#if defined(USE_JEMALLOC)
-	je_free(p);
-#elif defined(USE_TCMALLOC)
-	tc_free(p);
-#else
-	free(p);
-#endif
+	return ::operator new(size, al);
 }
+
+void operator delete(void *p, std::align_val_t al)
+{
+	::operator delete(p);
+}
+
+void operator delete[](void *p, std::align_val_t al)
+{
+	::operator delete(p);
+}
+#endif // HAVE_STD_ALIGNED_ALLOC
+
+#endif // USE_JEMALLOC
 
 namespace shogun
 {
@@ -199,27 +195,54 @@ void* sg_malloc(size_t size
 #elif defined(USE_TCMALLOC)
 	void *p=tc_malloc(size);
 #else
-	void* p=malloc(size);
+	void* p=std::malloc(size);
 #endif
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
-
 	if (!p)
-	{
-		const size_t buf_len=128;
-		char buf[buf_len];
-		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using malloc.\n", (long long int) size);
-		if (written<buf_len)
-			throw ShogunException(buf);
-		else
-			throw ShogunException("Out of memory error using malloc.\n");
-	}
+		allocation_error(p, size, "malloc");
 
 	return p;
 }
+
+#ifdef HAVE_ALIGNED_MALLOC
+void* sg_aligned_malloc(size_t size, size_t al)
+{
+	/* the value of size shall be an integral multiple of alignment.  */
+	if (std::size_t rem = size & (al - 1))
+		size += al - rem;
+#if defined(USE_JEMALLOC)
+	void* p = je_aligned_alloc(al, size);
+#elif defined(USE_TCMALLOC)
+	void *p = tc_memalign(al, size);
+#else
+
+#ifdef HAVE_STD_ALIGNED_ALLOC
+	void* p = std::aligned_alloc(al, size);
+#else
+
+#ifdef _MSC_VER
+	void* p = _aligned_malloc(size, al);
+#elif defined(HAVE_POSIX_MEMALIGN)
+	void* p = nullptr;
+	int r = posix_memalign(&p, al, size);
+	if (r)
+		p = nullptr;
+#endif
+#endif // HAVE_STD_ALIGNED_ALLOC
+#endif // USE_JEMALLOC || USE_TCMALLOC
+
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
+#endif
+	allocation_error(p, size, "aligned_malloc");
+
+	return p;
+}
+#endif // HAVE_ALIGNED_MALLOC
 
 void* sg_calloc(size_t num, size_t size
 #ifdef TRACE_MEMORY_ALLOCS
@@ -239,21 +262,8 @@ void* sg_calloc(size_t num, size_t size
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
-
 	if (!p)
-	{
-		const size_t buf_len=128;
-		char buf[buf_len];
-		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using calloc.\n",
-			(long long int) size);
-
-		if (written<buf_len)
-			throw ShogunException(buf);
-		else
-			throw ShogunException("Out of memory error using calloc.\n");
-	}
-
+		allocation_error(p, size, "calloc");
 	return p;
 }
 
@@ -296,16 +306,7 @@ void* sg_realloc(void* ptr, size_t size
 #endif
 
 	if (!p && (size || !ptr))
-	{
-		const size_t buf_len=128;
-		char buf[buf_len];
-		size_t written=snprintf(buf, buf_len,
-			"Out of memory error, tried to allocate %lld bytes using realloc.\n", (long long int) size);
-		if (written<buf_len)
-			throw ShogunException(buf);
-		else
-			throw ShogunException("Out of memory error using realloc.\n");
-	}
+		allocation_error(p, size, "realloc");
 
 	return p;
 }
@@ -331,111 +332,6 @@ void list_memory_allocs()
 }
 #endif
 
-#ifdef TRACE_MEMORY_ALLOCS
-#define SG_SPECIALIZED_MALLOC(type)																\
-template<> type* sg_generic_malloc<type >(size_t len, const char* file, int line)				\
-{																								\
-	return new type[len]();																		\
-}																								\
-																								\
-template<> type* sg_generic_calloc<type >(size_t len, const char* file, int line)				\
-{																								\
-	return new type[len]();																		\
-}																								\
-																								\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len, const char* file, int line)	\
-{																								\
-	type* new_ptr = new type[len]();															\
-	size_t min_len=old_len;																		\
-	if (len<min_len)																			\
-		min_len=len;																			\
-	for (size_t i=0; i<min_len; i++)															\
-		new_ptr[i]=ptr[i];																		\
-	delete[] ptr;																				\
-	return new_ptr;																				\
-}																								\
-																								\
-template<> void sg_generic_free<type >(type* ptr)												\
-{																								\
-	delete[] ptr;																				\
-}
-
-#else // TRACE_MEMORY_ALLOCS
-
-#define SG_SPECIALIZED_MALLOC(type)									\
-template<> type* sg_generic_malloc<type >(size_t len)				\
-{																	\
-	return new type[len]();											\
-}																	\
-																	\
-template<> type* sg_generic_calloc<type >(size_t len)				\
-{																	\
-	return new type[len]();											\
-}																	\
-																	\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len)	\
-{																	\
-	type* new_ptr = new type[len]();								\
-	size_t min_len=old_len;											\
-	if (len<min_len)												\
-		min_len=len;												\
-	for (size_t i=0; i<min_len; i++)								\
-		new_ptr[i]=ptr[i];											\
-	delete[] ptr;													\
-	return new_ptr;													\
-}																	\
-																	\
-template<> void sg_generic_free<type >(type* ptr)					\
-{																	\
-	delete[] ptr;													\
-}
-#endif // TRACE_MEMORY_ALLOCS
-
-SG_SPECIALIZED_MALLOC(SGVector<bool>)
-SG_SPECIALIZED_MALLOC(SGVector<char>)
-SG_SPECIALIZED_MALLOC(SGVector<int8_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int16_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<int64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
-SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
-SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGVector<complex128_t>)
-
-SG_SPECIALIZED_MALLOC(SGSparseVector<bool>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<char>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int8_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int16_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<int64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGSparseVector<complex128_t>)
-
-SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
-SG_SPECIALIZED_MALLOC(SGMatrix<char>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
-SG_SPECIALIZED_MALLOC(SGMatrix<complex128_t>)
-#undef SG_SPECIALIZED_MALLOC
 }
 
 void* shogun::get_copy(void* src, size_t len)

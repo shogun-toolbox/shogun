@@ -215,6 +215,66 @@ IF(UNIX)
 ENDIF()
 CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
 
+###### MALLOC LIBRARY ###########
+#Trace memory allocs
+OPTION(TRACE_MEMORY_ALLOCS "Memory allocation tracing" OFF)
+if (NOT MSVC)
+  SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
+  if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
+    include(external/Jemalloc)
+
+    SET(USE_JEMALLOC 1)
+    SET(HAVE_ALIGNED_MALLOC 1)
+    SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
+    target_include_directories(libshogun PRIVATE ${Jemalloc_INCLUDE_DIR})
+    target_include_directories(shogun PRIVATE ${Jemalloc_INCLUDE_DIR})
+    target_link_libraries(shogun PRIVATE ${Jemalloc_LIBRARIES})
+    if (EXISTS shogun-static)
+      target_link_libraries(shogun-static PRIVATE ${Jemalloc_LIBRARIES})
+    endif()
+  elseif(MALLOC_REPLACEMENT MATCHES "TCMalloc")
+    include(external/TCMalloc)
+
+    SET(USE_TCMALLOC 1)
+    SET(HAVE_ALIGNED_MALLOC 1)
+    SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
+    target_include_directories(libshogun PRIVATE ${TCMalloc_INCLUDE_DIR})
+    target_include_directories(shogun PRIVATE ${TCMalloc_INCLUDE_DIR})
+    target_link_libraries(shogun PRIVATE ${TCMalloc_LIBRARIES})
+    if (EXISTS shogun-static)
+      target_link_libraries(shogun-static PRIVATE ${TCMalloc_LIBRARIES})
+    endif()
+  elseif(MALLOC_REPLACEMENT MATCHES "Hoard")
+    find_package(Hoard)
+    if (Hoard_FOUND)
+      SET(USE_HOARD 1)
+      SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Hoard_LIBRARIES})
+    else ()
+    message(FATAL_ERROR "Unable to use hoard malloc: library not found")
+    endif ()
+  else()
+    message(STATUS "Using system's malloc")
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("-faligned-new" HAS_ALIGNED_NEW)
+    if (HAS_ALIGNED_NEW)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-new")
+    endif()
+    check_function_exists("aligned_alloc" HAVE_STD_ALIGNED_ALLOC)
+
+    if (NOT HAVE_STD_ALIGNED_ALLOC)
+      if (MSVC)
+        SET(HAVE_ALIGNED_MALLOC 1)
+      else()
+        check_function_exists("posix_memalign" HAVE_POSIX_MEMALIGN)
+        if (HAVE_POSIX_MEMALIGN)
+          SET(HAVE_ALIGNED_MALLOC 1)
+        endif()
+      endif()
+    endif()
+  endif()
+endif()
+
+
 ############################ external dependencies
 
 #Stan math
@@ -435,6 +495,11 @@ SHOGUN_DEPENDENCIES(
   CONFIG_FLAG HAVE_ARPREC)
 
 ###### checks for random
+# PRNG settings
+SET(MEXP "19937" CACHE STRING "PRNG Mersenne exponent")
+SET(SFMT_MEXP ${MEXP})
+SET(DSFMT_MEXP ${MEXP})
+
 CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
 IF(NOT HAVE_ARC4RANDOM)
     # assume that /dev/random is non-blocking if /dev/urandom does not exist
@@ -445,7 +510,23 @@ IF(NOT HAVE_ARC4RANDOM)
     endif()
 ENDIF()
 
+############################ HMM
+OPTION(USE_HMMDEBUG "HMM debug mode" OFF)
+OPTION(USE_HMMCACHE "HMM cache" ON)
+OPTION(USE_HMMPARALLEL "Parallel structures in hmm training" OFF)
+IF(USE_HMMPARALLEL)
+  SET(USE_HMMPARALLEL_STRUCTURES 1)
+ENDIF()
+# Viterbi path debug
+OPTION(USE_PATHDEBUG "Viterbi path debugging" OFF)
+# big states
+OPTION(USE_BIGSTATES "Big (16bit) state" ON)
+OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
+#kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
+OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
+
+OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
 ################## linker optimisations
 OPTION(INCREMENTAL_LINKING "Enable incremantal linking")
 SET(INCREMENTAL_LINKING_DIR ${CMAKE_BINARY_DIR}/linker_cache

@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Soumyajit De, Sergey Lisitsyn, 
- *          Pan Deng, Khaled Nasr, Michele Mazzoni, Viktor Gal, 
- *          Fernando Iglesias, Thoralf Klein, Chiyuan Zhang, Koen van de Sande, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Soumyajit De, Sergey Lisitsyn,
+ *          Pan Deng, Khaled Nasr, Michele Mazzoni, Viktor Gal,
+ *          Fernando Iglesias, Thoralf Klein, Chiyuan Zhang, Koen van de Sande,
  *          Roman Votyakov
  */
 #ifndef __SGMATRIX_H__
@@ -82,12 +82,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 #ifndef SWIG // SWIG should skip this part
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
-
 		/** The container type for a given template argument */
 		template <typename ST> using container_type = SGMatrix<ST>;
-
-#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
 
 		/**
 		 * Constructor for creating a SGMatrix from a SGVector with refcounting.

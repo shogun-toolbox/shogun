@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
-
-namespace shogun { template <class T> class SGMatrix; }
-namespace shogun { template <class T> class SGSparseVector; }
-namespace shogun { template <class T> class SGVector; }
 
 using namespace shogun;
 

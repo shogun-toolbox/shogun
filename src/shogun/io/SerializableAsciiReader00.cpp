@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann, Viktor Gal,
  *          Thoralf Klein, Bjoern Esser
  */
 
@@ -86,13 +86,8 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		float64_t c_real, c_imag;
 		if (fscanf(m_file->m_fstream, "(%lg,%lg)", &c_real, &c_imag)
 			!= 2) return false;
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11) || defined(_LIBCPP_VERSION)
 		((complex128_t*) param)->real(c_real);
 		((complex128_t*) param)->imag(c_imag);
-#else
-		((complex128_t*) param)->real()=c_real;
-		((complex128_t*) param)->imag()=c_imag;
-#endif
 		break;
 	case PT_UNDEFINED:
 	case PT_SGOBJECT:
