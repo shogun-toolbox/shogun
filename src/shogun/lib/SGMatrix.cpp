@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Thoralf Klein, 
- *          Pan Deng, Fernando Iglesias, Sergey Lisitsyn, Viktor Gal, 
- *          Michele Mazzoni, Yingrui Chang, Weijie Lin, Khaled Nasr, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Thoralf Klein,
+ *          Pan Deng, Fernando Iglesias, Sergey Lisitsyn, Viktor Gal,
+ *          Michele Mazzoni, Yingrui Chang, Weijie Lin, Khaled Nasr,
  *          Koen van de Sande, Roman Votyakov
  */
 

@@ -91,8 +91,9 @@
 #cmakedefine USE_SWIG_DIRECTORS 1
 #cmakedefine TRACE_MEMORY_ALLOCS 1
 #cmakedefine USE_JEMALLOC 1
+#cmakedefine USE_TCMALLOC 1
+#cmakedefine HAVE_ALIGNED_MALLOC 1
 
-#cmakedefine HAVE_CXX0X 1
 #cmakedefine HAVE_CXX11 1
 
 /* does the compiler support abi::__cxa_demangle */
