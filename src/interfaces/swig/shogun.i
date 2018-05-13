@@ -253,5 +253,6 @@ PUT_ADD(CECOCEncoder)
 PUT_ADD(CECOCDecoder)
 PUT_ADD(CMulticlassStrategy)
 PUT_ADD(CCombinationRule)
+PUT_ADD(CDifferentiableFunction)
 
 } // namespace shogun
