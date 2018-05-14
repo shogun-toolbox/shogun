@@ -88,7 +88,7 @@ namespace shogun
 	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
 			EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		CFeatures* result;
+		CFeatures* result = nullptr;
 		REQUIRE(base_features, "No base features provided.\n");
 
 		switch (primitive_type)
