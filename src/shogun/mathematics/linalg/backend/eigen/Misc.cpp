@@ -117,18 +117,25 @@ void LinalgBackendEigen::identity_impl(SGMatrix<T>& identity_matrix) const
 	I_eig.setIdentity();
 }
 
+template <typename T>
+void LinalgBackendEigen::set_const_impl(SGVector<T>& a, T value) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	a_eig.setConstant(value);
+}
+
+template <typename T>
+void LinalgBackendEigen::set_const_impl(SGMatrix<T>& a, T value) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	a_eig.setConstant(value);
+}
+
 template <typename T, template <typename> class Container>
 void LinalgBackendEigen::range_fill_impl(Container<T>& a, const T start) const
 {
 	for (decltype(a.size()) i = 0; i < a.size(); ++i)
 		a[i] = start + T(i);
-}
-
-template <typename T, template <typename> class Container>
-void LinalgBackendEigen::set_const_impl(Container<T>& a, T value) const
-{
-	for (decltype(a.size()) i = 0; i < a.size(); ++i)
-		a[i] = value;
 }
 
 template <typename T>

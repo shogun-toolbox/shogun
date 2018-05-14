@@ -18,6 +18,7 @@
 #include <shogun/mathematics/Random.h>
 #include <shogun/lib/SGVector.h>
 #include <algorithm>
+#include <numeric>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -468,12 +469,17 @@ class CMath : public CSGObject
 		 * @param x base (integer)
 		 * @param n exponent (integer)
 		 */
-		static inline int32_t pow(int32_t x, int32_t n)
+		template<typename T, std::enable_if_t<std::numeric_limits<T>::is_integer, T>* = nullptr>
+		static inline T pow(T x, T n)
 		{
 			ASSERT(n>=0)
-			int32_t result=1;
+			// power of integer 2 is basically a bitshift...
+			if (x == 2)
+				return (1 << n);
+
+			T result = 1;
 			while (n--)
-				result*=x;
+				result *= x;
 
 			return result;
 		}
@@ -1229,42 +1235,25 @@ class CMath : public CSGObject
 			}
 #endif
 
-		/** Helper functor for the function argsort */
-		template<class T>
-			struct IndexSorter
-			{
-				/** constructor */
-				IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
-
-				/** access operator */
-				bool operator() (index_t i, index_t j) const
-				{
-					return abs(data[i]-data[j])>std::numeric_limits<T>::epsilon()
-					&& data[i]<data[j];
-				}
-
-				/** data */
-				const T* data;
-			};
-
 #ifndef SWIG // SWIG should skip this part
 		/** Get sorted index.
 		 *
 		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
 		 *
-		 * @param vector vector to be sorted
+		 * @param v vector to be sorted
 		 * @return sorted index for this vector
 		 */
 		template<class T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-			static SGVector<index_t> argsort(SGVector<T> vector)
+			static SGVector<index_t> argsort(SGVector<T> v)
 			{
-				IndexSorter<T> cmp(&vector);
-				SGVector<index_t> idx(vector.size());
-				for (index_t i=0; i < vector.size(); ++i)
-					idx[i] = i;
-
-				std::sort(idx.vector, idx.vector+vector.size(), cmp);
-
+				SGVector<index_t> idx(v.vlen);
+				std::iota(idx.begin(), idx.end(), 0);
+				std::sort(idx.begin(), idx.end(),
+					[&v](index_t i1, index_t i2)
+					{
+						return std::abs(v[i1]-v[i2])>std::numeric_limits<T>::epsilon()
+							&& v[i1]<v[i2];
+					});
 				return idx;
 			}
 
@@ -1393,7 +1382,6 @@ class CMath : public CSGObject
 		/// helper function for parallel_qsort_index.
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
-
 
 		/** Finds the smallest element in output and puts that element as the
 		 * first element

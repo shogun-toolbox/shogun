@@ -63,13 +63,13 @@ public:
 	 *
 	 * @param size subset size
 	 */
-	void set_feature_subset_size(int32_t size);
+	void set_feature_subset_size(index_t size);
 
 	/** get number of random features to choose in each node split
 	 *
 	 * @return size subset size
 	 */
-	int32_t get_feature_subset_size() const { return m_randsubset_size; }
+	index_t get_feature_subset_size() const { return m_randsubset_size; }
 
 protected:
 	/** computes best attribute for CARTtrain
@@ -85,9 +85,9 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CLabels* labels,
-		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing,
-		int32_t &count_left, int32_t &count_right, int32_t subset_size=0, const SGVector<int32_t>& active_indices=SGVector<index_t>());
+	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
+		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 
 private:
 	/** initialize parameters */
@@ -95,7 +95,7 @@ private:
 
 private:
 	/** random feature subset size */
-	int32_t m_randsubset_size;
+	index_t m_randsubset_size;
 
 };
 } /* namespace shogun */

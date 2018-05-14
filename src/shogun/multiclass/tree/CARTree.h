@@ -229,7 +229,7 @@ public:
 	void set_label_epsilon(float64_t epsilon);
 
 	void pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
-	 
+
 	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
 protected:
@@ -247,7 +247,7 @@ protected:
 	 * @param level current tree depth
 	 * @return pointer to the root of the CART subtree
 	 */
-	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level);
+	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CDenseFeatures<float64_t>* data, const SGVector<float64_t>& weights, CDenseLabels* labels, int32_t level);
 
 	/** modify labels for compute_best_attribute
 	 *
@@ -255,7 +255,7 @@ protected:
 	 * @param n_ulabels stores number of unique labels
 	 * @return unique labels
 	 */
-	SGVector<float64_t> get_unique_labels(SGVector<float64_t> labels_vec, int32_t &n_ulabels);
+	SGVector<float64_t> get_unique_labels(const SGVector<float64_t>& labels_vec, index_t &n_ulabels) const;
 
 	/** computes best attribute for CARTtrain
 	 *
@@ -270,9 +270,9 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CLabels* labels,
-		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing,
-		int32_t &count_left, int32_t &count_right, int32_t subset_size=0, const SGVector<int32_t>& active_indices=SGVector<index_t>());
+	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
+		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 
 
 	/** handles missing values through surrogate splits
@@ -283,7 +283,7 @@ protected:
 	 * @param attr best attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	SGVector<bool> surrogate_split(SGMatrix<float64_t> data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr);
+	SGVector<bool> surrogate_split(SGMatrix<float64_t> data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr) const;
 
 
 	/** handles missing values for a chosen continuous surrogate attribute
@@ -298,9 +298,9 @@ protected:
 	 * @param attr surrogate attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	void handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs,
-		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left,
-									SGVector<float64_t> weights, float64_t p, int32_t attr);
+	void handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m, const std::vector<index_t>& missing_vecs,
+		std::vector<float64_t>& association_index, std::vector<index_t>& intersect_vecs,
+		SGVector<bool> is_left, SGVector<float64_t> weights, float64_t p, index_t attr) const;
 
 	/** handles missing values for a chosen nominal surrogate attribute
 	 *
@@ -314,9 +314,9 @@ protected:
 	 * @param attr surrogate attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	void handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs,
-		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left,
-									SGVector<float64_t> weights, float64_t p, int32_t attr);
+	void handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, const std::vector<index_t>& missing_vecs,
+		std::vector<float64_t>& association_index, const std::vector<index_t>& intersect_vecs,
+		SGVector<bool> is_left, SGVector<float64_t> weights, float64_t p, index_t attr) const;
 
 	/** returns gain in regression case
 	 *
@@ -326,7 +326,8 @@ protected:
 	 * @param labels regression labels
 	 * @return least squared deviation gain achieved after spliting the node
 	 */
-	float64_t gain(SGVector<float64_t> wleft, SGVector<float64_t> wright, SGVector<float64_t> wtotal, SGVector<float64_t> labels);
+	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright,
+		const SGVector<float64_t>& wtotal, const SGVector<float64_t>& feats) const;
 
 	/** returns gain in Gini impurity measure
 	 *
@@ -335,7 +336,7 @@ protected:
 	 * @param wtotal label distribution in current node
 	 * @return Gini gain achieved after spliting the node
 	 */
-	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal);
+	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal) const;
 
 	/** returns Gini impurity of a node
 	 *
@@ -343,7 +344,7 @@ protected:
 	 * @param total_weight stores the total weight of all classes
 	 * @return Gini index of the node
 	 */
-	float64_t gini_impurity_index(const SGVector<float64_t>& weighted_lab_classes, float64_t &total_weight);
+	float64_t gini_impurity_index(const SGVector<float64_t>& weighted_lab_classes, float64_t &total_weight) const;
 
 	/** returns least squares deviation
 	 *
@@ -352,7 +353,7 @@ protected:
 	 * @param total_weight stores sum of weights in weights vector
 	 * @return least squares deviation of the data
 	 */
-	float64_t least_squares_deviation(const SGVector<float64_t>& labels, const SGVector<float64_t>& weights, float64_t &total_weight);
+	float64_t least_squares_deviation(const SGVector<float64_t>& labels, const SGVector<float64_t>& weights, float64_t &total_weight) const;
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -378,7 +379,7 @@ protected:
 	 * @param weights weights associated with the labels
 	 * @return error evaluated
 	 */
-	float64_t compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights);
+	float64_t compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights) const;
 
 	/** cost-complexity pruning
 	 *
@@ -392,7 +393,7 @@ protected:
 	 * @param node the root of subtree whose weakest link it finds
 	 * @return alpha value corresponding to the weakest link in subtree
 	 */
-	float64_t find_weakest_alpha(bnode_t* node);
+	float64_t find_weakest_alpha(bnode_t* node) const;
 
 	/** recursively cuts weakest link(s) in a tree
 	 *

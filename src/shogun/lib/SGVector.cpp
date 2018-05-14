@@ -871,15 +871,9 @@ float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
 template <class T>
 int32_t SGVector<T>::unique(T* output, int32_t size)
 {
-	CMath::qsort<T>(output, size);
-	int32_t j=0;
-
-	for (int32_t i=0; i<size; i++)
-	{
-		if (i==0 || output[i]!=output[i-1])
-			output[j++]=output[i];
-	}
-	return j;
+	std::sort(output, output+size);
+	auto last = std::unique(output, output+size);
+	return std::distance(output, last);
 }
 
 template <>
