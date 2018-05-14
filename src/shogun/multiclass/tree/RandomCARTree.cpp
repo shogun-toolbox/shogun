@@ -43,28 +43,24 @@ CRandomCARTree::~CRandomCARTree()
 {
 }
 
-void CRandomCARTree::set_feature_subset_size(int32_t size)
+void CRandomCARTree::set_feature_subset_size(index_t size)
 {
 	REQUIRE(size>0, "Subset size should be greater than 0. %d supplied!\n",size)
 	m_randsubset_size=size;
 }
 
-int32_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CLabels* labels,
-	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing_final, int32_t &count_left,
-	int32_t &count_right, int32_t subset_size, const SGVector<index_t>& active_indices)
+index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing_final, index_t &count_left,
+	index_t &count_right, index_t subset_size, const SGVector<index_t>& active_indices)
 
 {
-	int32_t num_feats;
-	if(m_pre_sort)
-		num_feats=mat.num_cols;
-	else
-		num_feats=mat.num_rows;
-	
+	auto num_feats = (m_pre_sort) ? mat.num_cols : mat.num_rows;
+
 	// if subset size is not set choose sqrt(num_feats) by default
 	if (m_randsubset_size==0)
 		m_randsubset_size = std::sqrt((float64_t)num_feats);
 	subset_size=m_randsubset_size;
-	
+
 	REQUIRE(subset_size<=num_feats, "The Feature subset size(set %d) should be less than"
 	" or equal to the total number of features(%d here).\n",subset_size,num_feats)
 

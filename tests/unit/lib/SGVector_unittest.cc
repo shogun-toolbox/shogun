@@ -418,3 +418,13 @@ TEST(SGVectorTest,iterator)
 	for (auto v: t)
 		EXPECT_EQ(t[index++], v);
 }
+
+TEST(SGVectorTest,unique)
+{
+    SGVector<int32_t> vec{1,2,3,1,2,3,3,4,5,4,5,6,7};
+    auto num_unique = vec.unique(vec.vector, vec.vlen);
+
+    EXPECT_EQ(7, num_unique);
+    for (index_t i = 0; i < num_unique; ++i)
+		EXPECT_EQ(i+1, vec[i]);
+}
