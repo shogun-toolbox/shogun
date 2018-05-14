@@ -40,8 +40,6 @@ class CPNorm : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CPNorm ();
 
-		/// initialize preprocessor from features
-		virtual bool init (CFeatures* features);
 		/// cleanup
 		virtual void cleanup ();
 		/// initialize preprocessor from file
