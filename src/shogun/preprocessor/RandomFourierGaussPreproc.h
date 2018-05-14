@@ -79,14 +79,18 @@ public:
 	 */
 	virtual EFeatureClass get_feature_class();
 
-	/** initializer routine
+	/** fit to features
 	 * calls set_dim_input_space(const int32_t dim); with the proper value
-	 * calls init_randomcoefficients(); this call does NOT override a previous call to void set_randomcoefficients(...) IF and ONLY IF
-	 * the dimensions of input AND feature space are equal to the values from the previous call to void set_randomcoefficients(...)
-	 * @param f the features to be processed, must be of type CDenseFeatures<float64_t>
-	 * @return true if new random coefficients were generated, false if old ones from a call to set_randomcoefficients(...) are kept
+	 * calls init_randomcoefficients(); this call does NOT override a previous
+	 * call to void set_randomcoefficients(...) IF and ONLY IF
+	 * the dimensions of input AND feature space are equal to the values from
+	 * the previous call to void set_randomcoefficients(...)
+	 * @param f the features to be processed, must be of type
+	 * CDenseFeatures<float64_t>
+	 * @return true if new random coefficients were generated, false if old ones
+	 * from a call to set_randomcoefficients(...) are kept
 	 */
-	virtual bool init(CFeatures *f);
+	virtual void fit(CFeatures* f);
 
 	/**  setter for kernel width
 	 * @param width kernel width to be set
@@ -132,14 +136,21 @@ public:
 	void set_dim_feature_space(const int32_t dim);
 
 	/** computes new random coefficients IF test_rfinited() evaluates to false
-	 * test_rfinited() evaluates to TRUE if void set_randomcoefficients(...) hase been called and the values set by set_dim_input_space(...) , set_dim_feature_space(...) and set_kernelwidth(...) are consistent to the call of void set_randomcoefficients(...)
+	 * test_rfinited() evaluates to TRUE if void set_randomcoefficients(...)
+	 * hase been called and the values set by set_dim_input_space(...) ,
+	 * set_dim_feature_space(...) and set_kernelwidth(...) are consistent to the
+	 * call of void set_randomcoefficients(...)
 	 *
 	 * throws shogun exception if dim_feature_space <= 0 or dim_input_space <= 0
 	 *
-	 * @return returns true if test_rfinited() evaluates to false and new coefficients are computed
-	 * returns false if test_rfinited() evaluates to true and old random coefficients are kept which were set by a previous call to void set_randomcoefficients(...)
+	 * @return returns true if test_rfinited() evaluates to false and new
+	 * coefficients are computed
+	 * returns false if test_rfinited() evaluates to true and old random
+	 * coefficients are kept which were set by a previous call to void
+	 * set_randomcoefficients(...)
 	 *
-	 * this function is useful if you want to use apply_to_feature_vector but cannot call before it init(CFeatures *f)
+	 * this function is useful if you want to use apply_to_feature_vector but
+	 * cannot call before it fit(CFeatures *f)
 	 *
 	 */
 	bool init_randomcoefficients();
