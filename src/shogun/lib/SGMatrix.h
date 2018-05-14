@@ -76,7 +76,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 *
 		 * @return true if matrix is on GPU
 		 */
-		bool on_gpu() const
+		SG_FORCED_INLINE bool on_gpu() const
 		{
 			return gpu_ptr != NULL;
 		}
@@ -474,7 +474,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */
-		void assert_on_cpu() const
+		SG_FORCED_INLINE void assert_on_cpu() const
 		{
 			if (on_gpu())
 				SG_SERROR("Direct memory access not possible when data is in GPU memory.\n");
