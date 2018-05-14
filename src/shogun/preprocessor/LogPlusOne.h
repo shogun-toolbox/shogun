@@ -37,9 +37,6 @@ class CLogPlusOne : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CLogPlusOne();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
-
 		/// cleanup
 		virtual void cleanup();
 		/// initialize preprocessor from file
