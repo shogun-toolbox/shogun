@@ -371,7 +371,7 @@ SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* 
 	// Obtain the linear transform applying PCA
 	CPCA* pca = new CPCA();
 	pca->set_target_dim(cloned_features->get_num_features());
-	pca->init(cloned_features);
+	pca->fit(cloned_features);
 	SGMatrix<float64_t> pca_transform = pca->get_transformation_matrix();
 
 	SG_UNREF(pca);

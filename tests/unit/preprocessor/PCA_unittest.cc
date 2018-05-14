@@ -54,7 +54,7 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(EVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -118,7 +118,7 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(EVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -182,7 +182,7 @@ TEST(PCA, PCA_N_less_D_EVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(EVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -243,7 +243,7 @@ TEST(PCA, PCA_N_greater_D_SVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -303,7 +303,7 @@ TEST(PCA, PCA_N_equals_D_SVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -362,7 +362,7 @@ TEST(PCA, PCA_N_less_D_SVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -414,7 +414,7 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(AUTO,false,MEM_IN_PLACE);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -480,7 +480,7 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
 	SGVector<float64_t> finalVector=pca->apply_to_feature_vector(inputVector);
 
@@ -515,7 +515,7 @@ TEST(PCA, PCA_WHITEN_SVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(SVD,true);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
@@ -594,7 +594,7 @@ TEST(PCA, PCA_WHITEN_EVD)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CPCA* pca=new CPCA(EVD,true);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
 

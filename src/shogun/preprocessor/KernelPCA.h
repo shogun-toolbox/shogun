@@ -42,8 +42,8 @@ public:
 
 		virtual ~CKernelPCA();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
+		virtual void fit(CFeatures* features);
+
 		/// cleanup
 		virtual void cleanup();
 
