@@ -130,10 +130,7 @@ class CPCA: public CDimensionReductionPreprocessor
 		/** destructor */
 		virtual ~CPCA();
 
-		/** initialize preprocessor from features
-		 * @param features
-		 */
-		virtual bool init(CFeatures* features);
+		virtual void fit(CFeatures* features);
 
 		/** cleanup */
 		virtual void cleanup();
