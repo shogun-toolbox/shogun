@@ -37,7 +37,7 @@ TEST(CommUlongStringKernel, kernel_matrix)
 	CStringFeatures<uint64_t>* l_feats = new CStringFeatures<uint64_t>(alphabet);
 	l_feats->obtain_from_char(s_feats, 5-1, 5, 0, false);
 	CSortUlongString* preproc = new CSortUlongString();
-	preproc->init(l_feats);
+	preproc->fit(l_feats);
 	l_feats->add_preprocessor(preproc);
 	l_feats->apply_preprocessor();
 	CCommUlongStringKernel* kernel = new CCommUlongStringKernel(l_feats, l_feats);

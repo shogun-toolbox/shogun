@@ -43,9 +43,6 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 		/** destructor */
 		virtual ~CDecompressString();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* f);
-
 		/// cleanup
 		virtual void cleanup();
 
