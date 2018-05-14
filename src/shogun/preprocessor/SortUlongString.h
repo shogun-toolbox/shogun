@@ -31,8 +31,6 @@ public:
 	/** destructor */
 	virtual ~CSortUlongString();
 
-	/// initialize preprocessor from features
-	virtual bool init(CFeatures* f);
 	/// cleanup
 	virtual void cleanup();
 	/// initialize preprocessor from file
