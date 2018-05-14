@@ -43,13 +43,6 @@ CHomogeneousKernelMap::~CHomogeneousKernelMap()
 {
 }
 
-bool CHomogeneousKernelMap::init(CFeatures* features)
-{
-	ASSERT(features->get_feature_class()==C_DENSE)
-	ASSERT(features->get_feature_type()==F_DREAL)
-
-	return true;
-}
 
 void CHomogeneousKernelMap::cleanup()
 {
@@ -163,7 +156,7 @@ void CHomogeneousKernelMap::init()
 
 SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features)
 {
-	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
+	auto simple_features = features->as<CDenseFeatures<float64_t>>();
 	int32_t num_vectors = simple_features->get_num_vectors ();
 	int32_t num_features = simple_features->get_num_features ();
 

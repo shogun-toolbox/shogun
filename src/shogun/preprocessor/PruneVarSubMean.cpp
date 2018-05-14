@@ -26,84 +26,78 @@ CPruneVarSubMean::~CPruneVarSubMean()
 	cleanup();
 }
 
-/// initialize preprocessor from features
-bool CPruneVarSubMean::init(CFeatures* features)
+void CPruneVarSubMean::fit(CFeatures* features)
 {
-	if (!m_initialized)
+	if (m_initialized)
+		cleanup();
+
+	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	int32_t num_examples = simple_features->get_num_vectors();
+	int32_t num_features = simple_features->get_num_features();
+
+	m_mean = SGVector<float64_t>();
+	m_idx = SGVector<int32_t>();
+	m_std = SGVector<float64_t>();
+
+	m_mean.resize_vector(num_features);
+	float64_t* var = SG_MALLOC(float64_t, num_features);
+	int32_t i, j;
+
+	memset(var, 0, num_features * sizeof(float64_t));
+	m_mean.zero();
+
+	auto feature_matrix = simple_features->get_feature_matrix();
+
+	// compute mean
+	for (i = 0; i < num_examples; i++)
 	{
-		ASSERT(features->get_feature_class()==C_DENSE)
-		ASSERT(features->get_feature_type()==F_DREAL)
-
-		CDenseFeatures<float64_t>* simple_features=(CDenseFeatures<float64_t>*) features;
-		int32_t num_examples = simple_features->get_num_vectors();
-		int32_t num_features = simple_features->get_num_features();
-
-		m_mean = SGVector<float64_t>();
-		m_idx = SGVector<int32_t>();
-		m_std = SGVector<float64_t>();;
-
-		m_mean.resize_vector(num_features);
-		float64_t* var=SG_MALLOC(float64_t, num_features);
-		int32_t i,j;
-
-		memset(var, 0, num_features*sizeof(float64_t));
-		m_mean.zero();
-
-		SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
-
-		// compute mean
-		for (i=0; i<num_examples; i++)
-		{
-			for (j=0; j<num_features; j++)
-				m_mean[j]+=feature_matrix.matrix[i*num_features+j];
-		}
-
-		for (j=0; j<num_features; j++)
-			m_mean[j]/=num_examples;
-
-		// compute var
-		for (i=0; i<num_examples; i++)
-		{
-			for (j=0; j<num_features; j++)
-				var[j]+=CMath::sq(m_mean[j]-feature_matrix.matrix[i*num_features+j]);
-		}
-
-		int32_t num_ok=0;
-		int32_t* idx_ok=SG_MALLOC(int32_t, num_features);
-
-		for (j=0; j<num_features; j++)
-		{
-			var[j]/=num_examples;
-
-			if (var[j]>=1e-14)
-			{
-				idx_ok[num_ok]=j;
-				num_ok++ ;
-			}
-		}
-
-		SG_INFO("Reducing number of features from %i to %i\n", num_features, num_ok)
-
-		m_idx.resize_vector(num_ok);
-		SGVector<float64_t> new_mean(num_ok);
-		m_std.resize_vector(num_ok);
-
-		for (j=0; j<num_ok; j++)
-		{
-			m_idx[j]=idx_ok[j] ;
-			new_mean[j]=m_mean[idx_ok[j]];
-			m_std[j] = std::sqrt(var[idx_ok[j]]);
-		}
-		m_num_idx = num_ok;
-		SG_FREE(idx_ok);
-		SG_FREE(var);
-		m_mean = new_mean;
-
-		m_initialized = true;
-		return true;
+		for (j = 0; j < num_features; j++)
+			m_mean[j] += feature_matrix.matrix[i * num_features + j];
 	}
-	else
-		return false;
+
+	for (j = 0; j < num_features; j++)
+		m_mean[j] /= num_examples;
+
+	// compute var
+	for (i = 0; i < num_examples; i++)
+	{
+		for (j = 0; j < num_features; j++)
+			var[j] += CMath::sq(
+			    m_mean[j] - feature_matrix.matrix[i * num_features + j]);
+	}
+
+	int32_t num_ok = 0;
+	int32_t* idx_ok = SG_MALLOC(int32_t, num_features);
+
+	for (j = 0; j < num_features; j++)
+	{
+		var[j] /= num_examples;
+
+		if (var[j] >= 1e-14)
+		{
+			idx_ok[num_ok] = j;
+			num_ok++;
+		}
+	}
+
+	SG_INFO("Reducing number of features from %i to %i\n", num_features, num_ok)
+
+	m_idx.resize_vector(num_ok);
+	SGVector<float64_t> new_mean(num_ok);
+	m_std.resize_vector(num_ok);
+
+	for (j = 0; j < num_ok; j++)
+	{
+		m_idx[j] = idx_ok[j];
+		new_mean[j] = m_mean[idx_ok[j]];
+		m_std[j] = std::sqrt(var[idx_ok[j]]);
+	}
+	m_num_idx = num_ok;
+	SG_FREE(idx_ok);
+	SG_FREE(var);
+	m_mean = new_mean;
+
+	m_initialized = true;
 }
 
 /// clean up allocated memory
