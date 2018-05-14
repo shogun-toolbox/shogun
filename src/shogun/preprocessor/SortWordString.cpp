@@ -20,15 +20,6 @@ CSortWordString::~CSortWordString()
 {
 }
 
-/// initialize preprocessor from features
-bool CSortWordString::init(CFeatures* f)
-{
-	ASSERT(f->get_feature_class()==C_STRING)
-	ASSERT(f->get_feature_type()==F_WORD)
-
-	return true;
-}
-
 /// clean up allocated memory
 void CSortWordString::cleanup()
 {
@@ -56,13 +47,14 @@ bool CSortWordString::save(FILE* f)
 bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
 	int32_t i;
-	int32_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
+	auto sf = f->as<CStringFeatures<uint16_t>>();
+	int32_t num_vec = sf->get_num_vectors();
 
 	for (i=0; i<num_vec; i++)
 	{
 		int32_t len = 0 ;
 		bool free_vec;
-		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len, free_vec);
+		uint16_t* vec = sf->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec) // won't work with non-in-memory string features
 
 		//CMath::qsort(vec, len);

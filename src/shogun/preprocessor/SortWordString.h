@@ -32,9 +32,6 @@ public:
 	/** destructor */
 	virtual ~CSortWordString();
 
-	/// initialize preprocessor from features
-	virtual bool init(CFeatures* f);
-
 	/// cleanup
 	virtual void cleanup();
 	/// initialize preprocessor from file
