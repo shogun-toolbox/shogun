@@ -74,52 +74,46 @@ CPCA::~CPCA()
 {
 }
 
-bool CPCA::init(CFeatures* features)
+void CPCA::fit(CFeatures* features)
 {
-	if (!m_initialized)
-	{
-		REQUIRE(features->get_feature_class()==C_DENSE, "PCA only works with dense features")
-		REQUIRE(features->get_feature_type()==F_DREAL, "PCA only works with real features")
+	if (m_initialized)
+		cleanup();
 
-		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)
-									->get_feature_matrix();
-		int32_t num_vectors = feature_matrix.num_cols;
-		int32_t num_features = feature_matrix.num_rows;
-		SG_INFO(
-		    "num_examples: %d num_features: %d\n", num_vectors, num_features)
+	auto feature_matrix =
+	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	int32_t num_vectors = feature_matrix.num_cols;
+	int32_t num_features = feature_matrix.num_rows;
+	SG_INFO("num_examples: %d num_features: %d\n", num_vectors, num_features)
 
-		// max target dim allowed
-		int32_t max_dim_allowed = CMath::min(num_vectors, num_features);
-		num_dim=0;
+	// max target dim allowed
+	int32_t max_dim_allowed = CMath::min(num_vectors, num_features);
+	num_dim = 0;
 
-		REQUIRE(m_target_dim<=max_dim_allowed,
-			 "target dimension should be less or equal to than minimum of N and D")
+	REQUIRE(
+	    m_target_dim <= max_dim_allowed,
+	    "target dimension should be less or equal to than minimum of N and D")
 
-		// center data
-		Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+	// center data
+	Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
 
-		m_mean_vector = SGVector<float64_t>(num_features);
-		Map<VectorXd> data_mean(m_mean_vector.vector, num_features);
- 		data_mean = fmatrix.rowwise().sum()/(float64_t) num_vectors;
-		fmatrix = fmatrix.colwise()-data_mean;
+	m_mean_vector = SGVector<float64_t>(num_features);
+	Map<VectorXd> data_mean(m_mean_vector.vector, num_features);
+	data_mean = fmatrix.rowwise().sum() / (float64_t)num_vectors;
+	fmatrix = fmatrix.colwise() - data_mean;
 
-		m_eigenvalues_vector = SGVector<float64_t>(max_dim_allowed);
+	m_eigenvalues_vector = SGVector<float64_t>(max_dim_allowed);
 
-		if (m_method == AUTO)
-			m_method = (num_vectors>num_features) ? EVD : SVD;
+	if (m_method == AUTO)
+		m_method = (num_vectors > num_features) ? EVD : SVD;
 
-		if (m_method == EVD)
-		    init_with_evd(feature_matrix,  max_dim_allowed);
-		else
-		    init_with_svd(feature_matrix, max_dim_allowed);
+	if (m_method == EVD)
+		init_with_evd(feature_matrix, max_dim_allowed);
+	else
+		init_with_svd(feature_matrix, max_dim_allowed);
 
-		// restore feature matrix
-		fmatrix = fmatrix.colwise()+data_mean;
-		m_initialized = true;
-		return true;
-	}
-
-	return false;
+	// restore feature matrix
+	fmatrix = fmatrix.colwise() + data_mean;
+	m_initialized = true;
 }
 
 void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)

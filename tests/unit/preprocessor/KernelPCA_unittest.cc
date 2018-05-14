@@ -51,7 +51,7 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	CKernelPCA* kpca = new CKernelPCA(kernel);
 	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
-	kpca->init(train_feats);
+	kpca->fit(train_feats);
 
 	SGMatrix<float64_t> embedding = kpca->apply_to_feature_matrix(test_feats);
 
@@ -82,7 +82,7 @@ TEST(KernelPCA, apply_to_feature_vector)
 	CKernelPCA* kpca = new CKernelPCA(kernel);
 	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
-	kpca->init(train_feats);
+	kpca->fit(train_feats);
 
 	SGVector<float64_t> embedding = kpca->apply_to_feature_vector(test_vector);
 

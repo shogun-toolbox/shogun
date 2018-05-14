@@ -56,11 +56,6 @@ SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFe
 	}
 }
 
-bool CDimensionReductionPreprocessor::init(CFeatures* data)
-{
-	return true;
-}
-
 void CDimensionReductionPreprocessor::cleanup()
 {
 
