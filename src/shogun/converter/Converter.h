@@ -9,9 +9,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
+#include <shogun/transformer/Transformer.h>
 
 namespace shogun
 {
@@ -19,11 +20,11 @@ namespace shogun
 /** @brief class Converter used to convert data
  *
  */
-class CConverter : public CSGObject
+class CConverter : public CTransformer
 {
 public:
 	/** constructor */
-	CConverter() : CSGObject() {};
+	CConverter() : CTransformer(){};
 
 	/** destructor */
 	virtual ~CConverter() {};
