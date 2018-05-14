@@ -63,63 +63,62 @@ CKernelPCA::~CKernelPCA()
 		SG_UNREF(m_init_features);
 }
 
-bool CKernelPCA::init(CFeatures* features)
+void CKernelPCA::fit(CFeatures* features)
 {
-	if (!m_initialized && m_kernel)
+	REQUIRE(m_kernel, "Kernel not set\n");
+
+	if (m_initialized)
+		cleanup();
+
+	SG_REF(features);
+	m_init_features = features;
+
+	m_kernel->init(features, features);
+	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
+	m_kernel->cleanup();
+	int32_t n = kernel_matrix.num_cols;
+	int32_t m = kernel_matrix.num_rows;
+	ASSERT(n == m)
+	if (m_target_dim > n)
 	{
-		SG_REF(features);
-		m_init_features = features;
-
-		m_kernel->init(features,features);
-		SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-		m_kernel->cleanup();
-		int32_t n = kernel_matrix.num_cols;
-		int32_t m = kernel_matrix.num_rows;
-		ASSERT(n==m)
-		if (m_target_dim > n)
-		{
-			SG_SWARNING(
-			    "Target dimension (%d) is not a valid value, it must be"
-			    "less or equal than the number of vectors."
-			    "Setting it to maximum allowed size (%d).",
-			    m_target_dim, n);
-			m_target_dim = n;
-		}
-
-		SGVector<float64_t> bias_tmp = linalg::rowwise_sum(kernel_matrix);
-		linalg::scale(bias_tmp, bias_tmp, -1.0 / n);
-		float64_t s = linalg::sum(bias_tmp) / n;
-		linalg::add_scalar(bias_tmp, -s);
-
-		linalg::center_matrix(kernel_matrix);
-
-		SGVector<float64_t> eigenvalues(m_target_dim);
-		SGMatrix<float64_t> eigenvectors(kernel_matrix.num_rows, m_target_dim);
-		linalg::eigen_solver_symmetric(
-		    kernel_matrix, eigenvalues, eigenvectors, m_target_dim);
-
-		m_transformation_matrix =
-		    SGMatrix<float64_t>(kernel_matrix.num_rows, m_target_dim);
-		// eigenvalues are in increasing order
-		for (int32_t i = 0; i < m_target_dim; i++)
-		{
-			//normalize and trap divide by zero and negative eigenvalues
-			auto idx = m_target_dim - i - 1;
-			auto vec = eigenvectors.get_column(idx);
-			linalg::scale(
-			    vec, vec, 1.0 / std::sqrt(std::max(std::numeric_limits<float64_t>::epsilon(), eigenvalues[idx])));
-			m_transformation_matrix.set_column(i, vec);
-		}
-
-		m_bias_vector = SGVector<float64_t>(m_target_dim);
-		linalg::matrix_prod(
-		    m_transformation_matrix, bias_tmp, m_bias_vector, true);
-
-		m_initialized=true;
-		SG_INFO("Done\n")
-		return true;
+		SG_SWARNING(
+		    "Target dimension (%d) is not a valid value, it must be"
+		    "less or equal than the number of vectors."
+		    "Setting it to maximum allowed size (%d).",
+		    m_target_dim, n);
+		m_target_dim = n;
 	}
-	return false;
+
+	SGVector<float64_t> bias_tmp = linalg::rowwise_sum(kernel_matrix);
+	linalg::scale(bias_tmp, bias_tmp, -1.0 / n);
+	float64_t s = linalg::sum(bias_tmp) / n;
+	linalg::add_scalar(bias_tmp, -s);
+
+	linalg::center_matrix(kernel_matrix);
+
+	SGVector<float64_t> eigenvalues(m_target_dim);
+	SGMatrix<float64_t> eigenvectors(kernel_matrix.num_rows, m_target_dim);
+	linalg::eigen_solver_symmetric(
+	    kernel_matrix, eigenvalues, eigenvectors, m_target_dim);
+
+	m_transformation_matrix =
+	    SGMatrix<float64_t>(kernel_matrix.num_rows, m_target_dim);
+	// eigenvalues are in increasing order
+	for (int32_t i = 0; i < m_target_dim; i++)
+	{
+		// normalize and trap divide by zero and negative eigenvalues
+		auto idx = m_target_dim - i - 1;
+		auto vec = eigenvectors.get_column(idx);
+		linalg::scale(
+		    vec, vec, 1.0 / std::sqrt(std::max(std::numeric_limits<float64_t>::epsilon(), eigenvalues[idx])));
+		m_transformation_matrix.set_column(i, vec);
+	}
+
+	m_bias_vector = SGVector<float64_t>(m_target_dim);
+	linalg::matrix_prod(m_transformation_matrix, bias_tmp, m_bias_vector, true);
+
+	m_initialized = true;
+	SG_INFO("Done\n")
 }
 
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
