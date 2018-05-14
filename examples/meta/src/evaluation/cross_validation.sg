@@ -1,4 +1,4 @@
-#  Cross Validation for binary classification
+#  Cross Validation for Binary Classifier
 CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
 CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
 CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
@@ -6,21 +6,23 @@ CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
 Math:init_random(2)
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
+Features features_train = features(f_feats_train)
 BinaryLabels labels_train(f_labels_train)
-RealFeatures features_test(f_feats_test)
+Features features_test = features(f_feats_test)
 BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
+#OK
 #![set_parameters]
 real C = 1.0
 real epsilon = 0.001
 #![set_parameters]
 
+#OK
 #![create_instance]
-LibLinear svm(C, features_train, labels_train)
-svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
-svm.set_epsilon(epsilon)
+Machine svm = machine("LibLinear", labels=labels_train)
+svm.put("liblinear_solver_type", enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+svm.put("epsilon", epsilon)
 #![create_instance]
 
 #![create_cross_validation]
@@ -36,17 +38,17 @@ CrossValidationResult result = CrossValidationResult:obtain_from_generic(cross.e
 #![evaluate_and_get_result]
 
 #![get_results]
-real cv_mean_accuracy = result.get_mean()
-real cv_stddev_accuracy = result.get_std_dev()
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
 #![get_results]
 
 #![get_results_test_data]
-svm.train()
+svm.train(features_train)
 BinaryLabels labels_predict = svm.apply_binary(features_test)
 real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
 
-# Cross Validation for linear regression
+# Cross Validation for Linear Regression
 CSVFile reg_feats_train("../../data/regression_1d_linear_features_train.dat")
 CSVFile reg_feats_test("../../data/regression_1d_linear_features_test.dat")
 CSVFile reg_lab_train("../../data/regression_1d_linear_labels_train.dat")
@@ -54,15 +56,15 @@ CSVFile reg_lab_test("../../data/regression_1d_linear_labels_test.dat")
 Math:init_random(2)
 
 #![create_features_REGRESSION]
-RealFeatures reg_features_train(reg_feats_train)
+Features reg_features_train = features(reg_feats_train)
 RegressionLabels reg_labels_train(reg_lab_train)
-RealFeatures reg_features_test(reg_feats_test)
+Features reg_features_test = features(reg_feats_test)
 RegressionLabels reg_labels_test(reg_lab_test)
 #![create_features_REGRESSION]
 
 #![create_instance_REGRESSION]
 real tau = 0.001
-LinearRidgeRegression lrr(tau, reg_features_train, reg_labels_train)
+Machine lrr = machine("LinearRidgeRegression", tau=0.001, labels=labels_train)
 #![create_instance_REGRESSION]
 
 #![create_cross_validation_REGRESSION]
@@ -74,16 +76,16 @@ crossReg.set_num_runs(2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]
-result = CrossValidationResult:obtain_from_generic(crossReg.evaluate())
+CrossValidationResult result_lrr = CrossValidationResult:obtain_from_generic(crossReg.evaluate())
 #![evaluate_and_get_result_REGRESSION]
 
 #![get_results_REGRESSION]
-real cv_mean_mse = result.get_mean()
-real cv_stddev_mse = result.get_std_dev()
+real mean_lrr = result.get_real("mean")
+real stddev_lrr = result.get_real("std_dev")
 #![get_results_REGRESSION]
 
 #![train_REGRESSION]
-lrr.train()
+lrr.train(reg_features_train)
 #![train_REGRESSION]
 
 #![evaluate_error_REGRESSION]
