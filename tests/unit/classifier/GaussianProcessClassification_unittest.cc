@@ -593,7 +593,7 @@ TEST_F(GaussianProcessClassification, get_probabilities)
 TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 {
 	CRescaleFeatures* preproc=new CRescaleFeatures();
-	preproc->init(features_train);
+	preproc->fit(features_train);
 
 	features_train->add_preprocessor(preproc);
 	features_train->apply_preprocessor();

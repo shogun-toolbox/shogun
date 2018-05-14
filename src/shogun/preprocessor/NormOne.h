@@ -37,8 +37,6 @@ class CNormOne : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CNormOne();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
 		/// cleanup
 		virtual void cleanup();
 		/// initialize preprocessor from file

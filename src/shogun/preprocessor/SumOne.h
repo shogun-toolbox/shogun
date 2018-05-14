@@ -35,8 +35,6 @@ class CSumOne : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CSumOne();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
 		/// cleanup
 		virtual void cleanup();
 		/// initialize preprocessor from file

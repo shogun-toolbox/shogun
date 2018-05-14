@@ -35,8 +35,8 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CPruneVarSubMean();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
+		/// Fit preprocessor into features
+		virtual void fit(CFeatures* features);
 
 		/// cleanup
 		virtual void cleanup();

@@ -20,54 +20,49 @@ CRescaleFeatures::~CRescaleFeatures()
 	cleanup();
 }
 
-bool CRescaleFeatures::init(CFeatures* features)
+void CRescaleFeatures::fit(CFeatures* features)
 {
-	if (!m_initialized)
+	if (m_initialized)
+		cleanup();
+
+	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	int32_t num_examples = simple_features->get_num_vectors();
+	int32_t num_features = simple_features->get_num_features();
+	REQUIRE(
+	    num_examples > 1, "number of feature vectors should be at least 2!\n");
+
+	SG_INFO("Extracting min and range values for each feature\n")
+
+	m_min = SGVector<float64_t>(num_features);
+	m_range = SGVector<float64_t>(num_features);
+	auto feature_matrix = simple_features->get_feature_matrix();
+	for (index_t i = 0; i < num_features; i++)
 	{
-		ASSERT(features->get_feature_class()==C_DENSE);
-		ASSERT(features->get_feature_type()==F_DREAL);
+		SGVector<float64_t> vec = feature_matrix.get_row_vector(i);
+		float64_t cur_min = vec[0];
+		float64_t cur_max = vec[0];
 
-		CDenseFeatures<float64_t>* simple_features=(CDenseFeatures<float64_t>*) features;
-		int32_t num_examples = simple_features->get_num_vectors();
-		int32_t num_features = simple_features->get_num_features();
-		REQUIRE(num_examples > 1,
-                        "number of feature vectors should be at least 2!\n");
-
-		SG_INFO("Extracting min and range values for each feature\n")
-
-		m_min = SGVector<float64_t>(num_features);
-		m_range = SGVector<float64_t>(num_features);
-		SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-		for (index_t i = 0; i < num_features; i++)
+		/* find the max and min values in one loop */
+		for (index_t j = 1; j < vec.vlen; j++)
 		{
-			SGVector<float64_t> vec = feature_matrix.get_row_vector(i);
-			float64_t cur_min = vec[0];
-			float64_t cur_max = vec[0];
-
-			/* find the max and min values in one loop */
-			for (index_t j = 1; j < vec.vlen; j++)
-			{
-				cur_min = CMath::min(vec[j], cur_min);
-				cur_max = CMath::max(vec[j], cur_max);
-			}
-
-			/* only rescale if range > 0 */
-			if ((cur_max - cur_min) > 0) {
-				m_min[i] = cur_min;
-				m_range[i] = 1.0/(cur_max - cur_min);
-			}
-			else {
-				m_min[i] = 0.0;
-				m_range[i] = 1.0;
-			}
+			cur_min = CMath::min(vec[j], cur_min);
+			cur_max = CMath::max(vec[j], cur_max);
 		}
 
-		m_initialized = true;
-
-		return true;
+		/* only rescale if range > 0 */
+		if ((cur_max - cur_min) > 0)
+		{
+			m_min[i] = cur_min;
+			m_range[i] = 1.0 / (cur_max - cur_min);
+		}
+		else
+		{
+			m_min[i] = 0.0;
+			m_range[i] = 1.0;
+		}
 	}
 
-	return false;
+	m_initialized = true;
 }
 
 void CRescaleFeatures::cleanup()
@@ -79,7 +74,8 @@ SGMatrix<float64_t> CRescaleFeatures::apply_to_feature_matrix(CFeatures* feature
 {
 	ASSERT(m_initialized);
 
-	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto feature_matrix =
+	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	ASSERT(feature_matrix.num_rows == m_min.vlen);
 
 	for (index_t i = 0; i < feature_matrix.num_cols; i++)

@@ -23,10 +23,10 @@ TEST(MultipleProcessors, apply_to_feature_matrix)
 	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
 	CSumOne* sum1 = new CSumOne();
 	CLogPlusOne* logp1 = new CLogPlusOne();
-	sum1->init(feats);
+	sum1->fit(feats);
 	feats->add_preprocessor(sum1);
 
-	logp1->init(feats);
+	logp1->fit(feats);
 	feats->add_preprocessor(logp1);
 	feats->apply_preprocessor();
 

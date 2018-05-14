@@ -365,7 +365,7 @@ SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* 
 			new CDenseFeatures<float64_t>(features->get_feature_matrix().clone());
 	CPruneVarSubMean* mean_substractor =
 			new CPruneVarSubMean(false); // false to avoid variance normalization
-	mean_substractor->init(cloned_features);
+	mean_substractor->fit(cloned_features);
 	mean_substractor->apply_to_feature_matrix(cloned_features);
 
 	// Obtain the linear transform applying PCA

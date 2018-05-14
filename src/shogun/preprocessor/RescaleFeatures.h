@@ -32,36 +32,45 @@ namespace shogun
 			/** dtor */
 			virtual ~CRescaleFeatures();
 
-			/**
-			 * initialize preprocessor from features
-			 *
-			 * @param features the features to derive the min and max values from.
-			 */
-			virtual bool init(CFeatures* features);
+		    /**
+		     * Fit preprocessor into features
+		     *
+		     * @param features the features to derive the min and max values
+		     * from.
+		     */
+		    virtual void fit(CFeatures* features);
 
-			/**
-			 * Cleanup
-			 */
-			virtual void cleanup();
+		    /**
+		     * Cleanup
+		     */
+		    virtual void cleanup();
 
-			/**
-			 * Apply preproc on a feature matrix
-			 *
-			 * @param features input feature matrix
-			 * @return pointer to feature_matrix, i.e. f->get_feature_matrix();
-			 */
-			virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
+		    /**
+		     * Apply preproc on a feature matrix
+		     *
+		     * @param features input feature matrix
+		     * @return pointer to feature_matrix, i.e. f->get_feature_matrix();
+		     */
+		    virtual SGMatrix<float64_t>
+		    apply_to_feature_matrix(CFeatures* features);
 
-			/**
-			 * Apply preproc on a single feature vector
-			 */
-			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		    /**
+		     * Apply preproc on a single feature vector
+		     */
+		    virtual SGVector<float64_t>
+		    apply_to_feature_vector(SGVector<float64_t> vector);
 
-			/** @return object name */
-			virtual const char* get_name() const { return "RescaleFeatures"; }
+		    /** @return object name */
+		    virtual const char* get_name() const
+		    {
+			    return "RescaleFeatures";
+		    }
 
-			/** return a type of preprocessor */
-			virtual EPreprocessorType get_type() const { return P_RESCALEFEATURES; }
+		    /** return a type of preprocessor */
+		    virtual EPreprocessorType get_type() const
+		    {
+			    return P_RESCALEFEATURES;
+		    }
 
 		private:
 			void register_parameters();
