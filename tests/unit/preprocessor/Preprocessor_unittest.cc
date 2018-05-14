@@ -50,7 +50,7 @@ TEST(Preprocessor, dense_apply)
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CDensePreprocessor<float64_t>* preproc=new CNormOne();
-	preproc->init(features);
+	preproc->fit(features);
 
 	CFeatures* preprocessed=preproc->apply(features);
 
@@ -85,7 +85,7 @@ TEST(Preprocessor, string_apply)
 	/* create num_features 2-dimensional vectors */
 	CStringFeatures<uint16_t>* features=new CStringFeatures<uint16_t>(strings, ALPHANUM);
 	CStringPreprocessor<uint16_t>* preproc=new CSortWordString();
-	preproc->init(features);
+	preproc->fit(features);
 
 	CFeatures* preprocessed=preproc->apply(features);
 

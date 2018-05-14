@@ -69,9 +69,6 @@ namespace shogun
 			/** destructor */
 			virtual ~CHomogeneousKernelMap();
 
-			/** initialize preprocessor from features */
-			virtual bool init(CFeatures* features);
-
 			/** cleanup */
 			virtual void cleanup();
 

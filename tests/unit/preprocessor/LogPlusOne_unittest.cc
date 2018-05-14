@@ -20,7 +20,7 @@ TEST(LogPlusOne, apply_to_feature_matrix)
 
 	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
 	CLogPlusOne* preproc = new CLogPlusOne();
-	preproc->init(feats);
+	preproc->fit(feats);
 
 	feats->add_preprocessor(preproc);
 	feats->apply_preprocessor();

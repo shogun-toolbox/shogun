@@ -35,15 +35,6 @@ CPNorm::~CPNorm ()
 {
 }
 
-/// initialize preprocessor from features
-bool CPNorm::init (CFeatures* features)
-{
-	ASSERT(features->get_feature_class()==C_DENSE)
-	ASSERT(features->get_feature_type()==F_DREAL)
-
-	return true;
-}
-
 /// clean up allocated memory
 void CPNorm::cleanup ()
 {
@@ -70,7 +61,8 @@ bool CPNorm::save (FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
 {
-	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto feature_matrix =
+	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{
