@@ -93,6 +93,7 @@
 #cmakedefine USE_JEMALLOC 1
 #cmakedefine USE_TCMALLOC 1
 #cmakedefine HAVE_ALIGNED_MALLOC 1
+#cmakedefine HAVE_POSIX_MEMALIGN 1
 
 #cmakedefine HAVE_CXX11 1
 

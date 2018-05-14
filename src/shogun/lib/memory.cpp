@@ -230,6 +230,8 @@ void* sg_aligned_malloc(size_t size, size_t al)
 	int r = posix_memalign(&p, al, size);
 	if (r)
 		p = nullptr;
+#else
+	#error "HAVE_ALIGNED_MALLOC but dont have a method for it!"
 #endif
 #endif // HAVE_STD_ALIGNED_ALLOC
 #endif // USE_JEMALLOC || USE_TCMALLOC
@@ -238,7 +240,8 @@ void* sg_aligned_malloc(size_t size, size_t al)
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
-	allocation_error(p, size, "aligned_malloc");
+	if (!p)
+		allocation_error(p, size, "aligned_malloc");
 
 	return p;
 }
