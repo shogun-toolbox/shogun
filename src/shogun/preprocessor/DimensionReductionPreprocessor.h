@@ -43,12 +43,6 @@ public:
 	/** destructor */
 	virtual ~CDimensionReductionPreprocessor();
 
-	/** init
-	 * set true by default, should be defined if dimension reduction
-	 * preprocessor is using some initialization
-	 */
-	virtual bool init(CFeatures* data);
-
 	/** cleanup
 	 * set empty by default, should be defined if dimension reduction
 	 * preprocessor should free some resources
