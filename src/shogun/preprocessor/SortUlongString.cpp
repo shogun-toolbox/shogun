@@ -20,15 +20,6 @@ CSortUlongString::~CSortUlongString()
 {
 }
 
-/// initialize preprocessor from features
-bool CSortUlongString::init(CFeatures* f)
-{
-	ASSERT(f->get_feature_class()==C_STRING)
-	ASSERT(f->get_feature_type()==F_ULONG)
-
-	return true;
-}
-
 /// clean up allocated memory
 void CSortUlongString::cleanup()
 {
@@ -56,14 +47,14 @@ bool CSortUlongString::save(FILE* f)
 bool CSortUlongString::apply_to_string_features(CFeatures* f)
 {
 	int32_t i;
-	int32_t num_vec=((CStringFeatures<uint64_t>*)f)->get_num_vectors();
+	auto sf = f->as<CStringFeatures<uint64_t>>();
+	int32_t num_vec = sf->get_num_vectors();
 
 	for (i=0; i<num_vec; i++)
 	{
 		int32_t len=0;
 		bool free_vec;
-		uint64_t* vec=((CStringFeatures<uint64_t>*)f)->
-			get_feature_vector(i, len, free_vec);
+		uint64_t* vec = sf->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec) // won't work with non-in-memory string features
 
 		SG_DEBUG("sorting string of length %i\n", len)
