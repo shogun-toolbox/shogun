@@ -143,8 +143,8 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 
 	// comparing outputs against BRMLtoolbox MATLAB "CannonVar.m" implementation
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
-	CFisherLDA fisherlda(CANVAR_FLDA);
-	fisherlda.fit(dense_feat, labels, 1);
+	CFisherLDA fisherlda(1, CANVAR_FLDA);
+	fisherlda.fit(dense_feat, labels);
 	SGMatrix<float64_t> y=fisherlda.apply_to_feature_matrix(dense_feat);
 
 	float64_t epsilon=0.00000000001;
@@ -181,8 +181,8 @@ TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 	SG_REF(dense_feat);
 	SG_REF(labels);
 
-	CFisherLDA fisherlda(CLASSIC_FLDA);
-	fisherlda.fit(dense_feat, labels, 1);
+	CFisherLDA fisherlda(1, CLASSIC_FLDA);
+	fisherlda.fit(dense_feat, labels);
 	SGMatrix<float64_t> y=fisherlda.apply_to_feature_matrix(dense_feat);
 
 	float64_t epsilon=0.00000000001;
@@ -266,8 +266,8 @@ TEST_F(FLDATest, CANVAR_FLDA_for_D_greater_than_N )
 	SG_REF(l);
 	SG_REF(df);
 
-	CFisherLDA fisherlda(CANVAR_FLDA);
-	fisherlda.fit(df, l, 1);
+	CFisherLDA fisherlda(1, CANVAR_FLDA);
+	fisherlda.fit(df, l);
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
 
 	// comparing eigenvectors from the transformation_matrix with that from the
