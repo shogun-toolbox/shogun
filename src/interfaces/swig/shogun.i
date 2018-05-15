@@ -86,6 +86,7 @@
 %include "Library.i"
 %include "Mathematics.i"
 %include "Features.i"
+%include "Transformer.i"
 %include "Converter.i"
 %include "Preprocessor.i"
 %include "Evaluation.i"
