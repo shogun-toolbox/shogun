@@ -93,6 +93,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 {
 	public:
 		/** standard constructor
+		 * @param num_dimensions number of dimensions to retain
 		 * @param method LDA based on :
 		 * ::CLASSIC_FLDA/::CANVAR_FLDA/::AUTO_FLDA[default]
 		 * @param thresh threshold value for ::CANVAR_FLDA only. This is used to
@@ -107,8 +108,8 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * [default = BDC-SVD]
 		 */
 		CFisherLDA(
-		    EFLDAMethod method = AUTO_FLDA, float64_t thresh = 0.01,
-		    float64_t gamma = 0, bool bdc_svd = true);
+		    int32_t num_dimensions = 0, EFLDAMethod method = AUTO_FLDA,
+		    float64_t thresh = 0.01, float64_t gamma = 0, bool bdc_svd = true);
 
 		/** destructor */
 		virtual ~CFisherLDA();
@@ -117,9 +118,8 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
-		 * @param num_dimensions number of dimensions to retain
 		 */
-		virtual bool fit(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
+		virtual void fit(CFeatures* features, CLabels* labels);
 
 		/** cleanup */
 		virtual void cleanup();
@@ -165,7 +165,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * @param features training data.
 		 * @param labels multiclass labels.
 		 */
-		bool solver_canvar(
+		void solver_canvar(
 		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
 		/**
@@ -173,7 +173,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * @param features training data.
 		 * @param labels multiclass labels.
 		 */
-		bool solver_classic(
+		void solver_classic(
 		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
 		/** transformation matrix */
