@@ -60,7 +60,7 @@ CDependenceMaximization::~CDependenceMaximization()
 	SG_UNREF(m_labels_feats);
 }
 
-bool CDependenceMaximization::init(CFeatures* features)
+void CDependenceMaximization::fit(CFeatures* features)
 {
 	REQUIRE(features, "Features are not initialized!\n");
 	REQUIRE(features->get_feature_class()==C_DENSE ||
@@ -71,8 +71,6 @@ bool CDependenceMaximization::init(CFeatures* features)
 	REQUIRE(features->get_feature_type()==F_DREAL, "Only allowed for "
 			"features of double type! Provided %d!\n",
 			features->get_feature_type());
-
-	return true;
 }
 
 CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
