@@ -42,6 +42,12 @@ namespace shogun
 		virtual void fit(CFeatures* features)
 		{
 		}
+
+		/** Fit transformer to features and labels */
+		virtual void fit(CFeatures* features, CLabels* labels)
+		{
+			SG_SNOTIMPLEMENTED;
+		}
 	};
 }
 #endif /* TRANSFORMER_H_ */

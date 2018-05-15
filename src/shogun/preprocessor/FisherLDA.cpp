@@ -50,10 +50,12 @@ using namespace Eigen;
 using namespace shogun;
 
 CFisherLDA::CFisherLDA(
-    EFLDAMethod method, float64_t thresh, float64_t gamma, bool bdc_svd)
+    int32_t num_dimensions, EFLDAMethod method, float64_t thresh,
+    float64_t gamma, bool bdc_svd)
     : CDimensionReductionPreprocessor()
 {
 	initialize_parameters();
+	m_num_dim = num_dimensions;
 	m_method=method;
 	m_threshold=thresh;
 	m_gamma = gamma;
@@ -90,16 +92,9 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
-bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimensions)
+void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 {
 	REQUIRE(features, "Features are not provided!\n")
-
-	REQUIRE(features->get_feature_class()==C_DENSE,
-			"LDA only works with dense features. you provided %s\n",
-			features->get_name());
-
-	REQUIRE(features->get_feature_type()==F_DREAL,
-			"LDA only works with real features.\n");
 
 	REQUIRE(labels, "Labels for the given features are not specified!\n")
 
@@ -109,8 +104,7 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 	    "the type MulticlassLabels! you provided %s\n",
 	    labels->get_name());
 
-	CDenseFeatures<float64_t>* dense_features =
-	    static_cast<CDenseFeatures<float64_t>*>(features);
+	auto dense_features = features->as<CDenseFeatures<float64_t>>();
 	CMulticlassLabels* multiclass_labels =
 	    static_cast<CMulticlassLabels*>(labels);
 
@@ -127,8 +121,6 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 
 	REQUIRE(num_class > 1, "At least two classes are needed to perform LDA.\n")
 
-	m_num_dim=num_dimensions;
-
 	// clip number if Dimensions to be a valid number
 	if ((m_num_dim <= 0) || (m_num_dim > (num_class - 1)))
 		m_num_dim = (num_class - 1);
@@ -137,12 +129,12 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 	    m_method == AUTO_FLDA && num_vectors < num_features;
 
 	if ((m_method == CANVAR_FLDA) || lda_more_efficient)
-		return solver_canvar(dense_features, multiclass_labels);
+		solver_canvar(dense_features, multiclass_labels);
 	else
-		return solver_classic(dense_features, multiclass_labels);
+		solver_classic(dense_features, multiclass_labels);
 }
 
-bool CFisherLDA::solver_canvar(
+void CFisherLDA::solver_canvar(
     CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
 {
 	auto solver = std::unique_ptr<LDACanVarSolver<float64_t>>(
@@ -151,11 +143,9 @@ bool CFisherLDA::solver_canvar(
 
 	m_transformation_matrix = solver->get_eigenvectors();
 	m_eigenvalues_vector = solver->get_eigenvalues();
-
-	return true;
 }
 
-bool CFisherLDA::solver_classic(
+void CFisherLDA::solver_classic(
     CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
 {
 	SGMatrix<float64_t> data = features->get_feature_matrix();
@@ -199,8 +189,6 @@ bool CFisherLDA::solver_classic(
 		m_eigenvalues_vector[i] = eigenvalues[k];
 		m_transformation_matrix.set_column(k, eigenvectors.get_column(i));
 	}
-
-	return true;
 }
 
 void CFisherLDA::cleanup()
@@ -212,14 +200,8 @@ void CFisherLDA::cleanup()
 
 SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 {
-	REQUIRE(features->get_feature_class()==C_DENSE,
-			"LDA only works with dense features\n");
-
-	REQUIRE(features->get_feature_type()==F_DREAL,
-			"LDA only works with real features\n");
-
-	SGMatrix<float64_t> m =
-	    ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	auto m = simple_features->get_feature_matrix();
 
 	int32_t num_vectors=m.num_cols;
 	int32_t num_features=m.num_rows;
@@ -244,7 +226,7 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 	}
 	m.num_rows=m_num_dim;
 	m.num_cols=num_vectors;
-	((CDenseFeatures<float64_t>*)features)->set_feature_matrix(m);
+	simple_features->set_feature_matrix(m);
 	return m;
 }
 
