@@ -13,10 +13,10 @@ Labels labels_test = labels(f_labels_test)
 #![preprocess_features]
 PruneVarSubMean SubMean()
 NormOne Normalize()
-SubMean.init(features_train)
+SubMean.fit(features_train)
 SubMean.apply_to_feature_matrix(features_train)
 SubMean.apply_to_feature_matrix(features_test)
-Normalize.init(features_train)
+Normalize.fit(features_train)
 Normalize.apply_to_feature_matrix(features_train)
 Normalize.apply_to_feature_matrix(features_test)	
 #![preprocess_features]
