@@ -115,13 +115,6 @@ public:
 	virtual void set_algorithm(EFeatureSelectionAlgorithm algorithm)=0;
 
 	/**
-	 * Fit preprocessor into features
-	 *
-	 * @param features the features
-	 */
-	virtual void fit(CFeatures* features);
-
-	/**
 	 * Setter for labels. This method is overridden to internally convert the
 	 * labels to a dense feature object and set this feature in the
 	 * independence test estimator. These labels serve as samples
