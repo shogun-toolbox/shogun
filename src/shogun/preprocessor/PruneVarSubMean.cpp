@@ -106,7 +106,9 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
-	float64_t* m=((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
+
+	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	auto m = simple_features->get_feature_matrix();
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 	SG_INFO("Preprocessing feature matrix\n")
@@ -127,11 +129,11 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 		}
 	}
 
-	((CDenseFeatures<float64_t>*) features)->set_num_features(m_num_idx);
-	((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
+	simple_features->set_num_features(m_num_idx);
+	simple_features->get_feature_matrix(num_features, num_vectors);
 	SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	return ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
+	return simple_features->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector
