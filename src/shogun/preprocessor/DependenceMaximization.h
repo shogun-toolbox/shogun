@@ -115,12 +115,11 @@ public:
 	virtual void set_algorithm(EFeatureSelectionAlgorithm algorithm)=0;
 
 	/**
-	 * Initialize preprocessor from features
+	 * Fit preprocessor into features
 	 *
 	 * @param features the features
-	 * @return true if init was successful
 	 */
-	virtual bool init(CFeatures* features);
+	virtual void fit(CFeatures* features);
 
 	/**
 	 * Setter for labels. This method is overridden to internally convert the
