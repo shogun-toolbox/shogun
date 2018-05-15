@@ -60,9 +60,8 @@ namespace shogun
 
 	/** @brief Preprocessor FisherLDA attempts to model the difference between the classes
 	 * of data by performing linear discriminant analysis on input feature vectors/matrices.
-	 * When the init method in FisherLDA is called with proper feature matrix X(say N number
-	 * of vectors and D feature dimensions) supplied via apply_to_feature_matrix or
-	 * apply_to_feature_vector methods, this creates a transformation whose outputs are the
+	 * When the fit method in FisherLDA is called with proper feature matrix X(say N number
+	 * of vectors and D feature dimensions), this creates a transformation whose outputs are the
 	 * reduced T-Dimensional & class-specific distribution (where T<= number of unique
 	 * classes-1). The transformation matrix is essentially a DxT matrix, the columns of
 	 * which correspond to the specified number of eigenvectors which maximizes the ratio
