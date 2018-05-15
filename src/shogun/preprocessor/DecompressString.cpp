@@ -56,9 +56,9 @@ bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
 	{
 		int32_t len=0;
 		bool free_vec;
-		ST* vec = sf->get_feature_vector(i, len, free_vec);
+		auto vec = sf->get_feature_vector(i, len, free_vec);
 
-		ST* decompressed=apply_to_string(vec, len);
+		auto decompressed=apply_to_string(vec, len);
 		sf->free_feature_vector(vec, i, free_vec);
 		sf->cleanup_feature_vector(i);
 		sf->set_feature_vector(i, decompressed, len);
