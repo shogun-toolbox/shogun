@@ -4,10 +4,11 @@
  * Authors: Soeren Sonnenburg
  */
 
-#include <shogun/preprocessor/SortUlongString.h>
+#include <shogun/base/range.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/SortUlongString.h>
 
 using namespace shogun;
 
@@ -46,15 +47,14 @@ bool CSortUlongString::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 bool CSortUlongString::apply_to_string_features(CFeatures* f)
 {
-	int32_t i;
 	auto sf = f->as<CStringFeatures<uint64_t>>();
-	int32_t num_vec = sf->get_num_vectors();
+	auto num_vec = sf->get_num_vectors();
 
-	for (i=0; i<num_vec; i++)
+	for (auto i : range(num_vec))
 	{
 		int32_t len=0;
 		bool free_vec;
-		uint64_t* vec = sf->get_feature_vector(i, len, free_vec);
+		auto vec = sf->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec) // won't work with non-in-memory string features
 
 		SG_DEBUG("sorting string of length %i\n", len)
@@ -69,10 +69,9 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
 {
 	uint64_t* vec=SG_MALLOC(uint64_t, len);
-	int32_t i=0;
 
-	for (i=0; i<len; i++)
-		vec[i]=f[i];
+	for (auto i : range(len))
+		vec[i] = f[i];
 
 	//CMath::qsort(vec, len);
 	CMath::radix_sort(vec, len);

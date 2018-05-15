@@ -5,11 +5,12 @@
  *          Sergey Lisitsyn, Bjoern Esser
  */
 
-#include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/PruneVarSubMean.h>
 
 using namespace shogun;
 
@@ -35,33 +36,21 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	int32_t num_examples = simple_features->get_num_vectors();
 	int32_t num_features = simple_features->get_num_features();
 
-	m_mean = SGVector<float64_t>();
 	m_idx = SGVector<int32_t>();
 	m_std = SGVector<float64_t>();
 
-	m_mean.resize_vector(num_features);
-	float64_t* var = SG_MALLOC(float64_t, num_features);
-	int32_t i, j;
-
-	memset(var, 0, num_features * sizeof(float64_t));
-	m_mean.zero();
+	SGVector<float64_t> var(num_features);
 
 	auto feature_matrix = simple_features->get_feature_matrix();
 
 	// compute mean
-	for (i = 0; i < num_examples; i++)
-	{
-		for (j = 0; j < num_features; j++)
-			m_mean[j] += feature_matrix.matrix[i * num_features + j];
-	}
-
-	for (j = 0; j < num_features; j++)
-		m_mean[j] /= num_examples;
+	m_mean = linalg::rowwise_sum(feature_matrix);
+	linalg::scale(m_mean, m_mean, 1.0 / num_examples);
 
 	// compute var
-	for (i = 0; i < num_examples; i++)
+	for (auto i : range(num_examples))
 	{
-		for (j = 0; j < num_features; j++)
+		for (auto j : range(num_features))
 			var[j] += CMath::sq(
 			    m_mean[j] - feature_matrix.matrix[i * num_features + j]);
 	}
@@ -69,7 +58,7 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	int32_t num_ok = 0;
 	int32_t* idx_ok = SG_MALLOC(int32_t, num_features);
 
-	for (j = 0; j < num_features; j++)
+	for (auto j : range(num_features))
 	{
 		var[j] /= num_examples;
 
@@ -86,7 +75,7 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	SGVector<float64_t> new_mean(num_ok);
 	m_std.resize_vector(num_ok);
 
-	for (j = 0; j < num_ok; j++)
+	for (auto j : range(num_ok))
 	{
 		m_idx[j] = idx_ok[j];
 		new_mean[j] = m_mean[idx_ok[j]];
@@ -94,7 +83,6 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	}
 	m_num_idx = num_ok;
 	SG_FREE(idx_ok);
-	SG_FREE(var);
 	m_mean = new_mean;
 
 	m_initialized = true;

@@ -89,9 +89,9 @@ void CKernelPCA::fit(CFeatures* features)
 		m_target_dim = n;
 	}
 
-	SGVector<float64_t> bias_tmp = linalg::rowwise_sum(kernel_matrix);
+	auto bias_tmp = linalg::rowwise_sum(kernel_matrix);
 	linalg::scale(bias_tmp, bias_tmp, -1.0 / n);
-	float64_t s = linalg::sum(bias_tmp) / n;
+	auto s = linalg::sum(bias_tmp) / n;
 	linalg::add_scalar(bias_tmp, -s);
 
 	linalg::center_matrix(kernel_matrix);
