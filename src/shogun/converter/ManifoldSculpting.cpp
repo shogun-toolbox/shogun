@@ -72,7 +72,7 @@ int32_t CManifoldSculpting::get_max_iteration() const
 	return m_max_iteration;
 }
 
-CFeatures* CManifoldSculpting::apply(CFeatures* features)
+CFeatures* CManifoldSculpting::apply(CFeatures* features, bool inplace)
 {
 	CDenseFeatures<float64_t>* feats = (CDenseFeatures<float64_t>*)features;
 	SG_REF(feats);
