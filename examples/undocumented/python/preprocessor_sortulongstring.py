@@ -26,8 +26,8 @@ def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,orde
 
 	preproc = SortUlongString()
 	preproc.fit(feats_train)
-        feats_train = preproc.apply(feats_train)
-        feats_test = preproc.apply(feats_test)
+	feats_train = preproc.apply(feats_train)
+	feats_test = preproc.apply(feats_test)
 
 	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
 
