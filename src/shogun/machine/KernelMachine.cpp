@@ -6,14 +6,14 @@
  *          Fernando Iglesias, Thoralf Klein
  */
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/KernelMachine.h>
-
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/labels/Labels.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -443,8 +443,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-	bool result=train_machine();
-
+	bool result = CMachine::train();
 	/* remove last col subset of custom kernel */
 	m_custom_kernel->remove_col_subset();
 
