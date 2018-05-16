@@ -17,11 +17,9 @@ def preprocessor_normone (fm_train_real=traindat,fm_test_real=testdat,width=1.4,
 	feats_test=RealFeatures(fm_test_real)
 
 	preprocessor=NormOne()
-	preprocessor.init(feats_train)
-	feats_train.add_preprocessor(preprocessor)
-	feats_train.apply_preprocessor()
-	feats_test.add_preprocessor(preprocessor)
-	feats_test.apply_preprocessor()
+	preprocessor.fit(feats_train)
+        feats_train = preprocessor.apply(feats_train)
+        feats_test = preprocessor.apply(feats_test)
 
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 

@@ -16,13 +16,10 @@ def preprocessor_logplusone (fm_train_real=traindat,fm_test_real=testdat,width=1
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
-	preproc=LogPlusOne()
-	preproc.init(feats_train)
-	feats_train.add_preprocessor(preproc)
-	feats_train.apply_preprocessor()
-	feats_test.add_preprocessor(preproc)
-	feats_test.apply_preprocessor()
-
+	preproc = LogPlusOne()
+	preproc.fit(feats_train)
+        feats_train = preproc.apply(feats_train)
+        feats_test = preproc.apply(feats_test)
 
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 

@@ -21,8 +21,8 @@ def preprocessor_dimensionreductionpreprocessor (data, k):
 	converter.set_k(k)
 
 	preprocessor = DimensionReductionPreprocessor(converter)
-	preprocessor.init(features)
-	preprocessor.apply_to_feature_matrix(features)
+	preprocessor.fit(features)
+	features = preprocessor.apply(features)
 
 	return features
 

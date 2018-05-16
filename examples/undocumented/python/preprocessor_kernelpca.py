@@ -16,9 +16,9 @@ def preprocessor_kernelpca (data, threshold, width):
 	kernel = GaussianKernel(features,features,width)
 
 	preprocessor = KernelPCA(kernel)
-	preprocessor.init(features)
+	preprocessor.fit(features)
 	preprocessor.set_target_dim(2)
-	preprocessor.apply_to_feature_matrix(features)
+	features = preprocessor.apply(features)
 
 	return features
 

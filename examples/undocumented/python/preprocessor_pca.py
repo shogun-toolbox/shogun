@@ -13,8 +13,8 @@ def preprocessor_pca (data):
 	features = RealFeatures(data)
 
 	preprocessor = PCA()
-	preprocessor.init(features)
-	preprocessor.apply_to_feature_matrix(features)
+	preprocessor.fit(features)
+	features = preprocessor.apply(features)
 
 	return features
 

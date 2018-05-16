@@ -17,9 +17,9 @@ def preprocessor_fisherlda (data, labels, method):
 	sg_features = RealFeatures(data)
 	sg_labels = MulticlassLabels(labels)
 
-	preprocessor=FisherLda(method)
-	preprocessor.fit(sg_features, sg_labels, 1)
-	yn=preprocessor.apply_to_feature_matrix(sg_features)
+	preprocessor=FisherLda(1, method)
+	preprocessor.fit(sg_features, sg_labels)
+	yn = preprocessor.apply(sg_features).get_real_matrix('feature_matrix')
 
 	return yn
 
