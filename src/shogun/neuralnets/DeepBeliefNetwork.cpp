@@ -40,6 +40,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
@@ -263,7 +264,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 	float64_t alpha = gd_learning_rate;
 
 	int32_t counter = 0;
-	for (int32_t i=0; i<max_num_epochs; i++)
+	for (auto i: progress(range(0, max_num_epochs)))
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{
