@@ -11,16 +11,14 @@ def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=
 	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc=SortWordString()
-	preproc.init(feats_train)
-	feats_train.add_preprocessor(preproc)
-	feats_train.apply_preprocessor()
+	preproc = SortWordString()
+	preproc.fit(feats_train)
+	feats_train = preproc.apply(feats_train)
 
 	charfeat=StringCharFeatures(CSVFile(test_fname), DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	feats_test.add_preprocessor(preproc)
-	feats_test.apply_preprocessor()
+	feats_test = preproc.apply(feats_test)
 
 	distance=ManhattanWordDistance(feats_train, feats_train)
 
