@@ -66,7 +66,7 @@ bool CFastICA::get_whiten() const
 	return whiten;
 }
 
-CFeatures* CFastICA::apply(CFeatures* features)
+CFeatures* CFastICA::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	SG_REF(features);
