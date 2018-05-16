@@ -366,9 +366,9 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 	int32_t numberofsilpiterations=0;
 	bool final=false;
 
-	while (!(cancel_computation()) && !final)
+	while (!final)
 	{
-
+		COMPUTATION_CONTROLLERS
 		//curweights.clear();
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);

@@ -326,8 +326,9 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	while (iter < get_max_iterations())
 	{
+		COMPUTATION_CONTROLLERS
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
 			break;
@@ -539,8 +540,9 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	while (iter < get_max_iterations())
 	{
+		COMPUTATION_CONTROLLERS
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
 			break;
@@ -913,8 +915,9 @@ void CLibLinear::solve_l1r_lr(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	while (iter < get_max_iterations())
 	{
+		COMPUTATION_CONTROLLERS
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
 			break;

@@ -251,8 +251,9 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !cancel_computation())
+	while (iter < max_iterations)
 	{
+		COMPUTATION_CONTROLLERS
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 			break;
 

@@ -647,13 +647,12 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else
 
-  for (; ((!cancel_computation()) &&
-	      ((iteration < 3 || (!mkl_converged && callback)) ||
-	       (retrain && (!terminate))));
+  for (; (iteration < 3 || (!mkl_converged && callback)) ||
+	     (retrain && (!terminate));
 	   iteration++)
   {
 #endif
-
+	  COMPUTATION_CONTROLLERS
 	  if(use_kernel_cache)
 		  kernel->set_time(iteration);  /* for lru cache */
 

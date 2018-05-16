@@ -129,8 +129,9 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
+	for (int32_t e = 0; e < epochs; e++)
 	{
+		COMPUTATION_CONTROLLERS
 		count = skip;
 		bool updateB=false;
 		for (int32_t i=0; i<num_vec; i++)

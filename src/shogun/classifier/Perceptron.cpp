@@ -75,8 +75,9 @@ bool CPerceptron::train_machine(CFeatures* data)
 	}
 
 	//loop till we either get everything classified right or reach max_iter
-	while (!(cancel_computation()) && (!converged && iter < max_iter))
+	while (!converged && iter < max_iter)
 	{
+		COMPUTATION_CONTROLLERS
 		converged=true;
 		auto iter_train_labels = train_labels.begin();
 		auto iter_output = output.begin();
