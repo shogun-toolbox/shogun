@@ -86,7 +86,7 @@ EPreprocessorType CDensePreprocessor<ST>::get_type() const
 }
 
 template <class ST>
-CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features)
+CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 {
 	REQUIRE(features->get_feature_class()==C_DENSE, "Provided features (%d) "
 			"has to be of C_DENSE (%d) class!\n",

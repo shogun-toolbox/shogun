@@ -40,7 +40,7 @@ SGMatrix<float64_t> CJade::get_cumulant_matrix() const
 	return m_cumulant_matrix;
 }
 
-CFeatures* CJade::apply(CFeatures* features)
+CFeatures* CJade::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	SG_REF(features);

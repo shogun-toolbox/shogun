@@ -38,7 +38,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features);
+		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -127,7 +127,7 @@ template<> inline EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type
 }
 
 template <class ST>
-CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features)
+CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features, bool inplace)
 {
 	REQUIRE(features->get_feature_class()==C_STRING, "Provided features (%d) "
 			"has to be of C_STRING (%d) class!\n",
