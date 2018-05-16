@@ -52,7 +52,7 @@ SGNDArray<float64_t> CJediSep::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CJediSep::apply(CFeatures* features)
+CFeatures* CJediSep::apply(CFeatures* features, bool inplace)
 {
 	REQUIRE(features, "features is null");
 	SG_REF(features);

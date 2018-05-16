@@ -85,7 +85,7 @@ public:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply(CFeatures* features)=0;
+	virtual CFeatures* apply(CFeatures* features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;

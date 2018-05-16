@@ -25,7 +25,8 @@ const char* CHessianLocallyLinearEmbedding::get_name() const
 	return "HessianLocallyLinearEmbedding";
 };
 
-CFeatures* CHessianLocallyLinearEmbedding::apply(CFeatures* features)
+CFeatures*
+CHessianLocallyLinearEmbedding::apply(CFeatures* features, bool inplace)
 {
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;

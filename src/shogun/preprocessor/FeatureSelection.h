@@ -152,7 +152,7 @@ public:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 	/**
 	 * Abstract method that is defined in the subclasses to compute the

@@ -52,7 +52,7 @@ SGNDArray<float64_t> CSOBI::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CSOBI::apply(CFeatures* features)
+CFeatures* CSOBI::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	SG_REF(features);

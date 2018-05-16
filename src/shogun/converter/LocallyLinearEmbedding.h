@@ -52,7 +52,7 @@ public:
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CFeatures* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 	/** setter for k parameter
 	 * @param k k value

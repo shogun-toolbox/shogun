@@ -73,7 +73,7 @@ const char* CHashedDocConverter::get_name() const
 	return "HashedDocConverter";
 }
 
-CFeatures* CHashedDocConverter::apply(CFeatures* features)
+CFeatures* CHashedDocConverter::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	if (strcmp(features->get_name(), "StringFeatures")!=0)

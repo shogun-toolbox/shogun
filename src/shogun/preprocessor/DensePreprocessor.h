@@ -39,7 +39,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @param features the dense input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features);
+		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix

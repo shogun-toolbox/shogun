@@ -48,7 +48,7 @@ public:
 	virtual const char* get_name() const;
 
 	/** apply */
-	virtual CFeatures* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 };
 }
 

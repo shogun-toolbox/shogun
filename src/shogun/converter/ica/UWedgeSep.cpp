@@ -52,7 +52,7 @@ SGNDArray<float64_t> CUWedgeSep::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CUWedgeSep::apply(CFeatures* features)
+CFeatures* CUWedgeSep::apply(CFeatures* features, bool inplace)
 {
 	REQUIRE(features, "features is null");
 	SG_REF(features);

@@ -52,7 +52,7 @@ SGNDArray<float64_t> CFFSep::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CFFSep::apply(CFeatures* features)
+CFeatures* CFFSep::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	SG_REF(features);

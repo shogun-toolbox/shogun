@@ -33,7 +33,7 @@ class CICAConverter: public CConverter
 		/** apply to features
 		 * @param features features to embed
 		 */
-		virtual CFeatures* apply(CFeatures* features) = 0;
+		virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
 
 		/** setter for mixing matrix, if the mixing matrix is set it will be
 		 * used as an initial guess if supported by the algorithm

@@ -41,7 +41,7 @@ class CUWedgeSep: public CICAConverter
 		/** apply to features
 		 * @param features features to embed
 		 */
-		virtual CFeatures* apply(CFeatures* features);
+		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 		/** getter for tau parameter
 		 * @return tau vector

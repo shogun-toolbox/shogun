@@ -26,7 +26,8 @@ const char* CLinearLocalTangentSpaceAlignment::get_name() const
 	return "LinearLocalTangentSpaceAlignment";
 }
 
-CFeatures* CLinearLocalTangentSpaceAlignment::apply(CFeatures* features)
+CFeatures*
+CLinearLocalTangentSpaceAlignment::apply(CFeatures* features, bool inplace)
 {
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
