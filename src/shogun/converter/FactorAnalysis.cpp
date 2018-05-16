@@ -54,7 +54,7 @@ float64_t CFactorAnalysis::get_epsilon() const
 	return m_epsilon;
 }
 
-CFeatures* CFactorAnalysis::apply(CFeatures* features)
+CFeatures* CFactorAnalysis::apply(CFeatures* features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.max_iteration = m_max_iteration;
