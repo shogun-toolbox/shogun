@@ -56,15 +56,10 @@ CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
 
-	// we need to take the negation of the shifts for this case
-
-	SGVector<complex128_t> negated_shifts(m_shifts.vlen);
-	Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
-	Map<VectorXcd> negated_shifts_(negated_shifts.vector, negated_shifts.vlen);
-	negated_shifts_ = -shifts;
-
+	// we need to take the negation of the shifts for this case hence we set
+	// negate to true
 	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
-		m_linear_operator, sample, negated_shifts, m_weights);
+		m_linear_operator, sample, m_shifts, m_weights, true);
 
 	// Take negative (see CRationalApproximation for the formula)
 	Map<VectorXcd> v(vec.vector, vec.vlen);

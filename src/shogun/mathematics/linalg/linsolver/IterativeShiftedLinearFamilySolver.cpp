@@ -30,19 +30,24 @@ CIterativeShiftedLinearFamilySolver<T, ST>::~CIterativeShiftedLinearFamilySolver
 	{
 	}
 
-template <class T, class ST>
-void CIterativeShiftedLinearFamilySolver<T, ST>::compute_zeta_sh_new(
-		const SGVector<ST>& zeta_sh_old, const SGVector<ST>& zeta_sh_cur, const SGVector<ST>& shifts,
-		const T& beta_old, const T& beta_cur, const T& alpha, SGVector<ST>& zeta_sh_new)
+	template <class T, class ST>
+	void CIterativeShiftedLinearFamilySolver<T, ST>::compute_zeta_sh_new(
+	    const SGVector<ST>& zeta_sh_old, const SGVector<ST>& zeta_sh_cur,
+	    const SGVector<ST>& shifts, const T& beta_old, const T& beta_cur,
+	    const T& alpha, SGVector<ST>& zeta_sh_new, bool negate)
 	{
 		// compute zeta_sh_new according to Jergerlehner, eq. 2.44
 		// [see IterativeShiftedLinearFamilySolver.h]
 		for (index_t i=0; i<zeta_sh_new.vlen; ++i)
 		{
+			ST shift_value = shifts[i];
+			if (negate)
+				shift_value = -shifts[i];
 			ST numer=zeta_sh_old[i]*zeta_sh_cur[i]*beta_old;
 
-			ST denom=beta_cur*alpha*(zeta_sh_old[i]-zeta_sh_cur[i])
-				+beta_old*zeta_sh_old[i]*(1.0-beta_cur*shifts[i]);
+			ST denom =
+			    beta_cur * alpha * (zeta_sh_old[i] - zeta_sh_cur[i]) +
+			    beta_old * zeta_sh_old[i] * (1.0 - beta_cur * shift_value);
 
 			// handle division by zero
 			if (denom==static_cast<ST>(0.0))

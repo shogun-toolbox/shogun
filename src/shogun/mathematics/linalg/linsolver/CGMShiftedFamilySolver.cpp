@@ -47,7 +47,7 @@ SGVector<float64_t> CCGMShiftedFamilySolver::solve(
 
 SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
-	SGVector<complex128_t> shifts, SGVector<complex128_t> weights)
+	SGVector<complex128_t> shifts, SGVector<complex128_t> weights, bool negate)
 {
 	SG_DEBUG("Entering\n");
 
@@ -133,8 +133,9 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		float64_t beta=-r_norm2/p_dot_Ap;
 
 		// compute the zeta-shifted parameter of CG_M
-		compute_zeta_sh_new(zeta_sh_old, zeta_sh_cur, shifts, beta_old, beta,
-			alpha, zeta_sh_new);
+		compute_zeta_sh_new(
+			zeta_sh_old, zeta_sh_cur, shifts, beta_old, beta, alpha,
+			zeta_sh_new, negate);
 
 		// compute beta-shifted parameter of CG_M
 		compute_beta_sh(zeta_sh_new, zeta_sh_cur, beta, beta_sh);
