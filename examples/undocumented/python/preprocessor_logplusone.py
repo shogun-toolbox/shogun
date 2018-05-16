@@ -18,8 +18,8 @@ def preprocessor_logplusone (fm_train_real=traindat,fm_test_real=testdat,width=1
 
 	preproc = LogPlusOne()
 	preproc.fit(feats_train)
-        feats_train = preproc.apply(feats_train)
-        feats_test = preproc.apply(feats_test)
+	feats_train = preproc.apply(feats_train)
+	feats_test = preproc.apply(feats_test)
 
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 

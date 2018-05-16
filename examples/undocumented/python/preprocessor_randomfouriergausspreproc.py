@@ -20,8 +20,8 @@ def preprocessor_randomfouriergausspreproc (fm_train_real=traindat,fm_test_real=
 
 	preproc=RandomFourierGaussPreproc()
 	preproc.fit(feats_train)
-        feats_train = preproc.apply(feats_train)
-        feats_test = preproc.apply(feats_test)
+	feats_train = preproc.apply(feats_train)
+	feats_test = preproc.apply(feats_test)
 
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 
