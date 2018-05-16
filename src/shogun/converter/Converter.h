@@ -37,7 +37,7 @@ public:
 	 * @param features features to convert
 	 * @return converted features
 	 */
-	virtual CFeatures* apply(CFeatures* features) = 0;
+	virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
 };
 }
 #endif /* CONVERTER_H_ */

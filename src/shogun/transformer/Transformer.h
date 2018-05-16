@@ -48,6 +48,14 @@ namespace shogun
 		{
 			SG_SNOTIMPLEMENTED;
 		}
+
+		/** Apply transform to features. If transform is performed in place,
+		 *  underlying data of input features will be reused if possible.
+		 *	@param features features to transform
+		 *	@param inplace whether transform in place
+		 *	@return the result feature object after applying the transformer
+		 * */
+		virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
 	};
 }
 #endif /* TRANSFORMER_H_ */
