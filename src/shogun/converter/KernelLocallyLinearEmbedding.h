@@ -52,7 +52,7 @@ public:
 	virtual ~CKernelLocallyLinearEmbedding();
 
 	/** apply */
-	virtual CFeatures* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
 	/** embed kernel (kernel should be inited)
 	 * @param kernel kernel to construct embed

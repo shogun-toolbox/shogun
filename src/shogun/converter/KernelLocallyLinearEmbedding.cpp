@@ -31,7 +31,8 @@ CKernelLocallyLinearEmbedding::~CKernelLocallyLinearEmbedding()
 {
 }
 
-CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
+CFeatures*
+CKernelLocallyLinearEmbedding::apply(CFeatures* features, bool inplace)
 {
 	ASSERT(features)
 	SG_REF(features);
