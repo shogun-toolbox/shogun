@@ -585,7 +585,7 @@ index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	if (m_pre_sort)
 	{
 		indices_mask = SGVector<int64_t>(mat.num_rows);
-		linalg::set_const(indices_mask, -1LL);
+		linalg::set_const(indices_mask, int64_t(-1));
 		for(index_t j=0;j<active_indices.size();++j)
 		{
 			if (indices_mask[active_indices[j]]>=0)
