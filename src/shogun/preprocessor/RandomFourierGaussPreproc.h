@@ -54,13 +54,6 @@ public:
 	 */
 	~CRandomFourierGaussPreproc();
 
-	/** default processing routine, inherited from base class
-	 * @param features the features to be processed, must be of type CDenseFeatures<float64_t>
-	 * @return the processed feature matrix from the CDenseFeatures<float64_t> class
-	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
-	 */
-	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features); // ref count fo the feature matrix???
-
 
 	/** alternative processing routine, inherited from base class
 	 * @param vector the feature vector to be processed
@@ -155,7 +148,6 @@ public:
 	 */
 	bool init_randomcoefficients();
 
-
 	/** a getter
 	 * @return the set value of protected member dim_input_space
 	 */
@@ -178,6 +170,14 @@ public:
 	virtual EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
 
 protected:
+	/** default processing routine, inherited from base class
+	 * @param matrix the features matrix to be processed
+	 * @return the processed feature matrix from the CDenseFeatures<float64_t>
+	 * class in case (2) (see description above) this routine requires only
+	 * steps 2a) and 2b), the rest is determined automatically
+	 */
+	virtual SGMatrix<float64_t>
+	apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 	/**
 	 * helper for copy constructor and assignment operator=
