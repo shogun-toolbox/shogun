@@ -72,12 +72,6 @@ namespace shogun
 			/** cleanup */
 			virtual void cleanup();
 
-			/** applies to features
-			 * @param features features
-			 * @return feature matrix
-			 */
-			virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
-
 			/** applies to feature vector
 			 * @param vector features vector
 			 * @return transformed feature vector
@@ -134,6 +128,10 @@ namespace shogun
 			 * @return period value
 			 */
 			float64_t get_period() const;
+
+		protected:
+		    virtual SGMatrix<float64_t>
+		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 		private:
 			void init ();
