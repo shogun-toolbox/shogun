@@ -902,7 +902,7 @@ SGVector<bool> CCARTree::surrogate_split(SGMatrix<float64_t> m,SGVector<float64_
 	}
 
 	// if some missing attribute vectors are yet not addressed, use majority rule
-	for (index_t i=0;i<association_index.size();++i)
+	for (size_t i=0;i<association_index.size();++i)
 	{
 		if (association_index.at(i)==0.)
 			ret[missing_vecs.at(i)]=(p_l>=p_r);
@@ -933,7 +933,7 @@ void CCARTree::handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> 
 		auto z=feats[j];
 		float64_t numer=0.;
 		float64_t numerc=0.;
-		for (index_t k = 0; k < intersect_vecs.size(); ++k)
+		for (size_t k = 0; k < intersect_vecs.size(); ++k)
 		{
 			// if both go left or both go right
 			if ((m(attr,intersect_vecs.at(k))<=z) && is_left[intersect_vecs.at(k)])
@@ -951,7 +951,7 @@ void CCARTree::handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> 
 			? (p-(1-numer/denom))/p
 			: (p-(1-numerc/denom))/p;
 
-		for (index_t k = 0; k < missing_vecs.size(); ++k)
+		for (size_t k = 0; k < missing_vecs.size(); ++k)
 		{
 			if ((lambda>association_index.at(k)) &&
 			(!CMath::fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
@@ -1019,7 +1019,7 @@ void CCARTree::handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, 
 			: (p-(1-numerc/denom))/p;
 
 		// address missing value vectors not yet addressed or addressed using worse split
-		for (index_t k = 0; k < missing_vecs.size(); ++k)
+		for (size_t k = 0; k < missing_vecs.size(); ++k)
 		{
 			if ((lambda>association_index.at(k)) &&
 			(!CMath::fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
@@ -1077,7 +1077,8 @@ float64_t CCARTree::gini_impurity_index(const SGVector<float64_t>& weighted_lab_
 
 float64_t CCARTree::least_squares_deviation(const SGVector<float64_t>& feats, const SGVector<float64_t>& weights, float64_t &total_weight) const
 {
-	float64_t mean = linalg::dot(weights, feats);
+	SGVector<float64_t> wrap_feats(feats.vector, weights.size(), false);
+	float64_t mean = linalg::dot(weights, wrap_feats);
 	total_weight = linalg::sum(weights);
 
 	mean/=total_weight;
