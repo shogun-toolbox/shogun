@@ -11,6 +11,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/macros.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
