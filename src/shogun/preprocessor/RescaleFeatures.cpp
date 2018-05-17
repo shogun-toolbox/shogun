@@ -4,6 +4,8 @@
  * Authors: Viktor Gal, Bjoern Esser
  */
 
+#include <shogun/base/range.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 
 using namespace shogun;
@@ -70,24 +72,21 @@ void CRescaleFeatures::cleanup()
 	m_initialized = false;
 }
 
-SGMatrix<float64_t> CRescaleFeatures::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t>
+CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	ASSERT(m_initialized);
 
-	auto feature_matrix =
-	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
-	ASSERT(feature_matrix.num_rows == m_min.vlen);
+	ASSERT(matrix.num_rows == m_min.vlen);
 
-	for (index_t i = 0; i < feature_matrix.num_cols; i++)
+	for (auto i : range(matrix.num_cols))
 	{
-		float64_t* vec = feature_matrix.get_column_vector(i);
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(vec, -1.0, m_min.vector, feature_matrix.num_rows);
-		for (index_t j = 0; j < feature_matrix.num_rows; j++) {
-			vec[j] *= m_range[j];
-		}
+		auto vec = matrix.get_column(i);
+		linalg::add(vec, m_min, vec, 1.0, -1.0);
+		linalg::element_prod(vec, m_range, vec);
 	}
 
-	return feature_matrix;
+	return matrix;
 }
 
 SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)

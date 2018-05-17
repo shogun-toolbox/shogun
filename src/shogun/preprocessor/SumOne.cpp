@@ -4,10 +4,11 @@
  * Authors: Soeren Sonnenburg, Evgeniy Andreev, Sergey Lisitsyn
  */
 
-#include <shogun/preprocessor/SumOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/SumOne.h>
 
 using namespace shogun;
 
@@ -41,21 +42,15 @@ bool CSumOne::save(FILE* f)
 	return false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-SGMatrix<float64_t> CSumOne::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CSumOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	auto feature_matrix =
-	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
-
-	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+	for (int32_t i = 0; i < matrix.num_cols; i++)
 	{
-		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
-		float64_t sum = SGVector<float64_t>::sum(vec,feature_matrix.num_rows);
-		SGVector<float64_t>::scale_vector(1.0/sum, vec, feature_matrix.num_rows);
+		auto vec = matrix.get_column(i);
+		auto sum = linalg::sum(vec);
+		linalg::scale(vec, vec, 1.0 / sum);
 	}
-	return feature_matrix;
+	return matrix;
 }
 
 /// apply preproc on single feature vector

@@ -5,10 +5,11 @@
  *          Sergey Lisitsyn
  */
 
-#include <shogun/preprocessor/PNorm.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/PNorm.h>
 
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
@@ -56,21 +57,15 @@ bool CPNorm::save (FILE* f)
 	return false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
+SGMatrix<float64_t> CPNorm::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	auto feature_matrix =
-	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
-
-	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+	for (auto i : range(matrix.num_cols))
 	{
-		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
-		float64_t norm = get_pnorm (vec, feature_matrix.num_rows);
-		SGVector<float64_t>::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
+		auto vec = matrix.get_column(i);
+		auto norm = get_pnorm(vec.vector, vec.vlen);
+		linalg::scale(vec, vec, 1.0 / norm);
 	}
-	return feature_matrix;
+	return matrix;
 }
 
 /// apply preproc on single feature vector

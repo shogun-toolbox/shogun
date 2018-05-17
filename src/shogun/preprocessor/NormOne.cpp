@@ -5,11 +5,12 @@
  *          Viktor Gal
  */
 
-#include <shogun/preprocessor/NormOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/base/range.h>
+#include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/features/Features.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/NormOne.h>
 
 using namespace shogun;
 
@@ -43,21 +44,15 @@ bool CNormOne::save(FILE* f)
 	return false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-SGMatrix<float64_t> CNormOne::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CNormOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	auto feature_matrix =
-	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
-
-	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+	for (auto i : range(matrix.num_cols))
 	{
-		SGVector<float64_t> vec(&(feature_matrix.matrix[i*feature_matrix.num_rows]), feature_matrix.num_rows, false);
-		float64_t norm = std::sqrt(linalg::dot(vec, vec));
-		SGVector<float64_t>::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
+		auto vec = matrix.get_column(i);
+		auto norm = linalg::norm(vec);
+		linalg::scale(vec, vec, 1.0 / norm);
 	}
-	return feature_matrix;
+	return matrix;
 }
 
 /// apply preproc on single feature vector
