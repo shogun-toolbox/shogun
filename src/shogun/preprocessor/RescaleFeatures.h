@@ -45,14 +45,6 @@ namespace shogun
 		     */
 		    virtual void cleanup();
 
-		    /**
-		     * Apply preproc on a feature matrix
-		     *
-		     * @param features input feature matrix
-		     * @return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		     */
-		    virtual SGMatrix<float64_t>
-		    apply_to_feature_matrix(CFeatures* features);
 
 		    /**
 		     * Apply preproc on a single feature vector
@@ -76,7 +68,10 @@ namespace shogun
 			void register_parameters();
 
 		protected:
-			/** min */
+		    virtual SGMatrix<float64_t>
+		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
+
+		    /** min */
 			SGVector<float64_t> m_min;
 			/** 1.0/(max[i]-min[i]) */
 			SGVector<float64_t> m_range;
