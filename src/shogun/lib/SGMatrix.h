@@ -9,6 +9,7 @@
 #ifndef __SGMATRIX_H__
 #define __SGMATRIX_H__
 
+#include <shogun/base/macros.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
