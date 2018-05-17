@@ -51,12 +51,15 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	for (auto i : range(num_examples))
 	{
 		for (auto j : range(num_features))
-			var[j] += CMath::sq(
-			    m_mean[j] - feature_matrix.matrix[i * num_features + j]);
+		{
+			auto diff =
+			    linalg::add(m_mean, feature_matrix.get_column(i), 1.0, -1.0);
+			var[j] += linalg::dot(diff, diff);
+		}
 	}
 
 	int32_t num_ok = 0;
-	int32_t* idx_ok = SG_MALLOC(int32_t, num_features);
+	auto idx_ok = SGVector<int32_t>(num_features);
 
 	for (auto j : range(num_features))
 	{
@@ -82,7 +85,6 @@ void CPruneVarSubMean::fit(CFeatures* features)
 		m_std[j] = std::sqrt(var[idx_ok[j]]);
 	}
 	m_num_idx = num_ok;
-	SG_FREE(idx_ok);
 	m_mean = new_mean;
 
 	m_initialized = true;
@@ -97,43 +99,33 @@ void CPruneVarSubMean::cleanup()
 	m_initialized = false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t>
+CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	ASSERT(m_initialized)
 
-	int32_t num_vectors=0;
-	int32_t num_features=0;
+	int32_t num_vectors = matrix.num_cols;
 
-	auto simple_features = features->as<CDenseFeatures<float64_t>>();
-	auto m = simple_features->get_feature_matrix();
+	SGMatrix<float64_t> result(matrix.data(), m_num_idx, num_vectors);
 
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
-	SG_INFO("Preprocessing feature matrix\n")
-	for (int32_t vec=0; vec<num_vectors; vec++)
+	for (auto i : range(num_vectors))
 	{
-		float64_t* v_src=&m[num_features*vec];
-		float64_t* v_dst=&m[m_num_idx*vec];
+		auto v_src = matrix.get_column(i);
+		auto v_dst = matrix.get_column(i);
 
 		if (m_divide_by_std)
 		{
-			for (int32_t feat=0; feat<m_num_idx; feat++)
+			for (auto feat : range(m_num_idx))
 				v_dst[feat]=(v_src[m_idx[feat]]-m_mean[feat])/m_std[feat];
 		}
 		else
 		{
-			for (int32_t feat=0; feat<m_num_idx; feat++)
+			for (auto feat : range(m_num_idx))
 				v_dst[feat]=(v_src[m_idx[feat]]-m_mean[feat]);
 		}
 	}
 
-	simple_features->set_num_features(m_num_idx);
-	simple_features->get_feature_matrix(num_features, num_vectors);
-	SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features)
-
-	return simple_features->get_feature_matrix();
+	return result;
 }
 
 /// apply preproc on single feature vector

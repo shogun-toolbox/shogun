@@ -42,11 +42,6 @@ class CSumOne : public CDensePreprocessor<float64_t>
 		/// save preprocessor init-data to file
 		virtual bool save(FILE* f);
 
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
-
 		/// apply preproc on single feature vector
 		/// result in feature matrix
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
@@ -56,6 +51,10 @@ class CSumOne : public CDensePreprocessor<float64_t>
 
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const { return P_SUMONE; }
+
+	protected:
+		virtual SGMatrix<float64_t>
+		apply_to_matrix(SGMatrix<float64_t> matrix) override;
 };
 }
 #endif
