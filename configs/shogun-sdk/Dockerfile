@@ -39,10 +39,10 @@ RUN cd /tmp;\
     cmake ../../;\
     make install;
 
-ADD https://github.com/shogun-toolbox/tflogger/archive/v0.1.0.tar.gz /tmp/
+ADD https://github.com/shogun-toolbox/tflogger/archive/v0.1.1.tar.gz /tmp/
 RUN cd /tmp;\
-    tar -xvf v0.1.0.tar.gz;\
-    cd tflogger-0.1.0;\
+    tar -xvf v0.1.1.tar.gz;\
+    cd tflogger-0.1.1;\
     mkdir build;\
     cd build;\
     cmake ../;\
