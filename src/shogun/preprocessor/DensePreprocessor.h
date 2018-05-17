@@ -44,11 +44,14 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual SGMatrix<ST> apply_to_feature_matrix(CFeatures* features)=0;
+		// remove after cleaning up codebase
+		[[deprecated]] virtual SGMatrix<ST>
+		apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector)=0;
+		[[deprecated]] virtual SGVector<ST>
+		apply_to_feature_vector(SGVector<ST> vector) = 0;
 
 		/// return that we are dense features (just fixed size matrices)
 		virtual EFeatureClass get_feature_class();
@@ -58,6 +61,13 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const;
 
+	protected:
+		/** Apply preprocessor on matrix. Subclasses should try to apply in
+		 * place to avoid copying.
+		 * @param matrix the input feature matrix
+		 * @return the matrix after applying the preprocessor
+		 */
+		virtual SGMatrix<ST> apply_to_matrix(SGMatrix<ST> matrix) = 0;
 };
 
 }

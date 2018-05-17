@@ -92,10 +92,24 @@ CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 			"has to be of C_DENSE (%d) class!\n",
 			features->get_feature_class(), C_DENSE);
 
-	SGMatrix<ST> feat_matrix=apply_to_feature_matrix(features);
-	CDenseFeatures<ST>* preprocessed=new CDenseFeatures<ST>(feat_matrix);
+	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
+	if (!inplace)
+		matrix = matrix.clone();
+	auto feat_matrix = apply_to_matrix(matrix);
+	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
 	SG_REF(preprocessed);
 	return preprocessed;
+}
+
+template <class ST>
+SGMatrix<ST>
+CDensePreprocessor<ST>::apply_to_feature_matrix(CFeatures* features)
+{
+	auto simple_features = features->as<CDenseFeatures<ST>>();
+	auto feature_matrix =
+		apply_to_matrix(simple_features->get_feature_matrix());
+	simple_features->set_feature_matrix(feature_matrix);
+	return feature_matrix;
 }
 
 template class CDensePreprocessor<bool>;
