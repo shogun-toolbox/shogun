@@ -84,7 +84,10 @@ template<class T> class SGVector : public SGReferencedData
 		 *
 		 * @return true if vector is on GPU
 		 */
-		SG_FORCED_INLINE bool on_gpu() const
+#ifndef SWIG
+		SG_FORCED_INLINE
+#endif
+		bool on_gpu() const
 		{
 			return gpu_ptr != NULL;
 		}
@@ -574,7 +577,10 @@ template<class T> class SGVector : public SGReferencedData
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */
-		SG_FORCED_INLINE void assert_on_cpu() const
+#ifndef SWIG
+		SG_FORCED_INLINE
+#endif
+		void assert_on_cpu() const
 		{
 			if (on_gpu())
 				SG_SERROR("Direct memory access not possible when data is in GPU memory.\n");
