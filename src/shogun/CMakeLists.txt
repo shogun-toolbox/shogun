@@ -328,6 +328,10 @@ include(ShogunFindLAPACK)
 # variant
 IF (NOT HAVE_STD_VARIANT)
   include(external/variant)
+  SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+	$<BUILD_INTERFACE:${VARIANT_INCLUDE_DIR}>
+	$<INSTALL_INTERFACE:include/shogun/third_party/variant>
+  )
 ENDIF()
 
 SHOGUN_DEPENDENCIES(
