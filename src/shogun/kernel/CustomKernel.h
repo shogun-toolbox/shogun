@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Evgeniy Andreev, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Evgeniy Andreev,
  *          Sergey Lisitsyn, Yuyu Zhang, Evan Shelhamer, Pan Deng
  */
 
@@ -177,7 +177,8 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
 
-			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, len), cols, cols);
+			float32_t* m = SG_MALLOC(float32_t, len);
+			kmatrix=SGMatrix<float32_t>(m, cols, cols);
 			upper_diagonal=true;
 
 			for (int64_t i=0; i<len; i++)
@@ -227,7 +228,8 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
 
-			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, cols*(cols+1)/2), rows, cols);
+			float32_t* m = SG_MALLOC(float32_t, cols*(cols+1)/2);
+			kmatrix=SGMatrix<float32_t>(m, rows, cols);
 			upper_diagonal = true;
 
 			for (int64_t row=0; row<rows; row++)

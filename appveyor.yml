@@ -6,8 +6,8 @@ cache:
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      GENERATOR: Visual Studio 14 2015 Win64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      GENERATOR: Visual Studio 15 2017 Win64
       PYTHON: "3.6"
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
 
