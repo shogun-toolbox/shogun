@@ -52,7 +52,6 @@ endif()
 set(HAVE_CXX11 ON)
 
 ############# minimum library versions ###################
-SET(EIGEN_VERSION_MINIMUM 3.1.2)
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 
 # Store system's or distribution's C[XX]FLAGS.
