@@ -8,24 +8,14 @@
 #ifndef CMACHINEEVALUATION_H_
 #define CMACHINEEVALUATION_H_
 
-#include <shogun/lib/config.h>
-
-#include <shogun/base/SGObject.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
-
-#include <condition_variable>
-#include <mutex>
+#include <shogun/lib/StoppableSGObject.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {
-
-#define EVALUATION_CONTROLLERS                                                 \
-	if (cancel_evaluation())                                                   \
-		continue;                                                              \
-	pause_evaluation();
-
 	class CMachine;
 	class CFeatures;
 	class CLabels;
@@ -36,7 +26,7 @@ namespace shogun
 	 * that evaluates a machine according to some criterion.
 	 *
 	 */
-	class CMachineEvaluation : public CSGObject
+	class CMachineEvaluation : public CStoppableSGObject
 	{
 
 	public:
@@ -93,37 +83,6 @@ namespace shogun
 			m_autolock = autolock;
 		}
 
-#ifndef SWIG
-		/** @return whether the evaluation needs to be stopped */
-		SG_FORCED_INLINE bool cancel_evaluation() const
-		{
-			return m_cancel_computation.load();
-		}
-#endif
-
-#ifndef SWIG
-		/** Pause the evaluation f the flag is set */
-		SG_FORCED_INLINE void pause_evaluation()
-		{
-			if (m_pause_computation_flag.load())
-			{
-				std::unique_lock<std::mutex> lck(m_mutex);
-				while (m_pause_computation_flag.load())
-					m_pause_computation.wait(lck);
-			}
-		}
-#endif
-
-#ifndef SWIG
-		/** Resume current evaluation (sets the flag) */
-		SG_FORCED_INLINE void resume_evaluation()
-		{
-			std::unique_lock<std::mutex> lck(m_mutex);
-			m_pause_computation_flag = false;
-			m_pause_computation.notify_all();
-		}
-#endif
-
 	protected:
 		/** Initialize Object */
 		virtual void init();
@@ -137,37 +96,6 @@ namespace shogun
 		virtual CEvaluationResult* evaluate_impl() = 0;
 
 		/** connect the machine instance to the signal handler */
-		rxcpp::subscription connect_to_signal_handler();
-
-		/** reset the computation variables */
-		void reset_computation_variables()
-		{
-			m_cancel_computation = false;
-			m_pause_computation_flag = false;
-		}
-
-		/** The action which will be done when the user decides to
-		* premature stop the CMachineEvaluation execution */
-		virtual void on_next()
-		{
-			m_cancel_computation.store(true);
-		}
-
-		/** The action which will be done when the user decides to
-		* pause the CMachineEvaluation execution */
-		virtual void on_pause()
-		{
-			m_pause_computation_flag.store(true);
-			/* Here there should be the actual code*/
-			resume_evaluation();
-		}
-
-		/** The action which will be done when the user decides to
-		* return to prompt and terminate the program execution */
-		virtual void on_complete()
-		{
-		}
-
 	protected:
 		/** Machine to be Evaluated */
 		CMachine* m_machine;
@@ -189,18 +117,6 @@ namespace shogun
 
 		/** whether machine should be unlocked after evaluation */
 		bool m_do_unlock;
-
-		/** Cancel evaluation */
-		std::atomic<bool> m_cancel_computation;
-
-		/** Pause evaluation flag */
-		std::atomic<bool> m_pause_computation_flag;
-
-		/** Conditional variable to make threads wait */
-		std::condition_variable m_pause_computation;
-
-		/** Mutex used to pause threads */
-		std::mutex m_mutex;
 	};
 
 } /* namespace shogun */
