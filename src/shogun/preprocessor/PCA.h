@@ -11,9 +11,9 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 
 namespace shogun
 {
@@ -104,7 +104,7 @@ enum EPCAMemoryMode
  *
  * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
-class CPCA: public CDimensionReductionPreprocessor
+class CPCA : public CDensePreprocessor<float64_t>
 {
 	public:
 
@@ -134,12 +134,6 @@ class CPCA: public CDimensionReductionPreprocessor
 
 		/** cleanup */
 		virtual void cleanup();
-
-		/** apply preprocessor to feature matrix
-		 * @param features features
-		 * @return processed feature matrix
-		 */
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/** apply preprocessor to feature vector
 		 * @param vector feature vector
@@ -184,9 +178,22 @@ class CPCA: public CDimensionReductionPreprocessor
 		 */
 		float64_t get_eigenvalue_zero_tolerance() const;
 
+		/** setter for target dimension
+		 * @param dim target dimension
+		 */
+		void set_target_dim(int32_t dim);
+
+		/** getter for target dimension
+		 * @return target dimension
+		 */
+		int32_t get_target_dim() const;
+
 	protected:
 
 		void init();
+
+		virtual SGMatrix<float64_t>
+		    apply_to_matrix(SGMatrix<float64_t>) override;
 
 	protected:
 
@@ -217,6 +224,9 @@ class CPCA: public CDimensionReductionPreprocessor
 		 * whitening to tackle numerical issues
 		 */
 		float64_t m_eigenvalue_zero_tolerance;
+
+		/** target dimension */
+		int32_t m_target_dim;
 
 	private:
 		/** Computes the transformation matrix using an eigenvalue decomposition. */

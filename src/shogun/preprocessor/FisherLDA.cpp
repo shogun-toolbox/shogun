@@ -40,7 +40,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
@@ -52,7 +51,7 @@ using namespace shogun;
 CFisherLDA::CFisherLDA(
     int32_t num_dimensions, EFLDAMethod method, float64_t thresh,
     float64_t gamma, bool bdc_svd)
-    : CDimensionReductionPreprocessor()
+    : CDensePreprocessor<float64_t>()
 {
 	initialize_parameters();
 	m_num_dim = num_dimensions;
@@ -198,13 +197,10 @@ void CFisherLDA::cleanup()
 	m_eigenvalues_vector=SGVector<float64_t>();
 }
 
-SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
+SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	auto simple_features = features->as<CDenseFeatures<float64_t>>();
-	auto m = simple_features->get_feature_matrix();
-
-	int32_t num_vectors=m.num_cols;
-	int32_t num_features=m.num_rows;
+	auto num_vectors = matrix.num_cols;
+	auto num_features = matrix.num_rows;
 
 	SG_INFO("Transforming feature matrix\n")
 	Map<MatrixXd> transform_matrix(
@@ -213,7 +209,7 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	Map<MatrixXd> feature_matrix (m.matrix, num_features, num_vectors);
+	Map<MatrixXd> feature_matrix(matrix.matrix, num_features, num_vectors);
 
 	feature_matrix.block(0, 0, m_num_dim, num_vectors) =
 	    transform_matrix.transpose() * feature_matrix;
@@ -222,12 +218,11 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 	for (int32_t col=0; col<num_vectors; col++)
 	{
 		for (int32_t row=0; row<m_num_dim; row++)
-			m[col*m_num_dim+row]=feature_matrix(row, col);
+			matrix[col * m_num_dim + row] = feature_matrix(row, col);
 	}
-	m.num_rows=m_num_dim;
-	m.num_cols=num_vectors;
-	simple_features->set_feature_matrix(m);
-	return m;
+	matrix.num_rows = m_num_dim;
+	matrix.num_cols = num_vectors;
+	return matrix;
 }
 
 SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vector)
