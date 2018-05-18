@@ -325,6 +325,11 @@ ENDIF()
 #### LAPACK
 include(ShogunFindLAPACK)
 
+# variant
+IF (NOT HAVE_STD_VARIANT)
+  include(external/variant)
+ENDIF()
+
 SHOGUN_DEPENDENCIES(
   LIBRARY GLPK
   SCOPE PRIVATE
