@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUVector.h>
 #include <viennacl/vector.hpp>
@@ -209,5 +208,4 @@ template class CGPUVector<float32_t>;
 template class CGPUVector<float64_t>;
 }
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL
