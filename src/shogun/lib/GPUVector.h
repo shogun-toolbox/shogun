@@ -37,10 +37,11 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
+
+#include <memory>
 
 #include <shogun/lib/common.h>
-#include <memory>
+#include <shogun/lib/SGVector.h>
 
 #ifndef SWIG // SWIG should skip this part
 namespace viennacl
@@ -189,6 +190,5 @@ public:
 }
 #endif // SWIG
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL
 #endif // __GPUVECTOR_H__
