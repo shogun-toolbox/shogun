@@ -38,8 +38,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <vector>
 
 namespace shogun
@@ -88,8 +87,8 @@ namespace shogun
 	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on
 	 * whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses ::CLASSIC_FLDA)
 	 */
-class CFisherLDA: public CDimensionReductionPreprocessor
-{
+	class CFisherLDA : public CDensePreprocessor<float64_t>
+	{
 	public:
 		/** standard constructor
 		 * @param num_dimensions number of dimensions to retain
@@ -123,13 +122,6 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		/** cleanup */
 		virtual void cleanup();
 
-		/** apply preprocessor to feature matrix
-		 * @param features on which the learned tranformation has to be applied.
-		 * Sometimes it is also referred as projecting the given features.
-		 * @return processed feature matrix with reduced dimensions.
-		 */
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
-
 		/** apply preprocessor to feature vector
 		 * @param vector features on which the learned transformation has to be applied.
 		 * @return processed feature vector with reduced dimensions.
@@ -159,6 +151,14 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		void initialize_parameters();
 
 	protected:
+		/** apply preprocessor to feature matrix
+		 * @param matrix on which the learned tranformation has to be applied.
+		 * Sometimes it is also referred as projecting the given features
+		 * matrix.
+		 * @return processed feature matrix with reduced dimensions.
+		 */
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+
 		/**
 		 * Train the preprocessor with the canonical variates method.
 		 * @param features training data.
