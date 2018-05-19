@@ -9,10 +9,10 @@
 #define KERNELPCA_H__
 #include <shogun/lib/config.h>
 
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/common.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 
 namespace shogun
 {
@@ -28,7 +28,7 @@ class CKernel;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8744
  *
  */
-class CKernelPCA: public CDimensionReductionPreprocessor
+class CKernelPCA : public CPreprocessor
 {
 public:
 		/** default constructor
@@ -44,12 +44,11 @@ public:
 
 		virtual void fit(CFeatures* features);
 
+		virtual CFeatures* apply(CFeatures* features, bool inplace);
+
 		/// cleanup
 		virtual void cleanup();
 
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
@@ -77,11 +76,35 @@ public:
 			return m_bias_vector;
 		}
 
+		virtual EFeatureClass get_feature_class();
+
+		virtual EFeatureType get_feature_type();
+
 		/** @return object name */
 		virtual const char* get_name() const { return "KernelPCA"; }
 
 		/** @return the type of preprocessor */
 		virtual EPreprocessorType get_type() const { return P_KERNELPCA; }
+
+		/** setter for target dimension
+		 * @param dim target dimension
+		 */
+		void set_target_dim(int32_t dim);
+
+		/** getter for target dimension
+		 * @return target dimension
+		 */
+		int32_t get_target_dim() const;
+
+		/** setter for kernel
+		 * @param kernel kernel to set
+		 */
+		void set_kernel(CKernel* kernel);
+
+		/** getter for kernel
+		 * @return kernel
+		 */
+		CKernel* get_kernel() const;
 
 	protected:
 
@@ -102,6 +125,11 @@ public:
 		/** true when already initialized */
 		bool m_initialized;
 
+		/** target dimension */
+		int32_t m_target_dim;
+
+		/** kernel to be used */
+		CKernel* m_kernel;
 };
 }
 #endif

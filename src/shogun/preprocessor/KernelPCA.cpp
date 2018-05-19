@@ -18,16 +18,15 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 
 using namespace shogun;
 
-CKernelPCA::CKernelPCA() : CDimensionReductionPreprocessor()
+CKernelPCA::CKernelPCA() : CPreprocessor()
 {
 	init();
 }
 
-CKernelPCA::CKernelPCA(CKernel* k) : CDimensionReductionPreprocessor()
+CKernelPCA::CKernelPCA(CKernel* k) : CPreprocessor()
 {
 	init();
 	set_kernel(k);
@@ -121,6 +120,30 @@ void CKernelPCA::fit(CFeatures* features)
 	SG_INFO("Done\n")
 }
 
+CFeatures* CKernelPCA::apply(CFeatures* features, bool inplace)
+{
+	REQUIRE(m_initialized, "Transformer not fitted.\n");
+
+	if (!inplace)
+		features = dynamic_cast<CFeatures*>(features->clone());
+
+	if (dynamic_cast<CDenseFeatures<float64_t>*>(features))
+	{
+		auto feature_matrix = apply_to_feature_matrix(features);
+		features->as<CDenseFeatures<float64_t>>()->set_feature_matrix(
+		    feature_matrix);
+		return features;
+	}
+
+	if (features->get_feature_class() == C_STRING)
+	{
+		return apply_to_string_features(features);
+	}
+
+	SG_ERROR("Feature type %d not supported\n", features->get_feature_type());
+	return NULL;
+}
+
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
@@ -165,7 +188,7 @@ CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* featu
 
 	m_kernel->init(features,m_init_features);
 
-	float64_t* new_feature_matrix = SG_MALLOC(float64_t, m_target_dim*num_vectors);
+	SGMatrix<float64_t> new_feature_matrix(m_target_dim * num_vectors);
 
 	for (i=0; i<num_vectors; i++)
 	{
@@ -184,4 +207,38 @@ CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* featu
 	m_kernel->cleanup();
 
 	return new CDenseFeatures<float64_t>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
+}
+
+EFeatureClass CKernelPCA::get_feature_class()
+{
+	return C_ANY;
+}
+
+EFeatureType CKernelPCA::get_feature_type()
+{
+	return F_ANY;
+}
+
+void CKernelPCA::set_target_dim(int32_t dim)
+{
+	ASSERT(dim > 0)
+	m_target_dim = dim;
+}
+
+int32_t CKernelPCA::get_target_dim() const
+{
+	return m_target_dim;
+}
+
+void CKernelPCA::set_kernel(CKernel* kernel)
+{
+	SG_REF(kernel);
+	SG_UNREF(m_kernel);
+	m_kernel = kernel;
+}
+
+CKernel* CKernelPCA::get_kernel() const
+{
+	SG_REF(m_kernel);
+	return m_kernel;
 }
