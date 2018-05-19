@@ -32,6 +32,7 @@
 #define _EMBASE_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/base/progress.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -75,6 +76,7 @@ template <class T> class CEMBase : public CSGObject
 			float64_t log_likelihood_prev=0;
 			int32_t i=0;
 			bool converge=false;
+			auto pb = progress(range(max_iters));
 			while (i<max_iters)
 			{
 				log_likelihood_prev=log_likelihood_cur;
@@ -88,8 +90,9 @@ template <class T> class CEMBase : public CSGObject
 
 				maximization_step();
 				i++;
+				pb.print_progress();
 			}
-
+			pb.complete();
 			return converge;
 		}
 

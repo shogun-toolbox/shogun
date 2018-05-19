@@ -6,6 +6,7 @@
 #include <shogun/multiclass/LSHKNNSolver.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/lib/Signal.h>
 
@@ -75,9 +76,9 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType
 		sg_memcpy(NN.get_column_vector(i), indices->data(), sizeof(index_t)*m_k);
 		delete indices;
 	}
-
-	for (index_t i = 0; i < num_lab && (!cancel_computation()); ++i)
+	for (auto i: progress(range(num_lab)))
 	{
+		if(cancel_computation())break;
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)
 			train_lab[j] = m_train_labels[ NN(j,i) ];

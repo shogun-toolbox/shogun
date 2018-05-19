@@ -9,6 +9,7 @@
 
 #include <shogun/base/some.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
@@ -149,7 +150,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	SGVector<float64_t> logPxy(num_vectors * m_components.size());
 	SGVector<float64_t> logPx(num_vectors);
 	//float64_t* logPost=SG_MALLOC(float64_t, num_vectors*m_components.vlen);
-
+	auto pb = progress(range(max_iter));
 	while (iter<max_iter)
 	{
 		log_likelihood_prev=log_likelihood_cur;
@@ -181,12 +182,12 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 		if (iter>0 && log_likelihood_cur-log_likelihood_prev<min_change)
 			break;
-
+		pb.print_progress();
 		max_likelihood(alpha, min_cov);
 
 		iter++;
 	}
-
+	pb.complete();
 	return log_likelihood_cur;
 }
 
@@ -218,6 +219,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	SGVector<int32_t> merge_ind(
 	    m_components.size() * (m_components.size() - 1) / 2);
 
+	auto pb = progress(range(max_iter));
 	while (iter<max_iter)
 	{
 		linalg::zero(logPostSum);
@@ -334,8 +336,10 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		if (!better_found)
 			break;
 		iter++;
+		pb.print_progress();
+		
 	}
-
+	pb.complete();
 	return cur_likelihood;
 }
 
@@ -826,4 +830,3 @@ void CGMM::register_params()
 	    &m_coefficients, "m_coefficients", "Mixture coefficients.",
 	    MS_NOT_AVAILABLE);
 }
-

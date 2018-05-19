@@ -9,6 +9,7 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/evaluation/CrossValidation.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/machine/Machine.h>
 
@@ -66,7 +67,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	CMachine* machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
-	for (index_t i=0; i<combinations->get_num_elements(); ++i)
+	for (auto i:progress(range(combinations->get_num_elements())))
 	{
 		CParameterCombination* current_combination=(CParameterCombination*)
 				combinations->get_element(i);

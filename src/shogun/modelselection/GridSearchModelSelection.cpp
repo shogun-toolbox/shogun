@@ -7,6 +7,7 @@
 
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/base/progress.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/machine/Machine.h>
@@ -55,7 +56,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	CMachine* machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
-	for (index_t i=0; i<combinations->get_num_elements(); ++i)
+	for (auto i:progress(range(combinations->get_num_elements())))
 	{
 		CParameterCombination* current_combination=(CParameterCombination*)
 				combinations->get_element(i);

@@ -4,6 +4,7 @@
  */
 
 #include <shogun/multiclass/BruteKNNSolver.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;
@@ -22,8 +23,9 @@ CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, co
 	SGMatrix<index_t> NN = this->nn;
 
 	//from the indices to the nearest neighbors, compute the class labels
-	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
+	for (auto i: progress(range(num_lab)))
 	{
+		if(cancel_computation())break;
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)
 			train_lab[j] = m_train_labels[ NN(j,i) ];

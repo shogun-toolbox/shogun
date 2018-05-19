@@ -1,12 +1,13 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni,
  *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
 #include <shogun/classifier/svm/SGDQN.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/loss/HingeLoss.h>
@@ -129,7 +130,7 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for (int32_t e = 0; e < epochs; e++)
+	for (auto e: progress(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
 		count = skip;

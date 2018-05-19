@@ -7,6 +7,7 @@
 #include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
 
 #ifdef _WIN32
@@ -75,7 +76,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 	SGVector<float64_t> v=SGVector<float64_t>(k);
 	v.zero();
 
-	for (int32_t i = 0; i < max_iter; i++)
+	for (auto i: progress(range(max_iter)))
 	{
 		SGVector<int32_t> M=mbchoose_rand(batch_size,XSize);
 		SGVector<int32_t> ncent=SGVector<int32_t>(batch_size);

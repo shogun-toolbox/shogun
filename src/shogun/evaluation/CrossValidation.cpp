@@ -91,7 +91,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
-	for (index_t i = 0; i < m_num_runs; i++)
+	for (auto i:progress(range(m_num_runs)))
 	{
 		/* evtl. update xvalidation output class */
 		SG_DEBUG("Creating CrossValidationStorage.\n")
@@ -162,7 +162,7 @@ float64_t CCrossValidation::evaluate_one_run(
 		m_machine->set_store_model_features(true);
 		SG_DEBUG("starting locked evaluation\n", get_name())
 		/* do actual cross-validation */
-		for (index_t i = 0; i < num_subsets; ++i)
+		for (auto i:progress(range(num_subsets)))
 		{
 			COMPUTATION_CONTROLLERS
 

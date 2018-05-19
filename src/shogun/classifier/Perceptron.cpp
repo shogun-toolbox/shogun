@@ -10,6 +10,7 @@
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -81,6 +82,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 	{
 		w = get_w();
 	}
+	auto pb = progress(range(max_iter));
 	//loop till we either get everything classified right or reach max_iter
 	while (!converged && iter < max_iter)
 	{
@@ -105,8 +107,9 @@ bool CPerceptron::train_machine(CFeatures* data)
 		}
 
 		iter++;
+		pb.print_progress();
 	}
-
+	pb.complete();
 	if (converged)
 		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
 	else
