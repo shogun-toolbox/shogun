@@ -14,7 +14,6 @@
 #include <shogun/preprocessor/PNorm.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/preprocessor/KernelPCA.h>
 #include <shogun/preprocessor/FisherLDA.h>
