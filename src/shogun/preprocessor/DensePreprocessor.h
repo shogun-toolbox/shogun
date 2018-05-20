@@ -45,13 +45,15 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 		// remove after cleaning up codebase
-		[[deprecated]] virtual SGMatrix<ST>
-		apply_to_feature_matrix(CFeatures* features);
+#ifndef SWIG
+		[[deprecated]]
+#endif
+		    virtual SGMatrix<ST>
+		    apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		[[deprecated]] virtual SGVector<ST>
-		apply_to_feature_vector(SGVector<ST> vector) = 0;
+		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector) = 0;
 
 		/// return that we are dense features (just fixed size matrices)
 		virtual EFeatureClass get_feature_class();
