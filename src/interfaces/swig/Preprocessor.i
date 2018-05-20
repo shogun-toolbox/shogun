@@ -16,7 +16,6 @@
 %rename(PNorm) CPNorm;
 %rename(RescaleFeatures) CRescaleFeatures;
 
-%rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
 %rename(FisherLda) CFisherLDA;
@@ -61,8 +60,6 @@ namespace shogun
 #endif
 }
 
-/* Templates Class DimensionReductionPreprocessor */
-%include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 
 /* Templates Class StringPreprocessor*/
 %include <shogun/preprocessor/StringPreprocessor.h>
