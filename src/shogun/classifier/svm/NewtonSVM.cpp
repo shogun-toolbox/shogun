@@ -80,15 +80,10 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	float64_t obj, *grad=SG_MALLOC(float64_t, x_d+1);
 	float64_t t;
 
-	while (!cancel_computation())
+	while (iter <= num_iter)
 	{
+		COMPUTATION_CONTROLLERS
 		iter++;
-
-		if (iter>num_iter)
-		{
-			SG_PRINT("Maximum number of Newton steps reached. Try larger lambda")
-			break;
-		}
 
 		obj_fun_linear(weights, out, &obj, sv, &size_sv, grad);
 
@@ -209,6 +204,11 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 		if (newton_decrement*2<prec*obj)
 			break;
+	}
+
+	if (iter > num_iter)
+	{
+		SG_PRINT("Maximum number of Newton steps reached. Try larger lambda")
 	}
 
 #ifdef V_NEWTON

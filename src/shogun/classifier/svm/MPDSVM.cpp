@@ -92,8 +92,9 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	}
 
 	// go ...
-	while (niter++ < maxiter && !cancel_computation())
+	while (niter++ < maxiter)
 	{
+		COMPUTATION_CONTROLLERS
 		int32_t maxpidx=-1;
 		float64_t maxpviol = -1;
 		//float64_t maxdviol = CMath::abs(detas[0]);

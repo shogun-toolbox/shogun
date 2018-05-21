@@ -89,8 +89,9 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		is_log_loss = true;
 
 	int32_t vec_count;
-	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
+	for (int32_t e = 0; e < epochs; e++)
 	{
+		COMPUTATION_CONTROLLERS
 		vec_count=0;
 		count = skip;
 		while (features->get_next_example())

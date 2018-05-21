@@ -357,13 +357,9 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				                  ? num_vectors
 				                  : (thread_num + 1) * step;
 
-#ifdef WIN32
 				for (int32_t vec = start; vec < end; vec++)
-#else
-				for (int32_t vec = start; vec < end && !cancel_computation();
-				     vec++)
-#endif
 				{
+					COMPUTATION_CONTROLLERS
 					pb.print_progress();
 
 					ASSERT(kernel)
@@ -386,11 +382,6 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 			}
 			pb.complete();
 		}
-
-#ifndef WIN32
-		if (cancel_computation())
-			SG_INFO("prematurely stopped.           \n")
-#endif
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
@@ -516,12 +507,10 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		int32_t start = thread_num * step;
 		int32_t end =
 		    (thread_num == num_threads) ? num_inds : (thread_num + 1) * step;
-#ifdef WIN32
+
 		for (int32_t vec = start; vec < end; vec++)
-#else
-		for (int32_t vec = start; vec < end && !cancel_computation(); vec++)
-#endif
 		{
+			COMPUTATION_CONTROLLERS
 			pb.print_progress();
 			index_t index = indices[vec];
 			ASSERT(kernel)
@@ -542,13 +531,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 			}
 		}
 	}
-
-#ifndef WIN32
-	if (cancel_computation())
-		SG_INFO("prematurely stopped.\n")
-	else
-#endif
-		pb.complete();
+	pb.complete();
 
 	return output;
 }
