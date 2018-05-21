@@ -16,15 +16,15 @@ using namespace shogun;
 		continue;                                                              \
 	pause_computation();
 
-CStoppableSGObject::CStoppableSGObject() : CSGObject(){};
-
-CStoppableSGObject::~CStoppableSGObject(){};
-
-void CStoppableSGObject::init_stoppable()
+CStoppableSGObject::CStoppableSGObject() : CSGObject()
 {
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
-}
+
+	m_callback = nullptr;
+};
+
+CStoppableSGObject::~CStoppableSGObject(){};
 
 rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 {
@@ -39,6 +39,12 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 	    [this]() { this->on_complete(); });
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
+
+void CStoppableSGObject::add_callback(std::function<bool()> callback=nullptr)
+{
+	m_callback = callback;
+}
+
 
 void CStoppableSGObject::reset_computation_variables()
 {
