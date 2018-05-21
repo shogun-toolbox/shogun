@@ -459,25 +459,27 @@ bool CMKL::train_machine(CFeatures* data)
 	{
 		float64_t* sumw = SG_MALLOC(float64_t, num_kernels);
 
-
-
-		while (true)
+		while (get_max_train_time() <= 0 ||
+		       training_time_clock.cur_time_diff() <= get_max_train_time())
 		{
+			COMPUTATION_CONTROLLERS
 			svm->train();
 
 			float64_t suma=compute_sum_alpha();
 			compute_sum_beta(sumw);
-
-			if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
-			{
-				SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ())
-				break;
-			}
-
-
 			mkl_iterations++;
-			if (perform_mkl_step(sumw, suma) || cancel_computation())
+			if (perform_mkl_step(sumw, suma))
 				break;
+		}
+
+		if ((training_time_clock.cur_time_diff() > get_max_train_time()) &&
+		    (get_max_train_time() > 0))
+		{
+			SG_SWARNING(
+			    "MKL Algorithm terminates PREMATURELY due to current training "
+			    "time exceeding get_max_train_time ()= %f . It may have not "
+			    "converged yet!\n",
+			    get_max_train_time())
 		}
 
 		SG_FREE(sumw);

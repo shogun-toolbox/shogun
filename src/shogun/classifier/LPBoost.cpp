@@ -122,8 +122,10 @@ bool CLPBoost::train_machine(CFeatures* data)
 	int32_t num_hypothesis=0;
 	CTime time;
 
-	while (!(cancel_computation()))
+	while (get_max_train_time() <= 0 ||
+	       time.cur_time_diff() <= get_max_train_time())
 	{
+		COMPUTATION_CONTROLLERS
 		int32_t max_dim=0;
 		float64_t violator=find_max_violator(max_dim);
 		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim)
@@ -146,9 +148,6 @@ bool CLPBoost::train_machine(CFeatures* data)
 		solver.optimize(u);
 		//CMath::display_vector(u, num_vec, "u");
 		num_hypothesis++;
-
-		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
-			break;
 	}
 	float64_t* lambda=SG_MALLOC(float64_t, num_hypothesis);
 	solver.optimize(u, lambda);

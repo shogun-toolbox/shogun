@@ -128,8 +128,9 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	auto pb = progress(range(n), *this->io);
 
 	//for each test example
-	for (int32_t i = 0; i < n && (!cancel_computation()); i++)
+	for (int32_t i = 0; i < n; i++)
 	{
+		COMPUTATION_CONTROLLERS
 		pb.print_progress();
 
 		//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
@@ -211,8 +212,9 @@ CMulticlassLabels* CKNN::classify_NN()
 	auto pb = progress(range(num_lab), *this->io);
 
 	// for each test example
-	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)
+	for (int32_t i = 0; i < num_lab; i++)
 	{
+		COMPUTATION_CONTROLLERS
 		pb.print_progress();
 
 		// get distances from i-th test example to 0..num_m_train_labels-1 train examples
