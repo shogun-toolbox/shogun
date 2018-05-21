@@ -11,6 +11,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/Preprocessor.h>
 
@@ -43,7 +44,11 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual bool apply_to_string_features(CFeatures* f)=0;
+#ifndef SWIG
+		[[deprecated]]
+#endif
+		    virtual bool
+		    apply_to_string_features(CFeatures* f);
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;
@@ -59,6 +64,12 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
 
+	protected:
+		/** apply the preprocessor to string list in place.
+		 *
+		 * @param string_list the string list to be preprocessed
+		 */
+		virtual void apply_to_string_list(SGStringList<ST> string_list) = 0;
 };
 
 }

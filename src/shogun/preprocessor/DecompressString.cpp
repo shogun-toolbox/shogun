@@ -46,24 +46,15 @@ bool CDecompressString<ST>::save(FILE* f)
 }
 
 template <class ST>
-bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
+void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
 {
-	int32_t i;
-	auto sf = f->as<CStringFeatures<ST>>();
-	int32_t num_vec = sf->get_num_vectors();
-
-	for (i=0; i<num_vec; i++)
+	for (auto i : range(string_list.num_strings))
 	{
-		int32_t len=0;
-		bool free_vec;
-		auto vec = sf->get_feature_vector(i, len, free_vec);
-
-		auto decompressed=apply_to_string(vec, len);
-		sf->free_feature_vector(vec, i, free_vec);
-		sf->cleanup_feature_vector(i);
-		sf->set_feature_vector(i, decompressed, len);
+		auto& vec = string_list.strings[i];
+		auto decompressed = apply_to_string(vec.string, vec.slen);
+		SG_FREE(vec.string);
+		vec.string = decompressed;
 	}
-	return true;
 }
 
 template <class ST>
