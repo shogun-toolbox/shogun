@@ -42,9 +42,6 @@ void CLogRationalApproximationCGM::init()
 
 	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
 		"Linear solver for complex systems", MS_NOT_AVAILABLE);
-
-	SG_ADD(&m_negated_shifts, "negated_shifts",
-		"Negated shifts", MS_NOT_AVAILABLE);
 }
 
 CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
@@ -52,24 +49,17 @@ CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 	SG_UNREF(m_linear_solver);
 }
 
-float64_t CLogRationalApproximationCGM::compute(SGVector<float64_t> sample)
+float64_t
+CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 {
 	SG_DEBUG("Entering\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
 
-	// we need to take the negation of the shifts for this case
-	if (m_negated_shifts.vector == NULL)
-	{
-		m_negated_shifts = SGVector<complex128_t>(m_shifts.vlen);
-		Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
-		Map<VectorXcd> negated_shifts(
-			m_negated_shifts.vector, m_negated_shifts.vlen);
-		negated_shifts = -shifts;
-	}
-
+	// we need to take the negation of the shifts for this case hence we set
+	// negate to true
 	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
-		m_linear_operator, sample, m_negated_shifts, m_weights);
+		m_linear_operator, sample, m_shifts, m_weights, true);
 
 	// Take negative (see CRationalApproximation for the formula)
 	Map<VectorXcd> v(vec.vector, vec.vlen);

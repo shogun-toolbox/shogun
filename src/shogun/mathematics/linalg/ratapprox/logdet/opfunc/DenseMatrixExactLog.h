@@ -46,7 +46,7 @@ public:
 	/**
 	 * method that solves the result for a sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample);
+	virtual float64_t compute(SGVector<float64_t> sample) const;
 
 	/** @return object name */
 	virtual const char* get_name() const
