@@ -42,30 +42,60 @@ public:
 	 * @param features the sparse input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply(CFeatures* features)
-	{
-		SG_ERROR("Is not yet implemented!\n");
-		return NULL;
-	}
+	virtual CFeatures* apply(CFeatures* features, bool inplace);
 
-	/// apply preproc on feature matrix
-	/// result in feature matrix
-	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual SGSparseVector<ST>* apply_to_sparse_feature_matrix(CSparseFeatures<ST>* f)=0;
+#ifndef SWIG
+	[[deprecated]]
+#endif
+		/// apply preproc on feature matrix
+		/// result in feature matrix
+		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+		virtual SGSparseVector<ST>*
+		apply_to_sparse_feature_matrix(CSparseFeatures<ST>* f) = 0;
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual SGSparseVector<ST>* apply_to_sparse_feature_vector(SGSparseVector<ST>* f, int32_t &len)=0;
+	virtual SGSparseVector<ST>*
+	apply_to_sparse_feature_vector(SGSparseVector<ST>* f, int32_t& len) = 0;
 
 	/// return that we are simple minded features (just fixed size matrices)
-	virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+	virtual EFeatureClass get_feature_class()
+	{
+		return C_SPARSE;
+	}
 
 	/// return the name of the preprocessor
-	virtual const char* get_name() const { return "UNKNOWN"; }
+	virtual const char* get_name() const
+	{
+		return "UNKNOWN";
+	}
 
 	/// return a type of preprocessor
-	virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
+	virtual EPreprocessorType get_type() const
+	{
+		return P_UNKNOWN;
+	}
 
+protected:
+	virtual SGSparseMatrix<ST>
+	apply_to_sparse_matrix(SGSparseMatrix<ST> matrix) = 0;
 };
+
+template <class ST>
+CFeatures* CSparsePreprocessor<ST>::apply(CFeatures* features, bool inplace)
+{
+	auto feature_matrix =
+		features->as<CSparseFeatures<ST>>()->get_sparse_feature_matrix();
+
+	if (!inplace)
+		feature_matrix = feature_matrix.clone();
+
+	apply_to_sparse_matrix(feature_matrix);
+
+	auto processed = new CSparseFeatures<ST>(feature_matrix);
+	SG_REF(processed);
+
+	return processed;
+}
 }
 #endif
