@@ -32,14 +32,16 @@ namespace shogun
 		/** destructor */
 		virtual ~CStoppableSGObject();
 
-		/** init flags to false as default */
-		void init_stoppable();
-
 #ifndef SWIG
 		/** @return whether the algorithm needs to be stopped */
 		SG_FORCED_INLINE bool cancel_computation() const
 		{
-			return m_cancel_computation.load();
+			/* Execute the callback, if present*/
+			bool result_callback = false;
+			if (m_callback)
+				result_callback = m_callback();
+
+			return m_cancel_computation.load() || result_callback;
 		}
 #endif
 
@@ -66,12 +68,15 @@ namespace shogun
 		}
 #endif
 
+		void add_callback(std::function<bool()> callback);
+
 		virtual const char* get_name() const
 		{
 			return "StoppableSGObject";
 		}
 
 	protected:
+
 		/** connect the machine instance to the signal handler */
 		rxcpp::subscription connect_to_signal_handler();
 
@@ -97,6 +102,7 @@ namespace shogun
 		void on_complete();
 		virtual void on_complete_impl();
 
+	protected:
 		/** Cancel computation */
 		std::atomic<bool> m_cancel_computation;
 
@@ -108,6 +114,9 @@ namespace shogun
 
 		/** Mutex used to pause threads */
 		std::mutex m_mutex;
+
+		std::function<bool(void)> m_callback;
+
 	};
 }
 #endif
