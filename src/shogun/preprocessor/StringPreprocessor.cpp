@@ -96,8 +96,26 @@ namespace shogun
 		    "has to be of C_STRING (%d) class!\n",
 		    features->get_feature_class(), C_STRING);
 
-		apply_to_string_features(features);
-		return features;
+		auto string_features = features->as<CStringFeatures<ST>>();
+		auto string_list = string_features->get_features();
+
+		if (!inplace)
+			string_list = string_list.clone();
+
+		apply_to_string_list(string_list);
+
+		auto processed = new CStringFeatures<ST>(
+		    string_list, string_features->get_alphabet());
+		SG_REF(processed);
+
+		return processed;
+	}
+
+	template <class ST>
+	bool CStringPreprocessor<ST>::apply_to_string_features(CFeatures* features)
+	{
+		apply(features);
+		return true;
 	}
 
 	template class CStringPreprocessor<bool>;
