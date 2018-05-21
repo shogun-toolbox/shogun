@@ -75,7 +75,7 @@ void CDenseMatrixExactLog::precompute()
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
-float64_t CDenseMatrixExactLog::compute(SGVector<float64_t> sample)
+float64_t CDenseMatrixExactLog::compute(SGVector<float64_t> sample) const
 {
 	SG_DEBUG("Entering...\n");
 

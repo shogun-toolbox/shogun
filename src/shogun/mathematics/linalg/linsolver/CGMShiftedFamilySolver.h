@@ -62,7 +62,8 @@ public:
 	 */
 	virtual SGVector<complex128_t> solve_shifted_weighted(
 		CLinearOperator<float64_t>* A, SGVector<float64_t> b,
-		SGVector<complex128_t> shifts, SGVector<complex128_t> weights);
+		SGVector<complex128_t> shifts, SGVector<complex128_t> weights,
+		bool negate = false);
 
 	/** @return object name */
 	virtual const char* get_name() const

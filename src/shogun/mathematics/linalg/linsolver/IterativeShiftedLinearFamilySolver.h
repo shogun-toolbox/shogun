@@ -62,8 +62,9 @@ public:
 	 * @param weights the weights to be multiplied with each solution for each
 	 * shift
 	 */
-	virtual SGVector<ST> solve_shifted_weighted(CLinearOperator<T>* A,
-		SGVector<T> b, SGVector<ST> shifts, SGVector<ST> weights) = 0;
+	virtual SGVector<ST> solve_shifted_weighted(
+		CLinearOperator<T>* A, SGVector<T> b, SGVector<ST> shifts,
+		SGVector<ST> weights, bool negate) = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -86,9 +87,10 @@ protected:
 	 * @param alpha \f$\alpha\f$ non-shifted
 	 * @param zeta_sh_new \f$\zeta^{\sigma}_{n+1}\f$ to be computed
 	 */
-	void compute_zeta_sh_new(const SGVector<ST>& zeta_sh_old,
-		const SGVector<ST>& zeta_sh_cur, const SGVector<ST>& shifts,
-		const T& beta_old, const T& beta_cur, const T& alpha, SGVector<ST>& zeta_sh_new);
+	void compute_zeta_sh_new(
+		const SGVector<ST>& zeta_sh_old, const SGVector<ST>& zeta_sh_cur,
+		const SGVector<ST>& shifts, const T& beta_old, const T& beta_cur,
+		const T& alpha, SGVector<ST>& zeta_sh_new, bool negate = false);
 
 	/**
 	 * compute \f$\beta^{\sigma}_{n}\f$ as \f$\beta_{n}\frac{\zeta^{\sigma}_{n+1}}

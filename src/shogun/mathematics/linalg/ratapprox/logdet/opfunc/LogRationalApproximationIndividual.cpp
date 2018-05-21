@@ -53,7 +53,7 @@ CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
 }
 
 float64_t
-CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample)
+CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 {
 	SG_DEBUG("Entering..\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
