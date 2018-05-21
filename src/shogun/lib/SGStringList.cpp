@@ -1,7 +1,8 @@
-#include <shogun/lib/SGStringList.h>
-#include <shogun/lib/SGString.h>
+#include <shogun/base/range.h>
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGStringList.h>
 
 namespace shogun
 {
@@ -85,6 +86,19 @@ void SGStringList<T>::free_data()
 	strings = NULL;
 	num_strings = 0;
 	max_string_length = 0;
+}
+
+template <class T>
+SGStringList<T> SGStringList<T>::clone() const
+{
+	SGStringList<T> result(*this);
+
+	auto strings = SG_MALLOC(SGString<T>, num_strings);
+
+	for (auto i : range(num_strings))
+		strings[i] = this->strings[i].clone();
+
+	return SGStringList<T>(strings, num_strings, max_string_length);
 }
 
 template class SGStringList<bool>;

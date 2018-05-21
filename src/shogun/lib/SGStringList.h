@@ -60,6 +60,11 @@ public:
 	 */
 	void save(CFile* saver);
 
+	/** clone string list
+	 *
+	 * @return a deep copy of current string list
+	 */
+	SGStringList<T> clone() const;
 
 protected:
 
