@@ -17,7 +17,6 @@ CMachine::CMachine()
     : CStoppableSGObject(), m_max_train_time(0), m_labels(NULL),
       m_solver_type(ST_AUTO)
 {
-	init_stoppable();
 	m_data_locked=false;
 	m_store_model_features=false;
 
