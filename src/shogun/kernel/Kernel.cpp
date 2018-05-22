@@ -940,8 +940,7 @@ void CKernel::register_params()   {
 	SG_ADD((machine_int_t*) &opt_type, "opt_type",
 		  "Optimization type.", MS_NOT_AVAILABLE);
 	SG_ADD(&properties, "properties", "Kernel properties.", MS_NOT_AVAILABLE);
-	SG_ADD(&normalizer, "normalizer", "Normalize the kernel.",
-	    MS_AVAILABLE);
+	SG_ADD(&normalizer, "normalizer", "Normalize the kernel.", MS_AVAILABLE);
 }
 
 

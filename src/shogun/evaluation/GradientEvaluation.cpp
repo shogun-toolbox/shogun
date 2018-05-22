@@ -27,8 +27,10 @@ void CGradientEvaluation::init()
 	m_diff=NULL;
 	m_parameter_dictionary=NULL;
 
-	SG_ADD(&m_diff, "differentiable_function",	"Differentiable "
-			"function", MS_AVAILABLE);
+	SG_ADD(
+	    &m_diff, "differentiable_function", "Differentiable "
+	                                        "function",
+	    MS_AVAILABLE);
 }
 
 CGradientEvaluation::~CGradientEvaluation()

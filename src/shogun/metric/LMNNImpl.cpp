@@ -299,7 +299,8 @@ void CLMNNImpl::gradient_step(
 	}
 }
 
-void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const int32_t iter)
+void CLMNNImpl::correct_stepsize(
+    float64_t& stepsize, const SGVector<float64_t> obj, const int32_t iter)
 {
 	if (iter > 0)
 	{
@@ -321,7 +322,9 @@ void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> 
 	}
 }
 
-bool CLMNNImpl::check_termination(float64_t stepsize, const SGVector<float64_t> obj, int32_t iter, int32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold)
+bool CLMNNImpl::check_termination(
+    float64_t stepsize, const SGVector<float64_t> obj, int32_t iter,
+    int32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold)
 {
 	if (iter >= maxiter-1)
 	{
