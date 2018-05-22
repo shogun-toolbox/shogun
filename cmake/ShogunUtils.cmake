@@ -96,6 +96,7 @@ MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
                     set_tests_properties(
                         integration_meta_${META_TARGET}-${NAME_WITH_DIR}
 	                        PROPERTIES
+	                        LABELS "integration"
 	                        DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
                     )
     ENDIF()
