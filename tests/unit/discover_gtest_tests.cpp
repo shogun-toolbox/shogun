@@ -72,6 +72,10 @@ int main (int argc, char **argv)
 				string endParen (".*\")");
 
 				testfilecmake << addTest << testCases[i] << testExec << gTestFilter << testCases[i] << endParen << endl;
+
+				string setTestsProp ("SET_TESTS_PROPERTIES (unit-");
+				string properties (" PROPERTIES LABELS \"unit\")");
+				testfilecmake << setTestsProp << testCases[i] << properties << endl;
 			}
 		}
 
