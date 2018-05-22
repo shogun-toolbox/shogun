@@ -39,13 +39,13 @@ namespace shogun
  *
  * The class gives the interface used in first order stochastic minimizers
  *
- * The cost function must be Written as a finite sample-specific sum of cost.  
+ * The cost function must be Written as a finite sample-specific sum of cost.
  * For example, least squares cost function,
  * \f[
  * f(w)=\frac{ \sum_i{ (y_i-w^T x_i)^2 } }{2}
  * \f]
  * where \f$(y_i,x_i)\f$ is the i-th sample,
- * \f$y_i\f$ is the label and \f$x_i\f$ is the features 
+ * \f$y_i\f$ is the label and \f$x_i\f$ is the features
  */
 class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
@@ -63,23 +63,23 @@ public:
 	 * */
 	virtual bool next_sample()=0;
 
-	/** Get the SAMPLE gradient value wrt target variables 
+	/** Get the SAMPLE gradient value wrt target variables
 	 *
 	 * WARNING
-	 * This method does return 
+	 * This method does return
 	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$,
 	 * instead of
 	 * \f$\sum_i{ \frac{\partial f_i(w) }{\partial w} }\f$
 	 *
 	 * For least squares cost function, that is the value of
 	 * \f$\frac{\partial f_i(w) }{\partial w}\f$ given \f$w\f$ is known
-	 * where the index \f$i\f$ is obtained by next_sample() 
+	 * where the index \f$i\f$ is obtained by next_sample()
 	 *
 	 * @return sample gradient of variables
 	 */
 	virtual SGVector<float64_t> get_gradient()=0;
 
-	/** Get the cost given current target variables 
+	/** Get the cost given current target variables
 	 *
 	 * For least squares, that is the value of \f$f(w)\f$.
 	 *
