@@ -105,8 +105,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	sg_rand->set_seed(1);
-
 	float64_t accuracy=1E-5;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
@@ -134,8 +132,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	for (index_t i=0; i<num_estimates; ++i)
 		result+=estimates[i];
 	result/=num_estimates;
-
-	EXPECT_NEAR(result, CStatistics::log_det(mat), 10.0);
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(eig_solver);
