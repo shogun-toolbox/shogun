@@ -106,6 +106,7 @@ namespace shogun
 
 		auto processed = new CStringFeatures<ST>(
 		    string_list, string_features->get_alphabet());
+		SG_UNREF(features);
 		SG_REF(processed);
 
 		return processed;
