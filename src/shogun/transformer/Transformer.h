@@ -10,11 +10,12 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
 {
+
+	class CFeatures;
 
 	/** @brief class Transformer used to transform data
 	 *
