@@ -196,7 +196,7 @@ SGMatrix<float64_t> CLMNNImpl::sum_outer_products(
 ImpostorsSetType CLMNNImpl::find_impostors(
     CDenseFeatures<float64_t>* x, CMulticlassLabels* y,
     const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
-    const uint32_t iter, const uint32_t correction)
+    const int32_t iter, const int32_t correction)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors().\n")
 
@@ -299,7 +299,8 @@ void CLMNNImpl::gradient_step(
 	}
 }
 
-void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter)
+void CLMNNImpl::correct_stepsize(
+    float64_t& stepsize, const SGVector<float64_t> obj, const int32_t iter)
 {
 	if (iter > 0)
 	{
@@ -321,7 +322,9 @@ void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> 
 	}
 }
 
-bool CLMNNImpl::check_termination(float64_t stepsize, const SGVector<float64_t> obj, uint32_t iter, uint32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold)
+bool CLMNNImpl::check_termination(
+    float64_t stepsize, const SGVector<float64_t> obj, int32_t iter,
+    int32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold)
 {
 	if (iter >= maxiter-1)
 	{
