@@ -97,7 +97,7 @@
 
 #cmakedefine HAVE_CXX11 1
 
-#cmakedefine HAVE_STD_VARIANT
+#cmakedefine HAVE_STD_VARIANT 1
 
 /* does the compiler support abi::__cxa_demangle */
 #cmakedefine HAVE_CXA_DEMANGLE 1
