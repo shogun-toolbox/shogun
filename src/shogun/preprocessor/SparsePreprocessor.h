@@ -93,6 +93,7 @@ CFeatures* CSparsePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 	apply_to_sparse_matrix(feature_matrix);
 
 	auto processed = new CSparseFeatures<ST>(feature_matrix);
+	SG_UNREF(features);
 	SG_REF(processed);
 
 	return processed;
