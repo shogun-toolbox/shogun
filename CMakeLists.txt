@@ -47,6 +47,9 @@ if (MSVC)
 	endif()
 endif()
 
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX("variant" HAVE_STD_VARIANT)
+
 ### FIXME: remove these flags when the codebase
 # is cleared up
 set(HAVE_CXX11 ON)
