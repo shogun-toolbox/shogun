@@ -97,6 +97,7 @@ CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 		matrix = matrix.clone();
 	auto feat_matrix = apply_to_matrix(matrix);
 	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
+	SG_UNREF(features);
 	SG_REF(preprocessed);
 	return preprocessed;
 }
