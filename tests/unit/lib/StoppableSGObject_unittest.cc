@@ -73,3 +73,24 @@ TEST(StoppableSGObject, custom_callback)
 	a.train();
 	EXPECT_TRUE(a.get_check() == 5);
 }
+
+TEST(StoppableSGObject, custom_callback_by_user)
+{
+	int i=0;
+	function<bool()> callback = [&i]()
+	{
+		if (i>=3) {
+			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+			return true;
+		}
+		i++;
+		return false;
+	};
+
+
+	Mock_model a;
+	a.add_callback(callback);
+	a.train();
+	EXPECT_TRUE(a.get_check() == 3);
+}
+
