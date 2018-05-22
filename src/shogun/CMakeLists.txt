@@ -325,6 +325,7 @@ ENDIF()
 #### LAPACK
 include(ShogunFindLAPACK)
 
+CHECK_CXX_SOURCE_COMPILES("#include <variant>\n int main(int argc, char** argv) { return 0; }" HAVE_STD_VARIANT)
 # variant
 IF (NOT HAVE_STD_VARIANT)
   include(external/variant)
