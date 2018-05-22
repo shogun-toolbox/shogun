@@ -252,6 +252,8 @@ PUT_ADD(CLabels)
 PUT_ADD(CECOCEncoder)
 PUT_ADD(CECOCDecoder)
 PUT_ADD(CMulticlassStrategy)
+PUT_ADD(CCombinationRule)
+PUT_ADD(CDifferentiableFunction)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;

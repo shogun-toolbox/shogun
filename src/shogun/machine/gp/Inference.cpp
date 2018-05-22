@@ -88,13 +88,12 @@ CInference::~CInference()
 
 void CInference::init()
 {
-	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
+	SG_ADD(&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
 	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
-		MS_AVAILABLE);
-	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
-	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_model, "likelihood_model", "Likelihood model", MS_AVAILABLE);
+	SG_ADD(&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
+	SG_ADD(&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
+	SG_ADD(&m_features, "features", "Features", MS_NOT_AVAILABLE);
 	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", MS_NOT_AVAILABLE);
 	
 

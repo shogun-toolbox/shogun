@@ -124,25 +124,25 @@ class CLMNN : public CSGObject
 		 *
 		 * @return maximum number of iterations
 		 */
-		uint32_t get_maxiter() const;
+		int32_t get_maxiter() const;
 
 		/** set maximum number of iterations
 		 *
 		 * @param maxiter maximum number of iterations to set
 		 */
-		void set_maxiter(const uint32_t maxiter);
+		void set_maxiter(const int32_t maxiter);
 
 		/** get number of iterations between exact impostors search
 		 *
 		 * @return iterations between exact impostors search
 		 */
-		uint32_t get_correction() const;
+		int32_t get_correction() const;
 
 		/** set number of iterations between exact impostors search
 		 *
 		 * @param correction iterations between exact impostors search
 		 */
-		void set_correction(const uint32_t correction);
+		void set_correction(const int32_t correction);
 
 		/** get objective threshold
 		 *
@@ -211,13 +211,13 @@ class CLMNN : public CSGObject
 		float64_t m_stepsize_threshold;
 
 		/** maximum number of iterations. Its default value is 1000. */
-		uint32_t m_maxiter;
+		int32_t m_maxiter;
 
 		/**
 		 * number of iterations between exact computation of impostors.
 		 * Its default value is 15
 		 */
-		uint32_t m_correction;
+		int32_t m_correction;
 
 		/**
 		 * objective threshold; stop training if the first order difference in
