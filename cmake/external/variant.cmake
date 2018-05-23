@@ -13,4 +13,4 @@ ExternalProject_Add(
 		INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${VARIANT_SOURCE_DIR}/${VARIANT_RELEASE_VERSION}/variant.hpp ${VARIANT_INCLUDE_DIR}/variant.hpp
 )
 
-LIST(APPEND SHOGUN_DEPENDS variant)
+add_dependencies(libshogun variant)
