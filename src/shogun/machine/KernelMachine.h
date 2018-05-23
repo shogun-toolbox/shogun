@@ -227,11 +227,12 @@ class CKernelMachine : public CMachine
 		virtual float64_t apply_one(int32_t num);
 
 #ifndef SWIG // SWIG should skip this part
-		/** Trains a locked machine on a set of indices. Error if machine is
-		 * not locked
+
+		/** This precomputes the kernel matrix and stores it
 		 *
-		 * @param indices index vector (of locked features) that is used for training
-		 * @return whether training was successful
+		 *  @param indices index vector (of locked features) that is used for
++		 *  training
+		 *  @return whether training was successful
 		 */
 		virtual bool train_locked(SGVector<index_t> indices);
 

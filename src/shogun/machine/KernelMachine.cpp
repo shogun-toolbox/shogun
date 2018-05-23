@@ -421,10 +421,6 @@ void CKernelMachine::store_model_features()
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
-	SG_DEBUG("entering %s::train_locked()\n", get_name())
-	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n")
-
 	/* this is asusmed here */
 	ASSERT(m_custom_kernel==kernel)
 
@@ -443,14 +439,13 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-	bool result = CMachine::train();
+	bool result = CMachine::train_locked();
 	/* remove last col subset of custom kernel */
 	m_custom_kernel->remove_col_subset();
 
 	/* remove label subset after training */
 	m_labels->remove_subset();
 
-	SG_DEBUG("leaving %s::train_locked()\n", get_name())
 	return result;
 }
 
