@@ -68,7 +68,11 @@ namespace shogun
 		}
 #endif
 
-		void add_callback(std::function<bool()> callback);
+		/**
+		 * Set an additional stopping condition
+		 * @param callback method that implements an additional stopping condition
+		 */
+		void set_callback(std::function<bool()> callback);
 
 		virtual const char* get_name() const
 		{
