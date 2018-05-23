@@ -106,8 +106,6 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 	int32_t num_vectors = matrix.num_cols;
 
-	SGMatrix<float64_t> result(matrix.data(), m_num_idx, num_vectors);
-
 	for (auto i : range(num_vectors))
 	{
 		auto v_src = matrix.get_column(i);
@@ -125,7 +123,9 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 		}
 	}
 
-	return result;
+	matrix.num_rows = m_num_idx;
+
+	return matrix;
 }
 
 /// apply preproc on single feature vector
