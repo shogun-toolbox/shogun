@@ -38,8 +38,8 @@ TEST(CommUlongStringKernel, kernel_matrix)
 	l_feats->obtain_from_char(s_feats, 5-1, 5, 0, false);
 	CSortUlongString* preproc = new CSortUlongString();
 	preproc->fit(l_feats);
-	l_feats->add_preprocessor(preproc);
-	l_feats->apply_preprocessor();
+	l_feats = preproc->apply(l_feats)->as<CStringFeatures<uint64_t>>();
+
 	CCommUlongStringKernel* kernel = new CCommUlongStringKernel(l_feats, l_feats);
 	CIdentityKernelNormalizer* normalizer = new CIdentityKernelNormalizer();
 	kernel->set_normalizer(normalizer);
