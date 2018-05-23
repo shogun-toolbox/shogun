@@ -96,6 +96,8 @@ namespace shogun
 		    "has to be of C_STRING (%d) class!\n",
 		    features->get_feature_class(), C_STRING);
 
+		SG_REF(features);
+
 		auto string_features = features->as<CStringFeatures<ST>>();
 		auto string_list = string_features->get_features();
 
@@ -106,7 +108,12 @@ namespace shogun
 
 		auto processed = new CStringFeatures<ST>(
 		    string_list, string_features->get_alphabet());
-		SG_UNREF(features);
+
+		// FIXME: we should prevent freeing input features here because SGString 
+        // doesn't have ref counting, which will be freed after unref.
+		// fix this after #4248
+        if (features->ref_count() > 1)
+		    SG_UNREF(features);
 		SG_REF(processed);
 
 		return processed;
