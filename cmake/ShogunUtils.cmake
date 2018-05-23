@@ -290,3 +290,28 @@ function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
 		MESSAGE(FATAL_ERROR "Undefined interface ${INTERFACE}")
 	endif()
 endfunction()
+
+# inspired by arrow's benchmarking:
+# https://github.com/apache/arrow/blob/apache-arrow-0.9.0/cpp/cmake_modules/BuildUtils.cmake#L223
+function(ADD_SHOGUN_BENCHMARK REL_BENCHMARK_NAME)
+	if(NOT BUILD_BENCHMARKS)
+		return()
+	endif()
+	get_filename_component(BENCHMARK_NAME ${REL_BENCHMARK_NAME} NAME_WE)
+
+	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${REL_BENCHMARK_NAME}.cc)
+		# This benchmark has a corresponding .cc file, set it up as an executable.
+		add_executable(${BENCHMARK_NAME} "${REL_BENCHMARK_NAME}.cc")
+		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+		set_target_properties (${BENCHMARK_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+		target_link_libraries(${BENCHMARK_NAME} ${SHOGUN_BENCHMARK_LINK_LIBS})
+		set(NO_COLOR "--color_print=false")
+	endif()
+
+	add_test(${BENCHMARK_NAME} ${CMAKE_BINARY_DIR}/bin/${BENCHMARK_NAME} ${NO_COLOR})
+	set_tests_properties(${BENCHMARK_NAME} PROPERTIES LABELS "benchmark")
+	if(ARGN)
+		set_tests_properties(${BENCHMARK_NAME} PROPERTIES ${ARGN})
+	endif()
+endfunction()

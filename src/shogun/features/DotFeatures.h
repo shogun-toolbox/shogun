@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Michele Mazzoni, Evgeniy Andreev, 
- *          Fernando Iglesias, Yuyu Zhang, Heiko Strathmann, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Michele Mazzoni, Evgeniy Andreev,
+ *          Fernando Iglesias, Yuyu Zhang, Heiko Strathmann, Thoralf Klein,
  *          Evan Shelhamer, Bjoern Esser, Alesis Novik, Giovanni De Toni
  */
 
@@ -163,12 +163,6 @@ class CDotFeatures : public CFeatures
 		 * @return computed feature vector
 		 */
 		SGVector<float64_t> get_computed_dot_feature_vector(int32_t num);
-
-		/** run benchmark for add_to_dense_vec */
-		void benchmark_add_to_dense_vector(int32_t repeats=5);
-
-		/** run benchmark for dense_dot_range */
-		void benchmark_dense_dot_range(int32_t repeats=5);
 
 		/** iterate over the non-zero features
 		 *

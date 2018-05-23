@@ -13,6 +13,7 @@ If you feel that this readme is missing something, please send a patch! :)
 # Quicklinks
  * [Shogun git development cycle](#devcycle)
  * [Testing](#testing)
+ * [Benchmarking](#benchmark)
  * [Buildfarm](#buildfarm)
  * [API documentation](#api)
  * [CMake options](#cmake)
@@ -231,6 +232,38 @@ After this PR is merged, you need to send a second PR against the main repositor
 
 If everything worked, then the [travis](#buildfarm) build in the second PR will include your test in all interface languages.
 Please check the logs!
+
+# Benchmarking <a name="benchmark"></a>
+In Shogun we use [google-benchmark](https://github.com/google/benchmark) library to test the performance of the modules in the library.
+In order to compile and run the benchmarks set the `BUILD_BENCHMARKS` cmake flags to true, i.e. run the cmake command with `-DBUILD_BENCHMARKS=ON` flag.
+
+To run all the benchmakrs simply run:
+
+    ctest -L benchmark
+
+## Adding benchmarks
+We aim to provide an easy way to benchmark modules in Shogun. Hence, whenever you send us new C++ implementation, please
+consider writing benchmarks for it.
+
+In order to add benchmark to a class, simply create a file next to the implementation, which name is suffixed with `_benchmark.cc`.
+For example for the `RandomFourierDotFeatures` class the benchmarks are available in the `RandomFourierDotFeatures_benchmark.cc` file.
+On top of this you need to explicitly specify to cmake that you have added a new benchmarking file.
+`ADD_SHOGUN_BENCHMARK` cmake helper function should be used in `src/shogun/CMakeLists.txt` within the `benchmarking` to add a
+benchmark implementations to build.
+a new benchmarking file, add new benchmarks with the
+`ADD_SHOGUN_BENCHMARK` cmake function the following way. In the `src/shogun/CMakeLists.txt`
+file within the `benchmarking` section using th
+
+    ADD_SHOGUN_BENCHMARK(classifier/YOLOClassifier_benchmark)
+
+
+## Adding benchmarks
+We aim to write clear, minimal, yet exhaustive tests of basic building blocks in Shogun.
+Whenever you send us C++ code, we will ask you for a unit test for it.
+We do test numerical results as compared to reference implementations (e.g. in Python), as well as corner cases, consistency etc.
+Read on [test driven development](https://en.wikipedia.org/wiki/Test-driven_development), and search the web for tips on unit tests, e.g. [googletest's tips](https://github.com/google/googletest/blob/master/googletest/docs/Primer.md).
+
+
 
 # Build farm <a name="devcycle"></a>
 We run two types of buildfarms that are automatically triggered
