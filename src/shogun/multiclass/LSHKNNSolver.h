@@ -27,7 +27,7 @@ class CLSHKNNSolver : public CKNNSolver
 		/** default constructor */
 		CLSHKNNSolver() : CKNNSolver()
 		{
-			init(); 
+			init();
 		}
 
 		/** deconstructor */
@@ -55,9 +55,12 @@ class CLSHKNNSolver : public CKNNSolver
 	private:
 		void init()
 		{
-			m_lsh_l=0; 
+			m_lsh_l=0;
 			m_lsh_t=0;
 		}
+
+		template<typename PointType, typename FeatureType>
+		CMulticlassLabels* classify_objects(FeatureType* lhs, FeatureType* query_features, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
 	protected:
 		/* Number of hash tables for LSH */
