@@ -573,6 +573,7 @@ IF (BUILD_BENCHMARKS)
 
   ADD_SHOGUN_BENCHMARK(features/RandomFourierDotFeatures_benchmark)
   ADD_SHOGUN_BENCHMARK(features/hashed/HashedDocDotFeatures_benchmark)
+  ADD_SHOGUN_BENCHMARK(lib/RefCount_benchmark)
 ENDIF()
 
 #############################################
