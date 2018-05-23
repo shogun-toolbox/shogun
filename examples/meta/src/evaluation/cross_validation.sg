@@ -19,8 +19,7 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-Machine svm = machine("LibLinear", labels=label_train_new, liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
-svm.put("epsilon", epsilon)
+Machine svm = machine("LibLinear", labels=label_train_new, epsilon=epsilon, C1=C, liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
 #![create_instance]
 
 #![create_cross_validation]
