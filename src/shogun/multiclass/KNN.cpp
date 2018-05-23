@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Fernando Iglesias, Giovanni De Toni, 
- *          Saurabh Mahindre, Sergey Lisitsyn, Weijie Lin, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Giovanni De Toni,
+ *          Saurabh Mahindre, Sergey Lisitsyn, Weijie Lin, Heiko Strathmann,
  *          Evgeniy Andreev, Viktor Gal, Bjoern Esser
  */
 
@@ -54,10 +54,8 @@ void CKNN::init()
 	m_leaf_size=1;
 	m_knn_solver=KNN_BRUTE;
 	solver=NULL;
-#ifdef HAVE_CXX11
 	m_lsh_l = 0;
 	m_lsh_t = 0;
-#endif
 
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
@@ -340,13 +338,11 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 		SG_GPL_ONLY
 #endif // USE_GPL_SHOGUN
 	}
-#ifdef HAVE_CXX11
 	case KNN_LSH:
 	{
 		solver = new CLSHKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
 		SG_REF(solver);
 		break;
 	}
-#endif
 	}
 }

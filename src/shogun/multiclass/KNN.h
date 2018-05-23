@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Saurabh Mahindre, 
- *          Sergey Lisitsyn, Heiko Strathmann, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Saurabh Mahindre,
+ *          Sergey Lisitsyn, Heiko Strathmann, Evgeniy Andreev, Yuyu Zhang,
  *          Weijie Lin, Bjoern Esser, Saurabh Goyal
  */
 
@@ -32,9 +32,7 @@ namespace shogun
 		KNN_BRUTE,
 		KNN_KDTREE,
 		KNN_COVER_TREE,
-#ifdef HAVE_CXX11
 		KNN_LSH
-#endif
 	};
 
 class CDistanceMachine;
@@ -48,7 +46,7 @@ class CDistanceMachine;
  * \f[
  *		y_{x} = \arg \max_{l} \sum_{i=1}^{k} I[y_{i} = l],
  * \f]
- * 
+ *
  * where \f$y_{m}\f$ denotes the label of the \f$m^{th}\f$ example, and the
  * indicator function \f$I[a = b]\f$ equals 1 if a = b and zero otherwise.
  *
@@ -174,7 +172,7 @@ class CKNN : public CDistanceMachine
 		 */
 		inline int32_t get_leaf_size() const {return m_leaf_size; }
 
-		/** Set leaf size for KD-Tree 
+		/** Set leaf size for KD-Tree
 		 *	@param leaf_size
 		 */
 		inline void set_leaf_size(int32_t leaf_size)
@@ -202,7 +200,6 @@ class CKNN : public CDistanceMachine
 			m_knn_solver = knn_solver;
 		}
 
-#ifdef HAVE_CXX11
 		/** set parameters for LSH solver
 		  * @param l number of hash tables for LSH
 		  * @param t number of probes per query for LSH
@@ -212,7 +209,6 @@ class CKNN : public CDistanceMachine
 			m_lsh_l = l;
 			m_lsh_t = t;
 		}
-#endif
 
 	protected:
 		/** Stores feature data of underlying model.
@@ -272,7 +268,7 @@ class CKNN : public CDistanceMachine
 		 */
 		void choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step);
 
-		/** 
+		/**
 		 * To init the solver pointer indicated which solver will been used to classify_objects
 		 */
 		void init_solver(KNN_SOLVER knn_solver);
@@ -300,13 +296,11 @@ class CKNN : public CDistanceMachine
 
 		int32_t m_leaf_size;
 
-#ifdef HAVE_CXX11
 		/* Number of hash tables for LSH */
 		int32_t m_lsh_l;
 
 		/* Number of probes per query for LSH */
 		int32_t m_lsh_t;
-#endif
 };
 
 }
