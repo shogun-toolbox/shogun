@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Giovanni De Toni, Michele Mazzoni, Viktor Gal, 
- *          Fernando Iglesias, Evgeniy Andreev, Evan Shelhamer, Alesis Novik, 
+ * Authors: Soeren Sonnenburg, Giovanni De Toni, Michele Mazzoni, Viktor Gal,
+ *          Fernando Iglesias, Evgeniy Andreev, Evan Shelhamer, Alesis Novik,
  *          Sergey Lisitsyn
  */
 
@@ -180,72 +180,6 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 	v.zero();
 	add_to_dense_vec(1.0, num, v.vector, dim);
 	return v;
-}
-
-void CDotFeatures::benchmark_add_to_dense_vector(int32_t repeats)
-{
-	int32_t num=get_num_vectors();
-	int32_t d=get_dim_feature_space();
-	float64_t* w= SG_MALLOC(float64_t, d);
-	SGVector<float64_t>::fill_vector(w, d, 0.0);
-
-	CTime t;
-	float64_t start_cpu=t.get_runtime();
-	float64_t start_wall=t.get_curtime();
-	for (int32_t r=0; r<repeats; r++)
-	{
-		for (int32_t i=0; i<num; i++)
-			add_to_dense_vec(1.172343*(r+1), i, w, d);
-	}
-
-	SG_PRINT("Time to process %d x num=%d add_to_dense_vector ops: cputime %fs walltime %fs\n",
-			repeats, num, (t.get_runtime()-start_cpu)/repeats,
-			(t.get_curtime()-start_wall)/repeats);
-
-	SG_FREE(w);
-}
-
-void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
-{
-	int32_t num=get_num_vectors();
-	int32_t d=get_dim_feature_space();
-	float64_t* w= SG_MALLOC(float64_t, d);
-	float64_t* out= SG_MALLOC(float64_t, num);
-	float64_t* alphas= SG_MALLOC(float64_t, num);
-	SGVector<float64_t>::range_fill_vector(w, d, 17.0);
-	SGVector<float64_t>::range_fill_vector(alphas, num, 1.2345);
-	//SGVector<float64_t>::fill_vector(w, d, 17.0);
-	//SGVector<float64_t>::fill_vector(alphas, num, 1.2345);
-
-	CTime t;
-	float64_t start_cpu=t.get_runtime();
-	float64_t start_wall=t.get_curtime();
-
-	for (int32_t r=0; r<repeats; r++)
-			dense_dot_range(out, 0, num, alphas, w, d, 23);
-
-#ifdef DEBUG_DOTFEATURES
-    CMath::display_vector(out, 40, "dense_dot_range");
-	float64_t* out2= SG_MALLOC(float64_t, num);
-
-	for (int32_t r=0; r<repeats; r++)
-    {
-        CMath::fill_vector(out2, num, 0.0);
-        for (int32_t i=0; i<num; i++)
-            out2[i]+=dense_dot(i, w, d)*alphas[i]+23;
-    }
-    CMath::display_vector(out2, 40, "dense_dot");
-	for (int32_t i=0; i<num; i++)
-		out2[i]-=out[i];
-    CMath::display_vector(out2, 40, "diff");
-#endif
-	SG_PRINT("Time to process %d x num=%d dense_dot_range ops: cputime %fs walltime %fs\n",
-			repeats, num, (t.get_runtime()-start_cpu)/repeats,
-			(t.get_curtime()-start_wall)/repeats);
-
-	SG_FREE(alphas);
-	SG_FREE(out);
-	SG_FREE(w);
 }
 
 SGVector<float64_t> CDotFeatures::get_mean()

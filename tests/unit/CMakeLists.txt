@@ -82,7 +82,7 @@ if(JINJA2_IMPORT_SUCCESS)
     LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
     add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
 ELSE()
-    MESSAGE(Please install jinja2 for automatic generated tests.)
+    MESSAGE(WARNING "Please install jinja2 for automatic generated tests.")
 ENDIF()
 
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)

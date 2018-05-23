@@ -21,10 +21,12 @@ ENDIF()
 
 OPTION(LIBSHOGUN_BUILD_STATIC "Build libshogun static library")
 OPTION(DISABLE_SSE "Disable SSE and SSE2 features.")
+OPTION(BUILD_BENCHMARKS "Build benchmarks" OFF)
+
 set(INCLUDE_INSTALL_DIR include)
 set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party)
 
-if (MSVC)
+if (MSVC OR BUILD_BENCHMARKS)
   SET(LIBSHOGUN_BUILD_STATIC ON
     CACHE BOOL "Build libshogun static library" FORCE)
 endif()
@@ -542,6 +544,36 @@ endif()
 # FIXME: remove all the INCLUDES/SYSTEM_INCLUDES/POSTLINKFLAGS
 include_directories(${INCLUDES})
 target_link_libraries(shogun PUBLIC ${POSTLINKFLAGS})
+
+################# benchmarking
+IF (BUILD_BENCHMARKS)
+  IF (NOT BUILD_TYPE_UC STREQUAL "RELEASE")
+    MESSAGE(WARNING "You are building benchmark against non-Release mode!"
+      "The results might not reflect the actual runtimes...")
+  ENDIF()
+  find_package(benchmark CONFIG REQUIRED)
+
+  enable_testing()
+  add_library(shogun_benchmark_main ${CMAKE_CURRENT_SOURCE_DIR}/util/benchmark_main.cc)
+  if (APPLE)
+    target_link_libraries(shogun_benchmark_main benchmark)
+  elseif(MSVC)
+    target_link_libraries(shogun_benchmark_main
+      benchmark
+      Shlwapi.lib
+    )
+  else()
+    target_link_libraries(shogun_benchmark_main
+      benchmark
+      pthread
+    )
+  endif()
+
+  set(SHOGUN_BENCHMARK_LINK_LIBS shogun-static shogun_benchmark_main)
+
+  ADD_SHOGUN_BENCHMARK(features/RandomFourierDotFeatures_benchmark)
+  ADD_SHOGUN_BENCHMARK(features/hashed/HashedDocDotFeatures_benchmark)
+ENDIF()
 
 #############################################
 FIND_PACKAGE(Ctags)
