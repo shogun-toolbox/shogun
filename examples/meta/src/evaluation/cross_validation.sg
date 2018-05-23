@@ -1,27 +1,25 @@
-#  Cross Validation for Binary Classifier
-CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
-CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
-CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
-CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+#Cross Validation for Binary Classifier
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
 Math:init_random(2)
 
 #![create_features]
 Features features_train = features(f_feats_train)
 BinaryLabels labels_train(f_labels_train)
+Labels label_train_new = labels(f_labels_train)
 Features features_test = features(f_feats_test)
 BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
-#OK
 #![set_parameters]
 real C = 1.0
 real epsilon = 0.001
 #![set_parameters]
 
-#OK
 #![create_instance]
-Machine svm = machine("LibLinear", labels=labels_train)
-svm.put("liblinear_solver_type", enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+Machine svm = machine("LibLinear", labels=label_train_new, liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
 svm.put("epsilon", epsilon)
 #![create_instance]
 
@@ -34,7 +32,7 @@ cross.set_num_runs(2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-CrossValidationResult result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+CrossValidationResult result = cross.evaluate()
 #![evaluate_and_get_result]
 
 #![get_results]
@@ -44,27 +42,27 @@ real stddev = result.get_real("std_dev")
 
 #![get_results_test_data]
 svm.train(features_train)
-BinaryLabels labels_predict = svm.apply_binary(features_test)
+Labels labels_predict = svm.apply(features_test)
 real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
 
 # Cross Validation for Linear Regression
-CSVFile reg_feats_train("../../data/regression_1d_linear_features_train.dat")
-CSVFile reg_feats_test("../../data/regression_1d_linear_features_test.dat")
-CSVFile reg_lab_train("../../data/regression_1d_linear_labels_train.dat")
-CSVFile reg_lab_test("../../data/regression_1d_linear_labels_test.dat")
+File reg_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File reg_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File reg_lab_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File reg_lab_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
 Math:init_random(2)
 
 #![create_features_REGRESSION]
 Features reg_features_train = features(reg_feats_train)
-RegressionLabels reg_labels_train(reg_lab_train)
+Labels reg_labels_train = labels(reg_lab_train)
 Features reg_features_test = features(reg_feats_test)
-RegressionLabels reg_labels_test(reg_lab_test)
+Labels reg_labels_test = labels(reg_lab_test)
 #![create_features_REGRESSION]
 
 #![create_instance_REGRESSION]
 real tau = 0.001
-Machine lrr = machine("LinearRidgeRegression", tau=0.001, labels=labels_train)
+Machine lrr = machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
 #![create_instance_REGRESSION]
 
 #![create_cross_validation_REGRESSION]
@@ -76,12 +74,12 @@ crossReg.set_num_runs(2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]
-CrossValidationResult result_lrr = CrossValidationResult:obtain_from_generic(crossReg.evaluate())
+CrossValidationResult result_lrr = crossReg.evaluate()
 #![evaluate_and_get_result_REGRESSION]
 
 #![get_results_REGRESSION]
-real mean_lrr = result.get_real("mean")
-real stddev_lrr = result.get_real("std_dev")
+real mean_lrr = result_lrr.get_real("mean")
+real stddev_lrr = result_lrr.get_real("std_dev")
 #![get_results_REGRESSION]
 
 #![train_REGRESSION]
@@ -89,6 +87,6 @@ lrr.train(reg_features_train)
 #![train_REGRESSION]
 
 #![evaluate_error_REGRESSION]
-RegressionLabels reg_labels_predict = lrr.apply_regression(reg_features_test)
+Labels reg_labels_predict = lrr.apply(reg_features_test)
 real mse = MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
 #![evaluate_error_REGRESSION]
