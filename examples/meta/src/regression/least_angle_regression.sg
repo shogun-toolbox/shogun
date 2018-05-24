@@ -14,11 +14,11 @@ Labels labels_test = labels(f_labels_test)
 PruneVarSubMean SubMean()
 NormOne Normalize()
 SubMean.fit(features_train)
-SubMean.apply_to_feature_matrix(features_train)
-SubMean.apply_to_feature_matrix(features_test)
+Features features_train1 = SubMean.apply(features_train)
+Features features_test1 = SubMean.apply(features_test)
 Normalize.fit(features_train)
-Normalize.apply_to_feature_matrix(features_train)
-Normalize.apply_to_feature_matrix(features_test)	
+Features features_train2 = Normalize.apply(features_train1)
+Features features_test2 = Normalize.apply(features_test1)
 #![preprocess_features]
 
 #![create_instance]
@@ -26,8 +26,8 @@ Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False,
 #![create_instance]
 
 #![train_and_apply]
-lars.train(features_train)
-Labels labels_predict = lars.apply(features_test)
+lars.train(features_train2)
+Labels labels_predict = lars.apply(features_test2)
 
 #[!extract_w]
 RealVector weights = lars.get_real_vector("w")
