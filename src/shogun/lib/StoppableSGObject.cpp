@@ -40,11 +40,10 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
 
-void CStoppableSGObject::set_callback(std::function<bool()> callback=nullptr)
+void CStoppableSGObject::set_callback(std::function<bool()> callback)
 {
 	m_callback = callback;
 }
-
 
 void CStoppableSGObject::reset_computation_variables()
 {
