@@ -41,7 +41,7 @@
         "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
         "ComplexMatrix": "auto $name = SGMatrix<complex128_t>($arguments)"
     },
-    "Assign": "$identifier = $expr",
+    "Assign": "$identifier = wrap($expr)",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
