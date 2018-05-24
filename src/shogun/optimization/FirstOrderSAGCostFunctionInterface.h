@@ -13,6 +13,13 @@
 #include <shogun/optimization/FirstOrderSAGCostFunction.h>
 #include <functional>
 #include <vector>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+
+using Eigen::Dynamic;
+using Eigen::Matrix;
+using stan::math::var;
+using std::function;
 
 namespace shogun
 {
@@ -38,14 +45,10 @@ namespace shogun
 		/** Consturctor that initializes X, y, trainable_parameters, and the
 		 * cost_function */
 		FirstOrderSAGCostFunctionInterface(
-		    Eigen::Matrix<float64_t, Eigen::Dynamic, Eigen::Dynamic>* X,
-		    Eigen::Matrix<float64_t, 1, Eigen::Dynamic>* y,
-		    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>*
-		        trainable_parameters,
-		    std::vector<std::function<stan::math::var(int32_t)>>*
-		        cost_for_ith_point,
-		    std::function<stan::math::var(std::vector<stan::math::var>*)>*
-		        total_cost);
+		    SGMatrix<float64_t>* X, SGMatrix<float64_t>* y,
+		    Matrix<var, Dynamic, 1>* trainable_parameters,
+		    Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
+		    function<var(Matrix<var, Dynamic, 1>*)>* total_cost);
 
 		/** Default constructor, use setter helpers to set X, y,
 		*trainable_parameters, and
@@ -55,23 +58,21 @@ namespace shogun
 
 		/** Setter for the training data X */
 		virtual void set_training_data(
-		    Eigen::Matrix<float64_t, Eigen::Dynamic, Eigen::Dynamic>* X_new,
-		    Eigen::Matrix<float64_t, 1, Eigen::Dynamic>* y_new);
+		    SGMatrix<float64_t>* X_new, SGMatrix<float64_t>* y_new);
 
 		/** Setter for the trainable parameters of the cost function */
-		virtual void set_trainable_parameters(
-		    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>* new_params);
+		virtual void
+		    set_trainable_parameters(Matrix<var, Dynamic, 1>* new_params);
 
 		/** Setter for the cost function definition using stan */
 		virtual void set_ith_cost_function(
-		    std::vector<std::function<stan::math::var(int32_t)>>* new_cost_f);
+		    Matrix<function<var(int32_t)>, Dynamic, 1>* new_cost_f);
 
 		/** Setter for the overall cost function */
 		virtual void set_cost_function(
-		    std::function<stan::math::var(std::vector<stan::math::var>*)>*
-		        total_cost);
+		    function<var(Matrix<var, Dynamic, 1>*)>* total_cost);
 
-		~FirstOrderSAGCostFunctionInterface();
+		virtual ~FirstOrderSAGCostFunctionInterface();
 
 		/** Initialize to generate a sample sequence
 		 *
@@ -135,24 +136,21 @@ namespace shogun
 
 	protected:
 		/** X is the training data in column major matrix format */
-		Eigen::Matrix<float64_t, Eigen::Dynamic, Eigen::Dynamic>* m_X;
+		SGMatrix<float64_t>* m_X;
 
 		/** y is the ground truth, or the correct prediction */
-		Eigen::Matrix<float64_t, 1, Eigen::Dynamic>* m_y;
+		SGMatrix<float64_t>* m_y;
 
 		/** trainable_parameters are the variables that are optimized for */
-		Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>*
-		    m_trainable_parameters;
+		Matrix<var, Dynamic, 1>* m_trainable_parameters;
 
 		/** cost_for_ith_point is the cost contributed by each point in the
 		 * training data */
-		std::vector<std::function<stan::math::var(int32_t)>>*
-		    m_cost_for_ith_point;
+		Matrix<function<var(int32_t)>, Dynamic, 1>* m_cost_for_ith_point;
 
 		/** total_cost is the total cost to be minimized, that in this case is a
 		 * form of sum of cost_for_ith_point*/
-		std::function<stan::math::var(std::vector<stan::math::var>*)>*
-		    m_total_cost;
+		function<var(Matrix<var, Dynamic, 1>*)>* m_total_cost;
 
 		/** index_of_sample is the index of the column in X for the current
 		 * sample */

@@ -7,13 +7,15 @@
 #include <shogun/optimization/FirstOrderSAGCostFunctionInterface.h>
 #include <shogun/mathematics/Math.h>
 using namespace shogun;
+using stan::math::var;
+using std::function;
+using Eigen::Matrix;
 
 FirstOrderSAGCostFunctionInterface::FirstOrderSAGCostFunctionInterface(
-    Eigen::Matrix<float64_t, Eigen::Dynamic, Eigen::Dynamic>* X,
-    Eigen::Matrix<float64_t, 1, Eigen::Dynamic>* y,
-    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>* trainable_parameters,
-    std::vector<std::function<stan::math::var(int32_t)>>* cost_for_ith_point,
-    std::function<stan::math::var(std::vector<stan::math::var>*)>* total_cost)
+    SGMatrix<float64_t>* X, SGMatrix<float64_t>* y,
+    Matrix<var, Dynamic, 1>* trainable_parameters,
+    Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
+    function<var(Matrix<var, Dynamic, 1>*)>* total_cost)
 {
 	m_X = X;
 	m_y = y;
@@ -23,8 +25,7 @@ FirstOrderSAGCostFunctionInterface::FirstOrderSAGCostFunctionInterface(
 }
 
 void FirstOrderSAGCostFunctionInterface::set_training_data(
-    Eigen::Matrix<float64_t, Eigen::Dynamic, Eigen::Dynamic>* X_new,
-    Eigen::Matrix<float64_t, 1, Eigen::Dynamic>* y_new)
+    SGMatrix<float64_t>* X_new, SGMatrix<float64_t>* y_new)
 {
 	REQUIRE(X_new != NULL, "No X Provided");
 	REQUIRE(y_new != NULL, "No Y Provided");
@@ -39,7 +40,7 @@ void FirstOrderSAGCostFunctionInterface::set_training_data(
 }
 
 void FirstOrderSAGCostFunctionInterface::set_trainable_parameters(
-    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>* new_params)
+    Matrix<var, Dynamic, 1>* new_params)
 {
 	REQUIRE(new_params, "The trainable parameters must be provided");
 	if (this->m_trainable_parameters != new_params)
@@ -49,7 +50,7 @@ void FirstOrderSAGCostFunctionInterface::set_trainable_parameters(
 }
 
 void FirstOrderSAGCostFunctionInterface::set_ith_cost_function(
-    std::vector<std::function<stan::math::var(int32_t)>>* new_cost_f)
+    Matrix<function<var(int32_t)>, Dynamic, 1>* new_cost_f)
 {
 	REQUIRE(new_cost_f, "The cost function must be a vector of stan variables");
 	if (this->m_cost_for_ith_point != new_cost_f)
@@ -59,7 +60,7 @@ void FirstOrderSAGCostFunctionInterface::set_ith_cost_function(
 }
 
 void FirstOrderSAGCostFunctionInterface::set_cost_function(
-    std::function<stan::math::var(std::vector<stan::math::var>*)>* total_cost)
+    function<var(Matrix<var, Dynamic, 1>*)>* total_cost)
 {
 	REQUIRE(
 	    total_cost,
@@ -81,7 +82,7 @@ void FirstOrderSAGCostFunctionInterface::begin_sample()
 
 bool FirstOrderSAGCostFunctionInterface::next_sample()
 {
-	int32_t num_of_samples = m_X->cols();
+	auto num_of_samples = get_sample_size();
 	if (m_index_of_sample >= num_of_samples)
 		return false;
 	++m_index_of_sample;
@@ -97,34 +98,32 @@ SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_gradient()
 
 	SGVector<float64_t> gradients(num_of_variables);
 
-	stan::math::var f_i =
-	    (*m_cost_for_ith_point)[m_index_of_sample](m_index_of_sample);
+	var f_i = (*m_cost_for_ith_point)(m_index_of_sample, 0)(m_index_of_sample);
 
 	stan::math::set_zero_all_adjoints();
 	f_i.grad();
 
 	for (auto i = 0; i < num_of_variables; ++i)
-	{
-		gradients[i] = (*m_trainable_parameters)[i].adj();
-	}
+		gradients[i] = (*m_trainable_parameters)(i, 0).adj();
+
 	return gradients;
 }
 
 float64_t FirstOrderSAGCostFunctionInterface::get_cost()
 {
 	int32_t n = get_sample_size();
-	std::vector<stan::math::var> cost_argument(n);
+	Matrix<var, Dynamic, 1> cost_argument(n);
 	for (auto i = 0; i < n; ++i)
 	{
-		cost_argument[i] = (*m_cost_for_ith_point)[i](i);
+		cost_argument(i, 0) = (*m_cost_for_ith_point)(i, 0)(i);
 	}
-	stan::math::var cost = (*m_total_cost)(&cost_argument);
+	var cost = (*m_total_cost)(&cost_argument);
 	return cost.val();
 }
 
-int32_t FirstOrderSAGCostFunctionInterface::get_sample_size()
+index_t FirstOrderSAGCostFunctionInterface::get_sample_size()
 {
-	return m_X->cols();
+	return m_X->num_cols;
 }
 
 SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_average_gradient()
@@ -138,7 +137,7 @@ SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_average_gradient()
 	    n > 0,
 	    "Number of sample must be greater than 0, you provided no samples");
 
-	for (auto i = 0; i < n; ++i)
+	for (index_t i = 0; i < n; ++i)
 	{
 		m_index_of_sample = i;
 		auto grad = get_gradient();
