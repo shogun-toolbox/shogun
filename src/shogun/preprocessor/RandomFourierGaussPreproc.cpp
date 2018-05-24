@@ -401,7 +401,7 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 			SGVector<float64_t> b(
 			    randomcoeff_multiplicative + od * cur_dim_input_space,
 			    cur_dim_input_space, false);
-			res(vec, od) =
+			res(od, vec) =
 			    val * cos(randomcoeff_additive[od] + linalg::dot(a, b));
 		}
 	}
