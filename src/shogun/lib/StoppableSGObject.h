@@ -37,11 +37,7 @@ namespace shogun
 		SG_FORCED_INLINE bool cancel_computation() const
 		{
 			/* Execute the callback, if present*/
-			bool result_callback = false;
-			if (m_callback)
-				result_callback = m_callback();
-
-			return m_cancel_computation.load() || result_callback;
+			return (m_callback) ? (m_cancel_computation.load() || m_callback()) : m_cancel_computation.load();
 		}
 #endif
 
