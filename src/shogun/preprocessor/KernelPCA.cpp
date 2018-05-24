@@ -38,11 +38,17 @@ void CKernelPCA::init()
 	m_init_features = NULL;
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_bias_vector = SGVector<float64_t>();
+	m_target_dim = 1;
+	m_kernel = NULL;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 		"matrix used to transform data", MS_NOT_AVAILABLE);
 	SG_ADD(&m_bias_vector, "bias_vector",
 		"bias vector used to transform data", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_target_dim, "target_dim", "target dimensionality of preprocessor",
+	    MS_AVAILABLE);
+	SG_ADD(&m_kernel, "kernel", "kernel to be used", MS_AVAILABLE);
 }
 
 void CKernelPCA::cleanup()
