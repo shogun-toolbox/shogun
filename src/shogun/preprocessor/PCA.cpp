@@ -51,6 +51,7 @@ void CPCA::init()
 	m_mem_mode = MEM_REALLOCATE;
 	m_method = AUTO;
 	m_eigenvalue_zero_tolerance=1e-15;
+	m_target_dim = 1;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
