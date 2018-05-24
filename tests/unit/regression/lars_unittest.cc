@@ -433,9 +433,9 @@ TEST(LeastAngleRegression, ols_equivalence)
 	CPruneVarSubMean* proc1=new CPruneVarSubMean();
 	CNormOne* proc2=new CNormOne();
 	proc1->fit(features);
-	proc1->apply_to_feature_matrix(features);
+	features = proc1->apply(features)->as<CDenseFeatures<float64_t>>();
 	proc2->fit(features);
-	proc2->apply_to_feature_matrix(features);
+	features = proc2->apply(features)->as<CDenseFeatures<float64_t>>();
 
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);

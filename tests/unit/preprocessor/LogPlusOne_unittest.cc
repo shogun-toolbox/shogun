@@ -22,8 +22,7 @@ TEST(LogPlusOne, apply_to_feature_matrix)
 	CLogPlusOne* preproc = new CLogPlusOne();
 	preproc->fit(feats);
 
-	feats->add_preprocessor(preproc);
-	feats->apply_preprocessor();
+	feats = preproc->apply(feats)->as<CDenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{
