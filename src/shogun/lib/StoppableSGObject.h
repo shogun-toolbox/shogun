@@ -37,7 +37,8 @@ namespace shogun
 		SG_FORCED_INLINE bool cancel_computation() const
 		{
 			/* Execute the callback, if present*/
-			return (m_callback) ? (m_cancel_computation.load() || m_callback()) : m_cancel_computation.load();
+			return (m_callback) ? (m_cancel_computation.load() || m_callback())
+			                    : m_cancel_computation.load();
 		}
 #endif
 
@@ -66,7 +67,8 @@ namespace shogun
 
 		/**
 		 * Set an additional stopping condition
-		 * @param callback method that implements an additional stopping condition
+		 * @param callback method that implements an additional stopping
+		 * condition
 		 */
 		void set_callback(std::function<bool()> callback);
 
@@ -76,7 +78,6 @@ namespace shogun
 		}
 
 	protected:
-
 		/** connect the machine instance to the signal handler */
 		rxcpp::subscription connect_to_signal_handler();
 
@@ -116,7 +117,6 @@ namespace shogun
 		std::mutex m_mutex;
 
 		std::function<bool(void)> m_callback;
-
 	};
 }
 #endif
