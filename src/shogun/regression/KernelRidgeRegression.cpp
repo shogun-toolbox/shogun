@@ -42,7 +42,7 @@ bool CKernelRidgeRegression::solve_krr_system()
 {
 	SGMatrix<float64_t> kernel_matrix(kernel->get_kernel_matrix());
 	int32_t n = kernel_matrix.num_rows;
-	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
+	SGVector<float64_t> y = regression_labels(m_labels)->get_labels();
 
 	for(index_t i=0; i<n; i++)
 		kernel_matrix(i,i) += m_tau;
@@ -64,11 +64,7 @@ bool CKernelRidgeRegression::solve_krr_system()
 
 bool CKernelRidgeRegression::train_machine(CFeatures *data)
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
-
-	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Real labels needed for kernel ridge regression.\n")
+	REQUIRE(m_labels, "No labels set\n")
 
 	if (data)
 	{
