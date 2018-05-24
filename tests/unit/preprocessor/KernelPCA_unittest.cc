@@ -53,7 +53,9 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	kpca->set_target_dim(target_dim);
 	kpca->fit(train_feats);
 
-	SGMatrix<float64_t> embedding = kpca->apply_to_feature_matrix(test_feats);
+	SGMatrix<float64_t> embedding = kpca->apply(test_feats)
+	                                    ->as<CDenseFeatures<float64_t>>()
+	                                    ->get_feature_matrix();
 
 	// allow embedding with opposite sign
 	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
