@@ -145,7 +145,9 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	CFisherLDA fisherlda(1, CANVAR_FLDA);
 	fisherlda.fit(dense_feat, labels);
-	SGMatrix<float64_t> y=fisherlda.apply_to_feature_matrix(dense_feat);
+	SGMatrix<float64_t> y = fisherlda.apply(dense_feat)
+	                            ->as<CDenseFeatures<float64_t>>()
+	                            ->get_feature_matrix();
 
 	float64_t epsilon=0.00000000001;
 
