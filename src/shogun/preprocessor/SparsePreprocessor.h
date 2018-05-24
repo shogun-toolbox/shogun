@@ -84,6 +84,8 @@ protected:
 template <class ST>
 CFeatures* CSparsePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 {
+	SG_REF(features);
+
 	auto feature_matrix =
 		features->as<CSparseFeatures<ST>>()->get_sparse_feature_matrix();
 
