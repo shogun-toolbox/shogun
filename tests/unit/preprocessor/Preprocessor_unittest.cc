@@ -54,12 +54,10 @@ TEST(Preprocessor, dense_apply)
 
 	CFeatures* preprocessed=preproc->apply(features);
 
-	ASSERT_NE(preprocessed, (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
 
 	SG_UNREF(preproc);
 	SG_UNREF(preprocessed);
-	SG_UNREF(features);
 }
 
 TEST(Preprocessor, string_apply)
