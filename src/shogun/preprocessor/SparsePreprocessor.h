@@ -90,7 +90,10 @@ CFeatures* CSparsePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 		features->as<CSparseFeatures<ST>>()->get_sparse_feature_matrix();
 
 	if (!inplace)
-		feature_matrix = feature_matrix.clone();
+	{
+		// feature_matrix = feature_matrix.clone();
+		SG_SERROR("Out-of-place mode for SparsePreprocessor is not supported");
+	}
 
 	apply_to_sparse_matrix(feature_matrix);
 
