@@ -36,7 +36,8 @@ public:
 	/** destructor */
 	virtual ~CEmbeddingConverter();
 
-	/** applies to the given data, returns embedding
+	/** Apply transformation to features. In-place mode is not supported for
+	 * Tapkee converters.
 	 * @param features features to embed
 	 * @return embedding features
 	 */

@@ -33,8 +33,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 */
 		CDensePreprocessor();
 
-		/** generic interface for applying the preprocessor. used as a wrapper
-		 * for apply_to_feature_matrix() method
+		/** Apply transformation to dense features.
 		 *
 		 * @param features the dense input features
 		 * @return the result feature object after applying the preprocessor
