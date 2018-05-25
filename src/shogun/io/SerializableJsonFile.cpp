@@ -104,6 +104,14 @@ CSerializableJsonFile::init(const char* fname)
 		m_stack_stream.push_back(buf);
 		break;
 	case 'w':
+		/*
+		 * The C locale will be used for numeric values.
+		 * This is needed to make sure `std::to_string`
+		 * will serialize correctly, independent of the
+		 * user's actual used locale.
+		 */
+		std::setlocale(LC_NUMERIC, "C");
+
 		m_stack_stream.push_back(json_object_new_object());
 		buf = json_object_new_string(STR_FILETYPE_00);
 		json_object_object_add(m_stack_stream.back(),
