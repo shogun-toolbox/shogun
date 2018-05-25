@@ -13,6 +13,7 @@ ica.set_tol(0.00001)
 #![set_parameters]
 
 #![apply_convert]
+ica.fit(feats)
 Features converted = ica.apply(feats)
 #![apply_convert]
 
