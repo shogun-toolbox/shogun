@@ -139,17 +139,3 @@ EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
 {
 	return m_evaluation_criterion->get_evaluation_direction();
 }
-
-rxcpp::subscription CMachineEvaluation::connect_to_signal_handler()
-{
-	// Subscribe this algorithm to the signal handler
-	auto subscriber = rxcpp::make_subscriber<int>(
-	    [this](int i) {
-		    if (i == SG_PAUSE_COMP)
-			    this->on_pause();
-		    else
-			    this->on_next();
-		},
-	    [this]() { this->on_complete(); });
-	return get_global_signal()->get_observable()->subscribe(subscriber);
-}

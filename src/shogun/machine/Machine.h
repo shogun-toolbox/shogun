@@ -22,9 +22,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
-#include <condition_variable>
-#include <mutex>
-
 namespace shogun
 {
 

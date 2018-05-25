@@ -164,7 +164,7 @@ float64_t CCrossValidation::evaluate_one_run(
 		/* do actual cross-validation */
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			EVALUATION_CONTROLLERS
+			COMPUTATION_CONTROLLERS
 
 			/* evtl. update xvalidation output class */
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
@@ -236,7 +236,7 @@ float64_t CCrossValidation::evaluate_one_run(
 		//#pragma omp parallel for
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
-			EVALUATION_CONTROLLERS
+			COMPUTATION_CONTROLLERS
 
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
