@@ -32,11 +32,6 @@ public:
 	/** get name */
 	virtual const char* get_name() const { return "Converter"; }
 
-	/** applies to the given data, returning converted features
-	 * (e.g. dense embedding of string features)
-	 * @param features features to convert
-	 * @return converted features
-	 */
 	virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
 };
 }
