@@ -232,11 +232,11 @@ namespace shogun
 			{
 			case LT_MULTICLASS:
 				return Some<CMulticlassLabels>::from_raw(
-				    orig->as<CMulticlassLabels>());
+				    (CMulticlassLabels*)orig);
 			case LT_DENSE_GENERIC:
-				return to_multiclass(orig->as<CDenseLabels>());
+				return to_multiclass((CDenseLabels*)orig);
 			case LT_BINARY:
-				return to_multiclass(orig->as<CBinaryLabels>());
+				return to_multiclass((CBinaryLabels*)orig);
 			default:
 				SG_SNOTIMPLEMENTED
 			}

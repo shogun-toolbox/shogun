@@ -166,10 +166,10 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_BINARY:
-				return Some<CBinaryLabels>::from_raw(orig->as<CBinaryLabels>());
+				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
 			case LT_DENSE_GENERIC:
 			{
-				return some<CBinaryLabels>(*(orig->as<CDenseLabels>()));
+				return some<CBinaryLabels>(*((CDenseLabels*)orig));
 			}
 			default:
 				SG_SNOTIMPLEMENTED
