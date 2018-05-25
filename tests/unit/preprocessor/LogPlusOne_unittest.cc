@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-TEST(LogPlusOne, apply_to_feature_matrix)
+TEST(LogPlusOne, apply)
 {
 	float64_t data[6] = {1,2,3,4,5,6};
 	int32_t num_vectors = 2;

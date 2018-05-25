@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-TEST(RescaleFeatures, apply_to_feature_matrix)
+TEST(RescaleFeatures, apply)
 {
 	index_t num_features = 3;
 	index_t num_vectors = 10;
