@@ -38,13 +38,12 @@ TEST(CFastICA, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
+	auto mixed_signals = some<CDenseFeatures<float64_t>>(X);
 
 	// Separate
-	CFastICA* ica = new CFastICA();
-	SG_REF(ica);
-	CFeatures* signals = ica->apply(mixed_signals);
-	SG_REF(signals);
+	auto ica = some<CFastICA>();
+	ica->fit(mixed_signals);
+	auto signals = wrap(ica->apply(mixed_signals));
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(ica->get_mixing_matrix().matrix,2,2);
@@ -55,17 +54,11 @@ TEST(CFastICA, blind_source_separation)
 	// Test if output is correct
 	bool isperm = is_permutation_matrix(P);
 	EXPECT_EQ(isperm,true);
-
-	SG_UNREF(ica);
-	SG_UNREF(mixed_signals);
-	SG_UNREF(signals);
 }
 
 TEST(CFastICA, with_empty_feature)
 {
-	CDenseFeatures<float64_t>* empty_feat = new CDenseFeatures<float64_t>();
-	CFastICA* ica = new CFastICA();
+	auto empty_feat = some<CDenseFeatures<float64_t>>();
+	auto ica = some<CFastICA>();
 	EXPECT_THROW(ica->apply(empty_feat), ShogunException);
-	SG_UNREF(ica);
-	SG_UNREF(empty_feat);
 }
