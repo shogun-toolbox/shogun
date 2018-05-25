@@ -27,7 +27,7 @@ void load_data(SGMatrix<float64_t>& train, Container<float64_t>& test)
 		test[i] = test_data[i];
 }
 
-TEST(KernelPCA, apply_to_feature_matrix)
+TEST(KernelPCA, apply)
 {
 	index_t num_test_vectors = 2;
 
