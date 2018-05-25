@@ -38,13 +38,12 @@ TEST(CUWedgeSep, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
+	auto mixed_signals = some<CDenseFeatures<float64_t>>(X);
 
 	// Separate
-	CUWedgeSep* uwedgesep = new CUWedgeSep();
-	SG_REF(uwedgesep);
-	CFeatures* signals = uwedgesep->apply(mixed_signals);
-	SG_REF(signals);
+	auto uwedgesep = some<CUWedgeSep>();
+    uwedgesep->fit(mixed_signals);
+	auto signals = uwedgesep->apply(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(uwedgesep->get_mixing_matrix().matrix,2,2);
@@ -55,9 +54,5 @@ TEST(CUWedgeSep, blind_source_separation)
 	// Test if output is correct
 	bool isperm = is_permutation_matrix(P);
 	EXPECT_EQ(isperm,true);
-
-	SG_UNREF(uwedgesep);
-	SG_UNREF(mixed_signals);
-	SG_UNREF(signals);
 }
 
