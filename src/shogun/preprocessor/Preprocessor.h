@@ -79,12 +79,6 @@ public:
 	{
 	}
 
-	/** generic interface for applying the preprocessor. sub-classes may use
-	 * this method as a wrapper to specific implementations
-	 *
-	 * @param features the input features
-	 * @return the result feature object after applying the preprocessor
-	 */
 	virtual CFeatures* apply(CFeatures* features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
