@@ -5,9 +5,11 @@
  */
 
 #include <shogun/converter/ica/ICAConverter.h>
-
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CICAConverter::CICAConverter() : CConverter()
 {
@@ -59,3 +61,27 @@ float64_t CICAConverter::get_tol() const
 	return tol;
 }
 
+CFeatures* CICAConverter::apply(CFeatures* features, bool inplace)
+{
+	REQUIRE(m_mixing_matrix.matrix, "ICAConverter not fitted.");
+
+	SG_REF(features);
+
+	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	if (!inplace)
+		X = X.clone();
+
+	Map<MatrixXd> EX(X.matrix, X.num_rows, X.num_cols);
+	Map<MatrixXd> C(
+	    m_mixing_matrix.matrix, m_mixing_matrix.num_rows,
+	    m_mixing_matrix.num_cols);
+
+	// Unmix
+	EX = C.inverse() * EX;
+
+	auto processed = new CDenseFeatures<float64_t>(X);
+	SG_UNREF(features);
+	SG_REF(processed);
+
+	return features;
+}

@@ -35,10 +35,7 @@ class CFastICA: public CICAConverter
 		/** destructor */
 		virtual ~CFastICA();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual void fit(CFeatures* features);
 
 		/** setter for whiten flag
 		 * whether to whiten the data or not

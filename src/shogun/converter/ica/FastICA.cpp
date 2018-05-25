@@ -66,14 +66,13 @@ bool CFastICA::get_whiten() const
 	return whiten;
 }
 
-CFeatures* CFastICA::apply(CFeatures* features, bool inplace)
+void CFastICA::fit(CFeatures* features)
 {
 	ASSERT(features);
 	SG_REF(features);
 
-	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	REQUIRE(X.data(), "Features have not been provided.\n");
-
 	int n = X.num_rows;
 	int p = X.num_cols;
 	int m = n;
@@ -149,11 +148,6 @@ CFeatures* CFastICA::apply(CFeatures* features, bool inplace)
 	if (whiten)
 		W = (W*K);
 
-	EX = W * EX;
-
 	// set m_mixing_matrix
 	W = W.inverse();
-
-	return features;
 }
-

@@ -52,12 +52,12 @@ SGNDArray<float64_t> CFFSep::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CFFSep::apply(CFeatures* features, bool inplace)
+void CFFSep::fit(CFeatures* features)
 {
 	ASSERT(features);
 	SG_REF(features);
 
-	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 
 	int n = X.num_rows;
 	int m = X.num_cols;
@@ -90,11 +90,6 @@ CFeatures* CFFSep::apply(CFeatures* features, bool inplace)
 	// Normalize Estimated Mixing Matrix
 	for (int t = 0; t < C.cols(); t++)
 		C.col(t) /= C.col(t).maxCoeff();
-
-	// Unmix
-	EX = C.inverse() * EX;
-
-	return features;
 }
 
 // Computing time delayed correlation matrix
