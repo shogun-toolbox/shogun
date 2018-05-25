@@ -33,8 +33,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 */
 		CStringPreprocessor() : CPreprocessor() {}
 
-		/** generic interface for applying the preprocessor. used as a wrapper
-		 * for apply_to_string_features() method
+		/** Apply transformation to string features.
 		 *
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
