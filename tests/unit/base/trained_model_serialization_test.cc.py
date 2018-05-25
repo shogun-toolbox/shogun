@@ -90,12 +90,7 @@ def read_ctags(filename):
         return file.readlines()
 
 
-def entry(templateFile, input_file, config_file):
-    templateLoader = jinja2.FileSystemLoader(searchpath="/")
-    templateEnv = jinja2.Environment(loader=templateLoader)
-
-    template = templateEnv.get_template(templateFile)
-
+def generate_tests(input_file, config_file):
     tags = read_ctags(input_file)
     classes = get_shogun_classes(tags)
     guards = read_defined_guards(config_file)
@@ -112,30 +107,52 @@ def entry(templateFile, input_file, config_file):
         ancestors = get_ancestors(classes, name)
         header = attrs['include']
         for base in bases:
-            if (base in ancestors)\
-                    and not name in IGNORE\
-                    and not is_guarded(header, guards)\
-                    and not is_pure_virtual(name, tags)\
-                    and not ignore_in_class_list(header)\
+            if (base in ancestors) \
+                    and not name in IGNORE \
+                    and not is_guarded(header, guards) \
+                    and not is_pure_virtual(name, tags) \
+                    and not ignore_in_class_list(header) \
                     and use_gpl(header, guards):
                 machines[base][name] = attrs
 
-    templateVars = {"machines" : machines}
+    include_template = '#include "{0}"\n'
+    typelist_template = 'typedef ::testing::Types<{0}> {1}Types;\n'
 
-    return template.render(templateVars)
+    base_test_map = {
+        'CLinearMachine': 'Machine',
+        'CNativeMulticlassMachine': 'Machine',
+        'CLinearMulticlassMachine': 'Machine',
+        'CKernelMachine': 'KernelMachine',
+        'CKernelMulticlassMachine': 'KernelMachine',
+    }
+
+    test_machines_map = {
+        'Machine': [],
+        'KernelMachine': []
+    }
+
+    headers = ''
+    for b, m in machines.items():
+        test_machines_map[base_test_map[b]] += m.keys()
+        headers += ''.join([include_template.format(v['include']) for v in m.values()])
+
+    typelists = ''
+    for k, v in test_machines_map.items():
+        typelists += typelist_template.format(", ".join(v), k)
+
+    return headers + '\n' + typelists
 
 
 # execution
-# ./trained_model_serialization_unittest.cc.py
-# <template file> <input file> <output file> <config file>
+# ./trained_model_serialization_test.cc.py
+# <input file> <output file> <config file>
 
-import sys, os, re, jinja2
-TEMPLATE_FILE = sys.argv[1]
-input_file = sys.argv[2]
-output_file = sys.argv[3]
-config_file = sys.argv[4]
+import sys, os, re
+input_file = sys.argv[1]
+output_file = sys.argv[2]
+config_file = sys.argv[3]
 
-outputText = entry(TEMPLATE_FILE, input_file, config_file)
+outputText = generate_tests(input_file, config_file)
 
 with open(output_file, 'w') as f:
     f.writelines(outputText)
