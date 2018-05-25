@@ -282,17 +282,21 @@ endif()
 #Stan math
 include(external/StanMath)
 
-SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_STAN_MATH}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/stan>
 )
-SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_BOOST}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/stan_boost>
 )
-SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_CVODES}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/stan_cvodes>
 )
-SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<BUILD_INTERFACE:${STAN_INCLUDE_DIR_EIGEN}>
+  $<INSTALL_INTERFACE:include/shogun/third_party/eigen>
 )
 
 ####### LINALG
@@ -574,6 +578,8 @@ IF (BUILD_BENCHMARKS)
   ADD_SHOGUN_BENCHMARK(features/RandomFourierDotFeatures_benchmark)
   ADD_SHOGUN_BENCHMARK(features/hashed/HashedDocDotFeatures_benchmark)
   ADD_SHOGUN_BENCHMARK(lib/RefCount_benchmark)
+  ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/BasicOps_benchmark)
+  ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/Misc_benchmark)
 ENDIF()
 
 #############################################
