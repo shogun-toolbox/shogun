@@ -40,10 +40,7 @@ class CJade: public CICAConverter
 		/** destructor */
 		virtual ~CJade();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual void fit(CFeatures* features);
 
 		/** getter for cumulant_matrix
 		 * @return cumulant_matrix
