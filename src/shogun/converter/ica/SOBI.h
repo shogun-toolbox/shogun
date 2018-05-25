@@ -40,10 +40,7 @@ class CSOBI: public CICAConverter
 		/** destructor */
 		virtual ~CSOBI();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual void fit(CFeatures* features);
 
 		/** getter for tau parameter
 		 * @return tau vector
