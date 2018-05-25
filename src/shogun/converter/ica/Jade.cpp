@@ -40,12 +40,12 @@ SGMatrix<float64_t> CJade::get_cumulant_matrix() const
 	return m_cumulant_matrix;
 }
 
-CFeatures* CJade::apply(CFeatures* features, bool inplace)
+void CJade::fit(CFeatures* features)
 {
 	ASSERT(features);
 	SG_REF(features);
 
-	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 
 	int n = X.num_rows;
 	int T = X.num_cols;
@@ -187,13 +187,7 @@ CFeatures* CJade::apply(CFeatures* features, bool inplace)
 	std::cout << C << std::endl;
 	#endif
 
-	// Unmix
-	EX = C * EX;
-
 	m_mixing_matrix = SGMatrix<float64_t>(m,m);
 	Map<MatrixXd> Emixing_matrix(m_mixing_matrix.matrix,m,m);
 	Emixing_matrix = C.inverse();
-
-	return features;
 }
-
