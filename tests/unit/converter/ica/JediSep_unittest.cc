@@ -39,13 +39,12 @@ TEST(CJediSep, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
+	auto mixed_signals = some<CDenseFeatures<float64_t>>(X);
 
 	// Separate
-	CJediSep* jedisep = new CJediSep();
-	SG_REF(jedisep);
-	CFeatures* signals = jedisep->apply(mixed_signals);
-	SG_REF(signals);
+	auto jedisep = some<CJediSep>();
+    jedisep->fit(mixed_signals);
+	auto signals = jedisep->apply(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(jedisep->get_mixing_matrix().matrix,2,2);
@@ -56,9 +55,5 @@ TEST(CJediSep, blind_source_separation)
 	// Test if output is correct
 	bool isperm = is_permutation_matrix(P);
 	EXPECT_EQ(isperm,true);
-
-	SG_UNREF(jedisep);
-	SG_UNREF(mixed_signals);
-	SG_UNREF(signals);
 }
 
