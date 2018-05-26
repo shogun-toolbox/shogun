@@ -1,5 +1,5 @@
-CSVFile f_feats("../../data/fm_train_real.dat")
-CSVFile f_labels("../../data/label_train_twoclass.dat")
+File f_feats = csv_file("../../data/fm_train_real.dat")
+File f_labels = csv_file("../../data/label_train_twoclass.dat")
 
 #![create_features]
 Features feats = features(f_feats)
@@ -11,25 +11,25 @@ BinaryLabels labels(f_labels)
 #![create_features]
 
 #![create_kernels]
-CombinedKernel kernel()
-GaussianKernel k_1(10, 0.1)
-GaussianKernel k_2(10, 1)
-GaussianKernel k_3(10, 2)
-kernel.append_kernel(k_1)
-kernel.append_kernel(k_2)
-kernel.append_kernel(k_3)
+Kernel combined_kernel = kernel("CombinedKernel")
+Kernel k_1 = kernel("GaussianKernel", log_width=0.1)
+Kernel k_2 = kernel("GaussianKernel", log_width=1.0)
+Kernel k_3 = kernel("GaussianKernel", log_width=2.0)
+combined_kernel.add("kernel_array", k_1)
+combined_kernel.add("kernel_array", k_2)
+combined_kernel.add("kernel_array", k_3)
 #![create_kernels]
 
 #![create_classifier]
-LibSVM libsvm()
-MKLClassification svm(libsvm)
-svm.set_interleaved_optimization_enabled(False)
-svm.set_kernel(kernel)
+Machine libsvm = machine("LibSVM")
+Machine svm = machine("MKLClassification", kernel=combined_kernel)
+svm.put("interleaved_optimization", False)
+svm.put("svm", libsvm)
 #![create_classifier]
 
 #![create_cross_validation]
 StratifiedCrossValidationSplitting splitting_strategy(labels, 5)
-AccuracyMeasure evaluation_criterium()
+Evaluation evaluation_criterium = evaluation("AccuracyMeasure")
 CrossValidation cross(svm, combined_features, labels, splitting_strategy, evaluation_criterium)
 cross.set_autolock(False)
 cross.set_num_runs(2)
@@ -52,10 +52,10 @@ real stddev = result.get_real("std_dev")
 #![get_fold_machine]
 CrossValidationStorage obs = mkl_obs.get_observation(0)
 CrossValidationFoldStorage fold = obs.get_fold(0)
-MKLClassification machine = MKLClassification:obtain_from_generic(fold.get_trained_machine())
+MKLClassification machine_mkl = MKLClassification:obtain_from_generic(fold.get_trained_machine())
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = CombinedKernel:obtain_from_generic(machine.get_kernel())
+CombinedKernel k = CombinedKernel:obtain_from_generic(machine_mkl.get_kernel())
 RealVector w = k.get_subkernel_weights()
 #![get_weights]
