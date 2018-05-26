@@ -4,10 +4,10 @@
  * Authors: Elfarouk
  */
 
-#include <gtest/gtest.h>
 #include <shogun/optimization/FirstOrderSAGCostFunctionInterface.h>
 #include "FirstOrderSAGCostFunctionInterface_unittest.h"
 #include <Eigen/Dense>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 using Eigen::Matrix;
@@ -21,7 +21,7 @@ using std::function;
 */
 SGVector<float64_t> LeastSquareTestCostFunction::obtain_variable_reference()
 {
-	int32_t params_num = m_X->num_cols;
+	int32_t params_num = m_X.num_cols;
 	SGVector<float64_t> ret(params_num);
 	for (index_t i = 0; i < params_num; ++i)
 		ret[i] = (*m_trainable_parameters)(i, 0).val();
@@ -42,9 +42,9 @@ SGMatrix<float64_t> generateXSmall()
 	return X;
 }
 
-Matrix<var, Dynamic, 1> generateParametersSmall()
+StanVector generateParametersSmall()
 {
-	Matrix<var, Dynamic, 1> w(2, 1);
+	StanVector w(2, 1);
 	var m(1), c(0);
 	w(0, 0) = c;
 	w(1, 0) = m;
@@ -53,7 +53,7 @@ Matrix<var, Dynamic, 1> generateParametersSmall()
 }
 
 function<var(int32_t)> cost_for_ith_datapoint(
-    SGMatrix<float64_t>& X, SGMatrix<float64_t>& y, Matrix<var, Dynamic, 1>& w)
+    SGMatrix<float64_t>& X, SGMatrix<float64_t>& y, StanVector& w)
 {
 	auto f_i = [X, y, w](int32_t idx) {
 		var wx_y = w(0, 0) * X(0, idx) + w(1, 0) * X(1, idx) - y(0, idx);
@@ -64,9 +64,9 @@ function<var(int32_t)> cost_for_ith_datapoint(
 	return f_i;
 }
 
-function<var(Matrix<var, Dynamic, 1>*)> get_total_cost()
+function<var(StanVector*)> get_total_cost()
 {
-	auto cost = [](Matrix<var, Dynamic, 1>* v) {
+	auto cost = [](StanVector* v) {
 		var total_cost = v->sum();
 		return total_cost;
 	};
@@ -94,7 +94,7 @@ TEST(LeastSquareTestCostFunction, points_on_a_line)
 	auto total_cost = get_total_cost();
 
 	LeastSquareTestCostFunction lstcf(
-	    &X, &y, &w, &cost_for_ith_point, &total_cost);
+	    X, y, &w, &cost_for_ith_point, &total_cost);
 
 	EXPECT_NEAR(lstcf.get_cost(), 0.0, 1e-5);
 
@@ -129,7 +129,7 @@ TEST(LeastSquareTestCostFunction, points_on_y_equals_x_squared)
 	auto total_cost = get_total_cost();
 
 	LeastSquareTestCostFunction lstcf(
-	    &X, &y, &w, &cost_for_ith_point, &total_cost);
+	    X, y, &w, &cost_for_ith_point, &total_cost);
 
 	EXPECT_NEAR(lstcf.get_cost(), 2.0, 1e-5);
 

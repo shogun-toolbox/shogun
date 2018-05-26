@@ -18,10 +18,11 @@ class LeastSquareTestCostFunction : public FirstOrderSAGCostFunctionInterface
 public:
 	LeastSquareTestCostFunction(){};
 	LeastSquareTestCostFunction(
-	    SGMatrix<float64_t>* X, SGMatrix<float64_t>* y,
-	    Matrix<var, Dynamic, 1>* trainable_parameters,
-	    Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
-	    function<var(Matrix<var, Dynamic, 1>*)>* total_cost)
+	    SGMatrix<float64_t> X, SGMatrix<float64_t> y,
+	    StanVector* trainable_parameters,
+	    Eigen::Matrix<std::function<stan::math::var(int32_t)>, Eigen::Dynamic,
+	                  1>* cost_for_ith_point,
+	    std::function<stan::math::var(StanVector*)>* total_cost)
 	    : FirstOrderSAGCostFunctionInterface(
 	          X, y, trainable_parameters, cost_for_ith_point, total_cost){};
 
