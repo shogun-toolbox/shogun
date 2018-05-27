@@ -98,25 +98,24 @@ namespace shogun
 
 		SG_REF(features);
 
+		// We don't support stealing underlying data for StringFeatures yet.
+		// Currently StringPreprocessors modify StringFeatures in place
+		// directly.
 		auto string_features = features->as<CStringFeatures<ST>>();
-		auto string_list = string_features->get_features();
 
 		if (!inplace)
-			string_list = string_list.clone();
+		{
+			// this actually creates a deep copy
+			string_features = new CStringFeatures<ST>(*string_features);
+			SG_REF(string_features);
+		}
+
+		auto string_list = string_features->get_features();
 
 		apply_to_string_list(string_list);
 
-		auto processed = new CStringFeatures<ST>(
-		    string_list, string_features->get_alphabet());
-
-		// FIXME: we should prevent freeing input features here because SGString 
-        // doesn't have ref counting, which will be freed after unref.
-		// fix this after #4248
-        if (features->ref_count() > 1)
-		    SG_UNREF(features);
-		SG_REF(processed);
-
-		return processed;
+		SG_UNREF(features);
+		return string_features;
 	}
 
 	template <class ST>
