@@ -57,35 +57,39 @@ namespace shogun
 		CLASSIC_FLDA = 30
 	};
 
-	/** @brief Preprocessor FisherLDA attempts to model the difference between the classes
-	 * of data by performing linear discriminant analysis on input feature vectors/matrices.
-	 * When the fit method in FisherLDA is called with proper feature matrix X(say N number
-	 * of vectors and D feature dimensions), this creates a transformation whose outputs are the
-	 * reduced T-Dimensional & class-specific distribution (where T<= number of unique
-	 * classes-1). The transformation matrix is essentially a DxT matrix, the columns of
-	 * which correspond to the specified number of eigenvectors which maximizes the ratio
-	 * of between class matrix to within class matrix.
+	/** @brief Preprocessor FisherLDA attempts to model the difference between
+	 * the classes of data by performing linear discriminant analysis on input
+	 * feature vectors/matrices. When the fit method in FisherLDA is called with
+	 * proper feature matrix X(say N number of vectors and D feature
+	 * dimensions), this creates a transformation whose outputs are the reduced
+	 * T-Dimensional & class-specific distribution (where T<= number of unique
+	 * classes-1). The transformation matrix is essentially a DxT matrix, the
+	 * columns of which correspond to the specified number of eigenvectors which
+	 * maximizes the ratio of between class matrix to within class matrix.
 	 *
-	 * This class provides 3 method options to compute the transformation matrix :
+	 * This class provides 3 method options to compute the transformation
+	 * matrix:
 	 *
-	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the
-	 * between-class scatter and the within class scatter is maximized.
+	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the
+	 * ratio of the between-class scatter and the within class scatter is
+	 * maximized.
 	 * The between class matrix is :
 	 * \f$\sum_b = \sum_{i=1}^C{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}\f$
 	 * The within class matrix is :
-	 * \f$\sum_w = \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
+	 * \f$\sum_w =
+	 * \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
 	 * This should be choosen when N>D
 	 *
 	 * <em>::CANVAR_FLDA</em> : This method performs Canonical Variates which
 	 * generalises Fisher's method to projection of more than one dimension.
-	 * This is equipped to handle the cases where the within class matrix
-	 * are non-invertible. Can be used for both cases(D>N or D<N). See the
-	 * implementation in Bayesian Reasoning and Machine Learning by David Barber
-	 * , Section 16.3
+	 * This is equipped to handle the cases where the within class matrix are
+	 * non-invertible. Can be used for both cases(D>N or D<N). See the
+	 * implementation in Bayesian Reasoning and Machine Learning by David
+	 * Barber, Section 16.3
 	 *
-	 *
-	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on
-	 * whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses ::CLASSIC_FLDA)
+	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected
+	 * based on whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses
+	 * ::CLASSIC_FLDA)
 	 */
 	class CFisherLDA : public CDensePreprocessor<float64_t>
 	{
