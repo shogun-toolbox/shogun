@@ -43,7 +43,7 @@ TEST(CJediSep, blind_source_separation)
 
 	// Separate
 	auto jedisep = some<CJediSep>();
-    jedisep->fit(mixed_signals);
+	jedisep->fit(mixed_signals);
 	auto signals = jedisep->apply(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
