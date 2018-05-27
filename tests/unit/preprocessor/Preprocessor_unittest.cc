@@ -48,16 +48,13 @@ TEST(Preprocessor, dense_apply)
 	for (index_t i=0; i<dim*size; ++i)
 		data.matrix[i]=CMath::randn_double();
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CDensePreprocessor<float64_t>* preproc=new CNormOne();
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto preproc = some<CNormOne>();
 	preproc->fit(features);
 
-	CFeatures* preprocessed=preproc->apply(features);
+	auto preprocessed = wrap(preproc->apply(features));
 
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
-
-	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
 }
 
 TEST(Preprocessor, string_apply)
@@ -81,15 +78,12 @@ TEST(Preprocessor, string_apply)
 	}
 
 	/* create num_features 2-dimensional vectors */
-	CStringFeatures<uint16_t>* features=new CStringFeatures<uint16_t>(strings, ALPHANUM);
-	CStringPreprocessor<uint16_t>* preproc=new CSortWordString();
+	auto features = some<CStringFeatures<uint16_t>>(strings, ALPHANUM);
+	auto preproc = some<CSortWordString>();
 	preproc->fit(features);
 
-	CFeatures* preprocessed=preproc->apply(features);
+	auto preprocessed = wrap(preproc->apply(features));
 
-	ASSERT_NE(preprocessed, (CFeatures*)NULL);
+	ASSERT_NE(preprocessed.get(), (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_STRING);
-
-	SG_UNREF(preproc);
-	SG_UNREF(features);
 }
