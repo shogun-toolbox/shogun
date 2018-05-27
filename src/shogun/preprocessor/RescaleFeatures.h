@@ -45,7 +45,6 @@ namespace shogun
 		     */
 		    virtual void cleanup();
 
-
 		    /**
 		     * Apply preproc on a single feature vector
 		     */
@@ -72,9 +71,9 @@ namespace shogun
 		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 		    /** min */
-			SGVector<float64_t> m_min;
-			/** 1.0/(max[i]-min[i]) */
-			SGVector<float64_t> m_range;
+		    SGVector<float64_t> m_min;
+		    /** 1.0/(max[i]-min[i]) */
+		    SGVector<float64_t> m_range;
 			/** true when already initialized */
 			bool m_initialized;
 		};

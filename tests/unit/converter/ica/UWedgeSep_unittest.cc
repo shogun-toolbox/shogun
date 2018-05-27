@@ -42,7 +42,7 @@ TEST(CUWedgeSep, blind_source_separation)
 
 	// Separate
 	auto uwedgesep = some<CUWedgeSep>();
-    uwedgesep->fit(mixed_signals);
+	uwedgesep->fit(mixed_signals);
 	auto signals = uwedgesep->apply(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)

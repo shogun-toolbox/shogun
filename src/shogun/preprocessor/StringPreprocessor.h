@@ -40,9 +40,9 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 */
 		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+/// apply preproc on feature matrix
+/// result in feature matrix
+/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 #ifndef SWIG
 		[[deprecated]]
 #endif
