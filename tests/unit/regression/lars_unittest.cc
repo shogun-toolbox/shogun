@@ -427,19 +427,17 @@ TEST(LeastAngleRegression, ols_equivalence)
 	for (index_t i=0; i<lab.size(); i++)
 		lab[i]-=mean;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	SG_REF(features);
+	auto features = some<CDenseFeatures<float64_t>>(data);
 
-	CPruneVarSubMean* proc1=new CPruneVarSubMean();
-	CNormOne* proc2=new CNormOne();
+	auto proc1 = some<CPruneVarSubMean>();
+	auto proc2 = some<CNormOne>();
 	proc1->fit(features);
-	features = proc1->apply(features)->as<CDenseFeatures<float64_t>>();
+	features = wrap(proc1->apply(features)->as<CDenseFeatures<float64_t>>());
 	proc2->fit(features);
-	features = proc2->apply(features)->as<CDenseFeatures<float64_t>>();
+	features = wrap(proc2->apply(features)->as<CDenseFeatures<float64_t>>());
 
-	CRegressionLabels* labels=new CRegressionLabels(lab);
-	SG_REF(labels);
-	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
+	auto labels = some<CRegressionLabels>(lab);
+	auto lars = some<CLeastAngleRegression>(false);
 	lars->set_labels((CLabels*) labels);
 	lars->train(features);
 	// Full LAR model
@@ -460,12 +458,6 @@ TEST(LeastAngleRegression, ols_equivalence)
 	// Check if full LAR model is equivalent to OLS
 	EXPECT_EQ( w.size(), n_feat);
 	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);
-
-	SG_UNREF(proc1);
-	SG_UNREF(proc2);
-	SG_UNREF(lars);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 }
 #endif
 
