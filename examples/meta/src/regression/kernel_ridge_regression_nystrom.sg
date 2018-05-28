@@ -24,7 +24,7 @@ Labels labels_predict = nystrom.apply_regression(features_test)
 #![train_and_apply]
 
 #![extract_alpha]
-RealVector alphas = nystrom.get_real_vector("m_alpha")
+nystrom.get_real_vector("m_alpha")
 #![extract_alpha]
 
 #![evaluate_error]
