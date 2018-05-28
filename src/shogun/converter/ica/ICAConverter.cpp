@@ -81,7 +81,6 @@ CFeatures* CICAConverter::apply(CFeatures* features, bool inplace)
 
 	auto processed = new CDenseFeatures<float64_t>(X);
 	SG_UNREF(features);
-	SG_REF(processed);
 
-	return features;
+	return processed;
 }
