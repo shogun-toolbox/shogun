@@ -107,7 +107,6 @@ namespace shogun
 		{
 			// this actually creates a deep copy
 			string_features = new CStringFeatures<ST>(*string_features);
-			SG_REF(string_features);
 		}
 
 		auto string_list = string_features->get_features();
