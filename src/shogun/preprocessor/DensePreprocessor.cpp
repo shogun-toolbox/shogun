@@ -100,7 +100,6 @@ CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features, bool inplace)
 	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
 
 	SG_UNREF(features);
-	SG_REF(preprocessed);
 	return preprocessed;
 }
 
