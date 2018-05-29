@@ -14,7 +14,7 @@ ica.set_tol(0.00001)
 
 #![apply_convert]
 ica.fit(feats)
-Features converted = ica.apply(feats)
+Features converted = ica.transform(feats)
 #![apply_convert]
 
 #![extract]

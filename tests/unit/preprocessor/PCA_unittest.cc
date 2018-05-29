@@ -57,7 +57,7 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -120,7 +120,7 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -183,7 +183,7 @@ TEST(PCA, PCA_N_less_D_EVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -243,7 +243,7 @@ TEST(PCA, PCA_N_greater_D_SVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -302,7 +302,7 @@ TEST(PCA, PCA_N_equals_D_SVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -360,7 +360,7 @@ TEST(PCA, PCA_N_less_D_SVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -411,7 +411,7 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -508,7 +508,7 @@ TEST(PCA, PCA_WHITEN_SVD)
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
@@ -585,7 +585,7 @@ TEST(PCA, PCA_WHITEN_EVD)
 	pca->set_target_dim(3);
 	pca->fit(features);
 
-	auto finalmat = pca->apply(features)
+	auto finalmat = pca->transform(features)
 	                    ->as<CDenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 

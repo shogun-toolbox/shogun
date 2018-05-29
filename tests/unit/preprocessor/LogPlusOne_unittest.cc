@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-TEST(LogPlusOne, apply)
+TEST(LogPlusOne, transform)
 {
 	float64_t data[6] = {1,2,3,4,5,6};
 	int32_t num_vectors = 2;
@@ -22,7 +22,7 @@ TEST(LogPlusOne, apply)
 	CLogPlusOne* preproc = new CLogPlusOne();
 	preproc->fit(feats);
 
-	feats = preproc->apply(feats)->as<CDenseFeatures<float64_t>>();
+	feats = preproc->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{
