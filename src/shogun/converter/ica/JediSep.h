@@ -38,8 +38,6 @@ class CJediSep: public CICAConverter
 		/** destructor */
 		virtual ~CJediSep();
 
-		virtual void fit(CFeatures* features);
-
 		/** getter for tau parameter
 		 * @return tau vector
 		 */
@@ -62,6 +60,8 @@ class CJediSep: public CICAConverter
 
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features) override;
 
 	private:
 

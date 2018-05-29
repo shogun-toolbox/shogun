@@ -35,8 +35,6 @@ class CFastICA: public CICAConverter
 		/** destructor */
 		virtual ~CFastICA();
 
-		virtual void fit(CFeatures* features);
-
 		/** setter for whiten flag
 		 * whether to whiten the data or not
 		 * @param whiten
@@ -55,6 +53,8 @@ class CFastICA: public CICAConverter
 
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features) override;
 
 	private:
 
