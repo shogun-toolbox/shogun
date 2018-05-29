@@ -50,8 +50,7 @@ public:
 	virtual EPreprocessorType get_type() const { return P_SORTWORDSTRING; }
 
 protected:
-	virtual void
-	apply_to_string_list(SGStringList<uint16_t> string_list) override;
+	virtual void apply_to_string_list(SGStringList<uint16_t> string_list);
 };
 }
 #endif
