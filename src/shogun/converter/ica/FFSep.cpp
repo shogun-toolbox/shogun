@@ -52,12 +52,12 @@ SGNDArray<float64_t> CFFSep::get_covs() const
 	return m_covs;
 }
 
-void CFFSep::fit(CFeatures* features)
+void CFFSep::fit_dense(CDenseFeatures<float64_t>* features)
 {
 	ASSERT(features);
 	SG_REF(features);
 
-	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	auto X = features->get_feature_matrix();
 
 	int n = X.num_rows;
 	int m = X.num_cols;

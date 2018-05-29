@@ -61,9 +61,26 @@ float64_t CICAConverter::get_tol() const
 	return tol;
 }
 
+void CICAConverter::fit(CFeatures* features)
+{
+	REQUIRE(features, "Features are not provided\n");
+	REQUIRE(
+	    features->get_feature_class() == C_DENSE,
+	    "ICA converters only work with dense features\n");
+	REQUIRE(
+	    features->get_feature_type() == F_DREAL,
+	    "ICA converters only work with real features\n");
+
+	SG_REF(features);
+
+	fit_dense(static_cast<CDenseFeatures<float64_t>*>(features));
+
+	SG_UNREF(features);
+}
+
 CFeatures* CICAConverter::apply(CFeatures* features, bool inplace)
 {
-	REQUIRE(m_mixing_matrix.matrix, "ICAConverter not fitted.");
+	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
 
 	SG_REF(features);
 
