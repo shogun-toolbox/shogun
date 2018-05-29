@@ -40,8 +40,6 @@ class CJade: public CICAConverter
 		/** destructor */
 		virtual ~CJade();
 
-		virtual void fit(CFeatures* features);
-
 		/** getter for cumulant_matrix
 		 * @return cumulant_matrix
 		 */
@@ -54,6 +52,8 @@ class CJade: public CICAConverter
 
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features) override;
 
 	private:
 
