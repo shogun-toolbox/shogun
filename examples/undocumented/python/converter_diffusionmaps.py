@@ -12,7 +12,7 @@ def converter_diffusionmaps (data_fname,t):
 		converter.set_target_dim(1)
 		converter.set_kernel(GaussianKernel(10,10.0))
 		converter.set_t(t)
-		converter.apply(features)
+		converter.transform(features)
 
 		return features
 	except ImportError:

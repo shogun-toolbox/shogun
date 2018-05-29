@@ -432,9 +432,11 @@ TEST(LeastAngleRegression, ols_equivalence)
 	auto proc1 = some<CPruneVarSubMean>();
 	auto proc2 = some<CNormOne>();
 	proc1->fit(features);
-	features = wrap(proc1->apply(features)->as<CDenseFeatures<float64_t>>());
+	features =
+	    wrap(proc1->transform(features)->as<CDenseFeatures<float64_t>>());
 	proc2->fit(features);
-	features = wrap(proc2->apply(features)->as<CDenseFeatures<float64_t>>());
+	features =
+	    wrap(proc2->transform(features)->as<CDenseFeatures<float64_t>>());
 
 	auto labels = some<CRegressionLabels>(lab);
 	auto lars = some<CLeastAngleRegression>(false);

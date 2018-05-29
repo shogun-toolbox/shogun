@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-TEST(MultipleProcessors, apply)
+TEST(MultipleProcessors, transform)
 {
 	float64_t data[6] = {1,2,3,4,5,6};
 	int32_t num_vectors = 2;
@@ -24,10 +24,10 @@ TEST(MultipleProcessors, apply)
 	CSumOne* sum1 = new CSumOne();
 	CLogPlusOne* logp1 = new CLogPlusOne();
 	sum1->fit(feats);
-	feats = sum1->apply(feats)->as<CDenseFeatures<float64_t>>();
+	feats = sum1->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	logp1->fit(feats);
-	feats = logp1->apply(feats)->as<CDenseFeatures<float64_t>>();
+	feats = logp1->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{

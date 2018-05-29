@@ -88,7 +88,8 @@ namespace shogun
 	}
 
 	template <class ST>
-	CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features, bool inplace)
+	CFeatures*
+	CStringPreprocessor<ST>::transform(CFeatures* features, bool inplace)
 	{
 		REQUIRE(
 		    features->get_feature_class() == C_STRING,
@@ -120,7 +121,7 @@ namespace shogun
 	template <class ST>
 	bool CStringPreprocessor<ST>::apply_to_string_features(CFeatures* features)
 	{
-		apply(features);
+		transform(features);
 		return true;
 	}
 

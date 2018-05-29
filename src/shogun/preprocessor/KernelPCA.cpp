@@ -126,7 +126,7 @@ void CKernelPCA::fit(CFeatures* features)
 	SG_INFO("Done\n")
 }
 
-CFeatures* CKernelPCA::apply(CFeatures* features, bool inplace)
+CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 {
 	REQUIRE(m_initialized, "Transformer not fitted.\n");
 

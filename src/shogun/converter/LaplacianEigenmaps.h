@@ -46,7 +46,7 @@ public:
 	 * @param features to embed
 	 * @return embedded features
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/** embed distance
 	 * @param distance to use for embedding

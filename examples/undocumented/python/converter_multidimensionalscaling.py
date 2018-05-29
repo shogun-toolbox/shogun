@@ -15,7 +15,7 @@ def converter_multidimensionalscaling (data_fname):
 		converter = MultidimensionalScaling()
 		converter.set_target_dim(2)
 		converter.set_landmark(False)
-		embedding = converter.apply(features)
+		embedding = converter.transform(features)
 
 		distance_after = EuclideanDistance()
 		distance_after.init(embedding,embedding)

@@ -170,7 +170,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 }
 
 template <class ST>
-CFeatures* CFeatureSelection<ST>::apply(CFeatures* features, bool inplace)
+CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 {
 	SG_DEBUG("Entering!\n");
 
