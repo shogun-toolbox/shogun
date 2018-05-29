@@ -473,6 +473,9 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		static int32_t unique(T* output, int32_t size);
 
+		/** Returns new vector with sorted unique elements of current */
+		SGVector<T> unique();
+
 		/** Display array size */
 		void display_size() const;
 
