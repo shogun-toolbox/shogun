@@ -38,7 +38,7 @@ namespace shogun
 		 * @param features the features to derive the min and max values
 		 * from.
 		 */
-		virtual void fit(CFeatures* features) override;
+		virtual void fit(CFeatures* features);
 
 		/**
 		 * Cleanup
@@ -67,8 +67,7 @@ namespace shogun
 		void register_parameters();
 
 	protected:
-		virtual SGMatrix<float64_t>
-		apply_to_matrix(SGMatrix<float64_t> matrix) override;
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
 
 		/** min */
 		SGVector<float64_t> m_min;

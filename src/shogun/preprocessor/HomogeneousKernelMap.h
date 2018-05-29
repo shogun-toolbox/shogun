@@ -131,7 +131,7 @@ namespace shogun
 
 		protected:
 		    virtual SGMatrix<float64_t>
-		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
+		    apply_to_matrix(SGMatrix<float64_t> matrix);
 
 		private:
 			void init ();

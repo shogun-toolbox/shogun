@@ -192,8 +192,7 @@ class CPCA : public CDensePreprocessor<float64_t>
 
 		void init();
 
-		virtual SGMatrix<float64_t>
-		    apply_to_matrix(SGMatrix<float64_t>) override;
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t>);
 
 	protected:
 

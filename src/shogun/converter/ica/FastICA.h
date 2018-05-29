@@ -54,7 +54,7 @@ class CFastICA: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features) override;
+		virtual void fit_dense(CDenseFeatures<float64_t>* features);
 
 	private:
 

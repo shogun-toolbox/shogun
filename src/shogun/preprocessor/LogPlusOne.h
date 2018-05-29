@@ -55,8 +55,7 @@ class CLogPlusOne : public CDensePreprocessor<float64_t>
 		virtual EPreprocessorType get_type() const { return P_LOGPLUSONE; }
 
 	protected:
-		virtual SGMatrix<float64_t>
-		apply_to_matrix(SGMatrix<float64_t> matrix) override;
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
 };
 }
 #endif
