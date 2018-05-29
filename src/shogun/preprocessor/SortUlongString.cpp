@@ -60,8 +60,7 @@ uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
 {
 	uint64_t* vec=SG_MALLOC(uint64_t, len);
 
-	for (auto i : range(len))
-		vec[i] = f[i];
+    std::copy(f, f + len, vec);
 
 	//CMath::qsort(vec, len);
 	CMath::radix_sort(vec, len);
