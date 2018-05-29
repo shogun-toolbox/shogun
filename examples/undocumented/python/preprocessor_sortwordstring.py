@@ -18,7 +18,7 @@ def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc = SortWordString()
 	preproc.fit(feats_train)
-        feats_train = preproc.apply(feats_train)
+	feats_train = preproc.apply(feats_train)
 
 	charfeat=StringCharFeatures(fm_test_dna, DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
