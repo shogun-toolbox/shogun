@@ -87,12 +87,12 @@ void CPCA::fit(CFeatures* features)
 
 	auto feature_matrix =
 	    features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
-	int32_t num_vectors = feature_matrix.num_cols;
-	int32_t num_features = feature_matrix.num_rows;
+	auto num_vectors = feature_matrix.num_cols;
+	auto num_features = feature_matrix.num_rows;
 	SG_INFO("num_examples: %d num_features: %d\n", num_vectors, num_features)
 
 	// max target dim allowed
-	int32_t max_dim_allowed = CMath::min(num_vectors, num_features);
+	auto max_dim_allowed = std::min(num_vectors, num_features);
 	num_dim = 0;
 
 	REQUIRE(
