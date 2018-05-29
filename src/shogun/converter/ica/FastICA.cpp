@@ -66,12 +66,9 @@ bool CFastICA::get_whiten() const
 	return whiten;
 }
 
-void CFastICA::fit(CFeatures* features)
+void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 {
-	ASSERT(features);
-	SG_REF(features);
-
-	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	auto X = features->get_feature_matrix();
 	REQUIRE(X.data(), "Features have not been provided.\n");
 	int n = X.num_rows;
 	int p = X.num_cols;

@@ -15,13 +15,14 @@
 namespace shogun
 {
 
-class CFeatures;
+	template <class T>
+	class CDenseFeatures;
 
-/** @brief class ICAConverter
- * Base class for ICA algorithms that apply to CDenseFeatures<float64_t>
- */
-class CICAConverter: public CConverter
-{
+	/** @brief class ICAConverter
+	 * Base class for ICA algorithms that apply to CDenseFeatures<float64_t>
+	 */
+	class CICAConverter : public CConverter
+	{
 	public:
 
 		/** constructor */
@@ -36,7 +37,7 @@ class CICAConverter: public CConverter
 		 * @param features the training features, should be an instance of
 		 * CDenseFeatures<float64_t>
 		 */
-		virtual void fit(CFeatures* features) = 0;
+		virtual void fit(CFeatures* features);
 
 		/** Apply the ICA converter to features by multiplying the feature
 		 * matrix by the unmixing matirx.
@@ -83,9 +84,10 @@ class CICAConverter: public CConverter
 		virtual const char* get_name() const { return "ICAConverter"; };
 
 	protected:
-
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features) = 0;
 
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
