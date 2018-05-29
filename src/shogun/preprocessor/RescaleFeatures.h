@@ -25,58 +25,58 @@ namespace shogun
      */
 	class CRescaleFeatures : public CDensePreprocessor<float64_t>
 	{
-		public:
-			/** default ctor */
-			CRescaleFeatures();
+	public:
+		/** default ctor */
+		CRescaleFeatures();
 
-			/** dtor */
-			virtual ~CRescaleFeatures();
+		/** dtor */
+		virtual ~CRescaleFeatures();
 
-		    /**
-		     * Fit preprocessor into features
-		     *
-		     * @param features the features to derive the min and max values
-		     * from.
-		     */
-		    virtual void fit(CFeatures* features);
+		/**
+		 * Fit preprocessor into features
+		 *
+		 * @param features the features to derive the min and max values
+		 * from.
+		 */
+		virtual void fit(CFeatures* features);
 
-		    /**
-		     * Cleanup
-		     */
-		    virtual void cleanup();
+		/**
+		 * Cleanup
+		 */
+		virtual void cleanup();
 
-		    /**
-		     * Apply preproc on a single feature vector
-		     */
-		    virtual SGVector<float64_t>
-		    apply_to_feature_vector(SGVector<float64_t> vector);
+		/**
+		 * Apply preproc on a single feature vector
+		 */
+		virtual SGVector<float64_t>
+		apply_to_feature_vector(SGVector<float64_t> vector);
 
-		    /** @return object name */
-		    virtual const char* get_name() const
-		    {
-			    return "RescaleFeatures";
-		    }
+		/** @return object name */
+		virtual const char* get_name() const
+		{
+			return "RescaleFeatures";
+		}
 
-		    /** return a type of preprocessor */
-		    virtual EPreprocessorType get_type() const
-		    {
-			    return P_RESCALEFEATURES;
-		    }
+		/** return a type of preprocessor */
+		virtual EPreprocessorType get_type() const
+		{
+			return P_RESCALEFEATURES;
+		}
 
-		private:
-			void register_parameters();
+	private:
+		void register_parameters();
 
-		protected:
-		    virtual SGMatrix<float64_t>
-		    apply_to_matrix(SGMatrix<float64_t> matrix) override;
+	protected:
+		virtual SGMatrix<float64_t>
+		apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
-		    /** min */
-		    SGVector<float64_t> m_min;
-		    /** 1.0/(max[i]-min[i]) */
-		    SGVector<float64_t> m_range;
-			/** true when already initialized */
-			bool m_initialized;
-		};
+		/** min */
+		SGVector<float64_t> m_min;
+		/** 1.0/(max[i]-min[i]) */
+		SGVector<float64_t> m_range;
+		/** true when already initialized */
+		bool m_initialized;
+	};
 }
 
 #endif /* __RESCALEFEATURES_H__ */
