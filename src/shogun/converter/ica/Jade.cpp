@@ -40,12 +40,12 @@ SGMatrix<float64_t> CJade::get_cumulant_matrix() const
 	return m_cumulant_matrix;
 }
 
-void CJade::fit(CFeatures* features)
+void CJade::fit_dense(CDenseFeatures<float64_t>* features)
 {
 	ASSERT(features);
 	SG_REF(features);
 
-	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	auto X = features->get_feature_matrix();
 
 	int n = X.num_rows;
 	int T = X.num_cols;
