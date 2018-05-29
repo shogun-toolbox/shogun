@@ -70,8 +70,7 @@ class CPNorm : public CDensePreprocessor<float64_t>
 		double get_pnorm () const;
 
 	protected:
-		virtual SGMatrix<float64_t>
-		apply_to_matrix(SGMatrix<float64_t> matrix) override;
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
 
 	private:
 		void register_param ();
