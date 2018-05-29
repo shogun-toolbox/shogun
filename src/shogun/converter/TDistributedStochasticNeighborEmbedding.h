@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param features features to embed
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/** setter for the learning rate
 	 *

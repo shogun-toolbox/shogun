@@ -53,7 +53,8 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
 
-	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
+	CSparseFeatures<float64_t>* converted_docs =
+	    (CSparseFeatures<float64_t>*)converter->transform(doc_collection);
 
 	for (index_t i=0; i<3; i++)
 	{
@@ -106,7 +107,8 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 			tokenizer, false);
 
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
-	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
+	CSparseFeatures<float64_t>* converted_docs =
+	    (CSparseFeatures<float64_t>*)converter->transform(doc_collection);
 
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
@@ -197,7 +199,8 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
 	CHashedDocConverter* conv = new CHashedDocConverter(tokenizer, hash_bits, false, 3, 2);
-	CSparseFeatures<float64_t>* sf = (CSparseFeatures<float64_t>* ) conv->apply(doc_collection);
+	CSparseFeatures<float64_t>* sf =
+	    (CSparseFeatures<float64_t>*)conv->transform(doc_collection);
 	SG_UNREF(conv);
 	SGVector<float64_t> dense_vec(dimension);
 	float64_t dot_product = 0;

@@ -16,7 +16,7 @@ def converter_localtangentspacealignment (data_fname,k):
 		converter = LocalTangentSpaceAlignment()
 		converter.set_target_dim(1)
 		converter.set_k(k)
-		converter.apply(features)
+		converter.transform(features)
 
 		return features
 	except ImportError:
