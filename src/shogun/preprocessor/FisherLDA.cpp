@@ -91,6 +91,11 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
+void CFisherLDA::fit(CFeatures* features)
+{
+	SG_SERROR("Labels for the given features are not specified!\n");
+}
+
 void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 {
 	REQUIRE(features, "Features are not provided!\n")
