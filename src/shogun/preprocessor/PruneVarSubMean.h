@@ -36,7 +36,7 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		virtual ~CPruneVarSubMean();
 
 		/// Fit preprocessor into features
-		virtual void fit(CFeatures* features) override;
+		virtual void fit(CFeatures* features);
 
 		/// cleanup
 		virtual void cleanup();
@@ -52,8 +52,7 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		virtual EPreprocessorType get_type() const { return P_PRUNEVARSUBMEAN; }
 
 	protected:
-		virtual SGMatrix<float64_t>
-		apply_to_matrix(SGMatrix<float64_t> matrix) override;
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
 
 	private:
 		void init();

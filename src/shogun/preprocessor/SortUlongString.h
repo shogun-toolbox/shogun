@@ -49,8 +49,7 @@ public:
 	virtual EPreprocessorType get_type() const { return P_SORTULONGSTRING; }
 
 protected:
-	virtual void
-	apply_to_string_list(SGStringList<uint64_t> string_list) override;
+	virtual void apply_to_string_list(SGStringList<uint64_t> string_list);
 };
 }
 #endif
