@@ -45,11 +45,11 @@ bool CLogPlusOne::save(FILE* f)
 
 SGMatrix<float64_t> CLogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	for (auto j : range(matrix.num_cols))
+	for (auto& v : matrix)
 	{
-		for (auto i : range(matrix.num_rows))
-			matrix(i, j) = std::log(matrix(i, j) + 1.0);
+		v = std::log(v + 1.0);
 	}
+
 	return matrix;
 }
 
