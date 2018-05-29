@@ -4,6 +4,7 @@
  * Authors: Viktor Gal, Bjoern Esser
  */
 
+#include <algorithm>
 #include <shogun/base/range.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
@@ -47,8 +48,8 @@ void CRescaleFeatures::fit(CFeatures* features)
 		/* find the max and min values in one loop */
 		for (index_t j = 1; j < vec.vlen; j++)
 		{
-			cur_min = CMath::min(vec[j], cur_min);
-			cur_max = CMath::max(vec[j], cur_max);
+			cur_min = std::min(vec[j], cur_min);
+			cur_max = std::max(vec[j], cur_max);
 		}
 
 		/* only rescale if range > 0 */
