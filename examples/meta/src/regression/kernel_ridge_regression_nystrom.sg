@@ -20,7 +20,7 @@ Machine nystrom = machine("KRRNystrom",tau=0.001, num_rkhs_basis=100, kernel=k, 
 
 #![train_and_apply]
 nystrom.train(features_train)
-Labels labels_predict = nystrom.apply_regression(features_test)
+Labels labels_predict = nystrom.apply(features_test)
 #![train_and_apply]
 
 #![extract_alpha]
