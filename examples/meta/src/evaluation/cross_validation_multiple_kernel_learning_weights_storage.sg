@@ -52,10 +52,11 @@ real stddev = result.get_real("std_dev")
 #![get_fold_machine]
 CrossValidationStorage obs = mkl_obs.get_observation(0)
 CrossValidationFoldStorage fold = obs.get_fold(0)
-MKLClassification machine_mkl = MKLClassification:obtain_from_generic(fold.get_trained_machine())
+Machine machine_mkl = machine(fold.get_trained_machine())
+
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = CombinedKernel:obtain_from_generic(machine_mkl.get_kernel())
+CombinedKernel k = kernel(machine_mkl.get("kernel"))
 RealVector w = k.get_subkernel_weights()
 #![get_weights]
