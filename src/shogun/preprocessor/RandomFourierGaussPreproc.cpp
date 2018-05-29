@@ -374,8 +374,8 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ??
 
-	int32_t num_vectors = matrix.num_cols;
-	int32_t num_features = matrix.num_rows;
+	auto num_vectors = matrix.num_cols;
+	auto num_features = matrix.num_rows;
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
@@ -390,7 +390,7 @@ CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 	SGMatrix<float64_t> res(cur_dim_feature_space, num_vectors);
 
-	float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
+	auto val = std::sqrt(2.0 / cur_dim_feature_space);
 
 	for (auto vec : range(num_vectors))
 	{
