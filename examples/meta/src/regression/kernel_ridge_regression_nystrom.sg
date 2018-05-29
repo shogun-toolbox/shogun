@@ -29,7 +29,7 @@ nystrom.get_real_vector("m_alpha")
 
 #![evaluate_error]
 Evaluation eval = evaluation("MeanSquaredError")
-real mse = eval.evaluate(labels_predict, labels_test)
+eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
