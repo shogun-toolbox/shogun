@@ -32,7 +32,7 @@ public:
 	/** get name */
 	virtual const char* get_name() const { return "Converter"; }
 
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true) = 0;
 };
 }
 #endif /* CONVERTER_H_ */

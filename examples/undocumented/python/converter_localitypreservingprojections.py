@@ -11,7 +11,7 @@ def converter_localitypreservingprojections (data_fname,k):
 	converter.set_target_dim(1)
 	converter.set_k(k)
 	converter.set_tau(2.0)
-	converter.apply(features)
+	converter.transform(features)
 
 	return features
 

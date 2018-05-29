@@ -19,7 +19,7 @@ def preprocessor_fisherlda (data, labels, method):
 
 	preprocessor=FisherLda(1, method)
 	preprocessor.fit(sg_features, sg_labels)
-	yn = preprocessor.apply(sg_features).get_real_matrix('feature_matrix')
+	yn = preprocessor.transform(sg_features).get_real_matrix('feature_matrix')
 
 	return yn
 

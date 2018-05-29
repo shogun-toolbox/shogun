@@ -14,7 +14,7 @@ def preprocessor_pca (data):
 
 	preprocessor = PCA()
 	preprocessor.fit(features)
-	features = preprocessor.apply(features)
+	features = preprocessor.transform(features)
 
 	return features
 

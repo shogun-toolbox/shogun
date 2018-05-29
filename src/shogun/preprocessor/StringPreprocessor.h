@@ -38,7 +38,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 /// apply preproc on feature matrix
 /// result in feature matrix
