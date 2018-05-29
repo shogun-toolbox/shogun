@@ -33,8 +33,8 @@ void CPruneVarSubMean::fit(CFeatures* features)
 		cleanup();
 
 	auto simple_features = features->as<CDenseFeatures<float64_t>>();
-	int32_t num_examples = simple_features->get_num_vectors();
-	int32_t num_features = simple_features->get_num_features();
+	auto num_examples = simple_features->get_num_vectors();
+	auto num_features = simple_features->get_num_features();
 
 	m_idx = SGVector<int32_t>();
 	m_std = SGVector<float64_t>();
@@ -104,12 +104,14 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	ASSERT(m_initialized)
 
-	int32_t num_vectors = matrix.num_cols;
+	auto num_vectors = matrix.num_cols;
+	auto result = matrix;
+	result.num_rows = m_num_idx;
 
 	for (auto i : range(num_vectors))
 	{
 		auto v_src = matrix.get_column(i);
-		auto v_dst = matrix.get_column(i);
+		auto v_dst = result.get_column(i);
 
 		if (m_divide_by_std)
 		{
@@ -123,9 +125,7 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 		}
 	}
 
-	matrix.num_rows = m_num_idx;
-
-	return matrix;
+	return result;
 }
 
 /// apply preproc on single feature vector
