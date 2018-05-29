@@ -46,7 +46,7 @@ namespace shogun
 		 * @param inplace transform in place
 		 * @return the result feature object after applying the ICA converter
 		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/** setter for mixing matrix, if the mixing matrix is set it will be
 		 * used as an initial guess if supported by the algorithm

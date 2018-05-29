@@ -28,7 +28,7 @@ const char* CNeighborhoodPreservingEmbedding::get_name() const
 }
 
 CFeatures*
-CNeighborhoodPreservingEmbedding::apply(CFeatures* features, bool inplace)
+CNeighborhoodPreservingEmbedding::transform(CFeatures* features, bool inplace)
 {
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;

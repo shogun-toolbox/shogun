@@ -41,7 +41,7 @@ public:
 	 * @param features features to embed
 	 * @return embedding features
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true) = 0;
 
 	/** embed given features, acts the same as apply, but returns
 	 * DenseFeatures
