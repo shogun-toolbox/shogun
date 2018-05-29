@@ -116,12 +116,14 @@ namespace shogun
 		/** destructor */
 		virtual ~CFisherLDA();
 
+		virtual void fit(CFeatures* features) override;
+
 		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
 		 */
-		virtual void fit(CFeatures* features, CLabels* labels);
+		virtual void fit(CFeatures* features, CLabels* labels) override;
 
 		/** cleanup */
 		virtual void cleanup();
