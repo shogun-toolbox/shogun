@@ -42,7 +42,7 @@ TEST(CFFSep, blind_source_separation)
 	// Separate
 	auto ffsep = some<CFFSep>();
 	ffsep->fit(mixed_signals);
-	auto signals = wrap(ffsep->apply(mixed_signals));
+	auto signals = wrap(ffsep->transform(mixed_signals));
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(ffsep->get_mixing_matrix().matrix,2,2);

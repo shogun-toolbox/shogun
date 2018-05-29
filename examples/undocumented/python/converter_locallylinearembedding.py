@@ -16,7 +16,7 @@ def converter_locallylinearembeeding (data, k):
 	converter.set_k(k)
 
 	converter.fit(features)
-	features = converter.apply(features)
+	features = converter.transform(features)
 
 	return features
 

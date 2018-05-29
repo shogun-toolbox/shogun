@@ -40,7 +40,7 @@
 
 using namespace shogun;
 
-TEST(Preprocessor, dense_apply)
+TEST(Preprocessor, dense)
 {
 	const index_t dim=2;
 	const index_t size=4;
@@ -52,12 +52,12 @@ TEST(Preprocessor, dense_apply)
 	auto preproc = some<CNormOne>();
 	preproc->fit(features);
 
-	auto preprocessed = wrap(preproc->apply(features));
+	auto preprocessed = wrap(preproc->transform(features));
 
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
 }
 
-TEST(Preprocessor, string_apply)
+TEST(Preprocessor, string)
 {
 	const index_t num_strings=3;
 	const index_t max_string_length=20;
@@ -82,7 +82,7 @@ TEST(Preprocessor, string_apply)
 	auto preproc = some<CSortWordString>();
 	preproc->fit(features);
 
-	auto preprocessed = wrap(preproc->apply(features));
+	auto preprocessed = wrap(preproc->transform(features));
 
 	ASSERT_NE(preprocessed.get(), (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_STRING);

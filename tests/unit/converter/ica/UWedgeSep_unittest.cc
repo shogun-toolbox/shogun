@@ -43,7 +43,7 @@ TEST(CUWedgeSep, blind_source_separation)
 	// Separate
 	auto uwedgesep = some<CUWedgeSep>();
 	uwedgesep->fit(mixed_signals);
-	auto signals = uwedgesep->apply(mixed_signals);
+	auto signals = uwedgesep->transform(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(uwedgesep->get_mixing_matrix().matrix,2,2);

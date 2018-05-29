@@ -73,11 +73,13 @@ const char* CHashedDocConverter::get_name() const
 	return "HashedDocConverter";
 }
 
-CFeatures* CHashedDocConverter::apply(CFeatures* features, bool inplace)
+CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
 {
 	ASSERT(features);
 	if (strcmp(features->get_name(), "StringFeatures")!=0)
-		SG_ERROR("CHashedConverter::apply() : CFeatures object passed is not of type CStringFeatures.");
+		SG_ERROR(
+			"CHashedConverter::transform() : CFeatures object passed is "
+			"not of type CStringFeatures.");
 
 	CStringFeatures<char>* s_features = (CStringFeatures<char>*) features;
 

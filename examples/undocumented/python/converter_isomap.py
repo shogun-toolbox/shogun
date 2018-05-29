@@ -11,7 +11,7 @@ def converter_isomap (data_fname):
 	converter = Isomap()
 	converter.set_k(20)
 	converter.set_target_dim(1)
-	converter.apply(features)
+	converter.transform(features)
 
 	return features
 

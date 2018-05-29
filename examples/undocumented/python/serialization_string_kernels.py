@@ -106,7 +106,7 @@ def get_spectrum_features(data, order=3, gap=0, reverse=True):
     feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
     preproc = SortWordString()
     preproc.fit(feat)
-    feat = preproc.apply(feat)
+    feat = preproc.transform(feat)
 
     return feat
 

@@ -45,7 +45,7 @@ public:
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/** embed distance
 	 * @param distance to use for embedding

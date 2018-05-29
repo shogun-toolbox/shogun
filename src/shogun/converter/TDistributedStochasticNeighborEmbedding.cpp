@@ -55,7 +55,7 @@ float64_t CTDistributedStochasticNeighborEmbedding::get_perplexity() const
 	return m_perplexity;
 }
 
-CFeatures* CTDistributedStochasticNeighborEmbedding::apply(
+CFeatures* CTDistributedStochasticNeighborEmbedding::transform(
     CFeatures* features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;

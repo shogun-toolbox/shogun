@@ -16,12 +16,12 @@ def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc = SortWordString()
 	preproc.fit(feats_train)
-	feats_train = preproc.apply(feats_train)
+	feats_train = preproc.transform(feats_train)
 
 	charfeat=StringCharFeatures(fm_test_dna, DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	feats_test = preproc.apply(feats_test)
+	feats_test = preproc.transform(feats_test)
 
 	use_sign=False
 	kernel=WeightedCommWordStringKernel(feats_train, feats_train, use_sign)

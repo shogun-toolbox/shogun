@@ -38,7 +38,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @param features the dense input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 #ifndef SWIG
 		[[deprecated]]

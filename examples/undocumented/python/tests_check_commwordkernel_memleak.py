@@ -67,7 +67,7 @@ def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 		pre = SortWordString()
 		#pre.io.set_loglevel(MSG_DEBUG)
 		pre.fit(trainudat)
-		trainudat = pre.apply(trainudat)
+		trainudat = pre.transform(trainudat)
 		spec = CommWordStringKernel(10, False)
 		spec.set_normalizer(IdentityKernelNormalizer())
 		spec.init(trainudat, trainudat)

@@ -11,7 +11,7 @@ def converter_factoranalysis(data_fname):
 
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)
-		embedding = converter.apply(features)
+		embedding = converter.transform(features)
 
 		X = embedding.get_feature_matrix()
 		covdet = numpy.linalg.det(numpy.dot(X,X.T))

@@ -18,7 +18,7 @@ def preprocessor_kernelpca (data, threshold, width):
 	preprocessor = KernelPCA(kernel)
 	preprocessor.fit(features)
 	preprocessor.set_target_dim(2)
-	features = preprocessor.apply(features)
+	features = preprocessor.transform(features)
 
 	return features
 

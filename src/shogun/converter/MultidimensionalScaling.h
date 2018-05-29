@@ -75,7 +75,7 @@ public:
 	 * @param features features which feature matrix should be processed
 	 * @return new feature matrix
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/** get name */
 	const char* get_name() const;

@@ -22,13 +22,13 @@ def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
 	preproc.fit(feats_train)
-	feats_train = preproc.apply(feats_train)
+	feats_train = preproc.transform(feats_train)
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	feats_test = preproc.apply(feats_test)
+	feats_test = preproc.transform(feats_test)
 
 	distance=HammingWordDistance(feats_train, feats_train, use_sign)
 

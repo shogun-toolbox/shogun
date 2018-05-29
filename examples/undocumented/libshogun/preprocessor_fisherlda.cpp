@@ -41,7 +41,9 @@ void test()
 	CFisherLDA* fisherlda=new CFisherLDA(AUTO_FLDA);
 	SG_REF(fisherlda)
 	fisherlda->fit(features, labels, 1);
-	SGMatrix<float64_t> y=fisherlda->apply_to_feature_matrix(features);
+	SGMatrix<float64_t> y = fisherlda->transform(features)
+	                            ->as<CDenseFeatures<float64_t>>()
+	                            ->get_feature_matrix();
 
 	// display output
 	y.display_matrix();

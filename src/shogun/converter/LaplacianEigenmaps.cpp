@@ -57,7 +57,7 @@ const char* CLaplacianEigenmaps::get_name() const
 	return "LaplacianEigenmaps";
 };
 
-CFeatures* CLaplacianEigenmaps::apply(CFeatures* features, bool inplace)
+CFeatures* CLaplacianEigenmaps::transform(CFeatures* features, bool inplace)
 {
 	// shorthand for simplefeatures
 	SG_REF(features);

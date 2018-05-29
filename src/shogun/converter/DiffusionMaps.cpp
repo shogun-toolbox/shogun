@@ -58,7 +58,7 @@ const char* CDiffusionMaps::get_name() const
 	return "DiffusionMaps";
 };
 
-CFeatures* CDiffusionMaps::apply(CFeatures* features, bool inplace)
+CFeatures* CDiffusionMaps::transform(CFeatures* features, bool inplace)
 {
 	ASSERT(features)
 	// shorthand for simplefeatures

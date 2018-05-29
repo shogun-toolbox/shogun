@@ -68,7 +68,7 @@ public:
 	 * @param features the strings to be hashed. Must be an instance of CStringFeatures.
 	 * @return a CSparseFeatures object containing the hashes of the strings.
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/** Hashes the tokens contained in document
 	 *

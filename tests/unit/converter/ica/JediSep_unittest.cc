@@ -44,7 +44,7 @@ TEST(CJediSep, blind_source_separation)
 	// Separate
 	auto jedisep = some<CJediSep>();
 	jedisep->fit(mixed_signals);
-	auto signals = jedisep->apply(mixed_signals);
+	auto signals = jedisep->transform(mixed_signals);
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(jedisep->get_mixing_matrix().matrix,2,2);

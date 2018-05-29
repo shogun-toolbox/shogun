@@ -78,7 +78,7 @@ void CICAConverter::fit(CFeatures* features)
 	SG_UNREF(features);
 }
 
-CFeatures* CICAConverter::apply(CFeatures* features, bool inplace)
+CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 {
 	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
 

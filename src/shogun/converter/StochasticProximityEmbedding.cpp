@@ -106,7 +106,7 @@ const char * CStochasticProximityEmbedding::get_name() const
 }
 
 CFeatures*
-CStochasticProximityEmbedding::apply(CFeatures* features, bool inplace)
+CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 {
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n")

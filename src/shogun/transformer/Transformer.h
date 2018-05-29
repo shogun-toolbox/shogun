@@ -23,14 +23,16 @@ namespace shogun
 	 * to another features instance. As transformers might need a certain
 	 * training on a training set (e.g. learning parameters), they may expect
 	 * that the fit() function is called before anything else. The actual
-	 * transformations happen in the apply() function, which returns the
-	 * transformed features as a new CFeatures instance. apply() can work either
+	 * transformations happen in the transform() function, which returns the
+	 * transformed features as a new CFeatures instance. transform() can work
+	 * either
 	 * in-place or out-of-place. The underlying data is shared and modified if
 	 * supported is in-place mode.
 	 *
-	 * This class defines generic interface for transformers, fit() and apply().
+	 * This class defines generic interface for transformers, fit() and
+	 * transform().
 	 * Subclasses should override fit(CFeatures*) or fit(CFeatures*, CLabels*)
-	 * if necessary and apply() that apply transformation to features.
+	 * if necessary and transform() that transform transformation to features.
 	 *
 	 * Note that a new CFeatures is always created even in in-place mode because
 	 * CFeatures is immutable.
@@ -76,7 +78,8 @@ namespace shogun
 		 *	@param inplace whether transform in place
 		 *	@return the result feature object after applying the transformer
 		 */
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true) = 0;
+		virtual CFeatures*
+		transform(CFeatures* features, bool inplace = true) = 0;
 	};
 }
 #endif /* TRANSFORMER_H_ */

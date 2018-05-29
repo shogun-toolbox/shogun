@@ -26,7 +26,7 @@ def converter_hasheddoc(strings):
 	#create converter
 	converter=HashedDocConverter(tokenizer, num_bits, normalize)
 
-	converted_feats=converter.apply(f)
+	converted_feats=converter.transform(f)
 
 	#should expect 32
 	#print('Converted features\' space dimensionality is', converted_feats.get_dim_feature_space())

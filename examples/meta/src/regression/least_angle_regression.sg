@@ -14,11 +14,11 @@ Labels labels_test = labels(f_labels_test)
 PruneVarSubMean SubMean()
 NormOne Normalize()
 SubMean.fit(features_train)
-Features pruned_features_train = SubMean.apply(features_train)
-Features pruned_features_test = SubMean.apply(features_test)
+Features pruned_features_train = SubMean.transform(features_train)
+Features pruned_features_test = SubMean.transform(features_test)
 Normalize.fit(features_train)
-Features normalized_features_train = Normalize.apply(pruned_features_train)
-Features normalized_features_test = Normalize.apply(pruned_features_test)
+Features normalized_features_train = Normalize.transform(pruned_features_train)
+Features normalized_features_test = Normalize.transform(pruned_features_test)
 #![preprocess_features]
 
 #![create_instance]

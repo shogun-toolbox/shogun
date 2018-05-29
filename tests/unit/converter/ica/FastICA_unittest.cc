@@ -43,7 +43,7 @@ TEST(CFastICA, blind_source_separation)
 	// Separate
 	auto ica = some<CFastICA>();
 	ica->fit(mixed_signals);
-	auto signals = wrap(ica->apply(mixed_signals));
+	auto signals = wrap(ica->transform(mixed_signals));
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(ica->get_mixing_matrix().matrix,2,2);
@@ -60,5 +60,5 @@ TEST(CFastICA, with_empty_feature)
 {
 	auto empty_feat = some<CDenseFeatures<float64_t>>();
 	auto ica = some<CFastICA>();
-	EXPECT_THROW(ica->apply(empty_feat), ShogunException);
+	EXPECT_THROW(ica->transform(empty_feat), ShogunException);
 }

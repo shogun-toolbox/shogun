@@ -43,7 +43,7 @@ TEST(CSOBI, blind_source_separation)
 	// Separate
 	auto sobi = some<CSOBI>();
 	sobi->fit(mixed_signals);
-	auto signals = wrap(sobi->apply(mixed_signals));
+	auto signals = wrap(sobi->transform(mixed_signals));
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(sobi->get_mixing_matrix().matrix,2,2);

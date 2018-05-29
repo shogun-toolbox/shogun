@@ -69,7 +69,8 @@ enum EFeatureRemovalPolicy
  * the enum #EFeatureSelectionAlgorithm which can be set via set_algorithm()
  * call. Supported wrapper algorithms are
  *
- * - shogun::BACKWARD_ELIMINATION: apply_backward_elimination() method implements
+ * - shogun::BACKWARD_ELIMINATION: apply_backward_elimination() method
+ * implements
  * this algorithm. This runs inside a loop till it reaches #m_target_dim. In
  * each iteration, inside another loop that runs for all current dimensions we
  * compute measures and store the scores for each current dimension. Based on
@@ -86,7 +87,7 @@ enum EFeatureRemovalPolicy
  * approaches, the method set_algorithm() is kept abstract which is defined
  * in the subclasses as appropriate.
  *
- * The apply() method acts as a wrapper which decides which above methods to
+ * The transform() method acts as a wrapper which decides which above methods to
  * call based on the algorithm specified by #m_algorithm. This method makes
  * a deep copy of the original feature object using CSGObject::clone and then
  * performs feature selection on it. The actual memory requirement depends on
@@ -101,26 +102,32 @@ enum EFeatureRemovalPolicy
  * different which is specified by the #EFeatureRemovalPolicy enum and can be
  * set by set_policy() call. The supported policies are
  *
- * - shogun::N_SMALLEST: Features corresponding to N smallest measures are removed
- * - shogun::PERCENTILE_SMALLEST: Features corresponding to smallest N% measures are
+ * - shogun::N_SMALLEST: Features corresponding to N smallest measures are
+ * removed
+ * - shogun::PERCENTILE_SMALLEST: Features corresponding to smallest N% measures
+ * are
  *   removed
- * - shogun::N_LARGEST: Features corresponding to N largeest measures are removed
- * - shogun::PERCENTILE_LARGEST: Features corresponding to largest N% measures are
+ * - shogun::N_LARGEST: Features corresponding to N largeest measures are
+ * removed
+ * - shogun::PERCENTILE_LARGEST: Features corresponding to largest N% measures
+ * are
  *   removed
  *
  * Note that not all policies can be adapted for a specific feature seleciton
  * approaches. In general, in classes where feature selection is performed by
  * removing the features which correspond to lowest measure, the policies
- * shogun::N_SMALLEST and shogun::PERCENTILE_SMALLEST are appropriate. When features
+ * shogun::N_SMALLEST and shogun::PERCENTILE_SMALLEST are appropriate. When
+ * features
  * corresponding to highest measures are removed (e.g. training error in a
- * cross-validation scenario), shogun::N_LARGEST and shogun::PERCENTILE_LARGEST are
+ * cross-validation scenario), shogun::N_LARGEST and shogun::PERCENTILE_LARGEST
+ * are
  * applicable. Therefore, set_policy() is kept abstract and subclasses define
  * this to allow specific policies to be set.
  *
  * Removal of features in each iteration is handled by an abstract method
  * remove_feats() that removes a set of features at once based on the ranks
  * of the features on the measure. Internally this method also updates a subset
- * stack to keep track of the selected features. After calling apply(),
+ * stack to keep track of the selected features. After calling transform(),
  * the indices of the original features that are selected can be obtained
  * by calling get_selected_feats() method. Please note that the selected
  * features are always kept in the original order.
@@ -152,7 +159,7 @@ public:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 	/**
 	 * Abstract method that is defined in the subclasses to compute the

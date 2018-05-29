@@ -42,7 +42,7 @@ public:
 	 * @param features the sparse input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply(CFeatures* features, bool inplace);
+	virtual CFeatures* transform(CFeatures* features, bool inplace);
 
 #ifndef SWIG
 	[[deprecated]]
@@ -82,7 +82,7 @@ protected:
 };
 
 template <class ST>
-CFeatures* CSparsePreprocessor<ST>::apply(CFeatures* features, bool inplace)
+CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 {
 	SG_REF(features);
 

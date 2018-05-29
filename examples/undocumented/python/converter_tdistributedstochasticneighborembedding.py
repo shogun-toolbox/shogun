@@ -14,7 +14,7 @@ def converter_tdistributedstochasticneighborembedding(data_fname, seed=1):
 		converter = TDistributedStochasticNeighborEmbedding()
 		converter.set_target_dim(2)
 
-		embedding = converter.apply(features)
+		embedding = converter.transform(features)
 
 		return embedding
 	except ImportError:

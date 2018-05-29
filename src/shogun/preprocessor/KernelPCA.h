@@ -44,7 +44,7 @@ public:
 
 		virtual void fit(CFeatures* features);
 
-		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/// cleanup
 		virtual void cleanup();

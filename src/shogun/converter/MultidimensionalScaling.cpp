@@ -96,7 +96,8 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 	return embedding;
 }
 
-CFeatures* CMultidimensionalScaling::apply(CFeatures* features, bool inplace)
+CFeatures*
+CMultidimensionalScaling::transform(CFeatures* features, bool inplace)
 {
 	SG_REF(features);
 	ASSERT(m_distance)

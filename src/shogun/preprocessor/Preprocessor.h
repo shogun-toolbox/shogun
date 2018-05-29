@@ -65,7 +65,8 @@ enum EPreprocessorType
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
  * CDensePreprocessor. Although, for providing a generic interface for this,
- * an abstract apply() method is there, which sub-classes may choose to use as
+ * an abstract transform() method is there, which sub-classes may choose to use
+ * as
  * a wrapper to more specific methods.
  */
 class CPreprocessor : public CTransformer
@@ -79,7 +80,7 @@ public:
 	{
 	}
 
-	virtual CFeatures* apply(CFeatures* features, bool inplace) = 0;
+	virtual CFeatures* transform(CFeatures* features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;
