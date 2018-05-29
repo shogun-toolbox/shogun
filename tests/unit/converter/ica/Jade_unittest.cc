@@ -43,7 +43,7 @@ TEST(CJade, blind_source_separation)
 	// Separate
 	auto jade = some<CJade>();
 	jade->fit(mixed_signals);
-	auto signals = wrap(jade->apply(mixed_signals));
+	auto signals = wrap(jade->transform(mixed_signals));
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EA(jade->get_mixing_matrix().matrix,2,2);

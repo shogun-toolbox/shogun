@@ -74,7 +74,7 @@ const char* CLocallyLinearEmbedding::get_name() const
 	return "LocallyLinearEmbedding";
 }
 
-CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features, bool inplace)
+CFeatures* CLocallyLinearEmbedding::transform(CFeatures* features, bool inplace)
 {
 	// oh my let me dirty cast it
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);

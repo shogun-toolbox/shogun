@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-TEST(RescaleFeatures, apply)
+TEST(RescaleFeatures, transform)
 {
 	index_t num_features = 3;
 	index_t num_vectors = 10;
@@ -33,7 +33,7 @@ TEST(RescaleFeatures, apply)
 		range[i] = CMath::max(t.vector, t.vlen) - min[i];
 	}
 
-	feats = rescaler->apply(feats)->as<CDenseFeatures<float64_t>>();
+	feats = rescaler->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{
