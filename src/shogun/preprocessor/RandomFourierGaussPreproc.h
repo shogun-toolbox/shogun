@@ -83,7 +83,7 @@ public:
 	 * @return true if new random coefficients were generated, false if old ones
 	 * from a call to set_randomcoefficients(...) are kept
 	 */
-	virtual void fit(CFeatures* f);
+	virtual void fit(CFeatures* f) override;
 
 	/**  setter for kernel width
 	 * @param width kernel width to be set

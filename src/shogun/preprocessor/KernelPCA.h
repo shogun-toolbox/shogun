@@ -42,7 +42,7 @@ public:
 
 		virtual ~CKernelPCA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(CFeatures* features) override;
 
 		virtual CFeatures* apply(CFeatures* features, bool inplace = true);
 
