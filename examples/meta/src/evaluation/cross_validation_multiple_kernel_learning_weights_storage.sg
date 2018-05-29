@@ -57,6 +57,6 @@ Machine machine_mkl = machine(fold.get_trained_machine())
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = kernel(machine_mkl.get("kernel"))
+Kernel k = kernel(machine_mkl.get("kernel"))
 RealVector w = k.get_subkernel_weights()
 #![get_weights]
