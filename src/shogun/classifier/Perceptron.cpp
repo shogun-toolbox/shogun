@@ -35,7 +35,9 @@ void CPerceptron::init()
 	max_iter = 1000;
 	learn_rate = 0.1;
 	m_initialize_hyperplane = true;
-	SG_ADD(&max_iter, "initialize_hyperplane", "Whether to initialize hyperplane.", MS_AVAILABLE);
+	SG_ADD(
+	    &m_initialize_hyperplane, "initialize_hyperplane",
+	    "Whether to initialize hyperplane.", MS_AVAILABLE);
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", MS_AVAILABLE);
 	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
 }
@@ -65,15 +67,18 @@ bool CPerceptron::train_machine(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen)
 	SGVector<float64_t> output(num_vec);
 
-	SGVector<float64_t> w = get_w();
+	auto w = SGVector<float64_t>(num_feat);
 	if (m_initialize_hyperplane)
 	{
-		w = SGVector<float64_t>(num_feat);
+		set_w(w);
+		w.set_const(1.0 / num_feat);
 		//start with uniform w, bias=0
 		bias=0;
-		linalg::add_scalar(w, 1.0 / num_feat);
 	}
-
+	else
+	{
+		w = get_w();
+	}
 	//loop till we either get everything classified right or reach max_iter
 	while (!converged && iter < max_iter)
 	{
@@ -104,8 +109,6 @@ bool CPerceptron::train_machine(CFeatures* data)
 		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
 	else
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter)
-
-	set_w(w);
 
 	return converged;
 }
