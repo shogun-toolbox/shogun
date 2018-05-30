@@ -20,7 +20,6 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/Locality-sensitive_hashing.
  *
  */
-#ifdef HAVE_CXX11
 class CLSHKNNSolver : public CKNNSolver
 {
 	public:
@@ -70,7 +69,6 @@ class CLSHKNNSolver : public CKNNSolver
 		int32_t m_lsh_t;
 
 };
-#endif
 }
 
 #endif
