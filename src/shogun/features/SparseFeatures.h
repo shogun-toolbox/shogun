@@ -243,15 +243,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual void set_full_feature_matrix(SGMatrix<ST> full);
 
-		/** apply preprocessor
-		 *
-		 * possible with subset
-		 *
-		 * @param force_preprocessing if preprocssing shall be forced
-		 * @return if applying was successful
-		 */
-		virtual bool apply_preprocessor(bool force_preprocessing=false);
-
 		/** get number of feature vectors, possibly of subset
 		 *
 		 * @return number of feature vectors

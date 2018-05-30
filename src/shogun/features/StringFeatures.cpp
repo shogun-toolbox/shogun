@@ -1222,30 +1222,6 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	return true;
 }
 
-template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_preprocessing)
-{
-	SG_DEBUG("force: %d\n", force_preprocessing)
-
-	for (int32_t i=0; i<get_num_preprocessors(); i++)
-	{
-		if ( (!is_preprocessed(i) || force_preprocessing) )
-		{
-			set_preprocessed(i);
-			CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
-			SG_INFO("preprocessing using preproc %s\n", p->get_name())
-
-			if (!p->apply_to_string_features(this))
-			{
-				SG_UNREF(p);
-				return false;
-			}
-			else
-				SG_UNREF(p);
-		}
-	}
-	return true;
-}
-
 template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t window_size, int32_t step_size, int32_t skip)
 {
 	if (m_subset_stack->has_subsets())

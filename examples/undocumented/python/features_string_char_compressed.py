@@ -57,8 +57,8 @@ def features_string_char_compressed (fname):
 	# load compressed data and uncompress via preprocessor
 	f2=StringCharFeatures(RAWBYTE);
 	f2.load_compressed("tmp/foo_lzo.str", False)
-	f2.add_preprocessor(DecompressCharString(LZO))
-	f2.apply_preprocessor()
+	preproc = DecompressCharString(LZO)
+	f2 = preproc.transform(f2)
 	#print("lzo strings", f2.get_features())
 	#print
 

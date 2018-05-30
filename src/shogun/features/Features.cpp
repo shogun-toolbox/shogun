@@ -28,13 +28,10 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
-	// Call to init creates new preproc and preprocessed arrays.
+	// Call to init creates new preproc arrays.
 	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
 	preproc = orig.preproc;
-	preprocessed = orig.preprocessed;
 	SG_REF(preproc);
-	SG_REF(preprocessed);
 }
 
 CFeatures::CFeatures(CFile* loader)
@@ -51,7 +48,6 @@ CFeatures::~CFeatures()
 	clean_preprocessors();
 	SG_UNREF(m_subset_stack);
 	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
 }
 
 void CFeatures::init()
@@ -60,8 +56,6 @@ void CFeatures::init()
 	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", MS_NOT_AVAILABLE);
 
 	SG_ADD((CSGObject**) &preproc, "preproc", "Array of preprocessors.",
-	       MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &preprocessed, "preprocessed", "Array of preprocessed.",
 	       MS_NOT_AVAILABLE);
 
 	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets",
@@ -73,9 +67,7 @@ void CFeatures::init()
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = new CDynamicObjectArray();
-	preprocessed = new CDynamicArray<bool>();
 	SG_REF(preproc);
-	SG_REF(preprocessed);
 }
 
 void CFeatures::add_preprocessor(CPreprocessor* p)
@@ -83,7 +75,6 @@ void CFeatures::add_preprocessor(CPreprocessor* p)
 	ASSERT(p)
 
 	preproc->push_back(p);
-	preprocessed->push_back(false);
 }
 
 CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
@@ -96,23 +87,9 @@ CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
 		return NULL;
 }
 
-int32_t CFeatures::get_num_preprocessed() const
-{
-	int32_t num=0;
-
-	for (int32_t i=0; i<preproc->get_num_elements(); i++)
-	{
-	  if ((*preprocessed)[i])
-			num++;
-	}
-
-	return num;
-}
-
 void CFeatures::clean_preprocessors()
 {
 	preproc->reset_array();
-	preprocessed->reset_array();
 }
 
 void CFeatures::del_preprocessor(int32_t num)
@@ -120,7 +97,6 @@ void CFeatures::del_preprocessor(int32_t num)
 	if (num<preproc->get_num_elements() && num>=0)
 	{
 		preproc->delete_element(num);
-		preprocessed->delete_element(num);
 	}
 }
 
@@ -130,22 +106,8 @@ void CFeatures::list_preprocessors()
 
 	for (int32_t i=0; i<num_preproc; i++)
 	{
-		SG_INFO("preproc[%d]=%s applied=%s\n",i,
-				preproc->get_element(i)->get_name(),
-				preprocessed->get_element(i) ? "true" : "false");
+		SG_INFO("preproc[%d]=%s\n", i, preproc->get_element(i)->get_name());
 	}
-}
-
-void CFeatures::set_preprocessed(int32_t num)
-{
-	ASSERT(num<preprocessed->get_num_elements() && num>=0);
-	(*preprocessed)[num]=true;
-}
-
-bool CFeatures::is_preprocessed(int32_t num) const
-{
-	ASSERT(num<preprocessed->get_num_elements() && num>=0);
-	return (*preprocessed)[num];
 }
 
 int32_t CFeatures::get_num_preprocessors() const

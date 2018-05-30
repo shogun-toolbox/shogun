@@ -488,13 +488,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual bool save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level);
 
-		/** apply preprocessor
-		 *
-		 * @param force_preprocessing if preprocssing shall be forced
-		 * @return if applying was successful
-		 */
-		virtual bool apply_preprocessor(bool force_preprocessing=false);
-
 		/** slides a window of size window_size over the current single string
 		 * step_size is the amount by which the window is shifted.
 		 * creates (string_len-window_size)/step_size many feature obj
