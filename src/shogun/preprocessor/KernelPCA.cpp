@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni, Evan Shelhamer,
  *          Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, Giovanni De Toni
  */
 
@@ -9,6 +9,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 
+#include <limits>
 #include <string.h>
 #include <stdlib.h>
 
@@ -106,7 +107,7 @@ bool CKernelPCA::init(CFeatures* features)
 			auto idx = m_target_dim - i - 1;
 			auto vec = eigenvectors.get_column(idx);
 			linalg::scale(
-			    vec, vec, 1.0 / std::sqrt(CMath::max(1e-16, eigenvalues[idx])));
+			    vec, vec, 1.0 / std::sqrt(std::max(std::numeric_limits<float64_t>::epsilon(), eigenvalues[idx])));
 			m_transformation_matrix.set_column(i, vec);
 		}
 
