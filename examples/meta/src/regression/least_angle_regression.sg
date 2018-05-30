@@ -1,7 +1,7 @@
-CSVFile f_feats_train("../../data/regression_1d_linear_features_train.dat")
-CSVFile f_feats_test("../../data/regression_1d_linear_features_test.dat")
-CSVFile f_labels_train("../../data/regression_1d_linear_labels_train.dat")
-CSVFile f_labels_test("../../data/regression_1d_linear_labels_test.dat")
+File f_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -22,8 +22,7 @@ Normalize.apply_to_feature_matrix(features_test)
 #![preprocess_features]
 
 #![create_instance]
-real lamda1 = 0.01 
-Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=lamda1)
+Machine lars = machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=0.01)
 #![create_instance]
 
 #![train_and_apply]
@@ -35,7 +34,7 @@ RealVector weights = lars.get_real_vector("w")
 #[!extract_w]
 
 #![evaluate_error]
-MeanSquaredError eval()
+Evaluation eval = evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
