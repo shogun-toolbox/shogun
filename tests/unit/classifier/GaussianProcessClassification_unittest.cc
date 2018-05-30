@@ -149,9 +149,9 @@ public:
 	}
 	const index_t m = 25;
 	const index_t n = 10;
-	CDenseFeatures<float64_t>* features_train;
+	CFeatures* features_train;
 	CBinaryLabels* labels_train;
-	CDenseFeatures<float64_t>* features_test;
+	CFeatures* features_test;
 	CGaussianKernel* kernel;
 	CZeroMean* mean;
 };
@@ -595,12 +595,10 @@ TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 	CRescaleFeatures* preproc=new CRescaleFeatures();
 	preproc->fit(features_train);
 
-	features_train =
-	    preproc->transform(features_train)->as<CDenseFeatures<float64_t>>();
+	features_train = preproc->transform(features_train);
 	SG_REF(features_train)
 
-	features_test =
-	    preproc->transform(features_test)->as<CDenseFeatures<float64_t>>();
+	features_test = preproc->transform(features_test);
 	SG_REF(features_test);
 
 	// logit likelihood
