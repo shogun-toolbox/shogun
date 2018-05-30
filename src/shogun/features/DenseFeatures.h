@@ -261,18 +261,6 @@ public:
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec);
 
-	/** apply preprocessor
-	 *
-	 * applies preprocessors to ALL features (subset removed before and
-	 * restored afterwards)
-	 *
-	 * not possible with subset
-	 *
-	 * @param force_preprocessing if preprocssing shall be forced
-	 * @return if applying was successful
-	 */
-	virtual bool apply_preprocessor(bool force_preprocessing = false);
-
 	/** get number of feature vectors
 	 *
 	 * @return number of feature vectors
