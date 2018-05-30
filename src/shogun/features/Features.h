@@ -140,24 +140,6 @@ class CFeatures : public CSGObject
 		 */
 		CPreprocessor* get_preprocessor(int32_t num) const;
 
-		/** set applied flag for preprocessor
-		 *
-		 * @param num index of preprocessor in list
-		 */
-		void set_preprocessed(int32_t num);
-
-		/** get whether specified preprocessor was already applied
-		 *
-		 * @param num index of preprocessor in list
-		 */
-		bool is_preprocessed(int32_t num) const;
-
-		/** get the number of applied preprocs
-		 *
-		 * @return number of applied preprocessors
-		 */
-		int32_t get_num_preprocessed() const;
-
 		/** get number of preprocessors
 		 *
 		 * @return number of preprocessors
@@ -374,9 +356,6 @@ class CFeatures : public CSGObject
 
 		/** list of preprocessors */
 		CDynamicObjectArray* preproc;
-
-		/** i'th entry is true if features were already preprocessed with preproc i */
-		CDynamicArray<bool>* preprocessed;
 
 	protected:
 		/** subset used for index transformations */

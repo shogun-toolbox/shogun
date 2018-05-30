@@ -124,16 +124,6 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		else
 			bvec=NULL;
 	}
-	else
-	{
-		if ( (l->get_num_preprocessors() != l->get_num_preprocessed()) ||
-				(r->get_num_preprocessors() != r->get_num_preprocessed()))
-		{
-			SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
-					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preprocessors(),
-					r->get_num_preprocessed(), r->get_num_preprocessors());
-		}
-	}
 
 	float64_t result=0;
 	uint8_t mask=0;

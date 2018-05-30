@@ -388,48 +388,6 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 	return fm;
 }
 
-template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call apply_preproc\n")
-
-	SG_DEBUG("force: %d\n", force_preprocessing)
-
-	if (feature_matrix.matrix && get_num_preprocessors())
-	{
-		for (int32_t i = 0; i < get_num_preprocessors(); i++)
-		{
-			if ((!is_preprocessed(i) || force_preprocessing))
-			{
-				set_preprocessed(i);
-				CDensePreprocessor<ST>* p =
-						(CDensePreprocessor<ST>*) get_preprocessor(i);
-				SG_INFO("preprocessing using preproc %s\n", p->get_name())
-
-				if (p->apply_to_feature_matrix(this).matrix == NULL)
-				{
-					SG_UNREF(p);
-					return false;
-				}
-				SG_UNREF(p);
-
-			}
-		}
-
-		return true;
-	}
-	else
-	{
-		if (!feature_matrix.matrix)
-			SG_ERROR("no feature matrix\n")
-
-		if (!get_num_preprocessors())
-			SG_ERROR("no preprocessors available\n")
-
-		return false;
-	}
-}
-
 template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
