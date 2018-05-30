@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Saurabh Mahindre, Heiko Strathmann, Thoralf Klein, 
+ * Authors: Viktor Gal, Saurabh Mahindre, Heiko Strathmann, Thoralf Klein,
  *          Olivier NGuyen, Bjoern Esser, Weijie Lin
  */
 
@@ -89,7 +89,7 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 		}
 	}
 
-	class_probabilities = linalg::scale(class_probabilities, 1.0 / m_num_bags);
+	linalg::scale(class_probabilities, class_probabilities, 1.0 / m_num_bags);
 
 	for (auto i = 0; i < num_samples; ++i)
 		pred->set_multiclass_confidences(i, class_probabilities.get_column(i));
