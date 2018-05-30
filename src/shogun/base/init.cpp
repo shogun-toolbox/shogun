@@ -260,7 +260,6 @@ namespace shogun
 				linalg->set_linalg_warnings(false);
 		}
 
-#ifdef HAVE_CXX11
 		char* env_thread_val = NULL;
 		Parallel* parallel = get_global_parallel();
 		env_thread_val = getenv("SHOGUN_NUM_THREADS");
@@ -275,6 +274,5 @@ namespace shogun
 				"variable could not be parsed as integer!\n", env_thread_val);
 			}
 		}
-#endif
 	}
 }
