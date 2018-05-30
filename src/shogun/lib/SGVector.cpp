@@ -885,6 +885,22 @@ int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 }
 
 template <class T>
+SGVector<T> SGVector<T>::unique()
+{
+	SGVector<T> result = clone();
+	auto new_size = unique(result.data(), result.size());
+	result.resize_vector(new_size);
+	return result;
+}
+
+template <>
+SGVector<complex128_t> SGVector<complex128_t>::unique()
+{
+	SG_SNOTIMPLEMENTED
+	return SGVector<complex128_t>();
+}
+
+template <class T>
 SGVector<index_t> SGVector<T>::find(T elem)
 {
 	assert_on_cpu();

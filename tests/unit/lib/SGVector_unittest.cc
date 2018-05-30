@@ -428,3 +428,16 @@ TEST(SGVectorTest,unique)
     for (index_t i = 0; i < num_unique; ++i)
 		EXPECT_EQ(i+1, vec[i]);
 }
+
+TEST(SGVectorTest, unique_method)
+{
+	SGVector<int32_t> vec{1, 4, 3, 1, 4, 3, 3};
+	auto vec_unique = vec.unique();
+
+	ASSERT_NE(vec_unique.data(), nullptr);
+	ASSERT_EQ(3, vec_unique.size());
+	EXPECT_NE(vec_unique.data(), vec.data());
+	EXPECT_EQ(vec_unique[0], 1);
+	EXPECT_EQ(vec_unique[1], 3);
+	EXPECT_EQ(vec_unique[2], 4);
+}
