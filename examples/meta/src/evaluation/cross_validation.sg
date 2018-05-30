@@ -28,7 +28,7 @@ cross.set_num_runs(2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-CrossValidationResult result = cross.evaluate()
+CrossValidationResult result = CrossValidationResult:obtain_from_generic(cross.evaluate())
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]
