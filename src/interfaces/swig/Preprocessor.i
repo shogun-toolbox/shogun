@@ -27,7 +27,6 @@
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
 
-%newobject shogun::CFeatureSelection::apply;
 %newobject shogun::CFeatureSelection::remove_feats;
 
 %newobject shogun::CKernelPCA::apply_to_string_features;

@@ -4,6 +4,9 @@
  * Authors: Wuwei Lin
  */
 
+/* These functions return new Objects */
+%newobject shogun::CTransformer::transform(CFeatures*);
+
 /* Remove C Prefix */
 %rename(Transformer) CTransformer;
 
