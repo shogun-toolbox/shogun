@@ -54,6 +54,9 @@ CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab)
 void CKRRNystrom::init()
 {
 	m_num_rkhs_basis=0;
+	SG_ADD(
+	    &m_num_rkhs_basis, "num_rkhs_basis", "Number of rows/columns to sample",
+	    MS_AVAILABLE);
 }
 
 SGVector<int32_t> CKRRNystrom::subsample_indices()
@@ -92,7 +95,7 @@ bool CKRRNystrom::solve_krr_system()
 					"of the number of data points (%d)\n", m_num_rkhs_basis, n);
 	}
 
-	SGVector<float64_t> y=((CRegressionLabels*)m_labels)->get_labels();
+	SGVector<float64_t> y = regression_labels(m_labels)->get_labels();
 	if (!y.data())
 		SG_ERROR("Labels not set.\n");
 	SGVector<int32_t> col=subsample_indices();

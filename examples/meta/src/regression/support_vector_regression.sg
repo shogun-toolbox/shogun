@@ -30,7 +30,7 @@ RealVector alpha = svr.get_real_vector("m_alpha")
 #![extract_alpha]
 
 #![evaluate_error]
-MeanSquaredError eval()
+Evaluation eval = evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 

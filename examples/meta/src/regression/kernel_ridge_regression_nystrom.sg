@@ -1,13 +1,13 @@
-CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
-CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
-CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
-CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+File f_feats_train = csv_file("../../data/regression_1d_sinc_features_train.dat")
+File f_feats_test = csv_file("../../data/regression_1d_sinc_features_test.dat")
+File f_labels_train = csv_file("../../data/regression_1d_sinc_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_sinc_labels_test.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-RegressionLabels labels_train(f_labels_train)
-RegressionLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
@@ -15,24 +15,22 @@ Kernel k = kernel("GaussianKernel", log_width=0.0)
 #![create_appropriate_kernel]
 
 #![create_instance]
-real tau = 0.001
-int m = 100
-KRRNystrom nystrom(tau, m, k, labels_train)
+Machine nystrom = machine("KRRNystrom",tau=0.001, num_rkhs_basis=100, kernel=k, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
 nystrom.train(features_train)
-RegressionLabels labels_predict = nystrom.apply_regression(features_test)
+Labels labels_predict = nystrom.apply(features_test)
 #![train_and_apply]
 
 #![extract_alpha]
-nystrom.get_alphas()
+nystrom.get_real_vector("m_alpha")
 #![extract_alpha]
 
 #![evaluate_error]
-MeanSquaredError eval()
+Evaluation eval = evaluation("MeanSquaredError")
 eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
-RealVector output = labels_test.get_labels()
+RealVector output = labels_test.get_real_vector("labels")
