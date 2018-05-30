@@ -5,7 +5,7 @@
  */
 
 /* Remove C Prefix */
-%rename(CTransformer) CTransformer;
+%rename(Transformer) CTransformer;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/transformer/Transformer.h>
