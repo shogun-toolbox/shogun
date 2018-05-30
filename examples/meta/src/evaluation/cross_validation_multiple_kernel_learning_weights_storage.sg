@@ -7,7 +7,7 @@ CombinedFeatures combined_features()
 combined_features.append_feature_obj(feats)
 combined_features.append_feature_obj(feats)
 combined_features.append_feature_obj(feats)
-BinaryLabels labels(f_labels)
+Labels labels_train = labels(f_labels)
 #![create_features]
 
 #![create_kernels]
@@ -22,15 +22,13 @@ combined_kernel.add("kernel_array", k_3)
 
 #![create_classifier]
 Machine libsvm = machine("LibSVM")
-Machine svm = machine("MKLClassification", kernel=combined_kernel)
-svm.put("interleaved_optimization", False)
-svm.put("svm", libsvm)
+Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_optimization=False, svm=libsvm)
 #![create_classifier]
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels, 5)
+StratifiedCrossValidationSplitting splitting_strategy(labels_train, 5)
 Evaluation evaluation_criterium = evaluation("AccuracyMeasure")
-CrossValidation cross(svm, combined_features, labels, splitting_strategy, evaluation_criterium)
+CrossValidation cross(svm, combined_features, labels_train, splitting_strategy, evaluation_criterium)
 cross.set_autolock(False)
 cross.set_num_runs(2)
 #![create_cross_validation]
