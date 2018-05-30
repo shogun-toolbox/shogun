@@ -301,38 +301,6 @@ template<class ST> void CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 	sparse_feature_matrix.from_dense(full);
 }
 
-template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
-{
-	SG_INFO("force: %d\n", force_preprocessing)
-
-	if (sparse_feature_matrix.sparse_matrix && get_num_preprocessors())
-	{
-		for (int32_t i=0; i<get_num_preprocessors(); i++)
-		{
-			if (!is_preprocessed(i) || force_preprocessing)
-			{
-				set_preprocessed(i);
-				CSparsePreprocessor<ST>* p = (CSparsePreprocessor<ST>*) get_preprocessor(i);
-				SG_INFO("preprocessing using preproc %s\n", p->get_name())
-
-				if (p->apply_to_sparse_feature_matrix(this) == NULL)
-				{
-					SG_UNREF(p);
-					return false;
-				}
-
-				SG_UNREF(p);
-			}
-		}
-		return true;
-	}
-	else
-	{
-		SG_WARNING("no sparse feature matrix available or features already preprocessed - skipping.\n")
-		return false;
-	}
-}
-
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : sparse_feature_matrix.num_vectors;
