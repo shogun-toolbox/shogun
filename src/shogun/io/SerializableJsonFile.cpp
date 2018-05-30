@@ -8,6 +8,8 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_JSON
 
+#include <clocale>
+
 #include <shogun/io/SerializableJsonFile.h>
 #include <shogun/io/SerializableJsonReader00.h>
 
