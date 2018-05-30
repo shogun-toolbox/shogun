@@ -31,7 +31,6 @@
 %rename(UWedgeSep) CUWedgeSep;
 %rename(FastICA) CFastICA;
 
-%newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
 %newobject shogun::*::embed_distance;
 
