@@ -27,6 +27,7 @@
 %newobject apply_structured(CFeatures* data);
 %newobject apply_latent();
 %newobject apply_latent(CFeatures* data);
+%newobject shogun::CMachine::predict(CFeatures*);
 
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 

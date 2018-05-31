@@ -103,6 +103,23 @@ bool CMachine::train_locked()
 	return result;
 }
 
+void CMachine::fit(CFeatures* features)
+{
+	REQUIRE(train(features), "Failed to fit machine %s\n", get_name());
+}
+
+void CMachine::fit(CFeatures* features, CLabels* labels)
+{
+	set_labels(labels);
+	REQUIRE(train(features), "Failed to fit machine %s\n", get_name());
+	set_labels(nullptr);
+}
+
+CLabels* CMachine::predict(CFeatures* features)
+{
+	return apply(features);
+}
+
 void CMachine::set_labels(CLabels* lab)
 {
     if (lab != NULL)

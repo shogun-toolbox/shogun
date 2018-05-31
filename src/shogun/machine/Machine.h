@@ -168,6 +168,11 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train_locked();
 #endif
+		// FIXME: wrappers of train / apply for the time being, will be pure
+		// virtual functions after having refactored all machines
+		virtual void fit(CFeatures* features);
+		virtual void fit(CFeatures* features, CLabels* labels);
+		virtual CLabels* predict(CFeatures* features);
 
 		/** apply machine to data
 		 * if data is not specified apply to the current features
