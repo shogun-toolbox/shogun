@@ -67,12 +67,14 @@ bool CPerceptron::train_machine(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen)
 	SGVector<float64_t> output(num_vec);
 
-	auto w = SGVector<float64_t>(num_feat);
+	SGVector<float64_t> w;
 	if (m_initialize_hyperplane)
 	{
+		w = SGVector<float64_t>(num_feat);
 		set_w(w);
-		w.set_const(1.0 / num_feat);
+
 		//start with uniform w, bias=0
+		w.set_const(1.0 / num_feat);
 		bias=0;
 	}
 	else
