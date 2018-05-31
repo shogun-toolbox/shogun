@@ -1,7 +1,7 @@
-CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
-CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
-CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
-CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -11,9 +11,7 @@ Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-real learn_rate=1.0
-int max_iter=1000
-Machine perceptron = machine("Perceptron", labels=labels_train, learn_rate=learn_rate, max_iter=max_iter)
+Machine perceptron = machine("Perceptron", labels=labels_train, learn_rate=1.0, max_iter=1000)
 #![create_instance]
 
 #![train_and_apply]
@@ -27,6 +25,6 @@ real bias = perceptron.get_real("bias")
 #![extract_weights]
 
 #![evaluate_accuracy]
-AccuracyMeasure eval()
+Evaluation eval = evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
