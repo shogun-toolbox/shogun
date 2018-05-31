@@ -48,31 +48,22 @@ int32_t CKMeansMiniBatch::get_batch_size() const
 	return batch_size;
 }
 
-void CKMeansMiniBatch::set_mb_iter(int32_t i)
-{
-	REQUIRE(i>0, "Parameter number of iterations should be > 0");
-	minib_iter=i;
-}
-
-int32_t CKMeansMiniBatch::get_mb_iter() const
-{
-	return minib_iter;
-}
-
 void CKMeansMiniBatch::set_mb_params(int32_t b, int32_t t)
 {
 	REQUIRE(b>0, "Parameter bach size should be > 0");
 	REQUIRE(t>0, "Parameter number of iterations should be > 0");
 	batch_size=b;
-	minib_iter=t;
+	max_iter = t;
 }
 
 void CKMeansMiniBatch::minibatch_KMeans()
 {
 	REQUIRE(batch_size>0,
 		"batch size not set to positive value. Current batch size %d \n", batch_size);
-	REQUIRE(minib_iter>0,
-		"number of iterations not set to positive value. Current iterations %d \n", minib_iter);
+	REQUIRE(
+		max_iter > 0, "number of iterations not set to positive value. Current "
+		              "iterations %d \n",
+		max_iter);
 
 	CDenseFeatures<float64_t>* lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
@@ -84,7 +75,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 	SGVector<float64_t> v=SGVector<float64_t>(k);
 	v.zero();
 
-	for (int32_t i=0; i<minib_iter; i++)
+	for (int32_t i = 0; i < max_iter; i++)
 	{
 		SGVector<int32_t> M=mbchoose_rand(batch_size,XSize);
 		SGVector<int32_t> ncent=SGVector<int32_t>(batch_size);
@@ -146,12 +137,10 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 void CKMeansMiniBatch::init_mb_params()
 {
 	batch_size=-1;
-	minib_iter=-1;
 
 	SG_ADD(
 		&batch_size, "batch_size", "batch size for mini-batch KMeans",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&minib_iter, "mb_iter", "number of iterations", MS_NOT_AVAILABLE);
 }
 
 bool CKMeansMiniBatch::train_machine(CFeatures* data)
