@@ -107,10 +107,6 @@ no. of iterations int32_t(greater than 0)
 
 		/** Batch size for mini-batch KMeans */
 		int32_t batch_size;
-
-		/** Number of iterations for mini-batch KMeans */
-		int32_t minib_iter;
-
 };
 }
 #endif
