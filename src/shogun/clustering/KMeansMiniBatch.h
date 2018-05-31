@@ -58,19 +58,6 @@ class CKMeansMiniBatch : public CKMeansBase
 		 */
 		int32_t get_batch_size() const;
 
-		/** set no. of iterations for mini-batch KMeans
-		 *
-		 *@param t %rename(KMeans) CKMeans;
-no. of iterations int32_t(greater than 0)
-		 */
-		void set_mb_iter(int32_t t);
-
-		/** get no. of iterations for mini-batch KMeans
-		 *
-		 *@return no. of iterations
-		 */
-		int32_t get_mb_iter() const;
-
 		/** set batch size and no. of iteration for mini-batch KMeans
 		 *
 		 *@param b batch size
