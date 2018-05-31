@@ -45,7 +45,7 @@ Labels labels_predict = mkl.apply()
 #![mkl_apply]
 
 #![evaluate_accuracy]
-AccuracyMeasure eval()
+Evaluation eval = evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

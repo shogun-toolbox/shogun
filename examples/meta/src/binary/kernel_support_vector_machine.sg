@@ -30,7 +30,7 @@ real b = svm.get_real("m_bias")
 #![extract_weights_bias]
 
 #![evaluate_accuracy]
-AccuracyMeasure eval()
+Evaluation eval = evaluation("AccuracyMeasure")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
