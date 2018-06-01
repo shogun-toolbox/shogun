@@ -6,10 +6,11 @@
  *          Fernando Iglesias
  */
 
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/machine/LinearMachine.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -166,25 +167,9 @@ void CLinearMachine::compute_bias(CFeatures* data)
 
 bool CLinearMachine::train(CFeatures* data)
 {
-    /* not allowed to train on locked data */
-    if (m_data_locked)
-    {
-    	SG_ERROR("train data_lock() was called, only train_locked() is"
-    		" possible. Call data_unlock if you want to call train()\n",
-    		get_name());
-    }
+	bool result = CMachine::train(data);
+	if (m_compute_bias)
+		compute_bias(data);
 
-    if (train_require_labels())
-    {
-    	REQUIRE(m_labels,"No labels given",this->get_name());
-
-    	m_labels->ensure_valid(get_name());
-    }
-
-    bool result = train_machine(data);
-
-    if(m_compute_bias)
-    	compute_bias(data);
-
-    return result;
+	return result;
 }

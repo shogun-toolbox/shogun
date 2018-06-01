@@ -40,12 +40,11 @@ CMachine::~CMachine()
 bool CMachine::train(CFeatures* data)
 {
 	/* not allowed to train on locked data */
-	if (m_data_locked)
-	{
-		SG_ERROR("%s::train data_lock() was called, only train_locked() is"
-				" possible. Call data_unlock if you want to call train()\n",
-				get_name());
-	}
+	REQUIRE(
+	    !m_data_locked, "(%s)::train data_lock() was called, only "
+	                    "train_locked() is possible. Call data_unlock if you "
+	                    "want to call train()\n",
+	    get_name());
 
 	if (train_require_labels())
 	{
@@ -63,6 +62,20 @@ bool CMachine::train(CFeatures* data)
 	if (m_store_model_features)
 		store_model_features();
 
+	return result;
+}
+
+bool CMachine::train_locked()
+{
+	/*train machine without any actual features(data is locked)*/
+	REQUIRE(
+	    is_data_locked(),
+	    "Data needs to be locked for training, call data_lock()\n")
+
+	auto sub = connect_to_signal_handler();
+	bool result = train_machine();
+	sub.unsubscribe();
+	reset_computation_variables();
 	return result;
 }
 

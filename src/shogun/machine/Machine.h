@@ -159,6 +159,14 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train(CFeatures* data=NULL);
 
+#ifndef SWIG // SWIG should skip this part
+		/** Trains a locked machine on a set of indices. Error if machine is
+		 * not locked
+		 * @return whether training was successful
+		 */
+		virtual bool train_locked();
+#endif
+
 		/** apply machine to data
 		 * if data is not specified apply to the current features
 		 *
