@@ -12,7 +12,7 @@ Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
 CrossValidation cross(svm, feats, labs, splitting_strategy, evaluation_criterion)
 cross.set_num_runs(2)
 
-CrossValidationResult result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+EvaluationResult result = cross.evaluate()
 
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
