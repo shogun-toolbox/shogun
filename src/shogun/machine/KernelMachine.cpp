@@ -6,14 +6,14 @@
  *          Fernando Iglesias, Thoralf Klein
  */
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/KernelMachine.h>
-
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/labels/Labels.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -421,10 +421,6 @@ void CKernelMachine::store_model_features()
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
-	SG_DEBUG("entering %s::train_locked()\n", get_name())
-	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n")
-
 	/* this is asusmed here */
 	ASSERT(m_custom_kernel==kernel)
 
@@ -443,15 +439,13 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-	bool result=train_machine();
-
+	bool result = CMachine::train_locked();
 	/* remove last col subset of custom kernel */
 	m_custom_kernel->remove_col_subset();
 
 	/* remove label subset after training */
 	m_labels->remove_subset();
 
-	SG_DEBUG("leaving %s::train_locked()\n", get_name())
 	return result;
 }
 
