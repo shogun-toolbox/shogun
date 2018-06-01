@@ -1,13 +1,13 @@
-CSVFile f_labels("../../data/label_train_regression.dat")
+File f_labels = csv_file("../../data/label_train_regression.dat")
 
 #![create labels]
-RegressionLabels labels(f_labels)
+Labels reg_labels = labels(f_labels)
 #![create labels]
 
 #![set parameters]
 int num_subsets = 5
 int min_subset_size = 4
-TimeSeriesSplitting splitting(labels, num_subsets)
+TimeSeriesSplitting splitting(reg_labels, num_subsets)
 splitting.set_min_subset_size(min_subset_size)
 #![set parameters]
 

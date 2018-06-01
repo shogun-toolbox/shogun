@@ -40,4 +40,3 @@ real mse = eval.evaluate(labels_predict, labels_test)
 
 # integration testing variables
 RealVector output = labels_predict.get_real_vector("labels")
-
