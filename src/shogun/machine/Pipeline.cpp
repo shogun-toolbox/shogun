@@ -33,7 +33,7 @@ namespace shogun
 		return this;
 	}
 
-	CPipeline* CPipeline::then(shogun::CMachine* machine)
+	CPipeline* CPipeline::then(CMachine* machine)
 	{
 		REQUIRE(
 		    m_stages.empty() ||
@@ -48,6 +48,9 @@ namespace shogun
 
 	bool CPipeline::train_machine(CFeatures* data)
 	{
+		REQUIRE(
+		    !m_stages.empty() && holds_alternative<CMachine*>(m_stages.back()),
+		    "Machine has not been added.\n");
 		if (train_require_labels())
 		{
 			REQUIRE(m_labels, "No labels given.\n");
@@ -69,7 +72,7 @@ namespace shogun
 				auto machine = shogun::get<CMachine*>(stage);
 				if (machine->train_require_labels())
 					machine->set_labels(m_labels);
-				machine->train();
+				machine->train(data);
 			}
 		}
 		return true;
@@ -77,6 +80,9 @@ namespace shogun
 
 	CLabels* CPipeline::apply(CFeatures* data)
 	{
+		REQUIRE(
+		    !m_stages.empty() && holds_alternative<CMachine*>(m_stages.back()),
+		    "Machine has not been added.\n");
 		for (auto&& stage : m_stages)
 		{
 			if (holds_alternative<CTransformer*>(stage))
@@ -111,5 +117,33 @@ namespace shogun
 		}
 
 		return require_labels;
+	}
+
+	void CPipeline::list_stages() const
+	{
+		for (auto i : range(m_stages.size()))
+		{
+			SG_INFO("[%d] ", i);
+			visit(
+			    [this](auto&& object) { SG_INFO("%s\n", object->get_name()); },
+			    m_stages[i]);
+		}
+	}
+
+	CTransformer* CPipeline::get_transformer(size_t index) const
+	{
+		REQUIRE(
+		    !m_stages.empty() && index < m_stages.size() - 1,
+		    "Index out of bound. There are only %d transformers.\n",
+		    m_stages.size() - 1);
+		return shogun::get<CTransformer*>(m_stages[index]);
+	}
+
+	CMachine* CPipeline::get_machine() const
+	{
+		REQUIRE(
+		    !m_stages.empty() && holds_alternative<CMachine*>(m_stages.back()),
+		    "Machine has not been added.\n");
+		return shogun::get<CMachine*>(m_stages.back());
 	}
 }
