@@ -29,8 +29,8 @@ StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
 void StanFirstOrderSAGCostFunction::set_training_data(
     SGMatrix<float64_t> X_new, SGMatrix<float64_t> y_new)
 {
-	REQUIRE(!X_new.equals(SGMatrix<float64_t>()), "Empty X provided");
-	REQUIRE(!y_new.equals(SGMatrix<float64_t>()), "Empty y provided");
+  REQUIRE(X_new.size()>0, "Empty X provided");
+  REQUIRE(y_new.size()>0, "Empty y provided");
 	this->m_X = X_new;
 	this->m_y = y_new;
 }
