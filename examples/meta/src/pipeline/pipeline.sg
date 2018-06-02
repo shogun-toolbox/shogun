@@ -1,0 +1,34 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+
+#![create_features]
+Features feats_train = features(f_feats_train)
+#![create_features]
+
+#![create_transformers]
+Transformer subMean = transformer("PruneVarSubMean")
+Transformer pca = transformer("PCA")
+#![create_transformers]
+
+#![create_machine]
+Distance d = distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
+KMeans kmeans(distance=d, k=2)
+#![create_machine]
+
+
+#![create_pipeline]
+Pipeline pipeline()
+pipeline.with(subMean)
+pipeline.with(pca)
+pipeline.then(kmeans)
+#![create_pipeline]
+
+#![train_and_apply]
+pipeline.train(feats_train)
+Labels labels_predict = pipeline.apply(feats_train)
+#![train_and_apply]
+
+# additional integration variables
+#![extract_centers_and_radius]
+RealMatrix c = kmeans.get_cluster_centers()
+RealVector r = kmeans.get_real_vector('R')
+#![extract_centers_and_radius]

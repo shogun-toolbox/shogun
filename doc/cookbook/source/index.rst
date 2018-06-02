@@ -96,6 +96,16 @@ Distance
 
    examples/distance/**
 
+Pipeline
+--------
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+    :caption: Pipeline
+
+    examples/pipeline/**
+
 Neural Networks
 ---------------
 
