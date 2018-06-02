@@ -19,12 +19,15 @@ StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
     StanFunctionsVector<int32_t>* cost_for_ith_point,
     FunctionReturnsStan<StanVector*>* total_cost)
 {
-  REQUIRE(X.size()>0, "Empty X provided");
-  REQUIRE(y.size()>0, "Empty y provided");
-  auto num_of_variables = trainable_parameters->rows();
-  REQUIRE(num_of_variables > 0, "Provided %d variables in the parameters, more than 0 parameters required", num_of_variables);
-  REQUIRE(cost_for_ith_point!=NULL, "Cost for ith point is not provided");
-  REQUIRE(total_cost!=NULL, "Total cost function is not provided");
+	REQUIRE(X.size() > 0, "Empty X provided");
+	REQUIRE(y.size() > 0, "Empty y provided");
+	auto num_of_variables = trainable_parameters->rows();
+	REQUIRE(
+	    num_of_variables > 0, "Provided %d variables in the parameters, more "
+	                          "than 0 parameters required",
+	    num_of_variables);
+	REQUIRE(cost_for_ith_point != NULL, "Cost for ith point is not provided");
+	REQUIRE(total_cost != NULL, "Total cost function is not provided");
 	m_X = X;
 	m_y = y;
 	m_trainable_parameters = trainable_parameters;
@@ -35,8 +38,8 @@ StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
 void StanFirstOrderSAGCostFunction::set_training_data(
     SGMatrix<float64_t> X_new, SGMatrix<float64_t> y_new)
 {
-  REQUIRE(X_new.size()>0, "Empty X provided");
-  REQUIRE(y_new.size()>0, "Empty y provided");
+	REQUIRE(X_new.size() > 0, "Empty X provided");
+	REQUIRE(y_new.size() > 0, "Empty y provided");
 	this->m_X = X_new;
 	this->m_y = y_new;
 }
@@ -64,8 +67,6 @@ SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
 	REQUIRE(
 	    num_of_variables > 0,
 	    "Number of sample must be greater than 0, you provided no samples");
-
-	// SGVector<float64_t> gradients(num_of_variables);
 
 	var f_i = (*m_cost_for_ith_point)(m_index_of_sample, 0)(m_index_of_sample);
 

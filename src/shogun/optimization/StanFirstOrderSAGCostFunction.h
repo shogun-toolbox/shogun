@@ -14,12 +14,12 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/FirstOrderSAGCostFunction.h>
-#include <memory>
 using StanVector = Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>;
-template<class T>
+template <class T>
 using FunctionReturnsStan = std::function<stan::math::var(T)>;
-template<class S>
-using StanFunctionsVector = Eigen::Matrix< FunctionReturnsStan<S> , Eigen::Dynamic, 1>;
+template <class S>
+using StanFunctionsVector =
+    Eigen::Matrix<FunctionReturnsStan<S>, Eigen::Dynamic, 1>;
 namespace shogun
 {
 	/** @brief The first order stochastic cost function base class for
@@ -126,12 +126,12 @@ namespace shogun
 
 		/** cost_for_ith_point is the cost contributed by each point in the
 		 * training data */
-		
+
 		StanFunctionsVector<int32_t>* m_cost_for_ith_point;
 
 		/** total_cost is the total cost to be minimized, that in this case is a
 		 * form of sum of cost_for_ith_point*/
-		//std::function<stan::math::var(StanVector*)>* m_total_cost;
+		// std::function<stan::math::var(StanVector*)>* m_total_cost;
 		FunctionReturnsStan<StanVector*>* m_total_cost;
 
 		/** index_of_sample is the index of the column in X for the current
