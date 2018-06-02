@@ -16,18 +16,20 @@ using Eigen::Dynamic;
 StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
     SGMatrix<float64_t> X, SGMatrix<float64_t> y,
     StanVector* trainable_parameters,
-    Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
-    function<var(StanVector*)>* total_cost)
+    StanFunctionsVector<int32_t>* cost_for_ith_point,
+    FunctionReturnsStan<StanVector*>* total_cost)
 {
   REQUIRE(X.size()>0, "Empty X provided");
   REQUIRE(y.size()>0, "Empty y provided");
-  auto num_of_variables = trainable_parameters->rows;
+  auto num_of_variables = trainable_parameters->rows();
   REQUIRE(num_of_variables > 0, "Provided %d variables in the parameters, more than 0 parameters required", num_of_variables);
+  REQUIRE(cost_for_ith_point!=NULL, "Cost for ith point is not provided");
+  REQUIRE(total_cost!=NULL, "Total cost function is not provided");
 	m_X = X;
 	m_y = y;
 	m_trainable_parameters = trainable_parameters;
-	m_cost_for_ith_point = cost_for_ith_point;
-	m_total_cost = total_cost;
+	m_cost_for_ith_point = std::move(cost_for_ith_point);
+	m_total_cost = std::move(total_cost);
 }
 
 void StanFirstOrderSAGCostFunction::set_training_data(
