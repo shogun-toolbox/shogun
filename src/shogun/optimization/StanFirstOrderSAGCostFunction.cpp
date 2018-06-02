@@ -50,15 +50,13 @@ StanFirstOrderSAGCostFunction::~StanFirstOrderSAGCostFunction()
 
 void StanFirstOrderSAGCostFunction::begin_sample()
 {
-	m_index_of_sample = 0;
+	m_index_of_sample = -1;
 }
 
 bool StanFirstOrderSAGCostFunction::next_sample()
 {
-	if (m_index_of_sample >= get_sample_size())
-		return false;
 	++m_index_of_sample;
-	return true;
+	return m_index_of_sample < get_sample_size();
 }
 
 SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
