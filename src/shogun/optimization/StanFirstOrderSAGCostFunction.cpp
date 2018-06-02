@@ -19,6 +19,10 @@ StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
     Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
     function<var(StanVector*)>* total_cost)
 {
+  REQUIRE(X.size()>0, "Empty X provided");
+  REQUIRE(y.size()>0, "Empty y provided");
+  auto num_of_variables = trainable_parameters->rows;
+  REQUIRE(num_of_variables > 0, "Provided %d variables in the parameters, more than 0 parameters required", num_of_variables);
 	m_X = X;
 	m_y = y;
 	m_trainable_parameters = trainable_parameters;
