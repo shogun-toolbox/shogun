@@ -35,38 +35,6 @@ void StanFirstOrderSAGCostFunction::set_training_data(
 	this->m_y = y_new;
 }
 
-void StanFirstOrderSAGCostFunction::set_trainable_parameters(
-    StanVector* new_params)
-{
-	REQUIRE(new_params, "The trainable parameters must be provided");
-	if (this->m_trainable_parameters != new_params)
-	{
-		this->m_trainable_parameters = new_params;
-	}
-}
-
-void StanFirstOrderSAGCostFunction::set_ith_cost_function(
-    Matrix<function<var(int32_t)>, Dynamic, 1>* new_cost_f)
-{
-	REQUIRE(new_cost_f, "The cost function must be a vector of stan variables");
-	if (this->m_cost_for_ith_point != new_cost_f)
-	{
-		this->m_cost_for_ith_point = new_cost_f;
-	}
-}
-
-void StanFirstOrderSAGCostFunction::set_cost_function(
-    function<var(StanVector*)>* total_cost)
-{
-	REQUIRE(
-	    total_cost,
-	    "The total cost function must be a function returning a stan variable");
-	if (this->m_total_cost != total_cost)
-	{
-		this->m_total_cost = total_cost;
-	}
-}
-
 StanFirstOrderSAGCostFunction::~StanFirstOrderSAGCostFunction()
 {
 }

@@ -48,18 +48,6 @@ namespace shogun
 		virtual void
 		set_training_data(SGMatrix<float64_t> X_new, SGMatrix<float64_t> y_new);
 
-		/** Setter for the trainable parameters of the cost function */
-		virtual void set_trainable_parameters(StanVector* new_params);
-
-		/** Setter for the cost function definition using stan */
-		virtual void set_ith_cost_function(
-		    Eigen::Matrix<std::function<stan::math::var(int32_t)>,
-		                  Eigen::Dynamic, 1>* new_cost_f);
-
-		/** Setter for the overall cost function */
-		virtual void set_cost_function(
-		    std::function<stan::math::var(StanVector*)>* total_cost);
-
 		virtual ~StanFirstOrderSAGCostFunction();
 
 		/** Initialize to generate a sample sequence
