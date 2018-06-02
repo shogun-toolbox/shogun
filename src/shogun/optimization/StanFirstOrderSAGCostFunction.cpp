@@ -4,7 +4,7 @@
  * Authors: Elfarouk
  */
 
-#include <shogun/optimization/FirstOrderSAGCostFunctionInterface.h>
+#include <shogun/optimization/StanFirstOrderSAGCostFunction.h>
 #include <shogun/base/range.h>
 #include <shogun/mathematics/Math.h>
 using namespace shogun;
@@ -13,7 +13,7 @@ using std::function;
 using Eigen::Matrix;
 using Eigen::Dynamic;
 
-FirstOrderSAGCostFunctionInterface::FirstOrderSAGCostFunctionInterface(
+StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
     SGMatrix<float64_t> X, SGMatrix<float64_t> y,
     StanVector* trainable_parameters,
     Matrix<function<var(int32_t)>, Dynamic, 1>* cost_for_ith_point,
@@ -26,7 +26,7 @@ FirstOrderSAGCostFunctionInterface::FirstOrderSAGCostFunctionInterface(
 	m_total_cost = total_cost;
 }
 
-void FirstOrderSAGCostFunctionInterface::set_training_data(
+void StanFirstOrderSAGCostFunction::set_training_data(
     SGMatrix<float64_t> X_new, SGMatrix<float64_t> y_new)
 {
 	REQUIRE(!X_new.equals(SGMatrix<float64_t>()), "Empty X provided");
@@ -35,7 +35,7 @@ void FirstOrderSAGCostFunctionInterface::set_training_data(
 	this->m_y = y_new;
 }
 
-void FirstOrderSAGCostFunctionInterface::set_trainable_parameters(
+void StanFirstOrderSAGCostFunction::set_trainable_parameters(
     StanVector* new_params)
 {
 	REQUIRE(new_params, "The trainable parameters must be provided");
@@ -45,7 +45,7 @@ void FirstOrderSAGCostFunctionInterface::set_trainable_parameters(
 	}
 }
 
-void FirstOrderSAGCostFunctionInterface::set_ith_cost_function(
+void StanFirstOrderSAGCostFunction::set_ith_cost_function(
     Matrix<function<var(int32_t)>, Dynamic, 1>* new_cost_f)
 {
 	REQUIRE(new_cost_f, "The cost function must be a vector of stan variables");
@@ -55,7 +55,7 @@ void FirstOrderSAGCostFunctionInterface::set_ith_cost_function(
 	}
 }
 
-void FirstOrderSAGCostFunctionInterface::set_cost_function(
+void StanFirstOrderSAGCostFunction::set_cost_function(
     function<var(StanVector*)>* total_cost)
 {
 	REQUIRE(
@@ -67,16 +67,16 @@ void FirstOrderSAGCostFunctionInterface::set_cost_function(
 	}
 }
 
-FirstOrderSAGCostFunctionInterface::~FirstOrderSAGCostFunctionInterface()
+StanFirstOrderSAGCostFunction::~StanFirstOrderSAGCostFunction()
 {
 }
 
-void FirstOrderSAGCostFunctionInterface::begin_sample()
+void StanFirstOrderSAGCostFunction::begin_sample()
 {
 	m_index_of_sample = 0;
 }
 
-bool FirstOrderSAGCostFunctionInterface::next_sample()
+bool StanFirstOrderSAGCostFunction::next_sample()
 {
 	if (m_index_of_sample >= get_sample_size())
 		return false;
@@ -84,7 +84,7 @@ bool FirstOrderSAGCostFunctionInterface::next_sample()
 	return true;
 }
 
-SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_gradient()
+SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
 {
 	auto num_of_variables = m_trainable_parameters->rows();
 	REQUIRE(
@@ -105,7 +105,7 @@ SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_gradient()
 	return SGVector<float64_t>(gradients).clone();
 }
 
-float64_t FirstOrderSAGCostFunctionInterface::get_cost()
+float64_t StanFirstOrderSAGCostFunction::get_cost()
 {
 	auto n = get_sample_size();
 	StanVector cost_argument(n);
@@ -118,12 +118,12 @@ float64_t FirstOrderSAGCostFunctionInterface::get_cost()
 	return cost.val();
 }
 
-index_t FirstOrderSAGCostFunctionInterface::get_sample_size()
+index_t StanFirstOrderSAGCostFunction::get_sample_size()
 {
 	return m_X.num_cols;
 }
 
-SGVector<float64_t> FirstOrderSAGCostFunctionInterface::get_average_gradient()
+SGVector<float64_t> StanFirstOrderSAGCostFunction::get_average_gradient()
 {
 	int32_t params_num = m_trainable_parameters->rows();
 	SGVector<float64_t> average_gradients(params_num);

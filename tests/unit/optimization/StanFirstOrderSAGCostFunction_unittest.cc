@@ -4,8 +4,8 @@
  * Authors: Elfarouk
  */
 
-#include <shogun/optimization/FirstOrderSAGCostFunctionInterface.h>
-#include "FirstOrderSAGCostFunctionInterface_unittest.h"
+#include <shogun/optimization/StanFirstOrderSAGCostFunction.h>
+#include "StanFirstOrderSAGCostFunction_unittest.h"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 

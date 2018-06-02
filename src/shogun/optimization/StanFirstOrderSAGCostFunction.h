@@ -4,8 +4,8 @@
  * Authors: Elfarouk
  */
 
-#ifndef FIRSTORDERSAGCOSTFUNCTIONINTERFACE_H
-#define FIRSTORDERSAGCOSTFUNCTIONINTERFACE_H
+#ifndef StanFirstOrderSAGCostFunction_H
+#define StanFirstOrderSAGCostFunction_H
 
 #include <stan/math.hpp>
 #include <functional>
@@ -32,17 +32,17 @@ namespace shogun
 	 * where \f$(y_i,x_i)\f$ is the i-th sample,
 	 * \f$y_i\f$ is the label and \f$x_i\f$ is the features
 	 */
-	class FirstOrderSAGCostFunctionInterface : public FirstOrderSAGCostFunction
+	class StanFirstOrderSAGCostFunction : public FirstOrderSAGCostFunction
 	{
 	public:
-		FirstOrderSAGCostFunctionInterface(
+		StanFirstOrderSAGCostFunction(
 		    SGMatrix<float64_t> X, SGMatrix<float64_t> y,
 		    StanVector* trainable_parameters,
 		    Eigen::Matrix<std::function<stan::math::var(int32_t)>,
 		                  Eigen::Dynamic, 1>* cost_for_ith_point,
 		    std::function<stan::math::var(StanVector*)>* total_cost);
 
-		FirstOrderSAGCostFunctionInterface(){};
+		StanFirstOrderSAGCostFunction(){};
 
 		/** Setter for the training data X */
 		virtual void
@@ -60,7 +60,7 @@ namespace shogun
 		virtual void set_cost_function(
 		    std::function<stan::math::var(StanVector*)>* total_cost);
 
-		virtual ~FirstOrderSAGCostFunctionInterface();
+		virtual ~StanFirstOrderSAGCostFunction();
 
 		/** Initialize to generate a sample sequence
 		 *
@@ -147,4 +147,4 @@ namespace shogun
 	};
 }
 
-#endif /* FIRSTORDERSAGCOSTFUNCTIONINTERFACE_H  */
+#endif /* StanFirstOrderSAGCostFunction_H  */
