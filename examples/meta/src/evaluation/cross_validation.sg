@@ -28,7 +28,7 @@ cross.set_num_runs(2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-CrossValidationResult result = CrossValidationResult:obtain_from_generic(cross.evaluate())
+EvaluationResult result = cross.evaluate() 
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]
@@ -65,9 +65,7 @@ cross_validation.set_num_runs(2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]
-CrossValidationResult result_lrr = cross_validation.evaluate()
-real mean_lrr = result_lrr.get_real("mean")
-real stddev_lrr = result_lrr.get_real("std_dev")
+EvaluationResult result_lrr = cross_validation.evaluate()
 #![evaluate_and_get_result_REGRESSION]
 
 #![evaluate_error_REGRESSION]
