@@ -343,7 +343,7 @@ class Translator:
 
         dependencies = list(dependencies)
 
-        translations = list(map(self.translateDependencyElement, dependencies))
+        translations = list(set(map(self.translateDependencyElement, dependencies)))
         translations.sort()
 
         separator = self.targetDict["Dependencies"]["DependencyListSeparator"]
