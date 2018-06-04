@@ -211,6 +211,15 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 }
 
 template <class ST>
+CFeatures*
+CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
+{
+	SG_SNOTIMPLEMENTED;
+
+	return nullptr;
+}
+
+template <class ST>
 void CFeatureSelection<ST>::precompute()
 {
 }
