@@ -10,6 +10,7 @@
 #include <shogun/base/variant.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/transformer/Transformer.h>
+#include <utility>
 
 namespace shogun
 {
@@ -19,17 +20,34 @@ namespace shogun
 		CPipeline();
 		virtual ~CPipeline();
 
-		/** Add a transformer to pipeline.
+		/** Add a transformer with default name to pipeline. The name is
+		 * obtained by transformer->get_name().
 		 * @param transformer the transformer
 		 * @return the current pipeline
 		 */
 		CPipeline* with(CTransformer* transformer);
 
-		/** Add a machine to pipeline. Pipeline may have only one machine.
+		/** Add a transformer with given name to pipeline
+		 * @param name the name of the transformer
+		 * @param transformer the transformer
+		 * @return the current pipeline
+		 */
+		CPipeline* with(const std::string& name, CTransformer* transformer);
+
+		/** Add a machine with default name to pipeline. Pipeline may have only
+		 * one machine.
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
 		CPipeline* then(CMachine* machine);
+
+		/** Add a machine with given name to pipeline. Pipeline may have only
+		 * one machine.
+		 * @param name the name of the traansformer
+		 * @param machine the machine
+		 * @return the current pipeline
+		 */
+		CPipeline* then(const std::string& name, CMachine* machine);
 
 		virtual CLabels* apply(CFeatures* data = NULL) override;
 
@@ -39,13 +57,13 @@ namespace shogun
 		}
 
 		/** List all stages in the pipeline.*/
-		void list_stages() const;
+		virtual std::string to_string() const;
 
 		/** Get a transformer in the pipeline.
-		 * @param index index of the transformer (starting from zero)
+		 * @param name name of the transformer
 		 * @return the index-th transformer
 		 */
-		CTransformer* get_transformer(size_t index) const;
+		CTransformer* get_transformer(const std::string& name) const;
 
 		/** Get machine in the pipeline
 		 * @return the machine
@@ -55,7 +73,8 @@ namespace shogun
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL) override;
 
-		std::vector<variant<CTransformer*, CMachine*>> m_stages;
+		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
+		    m_stages;
 		virtual bool train_require_labels() const override;
 	};
 }

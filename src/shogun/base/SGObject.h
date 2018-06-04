@@ -527,7 +527,7 @@ public:
 	 * its name and parameters.
 	 *
 	 */
-	std::string to_string() const;
+	virtual std::string to_string() const;
 
 	/** Returns set of all parameter names of the object.
 	 *

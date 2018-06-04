@@ -86,11 +86,16 @@ TEST_F(PipelineTest, fit_predict)
 
 TEST_F(PipelineTest, get)
 {
-	EXPECT_THROW(pipeline->get_transformer(0), ShogunException);
+	EXPECT_THROW(pipeline->get_transformer("not_exists"), ShogunException);
 	EXPECT_THROW(pipeline->get_machine(), ShogunException);
 
-	pipeline->with(transformer1)->with(transformer2)->then(machine);
+	std::string transformer_name = "my_transformer";
+	pipeline->with(transformer1)
+	    ->with(transformer_name, transformer2)
+	    ->then(machine);
 
-	EXPECT_EQ(pipeline->get_transformer(1), transformer2.get());
+	EXPECT_EQ(
+	    pipeline->get_transformer("MockCTransformer"), transformer1.get());
+	EXPECT_EQ(pipeline->get_transformer(transformer_name), transformer2.get());
 	EXPECT_EQ(pipeline->get_machine(), machine.get());
 }
