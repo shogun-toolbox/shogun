@@ -82,8 +82,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		virtual SGMatrix<ST> apply_to_matrix(SGMatrix<ST> matrix) = 0;
 
 		/** Inverse apply preprocessor on matrix. Subclasses should try to apply
-		 * in
-		 * place to avoid copying.
+		 * in place to avoid copying.
 		 * @param matrix the input feature matrix
 		 * @return the matrix after applying the preprocessor
 		 */

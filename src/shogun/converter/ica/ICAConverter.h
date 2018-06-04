@@ -49,8 +49,7 @@ namespace shogun
 		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/** Inverse apply the ICA converter to features by multiplying the
-		 * feature
-		 * matrix by the mixing matirx.
+		 * feature matrix by the mixing matirx.
 		 * @param features the features to transformed, should be an instance of
 		 * CDenseFeatures<float64_t>
 		 * @param inplace transform in place
