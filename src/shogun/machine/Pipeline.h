@@ -81,6 +81,9 @@ namespace shogun
 		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
 		    m_stages;
 		virtual bool train_require_labels() const override;
+
+		/** Check pipeline is not empty and machine has been added. */
+		void check_pipeline();
 	};
 }
 

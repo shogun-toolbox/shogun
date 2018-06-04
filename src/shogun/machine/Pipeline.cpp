@@ -33,7 +33,9 @@ namespace shogun
 		REQUIRE(
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
-		    "Transformers can not be placed after machines.\n");
+		    "Transformers can not be placed after machines. Last element is "
+		    "%s\n",
+		    m_stages.back().first);
 
 		SG_REF(transformer);
 		m_stages.emplace_back(name, transformer);
@@ -51,7 +53,8 @@ namespace shogun
 		REQUIRE(
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
-		    "Multiple machines are added to pipeline.\n");
+		    "Multiple machines are added to pipeline. Last element is %s\n",
+		    m_stages.back().first);
 
 		SG_REF(machine);
 		m_stages.emplace_back(name, machine);
@@ -61,10 +64,8 @@ namespace shogun
 
 	bool CPipeline::train_machine(CFeatures* data)
 	{
-		REQUIRE(
-		    !m_stages.empty() &&
-		        holds_alternative<CMachine*>(m_stages.back().second),
-		    "Machine has not been added.\n");
+		check_pipeline();
+
 		if (train_require_labels())
 		{
 			REQUIRE(m_labels, "No labels given.\n");
@@ -94,10 +95,8 @@ namespace shogun
 
 	CLabels* CPipeline::apply(CFeatures* data)
 	{
-		REQUIRE(
-		    !m_stages.empty() &&
-		        holds_alternative<CMachine*>(m_stages.back().second),
-		    "Machine has not been added.\n");
+		check_pipeline();
+
 		for (auto&& stage : m_stages)
 		{
 			if (holds_alternative<CTransformer*>(stage.second))
@@ -160,12 +159,18 @@ namespace shogun
 		return nullptr;
 	}
 
+	void CPipeline::check_pipeline()
+	{
+		REQUIRE(!m_stages.empty(), "Pipeline is empty");
+		REQUIRE(
+		    holds_alternative<CMachine*>(m_stages.back().second),
+		    "Pipline cannot be trained without an added machine. Last element "
+		    "is %s.\n",
+		    m_stages.back().first);
+	}
+
 	CMachine* CPipeline::get_machine() const
 	{
-		REQUIRE(
-		    !m_stages.empty() &&
-		        holds_alternative<CMachine*>(m_stages.back().second),
-		    "Machine has not been added.\n");
 		return shogun::get<CMachine*>(m_stages.back().second);
 	}
 }
