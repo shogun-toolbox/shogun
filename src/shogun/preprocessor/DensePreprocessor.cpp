@@ -126,17 +126,6 @@ CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
 
 template <class ST>
 SGMatrix<ST>
-CDensePreprocessor<ST>::apply_to_feature_matrix(CFeatures* features)
-{
-	auto simple_features = features->as<CDenseFeatures<ST>>();
-	auto feature_matrix =
-		apply_to_matrix(simple_features->get_feature_matrix());
-	simple_features->set_feature_matrix(feature_matrix);
-	return feature_matrix;
-}
-
-template <class ST>
-SGMatrix<ST>
 CDensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
 {
 	SG_SNOTIMPLEMENTED;
