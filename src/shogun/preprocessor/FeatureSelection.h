@@ -161,6 +161,12 @@ public:
 	 */
 	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
+	/** Apply inverse transformation. This method is not supported by feature
+	 * selection preprocessors.
+	 */
+	virtual CFeatures*
+	inverse_transform(CFeatures* features, bool inplace = true);
+
 	/**
 	 * Abstract method that is defined in the subclasses to compute the
 	 * measures for the provided features based on which feature selection
