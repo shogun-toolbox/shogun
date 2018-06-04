@@ -5,7 +5,8 @@
  */
 
 /* These functions return new Objects */
-%newobject shogun::CTransformer::transform(CFeatures*);
+%newobject shogun::CTransformer::transform(CFeatures*, bool inplace=true);
+%newobject shogun::CTransformer::inverse_transform(CFeatures*, bool inplace=true);
 
 /* Remove C Prefix */
 %rename(Transformer) CTransformer;
