@@ -21,10 +21,9 @@ template <class ST> class CDenseFeatures;
 /** @brief Template class DensePreprocessor, base class for preprocessors (cf.
  * CPreprocessor) that apply to CDenseFeatures (i.e. rectangular dense matrices)
  *
- * Two new functions apply_to_feature_vector() and apply_to_feature_matrix()
- * are defined in this interface that need to be implemented in each particular
- * preprocessor operating on CDenseFeatures. For examples see e.g. CLogPlusOne
- * or CPCACut.
+ * Two new functions apply_to_feature_vector and apply_to_matrix() are defined
+ * in this interface need to be implemented in each particular preprocessor
+ * operating on CDenseFeatures. For examples see e.g. CLogPlusOne or CPCACut.
  */
 template <class ST> class CDensePreprocessor : public CPreprocessor
 {
@@ -50,16 +49,6 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 */
 		virtual CFeatures*
 		inverse_transform(CFeatures* features, bool inplace = true);
-
-#ifndef SWIG
-		[[deprecated]]
-#endif
-		    /// apply preproc on feature matrix
-		    /// result in feature matrix
-		    /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		    // remove after cleaning up codebase
-		    virtual SGMatrix<ST>
-		    apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix

@@ -118,13 +118,6 @@ namespace shogun
 		return string_features;
 	}
 
-	template <class ST>
-	bool CStringPreprocessor<ST>::apply_to_string_features(CFeatures* features)
-	{
-		transform(features);
-		return true;
-	}
-
 	template class CStringPreprocessor<bool>;
 	template class CStringPreprocessor<char>;
 	template class CStringPreprocessor<int8_t>;
