@@ -5,10 +5,10 @@
  *          Bjoern Esser
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/base/progress.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/structure/StochasticSOSVM.h>
 
 using namespace shogun;
 
@@ -109,7 +109,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 
 	// Main loop
 	int32_t k = 0;
-	for (auto pi: progress(range(m_num_iter)))
+	for (auto pi : progress(range(m_num_iter)))
 	{
 		for (int32_t si = 0; si < N; ++si)
 		{

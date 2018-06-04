@@ -5,12 +5,12 @@
  *          Michele Mazzoni, Heiko Strathmann, Fernando Iglesias
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/base/range.h>
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/base/progress.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>

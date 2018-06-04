@@ -7,9 +7,9 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/base/some.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
+#include <shogun/base/some.h>
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
@@ -337,7 +337,6 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 			break;
 		iter++;
 		pb.print_progress();
-		
 	}
 	pb.complete();
 	return cur_likelihood;

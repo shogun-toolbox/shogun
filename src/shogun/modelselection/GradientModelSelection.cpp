@@ -8,16 +8,14 @@
 
 #include <shogun/modelselection/GradientModelSelection.h>
 
-#include <shogun/evaluation/GradientResult.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/machine/Machine.h>
 #include <shogun/base/progress.h>
+#include <shogun/evaluation/GradientResult.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
-#include <shogun/mathematics/Math.h>
-
-
 
 using namespace shogun;
 
@@ -132,7 +130,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	index_t offset=0;
 
 	// set parameters from vector model_vars
-	for (auto i:progress(range(parameter_dictionary->get_num_elements())))
+	for (auto i : progress(range(parameter_dictionary->get_num_elements())))
 	{
 		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
 

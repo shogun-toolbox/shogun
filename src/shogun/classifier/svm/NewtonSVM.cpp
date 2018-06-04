@@ -7,16 +7,16 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/classifier/svm/NewtonSVM.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/progress.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/machine/LinearMachine.h>
+#include <shogun/classifier/svm/NewtonSVM.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/lapack.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 //#define DEBUG_NEWTON
 //#define V_NEWTON

@@ -5,12 +5,12 @@
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/progress.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

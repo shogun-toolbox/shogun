@@ -58,6 +58,10 @@
 
 namespace shogun
 {
+//#define progress(...)
+// Progress(std::string(this->get_name())+"::"+std::string(__FUNCTION__),
+//__VA_ARGS__)
+#define progress(...) Progress(std::string(__FUNCTION__), __VA_ARGS__)
 
 	/** Possible print modes */
 	enum SG_PRG_MODE
@@ -711,8 +715,8 @@ namespace shogun
 	 * @param	condition	premature stopping condition
 	 */
 	template <typename T>
-	inline PRange<T> progress(
-	    Range<T> range, const SGIO& io, std::string prefix = "PROGRESS: ",
+	inline PRange<T> Progress(
+	    std::string prefix, Range<T> range, const SGIO& io,
 	    SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
@@ -732,9 +736,8 @@ namespace shogun
 	 * @param	condition	premature stopping condition
 	 */
 	template <typename T>
-	inline PRange<T> progress(
-	    Range<T> range, std::string prefix = "PROGRESS: ",
-	    SG_PRG_MODE mode = UTF8,
+	inline PRange<T> Progress(
+	    std::string prefix, Range<T> range, SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
 		return PRange<T>(range, *sg_io, prefix, mode, condition);
@@ -746,7 +749,8 @@ namespace shogun
 	 * @param condition premature stopping condition
 	 */
 	template <typename T>
-	inline PRange<T> progress(Range<T> range, std::function<bool()> condition)
+	inline PRange<T> Progress(
+	    std::string prefix, Range<T> range, std::function<bool()> condition)
 	{
 		return PRange<T>(range, *sg_io, "PROGRESS: ", UTF8, condition);
 	}

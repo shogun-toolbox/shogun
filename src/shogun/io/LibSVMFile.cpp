@@ -165,7 +165,7 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 		mat_feat = SG_MALLOC(SGSparseVector<sg_type>, num_vec);                \
 		multilabel = SG_MALLOC(SGVector<float64_t>, num_vec);                  \
                                                                                \
-		auto pb = progress(range(0, num_vec), *this->io, "LOADING: ");         \
+		auto pb = progress(range(0, num_vec), *this->io);                      \
 		num_classes = 0;                                                       \
 		SG_SET_LOCALE_C;                                                       \
                                                                                \

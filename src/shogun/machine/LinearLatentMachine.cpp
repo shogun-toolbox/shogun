@@ -4,10 +4,10 @@
  * Authors: Viktor Gal, Thoralf Klein, Sergey Lisitsyn, Soeren Sonnenburg
  */
 
-#include <shogun/machine/LinearLatentMachine.h>
-#include <shogun/features/LatentFeatures.h>
 #include <shogun/base/progress.h>
+#include <shogun/features/LatentFeatures.h>
 #include <shogun/latent/LatentModel.h>
+#include <shogun/machine/LinearLatentMachine.h>
 
 using namespace shogun;
 

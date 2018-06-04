@@ -490,7 +490,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 
 		SG_DEBUG("block_size=%ld file_size=%ld\n", blocksize, fsize)
 
-		auto pb = progress(range(fsize), *this->io, "COUNTING: ");
+		auto pb = progress(range(fsize), *this->io);
 		size_t sz=blocksize;
 		while (sz == blocksize)
 		{

@@ -115,9 +115,8 @@ TEST(PRange, lambda_stop)
 {
 	int test = 6;
 	/* Stops before the 4th iteration */
-	for (auto i : progress(range(0, 6), range_io, "PROGRESS: ", UTF8, [&]() {
-		     return test > 3;
-		 }))
+	for (auto i :
+	     progress(range(0, 6), range_io, UTF8, [&]() { return test > 3; }))
 	{
 		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));

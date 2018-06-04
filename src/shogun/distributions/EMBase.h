@@ -31,9 +31,9 @@
 #ifndef _EMBASE_H__
 #define _EMBASE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/progress.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/base/progress.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {
