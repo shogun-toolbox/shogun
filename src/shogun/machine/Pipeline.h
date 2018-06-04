@@ -14,6 +14,11 @@
 
 namespace shogun
 {
+	/** Pipeline is a machine that chains multiple transformers and machines. It
+	 * consists of a sequence of transformers as intermediate stages of training
+	 * or testing and a machine as the final stage. Features are transformed by
+	 * transformers and fed into the next stage sequentially.
+	 */
 	class CPipeline : public CMachine
 	{
 	public:
