@@ -7,6 +7,7 @@
 #include <shogun/converter/ica/ICAConverter.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -95,6 +96,24 @@ CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 
 	// Unmix
 	EX = C.inverse() * EX;
+
+	auto processed = new CDenseFeatures<float64_t>(X);
+	SG_UNREF(features);
+
+	return processed;
+}
+
+CFeatures* CICAConverter::inverse_transform(CFeatures* features, bool inplace)
+{
+	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
+
+	SG_REF(features);
+
+	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	if (!inplace)
+		X = X.clone();
+
+	linalg::matrix_prod(m_mixing_matrix, X, X);
 
 	auto processed = new CDenseFeatures<float64_t>(X);
 	SG_UNREF(features);
