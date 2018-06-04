@@ -82,11 +82,11 @@ namespace shogun
 		transform(CFeatures* features, bool inplace = true) = 0;
 
 		/** Apply inverse transformation to features. If transformation is
-		 *performed in place, underlying data of input features will be reused
-		 *if possible.
-		 *	@param features features to transform
-		 *	@param inplace whether transform in place
-		 *	@return the result feature object after inverse applying the
+		 * performed in place, underlying data of input features will be reused
+		 * if possible.
+		 * @param features features to transform
+		 * @param inplace whether transform in place
+		 * @return the result feature object after inverse applying the
 		 *transformer
 		 */
 		virtual CFeatures*
