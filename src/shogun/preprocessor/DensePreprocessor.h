@@ -36,9 +36,20 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/** Apply transformation to dense features.
 		 *
 		 * @param features the dense input features
+		 * @param inplace whether transform in place
 		 * @return the result feature object after applying the preprocessor
 		 */
 		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+
+		/** Apply inverse transformation to dense features.
+		 *
+		 * @param features the dense input features
+		 * @param inplace whether transform in place
+		 * @return the result feature object after inverse applying the
+		 * preprocessor
+		 */
+		virtual CFeatures*
+		inverse_transform(CFeatures* features, bool inplace = true);
 
 #ifndef SWIG
 		[[deprecated]]
@@ -69,6 +80,14 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @return the matrix after applying the preprocessor
 		 */
 		virtual SGMatrix<ST> apply_to_matrix(SGMatrix<ST> matrix) = 0;
+
+		/** Inverse apply preprocessor on matrix. Subclasses should try to apply
+		 * in
+		 * place to avoid copying.
+		 * @param matrix the input feature matrix
+		 * @return the matrix after applying the preprocessor
+		 */
+		virtual SGMatrix<ST> inverse_apply_to_matrix(SGMatrix<ST> matrix);
 };
 
 }
