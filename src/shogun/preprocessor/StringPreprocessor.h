@@ -20,9 +20,10 @@ namespace shogun
 template <class ST> class CStringFeatures;
 
 /** @brief Template class StringPreprocessor, base class for preprocessors (cf.
- * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable length).
+ * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable
+ * length).
  *
- * Two new functions apply_to_string() and apply_to_string_features()
+ * Two new functions apply_to_string() and apply_to_string_list()
  * are defined in this interface that need to be implemented in each particular
  * preprocessor operating on CStringFeatures.
  */
@@ -39,15 +40,6 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 * @return the result feature object after applying the preprocessor
 		 */
 		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
-
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-#ifndef SWIG
-		[[deprecated]]
-#endif
-		    virtual bool
-		    apply_to_string_features(CFeatures* f);
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;

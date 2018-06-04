@@ -21,11 +21,11 @@ namespace shogun
 template <class ST> class SGSparseVector;
 template <class ST> class CSparseFeatures;
 
-/** @brief Template class SparsePreprocessor, base class for preprocessors (cf. CPreprocessor)
- * that apply to CSparseFeatures
+/** @brief Template class SparsePreprocessor, base class for preprocessors (cf.
+ * CPreprocessor) that apply to CSparseFeatures
  *
  * Two new functions apply_to_sparse_feature_vector() and
- * apply_to_sparse_feature_matrix() are defined in this interface that need to
+ * apply_to_sparse_matrix() are defined in this interface that need to
  * be implemented in each particular preprocessor operating on CSparseFeatures.
  *
  * */
@@ -43,15 +43,6 @@ public:
 	 * @return the result feature object after applying the preprocessor
 	 */
 	virtual CFeatures* transform(CFeatures* features, bool inplace);
-
-#ifndef SWIG
-	[[deprecated]]
-#endif
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual SGSparseVector<ST>*
-		apply_to_sparse_feature_matrix(CSparseFeatures<ST>* f) = 0;
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
