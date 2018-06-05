@@ -112,6 +112,15 @@ SGMatrix<float64_t> Base::kernel_all() const
     return result;
 }
 
+float64_t Base::sum_dx(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+    SGVector<float64_t> full = dx(idx_a, idx_b);
+    Map<VectorXd> eigen_full(full.vector, D);
+    return eigen_full.sum();
+}
+
+
 SGMatrix<float64_t> Base::dx_all() const
 {
     auto D = get_num_dimensions();
@@ -133,6 +142,14 @@ SGMatrix<float64_t> Base::dx_all() const
         }
 
     return result;
+}
+
+float64_t Base::sum_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+    SGVector<float64_t> full = dy(idx_a, idx_b);
+    Map<VectorXd> eigen_full(full.vector, D);
+    return eigen_full.sum();
 }
 
 float64_t Base::sum_dy_dy(index_t idx_a, index_t idx_b) const
@@ -198,6 +215,131 @@ SGMatrix<float64_t> Base::dx_dy_all() const
     return result;
 }
 
+
+
+SGVector<float64_t> Base::dx_sum_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+
+    SGVector<float64_t> result(D);
+    Map<VectorXd> eigen_result(result.vector, D);
+
+    auto full = dx_dy(idx_a, idx_b);
+    Map<MatrixXd> eigen_full(full.matrix, D, D);
+
+    eigen_result = eigen_full.colwise().sum();
+
+    return result;
+}
+SGMatrix<float64_t> Base::dx_sum_dy_all() const
+{
+    auto D = get_num_dimensions();
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+    auto ND_lhs = N_lhs * D;
+
+    SGMatrix<float64_t> result(ND_lhs, N_rhs);
+    Map<MatrixXd> eigen_result(result.matrix, ND_lhs, N_rhs);
+
+#pragma omp parallel for
+    for (auto idx_a = 0; idx_a < N_lhs; idx_a++)
+        for (auto idx_b = 0; idx_b < N_rhs; idx_b++)
+        {
+            auto row_start = idx_a * D;
+            auto col = idx_b;
+
+            auto h = dx_sum_dy(idx_a, idx_b);
+            Map<VectorXd> eigen_h(h.vector, D);
+
+            eigen_result.block(row_start, col, D, 1) = eigen_h;
+        }
+    return result;
+}
+
+SGVector<float64_t> Base::dx_sum_dy_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+
+    SGVector<float64_t> result(D);
+    Map<VectorXd> eigen_result(result.vector, D);
+
+    auto full = dx_dy_dy(idx_a, idx_b);
+    Map<MatrixXd> eigen_full(full.matrix, D, D);
+
+    eigen_result = eigen_full.colwise().sum();
+
+    return result;
+}
+
+SGVector<float64_t> Base::sum_dx_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+
+    SGVector<float64_t> result(D);
+    Map<VectorXd> eigen_result(result.vector, D);
+
+    auto full = dx_dy(idx_a, idx_b);
+    Map<MatrixXd> eigen_full(full.matrix, D, D);
+
+    eigen_result = eigen_full.rowwise().sum();
+
+    return result;
+}
+
+SGVector<float64_t> Base::sum_dx_dy_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+
+    SGVector<float64_t> result(D);
+    Map<VectorXd> eigen_result(result.vector, D);
+
+    auto full = dx_dy_dy(idx_a, idx_b);
+    Map<MatrixXd> eigen_full(full.matrix, D, D);
+
+    eigen_result = eigen_full.rowwise().sum();
+
+    return result;
+}
+
+
+float64_t Base::sum_dx_sum_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+    auto h = dx_sum_dy(idx_a, idx_b);
+    Map<VectorXd> eigen_h(h.vector, D);
+    return eigen_h.sum();
+}
+
+float64_t Base::sum_dx_sum_dy_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+    auto h = dx_sum_dy_dy(idx_a, idx_b);
+    Map<VectorXd> eigen_h(h.vector, D);
+    return eigen_h.sum();
+}
+
+SGMatrix<float64_t> Base::sum_dx_sum_dy_all() const
+{
+    auto N_lhs = get_num_lhs();
+    auto N_rhs = get_num_rhs();
+    bool is_sym = is_symmetric();
+
+    SGMatrix<float64_t> result(N_lhs, N_rhs);
+    Map<MatrixXd> eigen_result(result.matrix, N_lhs, N_rhs);
+
+    // TODO exploit symmetry in storage (Shognu lib?)
+    // TODO parallel jobs are of differing sizes...
+#pragma omp parallel for
+    for (auto idx_a = 0; idx_a < N_lhs; idx_a++)
+        for (auto idx_b = (is_sym ? idx_a : 0); idx_b < N_rhs; idx_b++)
+        {
+            auto f = sum_dx_sum_dy(idx_a, idx_b);
+            result(idx_a, idx_b) = f;
+            if (is_sym && idx_b != idx_a)
+                result(idx_b, idx_a) = f;
+        }
+    return result;
+}
 
 Base::Base()
 {

@@ -27,6 +27,7 @@
 %rename(KernelExpFamily) CKernelExpFamily;
 %rename(KernelExpFamilyNystrom) CKernelExpFamilyNystrom;
 %rename(KernelExpFamilyLite) CKernelExpFamilyLite;
+%rename(KernelExpFamilySum) CKernelExpFamilySum;
 
 
 /* Include Class Headers to make them visible from within the target language */
@@ -43,3 +44,4 @@
 %include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 %include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
 %include <shogun/distributions/kernel_exp_family/KernelExpFamilyLite.h>
+%include <shogun/distributions/kernel_exp_family/KernelExpFamilySum.h>
