@@ -60,7 +60,7 @@ std::shared_ptr<shogun::kernel_exp_family_impl::kernel::Base> Gaussian::shallow_
 
 float64_t Gaussian::kernel(index_t idx_a, index_t idx_b) const
 {
-	return CMath::exp(-sq_difference_norm(idx_a, idx_b) / m_sigma);
+	return std::exp(-sq_difference_norm(idx_a, idx_b) / m_sigma);
 }
 
 float64_t Gaussian::sq_difference_norm(index_t idx_a,  index_t idx_b) const
