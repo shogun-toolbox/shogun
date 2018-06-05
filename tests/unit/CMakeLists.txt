@@ -59,30 +59,29 @@ if(JINJA2_IMPORT_SUCCESS)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating DynamicObjectArray_unittest_generated.cc")
     LIST(APPEND TEMPLATE_GENERATED_UNITTEST DynamicObjectArray_unittest_generated.cc)
-
-    IF(NOT CTAGS_FOUND)
-        MESSAGE("Please install Ctags for trained models serialization tests.")
-    ELSEIF(NOT HAVE_HDF5)
-        MESSAGE("Please install HDF5 for trained models serialization tests.")
-    ELSE()
-        ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_unittest.cc
-            COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
-            ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
-            ${CTAGS_FILE}
-            trained_model_serialization_unittest.cc
-            ${CMAKE_BINARY_DIR}/src/shogun/lib/config.h
-            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
-            ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
-            ctags
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Generating trained_model_serialization_unittest.cc")
-        LIST(APPEND SERIALIZATION_UNITTEST trained_model_serialization_unittest.cc)
-    ENDIF()
-
-    LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
-    add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
 ELSE()
     MESSAGE(WARNING "Please install jinja2 for automatic generated tests.")
+ENDIF()
+
+IF(NOT CTAGS_FOUND)
+	MESSAGE("Please install Ctags for trained models serialization tests.")
+ELSEIF(NOT HAVE_HDF5)
+	MESSAGE("Please install HDF5 for trained models serialization tests.")
+ELSE()
+	ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_test.h
+			COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_test.cc.py
+			${CTAGS_FILE}
+			${CMAKE_CURRENT_BINARY_DIR}/trained_model_serialization_test.h
+			${CMAKE_BINARY_DIR}/src/shogun/lib/config.h
+			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_test.cc.py
+			ctags
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMENT "Generating trained_model_serialization_test.h")
+	LIST(APPEND SERIALIZATION_UNITTEST ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_test.cc)
+	LIST(APPEND SERIALIZATION_UNITTEST ${CMAKE_CURRENT_BINARY_DIR}/trained_model_serialization_test.h)
+
+	LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
+	add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
 ENDIF()
 
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
