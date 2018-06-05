@@ -159,7 +159,7 @@ namespace shogun
 		return nullptr;
 	}
 
-	void CPipeline::check_pipeline()
+	void CPipeline::check_pipeline() const
 	{
 		REQUIRE(!m_stages.empty(), "Pipeline is empty");
 		REQUIRE(
@@ -171,6 +171,7 @@ namespace shogun
 
 	CMachine* CPipeline::get_machine() const
 	{
+		check_pipeline();
 		return shogun::get<CMachine*>(m_stages.back().second);
 	}
 }

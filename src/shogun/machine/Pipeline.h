@@ -83,7 +83,7 @@ namespace shogun
 		virtual bool train_require_labels() const override;
 
 		/** Check pipeline is not empty and machine has been added. */
-		void check_pipeline();
+		void check_pipeline() const;
 	};
 }
 
