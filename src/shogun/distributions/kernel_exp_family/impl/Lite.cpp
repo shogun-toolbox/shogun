@@ -69,8 +69,6 @@ index_t Lite::get_system_size() const
 
 SGMatrix<float64_t> Lite::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const
 {
-	// TODO: would be better to make this a compile-time error
-	// like https://stackoverflow.com/a/24610165/344821
 	SG_SERROR("Can't subsample G_mm from G_mn for Lite");
 
 	SGMatrix<float64_t> return_something(0, 0);
@@ -95,7 +93,7 @@ SGMatrix<float64_t> Lite::compute_G_mm() const
 
 	auto kernel=m_kernel->shallow_copy();
 	kernel->set_lhs(basis);
-	kernel->set_rhs(basis);
+	kernel->set_rhs();  // make symmetric
 	kernel->precompute();
 
 	auto G_mm = kernel->kernel_all();

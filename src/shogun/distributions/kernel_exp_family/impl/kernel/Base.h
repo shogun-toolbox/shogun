@@ -58,6 +58,7 @@ public :
 
 	virtual void set_rhs(SGMatrix<float64_t> rhs);
 	virtual void set_rhs(SGVector<float64_t> rhs);
+	virtual void set_rhs(); // to make it symmetric
 	virtual void set_lhs(SGMatrix<float64_t> lhs);
 	virtual void set_lhs(SGVector<float64_t> lhs);
 	index_t get_num_dimensions() const;

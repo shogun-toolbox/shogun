@@ -61,6 +61,11 @@ void Base::set_rhs(SGVector<float64_t> rhs)
 	set_rhs(SGMatrix<float64_t>(rhs));
 }
 
+void Base::set_rhs()
+{
+    set_rhs(SGMatrix<float64_t>());
+}
+
 void Base::set_lhs(SGMatrix<float64_t> lhs)
 {
 	m_lhs = lhs;
@@ -73,7 +78,7 @@ void Base::set_lhs(SGVector<float64_t> lhs)
 
 index_t Base::get_num_rhs() const
 {
-	return m_rhs.num_cols;
+	return is_symmetric() ? m_lhs.num_cols : m_rhs.num_cols;
 }
 
 bool Base::is_symmetric() const
