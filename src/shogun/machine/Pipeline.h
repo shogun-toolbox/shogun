@@ -62,7 +62,7 @@ namespace shogun
 		}
 
 		/** List all stages in the pipeline.*/
-		virtual std::string to_string() const;
+		virtual std::string to_string() const override;
 
 		/** Get a transformer in the pipeline.
 		 * @param name name of the transformer
