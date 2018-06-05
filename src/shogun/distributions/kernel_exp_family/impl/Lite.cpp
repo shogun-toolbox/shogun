@@ -138,3 +138,22 @@ float64_t Lite::log_pdf(index_t idx_test) const
 	}
 	return beta_sum;
 }
+
+// TODO: implement these...
+SGVector<float64_t> Lite::grad(index_t idx_test) const
+{
+	SG_SERROR("Lite::grad not implemented yet");
+	return SGVector<float64_t>();
+}
+
+SGMatrix<float64_t> Lite::hessian(index_t idx_test) const
+{
+	SG_SERROR("Lite::hessian not implemented yet");
+	return SGMatrix<float64_t>();
+}
+
+SGVector<float64_t> Lite::hessian_diag(index_t idx_test) const
+{
+	SG_SERROR("Lite::hessian_diag not implemented yet");
+	return SGVector<float64_t>();
+}
