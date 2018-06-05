@@ -135,6 +135,14 @@ SGMatrix<float64_t> Base::dx_all() const
     return result;
 }
 
+float64_t Base::sum_dy_dy(index_t idx_a, index_t idx_b) const
+{
+    auto D = get_num_dimensions();
+    SGVector<float64_t> full = dy_dy(idx_a, idx_b);
+    Map<VectorXd> eigen_full(full.vector, D);
+    return eigen_full.sum();
+}
+
 SGMatrix<float64_t> Base::dy_all() const
 {
     auto D = get_num_dimensions();

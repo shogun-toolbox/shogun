@@ -88,6 +88,7 @@ public :
 	virtual SGMatrix<float64_t> dx_i_dx_j_dx_k_dx_k_row_sum(index_t idx_a, index_t idx_b) const=0;
 
 	virtual SGVector<float64_t> dy_dy(index_t a, index_t idx_b) const=0;
+	virtual float64_t sum_dy_dy(index_t a, index_t idx_b) const;
 
 	// old develop code
 	virtual SGMatrix<float64_t> dx_dx_dy_dy(index_t idx_a, index_t idx_b) const=0;

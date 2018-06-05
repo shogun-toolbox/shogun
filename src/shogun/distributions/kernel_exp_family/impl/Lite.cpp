@@ -102,27 +102,19 @@ SGMatrix<float64_t> Lite::compute_G_mm() const
 
 SGVector<float64_t> Lite::compute_h() const
 {
-	auto D = get_num_dimensions();
 	auto N_basis = get_num_basis();
 	auto N_data = get_num_data();
 
-	auto system_size = N_basis;
-	SGVector<float64_t> h(system_size);
-	Map<VectorXd> eigen_h(h.vector, system_size);
-	eigen_h = VectorXd::Zero(system_size);
+	SGVector<float64_t> h(N_basis);
+	Map<VectorXd> eigen_h(h.vector, N_basis);
+	eigen_h = VectorXd::Zero(N_basis);
 
 #pragma omp parallel for
-	for (auto idx_a=0; idx_a<N_basis; idx_a++)
-		for (auto idx_b=0; idx_b<N_data; idx_b++)
-		{
-			// TODO optimise, no need to store matrix
-			// TODO optimise, pull allocation out of the loop
-			SGMatrix<float64_t> temp = m_kernel->dy_dy(idx_a, idx_b);
-			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
-		}
+	for (auto idx_a = 0; idx_a < N_basis; idx_a++)
+		for (auto idx_b = 0; idx_b < N_data; idx_b++)
+			eigen_h(idx_a) += m_kernel->sum_dy_dy(idx_a, idx_b);
 
 	eigen_h /= N_data;
-
 	return h;
 }
 
