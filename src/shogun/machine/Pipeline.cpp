@@ -35,7 +35,7 @@ namespace shogun
 		        holds_alternative<CTransformer*>(m_stages.back().second),
 		    "Transformers can not be placed after machines. Last element is "
 		    "%s\n",
-		    m_stages.back().first);
+		    m_stages.back().first.c_str());
 
 		SG_REF(transformer);
 		m_stages.emplace_back(name, transformer);
@@ -54,7 +54,7 @@ namespace shogun
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
 		    "Multiple machines are added to pipeline. Last element is %s\n",
-		    m_stages.back().first);
+		    m_stages.back().first.c_str());
 
 		SG_REF(machine);
 		m_stages.emplace_back(name, machine);
@@ -166,7 +166,7 @@ namespace shogun
 		    holds_alternative<CMachine*>(m_stages.back().second),
 		    "Pipline cannot be trained without an added machine. Last element "
 		    "is %s.\n",
-		    m_stages.back().first);
+		    m_stages.back().first.c_str());
 	}
 
 	CMachine* CPipeline::get_machine() const
