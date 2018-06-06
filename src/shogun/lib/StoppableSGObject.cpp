@@ -6,6 +6,7 @@
 
 #include <rxcpp/rx-lite.hpp>
 #include <shogun/base/init.h>
+#include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/StoppableSGObject.h>
 
@@ -40,6 +41,16 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
 
+void CStoppableSGObject::serialize_machine()
+{
+	std::string filename = this->get_name();
+	filename += ".txt";
+	auto file = new CSerializableAsciiFile(filename.c_str(), 'w');
+	this->save_serializable(file);
+	file->close();
+	SG_FREE(file);
+}
+
 void CStoppableSGObject::set_callback(std::function<bool()> callback)
 {
 	m_callback = callback;
@@ -60,6 +71,7 @@ void CStoppableSGObject::on_next()
 void CStoppableSGObject::on_pause()
 {
 	m_pause_computation_flag.store(true);
+	this->serialize_machine();
 	on_pause_impl();
 	resume_computation();
 }

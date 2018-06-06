@@ -78,6 +78,9 @@ namespace shogun
 		}
 
 	protected:
+		/** Serialize machine to an Ascii file with a default file name */
+		void serialize_machine();
+
 		/** connect the machine instance to the signal handler */
 		rxcpp::subscription connect_to_signal_handler();
 
