@@ -152,7 +152,7 @@ SGMatrix<float64_t> Nystrom::compute_G_mm() const
 
 	auto kernel=m_kernel->shallow_copy();
 	kernel->set_lhs(basis);
-	kernel->set_rhs(basis);
+	kernel->set_rhs();  // make symmetric
 	kernel->precompute();
 	auto G_mm = kernel->dx_dy_all();
 

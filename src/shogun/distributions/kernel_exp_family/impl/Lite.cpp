@@ -69,8 +69,6 @@ index_t Lite::get_system_size() const
 
 SGMatrix<float64_t> Lite::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const
 {
-	// TODO: would be better to make this a compile-time error
-	// like https://stackoverflow.com/a/24610165/344821
 	SG_SERROR("Can't subsample G_mm from G_mn for Lite");
 
 	SGMatrix<float64_t> return_something(0, 0);
@@ -95,7 +93,7 @@ SGMatrix<float64_t> Lite::compute_G_mm() const
 
 	auto kernel=m_kernel->shallow_copy();
 	kernel->set_lhs(basis);
-	kernel->set_rhs(basis);
+	kernel->set_rhs();  // make symmetric
 	kernel->precompute();
 
 	auto G_mm = kernel->kernel_all();
@@ -104,27 +102,19 @@ SGMatrix<float64_t> Lite::compute_G_mm() const
 
 SGVector<float64_t> Lite::compute_h() const
 {
-	auto D = get_num_dimensions();
 	auto N_basis = get_num_basis();
 	auto N_data = get_num_data();
 
-	auto system_size = N_basis;
-	SGVector<float64_t> h(system_size);
-	Map<VectorXd> eigen_h(h.vector, system_size);
-	eigen_h = VectorXd::Zero(system_size);
+	SGVector<float64_t> h(N_basis);
+	Map<VectorXd> eigen_h(h.vector, N_basis);
+	eigen_h = VectorXd::Zero(N_basis);
 
 #pragma omp parallel for
-	for (auto idx_a=0; idx_a<N_basis; idx_a++)
-		for (auto idx_b=0; idx_b<N_data; idx_b++)
-		{
-			// TODO optimise, no need to store matrix
-			// TODO optimise, pull allocation out of the loop
-			SGMatrix<float64_t> temp = m_kernel->dy_dy(idx_a, idx_b);
-			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
-		}
+	for (auto idx_a = 0; idx_a < N_basis; idx_a++)
+		for (auto idx_b = 0; idx_b < N_data; idx_b++)
+			eigen_h(idx_a) += m_kernel->sum_dy_dy(idx_a, idx_b);
 
 	eigen_h /= N_data;
-
 	return h;
 }
 
@@ -139,4 +129,23 @@ float64_t Lite::log_pdf(index_t idx_test) const
 		beta_sum += m_beta[idx] * m_kernel->kernel(idx, idx_test);
 	}
 	return beta_sum;
+}
+
+// TODO: implement these...
+SGVector<float64_t> Lite::grad(index_t idx_test) const
+{
+	SG_SERROR("Lite::grad not implemented yet");
+	return SGVector<float64_t>();
+}
+
+SGMatrix<float64_t> Lite::hessian(index_t idx_test) const
+{
+	SG_SERROR("Lite::hessian not implemented yet");
+	return SGMatrix<float64_t>();
+}
+
+SGVector<float64_t> Lite::hessian_diag(index_t idx_test) const
+{
+	SG_SERROR("Lite::hessian_diag not implemented yet");
+	return SGVector<float64_t>();
 }

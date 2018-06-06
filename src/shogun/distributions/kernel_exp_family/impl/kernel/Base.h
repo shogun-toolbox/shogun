@@ -58,6 +58,7 @@ public :
 
 	virtual void set_rhs(SGMatrix<float64_t> rhs);
 	virtual void set_rhs(SGVector<float64_t> rhs);
+	virtual void set_rhs(); // to make it symmetric
 	virtual void set_lhs(SGMatrix<float64_t> lhs);
 	virtual void set_lhs(SGVector<float64_t> lhs);
 	index_t get_num_dimensions() const;
@@ -87,6 +88,7 @@ public :
 	virtual SGMatrix<float64_t> dx_i_dx_j_dx_k_dx_k_row_sum(index_t idx_a, index_t idx_b) const=0;
 
 	virtual SGVector<float64_t> dy_dy(index_t a, index_t idx_b) const=0;
+	virtual float64_t sum_dy_dy(index_t a, index_t idx_b) const;
 
 	// old develop code
 	virtual SGMatrix<float64_t> dx_dx_dy_dy(index_t idx_a, index_t idx_b) const=0;
