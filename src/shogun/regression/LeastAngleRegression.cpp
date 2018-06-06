@@ -198,7 +198,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	// main loop
 	//========================================
 	int32_t nloop=0;
-	auto pb = progress(range(0, max_active_allowed));
+	auto pb = SG_PROGRESS(range(0, max_active_allowed));
 	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
 	{
 		COMPUTATION_CONTROLLERS

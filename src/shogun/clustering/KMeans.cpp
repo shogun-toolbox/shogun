@@ -62,7 +62,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 
 	int32_t changed=1;
 
-	for (auto iter : progress(range(max_iter)))
+	for (auto iter : SG_PROGRESS(range(max_iter)))
 	{
 		if (iter==max_iter-1)
 			SG_SWARNING("KMeans clustering has reached maximum number of ( %d ) iterations without having converged. \

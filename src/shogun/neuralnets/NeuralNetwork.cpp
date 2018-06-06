@@ -287,7 +287,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	bool continue_training = true;
 	float64_t alpha = m_gd_learning_rate;
 
-	for (auto i : progress(
+	for (auto i : SG_PROGRESS(
 	         range(0, m_max_num_epochs), [&] { return continue_training; }))
 	{
 		for (int32_t j=0; j < training_set_size; j += m_gd_mini_batch_size)

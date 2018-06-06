@@ -130,7 +130,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	index_t offset=0;
 
 	// set parameters from vector model_vars
-	for (auto i : progress(range(parameter_dictionary->get_num_elements())))
+	for (auto i : SG_PROGRESS(range(parameter_dictionary->get_num_elements())))
 	{
 		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
 

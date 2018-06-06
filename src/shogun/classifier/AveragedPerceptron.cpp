@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni,
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, 
  *          Michele Mazzoni
  */
 
@@ -70,9 +70,9 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0/num_feat;
 
-	auto pb = progress(range(max_iter));
+	auto pb = SG_PROGRESS(range(max_iter));
 	// loop till we either get everything classified right or reach max_iter
-	while ((!converged && iter < max_iter))
+	while (!converged && iter < max_iter)
 	{
 		COMPUTATION_CONTROLLERS
 		converged=true;

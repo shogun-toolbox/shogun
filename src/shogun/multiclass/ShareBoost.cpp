@@ -75,7 +75,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 	CTime *timer = new CTime();
 
 	float64_t t_compute_pred = 0; // t of 1st round is 0, since no pred to compute
-	for (auto t : progress(range(m_nonzero_feas)))
+	for (auto t : SG_PROGRESS(range(m_nonzero_feas)))
 	{
 		timer->start();
 		compute_rho();

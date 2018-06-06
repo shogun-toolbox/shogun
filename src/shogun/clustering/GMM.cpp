@@ -150,7 +150,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	SGVector<float64_t> logPxy(num_vectors * m_components.size());
 	SGVector<float64_t> logPx(num_vectors);
 	//float64_t* logPost=SG_MALLOC(float64_t, num_vectors*m_components.vlen);
-	auto pb = progress(range(max_iter));
+	auto pb = SG_PROGRESS(range(max_iter));
 	while (iter<max_iter)
 	{
 		log_likelihood_prev=log_likelihood_cur;
@@ -219,7 +219,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	SGVector<int32_t> merge_ind(
 	    m_components.size() * (m_components.size() - 1) / 2);
 
-	auto pb = progress(range(max_iter));
+	auto pb = SG_PROGRESS(range(max_iter));
 	while (iter<max_iter)
 	{
 		linalg::zero(logPostSum);

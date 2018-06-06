@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Harshit Syal, Giovanni De Toni, Michele Mazzoni,
+ * Authors: Soeren Sonnenburg, Harshit Syal, Giovanni De Toni, Michele Mazzoni, 
  *          Viktor Gal, Weijie Lin, Sergey Lisitsyn, Sanuj Sharma
  */
 #include <shogun/lib/config.h>
@@ -81,7 +81,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	float64_t obj, *grad=SG_MALLOC(float64_t, x_d+1);
 	float64_t t;
 
-	auto pb = progress(range(num_iter));
+	auto pb = SG_PROGRESS(range(num_iter));
 	while (iter <= num_iter)
 	{
 		COMPUTATION_CONTROLLERS

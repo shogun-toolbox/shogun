@@ -293,7 +293,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* Main optimization loop                                       */
   /* ------------------------------------------------------------ */
 
-  auto pb = progress(range(10), *this->io);
+  auto pb = SG_PROGRESS(range(10));
   col_u = (float64_t*)get_col(u,-1);
   while( exitflag == -1 )
   {

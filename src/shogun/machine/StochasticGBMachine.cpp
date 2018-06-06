@@ -185,7 +185,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 	for (int32_t i=0;i<interf->get_num_labels();i++)
 		interf->set_label(i,0);
 
-	for (auto i : progress(range(m_num_iter)))
+	for (auto i : SG_PROGRESS(range(m_num_iter)))
 	{
 		// apply subset
 		if (m_subset_frac!=1.0)

@@ -109,7 +109,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 
 	// Main loop
 	int32_t k = 0;
-	for (auto pi : progress(range(m_num_iter)))
+	for (auto pi : SG_PROGRESS(range(m_num_iter)))
 	{
 		for (int32_t si = 0; si < N; ++si)
 		{

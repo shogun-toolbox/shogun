@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni,
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni, 
  *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
@@ -130,7 +130,7 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for (auto e : progress(range(epochs)))
+	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
 		count = skip;

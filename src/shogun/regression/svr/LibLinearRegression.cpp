@@ -204,7 +204,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		index[i] = i;
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	while(iter < max_iter)
 	{
 		Gmax_new = 0;

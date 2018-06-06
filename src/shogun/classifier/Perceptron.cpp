@@ -82,7 +82,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 	{
 		w = get_w();
 	}
-	auto pb = progress(range(max_iter));
+	auto pb = SG_PROGRESS(range(max_iter));
 	//loop till we either get everything classified right or reach max_iter
 	while (!converged && iter < max_iter)
 	{

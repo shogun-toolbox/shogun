@@ -178,7 +178,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
 		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
 
-	auto pb = progress(range(m_num_bags));
+	auto pb = SG_PROGRESS(range(m_num_bags));
 #pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{

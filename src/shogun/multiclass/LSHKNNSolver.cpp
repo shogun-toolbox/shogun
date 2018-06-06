@@ -76,7 +76,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType
 		sg_memcpy(NN.get_column_vector(i), indices->data(), sizeof(index_t)*m_k);
 		delete indices;
 	}
-	for (auto i : progress(range(num_lab)))
+	for (auto i : SG_PROGRESS(range(num_lab)))
 	{
 		if (cancel_computation())
 			break;

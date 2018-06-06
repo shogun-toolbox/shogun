@@ -73,7 +73,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	float64_t inner_eps = 0.5*m_C*m_epsilon;
 	bool stop = false;
 	m_cur_iter = 0;
-	auto pb = progress(range(m_max_iter));
+	auto pb = SG_PROGRESS(range(m_max_iter));
 	/* do CCCP */
 	SG_DEBUG("Starting CCCP\n")
 	while ((m_cur_iter < 2)||(!stop&&(m_cur_iter < m_max_iter)))

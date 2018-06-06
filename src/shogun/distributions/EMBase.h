@@ -76,7 +76,7 @@ template <class T> class CEMBase : public CSGObject
 			float64_t log_likelihood_prev=0;
 			int32_t i=0;
 			bool converge=false;
-			auto pb = progress(range(max_iters));
+			auto pb = SG_PROGRESS(range(max_iters));
 			while (i<max_iters)
 			{
 				log_likelihood_prev=log_likelihood_cur;

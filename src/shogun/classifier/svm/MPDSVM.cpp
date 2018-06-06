@@ -92,7 +92,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		dalphas[i]=-1; //CSVC
 	}
 
-	auto pb = progress(range(maxiter));
+	auto pb = SG_PROGRESS(range(maxiter));
 	// go ...
 	while (niter++ < maxiter)
 	{

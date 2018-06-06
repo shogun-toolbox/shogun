@@ -1330,7 +1330,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	K_THREAD_PARAM<T> params;
 	int64_t step = total_num/num_threads;
 	index_t t = 0;
-	auto pb = progress(range(total_num), *this->io);
+	auto pb = SG_PROGRESS(range(total_num));
 #pragma omp parallel for lastprivate(t) private(params)
 	for (t = 0; t < num_threads; ++t)
 	{

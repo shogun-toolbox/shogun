@@ -56,7 +56,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	CMachine* machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
-	for (auto i : progress(range(combinations->get_num_elements())))
+	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
 	{
 		CParameterCombination* current_combination=(CParameterCombination*)
 				combinations->get_element(i);

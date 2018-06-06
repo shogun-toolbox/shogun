@@ -581,7 +581,7 @@ ocas_return_value_T svm_ocas_solver(
   Bi=NULL;
 
   /* Initialize progress bar */
-  auto pb = progress(range(10));
+  auto pb = SG_SPROGRESS(range(10));
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
   H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);

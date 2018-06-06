@@ -124,7 +124,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	distance->precompute_rhs();
 
 	//for each test example
-	for (auto i : progress(range(n)))
+	for (auto i : SG_PROGRESS(range(n)))
 	{
 		COMPUTATION_CONTROLLERS
 		//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
@@ -203,7 +203,7 @@ CMulticlassLabels* CKNN::classify_NN()
 	distance->precompute_lhs();
 
 	// for each test example
-	for (auto i : progress(range(num_lab)))
+	for (auto i : SG_PROGRESS(range(num_lab)))
 	{
 		COMPUTATION_CONTROLLERS
 		// get distances from i-th test example to 0..num_m_train_labels-1 train examples

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma,
+ * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
  *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
@@ -90,7 +90,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		is_log_loss = true;
 
 	int32_t vec_count;
-	for (auto e : progress(range(epochs)))
+	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
 		vec_count=0;
