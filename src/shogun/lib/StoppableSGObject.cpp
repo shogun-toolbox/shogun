@@ -41,14 +41,11 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
 
-void CStoppableSGObject::serialize_machine()
+void CStoppableSGObject::serialize_machine(std::string filename)
 {
-	std::string filename = this->get_name();
-	filename += ".txt";
-	auto file = new CSerializableAsciiFile(filename.c_str(), 'w');
-	this->save_serializable(file);
-	file->close();
-	SG_FREE(file);
+	m_serialized_file = new CSerializableAsciiFile(filename.c_str(), 'w');
+	this->save_serializable(m_serialized_file);
+	m_serialized_file->close();
 }
 
 void CStoppableSGObject::set_callback(std::function<bool()> callback)
@@ -71,7 +68,7 @@ void CStoppableSGObject::on_next()
 void CStoppableSGObject::on_pause()
 {
 	m_pause_computation_flag.store(true);
-	this->serialize_machine();
+	this->serialize_machine(std::string(this->get_name()) + ".txt");
 	on_pause_impl();
 	resume_computation();
 }
