@@ -17,7 +17,6 @@
 namespace shogun
 {
 	class SGIO;
-	class CMath;
 	class Version;
 	class Parallel;
 	class CRandom;
@@ -110,18 +109,6 @@ namespace shogun
 	 * @return version object
 	 */
 	Version* get_global_version();
-
-	/** set the global math object
-	 *
-	 * @param math math object to use
-	 */
-	void set_global_math(CMath* math);
-
-	/** get the global math object
-	 *
-	 * @return math object
-	 */
-	CMath* get_global_math();
 
 	/** set the global random object
 	 *
