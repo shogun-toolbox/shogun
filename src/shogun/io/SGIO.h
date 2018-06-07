@@ -197,10 +197,10 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 		SG_SERROR(__VA_ARGS__)	\
 }
 
-#define REQUIRE_E(x, ...)                                                      \
+#define REQUIRE_E(x, Exception, ...)                                           \
 	{                                                                          \
 		if (SG_UNLIKELY(!(x)))                                                 \
-			SG_STHROW(__VA_ARGS__)                                             \
+			SG_STHROW(Exception, __VA_ARGS__)                                  \
 	}
 
 /* help clang static analyzer to identify custom assertation functions */
