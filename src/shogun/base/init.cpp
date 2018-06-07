@@ -40,7 +40,6 @@ namespace shogun
 	Parallel* sg_parallel=NULL;
 	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
-	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
@@ -72,8 +71,6 @@ namespace shogun
 			sg_parallel=new shogun::Parallel();
 		if (!sg_version)
 			sg_version = new shogun::Version();
-		if (!sg_math)
-			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
 		if (!sg_linalg)
@@ -90,7 +87,6 @@ namespace shogun
 		SG_REF(sg_io);
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
-		SG_REF(sg_math);
 		SG_REF(sg_rand);
 
 		sg_print_message=print_message;
@@ -124,7 +120,6 @@ namespace shogun
 #endif
 
 		SG_UNREF(sg_rand);
-		SG_UNREF(sg_math);
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
@@ -195,19 +190,6 @@ namespace shogun
 	{
 		SG_REF(sg_version);
 		return sg_version;
-	}
-
-	void set_global_math(CMath* math)
-	{
-		SG_REF(math);
-		SG_UNREF(sg_math);
-		sg_math=math;
-	}
-
-	CMath* get_global_math()
-	{
-		SG_REF(sg_math);
-		return sg_math;
 	}
 
 	void set_global_rand(CRandom* rand)
