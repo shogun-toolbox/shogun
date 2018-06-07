@@ -313,7 +313,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename... Args>
-		void message(EMessageType prio, Args... args) const;
+		void message(EMessageType prio, Args&&... args) const;
 
 		/** format and print a message, and then throw an exception
 		 * @tparam ExceptionType type of the exception to throw
@@ -321,7 +321,7 @@ class SGIO
 		 * @param args arguments for formatting message
 		 */
 		template <typename Exception, typename... Args>
-		void error(EMessageType prio, Args... args) const;
+		void error(EMessageType prio, Args&&... args) const;
 
 		/** print a message with the print function decided by priority
 		 *
@@ -591,14 +591,14 @@ class SGIO
 };
 
 template <typename... Args>
-void SGIO::message(EMessageType prio, Args... args) const
+void SGIO::message(EMessageType prio, Args&&... args) const
 {
 	const auto& msg = format(prio, std::forward<Args>(args)...);
 	print(prio, msg);
 }
 
 template <typename ExceptionType, typename... Args>
-void SGIO::error(EMessageType prio, Args... args) const
+void SGIO::error(EMessageType prio, Args&&... args) const
 {
 	const auto& msg = format(prio, std::forward<Args>(args)...);
 	print(prio, msg);
