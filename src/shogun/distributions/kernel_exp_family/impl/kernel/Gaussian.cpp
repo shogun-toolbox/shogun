@@ -165,6 +165,11 @@ SGMatrix<float64_t> Gaussian::dx_i_dx_j(index_t idx_a, index_t idx_b) const
 	return result;
 }
 
+SGMatrix<float64_t> Gaussian::dy_i_dy_j(index_t idx_a, index_t idx_b) const
+{
+	return dx_i_dx_j(idx_a, idx_b);
+}
+
 SGMatrix<float64_t> Gaussian::dx_dy_dy(index_t idx_a, index_t idx_b) const
 {
 	auto D = get_num_dimensions();

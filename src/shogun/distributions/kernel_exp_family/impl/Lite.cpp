@@ -131,21 +131,47 @@ float64_t Lite::log_pdf(index_t idx_test) const
 	return beta_sum;
 }
 
-// TODO: implement these...
 SGVector<float64_t> Lite::grad(index_t idx_test) const
 {
-	SG_SERROR("Lite::grad not implemented yet");
-	return SGVector<float64_t>();
+	auto N_basis = get_num_basis();
+	auto D = get_num_dimensions();
+
+	SGVector<float64_t> ret(D);
+	Map<VectorXd> eigen_ret(ret.vector, D);
+	for (auto idx = 0; idx < N_basis; ++idx)
+	{
+		auto bit = m_kernel->dy(idx, idx_test);
+		eigen_ret += m_beta[idx] * Map<VectorXd>(bit.vector, D);
+	}
+	return ret;
 }
 
 SGMatrix<float64_t> Lite::hessian(index_t idx_test) const
 {
-	SG_SERROR("Lite::hessian not implemented yet");
-	return SGMatrix<float64_t>();
+	auto N_basis = get_num_basis();
+	auto D = get_num_dimensions();
+
+	SGMatrix<float64_t> ret(D, D);
+	Map<MatrixXd> eigen_ret(ret.matrix, D, D);
+	for (auto idx = 0; idx < N_basis; ++idx)
+	{
+		auto bit = m_kernel->dy_i_dy_j(idx, idx_test);
+		eigen_ret += m_beta[idx] * Map<VectorXd>(bit.matrix, D, D);
+	}
+	return ret;
 }
 
 SGVector<float64_t> Lite::hessian_diag(index_t idx_test) const
 {
-	SG_SERROR("Lite::hessian_diag not implemented yet");
-	return SGVector<float64_t>();
+	auto N_basis = get_num_basis();
+	auto D = get_num_dimensions();
+
+	SGVector<float64_t> ret(D);
+	Map<VectorXd> eigen_ret(ret.vector, D);
+	for (auto idx = 0; idx < N_basis; ++idx)
+	{
+		auto bit = m_kernel->dy_dy(idx, idx_test);
+		eigen_ret += m_beta[idx] * Map<VectorXd>(bit.vector, D);
+	}
+	return ret;
 }

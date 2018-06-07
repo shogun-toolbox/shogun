@@ -101,6 +101,7 @@ public :
 
 	virtual SGVector<float64_t> dy_dy(index_t a, index_t idx_b) const=0;
 	virtual float64_t sum_dy_dy(index_t a, index_t idx_b) const;
+	virtual SGMatrix<float64_t> dy_i_dy_j(index_t a, index_t idx_b) const=0;
 
 	virtual SGVector<float64_t> dx_sum_dy_dy(index_t a, index_t idx_b) const;
 	virtual float64_t sum_dx_sum_dy_dy(index_t a, index_t idx_b) const;
