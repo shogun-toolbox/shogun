@@ -52,6 +52,7 @@
 
 %include "shogun_ignores.i"
 
+%include "Machine_includes.i"
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
 %include "Distance_includes.i"
