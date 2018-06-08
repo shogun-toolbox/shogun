@@ -116,10 +116,11 @@ namespace shogun
 		 */
 		virtual SGVector<float64_t> get_average_gradient();
 
-    virtual SGVector<float64_t> obtain_variable_reference();
+		virtual SGVector<float64_t> obtain_variable_reference();
 
-    /** Updates m_trainable_parameters values to m_ref_trainable_parameters */
-    void update_stan_vectors_to_reference_values();
+		/** Updates m_trainable_parameters values to m_ref_trainable_parameters
+		 */
+		void update_stan_vectors_to_reference_values();
 
 	protected:
 		/** X is the training data in column major matrix format */
@@ -141,9 +142,9 @@ namespace shogun
 		// std::function<stan::math::var(StanVector*)>* m_total_cost;
 		FunctionReturnsStan<StanVector*>* m_total_cost;
 
-    /** Reference values for trainable_parameters so that minimizers can
-     * perform inplace updates */
-    SGVector<float64_t> m_ref_trainable_parameters;
+		/** Reference values for trainable_parameters so that minimizers can
+		 * perform inplace updates */
+		SGVector<float64_t> m_ref_trainable_parameters;
 
 		/** index_of_sample is the index of the column in X for the current
 		 * sample */

@@ -15,22 +15,6 @@ using Eigen::Dynamic;
 using stan::math::var;
 using std::function;
 
-
-/** This is a temporary fix. The variables are now variables
-*   So we cannot return a reference to the minimizer in the format
-*   SGVector< var > until we update the minimizer's interface
-*/
-/*
-SGVector<float64_t> LeastSquareTestCostFunction::obtain_variable_reference()
-{
-	int32_t params_num = m_X.num_cols;
-	SGVector<float64_t> ret(params_num);
-	for (index_t i = 0; i < params_num; ++i)
-		ret[i] = (*m_trainable_parameters)(i, 0).val();
-	return ret;
-}
-*/
-
 SGMatrix<float64_t> generateXSmall()
 {
 	SGMatrix<float64_t> X(2, 3);
@@ -55,8 +39,8 @@ StanVector generateParametersSmall()
 	return w;
 }
 
-function<var(StanVector*, float64_t)> cost_for_ith_datapoint(
-    SGMatrix<float64_t>& X, SGMatrix<float64_t>& y)
+function<var(StanVector*, float64_t)>
+cost_for_ith_datapoint(SGMatrix<float64_t>& X, SGMatrix<float64_t>& y)
 {
 	auto f_i = [X, y](StanVector* w, int32_t idx) {
 		var wx_y = (*w)(0, 0) * X(0, idx) + (*w)(1, 0) * X(1, idx) - y(0, idx);
@@ -91,8 +75,10 @@ TEST(LeastSquareTestCostFunction, points_on_a_line)
 
 	auto f_i = cost_for_ith_datapoint(X, y);
 
-	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1> cost_for_ith_point =
-	    Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(n, 1, f_i);
+	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>
+	    cost_for_ith_point =
+	        Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(
+	            n, 1, f_i);
 
 	auto total_cost = get_total_cost();
 
@@ -127,8 +113,10 @@ TEST(LeastSquareTestCostFunction, points_on_y_equals_x_squared)
 
 	auto f_i = cost_for_ith_datapoint(X, y);
 
-	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1> cost_for_ith_point =
-	    Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(n, 1, f_i);
+	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>
+	    cost_for_ith_point =
+	        Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(
+	            n, 1, f_i);
 
 	auto total_cost = get_total_cost();
 
@@ -140,7 +128,7 @@ TEST(LeastSquareTestCostFunction, points_on_y_equals_x_squared)
 	lstcf.begin_sample();
 	lstcf.next_sample();
 	lstcf.next_sample();
-	lstcf.next_sample(); //third point
+	lstcf.next_sample(); // third point
 	auto grad = lstcf.get_gradient();
 	EXPECT_NEAR(grad[0], -2.0, 1e-5);
 	EXPECT_NEAR(grad[1], -4.0, 1e-5);

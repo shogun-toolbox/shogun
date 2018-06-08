@@ -33,11 +33,11 @@ StanFirstOrderSAGCostFunction::StanFirstOrderSAGCostFunction(
 	m_trainable_parameters = trainable_parameters;
 	m_cost_for_ith_point = cost_for_ith_point;
 	m_total_cost = total_cost;
-  m_ref_trainable_parameters = SGVector<float64_t>(num_of_variables);
-  for (auto i : range(num_of_variables))
-  {
-    m_ref_trainable_parameters[i] = (*m_trainable_parameters)(i,0).val();
-  }
+	m_ref_trainable_parameters = SGVector<float64_t>(num_of_variables);
+	for (auto i : range(num_of_variables))
+	{
+		m_ref_trainable_parameters[i] = (*m_trainable_parameters)(i, 0).val();
+	}
 }
 
 void StanFirstOrderSAGCostFunction::set_training_data(
@@ -66,11 +66,11 @@ bool StanFirstOrderSAGCostFunction::next_sample()
 
 void StanFirstOrderSAGCostFunction::update_stan_vectors_to_reference_values()
 {
-  auto num_of_variables = m_trainable_parameters->rows();
-  for (auto i : range(num_of_variables))
-  {
-    (*m_trainable_parameters)(i,0) = m_ref_trainable_parameters[i];
-  }
+	auto num_of_variables = m_trainable_parameters->rows();
+	for (auto i : range(num_of_variables))
+	{
+		(*m_trainable_parameters)(i, 0) = m_ref_trainable_parameters[i];
+	}
 }
 SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
 {
@@ -79,8 +79,9 @@ SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
 	    num_of_variables > 0,
 	    "Number of sample must be greater than 0, you provided no samples");
 
-  update_stan_vectors_to_reference_values();
-	var f_i = (*m_cost_for_ith_point)(m_index_of_sample, 0)(m_trainable_parameters, m_index_of_sample);
+	update_stan_vectors_to_reference_values();
+	var f_i = (*m_cost_for_ith_point)(m_index_of_sample, 0)(
+	    m_trainable_parameters, m_index_of_sample);
 
 	stan::math::set_zero_all_adjoints();
 	f_i.grad();
@@ -97,10 +98,11 @@ float64_t StanFirstOrderSAGCostFunction::get_cost()
 	auto n = get_sample_size();
 	StanVector cost_argument(n);
 
-  update_stan_vectors_to_reference_values();
+	update_stan_vectors_to_reference_values();
 	for (auto i : range(n))
 	{
-		cost_argument(i, 0) = (*m_cost_for_ith_point)(i, 0)(m_trainable_parameters, i);
+		cost_argument(i, 0) =
+		    (*m_cost_for_ith_point)(i, 0)(m_trainable_parameters, i);
 	}
 	var cost = (*m_total_cost)(&cost_argument);
 	return cost.val();
@@ -134,5 +136,5 @@ SGVector<float64_t> StanFirstOrderSAGCostFunction::get_average_gradient()
 
 SGVector<float64_t> StanFirstOrderSAGCostFunction::obtain_variable_reference()
 {
-  return m_ref_trainable_parameters;
+	return m_ref_trainable_parameters;
 }
