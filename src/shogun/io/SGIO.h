@@ -10,8 +10,9 @@
 #ifndef __SGIO_H__
 #define __SGIO_H__
 
-#include <shogun/lib/config.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #include <dirent.h>
 #include <string.h>
@@ -122,9 +123,22 @@ enum EMessageLocation
 }
 
 #define SG_WARNING(...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_ERROR(...) { io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_OBJ_ERROR(o, ...) { o->io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_CLASS_ERROR(c, ...) { c::io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_THROW(ExceptionType, ...)                                           \
+	{                                                                          \
+		io->template error<ExceptionType>(                                     \
+		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+	}
+#define SG_ERROR(...) SG_THROW(ShogunException, __VA_ARGS__)
+#define SG_OBJ_ERROR(o, ...)                                                   \
+	{                                                                          \
+		o->io->template error<ShogunException>(                                \
+		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+	}
+#define SG_CLASS_ERROR(c, ...)                                                 \
+	{                                                                          \
+		c::io->template error<ShogunException>(                                \
+		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+	}
 #define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, \
 __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 "work or not to the Shogun mailing list.  Thanking you in " \
@@ -157,7 +171,12 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 }
 
 #define SG_SWARNING(...) { sg_io->message(MSG_WARN,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_SERROR(...) { sg_io->message(MSG_ERROR,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_STHROW(Exception, ...)                                              \
+	{                                                                          \
+		sg_io->template error<Exception>(                                      \
+		    MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);  \
+	}
+#define SG_SERROR(...) SG_STHROW(ShogunException, __VA_ARGS__)
 #define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 
 #define SG_SDONE() {								\
@@ -177,6 +196,12 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 	if (SG_UNLIKELY(!(x)))		\
 		SG_SERROR(__VA_ARGS__)	\
 }
+
+#define REQUIRE_E(x, Exception, ...)                                           \
+	{                                                                          \
+		if (SG_UNLIKELY(!(x)))                                                 \
+			SG_STHROW(Exception, __VA_ARGS__)                                  \
+	}
 
 /* help clang static analyzer to identify custom assertation functions */
 #ifdef __clang_analyzer__
@@ -268,7 +293,7 @@ class SGIO
 			return syntax_highlight;
 		}
 
-		/** print a message
+		/** format a message
 		 *
 		 * optionally prefixed with file name and line number
 		 * from (use -1 in line to disable this)
@@ -279,8 +304,31 @@ class SGIO
 		 * @param line line number from where the message is called
 		 * @param fmt format string
 		 */
-		void message(EMessageType prio, const char* function, const char* file,
-				int32_t line, const char *fmt, ... ) const;
+		std::string format(
+		    EMessageType prio, const char* function, const char* file,
+		    int32_t line, const char* fmt, ...) const;
+
+		/** format and print a message
+		 * @param prio message priority
+		 * @param args arguments for formatting message
+		 */
+		template <typename... Args>
+		void message(EMessageType prio, Args&&... args) const;
+
+		/** format and print a message, and then throw an exception
+		 * @tparam ExceptionType type of the exception to throw
+		 * @param prio message priority
+		 * @param args arguments for formatting message
+		 */
+		template <typename Exception, typename... Args>
+		void error(EMessageType prio, Args&&... args) const;
+
+		/** print a message with the print function decided by priority
+		 *
+		 * @param prio message priority
+		 * @param msg message
+		 */
+		void print(EMessageType prio, const std::string& msg) const;
 
 		/** print 'done' with priority INFO,
 		 * but only if progress bar is enabled
@@ -291,13 +339,18 @@ class SGIO
 		/** print error message 'not implemented' */
 		inline void not_implemented(const char* function, const char* file, int32_t line) const
 		{
-			message(MSG_ERROR, function, file, line, "Sorry, not yet implemented .\n");
+			error<ShogunException>(
+			    MSG_ERROR, function, file, line,
+			    "Sorry, not yet implemented .\n");
 		}
 
 		/** print error message 'Only available with GPL parts.' */
 		inline void gpl_only(const char* function, const char* file, int32_t line) const
 		{
-			message(MSG_ERROR, function, file, line, "This feature is only available if Shogun is built with GPL codes.\n");
+			error<ShogunException>(
+			    MSG_ERROR, function, file, line, "This feature is only "
+			                                     "available if Shogun is built "
+			                                     "with GPL codes.\n");
 		}
 
 		/** print warning message 'function deprecated' */
@@ -536,5 +589,20 @@ class SGIO
 	private:
 		RefCount* m_refcount;
 };
+
+template <typename... Args>
+void SGIO::message(EMessageType prio, Args&&... args) const
+{
+	const auto& msg = format(prio, std::forward<Args>(args)...);
+	print(prio, msg);
+}
+
+template <typename ExceptionType, typename... Args>
+void SGIO::error(EMessageType prio, Args&&... args) const
+{
+	const auto& msg = format(prio, std::forward<Args>(args)...);
+	print(prio, msg);
+	throw ExceptionType(msg);
+}
 }
 #endif // __SGIO_H__
