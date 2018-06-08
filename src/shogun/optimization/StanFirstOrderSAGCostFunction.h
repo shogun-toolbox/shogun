@@ -17,9 +17,11 @@
 using StanVector = Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>;
 template <class T>
 using FunctionReturnsStan = std::function<stan::math::var(T)>;
+template <class T>
+using FunctionStanVectorArg = std::function<stan::math::var(StanVector*, T)>;
 template <class S>
 using StanFunctionsVector =
-    Eigen::Matrix<FunctionReturnsStan<S>, Eigen::Dynamic, 1>;
+    Eigen::Matrix<FunctionStanVectorArg<S>, Eigen::Dynamic, 1>;
 namespace shogun
 {
 	/** @brief The first order stochastic cost function base class for
@@ -43,7 +45,7 @@ namespace shogun
 		StanFirstOrderSAGCostFunction(
 		    SGMatrix<float64_t> X, SGMatrix<float64_t> y,
 		    StanVector* trainable_parameters,
-		    StanFunctionsVector<int32_t>* cost_for_ith_point,
+		    StanFunctionsVector<float64_t>* cost_for_ith_point,
 		    FunctionReturnsStan<StanVector*>* total_cost);
 
 		StanFirstOrderSAGCostFunction(){};
@@ -114,6 +116,11 @@ namespace shogun
 		 */
 		virtual SGVector<float64_t> get_average_gradient();
 
+    virtual SGVector<float64_t> obtain_variable_reference();
+
+    /** Updates m_trainable_parameters values to m_ref_trainable_parameters */
+    void update_stan_vectors_to_reference_values();
+
 	protected:
 		/** X is the training data in column major matrix format */
 		SGMatrix<float64_t> m_X;
@@ -127,12 +134,16 @@ namespace shogun
 		/** cost_for_ith_point is the cost contributed by each point in the
 		 * training data */
 
-		StanFunctionsVector<int32_t>* m_cost_for_ith_point;
+		StanFunctionsVector<float64_t>* m_cost_for_ith_point;
 
 		/** total_cost is the total cost to be minimized, that in this case is a
 		 * form of sum of cost_for_ith_point*/
 		// std::function<stan::math::var(StanVector*)>* m_total_cost;
 		FunctionReturnsStan<StanVector*>* m_total_cost;
+
+    /** Reference values for trainable_parameters so that minimizers can
+     * perform inplace updates */
+    SGVector<float64_t> m_ref_trainable_parameters;
 
 		/** index_of_sample is the index of the column in X for the current
 		 * sample */
