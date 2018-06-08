@@ -48,5 +48,25 @@ class ShogunException: public std::exception
 		/** exception string */
 		std::string msg;
 };
+
+/** @brief Class InvalidStateException defines an exception which is thrown
+ * whenever an object in Shogun in invalid state is used. For example, a machine
+ * is used before training.
+ */
+class InvalidStateException : public ShogunException
+{
+public:
+	/** constructor
+	 *
+	 * @param str exception string
+	 */
+	explicit InvalidStateException(const std::string& what_arg);
+
+	/** constructor
+	 *
+	 * @param str exception string
+	 */
+	explicit InvalidStateException(const char* what_arg);
+};
 }
 #endif // _SHOGUN_EXCEPTION_H_

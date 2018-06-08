@@ -38,17 +38,18 @@ TEST_F(PipelineTest, no_machine)
 	pipeline->with(transformer1);
 
 	auto features = some<NiceMock<MockCFeatures>>();
-	EXPECT_THROW(pipeline->train(features), ShogunException);
+	EXPECT_THROW(pipeline->train(features), InvalidStateException);
 }
 
 TEST_F(PipelineTest, wrong_order)
 {
-	EXPECT_THROW(pipeline->then(machine)->with(transformer1), ShogunException);
+	EXPECT_THROW(
+	    pipeline->then(machine)->with(transformer1), std::invalid_argument);
 }
 
 TEST_F(PipelineTest, multiple_machine)
 {
-	EXPECT_THROW(pipeline->then(machine)->then(machine), ShogunException);
+	EXPECT_THROW(pipeline->then(machine)->then(machine), std::invalid_argument);
 }
 
 TEST_F(PipelineTest, fit_predict)
@@ -86,8 +87,9 @@ TEST_F(PipelineTest, fit_predict)
 
 TEST_F(PipelineTest, get)
 {
-	EXPECT_THROW(pipeline->get_transformer("not_exists"), ShogunException);
-	EXPECT_THROW(pipeline->get_machine(), ShogunException);
+	EXPECT_THROW(
+	    pipeline->get_transformer("not_exists"), std::invalid_argument);
+	EXPECT_THROW(pipeline->get_machine(), InvalidStateException);
 
 	std::string transformer_name = "my_transformer";
 	pipeline->with(transformer1)

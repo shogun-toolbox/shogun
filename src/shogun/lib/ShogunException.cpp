@@ -37,3 +37,13 @@ const char* ShogunException::what() const noexcept
 {
 	return msg.c_str();
 }
+
+InvalidStateException::InvalidStateException(const std::string& what_arg)
+    : ShogunException(what_arg)
+{
+}
+
+InvalidStateException::InvalidStateException(const char* what_arg)
+    : ShogunException(what_arg)
+{
+}

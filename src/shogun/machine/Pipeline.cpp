@@ -6,6 +6,7 @@
 
 #include <shogun/machine/Pipeline.h>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 namespace shogun
@@ -30,9 +31,10 @@ namespace shogun
 	CPipeline*
 	CPipeline::with(const std::string& name, CTransformer* transformer)
 	{
-		REQUIRE(
+		REQUIRE_E(
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
+		    std::invalid_argument,
 		    "Transformers can not be placed after machines. Last element is "
 		    "%s\n",
 		    m_stages.back().first.c_str());
@@ -50,9 +52,10 @@ namespace shogun
 
 	CPipeline* CPipeline::then(const std::string& name, CMachine* machine)
 	{
-		REQUIRE(
+		REQUIRE_E(
 		    m_stages.empty() ||
 		        holds_alternative<CTransformer*>(m_stages.back().second),
+		    std::invalid_argument,
 		    "Multiple machines are added to pipeline. Last element is %s\n",
 		    m_stages.back().first.c_str());
 
@@ -154,16 +157,20 @@ namespace shogun
 				return shogun::get<CTransformer*>(stage.second);
 		}
 
-		SG_ERROR("Transformer with name %s not found.\n", name.c_str());
+		SG_THROW(
+		    std::invalid_argument, "Transformer with name %s not found.\n",
+		    name.c_str());
 
 		return nullptr;
 	}
 
 	void CPipeline::check_pipeline() const
 	{
-		REQUIRE(!m_stages.empty(), "Pipeline is empty");
-		REQUIRE(
+		REQUIRE_E(
+		    !m_stages.empty(), InvalidStateException, "Pipeline is empty");
+		REQUIRE_E(
 		    holds_alternative<CMachine*>(m_stages.back().second),
+		    InvalidStateException,
 		    "Pipline cannot be trained without an added machine. Last element "
 		    "is %s.\n",
 		    m_stages.back().first.c_str());
