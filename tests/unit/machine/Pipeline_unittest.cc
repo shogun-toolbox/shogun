@@ -5,7 +5,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <shogun/base/some.h>
+#include <shogun/lib/exception/InvalidStateException.h>
 #include <shogun/machine/Pipeline.h>
+#include <stdexcept>
 
 using namespace shogun;
 using ::testing::Mock;

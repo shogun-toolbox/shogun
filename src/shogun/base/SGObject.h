@@ -18,10 +18,10 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/RxCppHeader.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 

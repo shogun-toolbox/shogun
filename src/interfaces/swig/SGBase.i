@@ -104,7 +104,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/base/init.h>
  #include <shogun/lib/common.h>
  #include <shogun/io/SGIO.h>
- #include <shogun/lib/ShogunException.h>
+ #include <shogun/lib/exception/ShogunException.h>
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>

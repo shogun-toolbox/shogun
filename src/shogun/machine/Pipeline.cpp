@@ -4,6 +4,7 @@
  * Authors: Wuwei Lin
  */
 
+#include <shogun/lib/exception/InvalidStateException.h>
 #include <shogun/machine/Pipeline.h>
 #include <sstream>
 #include <stdexcept>
