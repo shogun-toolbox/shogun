@@ -59,3 +59,25 @@ TEST(Perceptron, train)
 	auto acc = some<CAccuracyMeasure>();
 	EXPECT_EQ(acc->evaluate(results, test_labels), 1.0);
 }
+
+TEST(Perceptron, custom_hyperplane_initialization)
+{
+	auto env = linear_test_env->getBinaryLabelData();
+	auto features = wrap(env->get_features_train());
+	auto labels = wrap(env->get_labels_train());
+	auto test_features = wrap(env->get_features_test());
+	auto test_labels = wrap(env->get_labels_test());
+
+	auto perceptron = some<CPerceptron>(features, labels);
+	perceptron->train();
+
+	auto weights = perceptron->get_w();
+
+	auto perceptron_initialized = some<CPerceptron>(features, labels);
+	perceptron_initialized->set_initialize_hyperplane(false);
+	perceptron_initialized->set_w(weights);
+	perceptron_initialized->set_max_iter(1);
+
+	perceptron_initialized->train();
+	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
+}
