@@ -311,7 +311,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
-%include <shogun/lib/ShogunException.h>
+%include <shogun/lib/exception/ShogunException.h>
 
 %include "swig_typemaps.i"
 
