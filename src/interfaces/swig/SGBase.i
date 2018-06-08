@@ -295,6 +295,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         SWIG_fail;
 #endif
     }
+    SWIG_CATCH_STDEXCEPT
 }
 
 %ignore NUM_LOG_LEVELS;
