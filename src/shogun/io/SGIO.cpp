@@ -65,71 +65,74 @@ SGIO::SGIO(const SGIO& orig)
 	m_refcount = new RefCount();
 }
 
-void SGIO::message(EMessageType prio, const char* function, const char* file,
-		int32_t line, const char *fmt, ... ) const
+std::string SGIO::format(
+    EMessageType prio, const char* function, const char* file, int32_t line,
+    const char* fmt, ...) const
 {
 	const char* msg_intro=get_msg_intro(prio);
 
-	if (msg_intro)
+	char str[4096];
+	snprintf(str, sizeof(str), "%s", msg_intro);
+	int len = strlen(msg_intro);
+	char* s = str + len;
+
+	/* file and line are shown for warnings and worse */
+	if (location_info == MSG_LINE_AND_FILE || prio == MSG_WARN ||
+	    prio == MSG_ERROR)
 	{
-		char str[4096];
-		snprintf(str, sizeof(str), "%s", msg_intro);
-		int len=strlen(msg_intro);
-		char* s=str+len;
-
-		/* file and line are shown for warnings and worse */
-		if (location_info==MSG_LINE_AND_FILE || prio==MSG_WARN || prio==MSG_ERROR)
-		{
-			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
-			len=strlen(str);
-			s=str+len;
-		}
-		else if (location_info==MSG_FUNCTION)
-		{
-			snprintf(s, sizeof(str)-len, "%s: ", function);
-			len=strlen(str);
-			s=str+len;
-		}
-		else if (location_info==MSG_NONE)
-		{
-			;
-		}
-
-		va_list list;
-		va_start(list,fmt);
-		vsnprintf(s, sizeof(str)-len, fmt, list);
-		va_end(list);
-
-		switch (prio)
-		{
-			case MSG_GCDEBUG:
-			case MSG_DEBUG:
-			case MSG_INFO:
-			case MSG_NOTICE:
-			case MSG_MESSAGEONLY:
-				if (sg_print_message)
-					sg_print_message(target, str);
-				break;
-
-			case MSG_WARN:
-				if (sg_print_warning)
-					sg_print_warning(target, str);
-				break;
-
-			case MSG_ERROR:
-			case MSG_CRITICAL:
-			case MSG_ALERT:
-			case MSG_EMERGENCY:
-				if (sg_print_error)
-					sg_print_error(target, str);
-				throw ShogunException(str);
-				break;
-			default:
-				break;
-		}
-
-		fflush(target);
+		snprintf(s, sizeof(str) - len, "In file %s line %d: ", file, line);
+		len = strlen(str);
+		s = str + len;
 	}
+	else if (location_info == MSG_FUNCTION)
+	{
+		snprintf(s, sizeof(str) - len, "%s: ", function);
+		len = strlen(str);
+		s = str + len;
+	}
+	else if (location_info == MSG_NONE)
+	{
+		;
+	}
+
+	va_list list;
+	va_start(list, fmt);
+	vsnprintf(s, sizeof(str) - len, fmt, list);
+	va_end(list);
+
+	return std::string(str);
+}
+
+void SGIO::print(EMessageType prio, const std::string& msg) const
+{
+	switch (prio)
+	{
+	case MSG_GCDEBUG:
+	case MSG_DEBUG:
+	case MSG_INFO:
+	case MSG_NOTICE:
+	case MSG_MESSAGEONLY:
+		if (sg_print_message)
+			sg_print_message(target, msg.c_str());
+		break;
+
+	case MSG_WARN:
+		if (sg_print_warning)
+			sg_print_warning(target, msg.c_str());
+		break;
+
+	case MSG_ERROR:
+	case MSG_CRITICAL:
+	case MSG_ALERT:
+	case MSG_EMERGENCY:
+		if (sg_print_error)
+			sg_print_error(target, msg.c_str());
+		break;
+	default:
+		break;
+	}
+
+	fflush(target);
 }
 
 void SGIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
@@ -202,11 +205,6 @@ const char* SGIO::get_msg_intro(EMessageType prio) const
 {
 	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{
-		// ignore msg if prio's level is under loglevel,
-		// but not if prio's level higher than MSG_WARN
-		if (levels[i]<loglevel && prio<=MSG_WARN)
-			return NULL;
-
 		if (levels[i]==prio)
 		{
 			if (syntax_highlight)
@@ -216,7 +214,7 @@ const char* SGIO::get_msg_intro(EMessageType prio) const
 		}
 	}
 
-	return NULL;
+	return nullptr; // unreachable
 }
 
 char* SGIO::c_string_of_substring(substring s)
