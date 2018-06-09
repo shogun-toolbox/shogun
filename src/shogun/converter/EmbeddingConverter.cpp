@@ -29,11 +29,6 @@ CEmbeddingConverter::~CEmbeddingConverter()
 	SG_UNREF(m_kernel);
 }
 
-CDenseFeatures<float64_t>* CEmbeddingConverter::embed(CFeatures* features)
-{
-	return (CDenseFeatures<float64_t>*)transform(features);
-}
-
 void CEmbeddingConverter::set_target_dim(int32_t dim)
 {
 	ASSERT(dim>0)

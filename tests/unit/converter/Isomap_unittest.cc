@@ -118,8 +118,9 @@ TEST(DISABLED_IsomapTest,neighbors_preserving)
 	isoEmbedder->set_target_dim(n_target_dimensions);
 	EXPECT_EQ(n_target_dimensions, isoEmbedder->get_target_dim());
 
-	CDenseFeatures<float64_t>* low_dimensional_features =
-		isoEmbedder->embed(high_dimensional_features);
+	auto low_dimensional_features =
+	    isoEmbedder->transform(high_dimensional_features)
+	        ->as<CDenseFeatures<float64_t>>();
 
 	EXPECT_EQ(n_target_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());

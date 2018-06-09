@@ -26,8 +26,9 @@ TEST(TDistributedStochasticNeighborEmbeddingTest,basic)
 	 */
 	embedder->set_perplexity(n_samples / 5.0);
 
-	CDenseFeatures<float64_t>* low_dimensional_features =
-		embedder->embed(high_dimensional_features);
+	auto low_dimensional_features =
+	    embedder->transform(high_dimensional_features)
+	        ->as<CDenseFeatures<float64_t>>();
 
 	EXPECT_EQ(n_target_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());
