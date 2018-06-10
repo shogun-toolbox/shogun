@@ -1,0 +1,14 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
+Features feats_train = features(f_feats_train)
+BinaryLabels labels_train(f_labels_train)
+
+GaussianKernel subkernel()
+subkernel.set_width(1.7)
+subkernel.init(feats_train, feats_train)
+
+AUCKernel auc(0, subkernel)
+auc.setup_auc_maximization(labels_train)
+
+RealMatrix km_train = auc.get_kernel_matrix()
+
