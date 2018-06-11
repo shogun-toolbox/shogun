@@ -27,7 +27,6 @@ protected:
 		    .WillByDefault(Return(true));
 	}
 
-	Some<CPipeline> pipeline = some<CPipeline>();
 	Some<NiceMock<MockCTransformer>> transformer1 =
 	    some<NiceMock<MockCTransformer>>();
 	Some<NiceMock<MockCTransformer>> transformer2 =
@@ -37,28 +36,19 @@ protected:
 
 TEST_F(PipelineTest, no_machine)
 {
-	pipeline->with(transformer1);
-
-	auto features = some<NiceMock<MockCFeatures>>();
-	EXPECT_THROW(pipeline->train(features), InvalidStateException);
-}
-
-TEST_F(PipelineTest, wrong_order)
-{
 	EXPECT_THROW(
-	    pipeline->then(machine)->with(transformer1), std::invalid_argument);
-}
-
-TEST_F(PipelineTest, multiple_machine)
-{
-	EXPECT_THROW(pipeline->then(machine)->then(machine), std::invalid_argument);
+	    some<CPipelineBuilder>()->over(transformer1)->build(),
+	    InvalidStateException);
 }
 
 TEST_F(PipelineTest, fit_predict)
 {
 	auto features = some<NiceMock<MockCFeatures>>();
 	auto labels = some<NiceMock<MockCLabels>>();
-	pipeline->with(transformer1)->with(transformer2)->then(machine);
+	auto pipeline = some<CPipelineBuilder>()
+	                    ->over(transformer1)
+	                    ->over(transformer2)
+	                    ->then(machine);
 
 	// no labels given
 	EXPECT_THROW(pipeline->train(features), ShogunException);
@@ -85,21 +75,26 @@ TEST_F(PipelineTest, fit_predict)
 	EXPECT_CALL(*machine, apply(_));
 
 	pipeline->apply(features);
+
+	SG_UNREF(pipeline);
 }
 
 TEST_F(PipelineTest, get)
 {
-	EXPECT_THROW(
-	    pipeline->get_transformer("not_exists"), std::invalid_argument);
-	EXPECT_THROW(pipeline->get_machine(), InvalidStateException);
 
 	std::string transformer_name = "my_transformer";
-	pipeline->with(transformer1)
-	    ->with(transformer_name, transformer2)
-	    ->then(machine);
 
+	auto pipeline = some<CPipelineBuilder>()
+	                    ->over(transformer1)
+	                    ->over(transformer_name, transformer2)
+	                    ->then(machine);
+
+	EXPECT_THROW(
+	    pipeline->get_transformer("not_exists"), std::invalid_argument);
 	EXPECT_EQ(
 	    pipeline->get_transformer("MockCTransformer"), transformer1.get());
 	EXPECT_EQ(pipeline->get_transformer(transformer_name), transformer2.get());
 	EXPECT_EQ(pipeline->get_machine(), machine.get());
+
+	SG_UNREF(pipeline);
 }

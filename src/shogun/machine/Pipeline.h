@@ -14,6 +14,72 @@
 
 namespace shogun
 {
+	class CPipeline;
+
+	/** @brief Builder of pipeline. */
+	class CPipelineBuilder : public CSGObject
+	{
+	public:
+		virtual ~CPipelineBuilder();
+
+		/** Add a transformer with default name to pipeline. The name is
+		 * obtained by transformer->get_name().
+		 * @param transformer the transformer
+		 * @return the current pipeline builder
+		 */
+		CPipelineBuilder* over(CTransformer* transformer);
+
+		/** Add a transformer with given name to pipeline
+		 * @param name the name of the transformer
+		 * @param transformer the transformer
+		 * @return the current pipeline builder
+		 */
+		CPipelineBuilder*
+		over(const std::string& name, CTransformer* transformer);
+
+		/** Add a machine with default name to pipeline. Pipeline may have only
+		 * one machine. build() will be called to create a new pipeline
+		 * instance.
+		 * @param machine the machine
+		 * @return the current pipeline
+		 */
+		CPipeline* then(CMachine* machine);
+
+		/** Add a machine with given name to pipeline. Pipeline may have only
+		 * one machine. build() will be called to create a new pipeline
+		 * instance.
+		 * @param name the name of the traansformer
+		 * @param machine the machine
+		 * @return the current pipeline
+		 */
+		CPipeline* then(const std::string& name, CMachine* machine);
+
+		/** Add a list of stages to pipeline. Stages in the list must be
+		 * transformers or machines.
+		 * @param stages vector of stages to add
+		 * @return the current pipeline
+		 */
+		CPipelineBuilder* add_stages(std::vector<CSGObject*> stages);
+
+		/* Build pipeline. A new pipeline instance will be created, current
+		 * pipeline builder will become invalid after calling this method.
+		 * @return the new pipeline instance
+		 */
+		CPipeline* build();
+
+		virtual const char* get_name() const override
+		{
+			return "PipelineBuilder";
+		}
+
+	private:
+		/** Check pipeline is not empty and machine has been added. */
+		void check_pipeline() const;
+
+		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
+		    m_stages;
+	};
+
 	/** Pipeline is a machine that chains multiple transformers and machines. It
 	 * consists of a sequence of transformers as intermediate stages of training
 	 * or testing and a machine as the final stage. Features are transformed by
@@ -21,38 +87,11 @@ namespace shogun
 	 */
 	class CPipeline : public CMachine
 	{
+		friend class CPipelineBuilder;
+
 	public:
 		CPipeline();
 		virtual ~CPipeline();
-
-		/** Add a transformer with default name to pipeline. The name is
-		 * obtained by transformer->get_name().
-		 * @param transformer the transformer
-		 * @return the current pipeline
-		 */
-		CPipeline* with(CTransformer* transformer);
-
-		/** Add a transformer with given name to pipeline
-		 * @param name the name of the transformer
-		 * @param transformer the transformer
-		 * @return the current pipeline
-		 */
-		CPipeline* with(const std::string& name, CTransformer* transformer);
-
-		/** Add a machine with default name to pipeline. Pipeline may have only
-		 * one machine.
-		 * @param machine the machine
-		 * @return the current pipeline
-		 */
-		CPipeline* then(CMachine* machine);
-
-		/** Add a machine with given name to pipeline. Pipeline may have only
-		 * one machine.
-		 * @param name the name of the traansformer
-		 * @param machine the machine
-		 * @return the current pipeline
-		 */
-		CPipeline* then(const std::string& name, CMachine* machine);
 
 		virtual CLabels* apply(CFeatures* data = NULL) override;
 
@@ -81,9 +120,6 @@ namespace shogun
 		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
 		    m_stages;
 		virtual bool train_require_labels() const override;
-
-		/** Check pipeline is not empty and machine has been added. */
-		void check_pipeline() const;
 	};
 }
 

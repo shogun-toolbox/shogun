@@ -12,11 +12,7 @@
 
 namespace shogun
 {
-	CPipeline::CPipeline() : CMachine()
-	{
-	}
-
-	CPipeline::~CPipeline()
+	CPipelineBuilder::~CPipelineBuilder()
 	{
 		for (auto&& stage : m_stages)
 		{
@@ -24,13 +20,13 @@ namespace shogun
 		}
 	}
 
-	CPipeline* CPipeline::with(CTransformer* transformer)
+	CPipelineBuilder* CPipelineBuilder::over(CTransformer* transformer)
 	{
-		return with(transformer->get_name(), transformer);
+		return over(transformer->get_name(), transformer);
 	}
 
-	CPipeline*
-	CPipeline::with(const std::string& name, CTransformer* transformer)
+	CPipelineBuilder*
+	CPipelineBuilder::over(const std::string& name, CTransformer* transformer)
 	{
 		REQUIRE_E(
 		    m_stages.empty() ||
@@ -46,12 +42,13 @@ namespace shogun
 		return this;
 	}
 
-	CPipeline* CPipeline::then(CMachine* machine)
+	CPipeline* CPipelineBuilder::then(CMachine* machine)
 	{
 		return then(machine->get_name(), machine);
 	}
 
-	CPipeline* CPipeline::then(const std::string& name, CMachine* machine)
+	CPipeline*
+	CPipelineBuilder::then(const std::string& name, CMachine* machine)
 	{
 		REQUIRE_E(
 		    m_stages.empty() ||
@@ -63,13 +60,71 @@ namespace shogun
 		SG_REF(machine);
 		m_stages.emplace_back(name, machine);
 
+		return build();
+	}
+
+	CPipelineBuilder*
+	CPipelineBuilder::add_stages(std::vector<CSGObject*> stages)
+	{
+		for (auto stage : stages)
+		{
+			auto transformer = dynamic_cast<CTransformer*>(stage);
+			if (transformer)
+			{
+				over(transformer);
+			}
+			else
+			{
+				auto machine = dynamic_cast<CMachine*>(stage);
+				REQUIRE_E(
+				    machine, std::invalid_argument, "Stage must be either a "
+				                                    "transformer or a machine. "
+				                                    "Provided %s\n",
+				    stage->get_name());
+				SG_REF(machine);
+				m_stages.emplace_back(machine->get_name(), machine);
+			}
+		}
 		return this;
+	}
+
+	CPipeline* CPipelineBuilder::build()
+	{
+		check_pipeline();
+
+		auto pipeline = new CPipeline();
+		pipeline->m_stages = std::move(m_stages);
+		m_stages.clear();
+
+		return pipeline;
+	}
+
+	void CPipelineBuilder::check_pipeline() const
+	{
+		REQUIRE_E(
+		    !m_stages.empty(), InvalidStateException, "Pipeline is empty");
+		REQUIRE_E(
+		    holds_alternative<CMachine*>(m_stages.back().second),
+		    InvalidStateException, "Pipline cannot be trained without an "
+		                           "added machine. Last element "
+		                           "is %s.\n",
+		    m_stages.back().first.c_str());
+	}
+
+	CPipeline::CPipeline() : CMachine()
+	{
+	}
+
+	CPipeline::~CPipeline()
+	{
+		for (auto&& stage : m_stages)
+		{
+			visit([](auto&& object) { SG_UNREF(object) }, stage.second);
+		}
 	}
 
 	bool CPipeline::train_machine(CFeatures* data)
 	{
-		check_pipeline();
-
 		if (train_require_labels())
 		{
 			REQUIRE(m_labels, "No labels given.\n");
@@ -99,8 +154,6 @@ namespace shogun
 
 	CLabels* CPipeline::apply(CFeatures* data)
 	{
-		check_pipeline();
-
 		for (auto&& stage : m_stages)
 		{
 			if (holds_alternative<CTransformer*>(stage.second))
@@ -165,21 +218,8 @@ namespace shogun
 		return nullptr;
 	}
 
-	void CPipeline::check_pipeline() const
-	{
-		REQUIRE_E(
-		    !m_stages.empty(), InvalidStateException, "Pipeline is empty");
-		REQUIRE_E(
-		    holds_alternative<CMachine*>(m_stages.back().second),
-		    InvalidStateException,
-		    "Pipline cannot be trained without an added machine. Last element "
-		    "is %s.\n",
-		    m_stages.back().first.c_str());
-	}
-
 	CMachine* CPipeline::get_machine() const
 	{
-		check_pipeline();
 		return shogun::get<CMachine*>(m_stages.back().second);
 	}
 }
