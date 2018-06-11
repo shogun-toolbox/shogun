@@ -2,12 +2,12 @@
 Chi Square Distance
 ===================
 
-The Chi Square Distance for real valued features x and x' extends the concept of :math:`\chi^{2}` metric to negative values.
+The Chi Square Distance for real valued features :math:`\bf{x},\bf{x'} \in \mathbb{R}^{n}` extends the concept of :math:`\chi^{2}` distance to negative values.
 This distance is calculated by the equation:
 
 .. math::
 
-    d(\bf{x},\bf{x'}) = \sum_{i=1}^{n}\frac{(x_{i}-x'_{i})^2}{|x_{i}|+|x'_{i}|} \quad \bf{x},\bf{x'} \in R^{n}
+    d(\bf{x},\bf{x'}) = \sum_{i=1}^{n}\frac{(x_{i}-x'_{i})^2}{|x_{i}|+|x'_{i}|}
 
 -------
 Example
