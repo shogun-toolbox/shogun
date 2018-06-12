@@ -138,7 +138,7 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 
 	int32_t counter = 0;
 
-	for (auto i : progress(range(0, max_num_epochs)))
+	for (auto i : SG_PROGRESS(range(0, max_num_epochs)))
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{

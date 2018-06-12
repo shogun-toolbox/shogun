@@ -4,9 +4,10 @@
  * Authors: Viktor Gal, Thoralf Klein, Sergey Lisitsyn, Soeren Sonnenburg
  */
 
-#include <shogun/machine/LinearLatentMachine.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/latent/LatentModel.h>
+#include <shogun/machine/LinearLatentMachine.h>
 
 using namespace shogun;
 
@@ -72,7 +73,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	float64_t inner_eps = 0.5*m_C*m_epsilon;
 	bool stop = false;
 	m_cur_iter = 0;
-
+	auto pb = SG_PROGRESS(range(m_max_iter));
 	/* do CCCP */
 	SG_DEBUG("Starting CCCP\n")
 	while ((m_cur_iter < 2)||(!stop&&(m_cur_iter < m_max_iter)))
@@ -104,8 +105,9 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 
 		/* increment iteration counter */
 		m_cur_iter++;
+		pb.print_progress();
 	}
-
+	pb.complete();
 	return true;
 }
 

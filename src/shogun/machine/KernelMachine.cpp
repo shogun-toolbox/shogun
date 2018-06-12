@@ -333,7 +333,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 		else
 		{
-			auto pb = progress(range(num_vectors));
+			auto pb = SG_PROGRESS(range(num_vectors));
 			int32_t num_threads;
 			int64_t step;
 #pragma omp parallel shared(num_threads, step)
@@ -480,7 +480,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		io->disable_progress();
 
 	/* custom kernel never has batch evaluation property so dont do this here */
-	auto pb = progress(range(0, num_inds));
+	auto pb = SG_PROGRESS(range(0, num_inds));
 	int32_t num_threads;
 	int64_t step;
 #pragma omp parallel shared(num_threads, step)

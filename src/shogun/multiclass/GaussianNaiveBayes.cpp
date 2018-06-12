@@ -108,7 +108,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	int32_t max_progress = 2 * train_labels.vlen + 2 * m_num_classes;
 
 	// Progress bar
-	auto pb = progress(range(max_progress), *this->io);
+	auto pb = SG_PROGRESS(range(max_progress));
 
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
@@ -172,7 +172,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
 
 	// classify each example of data
-	for (auto i : progress(range(num_vectors), *this->io))
+	for (auto i : SG_PROGRESS(range(num_vectors)))
 	{
 		result->set_label(i,apply_one(i));
 	}

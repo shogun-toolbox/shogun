@@ -642,7 +642,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   CTime start_time;
   mkl_converged=false;
 
-  auto pb = progress(range(10), *this->io);
+  auto pb = SG_PROGRESS(range(10));
 #ifdef CYGWIN
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else

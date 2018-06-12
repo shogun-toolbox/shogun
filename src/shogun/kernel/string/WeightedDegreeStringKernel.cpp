@@ -211,7 +211,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n")
 
-	for (auto i : progress(range(count), *this->io))
+	for (auto i : SG_PROGRESS(range(count)))
 	{
 		if (tree_num<0)
 		{
@@ -877,7 +877,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 #endif
 	ASSERT(num_threads>0)
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
-	auto pb = progress(range(num_feat), *this->io);
+	auto pb = SG_PROGRESS(range(num_feat));
 
 	if (num_threads < 2)
 	{

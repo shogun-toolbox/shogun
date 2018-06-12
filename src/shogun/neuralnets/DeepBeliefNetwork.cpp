@@ -33,17 +33,17 @@
 
 #include <shogun/neuralnets/DeepBeliefNetwork.h>
 
-
 #include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicArray.h>
-#include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
 
 using namespace shogun;
 
@@ -263,7 +263,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 	float64_t alpha = gd_learning_rate;
 
 	int32_t counter = 0;
-	for (int32_t i=0; i<max_num_epochs; i++)
+	for (auto i : SG_PROGRESS(range(0, max_num_epochs)))
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{

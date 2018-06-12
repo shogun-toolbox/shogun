@@ -5,11 +5,12 @@
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -91,6 +92,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		dalphas[i]=-1; //CSVC
 	}
 
+	auto pb = SG_PROGRESS(range(maxiter));
 	// go ...
 	while (niter++ < maxiter)
 	{
@@ -222,8 +224,10 @@ bool CMPDSVM::train_machine(CFeatures* data)
 				dalphas[i]+= F[i] * etachange;
 			//dalphas[i]+= F[i] * etachange[0] + F[i+n] * etachange[1];
 		}
+		pb.print_progress();
 	}
 
+	pb.complete();
 	if (niter >= maxiter)
 		SG_WARNING("increase maxiter ... \n")
 

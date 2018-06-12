@@ -129,7 +129,7 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	W = sym_decorrelation(W);
 
 	float64_t lim = tol+1;
-	for (auto i : progress(range(0, max_iter),[&] { return lim > tol; }))
+	for (auto i : SG_PROGRESS(range(0, max_iter), [&] { return lim > tol; }))
 	{
 		MatrixXd wtx = W * WX;
 

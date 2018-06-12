@@ -479,7 +479,7 @@ void Solver::Solve(
 	// initialize gradient
 	CTime start_time;
 	{
-		auto pb = progress(range(l));
+		auto pb = SG_SPROGRESS(range(l));
 		G = SG_MALLOC(float64_t, l);
 		G_bar = SG_MALLOC(float64_t, l);
 		int32_t i;
@@ -512,7 +512,7 @@ void Solver::Solve(
 
 	int32_t iter = 0;
 	int32_t counter = CMath::min(l,1000)+1;
-	auto pb = progress(range(10));
+	auto pb = SG_SPROGRESS(range(10));
 	while (!cancel_computation())
 	{
 		if (Q->max_train_time > 0 && start_time.cur_time_diff() > Q->max_train_time)
