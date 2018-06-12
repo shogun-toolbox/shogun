@@ -298,7 +298,7 @@ bool CCommWordStringKernel::init_optimization(
 
 	SG_DEBUG("initializing CCommWordStringKernel optimization\n")
 
-	for (auto i : progress(range(0, count), *this->io))
+	for (auto i : SG_PROGRESS(range(0, count)))
 	{
 		add_to_normal(IDX[i], weights[i]);
 	}

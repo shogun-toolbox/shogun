@@ -7,15 +7,16 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
+#include <shogun/base/progress.h>
 #include <shogun/classifier/svm/NewtonSVM.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/lapack.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 //#define DEBUG_NEWTON
 //#define V_NEWTON
@@ -80,6 +81,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	float64_t obj, *grad=SG_MALLOC(float64_t, x_d+1);
 	float64_t t;
 
+	auto pb = SG_PROGRESS(range(num_iter));
 	while (iter <= num_iter)
 	{
 		COMPUTATION_CONTROLLERS
@@ -204,13 +206,10 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 		if (newton_decrement*2<prec*obj)
 			break;
-	}
 
-	if (iter > num_iter)
-	{
-		SG_PRINT("Maximum number of Newton steps reached. Try larger lambda")
+		pb.print_progress();
 	}
-
+	pb.complete();
 #ifdef V_NEWTON
 	SG_PRINT("FINAL W AND BIAS Vector=\n\n")
 	CMath::display_matrix(weights, x_d+1, 1);

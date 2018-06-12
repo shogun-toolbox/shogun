@@ -109,7 +109,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 	float64_t* distances=SG_MALLOC(float64_t, num_pairs);
 
 	int32_t offs=0;
-	for (auto i : progress(range(0, num), *this->io))
+	for (auto i : SG_PROGRESS(range(0, num)))
 	{
 		for (int32_t j=i+1; j<num; j++)
 		{
@@ -123,7 +123,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
 	//CMath::display_vector(distances, (num-1)*num/2, "dists");
 
-	auto pb = progress(range(0, num_pairs - 1), *this->io);
+	auto pb = SG_PROGRESS(range(0, num_pairs - 1));
 	int32_t k=-1;
 	int32_t l=0;
 	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)

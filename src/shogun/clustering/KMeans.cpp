@@ -6,12 +6,13 @@
  *          Bjoern Esser, parijat
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
@@ -60,9 +61,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	distance->precompute_lhs();
 
 	int32_t changed=1;
-	int32_t iter;
 
-	for(iter=0; iter<max_iter; iter++)
+	for (auto iter : SG_PROGRESS(range(max_iter)))
 	{
 		if (iter==max_iter-1)
 			SG_SWARNING("KMeans clustering has reached maximum number of ( %d ) iterations without having converged. \

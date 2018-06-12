@@ -7,12 +7,13 @@
 
 #include <algorithm>
 
+#include <shogun/base/progress.h>
+#include <shogun/features/DenseSubsetFeatures.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
 #include <shogun/multiclass/ShareBoostOptimizer.h>
-#include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -74,7 +75,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 	CTime *timer = new CTime();
 
 	float64_t t_compute_pred = 0; // t of 1st round is 0, since no pred to compute
-	for (int32_t t=0; t < m_nonzero_feas; ++t)
+	for (auto t : SG_PROGRESS(range(m_nonzero_feas)))
 	{
 		timer->start();
 		compute_rho();

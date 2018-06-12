@@ -243,7 +243,7 @@ void CDistance::do_precompute_matrix()
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=SG_MALLOC(float32_t, num*(num+1)/2);
 
-	for (auto i : progress(range(num), *this->io))
+	for (auto i : SG_PROGRESS(range(num)))
 	{
 		for (int32_t j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;

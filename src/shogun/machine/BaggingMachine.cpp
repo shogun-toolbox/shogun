@@ -5,6 +5,7 @@
  *          Olivier NGuyen, Bjoern Esser, Weijie Lin
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/ensemble/CombinationRule.h>
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/machine/BaggingMachine.h>
@@ -177,7 +178,8 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
 		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
 
-	#pragma omp parallel for
+	auto pb = SG_PROGRESS(range(m_num_bags));
+#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());
@@ -239,7 +241,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		}
 
 		SG_UNREF(c);
+		pb.print_progress();
 	}
+	pb.complete();
 
 	return true;
 }

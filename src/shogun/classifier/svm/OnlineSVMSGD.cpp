@@ -5,12 +5,13 @@
  *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
-#include <shogun/classifier/svm/OnlineSVMSGD.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
+#include <shogun/classifier/svm/OnlineSVMSGD.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/loss/HingeLoss.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -89,7 +90,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		is_log_loss = true;
 
 	int32_t vec_count;
-	for (int32_t e = 0; e < epochs; e++)
+	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
 		vec_count=0;

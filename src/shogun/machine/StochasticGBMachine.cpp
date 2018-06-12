@@ -28,9 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/machine/StochasticGBMachine.h>
-#include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/optimization/lbfgs/lbfgs.h>
 
 using namespace shogun;
 
@@ -184,7 +185,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 	for (int32_t i=0;i<interf->get_num_labels();i++)
 		interf->set_label(i,0);
 
-	for (int32_t i=0;i<m_num_iter;i++)
+	for (auto i : SG_PROGRESS(range(m_num_iter)))
 	{
 		// apply subset
 		if (m_subset_frac!=1.0)

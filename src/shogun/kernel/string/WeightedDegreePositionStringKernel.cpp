@@ -266,7 +266,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n")
 
-	for (auto i : progress(range(p_count), *this->io))
+	for (auto i : SG_PROGRESS(range(p_count)))
 	{
 		if (tree_num<0)
 		{
@@ -1249,41 +1249,34 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 
 	if (num_threads < 2)
 	{
-
-	   auto pb = progress(range(num_feat), *this->io);
-	   // TODO: replace with the new signal
-	   // for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-	   for (int32_t j = 0; j < num_feat; j++)
-	   {
-		   init_optimization(num_suppvec, IDX, alphas, j);
-		   S_THREAD_PARAM_WDS<DNATrie> params;
-		   params.vec = vec;
-		   params.result = result;
-		   params.weights = weights;
-		   params.kernel = this;
-		   params.tries = &tries;
-		   params.factor = factor;
-		   params.j = j;
-		   params.start = 0;
-		   params.end = num_vec;
-		   params.length = length;
-		   params.max_shift = max_shift;
-		   params.shift = shift;
-		   params.vec_idx = vec_idx;
-		   compute_batch_helper((void*)&params);
-
-		   pb.print_progress();
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (auto j : SG_PROGRESS(range(num_feat)))
+		{
+			init_optimization(num_suppvec, IDX, alphas, j);
+			S_THREAD_PARAM_WDS<DNATrie> params;
+			params.vec = vec;
+			params.result = result;
+			params.weights = weights;
+			params.kernel = this;
+			params.tries = &tries;
+			params.factor = factor;
+			params.j = j;
+			params.start = 0;
+			params.end = num_vec;
+			params.length = length;
+			params.max_shift = max_shift;
+			params.shift = shift;
+			params.vec_idx = vec_idx;
+			compute_batch_helper((void*)&params);
 		    }
-		    pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
 	{
-
-		auto pb = progress(range(num_feat), *this->io);
 		// TODO: replace with the new signal
 		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-		for (int32_t j = 0; j < num_feat; j++)
+		for (auto j : SG_PROGRESS(range(num_feat)))
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -1326,12 +1319,10 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			pb.print_progress();
 
 			SG_FREE(params);
 			SG_FREE(threads);
 		}
-		pb.complete();
 	}
 #endif
 
@@ -1423,8 +1414,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	info.R_k = NULL;
 
 	// === main loop
-	auto pb = progress(range(num_feat * max_degree), *this->io);
-	for( k = 0; k < max_degree; ++k )
+	for (auto k : SG_PROGRESS(range(max_degree)))
 	{
 		const int32_t nofKmers = nofsKmers[ k ];
 		info.C_k = C[k];
@@ -1440,7 +1430,6 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 				x[j] = -1;
 			}
 			tries.traverse( tree, p, info, 0, x, k );
-			pb.print_progress();
 		}
 
 		// --- add partial overlap scores
@@ -1479,7 +1468,6 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 		//     end;
 		//   end;
 	}
-	pb.complete();
 
 	// === return a vector
 	num_feat=1;
@@ -1523,7 +1511,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
 
 	//compute consensus via dynamic programming
-	for (auto i : progress(range(num_tables), *this->io))
+	for (auto i : SG_PROGRESS(range(num_tables)))
 	{
 		bool cumulative=false;
 

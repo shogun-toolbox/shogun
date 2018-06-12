@@ -5,6 +5,7 @@
  *          Michele Mazzoni, Heiko Strathmann, Fernando Iglesias
  */
 
+#include <shogun/base/progress.h>
 #include <shogun/base/range.h>
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/features/iterators/DotIterator.h>
@@ -81,6 +82,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 	{
 		w = get_w();
 	}
+	auto pb = SG_PROGRESS(range(max_iter));
 	//loop till we either get everything classified right or reach max_iter
 	while (!converged && iter < max_iter)
 	{
@@ -105,8 +107,9 @@ bool CPerceptron::train_machine(CFeatures* data)
 		}
 
 		iter++;
+		pb.print_progress();
 	}
-
+	pb.complete();
 	if (converged)
 		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
 	else

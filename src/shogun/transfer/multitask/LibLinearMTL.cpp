@@ -249,7 +249,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 		index[i] = i;
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
 	while (iter < max_iterations)
 	{

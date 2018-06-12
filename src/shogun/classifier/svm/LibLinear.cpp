@@ -324,7 +324,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		index[i] = i;
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
 	while (iter < get_max_iterations())
 	{
@@ -538,7 +538,7 @@ void CLibLinear::solve_l1r_l2_svc(
 		}
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
 	while (iter < get_max_iterations())
 	{
@@ -913,7 +913,7 @@ void CLibLinear::solve_l1r_lr(
 		}
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	CTime start_time;
 	while (iter < get_max_iterations())
 	{
@@ -1270,7 +1270,7 @@ void CLibLinear::solve_l2r_lr_dual(
 		index[i] = i;
 	}
 
-	auto pb = progress(range(10));
+	auto pb = SG_PROGRESS(range(10));
 	while (iter < max_iter)
 	{
 		for (i = 0; i < l; i++)
