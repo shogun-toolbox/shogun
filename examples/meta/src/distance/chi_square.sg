@@ -1,5 +1,5 @@
-CSVFile f_feats_a("../../data/fm_train_real.dat")
-CSVFile f_feats_b("../../data/fm_test_real.dat")
+File f_feats_a = csv_file("../../data/fm_train_real.dat")
+File f_feats_b = csv_file("../../data/fm_test_real.dat")
 
 #![create_features]
 Features features_a = features(f_feats_a)
