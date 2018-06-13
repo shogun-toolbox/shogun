@@ -78,6 +78,9 @@ namespace shogun
 		}
 
 	protected:
+		/** Serialize machine to an Ascii file with a default file name */
+		void serialize_machine(std::string filename);
+
 		/** connect the machine instance to the signal handler */
 		rxcpp::subscription connect_to_signal_handler();
 
@@ -116,7 +119,12 @@ namespace shogun
 		/** Mutex used to pause threads */
 		std::mutex m_mutex;
 
+		/** callback on each call to cancel_computation() */
 		std::function<bool(void)> m_callback;
+
+		/** File to serialize model */
+		CSerializableFile* m_serialized_file;
+
 	};
 }
 #endif
