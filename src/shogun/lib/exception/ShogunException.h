@@ -14,11 +14,12 @@
 
 namespace shogun
 {
-/** @brief Class ShogunException defines an exception which is thrown whenever an
- * error inside of shogun occurs.
- */
-class ShogunException: public std::exception
-{
+	/** @brief Class ShogunException defines an exception which is thrown
+	 * whenever an
+	 * error inside of shogun occurs.
+	 */
+	class ShogunException : public std::exception
+	{
 	public:
 		/** constructor
 		 *
@@ -40,13 +41,13 @@ class ShogunException: public std::exception
 
 		/** destructor
 		 */
-        virtual ~ShogunException();
+		virtual ~ShogunException();
 
 		virtual const char* what() const noexcept override;
 
 	private:
 		/** exception string */
 		std::string msg;
-};
+	};
 }
 #endif // _SHOGUN_EXCEPTION_H_

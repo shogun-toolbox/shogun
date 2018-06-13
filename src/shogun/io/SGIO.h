@@ -10,9 +10,9 @@
 #ifndef __SGIO_H__
 #define __SGIO_H__
 
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/exception/ShogunException.h>
 
 #include <dirent.h>
 #include <string.h>
