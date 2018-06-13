@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <shogun/base/range.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/exception/ShogunException.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>

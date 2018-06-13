@@ -103,6 +103,11 @@ class CHierarchical : public CDistanceMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "Hierarchical"; }
 
+		virtual bool train_require_labels() const
+		{
+			return false;
+		}
+
 	protected:
 		/** estimate hierarchical clustering
 		 *
@@ -118,8 +123,6 @@ class CHierarchical : public CDistanceMachine
 		 * Currently: does nothing.
 		 * */
 		virtual void store_model_features();
-
-		virtual bool train_require_labels() const { return false; }
 
 	private:
 		/** Initialize attributes */

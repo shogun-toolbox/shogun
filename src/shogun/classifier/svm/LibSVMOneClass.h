@@ -41,10 +41,9 @@ class CLibSVMOneClass : public CSVM
 		/** @return object name */
 		virtual const char* get_name() const { return "LibSVMOneClass"; }
 
-	protected:
-
 		virtual bool train_require_labels() const { return false; }
 
+	protected:
 		/** train SVM
 		 *
 		 * @param data training data (parameter can be avoided if distance or

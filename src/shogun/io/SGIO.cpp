@@ -7,7 +7,6 @@
  */
 
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/memory.h>

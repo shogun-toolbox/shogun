@@ -205,6 +205,12 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { SG_NOTIMPLEMENTED }
 
+		/** whether train require labels */
+		virtual bool train_require_labels() const
+		{
+			return false;
+		}
+
 	protected:
 		/**
 		 * Train classifier
@@ -222,9 +228,6 @@ class COnlineLinearMachine : public CMachine
 		 * @return outputs
 		 */
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
-
-		/** whether train require labels */
-		virtual bool train_require_labels() const { return false; }
 
 	protected:
 		/** w */

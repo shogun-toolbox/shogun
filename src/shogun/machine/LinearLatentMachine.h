@@ -106,6 +106,11 @@ namespace shogun
 			 */
 			void set_model(CLatentModel* latent_model);
 
+			virtual bool train_require_labels() const
+			{
+				return false;
+			}
+
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
@@ -116,8 +121,6 @@ namespace shogun
 			 * @return primal objective value
 			 */
 			virtual float64_t do_inner_loop(float64_t cooling_eps)=0;
-
-			virtual bool train_require_labels() const { return false; }
 
 		protected:
 			/** user supplied latent model */

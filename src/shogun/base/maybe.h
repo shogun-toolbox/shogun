@@ -1,7 +1,7 @@
 #ifndef __SG_MAYBE_H__
 #define __SG_MAYBE_H__
 
-#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/exception/ShogunException.h>
 
 namespace shogun
 {

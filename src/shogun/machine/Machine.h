@@ -315,6 +315,12 @@ class CMachine : public CStoppableSGObject
 
 		virtual const char* get_name() const { return "Machine"; }
 
+		/** returns whether machine require labels for training */
+		virtual bool train_require_labels() const
+		{
+			return true;
+		}
+
 	protected:
 		/** train machine
 		 *
@@ -375,9 +381,6 @@ class CMachine : public CStoppableSGObject
 		{
 			return true;
 		}
-
-		/** returns whether machine require labels for training */
-		virtual bool train_require_labels() const { return true; }
 
 	protected:
 		/** maximum training time */

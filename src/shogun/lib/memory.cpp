@@ -5,12 +5,12 @@
  *          Weijie Lin, Bjoern Esser, Sergey Lisitsyn, Thoralf Klein
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/exception/ShogunException.h>
 
 #include <string.h>
 #include <stdio.h>
