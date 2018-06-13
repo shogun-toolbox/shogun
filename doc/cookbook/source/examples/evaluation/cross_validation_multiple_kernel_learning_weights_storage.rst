@@ -1,12 +1,9 @@
 ============================================
 Cross Validation on Multiple Kernel Learning
 ============================================
+In this example, we illustrate how to use cross-validation with multiple kernel learning (MKL)
 
-Cross Validation is a model validation technique whose purpose is to give an insight
-on how the model we are testing will generalize to an independent dataset. Essentially,
-it is based on training and test the model many times on different complementary partitions of the original
-training dataset and then to combine the validation results (e.g. average) to estimate a
-the performance of the final predictive model.
+For more information on cross-validation, check :doc:`./cross_validation`.
 
 -------
 Example

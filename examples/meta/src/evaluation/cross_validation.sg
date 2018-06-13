@@ -1,0 +1,75 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
+Math:init_random(2)
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Labels labels_train = labels(f_labels_train)
+Features features_test = features(f_feats_test)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![set_parameters]
+real C = 1.0
+real epsilon = 0.001
+#![set_parameters]
+
+#![create_instance]
+Machine svm = machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+#![create_instance]
+
+#![create_cross_validation]
+StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
+Evaluation evaluation_criteron = evaluation("AccuracyMeasure")
+CrossValidation cross(svm, features_train, labels_train, splitting_strategy, evaluation_criteron, False)
+cross.set_num_runs(2)
+#![create_cross_validation]
+
+#![evaluate_and_get_result]
+EvaluationResult result = cross.evaluate() 
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
+#![evaluate_and_get_result]
+
+#![get_results_test_data]
+svm.train(features_train)
+Labels labels_predict = svm.apply(features_test)
+real accuracy_test = evaluation_criteron.evaluate(labels_predict, labels_test)
+#![get_results_test_data]
+
+File reg_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File reg_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File reg_lab_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File reg_lab_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
+Math:init_random(2)
+
+#![create_features_REGRESSION]
+Features reg_features_train = features(reg_feats_train)
+Labels reg_labels_train = labels(reg_lab_train)
+Features reg_features_test = features(reg_feats_test)
+Labels reg_labels_test = labels(reg_lab_test)
+#![create_features_REGRESSION]
+
+#![create_machine_REGRESSION]
+real tau = 0.001
+Machine lrr = machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
+#![create_instance_REGRESSION]
+
+#![create_cross_validation_REGRESSION]
+MeanSquaredError MSE_evaluation()
+CrossValidationSplitting split_strategy(reg_labels_train, 2)
+CrossValidation cross_validation(lrr, reg_features_train, reg_labels_train, split_strategy, MSE_evaluation, False)
+cross_validation.set_num_runs(2)
+#![create_cross_validation_REGRESSION]
+
+#![evaluate_and_get_result_REGRESSION]
+EvaluationResult result_lrr = cross_validation.evaluate()
+#![evaluate_and_get_result_REGRESSION]
+
+#![evaluate_error_REGRESSION]
+lrr.train(reg_features_train)
+Labels reg_labels_predict = lrr.apply(reg_features_test)
+real mse = MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
+#![evaluate_error_REGRESSION]
