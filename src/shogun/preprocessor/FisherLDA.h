@@ -152,6 +152,11 @@ namespace shogun
 		/** @return a type of preprocessor */
 		virtual EPreprocessorType get_type() const {return P_FISHERLDA;}
 
+		virtual bool train_require_labels() const
+		{
+			return true;
+		}
+
 	private:
 
 		void initialize_parameters();

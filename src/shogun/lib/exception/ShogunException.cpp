@@ -4,30 +4,29 @@
  * Authors: Soeren Sonnenburg, Giovanni De Toni
  */
 
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/exception/ShogunException.h>
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 using namespace shogun;
 
-ShogunException::ShogunException(const std::string& what_arg):
-	std::exception(),
-	msg(what_arg)
+ShogunException::ShogunException(const std::string& what_arg)
+    : std::exception(), msg(what_arg)
 {
 }
 
-
-ShogunException::ShogunException(const char* what_arg):
-	std::exception(),
-	msg(what_arg)
+ShogunException::ShogunException(const char* what_arg)
+    : std::exception(), msg(what_arg)
 {
 }
 
 ShogunException::ShogunException(const ShogunException& orig)
-{ msg = orig.msg; }
+{
+	msg = orig.msg;
+}
 
 ShogunException::~ShogunException()
 {
