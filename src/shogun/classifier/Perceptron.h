@@ -59,11 +59,7 @@ class CPerceptron : public CIterativeLinearMachine
 		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
-		/** registers and initializes parameters */
-		void init();
-		/** init the model before training begins */
 		virtual void init_model(CFeatures* data);
-		/** perform a single iteration over features and update weights */
 		virtual void iteration();
 
 	protected:
@@ -71,6 +67,8 @@ class CPerceptron : public CIterativeLinearMachine
 		float64_t learn_rate;
 
 	private:
+		/** Store output during training */
+		SGVector<float64_t> m_output;
 		/** whether the hyperplane should be initialized in train_machine
 		 *
 		 * this allows to initialize the hyperplane to externally set

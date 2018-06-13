@@ -19,11 +19,6 @@ using namespace shogun;
 
 CPerceptron::CPerceptron() : CIterativeLinearMachine()
 {
-	init();
-}
-
-void CPerceptron::init()
-{
 	m_max_iterations = 1000;
 	learn_rate = 0.1;
 	m_initialize_hyperplane = true;
@@ -43,6 +38,8 @@ void CPerceptron::init_model(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
+		set_features((CDotFeatures*) data);
+		SG_REF(data);
 		m_continue_features = data;
 	}
 
@@ -61,17 +58,17 @@ void CPerceptron::init_model(CFeatures* data)
 		w.set_const(1.0 / num_feat);
 		bias=0;
 	}
+	m_output = SGVector<float64_t>(m_continue_features->get_num_vectors());
 }
 
 void CPerceptron::iteration()
 {
 	bool converged = true;
 	SGVector<float64_t> w = get_w();
-	SGVector<float64_t> output(m_continue_features->get_num_vectors());
 
 	auto labels = binary_labels(m_labels)->get_int_labels();
 	auto iter_train_labels = labels.begin();
-	auto iter_output = output.begin();
+	auto iter_output = m_output.begin();
 
 	for (const auto& v : DotIterator(m_continue_features->as<CDotFeatures>()))
 	{

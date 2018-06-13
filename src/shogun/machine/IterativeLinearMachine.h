@@ -18,22 +18,16 @@ namespace shogun
 	class CFeatures;
 	class CLabels;
 
+	/** @brief Class IterativeLinearMachine implements an iterative model
+	 * whose training can be prematurely stopped, and in particular
+	 * resumed, anytime.
+	 */
 	class CIterativeLinearMachine : public CLinearMachine
 	{
 	public:
 		/** Default constructor */
 		CIterativeLinearMachine();
 		virtual ~CIterativeLinearMachine();
-
-		/** Train classifier
-		  *
-		  * @param data training data (parameter can be avoided if distance or
-		  * kernel-based classifiers are used and distance/kernels are
-		  * initialized with train data)
-		  *
-		  * @return whether training was successful
-		  */
-		virtual bool train_machine(CFeatures* data = NULL);
 
 		/** Continue Training
 		  *
@@ -46,19 +40,21 @@ namespace shogun
 		virtual bool continue_train();
 
 	protected:
-		/** Can be overloaded by sublcasses to implement custom single
-		  *iterations of training loop.
+		virtual bool train_machine(CFeatures* data = NULL);
+
+		/** To be overloaded by sublcasses to implement custom single
+		  * iterations of training loop.
 		  */
 		virtual void iteration() = 0;
 
-		/** Can be overloaded in subclasses to initialize the model for training
+		/** To be overloaded in subclasses to initialize the model for training
 		  */
 		virtual void init_model(CFeatures* data = NULL) = 0;
 
 		/** Maximum Iterations */
-		int64_t m_max_iterations;
+		int32_t m_max_iterations;
 		/** Current iteration of training loop */
-		int64_t m_current_iteration;
+		int32_t m_current_iteration;
 		/** Completion status */
 		bool m_complete;
 		/** Features */

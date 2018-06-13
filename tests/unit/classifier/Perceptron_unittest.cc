@@ -81,14 +81,14 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	auto perceptron_initialized = some<CPerceptron>();
 	perceptron_initialized->set_initialize_hyperplane(false);
 	perceptron_initialized->set_w(weights);
-	perceptron_initialized->put<int64_t>("max_iterations", 1);
+	perceptron_initialized->put<int32_t>("max_iterations", 1);
 	perceptron_initialized->set_labels(labels);
 
 	perceptron_initialized->train(features);
 	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
 }
 
-TEST(Perceptron, prematurely_stop)
+TEST(Perceptron, continued_equals_converged)
 {
 	auto env = linear_test_env->getBinaryLabelData();
 	auto features = wrap(env->get_features_train());
@@ -118,13 +118,11 @@ TEST(Perceptron, prematurely_stop)
 	};
 	perceptron_stop->set_callback(callback);
 
+	perceptron_stop->put<bool>("compute_bias", false);
 	perceptron_stop->set_labels(labels);
 	perceptron_stop->train(features);
 
-	auto results_itermediate = wrap(perceptron_stop->apply(test_features))
-	                               ->get<SGVector<float64_t>>("labels");
-
-	EXPECT_FALSE(results.equals(results_itermediate));
+	EXPECT_FALSE(perceptron_stop->get<bool>("complete"));
 
 	if (!perceptron_stop->get<bool>("complete"))
 	{

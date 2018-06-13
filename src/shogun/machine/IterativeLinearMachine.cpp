@@ -27,6 +27,7 @@ CIterativeLinearMachine::CIterativeLinearMachine() : CLinearMachine()
 
 CIterativeLinearMachine::~CIterativeLinearMachine()
 {
+	SG_UNREF(m_continue_features);
 }
 
 bool CIterativeLinearMachine::train_machine(CFeatures* data)
