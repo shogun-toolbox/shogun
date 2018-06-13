@@ -96,6 +96,11 @@ namespace shogun
 
 			return nullptr;
 		}
+
+		virtual bool train_require_labels() const
+		{
+			return false;
+		}
 	};
 }
 #endif /* TRANSFORMER_H_ */

@@ -7,6 +7,14 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
 
+%newobject shogun::CPipelineBuilder::then(const std::string&);
+%newobject shogun::CPipelineBuilder::then(const std::string&, CMachine*);
+%newobject shogun::CPipelineBuilder::build();
+
+%rename(Machine) CMMachine;
+%rename(PipelineBuilder) CPipelineBuilder;
+%rename(Pipeline) CPipeline;
+
 %newobject apply();
 %newobject apply(CFeatures* data);
 %newobject apply_binary();
@@ -152,4 +160,8 @@ APPLY_LATENT(CLatentSVM);
 #undef APPLY_REGRESSION
 #undef APPLY_STRUCTURED
 #undef APPLY_LATENT
+
+
+%include <shogun/machine/Machine.h>
+%include <shogun/machine/Pipeline.h>
 #endif

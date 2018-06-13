@@ -143,14 +143,17 @@ class CKMeansBase : public CDistanceMachine
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
 
+		virtual bool train_require_labels() const
+		{
+			return false;
+		}
+
 	protected:
 		/** Initialize training for KMeans algorithms */
 		void initialize_training(CFeatures* data=NULL);
 
 		/** Ensures cluster centers are in lhs of underlying distance */
 		virtual void store_model_features();
-
-		virtual bool train_require_labels() const { return false; }
 
 		/** K-Means++ algorithm to initialize cluster centers
 		*
