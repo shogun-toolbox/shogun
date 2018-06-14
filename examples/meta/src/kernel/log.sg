@@ -1,0 +1,14 @@
+File f_feats_train = csv_file("../../data/fm_train_real.dat")
+File f_feats_test = csv_file("../../data/fm_test_real.dat")
+Features feats_train = features(f_feats_train)
+Features feats_test = features(f_feats_test)
+
+Distance dist = distance("EuclideanDistance")
+dist.init(feats_train, feats_train)
+Kernel log_kernel = kernel("LogKernel", degree=2.0, distance=dist)
+
+log_kernel.init(feats_train, feats_train)
+RealMatrix km_train = log_kernel.get_kernel_matrix()
+
+log_kernel.init(feats_train, feats_test)
+RealMatrix km_test = log_kernel.get_kernel_matrix()

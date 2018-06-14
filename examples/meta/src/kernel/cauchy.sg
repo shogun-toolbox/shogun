@@ -1,0 +1,15 @@
+File f_feats_train = csv_file("../../data/fm_train_real.dat")
+File f_feats_test = csv_file("../../data/fm_test_real.dat")
+
+Features feats_train = features(f_feats_train)
+Features feats_test = features(f_feats_test)
+
+Distance dist = distance("EuclideanDistance")
+dist.init(feats_train, feats_train)
+Kernel cauchy = kernel("CauchyKernel", sigma=1.0, distance=dist)
+
+cauchy.init(feats_train, feats_train)
+RealMatrix km_train = cauchy.get_kernel_matrix()
+
+cauchy.init(feats_train, feats_test)
+RealMatrix km_test = cauchy.get_kernel_matrix()
