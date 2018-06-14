@@ -11,7 +11,7 @@
 %newobject shogun::CPipelineBuilder::then(const std::string&, CMachine*);
 %newobject shogun::CPipelineBuilder::build();
 
-%rename(Machine) CMMachine;
+%rename(Machine) CMachine;
 %rename(PipelineBuilder) CPipelineBuilder;
 %rename(Pipeline) CPipeline;
 
