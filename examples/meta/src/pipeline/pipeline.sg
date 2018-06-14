@@ -16,10 +16,10 @@ KMeans kmeans(distance=d, k=2)
 
 
 #![create_pipeline]
-Pipeline pipeline()
-pipeline.with(subMean)
-pipeline.with(pca)
-pipeline.then(kmeans)
+PipelineBuilder builder()
+builder.over(subMean)
+builder.over(pca)
+Pipeline pipeline = builder.then(kmeans)
 #![create_pipeline]
 
 #![train_and_apply]
@@ -30,5 +30,5 @@ Labels labels_predict = pipeline.apply(feats_train)
 # additional integration variables
 #![extract_centers_and_radius]
 RealMatrix c = kmeans.get_cluster_centers()
-RealVector r = kmeans.get_real_vector('R')
+RealVector r = kmeans.get_real_vector("R")
 #![extract_centers_and_radius]
