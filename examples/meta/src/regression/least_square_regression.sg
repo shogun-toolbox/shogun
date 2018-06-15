@@ -11,16 +11,16 @@ Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine lrr = machine("LeastSquaresRegression", tau=0.001, labels=labels_train)
+Machine lsr = machine("LeastSquaresRegression", tau=0.001, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
-lrr.train(features_train)
-Labels labels_predict = lrr.apply(features_test)
+lsr.train(features_train)
+Labels labels_predict = lsr.apply(features_test)
 #![train_and_apply]
 
 #[!extract_w]
-RealVector w = lrr.get_real_vector("w")
+RealVector w = lsr.get_real_vector("w")
 #[!extract_w]
 
 #![evaluate_error]
