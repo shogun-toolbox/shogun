@@ -1,0 +1,29 @@
+File f_feats_train = csv_file("../../data/regression_1d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/regression_1d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/regression_1d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![create_instance]
+Machine lrr = machine("LeastSquaresRegression", tau=0.001, labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+lrr.train(features_train)
+Labels labels_predict = lrr.apply(features_test)
+#![train_and_apply]
+
+#[!extract_w]
+RealVector w = lrr.get_real_vector("w")
+#[!extract_w]
+
+#![evaluate_error]
+Evaluation eval = evaluation("MeanSquaredError")
+real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
