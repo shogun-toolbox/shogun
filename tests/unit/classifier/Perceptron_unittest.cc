@@ -64,6 +64,40 @@ TEST(Perceptron, train)
 	EXPECT_EQ(acc->evaluate(results, test_labels), 1.0);
 }
 
+TEST(Perceptron, continue_training_refcount)
+{
+	auto env = linear_test_env->getBinaryLabelData();
+	auto features = wrap(env->get_features_train());
+	auto labels = wrap(env->get_labels_train());
+	auto test_features = wrap(env->get_features_test());
+	auto test_labels = wrap(env->get_labels_test());
+
+	auto perceptron = some<CPerceptron>();
+	perceptron->set_labels(labels);
+	index_t iter = 0;
+	std::function<bool()> callback = [&iter]() {
+		if (iter >= 1)
+		{
+			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+			return true;
+		}
+		iter++;
+		return false;
+	};
+	perceptron->set_callback(callback);
+	perceptron->train(features);
+	//cancelled here
+	EXPECT_EQ(features->ref_count(), 4);
+	perceptron->train(features);
+	EXPECT_EQ(features->ref_count(), 4);
+	//cancelled again
+	perceptron->set_callback(nullptr);
+	perceptron->continue_train();
+	EXPECT_EQ(features->ref_count(), 4);
+	
+}
+
+
 TEST(Perceptron, custom_hyperplane_initialization)
 {
 	auto env = linear_test_env->getBinaryLabelData();
@@ -88,7 +122,7 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
 }
 
-TEST(Perceptron, continued_equals_converged)
+TEST(Perceptron, continue_training_consistency)
 {
 	auto env = linear_test_env->getBinaryLabelData();
 	auto features = wrap(env->get_features_train());
@@ -100,8 +134,7 @@ TEST(Perceptron, continued_equals_converged)
 	perceptron->set_labels(labels);
 	perceptron->train(features);
 
-	auto results = wrap(perceptron->apply(test_features))
-	                   ->get<SGVector<float64_t>>("labels");
+	auto results = perceptron->apply_binary(test_features);
 
 	index_t iter = 0;
 
@@ -130,8 +163,10 @@ TEST(Perceptron, continued_equals_converged)
 		perceptron_stop->continue_train();
 	}
 
-	auto results_complete = wrap(perceptron_stop->apply(test_features))
-	                            ->get<SGVector<float64_t>>("labels");
+	auto results_complete = perceptron_stop->apply_binary(test_features);
 
-	EXPECT_TRUE(results_complete.equals(results));
+	EXPECT_TRUE(results_complete->get_labels().equals(results->get_labels()));
+
+	SG_UNREF(results);
+	SG_UNREF(results_complete);
 }

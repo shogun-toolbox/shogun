@@ -51,6 +51,11 @@ namespace shogun
 		  */
 		virtual void init_model(CFeatures* data = NULL) = 0;
 
+		/** Can be overloaded in subclasses to show more information
+		  * and/or clean up states
+		  */
+		virtual void end_training();
+
 		/** Maximum Iterations */
 		int32_t m_max_iterations;
 		/** Current iteration of training loop */

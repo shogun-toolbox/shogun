@@ -39,8 +39,6 @@ void CPerceptron::init_model(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
-		SG_REF(data);
-		m_continue_features = data;
 	}
 
 	ASSERT(m_continue_features)
@@ -86,6 +84,11 @@ void CPerceptron::iteration()
 		}
 	}
 	m_complete = converged;
+}
+
+void CPerceptron::end_training()
+{
+	m_output = SGVector<float64_t>();
 }
 
 void CPerceptron::set_initialize_hyperplane(bool initialize_hyperplane)

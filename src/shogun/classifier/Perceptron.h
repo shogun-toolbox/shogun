@@ -61,6 +61,7 @@ class CPerceptron : public CIterativeLinearMachine
 	protected:
 		virtual void init_model(CFeatures* data);
 		virtual void iteration();
+		virtual void end_training();
 
 	protected:
 		/** learning rate */

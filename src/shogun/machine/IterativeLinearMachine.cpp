@@ -34,6 +34,9 @@ bool CIterativeLinearMachine::train_machine(CFeatures* data)
 {
 	m_current_iteration = 0;
 	m_complete = false;
+	SG_REF(data);
+	SG_UNREF(m_continue_features);
+	m_continue_features = data;
 	init_model(data);
 	return continue_train();
 }
@@ -50,5 +53,22 @@ bool CIterativeLinearMachine::continue_train()
 		pb.print_progress();
 	}
 	pb.complete();
+
+	if (m_complete)
+		SG_INFO(
+		    "%s converged after %d iterations.\n", this->get_name(),
+		    m_current_iteration)
+	else if (!m_complete && m_current_iteration == m_max_iterations)
+	{
+		SG_WARNING(
+		    "%s did not converge after the maximum number of %d iterations.\n",
+		    this->get_name(), m_current_iteration)
+
+		this->end_training();
+	}
 	return m_complete;
+}
+
+void CIterativeLinearMachine::end_training()
+{
 }
