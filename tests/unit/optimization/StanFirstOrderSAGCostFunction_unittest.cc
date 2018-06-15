@@ -39,22 +39,22 @@ StanVector generateParametersSmall()
 	return w;
 }
 
-function<var(StanVector*, float64_t)>
+function<var(const StanVector&, float64_t)>
 cost_for_ith_datapoint(SGMatrix<float64_t>& X, SGMatrix<float64_t>& y)
 {
-	auto f_i = [X, y](StanVector* w, int32_t idx) {
-		var wx_y = (*w)(0, 0) * X(0, idx) + (*w)(1, 0) * X(1, idx) - y(0, idx);
+	auto f_i = [X, y](const StanVector& w, int32_t idx) {
+		var wx_y = w(0, 0) * X(0, idx) + w(1, 0) * X(1, idx) - y(0, idx);
 		var res = wx_y * wx_y;
-		res /= 2;
+		res *= 0.5;
 		return res;
 	};
 	return f_i;
 }
 
-function<var(StanVector*)> get_total_cost()
+function<var(const StanVector&)> get_total_cost()
 {
-	auto cost = [](StanVector* v) {
-		var total_cost = v->sum();
+	auto cost = [](const StanVector& v) {
+		var total_cost = v.sum();
 		return total_cost;
 	};
 	return cost;
@@ -75,15 +75,15 @@ TEST(LeastSquareTestCostFunction, points_on_a_line)
 
 	auto f_i = cost_for_ith_datapoint(X, y);
 
-	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>
+	Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>
 	    cost_for_ith_point =
-	        Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(
+	        Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>::Constant(
 	            n, 1, f_i);
 
 	auto total_cost = get_total_cost();
 
 	LeastSquareTestCostFunction lstcf(
-	    X, y, &w, &cost_for_ith_point, &total_cost);
+	    X, y, w, cost_for_ith_point, total_cost);
 
 	EXPECT_NEAR(lstcf.get_cost(), 0.0, 1e-5);
 
@@ -113,15 +113,15 @@ TEST(LeastSquareTestCostFunction, points_on_y_equals_x_squared)
 
 	auto f_i = cost_for_ith_datapoint(X, y);
 
-	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>
+	Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>
 	    cost_for_ith_point =
-	        Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(
+	        Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>::Constant(
 	            n, 1, f_i);
 
 	auto total_cost = get_total_cost();
 
 	LeastSquareTestCostFunction lstcf(
-	    X, y, &w, &cost_for_ith_point, &total_cost);
+	    X, y, w, cost_for_ith_point, total_cost);
 
 	EXPECT_NEAR(lstcf.get_cost(), 2.0, 1e-5);
 

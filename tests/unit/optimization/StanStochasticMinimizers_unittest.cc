@@ -41,26 +41,17 @@ StanVector generateParameters()
 	return w;
 }
 
-function<var(StanVector*, float64_t)>
+function<var(const StanVector&, float64_t)>
 cost_for_ith_datapoints(SGMatrix<float64_t>& X, SGMatrix<float64_t>& y)
 {
-	auto f_i = [X, y](StanVector* w, int32_t idx) {
-		var wx_y = (*w)(0, 0) * X(0, idx) + (*w)(1, 0) * X(1, idx) +
-		           (*w)(2, 0) * X(2, idx) - y(0, idx);
+	auto f_i = [X, y](const StanVector& w, int32_t idx) {
+		var wx_y = w(0, 0) * X(0, idx) + w(1, 0) * X(1, idx) +
+		           w(2, 0) * X(2, idx) - y(0, idx);
 		var res = wx_y * wx_y;
-		res /= 2;
+		res *= 0.5;
 		return res;
 	};
 	return f_i;
-}
-
-function<var(StanVector*)> get_tot_cost()
-{
-	auto cost = [](StanVector* v) {
-		var total_cost = v->sum();
-		return total_cost;
-	};
-	return cost;
 }
 
 struct RegressionData
@@ -136,27 +127,28 @@ TEST(StanSGDMinimizer, test1)
 
 	auto f_i = cost_for_ith_datapoints(X, y);
 
-	Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>
+	Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>
 	    cost_for_ith_point =
-	        Matrix<function<var(StanVector*, float64_t)>, Dynamic, 1>::Constant(
+	        Matrix<function<var(const StanVector&, float64_t)>, Dynamic, 1>::Constant(
 	            n, 1, f_i);
 
-	auto total_cost = get_tot_cost();
+	auto total_cost = [](const StanVector& v) {
+		var total_cost = v.sum();
+		return total_cost;
+	};
 
-	SquareErrorTestCostFunction* fun = new SquareErrorTestCostFunction(
-	    X, y, &w, &cost_for_ith_point, &total_cost);
+	auto fun = new SquareErrorTestCostFunction(
+	    X, y, w, cost_for_ith_point, total_cost);
 
-	SGDMinimizer* opt = new SGDMinimizer(fun);
+	auto opt = new SGDMinimizer(fun);
 
-	ConstLearningRate* rate = new ConstLearningRate();
+	auto rate = new ConstLearningRate();
 	rate->set_const_learning_rate(0.01);
 
-	GradientDescendUpdater* updater = new GradientDescendUpdater();
+	auto updater = new GradientDescendUpdater();
 	opt->set_gradient_updater(updater);
 	opt->set_learning_rate(rate);
-
-	int32_t num_passes = 20;
-	opt->set_number_passes(num_passes);
+	opt->set_number_passes(20);
 
 	float64_t cost = opt->minimize() / n;
 
