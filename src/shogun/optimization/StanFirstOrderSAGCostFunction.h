@@ -11,17 +11,21 @@
 #include <functional>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/base/range.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/FirstOrderSAGCostFunction.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+
 using StanVector = Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>;
 template <class T>
 using FunctionReturnsStan = std::function<stan::math::var(T)>;
-template <class T>
-using FunctionStanVectorArg = std::function<stan::math::var(StanVector*, T)>;
+template <class R>
+using FunctionReturnsStanVectorArg = std::function<stan::math::var(const StanVector&, R)>;
 template <class S>
 using StanFunctionsVector =
-    Eigen::Matrix<FunctionStanVectorArg<S>, Eigen::Dynamic, 1>;
+    Eigen::Matrix<FunctionReturnsStanVectorArg<S>, Eigen::Dynamic, 1>;
 namespace shogun
 {
 	/** @brief The first order stochastic cost function base class for
@@ -44,11 +48,29 @@ namespace shogun
 	public:
 		StanFirstOrderSAGCostFunction(
 		    SGMatrix<float64_t> X, SGMatrix<float64_t> y,
-		    StanVector* trainable_parameters,
-		    StanFunctionsVector<float64_t>* cost_for_ith_point,
-		    FunctionReturnsStan<StanVector*>* total_cost);
+		    StanVector& trainable_parameters,
+		    StanFunctionsVector<float64_t> cost_for_ith_point,
+		    FunctionReturnsStan<const StanVector& > total_cost)
+          : m_trainable_parameters(trainable_parameters)
+        {
+          REQUIRE(X.size() > 0, "Empty X provided");
+          REQUIRE(y.size() > 0, "Empty y provided");
+          auto num_of_variables = trainable_parameters.rows();
+          REQUIRE(
+              num_of_variables > 0, "Provided %d variables in the parameters, more "
+                                    "than 0 parameters required",
+              num_of_variables);
 
-		StanFirstOrderSAGCostFunction(){};
+          m_X = X;
+          m_y = y;
+          m_cost_for_ith_point = cost_for_ith_point;
+          m_total_cost = total_cost;
+          m_ref_trainable_parameters = SGVector<float64_t>(num_of_variables);
+          for (auto i : range(num_of_variables))
+          {
+            m_ref_trainable_parameters[i] = m_trainable_parameters(i, 0).val();
+          }
+        }
 
 		/** Setter for the training data X */
 		virtual void
@@ -130,17 +152,17 @@ namespace shogun
 		SGMatrix<float64_t> m_y;
 
 		/** trainable_parameters are the variables that are optimized for */
-		StanVector* m_trainable_parameters;
+		StanVector& m_trainable_parameters;
 
 		/** cost_for_ith_point is the cost contributed by each point in the
 		 * training data */
 
-		StanFunctionsVector<float64_t>* m_cost_for_ith_point;
+		StanFunctionsVector<float64_t> m_cost_for_ith_point;
 
 		/** total_cost is the total cost to be minimized, that in this case is a
 		 * form of sum of cost_for_ith_point*/
 		// std::function<stan::math::var(StanVector*)>* m_total_cost;
-		FunctionReturnsStan<StanVector*>* m_total_cost;
+		FunctionReturnsStan<const StanVector&> m_total_cost;
 
 		/** Reference values for trainable_parameters so that minimizers can
 		 * perform inplace updates */
