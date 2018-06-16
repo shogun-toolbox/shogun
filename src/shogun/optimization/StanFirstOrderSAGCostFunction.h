@@ -43,7 +43,7 @@ namespace shogun
 	 * where \f$(y_i,x_i)\f$ is the i-th sample,
 	 * \f$y_i\f$ is the label and \f$x_i\f$ is the features
 	 */
-	class StanFirstOrderSAGCostFunction : public FirstOrderSAGCostFunction
+	class StanFirstOrderSAGCostFunction : public FirstOrderStochasticCostFunction
 	{
 	public:
 		StanFirstOrderSAGCostFunction(
@@ -171,6 +171,9 @@ namespace shogun
 		/** index_of_sample is the index of the column in X for the current
 		 * sample */
 		index_t m_index_of_sample;
+
+  private:
+    virtual SGVector<float64_t> get_gradient(index_t index);
 	};
 }
 

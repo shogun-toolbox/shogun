@@ -22,6 +22,26 @@ void StanFirstOrderSAGCostFunction::set_training_data(
 	this->m_y = y_new;
 }
 
+SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient(index_t index)
+{
+  auto num_of_variables = m_trainable_parameters.rows();
+  REQUIRE(
+      num_of_variables > 0,
+      "Number of sample must be greater than 0, you provided no samples");
+
+  update_stan_vectors_to_reference_values();
+  var f_i = m_cost_for_ith_point(index, 0)(
+      m_trainable_parameters, index);
+
+  stan::math::set_zero_all_adjoints();
+  f_i.grad();
+
+  SGVector<float64_t>::EigenVectorXt gradients =
+      m_trainable_parameters.unaryExpr(
+          [](stan::math::var x) -> float64_t { return x.adj(); });
+  return SGVector<float64_t>(gradients).clone();
+}
+
 StanFirstOrderSAGCostFunction::~StanFirstOrderSAGCostFunction()
 {
 }
@@ -47,22 +67,7 @@ void StanFirstOrderSAGCostFunction::update_stan_vectors_to_reference_values()
 }
 SGVector<float64_t> StanFirstOrderSAGCostFunction::get_gradient()
 {
-	auto num_of_variables = m_trainable_parameters.rows();
-	REQUIRE(
-	    num_of_variables > 0,
-	    "Number of sample must be greater than 0, you provided no samples");
-
-	update_stan_vectors_to_reference_values();
-	var f_i = m_cost_for_ith_point(m_index_of_sample, 0)(
-	    m_trainable_parameters, m_index_of_sample);
-
-	stan::math::set_zero_all_adjoints();
-	f_i.grad();
-
-	SGVector<float64_t>::EigenVectorXt gradients =
-	    m_trainable_parameters.unaryExpr(
-	        [](stan::math::var x) -> float64_t { return x.adj(); });
-	return SGVector<float64_t>(gradients).clone();
+  return get_gradient(m_index_of_sample);
 }
 
 float64_t StanFirstOrderSAGCostFunction::get_cost()
@@ -90,7 +95,6 @@ SGVector<float64_t> StanFirstOrderSAGCostFunction::get_average_gradient()
 	auto params_num = m_trainable_parameters.rows();
 	SGVector<float64_t> average_gradients(params_num);
 
-	auto old_index_sample = m_index_of_sample;
 	auto n = get_sample_size();
 	REQUIRE(
 	    n > 0,
@@ -98,12 +102,10 @@ SGVector<float64_t> StanFirstOrderSAGCostFunction::get_average_gradient()
 
 	for (index_t i = 0; i < n; ++i)
 	{
-		m_index_of_sample = i;
-		average_gradients += get_gradient();
+		average_gradients += get_gradient(i);
 	}
   average_gradients.scale(1.0/n);
   //lingalg::scale(average_gradients, 1.0/n);
-	m_index_of_sample = old_index_sample;
 	return average_gradients;
 }
 
