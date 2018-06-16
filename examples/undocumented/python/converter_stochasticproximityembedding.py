@@ -14,10 +14,10 @@ def converter_stochasticproximityembedding (data_fname, k):
 		# Embed with local strategy
 		converter.set_k(k)
 		converter.set_strategy(SPE_LOCAL)
-		converter.embed(features)
+		features = converter.transform(features)
 		# Embed with global strategy
 		converter.set_strategy(SPE_GLOBAL)
-		converter.embed(features)
+		features = converter.transform(features)
 
 		return features
 	except ImportError:
