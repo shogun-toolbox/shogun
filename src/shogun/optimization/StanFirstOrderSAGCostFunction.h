@@ -19,6 +19,7 @@
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
 
 using StanVector = Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1>;
+using StanMatrix = Eigen::Matrix<stan::math::var, Eigen::Dynamic, Eigen::Dynamic>;
 template <class T>
 using FunctionReturnsStan = std::function<stan::math::var(T)>;
 template <class R>
