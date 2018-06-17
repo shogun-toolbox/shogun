@@ -52,7 +52,7 @@ void StanNeuralLinearLayer::compute_activations(StanVector& parameters,
 	//float64_t* biases = parameters.vector;
 
 	auto biases = parameters.block(0,0,m_num_neurons, 1);
-	StanMatrix A;
+	StanMatrix& A = m_stan_activations;
 	A.resize(m_num_neurons, m_batch_size);
 	A.colwise() = biases;
 

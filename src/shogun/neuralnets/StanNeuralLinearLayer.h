@@ -4,8 +4,8 @@
  * Authors: Elfarouk, Khaled Nasr
  */
 
-#ifndef __NEURALLINEARLAYER_H__
-#define __NEURALLINEARLAYER_H__
+#ifndef __STANNEURALLINEARLAYER_H__
+#define __STANNEURALLINEARLAYER_H__
 
 #include <shogun/neuralnets/StanNeuralLayer.h>
 #include <shogun/lib/common.h>
