@@ -49,7 +49,7 @@ void StanNeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 
-	m_activations = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+  m_stan_activations.resize(m_num_neurons, m_batch_size);
 	m_dropout_mask = SGMatrix<bool>(m_num_neurons, m_batch_size);
 }
 
@@ -59,18 +59,24 @@ void StanNeuralLayer::dropout_activations()
 
 	if (is_training)
 	{
-		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t i=0; i<len; i++)
-		{
-			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
-			m_activations[i] *= m_dropout_mask[i];
-		}
+    for(int32_t i=0; i<m_num_neurons; ++i)
+    {
+      for(int32_t j = 0; j<m_batch_size; ++j)
+      {
+        m_dropout_mask(i,j) = CMath::random(0.0,1.0) >= dropout_prop;
+        m_stan_activations(i,j) *= m_dropout_mask(i,j);
+      }
+    }
 	}
 	else
 	{
-		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t i=0; i<len; i++)
-			m_activations[i] *= (1.0-dropout_prop);
+    for(int32_t i=0; i<m_num_neurons; ++i)
+    {
+      for(int32_t j = 0; j<m_batch_size; ++j)
+      {
+        m_stan_activations(i,j) *= (1.0 - dropout_prop);
+      }
+    }
 	}
 }
 
@@ -82,7 +88,6 @@ void StanNeuralLayer::init()
 	m_num_parameters = 0;
 	m_batch_size = 0;
 	dropout_prop = 0.0;
-	contraction_coefficient = 0.0;
 	is_training = false;
 	autoencoder_position = NLAP_NONE;
 
@@ -98,14 +103,10 @@ void StanNeuralLayer::init()
 	       "Input Sizes", MS_NOT_AVAILABLE);
 	SG_ADD(&dropout_prop, "dropout_prop",
 	       "Dropout Probabilty", MS_NOT_AVAILABLE);
-	SG_ADD(&contraction_coefficient, "contraction_coefficient",
-	       "Contraction Coefficient", MS_NOT_AVAILABLE);
 	SG_ADD(&is_training, "is_training",
 	       "is_training", MS_NOT_AVAILABLE);
 	SG_ADD(&m_batch_size, "batch_size",
 	       "Batch Size", MS_NOT_AVAILABLE);
-	SG_ADD(&m_activations, "activations",
-	       "Activations", MS_NOT_AVAILABLE);
 	SG_ADD(&m_dropout_mask, "dropout_mask",
 	       "Dropout mask", MS_NOT_AVAILABLE);
 

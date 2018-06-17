@@ -44,6 +44,8 @@ template <class T> class SGVector;
  * following functions have been defined in a mathematically plausible manner:
  * - initialize_parameters()
  * - compute_activations()
+ * - compute_gradients()
+ * - compute_error() [only if the layer can be used as an output layer]
  * - enforce_max_norm()
  *
  * The memory for the layer's parameters (weights and biases) is not allocated
@@ -122,7 +124,7 @@ public:
 	 * @param inputs activations of the neurons in the
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
-	virtual void compute_activations(StanVector& inputs) { }
+	virtual void compute_activations(StanMatrix inputs) { }
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -136,17 +138,6 @@ public:
 	virtual void compute_activations(StanVector& parameters,
 			CDynamicObjectArray* layers) { }
 
-	/** Constrains the weights of each neuron in the layer to have an L2 norm of
-	 * at most max_norm
-	 *
-	 * @param parameters pointer to the layer's parameters, array of size
-	 * get_num_parameters()
-	 *
-	 * @param max_norm maximum allowable norm for a neuron's weights
-	 */
-	virtual void enforce_max_norm(SGVector<float64_t> parameters,
-			float64_t max_norm) { }
-
 	/** Applies [dropout](http://arxiv.org/abs/1207.0580) [Hinton, 2012] to the
 	 * activations of the layer
 	 *
@@ -156,24 +147,6 @@ public:
 	 * for using dropout during training
 	 */
 	virtual void dropout_activations();
-
-	/** Computes
-	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
-	 * where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the Frobenius norm of
-	 * the Jacobian of the activations of the hidden layer with respect to its
-	 * inputs, \f$ N \f$ is the batch size, and \f$ \lambda \f$ is the
-	 * contraction coefficient.
-	 *
-	 * Should be implemented by layers that support being used as a hidden
-	 * layer in a contractive autoencoder.
-	 *
-	 * @param parameters Vector of size get_num_parameters(), contains the
-	 * parameters of the layer
-	 */
-	virtual float64_t compute_contraction_term(SGVector<float64_t> parameters)
-	{
-		return 0.0;
-	}
 
 	/** Gets the number of neurons in the layer
 	 *
@@ -215,7 +188,7 @@ public:
 	 *
 	 * @return layer's activations
 	 */
-	virtual SGMatrix<float64_t> get_activations() { return m_activations; }
+	virtual StanMatrix get_activations() { return m_stan_activations; }
 
 	/** Gets the indices of the layers that are connected to this layer as input
 	 *
@@ -237,17 +210,6 @@ public:
 	/** probabilty of dropping out a neuron in the layer */
 	float64_t dropout_prop;
 
-	/** For hidden layers in a contractive autoencoders [Rifai, 2011] a term:
-	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
-	 * is added to the error, where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the
-	 * Frobenius norm of the Jacobian of the activations of the hidden layer
-	 * with respect to its inputs, \f$ N \f$ is the batch size, and
-	 * \f$ \lambda \f$ is the contraction coefficient.
-	 *
-	 * Default value is 0.0.
-	 */
-	float64_t contraction_coefficient;
-
 	/** For autoencoders, specifies the position of the layer in the autoencoder,
 	 * i.e an encoding layer or a decoding layer. Default value is NLAP_NONE
 	 */
@@ -267,7 +229,7 @@ protected:
 	 */
 	int32_t m_height;
 
-	/** Number of parameters in this layer */
+	/** Number of neurons in this layer */
 	int32_t m_num_parameters;
 
 	/** Indices of the layers that are connected to this layer as input */
@@ -281,10 +243,10 @@ protected:
 	/** number of training/test cases the network is currently working with */
 	int32_t m_batch_size;
 
-	/** activations of the neurons in this layer
-	 * size num_neurons * batch_size
-	 */
-	SGMatrix<float64_t> m_activations;
+  /** activations of the neurons in this layer as stan Matrix
+   *  size num_neurons * batch_size
+   */
+  StanMatrix m_stan_activations;
 
 	/** binary mask that determines whether a neuron will be kept or dropped out
 	 * during the current iteration of training
