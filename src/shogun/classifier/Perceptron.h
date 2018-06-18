@@ -12,7 +12,7 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/common.h>
-#include <shogun/machine/IterativeLinearMachine.h>
+#include <shogun/machine/IterativeMachine.h>
 
 namespace shogun
 {
@@ -25,7 +25,7 @@ namespace shogun
  * \sa CLinearMachine
  * \sa http://en.wikipedia.org/wiki/Perceptron
  */
-class CPerceptron : public CIterativeLinearMachine
+class CPerceptron : public CIterativeMachine<CLinearMachine>
 {
 	public:
 

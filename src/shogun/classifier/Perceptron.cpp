@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CPerceptron::CPerceptron() : CIterativeLinearMachine()
+CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
 {
 	m_max_iterations = 1000;
 	learn_rate = 0.1;
@@ -41,10 +41,7 @@ void CPerceptron::init_model(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(m_continue_features)
-
-	int32_t num_feat =
-	    m_continue_features->as<CDotFeatures>()->get_dim_feature_space();
+	int32_t num_feat = features->get_dim_feature_space();
 
 	SGVector<float64_t> w;
 	if (m_initialize_hyperplane)
@@ -56,7 +53,7 @@ void CPerceptron::init_model(CFeatures* data)
 		w.set_const(1.0 / num_feat);
 		bias=0;
 	}
-	m_output = SGVector<float64_t>(m_continue_features->get_num_vectors());
+	m_output = SGVector<float64_t>(features->get_num_vectors());
 }
 
 void CPerceptron::iteration()
@@ -68,7 +65,7 @@ void CPerceptron::iteration()
 	auto iter_train_labels = labels.begin();
 	auto iter_output = m_output.begin();
 
-	for (const auto& v : DotIterator(m_continue_features->as<CDotFeatures>()))
+	for (const auto& v : DotIterator(features))
 	{
 		const auto true_label = *(iter_train_labels++);
 		auto& predicted_label = *(iter_output++);

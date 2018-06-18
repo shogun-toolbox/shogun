@@ -64,40 +64,6 @@ TEST(Perceptron, train)
 	EXPECT_EQ(acc->evaluate(results, test_labels), 1.0);
 }
 
-TEST(Perceptron, continue_training_refcount)
-{
-	auto env = linear_test_env->getBinaryLabelData();
-	auto features = wrap(env->get_features_train());
-	auto labels = wrap(env->get_labels_train());
-	auto test_features = wrap(env->get_features_test());
-	auto test_labels = wrap(env->get_labels_test());
-
-	auto perceptron = some<CPerceptron>();
-	perceptron->set_labels(labels);
-	index_t iter = 0;
-	std::function<bool()> callback = [&iter]() {
-		if (iter >= 1)
-		{
-			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
-			return true;
-		}
-		iter++;
-		return false;
-	};
-	perceptron->set_callback(callback);
-	perceptron->train(features);
-	//cancelled here
-	EXPECT_EQ(features->ref_count(), 4);
-	perceptron->train(features);
-	EXPECT_EQ(features->ref_count(), 4);
-	//cancelled again
-	perceptron->set_callback(nullptr);
-	perceptron->continue_train();
-	EXPECT_EQ(features->ref_count(), 4);
-	
-}
-
-
 TEST(Perceptron, custom_hyperplane_initialization)
 {
 	auto env = linear_test_env->getBinaryLabelData();
