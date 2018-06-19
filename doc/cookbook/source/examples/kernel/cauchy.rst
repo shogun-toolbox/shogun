@@ -2,10 +2,11 @@
 Cauchy Kernel
 =============
 
-The cauchy kernel is derived from the Cauchy distribution :cite:`basak2008kernel`. It is a long-tailed kernel defined as
+The cauchy kernel is derived from the Cauchy distribution :cite:`basak2008kernel`.
+It is a long-tailed kernel defined as
 
 .. math::
-  K(x,x') = \frac{1}{1+\frac{\| x-x' \|^2}{\sigma}}
+  k(x,x') = \frac{1}{1+\frac{\| x-x' \|^2}{\sigma}}
 
 -------
 Example
