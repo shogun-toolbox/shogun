@@ -53,7 +53,6 @@ void CPerceptron::init_model(CFeatures* data)
 		w.set_const(1.0 / num_feat);
 		bias=0;
 	}
-	m_output = SGVector<float64_t>(features->get_num_vectors());
 }
 
 void CPerceptron::iteration()
@@ -63,14 +62,12 @@ void CPerceptron::iteration()
 
 	auto labels = binary_labels(m_labels)->get_int_labels();
 	auto iter_train_labels = labels.begin();
-	auto iter_output = m_output.begin();
 
 	for (const auto& v : DotIterator(features))
 	{
 		const auto true_label = *(iter_train_labels++);
-		auto& predicted_label = *(iter_output++);
 
-		predicted_label = v.dot(w) + bias;
+		auto predicted_label = v.dot(w) + bias;
 
 		if (CMath::sign<float64_t>(predicted_label) != true_label)
 		{
@@ -81,11 +78,6 @@ void CPerceptron::iteration()
 		}
 	}
 	m_complete = converged;
-}
-
-void CPerceptron::end_training()
-{
-	m_output = SGVector<float64_t>();
 }
 
 void CPerceptron::set_initialize_hyperplane(bool initialize_hyperplane)

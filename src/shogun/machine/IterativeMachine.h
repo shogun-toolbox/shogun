@@ -9,6 +9,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/progress.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
@@ -18,19 +19,8 @@ namespace shogun
 	class CFeatures;
 	class CLabels;
 
-#define SG_ADD8(param, name, description, ms_available)                        \
-	{                                                                          \
-		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(                                                     \
-		    name, param,                                                       \
-		    AnyParameterProperties(                                            \
-		        description, ms_available, GRADIENT_NOT_AVAILABLE));           \
-		if (ms_available)                                                      \
-			this->m_model_selection_parameters->add(param, name, description); \
-	}
-
-	/** @brief Class IterativeLinearMachine implements an iterative model
-	 * whose training can be prematurely stopped, and in particular
+	/** @brief Mix-in class that implements an iterative model
+	 * whose training can be prematurely stopped, and in particular be
 	 * resumed, anytime.
 	 */
 	template <class T>
@@ -43,13 +33,13 @@ namespace shogun
 			m_current_iteration = 0;
 			m_complete = false;
 
-			SG_ADD8(
+			SG_ADD(
 			    &m_current_iteration, "current_iteration",
 			    "Current Iteration of training", MS_NOT_AVAILABLE);
-			SG_ADD8(
+			SG_ADD(
 			    &m_max_iterations, "max_iterations",
 			    "Maximum number of Iterations", MS_AVAILABLE);
-			SG_ADD8(
+			SG_ADD(
 			    &m_complete, "complete", "Convergence status",
 			    MS_NOT_AVAILABLE);
 		}
@@ -58,31 +48,31 @@ namespace shogun
 		{
 		}
 
-		/** Continue Training
-		  *
-		  * Only possible if a previous CMachine::train call was prematurely
-		  * stopped.
-		  * Throws an error otherwise
-		  *
-		  * @return whether continue training was successful
-		  */
+		/** Returns convergence status */
+		bool is_complete()
+		{
+			return m_complete;
+		}
+
 		virtual bool continue_train()
 		{
 			this->reset_computation_variables();
+
+			auto pb = SG_PROGRESS(range(m_max_iterations));
 			while (m_current_iteration < m_max_iterations && !m_complete)
 			{
-				if (this->cancel_computation())
-					break;
-				this->pause_computation();
+				COMPUTATION_CONTROLLERS
 				iteration();
 				m_current_iteration++;
+				pb.print_progress();
 			}
+			pb.complete();
 
 			if (m_complete)
 				SG_SINFO(
 				    "%s converged after %d iterations.\n", this->get_name(),
 				    m_current_iteration)
-			else if (!m_complete && m_current_iteration == m_max_iterations)
+			else if (!m_complete && m_current_iteration >= m_max_iterations)
 			{
 				SG_SWARNING(
 				    "%s did not converge after the maximum number of %d "

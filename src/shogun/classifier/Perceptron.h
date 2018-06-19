@@ -61,19 +61,16 @@ class CPerceptron : public CIterativeMachine<CLinearMachine>
 	protected:
 		virtual void init_model(CFeatures* data);
 		virtual void iteration();
-		virtual void end_training();
 
 	protected:
 		/** learning rate */
 		float64_t learn_rate;
 
 	private:
-		/** Store output during training */
-		SGVector<float64_t> m_output;
-		/** whether the hyperplane should be initialized in train_machine
-		 *
-		 * this allows to initialize the hyperplane to externally set
-		 * weights and bias
+		/** Flag that determines whether hyper-plane is initialised by the
+		 * algorithm, or not.
+		 * The latter allows users to initialize the algorithm by
+		 * manually setting weights and bias before training.
 		 */
 		bool m_initialize_hyperplane;
 };

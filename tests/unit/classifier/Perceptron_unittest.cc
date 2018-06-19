@@ -117,17 +117,14 @@ TEST(Perceptron, continue_training_consistency)
 	};
 	perceptron_stop->set_callback(callback);
 
-	perceptron_stop->put<bool>("compute_bias", false);
+	perceptron_stop->set_compute_bias(false);
 	perceptron_stop->set_labels(labels);
 	perceptron_stop->train(features);
 
-	EXPECT_FALSE(perceptron_stop->get<bool>("complete"));
+	ASSERT(!perceptron_stop->is_complete());
 
-	if (!perceptron_stop->get<bool>("complete"))
-	{
-		perceptron_stop->set_callback(nullptr);
-		perceptron_stop->continue_train();
-	}
+	perceptron_stop->set_callback(nullptr);
+	perceptron_stop->continue_train();
 
 	auto results_complete = perceptron_stop->apply_binary(test_features);
 

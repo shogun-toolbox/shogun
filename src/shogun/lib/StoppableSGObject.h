@@ -16,9 +16,9 @@
 namespace shogun
 {
 #define COMPUTATION_CONTROLLERS                                                \
-	if (cancel_computation())                                                  \
+	if (this->cancel_computation())                                            \
 		break;                                                                 \
-	pause_computation();
+	this->pause_computation();
 
 	/**
 	 * Class that abstracts all premature stopping code

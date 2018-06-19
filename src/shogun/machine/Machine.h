@@ -335,10 +335,10 @@ class CMachine : public CStoppableSGObject
 
 		/** Continue Training
 		 *
-		 * This is overloaded in IterativeLinearMachine
-		 * to resume training of a model that was prematurely stopped.
-		 *
-		 * NOT IMPLEMENTED!
+		 * This method can be used to continue a prematurely stopped
+		 * call to CMachine::train.
+		 * This is available for Iterative models and throws an error
+		 * if the feature is not supported. 
 		 *
 		 * @return whether training was successful
 		 */
