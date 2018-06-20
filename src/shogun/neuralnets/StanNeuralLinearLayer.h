@@ -64,17 +64,10 @@ public:
 	 *
 	 * @param parameters Vector of size get_num_parameters()
 	 *
-	 * @param parameter_regularizable Vector of size get_num_parameters().
-	 * This controls which of the layer's parameter are
-	 * subject to regularization, i.e to turn off regularization for parameter
-	 * i, set parameter_regularizable[i] = false. This is usally used to turn
-	 * off regularization for bias parameters.
-	 *
 	 * @param sigma standard deviation of the gaussian used to random the
 	 * parameters
 	 */
 	virtual void initialize_parameters(StanVector& parameters,
-			SGVector<bool> parameter_regularizable,
 			float64_t sigma);
 
 	/** Computes the activations of the neurons in this layer, results should

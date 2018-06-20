@@ -33,16 +33,12 @@ void StanNeuralLinearLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 }
 
 void StanNeuralLinearLayer::initialize_parameters(StanVector& parameters,
-		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
 	for (int32_t i=0; i<m_num_parameters; i++)
 	{
 		// random the parameters
 		parameters(i,0) = CMath::normal_random(0.0, sigma);
-
-		// turn regularization off for the biases, on for the weights
-		parameter_regularizable[i] = (i>=m_num_neurons);
 	}
 }
 
