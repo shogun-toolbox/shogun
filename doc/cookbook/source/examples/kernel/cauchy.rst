@@ -2,7 +2,7 @@
 Cauchy Kernel
 =============
 
-The cauchy kernel is derived from the Cauchy distribution :cite:`basak2008kernel`.
+The cauchy kernel is derived from the Cauchy distribution :cite:`basak2008kernel` (Section 3).
 It is a long-tailed kernel defined as
 
 .. math::
