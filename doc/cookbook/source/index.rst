@@ -96,6 +96,16 @@ Distance
 
    examples/distance/**
 
+Kernel
+-------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Kernel
+
+   examples/kernel/**
+
 Neural Networks
 ---------------
 
