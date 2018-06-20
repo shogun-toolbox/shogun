@@ -1,0 +1,18 @@
+File f_feats = csv_file("../../data/fm_train_real.dat")
+
+#![create_features]
+Features feats = features(f_feats)
+#![create_features]
+
+#![set_parameters]
+Kernel k = kernel("GaussianKernel", cache_size=10, log_width=10.0)
+Converter diffusion_maps = converter("DiffusionMaps", target_dim=1, kernel=k, t=10)
+#![set_parameters]
+
+#![apply_convert]
+Features converted = diffusion_maps.apply(feats)
+#![apply_convert]
+
+#![extract]
+RealMatrix feature_matrix = converted.get_real_matrix("feature_matrix")
+#![extract]
