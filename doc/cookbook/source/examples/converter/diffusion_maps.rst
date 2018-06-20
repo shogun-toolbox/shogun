@@ -16,7 +16,7 @@ we create CDenseFeatures (RealFeatures, here 64 bit float values).
 
 .. sgexample:: diffusionmaps.sg:create_features
 
-We create the :sgclass:`CDiffusionMaps` instance, and set its parameters. The diffusion kernel must satisfy
+We create the :sgclass:`CDiffusionMaps` instance, and set its parameters. The diffusion kernel :math: `k` must satisfy
 the following properties:
 
 1. :math: `k` is symmetric :math: `{\bf k}(x, y) = {\bf k}(y, x)`
