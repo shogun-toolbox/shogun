@@ -7,6 +7,7 @@
 #define FACTORY_H_
 
 #include <shogun/base/class_list.h>
+#include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/features/DenseFeatures.h>
@@ -31,6 +32,7 @@ namespace shogun
 	CMulticlassStrategy* multiclass_strategy(const std::string& name);
 	CECOCEncoder* ecoc_encoder(const std::string& name);
 	CECOCDecoder* ecoc_decoder(const std::string& name);
+	CConverter* converter(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -49,6 +51,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CMulticlassStrategy, multiclass_strategy)
 	BASE_CLASS_FACTORY(CECOCEncoder, ecoc_encoder)
 	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
+	BASE_CLASS_FACTORY(CConverter, converter)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
