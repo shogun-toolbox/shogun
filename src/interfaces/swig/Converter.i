@@ -29,6 +29,7 @@
 %rename(FFSep) CFFSep;
 %rename(JediSep) CJediSep;
 %rename(UWedgeSep) CUWedgeSep;
+%rename(Converter) CConverter;
 %rename(FastICA) CFastICA;
 
 %newobject shogun::CEmbeddingConverter::apply;
