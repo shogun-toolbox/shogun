@@ -161,7 +161,7 @@ APPLY_LATENT(CLatentSVM);
 #undef APPLY_STRUCTURED
 #undef APPLY_LATENT
 
+#endif
 
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/Pipeline.h>
-#endif
