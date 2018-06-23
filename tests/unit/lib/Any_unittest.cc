@@ -636,3 +636,10 @@ TEST(Any, reset_array2d_reference)
 	EXPECT_EQ(obj->ref_count(), 1);
 	SG_UNREF(obj);
 }
+
+TEST(Any, lazy)
+{
+	auto v = 9;
+	auto any = make_any<int>([=]() { return v; });
+	EXPECT_EQ(any.as<int32_t>(), v);
+}

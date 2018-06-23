@@ -948,6 +948,19 @@ namespace shogun
 		return Any(v);
 	}
 
+	/** Wraps a function as as instance of Any.
+	 *
+	 * @param func function to wrap
+	 * @return Any object that uses the function to obtain its value
+	 */
+	template <typename T>
+	inline Any make_any(std::function<T()> func)
+	{
+		// TODO add policy
+		T value = func();
+		return Any(value);
+	}
+
 	template <typename T>
 	inline Any make_any_ref(T* v)
 	{
