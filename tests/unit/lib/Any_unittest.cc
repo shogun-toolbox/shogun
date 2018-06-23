@@ -99,12 +99,12 @@ TEST(Any, as)
 	EXPECT_THROW(any.as<float64_t>(), TypeMismatchException);
 }
 
-TEST(Any, same_type)
+TEST(Any, has_type)
 {
 	int32_t integer = 10;
 	auto any = make_any(integer);
-	EXPECT_EQ(any.same_type<int32_t>(), true);
-	EXPECT_EQ(any.same_type<float64_t>(), false);
+	EXPECT_EQ(any.has_type<int32_t>(), true);
+	EXPECT_EQ(any.has_type<float64_t>(), false);
 }
 
 TEST(Any, empty)
@@ -116,12 +116,12 @@ TEST(Any, empty)
 	EXPECT_EQ(empty_any.empty(), true);
 }
 
-TEST(Any, same_type_fallback)
+TEST(Any, has_type_fallback)
 {
 	int32_t integer = 10;
 	auto any = make_any(integer);
-	EXPECT_EQ(any.same_type_fallback<int32_t>(), true);
-	EXPECT_EQ(any.same_type_fallback<float64_t>(), false);
+	EXPECT_EQ(any.has_type_fallback<int32_t>(), true);
+	EXPECT_EQ(any.has_type_fallback<float64_t>(), false);
 }
 
 // TODO(lisitsyn): Windows being unstable here, unclear yet
@@ -637,7 +637,7 @@ TEST(Any, reset_array2d_reference)
 	SG_UNREF(obj);
 }
 
-TEST(Any, lazy)
+TEST(Any, lazy_simple)
 {
 	auto v = 9;
 	auto any = make_any<int>([=]() { return v; });
