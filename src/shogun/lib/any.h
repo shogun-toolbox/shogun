@@ -328,6 +328,10 @@ namespace shogun
 		template <class T>
 		inline const T& value_of(T const* ptr)
 		{
+			if (!ptr)
+			{
+				throw std::logic_error("Tried to access null pointer");
+			}
 			return *ptr;
 		}
 
