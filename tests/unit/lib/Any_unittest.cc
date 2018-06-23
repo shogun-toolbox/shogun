@@ -643,3 +643,26 @@ TEST(Any, lazy_simple)
 	auto any = make_any<int>([=]() { return v; });
 	EXPECT_EQ(any.as<int32_t>(), v);
 }
+
+TEST(Any, lazy_assignment_into_with_value)
+{
+	auto v = 3;
+	auto any = make_any<int>([=]() { return 111; });
+	EXPECT_THROW(any = make_any<int>(v), TypeMismatchException);
+}
+
+TEST(Any, lazy_assignment_into_with_function)
+{
+	auto v = 3;
+	auto any = make_any<int>([=]() { return 111; });
+	any = make_any<int>([=]() { return v; });
+	EXPECT_EQ(any.as<int32_t>(), v);
+}
+
+TEST(Any, lazy_assignment_from)
+{
+	auto v = 3;
+	auto any = make_any(0);
+	EXPECT_THROW(
+	    any = make_any<int>([=]() { return v; }), TypeMismatchException);
+}
