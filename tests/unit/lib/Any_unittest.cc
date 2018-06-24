@@ -89,6 +89,11 @@ public:
 	{
 		return new Object();
 	}
+
+	int computed_member() const
+	{
+		return 90210;
+	}
 };
 
 TEST(Any, as)
@@ -665,4 +670,11 @@ TEST(Any, lazy_assignment_from)
 	auto any = make_any(0);
 	EXPECT_THROW(
 	    any = make_any<int>([=]() { return v; }), TypeMismatchException);
+}
+
+TEST(Any, lazy_member_function)
+{
+	auto obj = std::make_shared<Object>();
+	auto any = make_any<int>(std::bind(&Object::computed_member, obj));
+	EXPECT_EQ(any.as<int>(), obj->computed_member());
 }

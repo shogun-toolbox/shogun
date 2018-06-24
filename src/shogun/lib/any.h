@@ -342,17 +342,30 @@ namespace shogun
 		}
 
 		template <class T>
-		const T& get_value(const void* storage)
+		struct has_result_type
 		{
-			return value_of(typed_pointer<T>(storage));
-		}
+			typedef char yes[1];
+			typedef char no[2];
+			template <class C>
+			static yes& test(typename C::result_type*);
+			template <class C>
+			static no& test(...);
+			static bool const value = (sizeof(test<T>(0)) == sizeof(yes));
+		};
 
 		template <class T>
-		auto get_value(const void* storage) -> decltype(typed_pointer<T>(storage)())
+		T get_value(const void* storage, bool is_functional)
 		{
-			return typed_pointer<T>(storage)();
+			if (is_functional)
+			{
+				auto function = typed_pointer<std::function<T()>>(storage);
+				return (*function)();
+			}
+			else
+			{
+				return value_of(typed_pointer<T>(storage));
+			}
 		}
-
 
 		template <class T, class S>
 		inline auto free_array(T* ptr, S size)
@@ -508,7 +521,7 @@ namespace shogun
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches(BaseAnyPolicy* other) const = 0;
+		virtual bool matches_policy(BaseAnyPolicy* other) const = 0;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -529,6 +542,8 @@ namespace shogun
 		 * @param visitor abstract visitor to use
 		 */
 		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
+
+		virtual bool is_functional() const = 0;
 	};
 
 	template <typename T>
@@ -558,6 +573,11 @@ namespace shogun
 		virtual bool matches_type(const std::type_info& ti) const override
 		{
 			return typeid(T) == ti;
+		}
+
+		virtual bool is_functional() const
+		{
+			return any_detail::has_result_type<T>::value;
 		}
 	};
 
@@ -598,7 +618,7 @@ namespace shogun
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -662,7 +682,7 @@ namespace shogun
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches(BaseAnyPolicy* other) const override;
+		virtual bool matches_policy(BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -710,7 +730,7 @@ namespace shogun
 	}
 
 	template <class T>
-	bool NonOwningAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	bool NonOwningAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -724,7 +744,7 @@ namespace shogun
 	}
 
 	template <class T>
-	bool PointerValueAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	bool PointerValueAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -789,7 +809,7 @@ namespace shogun
 				set_or_inherit(other);
 				return *(this);
 			}
-			if (!policy->matches(other.policy))
+			if (!policy->matches_policy(other.policy))
 			{
 				throw TypeMismatchException(
 				    other.policy->type(), policy->type());
@@ -809,7 +829,7 @@ namespace shogun
 
 		Any& clone_from(const Any& other)
 		{
-			if (!policy->matches(other.policy))
+			if (!policy->matches_policy(other.policy))
 			{
 				throw TypeMismatchException(
 				    other.policy->type(), policy->type());
@@ -842,11 +862,12 @@ namespace shogun
 		 * @return type-casted value
 		 */
 		template <typename T>
-		const T& as() const
+		T as() const
 		{
 			if (has_type<T>())
 			{
-				return any_detail::get_value<T>(storage);
+				return any_detail::get_value<T>(
+				    storage, policy->is_functional());
 			}
 			else
 			{
@@ -924,7 +945,7 @@ namespace shogun
 		{
 			return lhs.empty() && rhs.empty();
 		}
-		if (!lhs.policy->matches(rhs.policy))
+		if (!lhs.policy->matches_policy(rhs.policy))
 		{
 			return false;
 		}
