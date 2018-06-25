@@ -333,6 +333,21 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
+		/** Continue Training
+		 *
+		 * This method can be used to continue a prematurely stopped
+		 * call to CMachine::train.
+		 * This is available for Iterative models and throws an error
+		 * if the feature is not supported. 
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool continue_train()
+		{
+			SG_ERROR("Training continuation not supported by this model.\n");
+			return false;
+		}
+
 		/** Stores feature data of underlying model.
 		 * After this method has been called, it is possible to change
 		 * the machine's feature data and call apply(), which is then performed

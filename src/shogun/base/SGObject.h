@@ -80,25 +80,25 @@ template <class T> class SGStringList;
 
 #define SG_ADD4(param, name, description, ms_available)                        \
 	{                                                                          \
-		m_parameters->add(param, name, description);                           \
-		watch_param(                                                           \
+		this->m_parameters->add(param, name, description);                     \
+		this->watch_param(                                                     \
 		    name, param,                                                       \
 		    AnyParameterProperties(                                            \
 		        description, ms_available, GRADIENT_NOT_AVAILABLE));           \
 		if (ms_available)                                                      \
-			m_model_selection_parameters->add(param, name, description);       \
+			this->m_model_selection_parameters->add(param, name, description); \
 	}
 
 #define SG_ADD5(param, name, description, ms_available, gradient_available)    \
 	{                                                                          \
-		m_parameters->add(param, name, description);                           \
-		watch_param(                                                           \
+		this->m_parameters->add(param, name, description);                     \
+		this->watch_param(                                                     \
 		    name, param, AnyParameterProperties(                               \
 		                     description, ms_available, gradient_available));  \
 		if (ms_available)                                                      \
-			m_model_selection_parameters->add(param, name, description);       \
+			this->m_model_selection_parameters->add(param, name, description); \
 		if (gradient_available)                                                \
-			m_gradient_parameters->add(param, name, description);              \
+			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
