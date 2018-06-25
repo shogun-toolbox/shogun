@@ -17,19 +17,6 @@
 namespace shogun
 {
 
-/** For autoencoders, specifies the position of the layer in the autoencoder,
- * i.e an encoding layer or a decoding layer
- */
-enum ENLAutoencoderPosition
-{
-	/** The layer is not a part of an autoencoder */
-	NLAP_NONE=0,
-	/** The layer is an encoding layer */
-	NLAP_ENCODING=1,
-	/** The layer is a decoding layer */
-	NLAP_DECODING=2
-};
-
 template <class T> class SGVector;
 
 /** @brief Base class for neural network layers
@@ -115,7 +102,7 @@ public:
 	 * parameters
 	 */
 	virtual void initialize_parameters(StanVector& parameters,
-			SGVector<bool> parameter_regularizable,
+			int32_t i, int32_t j,
 			float64_t sigma) { }
 
 	/** Computes the activations of the neurons in this layer, results should
@@ -209,11 +196,6 @@ public:
 
 	/** probabilty of dropping out a neuron in the layer */
 	float64_t dropout_prop;
-
-	/** For autoencoders, specifies the position of the layer in the autoencoder,
-	 * i.e an encoding layer or a decoding layer. Default value is NLAP_NONE
-	 */
-	ENLAutoencoderPosition autoencoder_position;
 
 protected:
 	/** Number of neurons in this layer */

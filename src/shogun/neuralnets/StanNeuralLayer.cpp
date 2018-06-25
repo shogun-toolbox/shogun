@@ -89,7 +89,6 @@ void StanNeuralLayer::init()
 	m_batch_size = 0;
 	dropout_prop = 0.0;
 	is_training = false;
-	autoencoder_position = NLAP_NONE;
 
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
@@ -110,6 +109,4 @@ void StanNeuralLayer::init()
 	SG_ADD(&m_dropout_mask, "dropout_mask",
 	       "Dropout mask", MS_NOT_AVAILABLE);
 
-	SG_ADD((machine_int_t*)&autoencoder_position, "autoencoder_position",
-	       "Autoencoder Position", MS_NOT_AVAILABLE);
 }
