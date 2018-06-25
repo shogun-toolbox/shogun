@@ -31,6 +31,9 @@
 * policies,
 * either expressed or implied, of the Shogun Development Team.
 */
+#include <functional>
+#include <rxcpp/rx-lite.hpp>
+#include <shogun/lib/Signal.h>
 
 #include "environments/LinearTestEnvironment.h"
 #include <gtest/gtest.h>
@@ -52,8 +55,9 @@ TEST(Perceptron, train)
 	auto test_features = wrap(env->get_features_test());
 	auto test_labels = wrap(env->get_labels_test());
 
-	auto perceptron = some<CPerceptron>(features, labels);
-	EXPECT_TRUE(perceptron->train());
+	auto perceptron = some<CPerceptron>();
+	perceptron->set_labels(labels);
+	EXPECT_TRUE(perceptron->train(features));
 
 	auto results = wrap(perceptron->apply(test_features));
 	auto acc = some<CAccuracyMeasure>();
@@ -68,16 +72,64 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	auto test_features = wrap(env->get_features_test());
 	auto test_labels = wrap(env->get_labels_test());
 
-	auto perceptron = some<CPerceptron>(features, labels);
-	perceptron->train();
+	auto perceptron = some<CPerceptron>();
+	perceptron->set_labels(labels);
+	perceptron->train(features);
 
 	auto weights = perceptron->get_w();
 
-	auto perceptron_initialized = some<CPerceptron>(features, labels);
+	auto perceptron_initialized = some<CPerceptron>();
 	perceptron_initialized->set_initialize_hyperplane(false);
 	perceptron_initialized->set_w(weights);
-	perceptron_initialized->set_max_iter(1);
+	perceptron_initialized->put<int32_t>("max_iterations", 1);
+	perceptron_initialized->set_labels(labels);
 
-	perceptron_initialized->train();
+	perceptron_initialized->train(features);
 	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
+}
+
+TEST(Perceptron, continue_training_consistency)
+{
+	auto env = linear_test_env->getBinaryLabelData();
+	auto features = wrap(env->get_features_train());
+	auto labels = wrap(env->get_labels_train());
+	auto test_features = wrap(env->get_features_test());
+	auto test_labels = wrap(env->get_labels_test());
+
+	auto perceptron = some<CPerceptron>();
+	perceptron->set_labels(labels);
+	perceptron->train(features);
+
+	auto results = perceptron->apply_binary(test_features);
+
+	index_t iter = 0;
+
+	auto perceptron_stop = some<CPerceptron>();
+
+	std::function<bool()> callback = [&iter]() {
+		if (iter >= 1)
+		{
+			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+			return true;
+		}
+		iter++;
+		return false;
+	};
+	perceptron_stop->set_callback(callback);
+
+	perceptron_stop->set_compute_bias(false);
+	perceptron_stop->set_labels(labels);
+	perceptron_stop->train(features);
+
+	ASSERT(!perceptron_stop->is_complete());
+
+	perceptron_stop->set_callback(nullptr);
+	perceptron_stop->continue_train();
+
+	auto results_complete = perceptron_stop->apply_binary(test_features);
+
+	EXPECT_TRUE(results_complete->get_labels().equals(results->get_labels()));
+
+	SG_UNREF(results);
+	SG_UNREF(results_complete);
 }

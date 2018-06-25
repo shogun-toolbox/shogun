@@ -17,29 +17,14 @@
 
 using namespace shogun;
 
-CPerceptron::CPerceptron()
-: CLinearMachine()
+CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
 {
-	init();
-}
-
-CPerceptron::CPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
-{
-	init();
-	set_features(traindat);
-	set_labels(trainlab);
-}
-
-void CPerceptron::init()
-{
-	max_iter = 1000;
+	m_max_iterations = 1000;
 	learn_rate = 0.1;
 	m_initialize_hyperplane = true;
 	SG_ADD(
 	    &m_initialize_hyperplane, "initialize_hyperplane",
 	    "Whether to initialize hyperplane.", MS_AVAILABLE);
-	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", MS_AVAILABLE);
 	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
 }
 
@@ -47,10 +32,8 @@ CPerceptron::~CPerceptron()
 {
 }
 
-bool CPerceptron::train_machine(CFeatures* data)
+void CPerceptron::init_model(CFeatures* data)
 {
-	ASSERT(m_labels)
-
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -58,15 +41,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features)
-	bool converged=false;
-	int32_t iter=0;
-	SGVector<int32_t> train_labels = binary_labels(m_labels)->get_int_labels();
-	int32_t num_feat=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
-
-	ASSERT(num_vec==train_labels.vlen)
-	SGVector<float64_t> output(num_vec);
+	int32_t num_feat = features->get_dim_feature_space();
 
 	SGVector<float64_t> w;
 	if (m_initialize_hyperplane)
@@ -78,44 +53,31 @@ bool CPerceptron::train_machine(CFeatures* data)
 		w.set_const(1.0 / num_feat);
 		bias=0;
 	}
-	else
+}
+
+void CPerceptron::iteration()
+{
+	bool converged = true;
+	SGVector<float64_t> w = get_w();
+
+	auto labels = binary_labels(m_labels)->get_int_labels();
+	auto iter_train_labels = labels.begin();
+
+	for (const auto& v : DotIterator(features))
 	{
-		w = get_w();
-	}
-	auto pb = SG_PROGRESS(range(max_iter));
-	//loop till we either get everything classified right or reach max_iter
-	while (!converged && iter < max_iter)
-	{
-		COMPUTATION_CONTROLLERS
-		converged=true;
-		auto iter_train_labels = train_labels.begin();
-		auto iter_output = output.begin();
-		for (const auto& v : DotIterator(features))
+		const auto true_label = *(iter_train_labels++);
+
+		auto predicted_label = v.dot(w) + bias;
+
+		if (CMath::sign<float64_t>(predicted_label) != true_label)
 		{
-			const auto true_label = *(iter_train_labels++);
-			auto& predicted_label = *(iter_output++);
-
-			predicted_label = v.dot(w) + bias;
-
-			if (CMath::sign<float64_t>(predicted_label) != true_label)
-			{
-				converged = false;
-				const auto gradient = learn_rate * true_label;
-				bias += gradient;
-				v.add(gradient, w);
-			}
+			converged = false;
+			const auto gradient = learn_rate * true_label;
+			bias += gradient;
+			v.add(gradient, w);
 		}
-
-		iter++;
-		pb.print_progress();
 	}
-	pb.complete();
-	if (converged)
-		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
-	else
-		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter)
-
-	return converged;
+	m_complete = converged;
 }
 
 void CPerceptron::set_initialize_hyperplane(bool initialize_hyperplane)
