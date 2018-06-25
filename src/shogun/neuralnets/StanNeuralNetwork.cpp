@@ -34,7 +34,7 @@
 
  	m_num_layers = m_layers->get_num_elements();
  	m_adj_matrix = SGMatrix<bool>(m_num_layers, m_num_layers);
- 	m_adj_matrix.zero();
+ 	m_adj_matrix.Zero();
 
  	m_num_inputs = 0;
  	for (int32_t i=0; i<m_num_layers; i++)
@@ -105,13 +105,12 @@
 
  	m_params = StanVector(m_total_num_parameters, 1);
 
- 	m_params.zero();
+ 	m_params.Zero();
 
  	for (int32_t i=0; i<m_num_layers; i++)
  	{
- 		auto layer_param = get_section(m_params, i);
-
- 		get_layer(i)->initialize_parameters(layer_param,sigma);
+ 		get_layer(i)->initialize_parameters(m_params, m_index_offsets[i],
+      m_index_offsets[i] + get_layer(i)->get_num_parameters() -1 ,sigma);
 
  		get_layer(i)->set_batch_size(m_batch_size);
  	}
@@ -122,56 +121,15 @@
  	SG_UNREF(m_layers);
  }
 
-//TODO: Fix apply_*
- CBinaryLabels* StanNeuralNetwork::apply_binary(CFeatures* data)
- {
- 	SGMatrix<float64_t> output_activations = forward_propagate(data);
- 	CBinaryLabels* labels = new CBinaryLabels(m_batch_size);
 
- 	for (int32_t i=0; i<m_batch_size; i++)
- 	{
- 		if (get_num_outputs()==1)
- 		{
- 			if (output_activations[i]>0.5) labels->set_label(i, 1);
- 			else labels->set_label(i, -1);
-
- 			labels->set_value(output_activations[i], i);
- 		}
- 		else if (get_num_outputs()==2)
- 		{
- 			float64_t v1 = output_activations[2*i];
- 			float64_t v2 = output_activations[2*i+1];
- 			if (v1>v2)
- 				labels->set_label(i, 1);
- 			else labels->set_label(i, -1);
-
- 			labels->set_value(v2/(v1+v2), i);
- 		}
- 	}
-
- 	return labels;
- }
-
- CRegressionLabels* StanNeuralNetwork::apply_regression(CFeatures* data)
- {
- 	SGMatrix<float64_t> output_activations = forward_propagate(data);
- 	SGVector<float64_t> labels_vec(m_batch_size);
-
- 	for (int32_t i=0; i<m_batch_size; i++)
- 			labels_vec[i] = output_activations[i];
-
- 	return new CRegressionLabels(labels_vec);
- }
-
-
- SGMatrix<float64_t> StanNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
+ StanMatrix StanNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
  {
  	SGMatrix<float64_t> inputs = features_to_matrix(data);
  	set_batch_size(data->get_num_vectors());
  	return forward_propagate(inputs, j);
  }
 
- SGMatrix<float64_t> StanNeuralNetwork::forward_propagate(
+ StanMatrix StanNeuralNetwork::forward_propagate(
  	SGMatrix<float64_t> inputs, int32_t j)
  {
  	if (j==-1)
@@ -179,34 +137,22 @@
 
  	for (int32_t i=0; i<=j; i++)
  	{
- 		CNeuralLayer* layer = get_layer(i);
+ 		StanNeuralLayer* layer = get_layer(i);
 
  		if (layer->is_input())
  			layer->compute_activations(inputs);
  		else
- 			layer->compute_activations(get_section(m_params, i), m_layers);
+ 			layer->compute_activations(m_params, m_index_offsets[i],
+        m_index_offsets[i] + get_layer(i)->get_num_parameters() -1, m_layers);
 
  		layer->dropout_activations();
  	}
-
  	return get_layer(j)->get_activations();
  }
 
-
- SGVector<float64_t>* StanNeuralNetwork::get_layer_parameters(int32_t i)
+ StanNeuralLayer* StanNeuralNetwork::get_layer(int32_t i)
  {
- 	REQUIRE(i<m_num_layers && i >= 0, "Layer index (%i) out of range\n", i);
-
- 	int32_t n = get_layer(i)->get_num_parameters();
- 	SGVector<float64_t>* p = new SGVector<float64_t>(n);
-
- 	sg_memcpy(p->vector, get_section(m_params, i), n*sizeof(float64_t));
- 	return p;
- }
-
- CNeuralLayer* StanNeuralNetwork::get_layer(int32_t i)
- {
- 	CNeuralLayer* layer = (CNeuralLayer*)m_layers->element(i);
+ 	auto layer = (StanNeuralLayer*)m_layers->element(i);
  	// needed because m_layers->element(i) increases the reference count of
  	// layer i
  	SG_UNREF(layer);
@@ -214,8 +160,9 @@
  }
 
  template <class T>
- SGVector<T> StanNeuralNetwork::get_section(SGVector<T> v, int32_t i)
+ StanVector& StanNeuralNetwork::get_section(SGVector<T> v, int32_t i)
  {
+
  	return SGVector<T>(v.vector+m_index_offsets[i],
  		get_layer(i)->get_num_parameters(), false);
  }

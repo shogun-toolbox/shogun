@@ -8,6 +8,7 @@
 #define __STANNEURALNETWORK_H__
 
 #include <shogun/optimization/StanFirstOrderSAGCostFunction.h>
+#include <shogun/neuralnets/StanNeuralLayer.h>
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
@@ -104,11 +105,6 @@ public:
 
 	virtual ~StanNeuralNetwork();
 
-	/** apply machine to data in means of binary classification problem */
-	virtual CBinaryLabels* apply_binary(CFeatures* data);
-	/** apply machine to data in means of regression problem */
-	virtual CRegressionLabels* apply_regression(CFeatures* data);
-
 	/** returns a copy of a layer's parameters array
 	 *
 	 * @param i index of the layer
@@ -151,10 +147,6 @@ protected:
 
 private:
 	void init();
-
-	/** Returns the section of vector v that belongs to layer i */
-	template<class T>
-	StanVector get_section(StanVector& v, int32_t i);
 
 protected:
 	/** number of neurons in the input layer */
