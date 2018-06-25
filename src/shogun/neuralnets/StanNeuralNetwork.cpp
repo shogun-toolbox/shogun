@@ -164,29 +164,6 @@
  }
 
 
- CMulticlassLabels* StanNeuralNetwork::apply_multiclass(CFeatures* data)
- {
- 	SGMatrix<float64_t> output_activations = forward_propagate(data);
- 	SGVector<float64_t> labels_vec(m_batch_size);
-
- 	for (int32_t i=0; i<m_batch_size; i++)
- 	{
- 		labels_vec[i] = CMath::arg_max(
- 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
- 	}
-
- 	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
-
- 	labels->allocate_confidences_for(get_num_outputs());
- 	for (int32_t i=0; i<m_batch_size; i++)
- 	{
- 		labels->set_multiclass_confidences(i, SGVector<float64_t>(
- 			output_activations.matrix, get_num_outputs(), i*get_num_outputs()));
- 	}
-
- 	return labels;
- }
-
  SGMatrix<float64_t> StanNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
  {
  	SGMatrix<float64_t> inputs = features_to_matrix(data);

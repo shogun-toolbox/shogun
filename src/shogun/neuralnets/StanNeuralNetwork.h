@@ -102,14 +102,12 @@ public:
 	 */
 	virtual void initialize_neural_network(float64_t sigma = 0.01f);
 
-	virtual ~CNeuralNetwork();
+	virtual ~StanNeuralNetwork();
 
 	/** apply machine to data in means of binary classification problem */
 	virtual CBinaryLabels* apply_binary(CFeatures* data);
 	/** apply machine to data in means of regression problem */
 	virtual CRegressionLabels* apply_regression(CFeatures* data);
-	/** apply machine to data in means of multiclass classification problem */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
 
 	/** returns a copy of a layer's parameters array
 	 *

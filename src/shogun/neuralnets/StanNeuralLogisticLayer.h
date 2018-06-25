@@ -25,7 +25,7 @@ public:
 	/** default constructor */
 	StanNeuralLogisticLayer();
 
-	/** Constuctor
+	/** Constructor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
@@ -46,7 +46,7 @@ public:
 			CDynamicObjectArray* layers);
 
 
-	virtual const char* get_name() const { return "NeuralLogisticLayer"; }
+	virtual const char* get_name() const { return "StanNeuralLogisticLayer"; }
 };
 
 }
