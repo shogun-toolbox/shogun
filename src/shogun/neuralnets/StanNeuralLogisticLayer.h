@@ -42,7 +42,7 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(StanVector& parameters,
+	virtual void compute_activations(StanVector& parameters, int32_t i, int32_t j,
 			CDynamicObjectArray* layers);
 
 

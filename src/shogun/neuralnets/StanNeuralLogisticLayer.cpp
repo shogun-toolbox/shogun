@@ -19,10 +19,10 @@
  {
  }
 
- void StanNeuralLogisticLayer::compute_activations(StanVector& parameters,
- 		CDynamicObjectArray* layers)
+ void StanNeuralLogisticLayer::compute_activations(StanVector& parameters, int32_t f,
+   int32_t e, CDynamicObjectArray* layers)
  {
- 	StanNeuralLinearLayer::compute_activations(parameters, layers);
+ 	StanNeuralLinearLayer::compute_activations(parameters, f, e, layers);
 
   for(index_t i=0; i< m_num_neurons; ++i)
   {
