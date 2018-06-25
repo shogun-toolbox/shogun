@@ -32,22 +32,20 @@ void StanNeuralLinearLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 		m_num_parameters += m_num_neurons*m_input_sizes[i];
 }
 
-void StanNeuralLinearLayer::initialize_parameters(StanVector& parameters,
+void StanNeuralLinearLayer::initialize_parameters(StanVector& parameters, int32_t i, int32_t j,
 		float64_t sigma)
 {
-	for (int32_t i=0; i<m_num_parameters; i++)
+	for (int32_t idx=i; idx<= j; idx++)
 	{
 		// random the parameters
-		parameters(i,0) = CMath::normal_random(0.0, sigma);
+		parameters(idx,0) = CMath::normal_random(0.0, sigma);
 	}
 }
 
-void StanNeuralLinearLayer::compute_activations(StanVector& parameters,
+void StanNeuralLinearLayer::compute_activations(StanVector& parameters, int32_t i, int32_t j,
 		CDynamicObjectArray* layers)
 {
-	//float64_t* biases = parameters.vector;
-
-	auto biases = parameters.block(0,0,m_num_neurons, 1);
+	auto biases = parameters.block(i,0,m_num_neurons, 1);
 	StanMatrix& A = m_stan_activations;
 	A.resize(m_num_neurons, m_batch_size);
 	A.colwise() = biases;
@@ -59,7 +57,7 @@ void StanNeuralLinearLayer::compute_activations(StanVector& parameters,
 			(StanNeuralLayer*)layers->element(m_input_indices[l]);
 
 		//float64_t* weights = parameters.vector + weights_index_offset;
-		auto W = parameters.block(0,weights_index_offset, m_num_neurons*layer->get_num_neurons(), 1);
+		auto W = parameters.block(i+weights_index_offset, 0, m_num_neurons*layer->get_num_neurons(), 1);
 		W.resize(m_num_neurons, layer->get_num_neurons());
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
 

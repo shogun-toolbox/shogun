@@ -67,7 +67,7 @@ public:
 	 * @param sigma standard deviation of the gaussian used to random the
 	 * parameters
 	 */
-	virtual void initialize_parameters(StanVector& parameters,
+	virtual void initialize_parameters(StanVector& parameters, int32_t i, int32_t j,
 			float64_t sigma);
 
 	/** Computes the activations of the neurons in this layer, results should
@@ -79,10 +79,10 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(StanVector& parameters,
+	virtual void compute_activations(StanVector& parameters, int32_t, int32_t j,
 			CDynamicObjectArray* layers);
 
-	virtual const char* get_name() const { return "NeuralLinearLayer"; }
+	virtual const char* get_name() const { return "StanNeuralLinearLayer"; }
 };
 
 }
