@@ -85,6 +85,26 @@ namespace shogun
 		return result;
 	}
 
+	CFeatures* string_features(
+	    CFile* file, EAlphabet alpha = DNA,
+	    EPrimitiveType primitive_type = PT_CHAR)
+	{
+		REQUIRE(file, "No file provided.\n");
+		CFeatures* result = nullptr;
+
+		switch (primitive_type)
+		{
+		case PT_CHAR:
+			result = new CStringFeatures<char>(file, alpha);
+			break;
+		default:
+			SG_SNOTIMPLEMENTED
+		}
+
+		SG_REF(result);
+		return result;
+	}
+
 	/** Factory for CDenseSubsetFeatures.
 	 * TODO: Should be removed once the concept of feature views has arrived
 	 */
