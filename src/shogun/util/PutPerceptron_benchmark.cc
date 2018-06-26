@@ -3,72 +3,66 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
+
+	std::normal_distribution<float64_t> normal;
+	std::random_device rd;
+	std::mt19937 gen{rd()};
+
 	// Mock PerceptronP
-	class PerceptronP : public CSGObject
+	class CMockPerceptron : public CSGObject
 	{
 
 	public:
-		PerceptronP() : CSGObject()
+		CMockPerceptron() : CSGObject()
 		{
 			max_iters = 1000;
-			learn_rate = 0.1;
 			SG_ADD(&w, "w", "weights", MS_AVAILABLE);
 		}
 
-		~PerceptronP()
+		~CMockPerceptron()
 		{
 		}
 
-		bool train(CDotFeatures* feats, CBinaryLabels* labels, bool use_put)
+		bool train(CDotFeatures* feats, CBinaryLabels* labels)
 		{
 			int32_t num_feat = feats->get_dim_feature_space();
-			SGVector<float64_t> weights(num_feat);
+			weights = SGVector<float64_t>(num_feat);
 			weights.set_const(1.0 / num_feat);
-			bias = 0;
+			float64_t bias = 0;
 
 			SGVector<float64_t> output(feats->get_num_vectors());
 			for (auto iter : range(max_iters))
 			{
 				auto iter_train_labels = labels->get_int_labels().begin();
-				auto iter_output = output.begin();
 
 				for (const auto& v : DotIterator(feats))
 				{
 					const auto true_label = *(iter_train_labels++);
-					auto& predicted_label = *(iter_output++);
 
-					predicted_label = v.dot(weights) + bias;
+					auto predicted_label = v.dot(weights) + bias;
 
 					if (CMath::sign<float64_t>(predicted_label) != true_label)
 					{
-						const auto gradient = learn_rate * true_label;
+						const auto gradient = true_label;
 						bias += gradient;
 						v.add(gradient, weights);
 					}
-					if (use_put)
-					{
-						this->put<SGVector<float64_t>>("w", weights);
-					}
-					else
-						w = weights;
 				}
+				m_callback();
 			}
 		}
 
 		virtual const char* get_name() const
 		{
-			return "PerceptronP";
+			return "MockPerceptron";
 		}
 
-	protected:
-		/** learning rate */
-		float64_t bias;
+		std::function<void(void)> m_callback;
 		SGVector<float64_t> w;
-		float64_t learn_rate;
+		SGVector<float64_t> weights;
 		int32_t max_iters;
 	};
 
@@ -93,13 +87,13 @@ namespace shogun
 		void createNormalFeatures(const benchmark::State& state)
 		{
 			index_t num_dim = state.range(0);
-			index_t num_vecs = 1000;
+			index_t num_vecs = state.range(1);
 			SGMatrix<float64_t> mat(num_dim, num_vecs);
 			for (index_t i = 0; i < num_vecs; i++)
 			{
 				for (index_t j = 0; j < num_dim; j++)
 				{
-					mat(j, i) = CMath::normal_random(0.0, 1.0);
+					mat(j, i) = normal(gen);
 				}
 			}
 			feats = new CDenseFeatures<float64_t>(mat);
@@ -113,25 +107,54 @@ namespace shogun
 
 			for (index_t i = 0; i < num_dim; i++)
 			{
-				vec[i] = CMath::random(0, 1) > 0.5 ? -1 : 1;
+				vec[i] = std::rand() % 100 > 50 ? -1 : 1;
 			}
 			labels = new CBinaryLabels(vec);
 			SG_REF(labels);
 		}
 	};
 
-	BENCHMARK_DEFINE_F(DataFixture, Put_perceptron)(benchmark::State& st)
+	BENCHMARK_DEFINE_F(DataFixture, perceptron_baseline)(benchmark::State& st)
 	{
 		for (auto _ : st)
 		{
-			auto perceptron = new PerceptronP();
-			SG_REF(perceptron);
-			perceptron->train(feats, labels, st.range(1));
-			SG_UNREF(perceptron);
+			auto perceptron = new CMockPerceptron();
+			std::function<void()> callback = [&perceptron]() {
+				perceptron->w = perceptron->weights;
+			};
+			perceptron->m_callback = callback;
+			perceptron->train(feats, labels);
 		}
 	}
 
-	BENCHMARK_REGISTER_F(DataFixture, Put_perceptron)
-	    ->Ranges({{8, 8 << 10}, {0, 1}})
+	BENCHMARK_DEFINE_F(DataFixture, perceptron_with_put)(benchmark::State& st)
+	{
+		for (auto _ : st)
+		{
+			auto perceptron = new CMockPerceptron();
+			std::function<void()> callback = [&perceptron]() {
+				perceptron->put<SGVector<float64_t>>("w", perceptron->weights);
+			};
+			perceptron->m_callback = callback;
+			perceptron->train(feats, labels);
+		}
+	}
+
+	BENCHMARK_REGISTER_F(DataFixture, perceptron_baseline)
+	    ->Ranges(
+	        {
+	            {8, 1 << 8} // range for dimensions of feature vector
+	            ,
+	            {8 << 5, 8 << 8} // range for number of feature vectors
+	        })
+	    ->Unit(benchmark::kMillisecond);
+
+	BENCHMARK_REGISTER_F(DataFixture, perceptron_with_put)
+	    ->Ranges(
+	        {
+	            {8, 1 << 8} // range for dimensions of feature vector
+	            ,
+	            {8 << 5, 8 << 8} // range for number of feature vectors
+	        })
 	    ->Unit(benchmark::kMillisecond);
 }
