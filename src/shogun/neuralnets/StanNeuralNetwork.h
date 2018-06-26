@@ -18,7 +18,7 @@ namespace shogun
 {
 template<class T> class CDenseFeatures;
 class CDynamicObjectArray;
-class CNeuralLayer;
+class StanNeuralNetwork;
 
 /** @brief A generic multi-layer neural network
  *
@@ -105,12 +105,6 @@ public:
 
 	virtual ~StanNeuralNetwork();
 
-	/** returns a copy of a layer's parameters array
-	 *
-	 * @param i index of the layer
-	 */
-	StanVector& get_layer_parameters(int32_t i);
-
 	/** returns the totat number of parameters in the network */
 	int32_t get_num_parameters() { return m_total_num_parameters; }
 
@@ -125,6 +119,19 @@ public:
 
 	/** Returns an array holding the network's layers */
 	CDynamicObjectArray* get_layers();
+
+	void set_batch_size(int32_t batch_size)
+	{
+		if (batch_size!=m_batch_size)
+		{
+			m_batch_size = batch_size;
+			for (int32_t i=0; i<m_num_layers; i++)
+				get_layer(i)->set_batch_size(m_batch_size);
+		}
+	}
+
+	SGMatrix<float64_t> features_to_matrix(CFeatures* features);
+
 
 	virtual const char* get_name() const { return "StanNeuralNetwork";}
 
@@ -154,6 +161,9 @@ protected:
 
 	/** number of layer */
 	int32_t m_num_layers;
+
+	/** batch size */
+	int32_t m_batch_size;
 
 	/** network's layers */
 	CDynamicObjectArray* m_layers;

@@ -3,12 +3,12 @@
  *
  * Authors: Elfarouk, Khaled Nasr
  */
- #include <shogun/neuralnets/StanNeuralNetwork.h>
- #include <shogun/mathematics/Math.h>
- #include <shogun/optimization/lbfgs/lbfgs.h>
- #include <shogun/features/DenseFeatures.h>
- #include <shogun/lib/DynamicObjectArray.h>
- #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/neuralnets/StanNeuralNetwork.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/neuralnets/NeuralLayer.h>
 
  using namespace shogun;
 
@@ -34,7 +34,7 @@
 
  	m_num_layers = m_layers->get_num_elements();
  	m_adj_matrix = SGMatrix<bool>(m_num_layers, m_num_layers);
- 	m_adj_matrix.Zero();
+ 	m_adj_matrix.zero();
 
  	m_num_inputs = 0;
  	for (int32_t i=0; i<m_num_layers; i++)
@@ -105,7 +105,7 @@
 
  	m_params = StanVector(m_total_num_parameters, 1);
 
- 	m_params.Zero();
+ 	m_params.setZero(m_total_num_parameters,1);
 
  	for (int32_t i=0; i<m_num_layers; i++)
  	{
@@ -119,6 +119,22 @@
  StanNeuralNetwork::~StanNeuralNetwork()
  {
  	SG_UNREF(m_layers);
+ }
+
+ SGMatrix<float64_t> StanNeuralNetwork::features_to_matrix(CFeatures* features)
+ {
+ 	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
+ 	REQUIRE(features->get_feature_type() == F_DREAL,
+ 		"Feature type must be F_DREAL\n");
+ 	REQUIRE(features->get_feature_class() == C_DENSE,
+ 		"Feature class must be C_DENSE\n");
+
+ 	CDenseFeatures<float64_t>* inputs = (CDenseFeatures<float64_t>*) features;
+ 	REQUIRE(inputs->get_num_features()==m_num_inputs,
+ 		"Number of features (%i) must match the network's number of inputs "
+ 		"(%i)\n", inputs->get_num_features(), get_num_inputs());
+
+ 	return inputs->get_feature_matrix();
  }
 
 
@@ -140,10 +156,11 @@
  		StanNeuralLayer* layer = get_layer(i);
 
  		if (layer->is_input())
- 			layer->compute_activations(inputs);
+      1==1; //compilation
+ 			//TODO layer->compute_activations(inputs);
  		else
- 			layer->compute_activations(m_params, m_index_offsets[i],
-        m_index_offsets[i] + get_layer(i)->get_num_parameters() -1, m_layers);
+ 			layer->compute_activations(m_params, (int)(m_index_offsets[i]),
+        (int)(m_index_offsets[i] + get_layer(i)->get_num_parameters() -1), m_layers);
 
  		layer->dropout_activations();
  	}
@@ -157,14 +174,6 @@
  	// layer i
  	SG_UNREF(layer);
  	return layer;
- }
-
- template <class T>
- StanVector& StanNeuralNetwork::get_section(SGVector<T> v, int32_t i)
- {
-
- 	return SGVector<T>(v.vector+m_index_offsets[i],
- 		get_layer(i)->get_num_parameters(), false);
  }
 
  int32_t StanNeuralNetwork::get_num_outputs()
@@ -185,6 +194,7 @@
  	m_layers = NULL;
  	m_total_num_parameters = 0;
  	m_is_training = false;
+  m_batch_size = 1;
 
  	SG_ADD(&m_num_inputs, "num_inputs",
  	       "Number of Inputs", MS_NOT_AVAILABLE);
@@ -194,8 +204,6 @@
  	       "Adjacency Matrix", MS_NOT_AVAILABLE);
  	SG_ADD(&m_index_offsets, "index_offsets",
  		"Index Offsets", MS_NOT_AVAILABLE);
- 	SG_ADD(&m_params, "params",
- 		"Parameters", MS_NOT_AVAILABLE);
  	SG_ADD((CSGObject**)&m_layers, "layers",
  		"DynamicObjectArray of StanNeuralNetwork objects",
  		MS_NOT_AVAILABLE);

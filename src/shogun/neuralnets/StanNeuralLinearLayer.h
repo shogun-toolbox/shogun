@@ -79,7 +79,7 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(StanVector& parameters, int32_t, int32_t j,
+	virtual void compute_activations(StanVector& parameters, int32_t i, int32_t j,
 			CDynamicObjectArray* layers);
 
 	virtual const char* get_name() const { return "StanNeuralLinearLayer"; }
