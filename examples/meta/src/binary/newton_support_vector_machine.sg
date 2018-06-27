@@ -1,0 +1,33 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![create_instance]
+Machine svm = machine("NewtonSVM", labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+svm.train(features_train)
+BinaryLabels labels_predict = svm.apply_binary(features_test)
+#![train_and_apply]
+
+#![extract_weights_bias]
+RealVector w = svm.get_real_vector("w")
+real b = svm.get_real("bias")
+#![extract_weights_bias]
+
+#![evaluate_accuracy]
+Evaluation eval = evaluation("AccuracyMeasure")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()
