@@ -13,7 +13,6 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/machine/LinearMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -22,17 +21,18 @@
 //#define V_NEWTON
 using namespace shogun;
 
-CNewtonSVM::CNewtonSVM() : CLinearMachine(true)
+CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
 {
 	lambda = 1;
-	num_iter = 20;
+	m_max_iterations = 20;
 	prec = 1e-6;
 	C = 1;
+	set_compute_bias(true);
 }
 
 CNewtonSVM::CNewtonSVM(
     float64_t c, CDotFeatures* traindat, CLabels* trainlab, int32_t itr)
-    : CLinearMachine(true)
+    : CIterativeMachine<CLinearMachine>()
 {
 	lambda=1/c;
 	num_iter=itr;
@@ -40,6 +40,7 @@ CNewtonSVM::CNewtonSVM(
 	C=c;
 	set_features(traindat);
 	set_labels(trainlab);
+	set_compute_bias(true);
 }
 
 
@@ -48,7 +49,7 @@ CNewtonSVM::~CNewtonSVM()
 }
 
 
-bool CNewtonSVM::train_machine(CFeatures* data)
+void CNewtonSVM::init_model(CFeatures* data)
 {
 	if (data)
 	{
@@ -69,21 +70,17 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 	ASSERT(num_vec==train_labels.vlen)
 
-	float64_t* weights = SG_CALLOC(float64_t, x_d+1);
-	float64_t* out=SG_MALLOC(float64_t, x_n);
+	weights = SG_CALLOC(float64_t, x_d+1);
+	out=SG_MALLOC(float64_t, x_n);
 	SGVector<float64_t>::fill_vector(out, x_n, 1.0);
 
-	int32_t *sv=SG_MALLOC(int32_t, x_n), size_sv=0, iter=0;
-	float64_t obj, *grad=SG_MALLOC(float64_t, x_d+1);
-	float64_t t;
+	sv=SG_MALLOC(int32_t, x_n);
+	grad=SG_MALLOC(float64_t, x_d+1);
+}
 
-	auto pb = SG_PROGRESS(range(num_iter));
-	while (iter <= num_iter)
-	{
-		COMPUTATION_CONTROLLERS
-		iter++;
-
-		obj_fun_linear(weights, out, &obj, sv, &size_sv, grad);
+void CNewtonSVM::iteration()
+{
+	obj_fun_linear();
 
 #ifdef DEBUG_NEWTON
 		SG_PRINT("fun linear passed !\n")
@@ -169,7 +166,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		for (int32_t i=0; i<r; i++)
 			step[i]=-s2[i];
 
-		line_search_linear(weights, step, out, &t);
+	line_search_linear(step);
 
 #ifdef DEBUG_NEWTON
 		SG_PRINT("t=%f\n\n", t)
@@ -201,11 +198,11 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		SG_FREE(s2);
 
 		if (newton_decrement*2<prec*obj)
-			break;
+		m_complete=true;
+}
 
-		pb.print_progress();
-	}
-	pb.complete();
+void CNewtonSVM::end_training()
+{
 #ifdef V_NEWTON
 	SG_PRINT("FINAL W AND BIAS Vector=\n\n")
 	CMath::display_matrix(weights, x_d+1, 1);
@@ -217,14 +214,9 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	SG_FREE(sv);
 	SG_FREE(grad);
 	SG_FREE(out);
-
-	return true;
-
-
 }
 
-void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
-		out, float64_t* tx)
+void CNewtonSVM::line_search_linear(float64_t* d)
 {
 	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
 	SGVector<float64_t> outz(x_n);
@@ -233,7 +225,6 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 	SGVector<float64_t> outzsv(x_n);
 	SGVector<float64_t> Ysv(x_n);
 	SGVector<float64_t> Xsv(x_n);
-	float64_t t=0.0;
 	SGVector<float64_t> Xd(x_n);
 
 	for (int32_t i=0; i<x_n; i++)
@@ -310,11 +301,9 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 	} while(1);
 
 	sg_memcpy(out, outz.vector, sizeof(float64_t)*x_n);
-	*tx=t;
 }
 
-void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
-		float64_t* obj, int32_t* sv, int32_t* numsv, float64_t* grad)
+void CNewtonSVM::obj_fun_linear()
 {
 	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();
 
@@ -346,7 +335,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 	SGVector<float64_t>::scale_vector(0.5, w0copy, x_d+1);
 	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d+1, lambda,
 			w0, x_d+1, w0copy, x_d+1, 0.0, &C1, 1);
-	*obj=p1+C1;
+	obj=p1+C1;
 	SGVector<float64_t>::scale_vector(lambda, w0, x_d);
 	float64_t* temp=SG_CALLOC(float64_t, x_n); //temp = out.*Y
 	SGVector<float64_t>::vector_multiply(temp, out, v.vector, x_n);
@@ -377,7 +366,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 			sv[sv_len++]=i;
 	}
 
-	*numsv=sv_len;
+	size_sv=sv_len;
 
 	SG_FREE(w0);
 	SG_FREE(w0copy);
