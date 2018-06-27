@@ -102,7 +102,7 @@ void CPruneVarSubMean::cleanup()
 SGMatrix<float64_t>
 CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	ASSERT(m_initialized)
+	REQUIRE(m_initialized, "Transformer has not been fitted.\n");
 
 	auto num_vectors = matrix.num_cols;
 	auto result = matrix;
@@ -132,31 +132,18 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* ret=NULL;
+	REQUIRE(m_initialized, "Transformer has not been fitted.\n");
 
-	if (m_initialized)
+	SGVector<float64_t> out(m_num_idx);
+
+	for (auto i : range(m_num_idx))
 	{
-		ret=SG_MALLOC(float64_t, m_num_idx);
-
+		out[i] = vector[m_idx[i]] - m_mean[i];
 		if (m_divide_by_std)
-		{
-			for (int32_t i=0; i<m_num_idx; i++)
-				ret[i]=(vector.vector[m_idx[i]]-m_mean[i])/m_std[i];
-		}
-		else
-		{
-			for (int32_t i=0; i<m_num_idx; i++)
-				ret[i]=(vector.vector[m_idx[i]]-m_mean[i]);
-		}
-	}
-	else
-	{
-		ret=SG_MALLOC(float64_t, vector.vlen);
-		for (int32_t i=0; i<vector.vlen; i++)
-			ret[i]=vector.vector[i];
+			out[i] /= m_std[i];
 	}
 
-	return SGVector<float64_t>(ret,m_num_idx);
+	return out;
 }
 
 void CPruneVarSubMean::init()
@@ -171,7 +158,9 @@ void CPruneVarSubMean::init()
 
 void CPruneVarSubMean::register_parameters()
 {
-	SG_ADD(&m_initialized, "initialized", "The prerpocessor is initialized",  MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_initialized, "initialized", "The preprocessor is initialized",
+	    MS_NOT_AVAILABLE);
 	SG_ADD(&m_divide_by_std, "divide_by_std", "Divide by standard deviation", MS_AVAILABLE);
 	SG_ADD(&m_num_idx, "num_idx", "Number of elements in idx_vec", MS_NOT_AVAILABLE);
 	SG_ADD(&m_std, "std_vec", "Standard dev vector", MS_NOT_AVAILABLE);
