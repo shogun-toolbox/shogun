@@ -96,6 +96,8 @@ public:
 	 */
 	virtual ELabelType get_label_type() const override;
 
+	virtual CLabels* duplicate() const;
+
 	/** Converts all scores to calibrated probabilities by fitting a
 	 * sigmoid function using the method described in
 	 * Lin, H., Lin, C., and Weng, R. (2007).

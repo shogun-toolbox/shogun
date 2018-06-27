@@ -139,24 +139,49 @@ namespace shogun
 		 */
 		virtual SGVector<float64_t> get_values() const;
 
+		/** shallow-copy of the labels object
+		 *
+		 * @return labels object
+		 */
+		virtual CLabels* duplicate() const
+		{
+			SG_SNOTIMPLEMENTED;
+			return nullptr;
+		}
+
 #ifndef SWIG // SWIG should skip this part
-	virtual CLabels* shallow_subset_copy()
-	{
-		SG_SNOTIMPLEMENTED;
-		return NULL;
-	}
+		virtual CLabels* shallow_subset_copy()
+		{
+			SG_SNOTIMPLEMENTED;
+			return NULL;
+		}
 #endif
 
-private:
-	void init();
+		/** Creates a subset view of the labels containing the elements
+		 * whose indices are listed in the passed vector
+		 *
+		 * @param subset subset of indices
+		 * @return new CLabels object wrapped by a smart pointer
+		 */
+		CLabels* view(const SGVector<index_t>& subset);
 
-protected:
+		/** Creates a subset view of the labels containing the elements
+		 * whose indices are listed in the passed vector
+		 *
+		 * @param subset subset of indices
+		 * @return new CLabels object wrapped by a smart pointer
+		 */
+		CLabels* view(const std::vector<index_t>& subset);
 
-	/** subset class to enable subset support for this class */
-	CSubsetStack * m_subset_stack;
+	private:
+		void init();
 
-	/** current active value vector */
-	SGVector<float64_t> m_current_values;
+	protected:
+		/** subset class to enable subset support for this class */
+		CSubsetStack* m_subset_stack;
+
+		/** current active value vector */
+		SGVector<float64_t> m_current_values;
 };
 }
 #endif

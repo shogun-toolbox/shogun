@@ -61,6 +61,11 @@ class CRegressionLabels : public CDenseLabels
 		/** @return object name */
 		virtual const char* get_name() const { return "RegressionLabels"; }
 
+		/** shallow-copy of the labels object
+		 * @see CLabels::duplicate
+		 */
+		virtual CLabels* duplicate() const;
+
 #ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy();
 #endif
