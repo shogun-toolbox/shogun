@@ -11,7 +11,7 @@
 %newobject shogun::CPipelineBuilder::then(const std::string&, CMachine*);
 %newobject shogun::CPipelineBuilder::build();
 
-%rename(Machine) CMMachine;
+%rename(Machine) CMachine;
 %rename(PipelineBuilder) CPipelineBuilder;
 %rename(Pipeline) CPipeline;
 
@@ -161,7 +161,7 @@ APPLY_LATENT(CLatentSVM);
 #undef APPLY_STRUCTURED
 #undef APPLY_LATENT
 
+#endif
 
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/Pipeline.h>
-#endif

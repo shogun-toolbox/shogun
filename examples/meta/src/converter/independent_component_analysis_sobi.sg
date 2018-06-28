@@ -7,7 +7,7 @@ Features feats = features(f_feats)
 #![create_features]
 
 #![set_parameters]
-Converter ica = converter("SOBI", max_iter=200, tol=0.00001)
+Transformer ica = transformer("SOBI", max_iter=200, tol=0.00001)
 #![set_parameters]
 
 #![apply_convert]
