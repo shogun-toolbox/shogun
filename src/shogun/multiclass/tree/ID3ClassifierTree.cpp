@@ -320,14 +320,12 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 			}
 		}
 
-		feats->add_subset(subset);
-		gnd_truth->add_subset(subset);
+		auto feats_train =
+		    wrap(feats->view(subset)->as<CDenseFeatures<float64_t>>());
+		auto gt_train = wrap(gnd_truth->view(subset)->as<CMulticlassLabels>());
 
 		// prune the child subtree
-		prune_tree_machine(feats, gnd_truth, child, epsilon);
-
-		feats->remove_subset();
-		gnd_truth->remove_subset();
+		prune_tree_machine(feats_train, gt_train, child, epsilon);
 
 		SG_UNREF(child);
 	}

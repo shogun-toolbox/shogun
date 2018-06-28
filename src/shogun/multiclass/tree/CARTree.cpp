@@ -480,18 +480,17 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 	}
 
 	// left child
-	data->add_subset(subsetl);
-	labels->add_subset(subsetl);
-	bnode_t* left_child=CARTtrain(data,weightsl,labels,level+1);
-	data->remove_subset();
-	labels->remove_subset();
+	auto feats_train =
+	    wrap(data->view(subsetl)->as<CDenseFeatures<float64_t>>());
+	auto labels_train = wrap(labels->view(subsetl)->as<CDenseLabels>());
+	bnode_t* left_child =
+	    CARTtrain(feats_train, weightsl, labels_train, level + 1);
 
 	// right child
-	data->add_subset(subsetr);
-	labels->add_subset(subsetr);
-	bnode_t* right_child=CARTtrain(data,weightsr,labels,level+1);
-	data->remove_subset();
-	labels->remove_subset();
+	feats_train = wrap(data->view(subsetr)->as<CDenseFeatures<float64_t>>());
+	labels_train = wrap(labels->view(subsetr)->as<CDenseLabels>());
+	bnode_t* right_child =
+	    CARTtrain(feats_train, weightsr, labels_train, level + 1);
 
 	// set node parameters
 	node->data.attribute_id=best_attribute;
@@ -1205,27 +1204,27 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 		}
 
 		SGVector<int32_t> subset(train_indices.data(),train_indices.size(),false);
-		data->add_subset(subset);
-		m_labels->add_subset(subset);
+		auto dense_labels = m_labels->as<CDenseLabels>();
+		auto feats_train =
+		    wrap(data->view(subset)->as<CDenseFeatures<float64_t>>());
+		auto labels_train =
+		    wrap(dense_labels->view(subset)->as<CDenseLabels>());
 		SGVector<float64_t> subset_weights(train_indices.size());
 
 		for (index_t j = 0; j < train_indices.size(); ++j)
 			subset_weights[j]=m_weights[train_indices.at(j)];
 
 		// train with training subset
-		auto dense_labels = m_labels->as<CDenseLabels>();
-		bnode_t* root=CARTtrain(data,subset_weights,dense_labels,0);
+		bnode_t* root = CARTtrain(feats_train, subset_weights, labels_train, 0);
 
 		// prune trained tree
 		CTreeMachine<CARTreeNodeData>* tmax=new CTreeMachine<CARTreeNodeData>();
 		tmax->set_root(root);
 		CDynamicObjectArray* pruned_trees=prune_tree(tmax);
 
-		data->remove_subset();
-		m_labels->remove_subset();
 		subset=SGVector<int32_t>(test_indices.data(),test_indices.size(),false);
-		data->add_subset(subset);
-		m_labels->add_subset(subset);
+		feats_train = wrap(data->view(subset)->as<CDenseFeatures<float64_t>>());
+		labels_train = wrap(dense_labels->view(subset)->as<CDenseLabels>());
 		subset_weights=SGVector<float64_t>(test_indices.size());
 		for (int32_t j=0;j<test_indices.size();++j)
 			subset_weights[j]=m_weights[test_indices.at(j)];
@@ -1242,15 +1241,15 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 			else
 				SG_ERROR("%d element is NULL which should not be",j);
 
-			CLabels* labels=apply_from_current_node(data, current_root);
-			float64_t error=compute_error(labels, m_labels, subset_weights);
+			CLabels* labels =
+			    apply_from_current_node(feats_train, current_root);
+			float64_t error =
+			    compute_error(labels, labels_train, subset_weights);
 			r_cv.push_back(error);
 			SG_UNREF(labels);
 			SG_UNREF(jth_element);
 		}
 
-		data->remove_subset();
-		m_labels->remove_subset();
 		SG_UNREF(tmax);
 		SG_UNREF(pruned_trees);
 	}

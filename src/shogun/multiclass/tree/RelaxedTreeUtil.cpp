@@ -19,28 +19,23 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	SGMatrix<float64_t> conf_mat(num_classes, num_classes), tmp_mat(num_classes, num_classes);
 	conf_mat.zero();
 
-	machine->set_labels(Y);
 	machine->set_store_model_features(true);
 
 	for (int32_t i=0; i < N_splits; ++i)
 	{
 		// subset for training
 		SGVector<index_t> inverse_subset_indices = split->generate_subset_inverse(i);
-		X->add_subset(inverse_subset_indices);
-		Y->add_subset(inverse_subset_indices);
-
-		machine->train(X);
-		X->remove_subset();
-		Y->remove_subset();
+		machine->set_labels(Y->view(inverse_subset_indices));
+		machine->train(X->view(inverse_subset_indices));
 
 		// subset for predicting
 		SGVector<index_t> subset_indices = split->generate_subset_indices(i);
-		X->add_subset(subset_indices);
-		Y->add_subset(subset_indices);
+		auto feats_subset = wrap(X->view(subset_indices));
+		auto labels_subset =
+		    wrap(Y->view(subset_indices)->as<CMulticlassLabels>());
+		CMulticlassLabels* pred = machine->apply_multiclass(feats_subset);
 
-		CMulticlassLabels *pred = machine->apply_multiclass(X);
-
-		get_confusion_matrix(tmp_mat, Y, pred);
+		get_confusion_matrix(tmp_mat, labels_subset, pred);
 
 		for (index_t j=0; j < tmp_mat.num_rows; ++j)
 		{
@@ -51,9 +46,6 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 		}
 
 		SG_UNREF(pred);
-
-		X->remove_subset();
-		Y->remove_subset();
 	}
 
 	SG_UNREF(split);
