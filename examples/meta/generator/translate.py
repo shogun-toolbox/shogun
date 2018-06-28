@@ -604,7 +604,7 @@ class Translator:
         translatedArgsList = self.translateArgumentList(argsList)
 
         if object not in self.variableTypes:
-            raise TranslationFailure("Variable {} not initialised".format(identifier))
+            raise TranslationFailure("Variable {} not initialised".format(object))
 
         template = Template(self.targetDict["Expr"]["MethodCall"]["Default"])
         if method in self.targetDict["Expr"]["MethodCall"]:
