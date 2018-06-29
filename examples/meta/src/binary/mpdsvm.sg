@@ -1,0 +1,23 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
+
+Features feats_train = features(f_feats_train)
+Features feats_test = features(f_feats_test)
+BinaryLabels labels_train(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+
+Kernel gaussian = kernel("GaussianKernel", log_width=0.01)
+gaussian.init(feats_train, feats_train)
+
+real C=1.0
+Machine svm = machine("MPDSVM", C1=C, C2=C, kernel=gaussian, epsilon=0.00001)
+
+svm.set_labels(labels_train)
+svm.train()
+
+Labels labels_predict = svm.apply(feats_test)
+
+Evaluation eval = evaluation("AccuracyMeasure")
+real accuracy = eval.evaluate(labels_predict, labels_test)
