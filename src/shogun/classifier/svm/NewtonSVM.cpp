@@ -50,10 +50,6 @@ CNewtonSVM::~CNewtonSVM()
 
 bool CNewtonSVM::train_machine(CFeatures* data)
 {
-
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
-
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -63,7 +59,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 	ASSERT(features)
 
-	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> train_labels = binary_labels(m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -230,7 +226,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 		out, float64_t* tx)
 {
-	SGVector<float64_t> Y=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
 	SGVector<float64_t> outz(x_n);
 	SGVector<float64_t> temp1(x_n);
 	SGVector<float64_t> temp1forout(x_n);
@@ -320,7 +316,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 		float64_t* obj, int32_t* sv, int32_t* numsv, float64_t* grad)
 {
-	SGVector<float64_t> v=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();
 
 	for (int32_t i=0; i<x_n; i++)
 	{
