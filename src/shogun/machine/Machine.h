@@ -25,6 +25,20 @@
 namespace shogun
 {
 
+#define TRAIN_DENSE_DISPATHER(train_templated_name) \
+virtual bool train_with_dense(CFeatures* data) \
+{  \
+  switch (data->get_feature_type()) \
+  { \
+    case F_DREAL: \
+      return train_templated_name<float64_t>(data->as<CDenseFeatures<float64_t>>()); \
+		case F_SHORTREAL: \
+      return train_templated_name<float32_t>(data->as<CDenseFeatures<float32_t>>()); \
+		case F_LONGREAL: \
+	    return train_templated_name<floatmax_t>(data->as<CDenseFeatures<floatmax_t>>()); \
+  } \
+}
+
 class CFeatures;
 class CLabels;
 
@@ -315,7 +329,6 @@ class CMachine : public CStoppableSGObject
 
 		virtual const char* get_name() const { return "Machine"; }
 
-	protected:
 		/** train machine
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -328,11 +341,38 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
-			SG_ERROR("train_machine is not yet implemented for %s!\n",
-					get_name());
+			bool result=false;
+			
+			switch (data->get_feature_class())
+			{
+				case C_DENSE:
+					result=train_with_dense(data);
+					break;
+				case C_STRING:
+					result=train_with_string(data);
+					break;
+				default:
+					SG_ERROR("train_machine is not yet implemented for %s!\n",
+							get_name())
+					break;
+			}
+			return result;
+		}
+		
+	protected:
+		
+		virtual bool train_with_dense(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED
 			return false;
 		}
-
+		
+		virtual bool train_with_string(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED
+			return false;
+		}
+		
 		/** Continue Training
 		 *
 		 * This method can be used to continue a prematurely stopped

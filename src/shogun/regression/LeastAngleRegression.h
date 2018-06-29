@@ -199,7 +199,6 @@ protected:
 	* @param data training data
 	* @see train_machine_templated
 	*/
-	bool train_machine(CFeatures * data);
 
 	template <typename ST>
 	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
@@ -230,6 +229,8 @@ private:
 	*/
 	template <typename ST>
 	bool train_machine_templated(CDenseFeatures<ST> * data);
+	
+	TRAIN_DENSE_DISPATHER(train_machine_templated)
 
 	void activate_variable(int32_t v)
 	{
