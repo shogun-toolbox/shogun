@@ -268,7 +268,9 @@ namespace shogun
 		}
 
 		template <class T>
-		bool compare_impl(maybe_most_important, const std::function<T()>& lhs, const std::function<T()>& rhs)
+		bool compare_impl(
+		    maybe_most_important, const std::function<T()>& lhs,
+		    const std::function<T()>& rhs)
 		{
 			return compare(lhs(), rhs());
 		}
@@ -625,7 +627,8 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(const void* storage, const void* other_storage) const override
+		bool
+		equals(const void* storage, const void* other_storage) const override
 		{
 			const T& typed_storage = value_of(typed_pointer<T>(storage));
 			const T& typed_other_storage =
@@ -689,7 +692,8 @@ namespace shogun
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(const void* storage, const void* other_storage) const override
+		bool
+		equals(const void* storage, const void* other_storage) const override
 		{
 			const T& typed_storage = value_of(typed_pointer<T>(storage));
 			const T& typed_other_storage =
@@ -882,8 +886,8 @@ namespace shogun
 		{
 			return (policy == owning_policy<T>()) ||
 			       (policy == non_owning_policy<T>()) ||
-			        policy == owning_policy<std::function<T()>>() ||
-			        has_type_fallback<T>();
+			       policy == owning_policy<std::function<T()>>() ||
+			       has_type_fallback<T>();
 		}
 
 		/** @return true if type-id is same. */
