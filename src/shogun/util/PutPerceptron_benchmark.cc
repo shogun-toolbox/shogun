@@ -1,3 +1,4 @@
+#include <random>
 #include <benchmark/benchmark.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DotFeatures.h>
@@ -154,7 +155,8 @@ namespace shogun
 		{
 			auto perceptron = new CMockPerceptron();
 			std::function<void()> callback = [&perceptron]() {
-				auto value = make_any(perceptron->weights);
+				perceptron->w = perceptron->weights;
+				auto value = make_any(perceptron->w);
 				std::string name = "weights";
 				ObservedValue observed_value (1, name, value, LOGGER);
 				perceptron->observe_dispatcher(observed_value);
@@ -172,7 +174,8 @@ namespace shogun
 			auto perceptron = new CMockPerceptron();
 			perceptron->subscribe_to_parameters(observer);
 			std::function<void()> callback = [&perceptron]() {
-				auto value = make_any(perceptron->weights);
+				perceptron->w = perceptron->weights;
+				auto value = make_any(perceptron->w);
 				std::string name = "weights";
 				ObservedValue observed_value (1, name, value, LOGGER);
 				perceptron->observe_dispatcher(observed_value);
