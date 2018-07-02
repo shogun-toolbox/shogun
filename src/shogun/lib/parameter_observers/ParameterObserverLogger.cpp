@@ -17,7 +17,8 @@ CParameterObserverLogger::~CParameterObserverLogger() {}
 void CParameterObserverLogger::on_next(const TimedObservedValue &value)
 {
 	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type());
-	SG_SPRINT("Value observed");
+	// Just get the value for now. It does nothing else.
+	//SG_SPRINT("Value observed");
 }
 
 void CParameterObserverLogger::on_error(std::exception_ptr ptr) {}
