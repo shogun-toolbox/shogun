@@ -53,6 +53,7 @@ namespace shogun
 	/* Type of the observed value */
 	enum SG_OBS_VALUE_TYPE
 	{
+		LOGGER,
 		TENSORBOARD,
 		CROSSVALIDATION
 	};
