@@ -3,6 +3,8 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/parameter_observers/ParameterObserverLogger.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
 
 namespace shogun
 {
@@ -53,6 +55,12 @@ namespace shogun
 				}
 				m_callback();
 			}
+		}
+
+	public:
+		void observe_dispatcher(const ObservedValue& value)
+		{
+			CSGObject::observe(value);
 		}
 
 		virtual const char* get_name() const
@@ -140,6 +148,40 @@ namespace shogun
 		}
 	}
 
+	BENCHMARK_DEFINE_F(DataFixture, perceptron_with_observe)(benchmark::State& st)
+	{
+		for (auto _ : st)
+		{
+			auto perceptron = new CMockPerceptron();
+			std::function<void()> callback = [&perceptron]() {
+				auto value = make_any(perceptron->weights);
+				std::string name = "weights";
+				ObservedValue observed_value (1, name, value, LOGGER);
+				perceptron->observe_dispatcher(observed_value);
+			};
+			perceptron->m_callback = callback;
+			perceptron->train(feats, labels);
+		}
+	}
+
+	BENCHMARK_DEFINE_F(DataFixture, perceptron_with_observe_and_observer)(benchmark::State& st)
+	{
+		for (auto _ : st)
+		{
+			auto observer = new CParameterObserverLogger();
+			auto perceptron = new CMockPerceptron();
+			perceptron->subscribe_to_parameters(observer);
+			std::function<void()> callback = [&perceptron]() {
+				auto value = make_any(perceptron->weights);
+				std::string name = "weights";
+				ObservedValue observed_value (1, name, value, LOGGER);
+				perceptron->observe_dispatcher(observed_value);
+			};
+			perceptron->m_callback = callback;
+			perceptron->train(feats, labels);
+		}
+	}
+
 	BENCHMARK_REGISTER_F(DataFixture, perceptron_baseline)
 	    ->Ranges(
 	        {
@@ -157,4 +199,21 @@ namespace shogun
 	            {8 << 5, 8 << 8} // range for number of feature vectors
 	        })
 	    ->Unit(benchmark::kMillisecond);
+
+	BENCHMARK_REGISTER_F(DataFixture, perceptron_with_observe)
+		->Ranges(
+		{
+			{8, 1 << 8}, // range for dimensions of feature vector
+			{8 << 5, 8 << 8} // range for number of feature vectors
+		})
+		->Unit(benchmark::kMillisecond);
+
+	BENCHMARK_REGISTER_F(DataFixture, perceptron_with_observe_and_observer)
+		->Ranges(
+		{
+			{8, 1 << 8}, // range for dimensions of feature vector
+			{8 << 5, 8 << 8} // range for number of feature vectors
+		})
+		->Unit(benchmark::kMillisecond);
+
 }
