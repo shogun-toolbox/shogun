@@ -111,7 +111,7 @@ public:
 	 * @param inputs activations of the neurons in the
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
-	virtual void compute_activations(StanMatrix inputs) { }
+	virtual void compute_activations(StanMatrix& inputs, StanVector& parameters) {};
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers

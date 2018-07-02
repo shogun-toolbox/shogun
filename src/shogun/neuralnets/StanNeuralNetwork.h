@@ -132,6 +132,8 @@ public:
 
 	SGMatrix<float64_t> features_to_matrix(CFeatures* features);
 
+	StanMatrix sgmatrix_to_eigen(SGMatrix<float64_t> input);
+
 
 	virtual const char* get_name() const { return "StanNeuralNetwork";}
 

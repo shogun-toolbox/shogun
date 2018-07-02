@@ -151,17 +151,16 @@
  	if (j==-1)
  		j = m_num_layers-1;
 
+ 	auto X = sgmatrix_to_eigen(inputs);
  	for (int32_t i=0; i<=j; i++)
  	{
  		StanNeuralLayer* layer = get_layer(i);
 
- 		if (layer->is_input())
-      1==1; //compilation
- 			//TODO layer->compute_activations(inputs);
+ 		if (layer->is_input()) //TODO input layer
+ 			layer->compute_activations(X, m_params);
  		else
  			layer->compute_activations(m_params, (int)(m_index_offsets[i]),
-        (int)(m_index_offsets[i] + get_layer(i)->get_num_parameters() -1), m_layers);
-
+                                       (int)(m_index_offsets[i] + get_layer(i)->get_num_parameters() -1), m_layers);
  		layer->dropout_activations();
  	}
  	return get_layer(j)->get_activations();
@@ -187,7 +186,25 @@
  	return m_layers;
  }
 
- void StanNeuralNetwork::init()
+StanMatrix StanNeuralNetwork::sgmatrix_to_eigen(SGMatrix<float64_t> input) {
+	auto data = input.data();
+	auto r = input.num_rows;
+	auto c = input.num_cols;
+	StanMatrix X(r, c);
+	int32_t idx = 0;
+	for(int32_t i=0; i<c; ++i)
+	{
+	    for(int32_t j=0; j<r; ++j)
+	    {
+	        X(j,i) = data[idx];
+	        ++idx;
+	    }
+	}
+	return X;
+}
+
+
+void StanNeuralNetwork::init()
  {
  	m_num_inputs = 0;
  	m_num_layers = 0;

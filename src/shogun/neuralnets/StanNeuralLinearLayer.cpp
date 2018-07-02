@@ -69,3 +69,4 @@ void StanNeuralLinearLayer::compute_activations(StanVector& parameters, int32_t 
 		SG_UNREF(layer);
 	}
 }
+
