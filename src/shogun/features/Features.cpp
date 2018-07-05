@@ -268,7 +268,7 @@ void CFeatures::unset_property(EFeatureProperty p)
 CFeatures* CFeatures::view(const SGVector<index_t>& subset)
 {
 	auto feats_view = this->duplicate();
-	feats_view->add_subset(subset.clone());
+	feats_view->add_subset(subset);
 	return feats_view;
 }
 
