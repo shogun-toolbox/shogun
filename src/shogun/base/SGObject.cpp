@@ -703,6 +703,7 @@ CSGObject* CSGObject::clone()
 			SG_SDEBUG(
 			    "Skipping clone of %s::%s of type %s.\n", this->get_name(),
 			    tag.name().c_str(), own.type().c_str());
+			continue;
 		}
 
 		SG_SDEBUG(
