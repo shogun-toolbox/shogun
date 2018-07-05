@@ -343,6 +343,13 @@ namespace shogun
 			return *ptr;
 		}
 
+		template <>
+		inline const Empty& value_of(Empty const* ptr)
+		{
+			static Empty empty;
+			return empty;
+		}
+
 		template <class T>
 		struct has_result_type
 		{
