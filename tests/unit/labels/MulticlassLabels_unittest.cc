@@ -6,6 +6,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 
@@ -91,4 +92,17 @@ TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
 	auto converted2 = multiclass_labels(labels);
 	ASSERT_NE(converted2.get(), nullptr);
 	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
+}
+
+TEST_F(MulticlassLabels, view)
+{
+	auto labels = some<CMulticlassLabels>(labels_true);
+	SGVector<index_t> subset{0, 2};
+	auto labels_subset = wrap(labels->view(subset)->as<CMulticlassLabels>());
+
+	ASSERT_EQ(labels_subset->get_num_labels(), subset.vlen);
+	for (auto i : range(subset.vlen))
+	{
+		EXPECT_EQ(labels_subset->get_int_label(i), labels_true[subset[i]]);
+	}
 }
