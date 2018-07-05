@@ -901,7 +901,7 @@ namespace shogun
 		template <typename T>
 		bool has_type_fallback() const
 		{
-			return policy->matches_type(typeid(T));
+			return policy->matches_type(typeid(T)) || policy->matches_type(typeid(std::function<T()>));
 		}
 
 		/** @return true if Any object is empty. */
