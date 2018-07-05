@@ -698,6 +698,13 @@ CSGObject* CSGObject::clone()
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
 
+		if (!own.cloneable())
+		{
+			SG_SDEBUG(
+			    "Skipping clone of %s::%s of type %s.\n", this->get_name(),
+			    tag.name().c_str(), own.type().c_str());
+		}
+
 		SG_SDEBUG(
 			"Cloning parameter %s::%s of type %s.\n", this->get_name(),
 			tag.name().c_str(), own.type().c_str());
@@ -993,6 +1000,16 @@ bool CSGObject::equals(const CSGObject* other) const
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
+
+		if (!own.visitable())
+		{
+			SG_SDEBUG(
+			    "Skipping comparison of %s::%s of type %s as it is "
+			    "non-visitable.\n",
+			    this->get_name(), tag.name().c_str(), own.type().c_str());
+			continue;
+		}
+
 		const Any& given = other->get_parameter(tag).get_value();
 
 		SG_SDEBUG(
