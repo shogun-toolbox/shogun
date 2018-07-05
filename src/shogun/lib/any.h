@@ -840,6 +840,16 @@ namespace shogun
 
 		Any& clone_from(const Any& other)
 		{
+			if (!other.cloneable())
+			{
+				throw std::logic_error("Tried to clone non-cloneable Any");
+			}
+			if (empty())
+			{
+				policy = other.policy;
+				set_or_inherit(other);
+				return *(this);
+			}
 			if (!policy->matches_policy(other.policy))
 			{
 				throw TypeMismatchException(
@@ -901,13 +911,26 @@ namespace shogun
 		template <typename T>
 		bool has_type_fallback() const
 		{
-			return policy->matches_type(typeid(T)) || policy->matches_type(typeid(std::function<T()>));
+			return policy->matches_type(typeid(T)) ||
+			       policy->matches_type(typeid(std::function<T()>));
 		}
 
 		/** @return true if Any object is empty. */
 		bool empty() const
 		{
 			return has_type<Empty>();
+		}
+
+		/** @return true if Any object is cloneable. */
+		bool cloneable() const
+		{
+			return !policy->is_functional();
+		}
+
+		/** @return true if Any object is visitable. */
+		bool visitable() const
+		{
+			return !policy->is_functional();
 		}
 
 		const std::type_info& type_info() const
@@ -929,6 +952,10 @@ namespace shogun
 		 */
 		void visit(AnyVisitor* visitor) const
 		{
+			if (!visitable())
+			{
+				throw std::logic_error("Tried to visit non-visitable Any");
+			}
 			policy->visit(storage, visitor);
 		}
 

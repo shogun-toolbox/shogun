@@ -678,3 +678,16 @@ TEST(Any, lazy_member_function)
 	auto any = make_any<int>(std::bind(&Object::computed_member, obj));
 	EXPECT_EQ(any.as<int>(), obj->computed_member());
 }
+
+TEST(Any, lazy_cloneable_visitable)
+{
+	Any any;
+	EXPECT_THROW(
+	    any.clone_from(make_any<int>([=]() { return 111; })), std::logic_error);
+	EXPECT_TRUE(any.cloneable());
+	EXPECT_TRUE(any.visitable());
+	any = make_any<int>([=]() { return 222; });
+	EXPECT_FALSE(any.cloneable());
+	EXPECT_FALSE(any.visitable());
+	EXPECT_THROW(any.visit(nullptr), std::logic_error);
+}
