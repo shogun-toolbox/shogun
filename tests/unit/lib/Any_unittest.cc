@@ -89,6 +89,11 @@ public:
 	{
 		return new Object();
 	}
+
+	int computed_member() const
+	{
+		return 90210;
+	}
 };
 
 TEST(Any, as)
@@ -99,12 +104,12 @@ TEST(Any, as)
 	EXPECT_THROW(any.as<float64_t>(), TypeMismatchException);
 }
 
-TEST(Any, same_type)
+TEST(Any, has_type)
 {
 	int32_t integer = 10;
 	auto any = make_any(integer);
-	EXPECT_EQ(any.same_type<int32_t>(), true);
-	EXPECT_EQ(any.same_type<float64_t>(), false);
+	EXPECT_EQ(any.has_type<int32_t>(), true);
+	EXPECT_EQ(any.has_type<float64_t>(), false);
 }
 
 TEST(Any, empty)
@@ -116,12 +121,12 @@ TEST(Any, empty)
 	EXPECT_EQ(empty_any.empty(), true);
 }
 
-TEST(Any, same_type_fallback)
+TEST(Any, has_type_fallback)
 {
 	int32_t integer = 10;
 	auto any = make_any(integer);
-	EXPECT_EQ(any.same_type_fallback<int32_t>(), true);
-	EXPECT_EQ(any.same_type_fallback<float64_t>(), false);
+	EXPECT_EQ(any.has_type_fallback<int32_t>(), true);
+	EXPECT_EQ(any.has_type_fallback<float64_t>(), false);
 }
 
 // TODO(lisitsyn): Windows being unstable here, unclear yet
@@ -635,4 +640,54 @@ TEST(Any, reset_array2d_reference)
 	    Array2DReference<Object*, int>(&src_array, &src_rows, &src_cols));
 	EXPECT_EQ(obj->ref_count(), 1);
 	SG_UNREF(obj);
+}
+
+TEST(Any, lazy_simple)
+{
+	auto v = 9;
+	auto any = make_any<int>([=]() { return v; });
+	EXPECT_EQ(any.as<int32_t>(), v);
+}
+
+TEST(Any, lazy_assignment_into_with_value)
+{
+	auto v = 3;
+	auto any = make_any<int>([=]() { return 111; });
+	EXPECT_THROW(any = make_any<int>(v), TypeMismatchException);
+}
+
+TEST(Any, lazy_assignment_into_with_function)
+{
+	auto v = 3;
+	auto any = make_any<int>([=]() { return 111; });
+	any = make_any<int>([=]() { return v; });
+	EXPECT_EQ(any.as<int32_t>(), v);
+}
+
+TEST(Any, lazy_assignment_from)
+{
+	auto v = 3;
+	auto any = make_any(0);
+	EXPECT_THROW(
+	    any = make_any<int>([=]() { return v; }), TypeMismatchException);
+}
+
+TEST(Any, lazy_member_function)
+{
+	auto obj = std::make_shared<Object>();
+	auto any = make_any<int>(std::bind(&Object::computed_member, obj));
+	EXPECT_EQ(any.as<int>(), obj->computed_member());
+}
+
+TEST(Any, lazy_cloneable_visitable)
+{
+	Any any;
+	EXPECT_THROW(
+	    any.clone_from(make_any<int>([=]() { return 111; })), std::logic_error);
+	EXPECT_TRUE(any.cloneable());
+	EXPECT_TRUE(any.visitable());
+	any = make_any<int>([=]() { return 222; });
+	EXPECT_FALSE(any.cloneable());
+	EXPECT_FALSE(any.visitable());
+	EXPECT_THROW(any.visit(nullptr), std::logic_error);
 }

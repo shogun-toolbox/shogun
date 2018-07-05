@@ -335,7 +335,7 @@ public:
 		if (!has_parameter(tag))
 			return false;
 		const Any value = get_parameter(tag).get_value();
-		return value.same_type<T>();
+		return value.has_type<T>();
 	}
 
 	/** Setter for a class parameter, identified by a Tag.
