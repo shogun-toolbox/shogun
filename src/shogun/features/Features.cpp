@@ -272,17 +272,6 @@ CFeatures* CFeatures::view(const SGVector<index_t>& subset)
 	return feats_view;
 }
 
-CFeatures* CFeatures::view(const std::vector<index_t>& subset)
-{
-	auto feats_view = this->duplicate();
-
-	auto sg_subset = SGVector<index_t>(subset.size());
-	std::copy(subset.cbegin(), subset.cend(), sg_subset.data());
-	feats_view->add_subset(sg_subset);
-
-	return feats_view;
-}
-
 void CFeatures::add_subset(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset(subset);

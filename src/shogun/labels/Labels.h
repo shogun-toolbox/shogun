@@ -165,14 +165,6 @@ namespace shogun
 		 */
 		CLabels* view(const SGVector<index_t>& subset);
 
-		/** Creates a subset view of the labels containing the elements
-		 * whose indices are listed in the passed vector
-		 *
-		 * @param subset subset of indices
-		 * @return new CLabels object wrapped by a smart pointer
-		 */
-		CLabels* view(const std::vector<index_t>& subset);
-
 	private:
 		void init();
 

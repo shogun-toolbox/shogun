@@ -82,17 +82,6 @@ CLabels* CLabels::view(const SGVector<index_t>& subset)
 	return labels_view;
 }
 
-CLabels* CLabels::view(const std::vector<index_t>& subset)
-{
-	auto labels_view = this->duplicate();
-
-	auto sg_subset = SGVector<index_t>(subset.size());
-	std::copy(subset.cbegin(), subset.cend(), sg_subset.data());
-	labels_view->add_subset(sg_subset);
-
-	return labels_view;
-}
-
 float64_t CLabels::get_value(int32_t idx)
 {
 	ASSERT(m_current_values.vector && idx < get_num_labels())

@@ -564,10 +564,12 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a
-	auto afeats = x->view(a)->as<CDenseFeatures<float64_t>>();
+	auto afeats = x->view(SGVector<index_t>(a.data(), a.size(), false))
+	                  ->as<CDenseFeatures<float64_t>>();
 
 	// create new features only containing examples whose indices are in b
-	auto bfeats = x->view(b)->as<CDenseFeatures<float64_t>>();
+	auto bfeats = x->view(SGVector<index_t>(b.data(), b.size(), false))
+	                  ->as<CDenseFeatures<float64_t>>();
 
 	// create and return distance
 	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);

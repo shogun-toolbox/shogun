@@ -274,13 +274,12 @@ TEST(DenseFeaturesTest, view)
 			EXPECT_EQ(feature_matrix_subset1(i, j), data(i, subset1[j]));
 	}
 
-	std::vector<index_t> subset2{
+	SGVector<index_t> subset2{
 	    0, 2}; // subset2 is column 0 & 3 of original features
 	auto feats_subset2 =
 	    wrap(feats_subset1->view(subset2)->as<CDenseFeatures<float64_t>>());
 	ASSERT_EQ(feats_subset2->get_num_features(), num_feats);
-	ASSERT_EQ(
-	    feats_subset2->get_num_vectors(), static_cast<index_t>(subset2.size()));
+	ASSERT_EQ(feats_subset2->get_num_vectors(), subset2.vlen);
 	auto feature_matrix_subset2 = feats_subset2->get_feature_matrix();
 
 	for (auto j : range(subset2.size()))
