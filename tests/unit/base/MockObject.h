@@ -285,6 +285,11 @@ namespace shogun
 			return m_object;
 		}
 
+		int some_method() const
+		{
+			return 42;
+		}
+
 	protected:
 		void init_params()
 		{
@@ -302,6 +307,8 @@ namespace shogun
 			    "watched_object", &m_object,
 			    AnyParameterProperties(
 			        "Object", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE));
+
+			watch_method("some_method", &CMockObject::some_method);
 		}
 
 	private:
