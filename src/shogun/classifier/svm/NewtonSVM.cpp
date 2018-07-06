@@ -14,7 +14,6 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 //#define DEBUG_NEWTON
@@ -27,6 +26,7 @@ CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
 	m_max_iterations = 20;
 	prec = 1e-6;
 	C = 1;
+	t=0;
 	set_compute_bias(true);
 }
 
@@ -38,6 +38,7 @@ CNewtonSVM::CNewtonSVM(
 	num_iter=itr;
 	prec=1e-6;
 	C=c;
+	t=0;
 	set_features(traindat);
 	set_labels(trainlab);
 	set_compute_bias(true);
@@ -70,59 +71,45 @@ void CNewtonSVM::init_model(CFeatures* data)
 
 	ASSERT(num_vec==train_labels.vlen)
 
-	weights = SG_CALLOC(float64_t, x_d+1);
-	out=SG_MALLOC(float64_t, x_n);
-	SGVector<float64_t>::fill_vector(out, x_n, 1.0);
-
-	sv=SG_MALLOC(int32_t, x_n);
-	grad=SG_MALLOC(float64_t, x_d+1);
+	SGVector<float64_t>weights(x_d);
+	set_w(weights);
+	out = SGVector<float64_t>(x_n);
+	out.set_const(1.0);
+	weights.set_const(0.0);
+	
+	sv = SGVector<int32_t>(x_n);
+	sv.set_const(0);
+	grad = SGVector<float64_t>(x_d+1);
+	grad.set_const(0.0);
 }
 
 void CNewtonSVM::iteration()
 {
 	obj_fun_linear();
-
-#ifdef DEBUG_NEWTON
-		SG_PRINT("fun linear passed !\n")
-		SG_PRINT("Obj =%f\n", obj)
-		SG_PRINT("Grad=\n")
-
-		for (int32_t i=0; i<x_d+1; i++)
-			SG_PRINT("grad[%d]=%.16g\n", i, grad[i])
-		SG_PRINT("SV=\n")
-
-		for (int32_t i=0; i<size_sv; i++)
-			SG_PRINT("sv[%d]=%d\n", i, sv[i])
-#endif
+	SGVector<float64_t> weights = get_w();
 
 		SGVector<float64_t> sgv;
-		float64_t* Xsv = SG_MALLOC(float64_t, x_d*size_sv);
+		SGMatrix<float64_t> Xsv(x_d, size_sv);
 		for (int32_t k=0; k<size_sv; k++)
 		{
 			sgv=features->get_computed_dot_feature_vector(sv[k]);
 			for (int32_t j=0; j<x_d; j++)
 				Xsv[k*x_d+j]=sgv.vector[j];
 		}
-		int32_t tx=x_d;
-		int32_t ty=size_sv;
-		SGMatrix<float64_t>::transpose_matrix(Xsv, tx, ty);
+		Xsv = linalg::transpose_matrix(Xsv);
 
-#ifdef DEBUG_NEWTON
-		SGMatrix<float64_t>::display_matrix(Xsv, x_d, size_sv);
-#endif
-
-		float64_t* lcrossdiag=SG_MALLOC(float64_t, (x_d+1)*(x_d+1));
-		float64_t* vector=SG_MALLOC(float64_t, x_d+1);
+		SGMatrix<float64_t> lcrossdiag(x_d+1, x_d+1);
+		SGVector<float64_t> vector(x_d+1);
 
 		for (int32_t i=0; i<x_d; i++)
 			vector[i]=lambda;
 
 		vector[x_d]=0;
 
-		SGMatrix<float64_t>::create_diagonal_matrix(lcrossdiag, vector, x_d+1);
-		float64_t* Xsv2=SG_MALLOC(float64_t, x_d*x_d);
-		cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, x_d, x_d, size_sv,
-				1.0, Xsv, size_sv, Xsv, size_sv, 0.0, Xsv2, x_d);
+		SGMatrix<float64_t>::create_diagonal_matrix(lcrossdiag.matrix, vector.vector, x_d+1);
+		SGMatrix<float64_t> Xsv2(x_d, x_d);
+		linalg::matrix_prod(Xsv, Xsv, Xsv2, true);
+		
 		float64_t* sum=SG_CALLOC(float64_t, x_d);
 
 		for (int32_t j=0; j<x_d; j++)
@@ -131,7 +118,7 @@ void CNewtonSVM::iteration()
 				sum[j]+=Xsv[i+j*size_sv];
 		}
 
-		float64_t* Xsv2sum=SG_MALLOC(float64_t, (x_d+1)*(x_d+1));
+		SGMatrix<float64_t> Xsv2sum(x_d+1, x_d+1);
 
 		for (int32_t i=0; i<x_d; i++)
 		{
@@ -145,78 +132,36 @@ void CNewtonSVM::iteration()
 			Xsv2sum[j*(x_d+1)+x_d]=sum[j];
 
 		Xsv2sum[x_d*(x_d+1)+x_d]=size_sv;
-		float64_t* identity_matrix=SG_MALLOC(float64_t, (x_d+1)*(x_d+1));
+		SGMatrix<float64_t> identity_matrix(x_d+1, x_d+1);
+		vector.set_const(1.0);
 
-		SGVector<float64_t>::fill_vector(vector, x_d+1, 1.0);
+		SGMatrix<float64_t>::create_diagonal_matrix(identity_matrix.matrix, vector.vector, x_d+1);
+		
+		auto xsv2sum = linalg::matrix_prod(lcrossdiag, identity_matrix);
+		
+		linalg::add(Xsv2sum, xsv2sum, Xsv2sum);		
+		SGMatrix<float64_t> inverse((x_d+1), (x_d+1));
+		SGMatrix<float64_t>::pinv(Xsv2sum.matrix, x_d+1, x_d+1, inverse.matrix);
+		
+		SGVector<float64_t> step(x_d+1);
+		SGVector<float64_t>s2(x_d+1);
+		s2 = linalg::matrix_prod(inverse, grad);
 
-		SGMatrix<float64_t>::create_diagonal_matrix(identity_matrix, vector, x_d+1);
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, x_d+1, x_d+1,
-				x_d+1, 1.0, lcrossdiag, x_d+1, identity_matrix, x_d+1, 1.0,
-				Xsv2sum, x_d+1);
-
-		float64_t* inverse=SG_MALLOC(float64_t, (x_d+1)*(x_d+1));
-		int32_t r=x_d+1;
-		SGMatrix<float64_t>::pinv(Xsv2sum, r, r, inverse);
-
-		float64_t* step=SG_MALLOC(float64_t, r);
-		float64_t* s2=SG_MALLOC(float64_t, r);
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, r, 1, r, 1.0,
-				inverse, r, grad, r, 0.0, s2, r);
-
-		for (int32_t i=0; i<r; i++)
+		for (int32_t i=0; i<x_d+1; i++)
 			step[i]=-s2[i];
 
 	line_search_linear(step);
 
-#ifdef DEBUG_NEWTON
-		SG_PRINT("t=%f\n\n", t)
-
-		for (int32_t i=0; i<x_n; i++)
-			SG_PRINT("out[%d]=%.16g\n", i, out[i])
-
-		for (int32_t i=0; i<x_d+1; i++)
-			SG_PRINT("weights[%d]=%.16g\n", i, weights[i])
-#endif
-
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(weights, t, step, r);
-		float64_t newton_decrement;
-		cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, r, -0.5,
-				step, r, grad, r, 0.0, &newton_decrement, 1);
-#ifdef V_NEWTON
-		SG_PRINT("Itr=%d, Obj=%f, No of sv=%d, Newton dec=%0.3f, line search=%0.3f\n\n",
-				iter, obj, size_sv, newton_decrement, t);
-#endif
-
-		SG_FREE(Xsv);
-		SG_FREE(vector);
-		SG_FREE(lcrossdiag);
-		SG_FREE(Xsv2);
-		SG_FREE(Xsv2sum);
-		SG_FREE(identity_matrix);
-		SG_FREE(inverse);
-		SG_FREE(step);
-		SG_FREE(s2);
+		SGVector<float64_t> tmp_step(step.data(), x_d, false);
+		linalg::add(weights, tmp_step, weights, 1.0, t);
+		bias += t*step[x_d];
+		float64_t newton_decrement = -0.5*linalg::dot(step, grad);
 
 		if (newton_decrement*2<prec*obj)
 		m_complete=true;
 }
 
-void CNewtonSVM::end_training()
-{
-#ifdef V_NEWTON
-	SG_PRINT("FINAL W AND BIAS Vector=\n\n")
-	CMath::display_matrix(weights, x_d+1, 1);
-#endif
-
-	set_w(SGVector<float64_t>(weights, x_d));
-	set_bias(weights[x_d]);
-
-	SG_FREE(sv);
-	SG_FREE(grad);
-	SG_FREE(out);
-}
-
-void CNewtonSVM::line_search_linear(float64_t* d)
+void CNewtonSVM::line_search_linear(const SGVector<float64_t> d)
 {
 	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
 	SGVector<float64_t> outz(x_n);
@@ -226,40 +171,27 @@ void CNewtonSVM::line_search_linear(float64_t* d)
 	SGVector<float64_t> Ysv(x_n);
 	SGVector<float64_t> Xsv(x_n);
 	SGVector<float64_t> Xd(x_n);
-
+	SGVector<float64_t> weights = get_w();
 	for (int32_t i=0; i<x_n; i++)
-		Xd[i]=features->dense_dot(i, d, x_d);
+		Xd[i]=features->dense_dot(i, d.data(), x_d);
 
 	linalg::add_scalar(Xd, d[x_d]);
-
-#ifdef DEBUG_NEWTON
-	CMath::display_vector(d, x_d+1, "Weight vector");
-
-	for (int32_t i=0; i<x_d+1; i++)
-		SG_SPRINT("Xd[%d]=%.18g\n", i, Xd[i])
-
-	CMath::display_vector(Xd, x_n, "XD vector=");
-#endif
-
-	float64_t wd;
-	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d, lambda,
-			weights, x_d, d, x_d, 0.0, &wd, 1);
-	float64_t dd;
-	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d, lambda, d,
-			x_d, d, x_d, 0.0, &dd, 1);
+	
+	SGVector<float64_t> tmp_d = SGVector<float64_t>(d.data(), x_d, false);
+	float64_t wd = lambda*linalg::dot(weights, tmp_d);
+	float64_t dd = lambda*linalg::dot(tmp_d, tmp_d);
 
 	float64_t g, h;
 	int32_t sv_len=0;
 	SGVector<int32_t> sv(x_n);
-
-	SGVector<float64_t> sg_out(out, x_n, false);
+	
 	do
 	{
 		// FIXME:: port it to linalg::
 		SGVector<float64_t>::vector_multiply(temp1.vector, Y.vector, Xd.vector, x_n);
 		sg_memcpy(temp1forout.vector, temp1.vector, sizeof(float64_t)*x_n);
 		linalg::scale(temp1forout, temp1forout, t);
-		linalg::add(sg_out, temp1forout, outz, 1.0, -1.0);
+		outz = linalg::add(out, temp1forout, 1.0, -1.0);
 
 		// Calculation of sv
 		sv_len=0;
@@ -288,13 +220,13 @@ void CNewtonSVM::line_search_linear(float64_t* d)
 		g-=tempg;
 
 		// Calculation of second derivative 'h'
-		cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, sv_len, 1.0,
-				Xsv.vector, sv_len, Xsv.vector, sv_len, 0.0, &h, 1);
+		SGVector<float64_t> tmp_Xsv = SGVector<float64_t>(Xsv, sv_len, false);
+		h = linalg::dot(tmp_Xsv, tmp_Xsv);
+		
 		h+=dd;
 
 		// Calculation of 1D Newton step 'd'
 		t-=g/h;
-
 		if (((g*g)/h)<1e-10)
 			break;
 
@@ -305,6 +237,7 @@ void CNewtonSVM::line_search_linear(float64_t* d)
 
 void CNewtonSVM::obj_fun_linear()
 {
+	SGVector<float64_t> weights = get_w();
 	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();
 
 	for (int32_t i=0; i<x_n; i++)
@@ -313,13 +246,8 @@ void CNewtonSVM::obj_fun_linear()
 			out[i]=0;
 	}
 
-#ifdef DEBUG_NEWTON
-	for (int32_t i=0; i<x_n; i++)
-		SG_SPRINT("out[%d]=%.16g\n", i, out[i])
-#endif
-
 	//create copy of w0
-	float64_t* w0=SG_MALLOC(float64_t, x_d+1);
+	SGVector<float64_t> w0(x_d+1);
 	sg_memcpy(w0, weights, sizeof(float64_t)*(x_d));
 	w0[x_d]=0; //do not penalize b
 
@@ -330,11 +258,11 @@ void CNewtonSVM::obj_fun_linear()
 	SGVector<float64_t>::vector_multiply(out1, out, out, x_n);
 	float64_t p1=SGVector<float64_t>::sum(out1, x_n)/2;
 	float64_t C1;
-	float64_t* w0copy=SG_MALLOC(float64_t, x_d+1);
-	sg_memcpy(w0copy, w0, sizeof(float64_t)*(x_d+1));
-	SGVector<float64_t>::scale_vector(0.5, w0copy, x_d+1);
-	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d+1, lambda,
-			w0, x_d+1, w0copy, x_d+1, 0.0, &C1, 1);
+	
+	SGVector<float64_t> w0copy(x_d+1);
+	sg_memcpy(w0copy.vector, w0.vector, sizeof(float64_t)*(x_d+1));
+	w0copy.scale_vector(0.5, w0copy, x_d+1);
+	C1 = lambda*linalg::dot(w0, w0copy);
 	obj=p1+C1;
 	SGVector<float64_t>::scale_vector(lambda, w0, x_d);
 	float64_t* temp=SG_CALLOC(float64_t, x_n); //temp = out.*Y
@@ -345,11 +273,6 @@ void CNewtonSVM::obj_fun_linear()
 	for (int32_t i=0; i<x_n; i++)
 	{
 		features->add_to_dense_vec(temp[i], i, temp1, x_d);
-#ifdef DEBUG_NEWTON
-		SG_SPRINT("\ntemp[%d]=%f", i, temp[i])
-		CMath::display_vector(vec.vector, x_d, "vector");
-		CMath::display_vector(temp1, x_d, "debuging");
-#endif
 	}
 	float64_t* p2=SG_MALLOC(float64_t, x_d+1);
 
@@ -368,8 +291,6 @@ void CNewtonSVM::obj_fun_linear()
 
 	size_sv=sv_len;
 
-	SG_FREE(w0);
-	SG_FREE(w0copy);
 	SG_FREE(out1);
 	SG_FREE(temp);
 	SG_FREE(temp1);

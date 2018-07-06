@@ -96,19 +96,19 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 	protected:
 		virtual void init_model(CFeatures* data);
 		virtual void iteration();
-		virtual void end_training();
 
 	private:
 		void obj_fun_linear();
 
-		void line_search_linear(float64_t* d);
+		void line_search_linear(SGVector<float64_t> d);
 
 	protected:
 		/** lambda=1/C */
 		float64_t lambda, C, epsilon;
-		float64_t *weights, *out, *grad;
+		SGVector<float64_t> out, grad;
+		SGVector<int32_t> sv;
 		float64_t prec, obj, t;
-		int32_t x_n, x_d, num_iter, *sv, size_sv;
+		int32_t x_n, x_d, num_iter, size_sv;
 
 		/** if bias is used */
 		bool use_bias;
