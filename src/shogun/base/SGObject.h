@@ -715,6 +715,7 @@ protected:
 			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
 	}
 
+#ifndef SWIG
 	template <typename T, typename S>
 	void watch_method(const std::string& name, T (S::*method)() const)
 	{
@@ -725,6 +726,7 @@ protected:
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
+#endif
 
 public:
 	/** Updates the hash of current parameter combination */
