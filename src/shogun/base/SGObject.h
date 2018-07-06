@@ -349,9 +349,16 @@ public:
 	{
 		if (has_parameter(_tag))
 		{
+			auto parameter_value = get_parameter(_tag).get_value();
+			if (!parameter_value.cloneable())
+			{
+				SG_ERROR(
+					"Cannot put parameter %s::%s.\n", get_name(),
+					_tag.name().c_str());
+			}
 			try
 			{
-				any_cast<T>(get_parameter(_tag).get_value());
+				any_cast<T>(parameter_value);
 			}
 			catch (const TypeMismatchException& exc)
 			{
