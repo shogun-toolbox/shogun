@@ -563,3 +563,9 @@ TEST(SGObject, watched_parameter_object)
 	obj = empty<CMockObject>();
 	EXPECT_EQ(other_obj->ref_count(), 1);
 }
+
+TEST(SGObject, watch_method)
+{
+	auto obj = some<CMockObject>();
+	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
+}
