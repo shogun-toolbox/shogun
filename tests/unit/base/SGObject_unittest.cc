@@ -568,4 +568,5 @@ TEST(SGObject, watch_method)
 {
 	auto obj = some<CMockObject>();
 	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
+	EXPECT_THROW(obj->put<int>("some_method", 0), ShogunException);
 }
