@@ -353,9 +353,8 @@ public:
 			if (!parameter_value.cloneable())
 			{
 				SG_ERROR(
-					"Cannot put parameter %s::%s. Perhaps it is immutable for "
-					"%s",
-					get_name(), _tag.name().c_str(), get_name());
+					"Cannot put parameter %s::%s.\n", get_name(),
+					_tag.name().c_str());
 			}
 			try
 			{
