@@ -957,7 +957,15 @@ std::string CSGObject::to_string() const
 	for (auto it = self->map.begin(); it != self->map.end(); ++it)
 	{
 		ss << it->first.name() << "=";
-		it->second.get_value().visit(visitor.get());
+		auto value = it->second.get_value();
+		if (value.visitable())
+		{
+			value.visit(visitor.get());
+		}
+		else
+		{
+			ss << "{function}";
+		}
 		if (std::next(it) != (self->map.end()))
 		{
 			ss << ",";
