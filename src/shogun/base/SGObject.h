@@ -716,6 +716,11 @@ protected:
 	}
 
 #ifndef SWIG
+	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	 *
+	 * @param name name of the parameter
+	 * @param method pointer to the method
+	 */
 	template <typename T, typename S>
 	void watch_method(const std::string& name, T (S::*method)() const)
 	{
