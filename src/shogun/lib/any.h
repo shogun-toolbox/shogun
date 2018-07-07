@@ -584,7 +584,7 @@ namespace shogun
 			return typeid(T) == ti;
 		}
 
-		virtual bool is_functional() const
+		virtual bool is_functional() const override
 		{
 			return any_detail::has_result_type<T>::value;
 		}
