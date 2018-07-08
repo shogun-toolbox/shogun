@@ -219,7 +219,7 @@ SGVector<float64_t> CKMeansBase::get_radiuses()
 	return R;
 }
 
-SGMatrix<float64_t> CKMeansBase::get_cluster_centers()
+SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
 {
 	if (!R.vector)
 		return SGMatrix<float64_t>();
@@ -362,6 +362,8 @@ void CKMeansBase::init()
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
 	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
-	SG_ADD(&R, "R", "Cluster radiuses", MS_NOT_AVAILABLE);
+	SG_ADD(&R, "radiuses", "Cluster radiuses", MS_NOT_AVAILABLE);
+
+	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }
 

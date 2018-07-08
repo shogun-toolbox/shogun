@@ -126,7 +126,7 @@ class CKMeansBase : public CDistanceMachine
 		 *
 		 * @return cluster centers or empty matrix if no radiuses are there (not trained yet)
 		 */
-		SGMatrix<float64_t> get_cluster_centers();
+		SGMatrix<float64_t> get_cluster_centers() const;
 
 		/** get dimensions
 		 *
