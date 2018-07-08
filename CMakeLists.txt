@@ -323,6 +323,8 @@ ENDIF()
 ForEach(Interface ${AVAILABLE_INTERFACES})
     OPTION(${Interface} ${Interface}Description OFF)
 EndForEach(Interface)
+# coreml is an interface but not swig-based thus not listed in ${AVAILABLE_INTERFACE}
+OPTION(INTERFACE_COREML CoreML OFF)
 
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
@@ -389,6 +391,12 @@ OPTION(REDUCE_SWIG_DEBUG "Reduce debuginfo when compiling interfaces" OFF)
 IF(REDUCE_SWIG_DEBUG)
 	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -g1")
 ENDIF(REDUCE_SWIG_DEBUG)
+
+# coreml
+IF (INTERFACE_COREML)
+	FIND_PACKAGE(Protobuf)
+	ADD_SUBDIRECTORY (${CMAKE_SOURCE_DIR}/src/interfaces/coreml)
+ENDIF()
 
 # python
 IF (INTERFACE_PYTHON)
@@ -534,6 +542,7 @@ PrintStatus("Interfaces")
 ForEach(Interface ${AVAILABLE_INTERFACES})
     PrintInterfaceStatus("${${Interface}_DESCRIPTION}" ${Interface})
 EndForEach(Interface)
+PrintInterfaceStatus("CoreML" INTERFACE_COREML)
 
 PrintLine()
 PrintStatus("To compile shogun type")
