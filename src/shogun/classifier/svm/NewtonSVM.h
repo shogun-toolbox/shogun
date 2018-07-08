@@ -10,10 +10,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/common.h>
+#include <shogun/machine/IterativeMachine.h>
 
 namespace shogun
 {
@@ -23,7 +23,7 @@ namespace shogun
  *  This Implementation is ported from the Olivier Chapelles fast newton based SVM solver, Which could be found here :http://mloss.org/software/view/30/
  *  For further information on this implementation of SVM refer to this paper: http://www.kyb.mpg.de/publications/attachments/neco_%5B0%5D.pdf
 */
-class CNewtonSVM : public CLinearMachine
+class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
@@ -94,28 +94,21 @@ class CNewtonSVM : public CLinearMachine
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		/** train SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual void init_model(CFeatures* data);
+		virtual void iteration();
 
 	private:
-		void obj_fun_linear(float64_t* weights, float64_t* out, float64_t* obj,
-				int32_t* sv, int32_t* numsv, float64_t* grad);
+		void obj_fun_linear();
 
-		void line_search_linear(float64_t* weights, float64_t* d,
-				float64_t* out, float64_t* tx);
+		void line_search_linear(SGVector<float64_t> d);
 
 	protected:
 		/** lambda=1/C */
 		float64_t lambda, C, epsilon;
-		float64_t prec;
-		int32_t x_n, x_d, num_iter;
+		SGVector<float64_t> out, grad;
+		SGVector<int32_t> sv;
+		float64_t prec, obj, t;
+		int32_t x_n, x_d, num_iter, size_sv;
 
 		/** if bias is used */
 		bool use_bias;
