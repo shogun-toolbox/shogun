@@ -69,9 +69,13 @@ namespace shogun
 			pb.complete();
 
 			if (m_complete)
+			{
 				SG_SINFO(
 				    "%s converged after %d iterations.\n", this->get_name(),
 				    m_current_iteration)
+
+				this->end_training();
+			}
 			else if (!m_complete && m_current_iteration >= m_max_iterations)
 			{
 				SG_SWARNING(

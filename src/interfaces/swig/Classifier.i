@@ -44,7 +44,6 @@
 %rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
 %rename(AveragedPerceptron) CAveragedPerceptron;
-%rename(NewtonSVM) CNewtonSVM;
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
 #endif
@@ -126,7 +125,6 @@
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
 
-%include <shogun/classifier/svm/NewtonSVM.h>
 #ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 #endif //USE_GPL_SHOGUN
