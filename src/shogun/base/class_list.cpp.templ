@@ -44,30 +44,20 @@ REPLACE template_definitions THIS
 
 REPLACE complex_template_definitions THIS
 
-typedef CSGObject* (*create_function)(EPrimitiveType generic);
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-typedef struct
-{
-	const char* m_class_name;
-	create_function m_create_function;
-} class_list_entry_t;
-#endif
+typedef CSGObject* (*CreateFunction)(EPrimitiveType generic);
 
-static class_list_entry_t class_list[] = {
+static const std::map<std::string, CreateFunction> classes = {
 REPLACE struct THIS
-	{NULL, NULL}
 };
 
 CSGObject* shogun::create(const char* classname, EPrimitiveType generic)
 {
-	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
-		 i++)
+	auto entry = classes.find(classname);
+	if (entry != classes.end())
 	{
-		if (strncmp(i->m_class_name, classname, STRING_LEN) == 0)
-			return i->m_create_function(generic);
+		return entry->second(generic);
 	}
-
-	return NULL;
+	return nullptr;
 }
 
 void shogun::delete_object(CSGObject* object)
@@ -78,10 +68,9 @@ void shogun::delete_object(CSGObject* object)
 std::set<std::string> shogun::available_objects()
 {
 	std::set<std::string> result;
-	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
-		 i++)
+	for (const auto& each : classes)
 	{
-		result.insert(i->m_class_name);
+		result.insert(each.first);
 	}
 	return result;
 }
