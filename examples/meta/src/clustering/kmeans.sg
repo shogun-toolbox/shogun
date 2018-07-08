@@ -1,5 +1,5 @@
-File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
 Math:init_random(1)
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -10,7 +10,7 @@ Distance d = distance("EuclideanDistance", lhs=features_train, rhs=features_trai
 #![choose_distance]
 
 #![create_instance_lloyd]
-KMeans kmeans(2, d)
+Machine kmeans = machine("KMeans", k=2, distance=d)
 #![create_instance_lloyd]
 
 #![train_dataset]
@@ -18,10 +18,10 @@ kmeans.train()
 #![train_dataset]
 
 #![extract_centers_and_radius]
-RealMatrix c = kmeans.get_cluster_centers()
-RealVector r = kmeans.get_radiuses()
+RealMatrix c = kmeans.get_real_matrix("cluster_centers")
+RealVector r = kmeans.get_real_vector("radiuses")
 #![extract_centers_and_radius]
 
 #![create_instance_mb]
-KMeansMiniBatch kmeans_mb(k=2, distance=d, batch_size=4, max_iter=1000)
+Machine kmeans_mini_batch = machine("KMeansMiniBatch", k=2, distance=d, batch_size=4, max_iter=100)
 #![create_instance_mb]
