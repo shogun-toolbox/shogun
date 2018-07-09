@@ -10,9 +10,6 @@ parameter_list = [[matrix]]
 # ... of type LongInt
 def features_dense_longint (A=matrix):
 	a=LongIntFeatures(A)
-	# get first feature vector and set it
-
-	a.set_feature_vector(array([1,4,0,0,0,9], dtype=int64), 0)
 
 	# get matrix
 	a_out = a.get_feature_matrix()

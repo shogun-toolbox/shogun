@@ -17,9 +17,8 @@ def features_dense_byte (A):
 	#print(a.get_num_vectors())
 	#print(a.get_num_features())
 
-	# get first feature vector and set it
+	# get first feature vector
 	#print(a.get_feature_vector(0))
-	a.set_feature_vector(numpy.array([1,4,0,0,0,9], dtype=numpy.uint8), 0)
 
 	# get matrix
 	a_out = a.get_feature_matrix()
