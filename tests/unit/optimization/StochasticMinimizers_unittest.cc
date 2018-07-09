@@ -1,32 +1,7 @@
 /*
- * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2015 Wu Lin
- * All rights reserved.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * The views and conclusions contained in the software and documentation are those
- * of the authors and should not be interpreted as representing official policies,
- * either expressed or implied, of the Shogun Development Team.
- *
+ * Authors: Wu Lin
  */
 #include <gtest/gtest.h>
 
@@ -374,46 +349,46 @@ void ClassificationFixture::init()
 {
 	y=SGVector<float64_t>(20);
 	x=SGMatrix<float64_t>(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874;
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521;
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423;
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271;
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956;
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419;
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298;
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682;
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933;
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587;
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624;
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835;
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454;
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363;
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918;
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468;
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305;
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211;
 	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
+	y[0]=1;
+	y[1]=-1;
+	y[2]=-1;
+	y[3]=1;
+	y[4]=1;
+	y[5]=-1;
+	y[6]=-1;
+	y[7]=1;
+	y[8]=1;
+	y[9]=-1;
 	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
+	y[11]=-1;
+	y[12]=1;
+	y[13]=1;
+	y[14]=1;
+	y[15]=1;
+	y[16]=-1;
+	y[17]=-1;
+	y[18]=-1;
+	y[19]=-1;
 }
 
 
@@ -490,7 +465,7 @@ TEST(SGDMinimizer,test1)
 	//In this implementation, the cost function is 0.5 \times \sum_i{(y_i-x_i'*w)^2}
 	//cost=0.491198269864709
 	EXPECT_NEAR(cost,0.491198269864709, 1e-10);
-		
+
 	delete opt;
 }
 
@@ -694,7 +669,7 @@ TEST(SVRGMinimizer,test1)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.001);
 
-	//using momentum method 
+	//using momentum method
 	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
 	//momentum=0.9
@@ -782,13 +757,13 @@ TEST(SVRGMinimizer,test2)
 
 	//result from the Semi Stochastic Gradient Descent 1.0 (S2GD) package
 	//http://mloss.org/software/view/556/
-	//w[0]=1.840662 
-	//w[1]=-0.855683 
+	//w[0]=1.840662
+	//w[1]=-0.855683
 	//cost=0.334054
 	opt->minimize();
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.334054,1e-6);
-	
+
 	SGVector<float64_t> w=bb->obtain_variable_reference();
 	EXPECT_NEAR(w[0],1.840662,1e-6);
 	EXPECT_NEAR(w[1],-0.855683,1e-6);
@@ -810,7 +785,7 @@ TEST(AdaDeltaUpdater, test1)
 	MomentumCorrection* momentum_correction=new NesterovMomentumCorrection();
 	momentum_correction->set_correction_weight(0.99);
 	updater->set_descend_correction(momentum_correction);
-	
+
 	opt->set_gradient_updater(updater);
 	opt->set_number_passes(1);
 
@@ -945,8 +920,8 @@ TEST(L1PenaltyForTG, test1)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//w=
-	//-0.047225925298 
-	//0.018566844801 
+	//-0.047225925298
+	//0.018566844801
 	//
 	//cost=
 	//0.679635661120
@@ -978,7 +953,7 @@ TEST(L1PenaltyForTG, test2)
 	opt->set_penalty_weight(0.01);
 	L1Penalty* penalty_type=new L1PenaltyForTG();
 	penalty_type->set_rounding_epsilon(0);
-	
+
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
@@ -989,8 +964,8 @@ TEST(L1PenaltyForTG, test2)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//w=
-	//-0.203765743995 
-	//0.109255680811 
+	//-0.203765743995
+	//0.109255680811
 	//cost=
 	//0.633950836133
 	//
@@ -1022,7 +997,7 @@ TEST(ElasticNetPenalty, test1)
 	opt->set_penalty_weight(0.01);
 	ElasticNetPenalty* penalty_type=new ElasticNetPenalty();
 	penalty_type->set_l1_ratio(0.7);
-	
+
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
@@ -1033,7 +1008,7 @@ TEST(ElasticNetPenalty, test1)
 	//
 	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
 	//
-	//w[0]=-0.206101230857 w[1]=0.111680271395 
+	//w[0]=-0.206101230857 w[1]=0.111680271395
 	//total loss=0.633194272101
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.633194272101,1e-10);
@@ -1073,11 +1048,11 @@ TEST(SMIDASMinimizer, test1)
 	//reference result from http://mloss.org/software/view/208/
 	//
 	//w=
-	//-0.0934993 
+	//-0.0934993
 	//0.0367823
 	//
 	//cost=
-	//0.666646 
+	//0.666646
 	float64_t cost=bb->get_cost()/bb->get_sample_size();
 	EXPECT_NEAR(cost,0.666646,1e-6);
 	SGVector<float64_t> w=bb->obtain_variable_reference();

@@ -30,8 +30,9 @@
  */
 #ifndef FIRSTORDERSTOCHASTICMINIMIZER_H
 #define FIRSTORDERSTOCHASTICMINIMIZER_H
-#include <shogun/optimization/FirstOrderMinimizer.h>
+
 #include <shogun/optimization/FirstOrderStochasticCostFunction.h>
+#include <shogun/optimization/FirstOrderMinimizer.h>
 #include <shogun/optimization/DescendUpdater.h>
 #include <shogun/optimization/LearningRate.h>
 namespace shogun
