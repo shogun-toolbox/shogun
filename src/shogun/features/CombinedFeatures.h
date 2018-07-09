@@ -76,7 +76,7 @@ class CCombinedFeatures : public CFeatures
 		}
 
 		/** list feature objects */
-		void list_feature_objs();
+		void list_feature_objs() const;
 
 		/** check feature object compatibility
 		 *
@@ -89,20 +89,20 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return first feature object
 		 */
-		CFeatures* get_first_feature_obj();
+		CFeatures* get_first_feature_obj() const;
 
 		/** get feature object at index idx
 		*
 		* @param idx index of feature object
 		* @return the feature object at index idx
 		*/
-		CFeatures* get_feature_obj(int32_t idx);
+		CFeatures* get_feature_obj(int32_t idx) const;
 
 		/** get last feature object
 		 *
 		 * @return last feature object
 		 */
-		CFeatures* get_last_feature_obj();
+		CFeatures* get_last_feature_obj() const;
 
 		/** insert feature object at index idx
 		 *  Important, idx must be < num_feature_obj
@@ -131,7 +131,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature objects
 		 */
-		int32_t get_num_feature_obj();
+		int32_t get_num_feature_obj() const;
 
 		/** Takes another feature instance and returns a new instance which is
 		 * a concatenation of a copy if this instace's data and the given
@@ -143,7 +143,7 @@ class CCombinedFeatures : public CFeatures
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		CFeatures* create_merged_copy(CFeatures* other);
+		CFeatures* create_merged_copy(CFeatures* other) const;
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards.
