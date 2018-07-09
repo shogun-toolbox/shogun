@@ -106,7 +106,7 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 			expected_merged_mat.matrix+active_data_1.size());
 
 	auto merged=static_cast<CDenseFeatures<float64_t>*>(features_1->create_merged_copy(features_2));
-	SGMatrix<float64_t> merged_mat=merged->steal_feature_matrix();
+	SGMatrix<float64_t> merged_mat = merged->get_feature_matrix();
 
 	ASSERT_EQ(expected_merged_mat.num_rows, merged_mat.num_rows);
 	ASSERT_EQ(expected_merged_mat.num_cols, merged_mat.num_cols);

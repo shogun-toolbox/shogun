@@ -113,12 +113,6 @@ public:
 	 */
 	void free_feature_matrix();
 
-	/** free feature matrix and cache
-	 *
-	 * Any subset is removed
-	 */
-	void free_features();
-
 	/** get feature vector
 	 * for sample num from the matrix as it is if matrix is
 	 * initialized, else return preprocessed compute_feature_vector (not
@@ -131,15 +125,6 @@ public:
 	 * @return feature vector
 	 */
 	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree);
-
-	/** set feature vector num
-	 *
-	 * possible with subset
-	 *
-	 * @param vector vector
-	 * @param num index if vector to set
-	 */
-	void set_feature_vector(SGVector<ST> vector, int32_t num);
 
 	/** get feature vector num
 	 *
@@ -206,15 +191,7 @@ public:
 	 *
 	 * @return matrix feature matrix
 	 */
-	SGMatrix<ST> get_feature_matrix();
-
-	/** steals feature matrix, i.e. returns matrix and
-	 * forget about it
-	 * subset is ignored
-	 *
-	 * @return matrix feature matrix
-	 */
-	SGMatrix<ST> steal_feature_matrix();
+	SGMatrix<ST> get_feature_matrix() const;
 
 	/** Setter for feature matrix
 	 *
@@ -238,7 +215,7 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return feature matrix
 	 */
-	ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec);
+	ST* get_feature_matrix(int32_t& num_feat, int32_t& num_vec) const;
 
 	/** get a transposed copy of the features
 	 *
@@ -316,16 +293,6 @@ public:
 	 * @return templated feature type
 	 */
 	virtual EFeatureType get_feature_type() const;
-
-	/** reshape
-	 *
-	 * not possible with subset
-	 *
-	 * @param p_num_features new number of features
-	 * @param p_num_vectors new number of vectors
-	 * @return if reshaping was successful
-	 */
-	virtual bool reshape(int32_t p_num_features, int32_t p_num_vectors);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -483,7 +450,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CList* other);
+	CFeatures* create_merged_copy(CList* other) const;
 
 	/** Convenience method for method with same name and list as parameter.
 	 *
@@ -491,11 +458,11 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CFeatures* other);
+	CFeatures* create_merged_copy(CFeatures* other) const;
 
-	/** helper method used to specialize a base class instance
-	 *
-	 */
+/** helper method used to specialize a base class instance
+ *
+ */
 #ifndef SWIG
 	[[deprecated("use .as template function")]]
 #endif
@@ -522,6 +489,12 @@ protected:
 	 */
 	virtual ST* compute_feature_vector(int32_t num, int32_t& len,
 			ST* target = NULL);
+
+	/** free feature matrix and cache
+	 *
+	 * Any subset is removed
+	 */
+	void free_features();
 
 private:
 	void init();
