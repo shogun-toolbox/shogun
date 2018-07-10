@@ -43,7 +43,8 @@ SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFe
 	{
 		m_converter->set_target_dim(m_target_dim);
 		CDenseFeatures<float64_t>* embedding = m_converter->embed(features);
-		SGMatrix<float64_t> embedding_feature_matrix = embedding->steal_feature_matrix();
+		SGMatrix<float64_t> embedding_feature_matrix =
+			embedding->get_feature_matrix();
 		((CDenseFeatures<float64_t>*)features)->set_feature_matrix(embedding_feature_matrix);
 		delete embedding;
 		return embedding_feature_matrix;

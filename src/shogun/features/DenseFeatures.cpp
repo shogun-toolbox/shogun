@@ -170,28 +170,6 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 	return feat;
 }
 
-template<class ST> void CDenseFeatures<ST>::set_feature_vector(SGVector<ST> vector, int32_t num)
-{
-	/* index conversion for subset, only for array access */
-	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
-
-	if (num>=get_num_vectors())
-	{
-		SG_ERROR("Index out of bounds (number of vectors %d, you "
-		"requested %d)\n", get_num_vectors(), num);
-	}
-
-	if (!feature_matrix.matrix)
-		SG_ERROR("Requires a in-memory feature matrix\n")
-
-	if (vector.vlen != num_features)
-		SG_ERROR(
-				"Vector not of length %d (has %d)\n", num_features, vector.vlen);
-
-	sg_memcpy(&feature_matrix.matrix[real_num * int64_t(num_features)], vector.vector,
-			int64_t(num_features) * sizeof(ST));
-}
-
 template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t num)
 {
 	/* index conversion for subset, only for array access */
@@ -286,7 +264,7 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 }
 
 template <class ST>
-SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
+SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix() const
 {
 	if (!m_subset_stack->has_subsets())
 		return feature_matrix;
@@ -331,16 +309,6 @@ void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column
 	}
 }
 
-template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
-{
-	SGMatrix<ST> st_feature_matrix=feature_matrix;
-	m_subset_stack->remove_all_subsets();
-	SG_UNREF(feature_cache);
-	clean_preprocessors();
-	free_feature_matrix();
-	return st_feature_matrix;
-}
-
 template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
 {
 	m_subset_stack->remove_all_subsets();
@@ -350,7 +318,9 @@ template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matr
 	num_vectors = matrix.num_cols;
 }
 
-template<class ST> ST* CDenseFeatures<ST>::get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+template <class ST>
+ST* CDenseFeatures<ST>::get_feature_matrix(
+	int32_t& num_feat, int32_t& num_vec) const
 {
 	num_feat = num_features;
 	num_vec = num_vectors;
@@ -467,21 +437,6 @@ template<class ST> void CDenseFeatures<ST>::initialize_cache()
 }
 
 template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  { return C_DENSE; }
-
-template<class ST> bool CDenseFeatures<ST>::reshape(int32_t p_num_features, int32_t p_num_vectors)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call reshape\n")
-
-	if (p_num_features * p_num_vectors
-			== this->num_features * this->num_vectors)
-	{
-		num_features = p_num_features;
-		num_vectors = p_num_vectors;
-		return true;
-	} else
-		return false;
-}
 
 template<class ST> int32_t CDenseFeatures<ST>::get_dim_feature_space() const { return num_features; }
 
@@ -1005,7 +960,7 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
+CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 {
 	SG_DEBUG("Entering.\n");
 
@@ -1017,7 +972,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 
 	while (current!=nullptr)
 	{
-		auto casted=dynamic_cast<CDenseFeatures<ST>*>(current);
+		auto casted = dynamic_cast<const CDenseFeatures<ST>*>(current);
 
 		REQUIRE(casted!=nullptr, "Provided object's type (%s) must match own type (%s)!\n",
 				current->get_name(), get_name());
@@ -1042,7 +997,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 
 	while (current!=nullptr)
 	{
-		auto casted=static_cast<CDenseFeatures<ST>*>(current);
+		auto casted = static_cast<const CDenseFeatures<ST>*>(current);
 		casted->copy_feature_matrix(data, num_copied);
 		num_copied+=casted->get_num_vectors();
 
@@ -1059,7 +1014,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other)
+CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other) const
 {
 	auto list=some<CList>();
 	list->append_element(other);

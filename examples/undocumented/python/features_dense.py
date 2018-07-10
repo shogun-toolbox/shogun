@@ -24,10 +24,6 @@ def features_dense (A=matrixA,B=matrixB,C=matrixC):
 
 # print(some statistics about a)
 
-# get first feature vector and set it
-
-    a.set_feature_vector(array([1,4,0,0,0,9], dtype=float64), 0)
-
 # get matrices
     a_out = a.get_feature_matrix()
     b_out = b.get_feature_matrix()

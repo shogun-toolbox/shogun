@@ -17,9 +17,8 @@ def features_dense_real (A=matrix):
 #print(a.get_num_vectors())
 #print(a.get_num_features())
 
-# get first feature vector and set it
+# get first feature vector
 #print(a.get_feature_vector(0))
-    a.set_feature_vector(array([1,4,0,0,0,9], dtype=float64), 0)
 
 # get matrix
     a_out = a.get_feature_matrix()
