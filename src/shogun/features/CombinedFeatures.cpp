@@ -41,7 +41,7 @@ CCombinedFeatures::~CCombinedFeatures()
 	SG_UNREF(feature_array);
 }
 
-CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
+CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
 {
 	REQUIRE(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
@@ -49,7 +49,7 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 	return (CFeatures*) feature_array->get_element(idx);
 }
 
-void CCombinedFeatures::list_feature_objs()
+void CCombinedFeatures::list_feature_objs() const
 {
 	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
 	this->list_feature_obj();
@@ -111,12 +111,12 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	return result;
 }
 
-CFeatures* CCombinedFeatures::get_first_feature_obj()
+CFeatures* CCombinedFeatures::get_first_feature_obj() const
 {
 	return get_feature_obj(0);
 }
 
-CFeatures* CCombinedFeatures::get_last_feature_obj()
+CFeatures* CCombinedFeatures::get_last_feature_obj() const
 {
 	return get_feature_obj(get_num_feature_obj()-1);
 }
@@ -159,7 +159,7 @@ bool CCombinedFeatures::delete_feature_obj(int32_t idx)
 	return feature_array->delete_element(idx);
 }
 
-int32_t CCombinedFeatures::get_num_feature_obj()
+int32_t CCombinedFeatures::get_num_feature_obj() const
 {
 	return feature_array->get_num_elements();
 }
@@ -170,7 +170,7 @@ void CCombinedFeatures::init()
 	SG_ADD(&feature_array, "array", "Feature array.", MS_NOT_AVAILABLE);
 }
 
-CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
+CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
@@ -185,7 +185,7 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 				get_name());
 	}
 
-	CCombinedFeatures* casted=dynamic_cast<CCombinedFeatures*>(other);
+	auto casted = dynamic_cast<const CCombinedFeatures*>(other);
 
 	if (!casted)
 	{

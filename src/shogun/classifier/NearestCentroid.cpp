@@ -29,17 +29,12 @@ namespace shogun{
 
 	CNearestCentroid::~CNearestCentroid()
 	{
-		if(m_is_trained)
-			distance->remove_lhs();
-		else
-			delete m_centroids;
 	}
 
 	void CNearestCentroid::init()
 	{
 		m_shrinking=0;
 		m_is_trained=false;
-		m_centroids = new CDenseFeatures<float64_t>();
 	}
 
 
@@ -64,9 +59,6 @@ namespace shogun{
 		int32_t num_feats = ((CDenseFeatures<float64_t>*) data)->get_num_features();
 		SGMatrix<float64_t> centroids(num_feats,num_classes);
 		centroids.zero();
-
-		m_centroids->set_num_features(num_feats);
-		m_centroids->set_num_vectors(num_classes);
 
 		int64_t* num_per_class = new int64_t[num_classes];
 		for (int32_t i=0 ; i<num_classes ; i++)
@@ -100,12 +92,10 @@ namespace shogun{
 			SGVector<float64_t>::scale_vector(scale,target,num_feats);
 		}
 
-		m_centroids->free_feature_matrix();
-		m_centroids->set_feature_matrix(centroids);
-
+		auto centroids_feats = some<CDenseFeatures<float64_t>>(centroids);
 
 		m_is_trained=true;
-		distance->init(m_centroids,distance->get_rhs());
+		distance->init(centroids_feats, distance->get_rhs());
 
 		SG_FREE(num_per_class);
 
