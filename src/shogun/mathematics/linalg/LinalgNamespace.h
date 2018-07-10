@@ -500,7 +500,7 @@ namespace shogun
 			    "Dimension mismatch! A (%d x %d) vs result (%d x %d).\n",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
 	
-			REQUIRE(A.num_rows == A.num_cols, "Given Matrix is not square A(%d x %d)", A.num_rows, A.num_cols);
+			REQUIRE(A.num_rows == A.num_cols, "Given matrix is not square (%d x %d)", A.num_rows, A.num_cols);
 					
 			infer_backend(A)->pinvh(A, result);
 		}
@@ -512,17 +512,16 @@ namespace shogun
 		 * @param A The matrix
 		 * @return The result matrix
 		 */
-		template <typename T, template <typename> class Container>
-		Container<T> pinvh(const SGMatrix<T>& A)
+		template <typename T>
+		SGMatrix<T> pinvh(const SGMatrix<T>& A)
 		{
-			auto result = A.clone();
+			SGMatrix<T> result(A.num_rows, A.num_rows);
 			pinvh(A, result);
 			return result;
 		}
 
 		/** Calculates pseudo inverse A+ using singular value decomposition.
 		 * User should pass an appropriately pre-allocated memory matrix
-		 * or pass the operand argument A as a result.
 		 *
 		 * @param A The matrix
 		 * @param result The matrix that saves the result
@@ -530,11 +529,10 @@ namespace shogun
 		template <typename T>
 		void pinv(const SGMatrix<T>& A, SGMatrix<T>& result)
 		{
-
 			REQUIRE(
-			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
-			    "Dimension mismatch! A (%d x %d) vs result (%d x %d).\n",
-			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
+					result.num_rows == A.num_cols && result.num_cols == A.num_rows,
+					"Dimension mismatch! result must be of (%d x %d) provided is (%d x %d).\n",
+					A.num_cols, A.num_rows, result.num_rows, result.num_cols);
 					
 			infer_backend(A)->pinv(A, result);
 		}
@@ -546,10 +544,10 @@ namespace shogun
 		 * @param A The matrix
 		 * @return The result matrix
 		 */
-		template <typename T, template <typename> class Container>
-		Container<T> pinv(const SGMatrix<T>& A)
+		template <typename T>
+		SGMatrix<T> pinv(const SGMatrix<T>& A)
 		{
-			auto result = A.clone();
+			SGMatrix<T> result(A.num_cols, A.num_rows);
 			pinv(A, result);
 			return result;
 		}
