@@ -230,6 +230,36 @@ namespace shogun
 #undef BACKEND_GENERIC_LDLT_FACTOR
 
 /**
+ * Wrapper method of pseudo inverse for self adjoint matrices
+ *
+ * @see linalg::pinvh
+ */
+#define BACKEND_GENERIC_PINVH(Type, Container)                     \
+	virtual void pinvh(                                            \
+	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_PINVH, SGMatrix)
+#undef BACKEND_GENERIC_PINVH
+
+/**
+ * Wrapper method of pseudo inverse
+ *
+ * @see linalg::pinvh
+ */
+#define BACKEND_GENERIC_PINV(Type, Container)                     \
+	virtual void pinv(                                            \
+	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_PINV, SGMatrix)
+#undef BACKEND_GENERIC_PINV
+
+/**
  * Wrapper method of LDLT Cholesky solver
  *
  * @see linalg::ldlt_solver
