@@ -69,9 +69,6 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		int32_t m_num_idx;
 		/** divide by std */
 		bool m_divide_by_std;
-
-		/// true when already initialized
-		bool m_initialized;
 };
 }
 #endif

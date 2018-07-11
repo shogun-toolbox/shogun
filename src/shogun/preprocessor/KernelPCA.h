@@ -122,9 +122,6 @@ public:
 		/** bias vector */
 		SGVector<float64_t> m_bias_vector;
 
-		/** true when already initialized */
-		bool m_initialized;
-
 		/** target dimension */
 		int32_t m_target_dim;
 

@@ -206,8 +206,6 @@ class CPCA : public CDensePreprocessor<float64_t>
 		SGVector<float64_t> m_mean_vector;
 		/** eigenvalues vector */
 		SGVector<float64_t> m_eigenvalues_vector;
-		/** initialized */
-		bool m_initialized;
 		/** whitening */
 		bool m_whitening;
 		/** PCA mode */

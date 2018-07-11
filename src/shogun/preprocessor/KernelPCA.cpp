@@ -34,7 +34,7 @@ CKernelPCA::CKernelPCA(CKernel* k) : CPreprocessor()
 
 void CKernelPCA::init()
 {
-	m_initialized = false;
+	m_fitted = false;
 	m_init_features = NULL;
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_bias_vector = SGVector<float64_t>();
@@ -59,7 +59,7 @@ void CKernelPCA::cleanup()
 	if (m_init_features)
 		SG_UNREF(m_init_features);
 
-	m_initialized = false;
+	m_fitted = false;
 }
 
 CKernelPCA::~CKernelPCA()
@@ -72,7 +72,7 @@ void CKernelPCA::fit(CFeatures* features)
 {
 	REQUIRE(m_kernel, "Kernel not set\n");
 
-	if (m_initialized)
+	if (m_fitted)
 		cleanup();
 
 	SG_REF(features);
@@ -122,13 +122,13 @@ void CKernelPCA::fit(CFeatures* features)
 	m_bias_vector = SGVector<float64_t>(m_target_dim);
 	linalg::matrix_prod(m_transformation_matrix, bias_tmp, m_bias_vector, true);
 
-	m_initialized = true;
+	m_fitted = true;
 	SG_INFO("Done\n")
 }
 
 CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 {
-	REQUIRE(m_initialized, "Transformer not fitted.\n");
+	check_fitted();
 
 	if (!inplace)
 		features = dynamic_cast<CFeatures*>(features->clone());
@@ -152,7 +152,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 {
-	ASSERT(m_initialized)
+	check_fitted();
 	int32_t n = m_init_features->get_num_vectors();
 
 	m_kernel->init(features, m_init_features);
@@ -172,7 +172,7 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 
 SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	ASSERT(m_initialized)
+	check_fitted();
 
 	CFeatures* features =
 	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector));
@@ -186,7 +186,7 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 
 CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
 {
-	ASSERT(m_initialized)
+	check_fitted();
 
 	int32_t num_vectors = features->get_num_vectors();
 	int32_t i,j,k;

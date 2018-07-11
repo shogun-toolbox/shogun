@@ -73,8 +73,6 @@ namespace shogun
 		SGVector<float64_t> m_min;
 		/** 1.0/(max[i]-min[i]) */
 		SGVector<float64_t> m_range;
-		/** true when already initialized */
-		bool m_initialized;
 	};
 }
 
