@@ -27,7 +27,7 @@ We create an instance of :sgclass:`CLibSVM` with the custom kernel.
 
 .. sgexample:: custom_kernel_machine:create_machine
 
-Then we train the :sgclass:`CLibSVM` and we apply it to the test data, which gives the predicted :sgclass:`CBinaryLabels`.
+Then we train the :sgclass:`CLibSVM` and we apply it to the test data, which gives the predicted :sgclass:`CLabels`.
 
 .. sgexample:: custom_kernel_machine:train_and_apply
 
