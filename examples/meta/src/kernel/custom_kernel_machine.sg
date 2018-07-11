@@ -16,9 +16,12 @@ k_obj.init(features_train, features_train)
 RealMatrix km_train = k_obj.get_kernel_matrix()
 k_obj.init(features_train, features_test)
 RealMatrix km_test = k_obj.get_kernel_matrix()
+#![create_kernel]
+
+#![create_custom_kernel]
 Kernel k_train = kernel(km_train)
 Kernel k_test = kernel(km_test)
-#![create_kernel]
+#![create_custom_kernel]
 
 #![create_machine]
 Machine svm = machine("LibSVM", C1=1.0, C2=1.0, kernel=k_train, labels=labels_train, epsilon=0.001)
