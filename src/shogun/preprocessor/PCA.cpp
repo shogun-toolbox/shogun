@@ -44,7 +44,6 @@ void CPCA::init()
 	m_mean_vector = SGVector<float64_t>();
 	m_eigenvalues_vector = SGVector<float64_t>();
 	num_dim = 0;
-	m_initialized = false;
 	m_whitening = false;
 	m_mode = FIXED_NUMBER;
 	m_thresh = 1e-6;
@@ -59,8 +58,6 @@ void CPCA::init()
 	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
 	    "Vector with Eigenvalues.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_initialized, "initalized", "True when initialized.",
-	    MS_NOT_AVAILABLE);
 	SG_ADD(&m_whitening, "whitening", "Whether data shall be whitened.",
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
@@ -82,7 +79,7 @@ CPCA::~CPCA()
 
 void CPCA::fit(CFeatures* features)
 {
-	if (m_initialized)
+	if (m_fitted)
 		cleanup();
 
 	auto feature_matrix =
@@ -119,7 +116,7 @@ void CPCA::fit(CFeatures* features)
 
 	// restore feature matrix
 	fmatrix = fmatrix.colwise() + data_mean;
-	m_initialized = true;
+	m_fitted = true;
 }
 
 void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)
@@ -284,12 +281,12 @@ void CPCA::cleanup()
 	m_transformation_matrix=SGMatrix<float64_t>();
         m_mean_vector = SGVector<float64_t>();
         m_eigenvalues_vector = SGVector<float64_t>();
-	m_initialized = false;
+	    m_fitted = false;
 }
 
 SGMatrix<float64_t> CPCA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	ASSERT(m_initialized)
+	check_fitted();
 
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;

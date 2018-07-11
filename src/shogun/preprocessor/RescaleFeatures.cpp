@@ -11,9 +11,7 @@
 
 using namespace shogun;
 
-CRescaleFeatures::CRescaleFeatures()
- : CDensePreprocessor<float64_t>(),
- m_initialized(false)
+CRescaleFeatures::CRescaleFeatures() : CDensePreprocessor<float64_t>()
 {
 	register_parameters();
 }
@@ -25,7 +23,7 @@ CRescaleFeatures::~CRescaleFeatures()
 
 void CRescaleFeatures::fit(CFeatures* features)
 {
-	if (m_initialized)
+	if (m_fitted)
 		cleanup();
 
 	auto simple_features = features->as<CDenseFeatures<float64_t>>();
@@ -65,18 +63,18 @@ void CRescaleFeatures::fit(CFeatures* features)
 		}
 	}
 
-	m_initialized = true;
+	m_fitted = true;
 }
 
 void CRescaleFeatures::cleanup()
 {
-	m_initialized = false;
+	m_fitted = false;
 }
 
 SGMatrix<float64_t>
 CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	ASSERT(m_initialized);
+	check_fitted();
 
 	ASSERT(matrix.num_rows == m_min.vlen);
 
@@ -92,7 +90,7 @@ CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	ASSERT(m_initialized);
+	check_fitted();
 	ASSERT(m_min.vlen == vector.vlen);
 
 	float64_t* ret = SG_MALLOC(float64_t, vector.vlen);
@@ -108,5 +106,4 @@ void CRescaleFeatures::register_parameters()
 {
 	SG_ADD(&m_min, "min", "minimum values of each feature", MS_NOT_AVAILABLE);
 	SG_ADD(&m_range, "range", "Reciprocal of the range of each feature", MS_NOT_AVAILABLE);
-	SG_ADD(&m_initialized, "initialized", "Indicator of the state of the preprocessor.", MS_NOT_AVAILABLE);
 }

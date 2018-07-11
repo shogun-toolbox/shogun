@@ -12,18 +12,18 @@
 namespace shogun
 {
 
-	/** @brief Class MachineNotTrainedException defines an exception which is
+	/** @brief Class NotFittedException defines an exception which is
 	 * thrown whenever a machine or a transformer in Shogun used but haven't be
 	 * fitted.
 	 */
-	class MachineNotTrainedException : public ShogunException
+	class NotFittedException : public ShogunException
 	{
 	public:
 		/** constructor
 		*
 		* @param str exception string
 		*/
-		explicit MachineNotTrainedException(const std::string& what_arg)
+		explicit NotFittedException(const std::string& what_arg)
 		    : ShogunException(what_arg)
 		{
 		}
@@ -32,7 +32,7 @@ namespace shogun
 		 *
 		 * @param str exception string
 		 */
-		explicit MachineNotTrainedException(const char* what_arg)
+		explicit NotFittedException(const char* what_arg)
 		    : ShogunException(what_arg)
 		{
 		}

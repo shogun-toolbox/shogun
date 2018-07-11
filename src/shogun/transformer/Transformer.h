@@ -41,9 +41,7 @@ namespace shogun
 	{
 	public:
 		/** constructor */
-		CTransformer() : CSGObject()
-		{
-		}
+		CTransformer();
 
 		/** destructor */
 		virtual ~CTransformer()
@@ -101,6 +99,14 @@ namespace shogun
 		{
 			return false;
 		}
+
+	protected:
+		/** Check current transformer has been fitted, throw NotFittedException
+		 * otherwise.
+		 */
+		void check_fitted() const;
+
+		bool m_fitted;
 	};
 }
 #endif /* TRANSFORMER_H_ */
