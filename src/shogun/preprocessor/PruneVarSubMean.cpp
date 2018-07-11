@@ -29,7 +29,7 @@ CPruneVarSubMean::~CPruneVarSubMean()
 
 void CPruneVarSubMean::fit(CFeatures* features)
 {
-	if (m_initialized)
+	if (m_fitted)
 		cleanup();
 
 	auto simple_features = features->as<CDenseFeatures<float64_t>>();
@@ -87,7 +87,7 @@ void CPruneVarSubMean::fit(CFeatures* features)
 	m_num_idx = num_ok;
 	m_mean = new_mean;
 
-	m_initialized = true;
+	m_fitted = true;
 }
 
 /// clean up allocated memory
@@ -96,13 +96,13 @@ void CPruneVarSubMean::cleanup()
 	m_idx=SGVector<int32_t>();
 	m_mean=SGVector<float64_t>();
 	m_std=SGVector<float64_t>();
-	m_initialized = false;
+	m_fitted = false;
 }
 
 SGMatrix<float64_t>
 CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	REQUIRE(m_initialized, "Transformer has not been fitted.\n");
+	check_fitted();
 
 	auto num_vectors = matrix.num_cols;
 	auto result = matrix;
@@ -132,7 +132,7 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	REQUIRE(m_initialized, "Transformer has not been fitted.\n");
+	check_fitted();
 
 	SGVector<float64_t> out(m_num_idx);
 
@@ -148,7 +148,7 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 
 void CPruneVarSubMean::init()
 {
-	m_initialized = false;
+	m_fitted = false;
 	m_divide_by_std = false;
 	m_num_idx = 0;
 	m_idx = SGVector<int32_t>();
@@ -158,9 +158,6 @@ void CPruneVarSubMean::init()
 
 void CPruneVarSubMean::register_parameters()
 {
-	SG_ADD(
-	    &m_initialized, "initialized", "The preprocessor is initialized",
-	    MS_NOT_AVAILABLE);
 	SG_ADD(&m_divide_by_std, "divide_by_std", "Divide by standard deviation", MS_AVAILABLE);
 	SG_ADD(&m_num_idx, "num_idx", "Number of elements in idx_vec", MS_NOT_AVAILABLE);
 	SG_ADD(&m_std, "std_vec", "Standard dev vector", MS_NOT_AVAILABLE);
