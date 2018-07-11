@@ -102,7 +102,7 @@ void CPruneVarSubMean::cleanup()
 SGMatrix<float64_t>
 CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	check_fitted();
+	assert_fitted();
 
 	auto num_vectors = matrix.num_cols;
 	auto result = matrix;
@@ -132,7 +132,7 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 /// result in feature matrix
 SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	check_fitted();
+	assert_fitted();
 
 	SGVector<float64_t> out(m_num_idx);
 
