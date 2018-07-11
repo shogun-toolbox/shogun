@@ -74,7 +74,7 @@ void CRescaleFeatures::cleanup()
 SGMatrix<float64_t>
 CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	check_fitted();
+	assert_fitted();
 
 	ASSERT(matrix.num_rows == m_min.vlen);
 
@@ -90,7 +90,7 @@ CRescaleFeatures::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	check_fitted();
+	assert_fitted();
 	ASSERT(m_min.vlen == vector.vlen);
 
 	float64_t* ret = SG_MALLOC(float64_t, vector.vlen);

@@ -104,7 +104,7 @@ namespace shogun
 		/** Check current transformer has been fitted, throw NotFittedException
 		 * otherwise.
 		 */
-		void check_fitted() const;
+		void assert_fitted() const;
 
 		bool m_fitted;
 	};

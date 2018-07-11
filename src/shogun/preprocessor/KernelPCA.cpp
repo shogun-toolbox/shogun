@@ -128,7 +128,7 @@ void CKernelPCA::fit(CFeatures* features)
 
 CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 {
-	check_fitted();
+	assert_fitted();
 
 	if (!inplace)
 		features = dynamic_cast<CFeatures*>(features->clone());
@@ -152,7 +152,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 {
-	check_fitted();
+	assert_fitted();
 	int32_t n = m_init_features->get_num_vectors();
 
 	m_kernel->init(features, m_init_features);
@@ -172,7 +172,7 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 
 SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	check_fitted();
+	assert_fitted();
 
 	CFeatures* features =
 	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector));
@@ -186,7 +186,7 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 
 CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
 {
-	check_fitted();
+	assert_fitted();
 
 	int32_t num_vectors = features->get_num_vectors();
 	int32_t i,j,k;

@@ -286,7 +286,7 @@ void CPCA::cleanup()
 
 SGMatrix<float64_t> CPCA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	check_fitted();
+	assert_fitted();
 
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
