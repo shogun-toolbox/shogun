@@ -57,13 +57,13 @@ TEST_F(NormOne, transform)
 TEST_F(NormOne, apply_to_vector)
 {
 	transformer->fit(feats);
+	feats->add_preprocessor(transformer);
 
 	for (auto i : range(num_vectors))
 	{
-		SGVector<float64_t> v = feats->get_feature_vector(i);
-		auto result = transformer->apply_to_feature_vector(v);
+		SGVector<float64_t> result = feats->get_feature_vector(i);
 		ASSERT_EQ(result.vlen, num_features);
-		for (auto j : range(v.vlen))
+		for (auto j : range(result.vlen))
 		{
 			EXPECT_DOUBLE_EQ(result[j], matrix(j, i) / norm[i]);
 		}
