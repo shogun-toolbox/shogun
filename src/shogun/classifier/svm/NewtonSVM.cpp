@@ -126,12 +126,10 @@ void CNewtonSVM::iteration()
 	Xsv2sum(x_d, x_d) = size_sv;
 
 	linalg::add(Xsv2sum, lcrossdiag, Xsv2sum);
-	SGMatrix<float64_t> inverse((x_d + 1), (x_d + 1));
-	SGMatrix<float64_t>::pinv(Xsv2sum.data(), x_d + 1, x_d + 1, inverse.data());
 
 	SGVector<float64_t> step(x_d + 1);
 	SGVector<float64_t> s2(x_d + 1);
-	s2 = linalg::matrix_prod(inverse, grad);
+	s2 = linalg::matrix_prod(linalg::pinvh(Xsv2sum), grad);
 
 	for (int32_t i = 0; i < x_d + 1; i++)
 		step[i] = -s2[i];

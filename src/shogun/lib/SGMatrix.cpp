@@ -948,54 +948,7 @@ SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t si
 	return identity_matrix;
 }
 
-//Howto construct the pseudo inverse (from "The Matrix Cookbook")
-//
-//Assume A does not have full rank, i.e. A is n \times m and rank(A) = r < min(n;m).
-//
-//The matrix A+ known as the pseudo inverse is unique and does always exist.
-//
-//The pseudo inverse A+ can be constructed from the singular value
-//decomposition A = UDV^T , by  A^+ = V(D+)U^T.
-
 #ifdef HAVE_LAPACK
-template <class T>
-float64_t* SGMatrix<T>::pinv(
-		float64_t* matrix, int32_t rows, int32_t cols, float64_t* target)
-{
-	if (!target)
-		target=SG_MALLOC(float64_t, rows*cols);
-
-	char jobu='A';
-	char jobvt='A';
-	int m=rows; /* for calling external lib */
-	int n=cols; /* for calling external lib */
-	int lda=m; /* for calling external lib */
-	int ldu=m; /* for calling external lib */
-	int ldvt=n; /* for calling external lib */
-	int info=-1; /* for calling external lib */
-	int32_t lsize=CMath::min((int32_t) m, (int32_t) n);
-	double* s=SG_MALLOC(double, lsize);
-	double* u=SG_MALLOC(double, m*m);
-	double* vt=SG_MALLOC(double, n*n);
-
-	wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
-	ASSERT(info==0)
-
-	for (int64_t i=0; i<n; i++)
-	{
-		for (int64_t j=0; j<lsize; j++)
-			vt[i*n+j]=vt[i*n+j]/s[j];
-	}
-
-	cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, m, n, m, 1.0, vt, ldvt, u, ldu, 0, target, m);
-
-	SG_FREE(u);
-	SG_FREE(vt);
-	SG_FREE(s);
-
-	return target;
-}
-
 /// inverses square matrix in-place
 template <class T>
 void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)

@@ -484,6 +484,79 @@ namespace shogun
 			    ->add_col_vec(A, i, b, result, alpha, beta);
 		}
 
+		/** Calculates pseudo inverse A+ from eigen values solved by a self
+		 * adjoint eigen solver.
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * or pass the operand argument A as a result.
+		 *
+		 * @param A The matrix
+		 * @param result The matrix that saves the result
+		 */
+		template <typename T>
+		void pinvh(const SGMatrix<T>& A, SGMatrix<T>& result)
+		{
+
+			REQUIRE(
+			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
+			    "Dimension mismatch! A (%d x %d) vs result (%d x %d).\n",
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
+
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Given matrix is not square (%d x %d)", A.num_rows, A.num_cols);
+
+			infer_backend(A)->pinvh(A, result);
+		}
+
+		/**
+		 * Calculates pseudo inverse A+ from eigen values solved by a self
+		 * adjoint eigen solver.
+		 * This version returns the result in a newly created matrix.
+		 *
+		 * @param A The matrix
+		 * @return The result matrix
+		 */
+		template <typename T>
+		SGMatrix<T> pinvh(const SGMatrix<T>& A)
+		{
+			SGMatrix<T> result(A.num_rows, A.num_rows);
+			pinvh(A, result);
+			return result;
+		}
+
+		/** Calculates pseudo inverse A+ using singular value decomposition.
+		 * User should pass an appropriately pre-allocated memory matrix
+		 *
+		 * @param A The matrix
+		 * @param result The matrix that saves the result
+		 */
+		template <typename T>
+		void pinv(const SGMatrix<T>& A, SGMatrix<T>& result)
+		{
+			REQUIRE(
+			    result.num_rows == A.num_cols && result.num_cols == A.num_rows,
+			    "Dimension mismatch! Result must be of (%d x %d) provided is "
+			    "(%d x %d).\n",
+			    A.num_cols, A.num_rows, result.num_rows, result.num_cols);
+
+			infer_backend(A)->pinv(A, result);
+		}
+
+		/**
+		 * Calculates pseudo inverse A+ using singular value decomposition.
+		 * This version returns the result in a newly created matrix.
+		 *
+		 * @param A The matrix
+		 * @return The result matrix
+		 */
+		template <typename T>
+		SGMatrix<T> pinv(const SGMatrix<T>& A)
+		{
+			SGMatrix<T> result(A.num_cols, A.num_rows);
+			pinv(A, result);
+			return result;
+		}
+
 		/**
 		 * Performs the operation A.diagonal = alpha * A.diagonal + beta * b.
 		 * The matrix is not required to be square.
