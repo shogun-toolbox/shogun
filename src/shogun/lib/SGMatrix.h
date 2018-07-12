@@ -393,13 +393,6 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Inverses square matrix in-place */
 		static void inverse(SGMatrix<float64_t> matrix);
 
-		/** Return the pseudo inverse for matrix
-		 * when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
-		 */
-		static float64_t* pinv(
-			float64_t* matrix, int32_t rows, int32_t cols,
-			float64_t* target=NULL);
-
 #endif
 
 		/** Compute trace */

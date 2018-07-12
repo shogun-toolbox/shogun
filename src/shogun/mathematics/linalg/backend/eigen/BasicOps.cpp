@@ -67,6 +67,24 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
 #undef BACKEND_GENERIC_ADD_DIAG
 
+#define BACKEND_GENERIC_PINVH(Type, Container)                                 \
+	void LinalgBackendEigen::pinvh(                                            \
+	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+	{                                                                          \
+		pinvh_impl(A, result);                                                 \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINVH, SGMatrix)
+#undef BACKEND_GENERIC_PINVH
+
+#define BACKEND_GENERIC_PINV(Type, Container)                                  \
+	void LinalgBackendEigen::pinv(                                             \
+	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+	{                                                                          \
+		pinv_impl(A, result);                                                  \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINV, SGMatrix)
+#undef BACKEND_GENERIC_PINV
+
 #define BACKEND_GENERIC_ADD_VECTOR(Type, Container)                            \
 	void LinalgBackendEigen::add_vector(                                       \
 	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
@@ -206,6 +224,46 @@ void LinalgBackendEigen::add_diag_impl(
 	typename SGVector<T>::EigenVectorXtMap b_eig = b;
 
 	A_eig.diagonal() = alpha * A_eig.diagonal() + beta * b_eig;
+}
+
+template <typename T>
+void LinalgBackendEigen::pinvh_impl(
+    const SGMatrix<T>& A, SGMatrix<T>& result) const
+{
+	auto m = A.num_rows;
+	SGVector<T> s(m);
+	SGMatrix<T> V(m, m);
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+	eigen_solver_symmetric_impl<T>(A, s, V, m);
+
+	typename SGVector<T>::EigenVectorXtMap s_eig = s;
+	typename SGMatrix<T>::EigenMatrixXtMap V_eig = V;
+
+	float64_t pinv_tol = CMath::MACHINE_EPSILON * m * s_eig.real().maxCoeff();
+	s_eig.array() = (s_eig.real().array() > pinv_tol)
+	                    .select(s_eig.real().array().inverse(), 0);
+	result_eig = V_eig * s_eig.asDiagonal() * V_eig.transpose();
+}
+
+template <typename T>
+void LinalgBackendEigen::pinv_impl(
+    const SGMatrix<T>& A, SGMatrix<T>& result) const
+{
+	auto m = std::min(A.num_cols, A.num_rows);
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+	auto svd_eig = A_eig.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+	auto s_eig = svd_eig.singularValues().real();
+	auto U_eig = svd_eig.matrixU().real();
+	auto V_eig = svd_eig.matrixV().real();
+
+	float64_t pinv_tol = CMath::MACHINE_EPSILON * m * s_eig.maxCoeff();
+	s_eig.array() =
+	    (s_eig.array() > pinv_tol).select(s_eig.array().inverse(), 0);
+	result_eig = V_eig * s_eig.asDiagonal() * U_eig.transpose();
 }
 
 template <typename T>
