@@ -329,15 +329,8 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 
 }
 
-bool CRandomFourierGaussPreproc::init(CFeatures *f) {
-	if (f->get_feature_class() != get_feature_class()) {
-		throw ShogunException(
-				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CDenseFeatures<float64_t> as features\n");
-	}
-	if (f->get_feature_type() != get_feature_type()) {
-		throw ShogunException(
-				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CDenseFeatures<float64_t> as features\n");
-	}
+void CRandomFourierGaussPreproc::fit(CFeatures* f)
+{
 	if (dim_feature_space <= 0) {
 		throw ShogunException(
 				"CRandomFourierGaussPreproc::init (CFeatures *f): dim_feature_space<=0 is not allowed, use void set_dim_feature_space(const int32 dim) before!\n");
@@ -345,20 +338,17 @@ bool CRandomFourierGaussPreproc::init(CFeatures *f) {
 
 	SG_INFO("calling CRandomFourierGaussPreproc::init(...)\n")
 	int32_t num_features =
-			((CDenseFeatures<float64_t>*) f)->get_num_features();
+	    f->as<CDenseFeatures<float64_t>>()->get_num_features();
 
 	if (!test_rfinited()) {
 		dim_input_space = num_features;
 		init_randomcoefficients();
 		ASSERT( test_rfinited())
-		return true;
 	} else {
 		dim_input_space = num_features;
 		// does not reinit if dimension is the same to avoid overriding a previous call of set_randomcoefficients(...)
-		bool inited = init_randomcoefficients();
-		return inited;
+		init_randomcoefficients();
 	}
-
 }
 
 SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector<float64_t> vector)
@@ -379,47 +369,44 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 	return res;
 }
 
-SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t>
+CRandomFourierGaussPreproc::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	init(features);
-
 	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ??
 
-	int32_t num_vectors = 0;
-	int32_t num_features = 0;
-	float64_t* m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
-			num_features, num_vectors);
+	auto num_vectors = matrix.num_cols;
+	auto num_features = matrix.num_rows;
+
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	if (num_features!=cur_dim_input_space)
+	if (num_features != cur_dim_input_space)
 	{
 		throw ShogunException(
-						"float64_t * CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures *f): num_features!=cur_dim_input_space is not allowed\n");
+		    "float64_t * "
+		    "CRandomFourierGaussPreproc::apply_to_matrix("
+		    "SGMatrix<float64_t> matrix): matrix.num_rows != "
+		    "cur_dim_input_space is not allowed\n");
 	}
 
-	if (m)
+	SGMatrix<float64_t> res(cur_dim_feature_space, num_vectors);
+
+	auto val = std::sqrt(2.0 / cur_dim_feature_space);
+
+	for (auto vec : range(num_vectors))
 	{
-		SGMatrix<float64_t> res(cur_dim_feature_space,num_vectors);
-
-		float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
-
-		for (int32_t vec = 0; vec < num_vectors; vec++)
+		for (auto od : range(cur_dim_feature_space))
 		{
-			for (int32_t od = 0; od < cur_dim_feature_space; ++od)
-			{
-				SGVector<float64_t> a(m+vec * num_features, cur_dim_input_space, false);
-				SGVector<float64_t> b(randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space, false);
-				res.matrix[od + vec * cur_dim_feature_space] = val * cos(
-						randomcoeff_additive[od]
-								+ linalg::dot(a, b));
-			}
+			SGVector<float64_t> a(
+			    matrix.matrix + vec * num_features, cur_dim_input_space, false);
+			SGVector<float64_t> b(
+			    randomcoeff_multiplicative + od * cur_dim_input_space,
+			    cur_dim_input_space, false);
+			res(od, vec) =
+			    val * cos(randomcoeff_additive[od] + linalg::dot(a, b));
 		}
-		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(res);
-
-		return res;
 	}
-	else
-		return SGMatrix<float64_t>();
+
+	return res;
 }
 
 void CRandomFourierGaussPreproc::cleanup()

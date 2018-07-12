@@ -74,10 +74,11 @@ public:
 
 	/** print the tree structure for debug purpose */
 	void print_tree();
-protected:
+
 	/** the labels will be embedded in the streaming features */
 	virtual bool train_require_labels() const { return false; }
 
+protected:
 	/** train machine
 	 *
 	 * @param data training data

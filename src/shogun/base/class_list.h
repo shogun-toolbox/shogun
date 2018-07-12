@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/exception/ShogunException.h>
 
 #include <shogun/io/SGIO.h>
 

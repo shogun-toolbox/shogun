@@ -38,8 +38,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <vector>
 
 namespace shogun
@@ -58,41 +57,45 @@ namespace shogun
 		CLASSIC_FLDA = 30
 	};
 
-	/** @brief Preprocessor FisherLDA attempts to model the difference between the classes
-	 * of data by performing linear discriminant analysis on input feature vectors/matrices.
-	 * When the init method in FisherLDA is called with proper feature matrix X(say N number
-	 * of vectors and D feature dimensions) supplied via apply_to_feature_matrix or
-	 * apply_to_feature_vector methods, this creates a transformation whose outputs are the
-	 * reduced T-Dimensional & class-specific distribution (where T<= number of unique
-	 * classes-1). The transformation matrix is essentially a DxT matrix, the columns of
-	 * which correspond to the specified number of eigenvectors which maximizes the ratio
-	 * of between class matrix to within class matrix.
+	/** @brief Preprocessor FisherLDA attempts to model the difference between
+	 * the classes of data by performing linear discriminant analysis on input
+	 * feature vectors/matrices. When the fit method in FisherLDA is called with
+	 * proper feature matrix X(say N number of vectors and D feature
+	 * dimensions), this creates a transformation whose outputs are the reduced
+	 * T-Dimensional & class-specific distribution (where T<= number of unique
+	 * classes-1). The transformation matrix is essentially a DxT matrix, the
+	 * columns of which correspond to the specified number of eigenvectors which
+	 * maximizes the ratio of between class matrix to within class matrix.
 	 *
-	 * This class provides 3 method options to compute the transformation matrix :
+	 * This class provides 3 method options to compute the transformation
+	 * matrix:
 	 *
-	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the
-	 * between-class scatter and the within class scatter is maximized.
+	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the
+	 * ratio of the between-class scatter and the within class scatter is
+	 * maximized.
 	 * The between class matrix is :
 	 * \f$\sum_b = \sum_{i=1}^C{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}\f$
 	 * The within class matrix is :
-	 * \f$\sum_w = \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
+	 * \f$\sum_w =
+	 * \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
 	 * This should be choosen when N>D
 	 *
 	 * <em>::CANVAR_FLDA</em> : This method performs Canonical Variates which
 	 * generalises Fisher's method to projection of more than one dimension.
-	 * This is equipped to handle the cases where the within class matrix
-	 * are non-invertible. Can be used for both cases(D>N or D<N). See the
-	 * implementation in Bayesian Reasoning and Machine Learning by David Barber
-	 * , Section 16.3
+	 * This is equipped to handle the cases where the within class matrix are
+	 * non-invertible. Can be used for both cases(D>N or D<N). See the
+	 * implementation in Bayesian Reasoning and Machine Learning by David
+	 * Barber, Section 16.3
 	 *
-	 *
-	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on
-	 * whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses ::CLASSIC_FLDA)
+	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected
+	 * based on whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses
+	 * ::CLASSIC_FLDA)
 	 */
-class CFisherLDA: public CDimensionReductionPreprocessor
-{
+	class CFisherLDA : public CDensePreprocessor<float64_t>
+	{
 	public:
 		/** standard constructor
+		 * @param num_dimensions number of dimensions to retain
 		 * @param method LDA based on :
 		 * ::CLASSIC_FLDA/::CANVAR_FLDA/::AUTO_FLDA[default]
 		 * @param thresh threshold value for ::CANVAR_FLDA only. This is used to
@@ -107,29 +110,23 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * [default = BDC-SVD]
 		 */
 		CFisherLDA(
-		    EFLDAMethod method = AUTO_FLDA, float64_t thresh = 0.01,
-		    float64_t gamma = 0, bool bdc_svd = true);
+		    int32_t num_dimensions = 0, EFLDAMethod method = AUTO_FLDA,
+		    float64_t thresh = 0.01, float64_t gamma = 0, bool bdc_svd = true);
 
 		/** destructor */
 		virtual ~CFisherLDA();
+
+		virtual void fit(CFeatures* features);
 
 		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
-		 * @param num_dimensions number of dimensions to retain
 		 */
-		virtual bool fit(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
+		virtual void fit(CFeatures* features, CLabels* labels);
 
 		/** cleanup */
 		virtual void cleanup();
-
-		/** apply preprocessor to feature matrix
-		 * @param features on which the learned tranformation has to be applied.
-		 * Sometimes it is also referred as projecting the given features.
-		 * @return processed feature matrix with reduced dimensions.
-		 */
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/** apply preprocessor to feature vector
 		 * @param vector features on which the learned transformation has to be applied.
@@ -155,17 +152,30 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		/** @return a type of preprocessor */
 		virtual EPreprocessorType get_type() const {return P_FISHERLDA;}
 
+		virtual bool train_require_labels() const
+		{
+			return true;
+		}
+
 	private:
 
 		void initialize_parameters();
 
 	protected:
+		/** apply preprocessor to feature matrix
+		 * @param matrix on which the learned tranformation has to be applied.
+		 * Sometimes it is also referred as projecting the given features
+		 * matrix.
+		 * @return processed feature matrix with reduced dimensions.
+		 */
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+
 		/**
 		 * Train the preprocessor with the canonical variates method.
 		 * @param features training data.
 		 * @param labels multiclass labels.
 		 */
-		bool solver_canvar(
+		void solver_canvar(
 		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
 		/**
@@ -173,7 +183,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * @param features training data.
 		 * @param labels multiclass labels.
 		 */
-		bool solver_classic(
+		void solver_classic(
 		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
 
 		/** transformation matrix */

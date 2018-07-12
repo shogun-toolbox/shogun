@@ -11,6 +11,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/Preprocessor.h>
 
@@ -19,9 +20,10 @@ namespace shogun
 template <class ST> class CStringFeatures;
 
 /** @brief Template class StringPreprocessor, base class for preprocessors (cf.
- * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable length).
+ * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable
+ * length).
  *
- * Two new functions apply_to_string() and apply_to_string_features()
+ * Two new functions apply_to_string() and apply_to_string_list()
  * are defined in this interface that need to be implemented in each particular
  * preprocessor operating on CStringFeatures.
  */
@@ -32,18 +34,12 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 */
 		CStringPreprocessor() : CPreprocessor() {}
 
-		/** generic interface for applying the preprocessor. used as a wrapper
-		 * for apply_to_string_features() method
+		/** Apply transformation to string features.
 		 *
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features);
-
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual bool apply_to_string_features(CFeatures* f)=0;
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;
@@ -59,83 +55,13 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
 
+	protected:
+		/** apply the preprocessor to string list in place.
+		 *
+		 * @param string_list the string list to be preprocessed
+		 */
+		virtual void apply_to_string_list(SGStringList<ST> string_list) = 0;
 };
-
-template<> inline EFeatureType CStringPreprocessor<uint64_t>::get_feature_type()
-{
-	return F_ULONG;
-}
-
-template<> inline EFeatureType CStringPreprocessor<int64_t>::get_feature_type()
-{
-	return F_LONG;
-}
-
-template<> inline EFeatureType CStringPreprocessor<uint32_t>::get_feature_type()
-{
-	return F_UINT;
-}
-
-template<> inline EFeatureType CStringPreprocessor<int32_t>::get_feature_type()
-{
-	return F_INT;
-}
-
-template<> inline EFeatureType CStringPreprocessor<uint16_t>::get_feature_type()
-{
-	return F_WORD;
-}
-
-template<> inline EFeatureType CStringPreprocessor<int16_t>::get_feature_type()
-{
-	return F_WORD;
-}
-
-template<> inline EFeatureType CStringPreprocessor<uint8_t>::get_feature_type()
-{
-	return F_BYTE;
-}
-
-template<> inline EFeatureType CStringPreprocessor<int8_t>::get_feature_type()
-{
-	return F_BYTE;
-}
-
-template<> inline EFeatureType CStringPreprocessor<char>::get_feature_type()
-{
-	return F_CHAR;
-}
-
-template<> inline EFeatureType CStringPreprocessor<bool>::get_feature_type()
-{
-	return F_BOOL;
-}
-
-template<> inline EFeatureType CStringPreprocessor<float32_t>::get_feature_type()
-{
-	return F_SHORTREAL;
-}
-
-template<> inline EFeatureType CStringPreprocessor<float64_t>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-template<> inline EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type()
-{
-	return F_LONGREAL;
-}
-
-template <class ST>
-CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features)
-{
-	REQUIRE(features->get_feature_class()==C_STRING, "Provided features (%d) "
-			"has to be of C_STRING (%d) class!\n",
-			features->get_feature_class(), C_STRING);
-
-	apply_to_string_features(features);
-	return features;
-}
 
 }
 #endif

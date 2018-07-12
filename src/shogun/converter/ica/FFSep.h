@@ -39,10 +39,6 @@ class CFFSep: public CICAConverter
 		/** destructor */
 		virtual ~CFFSep();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features);
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -63,9 +59,10 @@ class CFFSep: public CICAConverter
 		virtual const char* get_name() const { return "FFSep"; };
 
 	protected:
-
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features);
 
 	private:
 

@@ -18,7 +18,7 @@ def converter_kernellocallylinearembedding (data_fname,k):
 		converter = KernelLocallyLinearEmbedding(kernel)
 		converter.set_target_dim(1)
 		converter.set_k(k)
-		converter.apply(features)
+		converter.transform(features)
 
 		return features
 	except ImportError:

@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-TEST(RescaleFeatures, apply_to_feature_matrix)
+TEST(RescaleFeatures, transform)
 {
 	index_t num_features = 3;
 	index_t num_vectors = 10;
@@ -23,7 +23,7 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 	SGMatrix<float64_t> em(ev.vector, num_features, num_vectors, false);
 	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
 	CRescaleFeatures* rescaler = new CRescaleFeatures();
-	rescaler->init(feats);
+	rescaler->fit(feats);
 
 	/* find the min and range for each feature among all the vectors */
 	for (index_t i = 0; i < num_features; i++)
@@ -33,8 +33,8 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 		range[i] = CMath::max(t.vector, t.vlen) - min[i];
 	}
 
-	feats->add_preprocessor(rescaler);
-	feats->apply_preprocessor();
+	feats = rescaler->transform(feats)->as<CDenseFeatures<float64_t>>();
+
 	for (index_t i = 0; i < num_vectors; i++)
 	{
 		SGVector<float64_t> vec = feats->get_feature_vector(i);

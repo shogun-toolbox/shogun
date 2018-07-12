@@ -86,16 +86,51 @@ EPreprocessorType CDensePreprocessor<ST>::get_type() const
 }
 
 template <class ST>
-CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features)
+CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 {
 	REQUIRE(features->get_feature_class()==C_DENSE, "Provided features (%d) "
 			"has to be of C_DENSE (%d) class!\n",
 			features->get_feature_class(), C_DENSE);
 
-	SGMatrix<ST> feat_matrix=apply_to_feature_matrix(features);
-	CDenseFeatures<ST>* preprocessed=new CDenseFeatures<ST>(feat_matrix);
-	SG_REF(preprocessed);
+	SG_REF(features);
+	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
+	if (!inplace)
+		matrix = matrix.clone();
+	auto feat_matrix = apply_to_matrix(matrix);
+	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
+
+	SG_UNREF(features);
 	return preprocessed;
+}
+
+template <class ST>
+CFeatures*
+CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
+{
+	REQUIRE(
+		features->get_feature_class() == C_DENSE,
+		"Provided features (%d) "
+		"has to be of C_DENSE (%d) class!\n",
+		features->get_feature_class(), C_DENSE);
+
+	SG_REF(features);
+	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
+	if (!inplace)
+		matrix = matrix.clone();
+	auto feat_matrix = inverse_apply_to_matrix(matrix);
+	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
+
+	SG_UNREF(features);
+	return preprocessed;
+}
+
+template <class ST>
+SGMatrix<ST>
+CDensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
+{
+	SG_SNOTIMPLEMENTED;
+
+	return SGMatrix<ST>();
 }
 
 template class CDensePreprocessor<bool>;

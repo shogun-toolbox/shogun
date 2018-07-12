@@ -36,18 +36,12 @@ public:
 	/** destructor */
 	virtual ~CEmbeddingConverter();
 
-	/** applies to the given data, returns embedding
+	/** Apply transformation to features. In-place mode is not supported for
+	 * Tapkee converters.
 	 * @param features features to embed
-	 * @return embedding features
+	 * @return embedding dense real features
 	 */
-	virtual CFeatures* apply(CFeatures* features) = 0;
-
-	/** embed given features, acts the same as apply, but returns
-	 * DenseFeatures
-	 * @param features features to embed
-	 * @return embedding simple features
-	 */
-	virtual CDenseFeatures<float64_t>* embed(CFeatures* features);
+	virtual CFeatures* transform(CFeatures* features, bool inplace = true) = 0;
 
 	/** setter for target dimension
 	 * @param dim target dimension

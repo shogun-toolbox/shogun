@@ -27,7 +27,7 @@ void load_data(SGMatrix<float64_t>& train, Container<float64_t>& test)
 		test[i] = test_data[i];
 }
 
-TEST(KernelPCA, apply_to_feature_matrix)
+TEST(KernelPCA, transform)
 {
 	index_t num_test_vectors = 2;
 
@@ -51,9 +51,11 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	CKernelPCA* kpca = new CKernelPCA(kernel);
 	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
-	kpca->init(train_feats);
+	kpca->fit(train_feats);
 
-	SGMatrix<float64_t> embedding = kpca->apply_to_feature_matrix(test_feats);
+	SGMatrix<float64_t> embedding = kpca->transform(test_feats)
+	                                    ->as<CDenseFeatures<float64_t>>()
+	                                    ->get_feature_matrix();
 
 	// allow embedding with opposite sign
 	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
@@ -82,7 +84,7 @@ TEST(KernelPCA, apply_to_feature_vector)
 	CKernelPCA* kpca = new CKernelPCA(kernel);
 	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
-	kpca->init(train_feats);
+	kpca->fit(train_feats);
 
 	SGVector<float64_t> embedding = kpca->apply_to_feature_vector(test_vector);
 

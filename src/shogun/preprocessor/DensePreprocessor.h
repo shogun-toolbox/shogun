@@ -21,10 +21,9 @@ template <class ST> class CDenseFeatures;
 /** @brief Template class DensePreprocessor, base class for preprocessors (cf.
  * CPreprocessor) that apply to CDenseFeatures (i.e. rectangular dense matrices)
  *
- * Two new functions apply_to_feature_vector() and apply_to_feature_matrix()
- * are defined in this interface that need to be implemented in each particular
- * preprocessor operating on CDenseFeatures. For examples see e.g. CLogPlusOne
- * or CPCACut.
+ * Two new functions apply_to_feature_vector and apply_to_matrix() are defined
+ * in this interface need to be implemented in each particular preprocessor
+ * operating on CDenseFeatures. For examples see e.g. CLogPlusOne or CPCACut.
  */
 template <class ST> class CDensePreprocessor : public CPreprocessor
 {
@@ -33,22 +32,27 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 */
 		CDensePreprocessor();
 
-		/** generic interface for applying the preprocessor. used as a wrapper
-		 * for apply_to_feature_matrix() method
+		/** Apply transformation to dense features.
 		 *
 		 * @param features the dense input features
+		 * @param inplace whether transform in place
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* apply(CFeatures* features);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual SGMatrix<ST> apply_to_feature_matrix(CFeatures* features)=0;
+		/** Apply inverse transformation to dense features.
+		 *
+		 * @param features the dense input features
+		 * @param inplace whether transform in place
+		 * @return the result feature object after inverse applying the
+		 * preprocessor
+		 */
+		virtual CFeatures*
+		inverse_transform(CFeatures* features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector)=0;
+		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector) = 0;
 
 		/// return that we are dense features (just fixed size matrices)
 		virtual EFeatureClass get_feature_class();
@@ -58,6 +62,20 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const;
 
+	protected:
+		/** Apply preprocessor on matrix. Subclasses should try to apply in
+		 * place to avoid copying.
+		 * @param matrix the input feature matrix
+		 * @return the matrix after applying the preprocessor
+		 */
+		virtual SGMatrix<ST> apply_to_matrix(SGMatrix<ST> matrix) = 0;
+
+		/** Inverse apply preprocessor on matrix. Subclasses should try to apply
+		 * in place to avoid copying.
+		 * @param matrix the input feature matrix
+		 * @return the matrix after applying the preprocessor
+		 */
+		virtual SGMatrix<ST> inverse_apply_to_matrix(SGMatrix<ST> matrix);
 };
 
 }

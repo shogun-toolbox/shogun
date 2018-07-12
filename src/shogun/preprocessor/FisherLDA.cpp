@@ -40,7 +40,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/solver/LDACanVarSolver.h>
 #include <shogun/solver/LDASolver.h>
@@ -50,10 +49,12 @@ using namespace Eigen;
 using namespace shogun;
 
 CFisherLDA::CFisherLDA(
-    EFLDAMethod method, float64_t thresh, float64_t gamma, bool bdc_svd)
-    : CDimensionReductionPreprocessor()
+    int32_t num_dimensions, EFLDAMethod method, float64_t thresh,
+    float64_t gamma, bool bdc_svd)
+    : CDensePreprocessor<float64_t>()
 {
 	initialize_parameters();
+	m_num_dim = num_dimensions;
 	m_method=method;
 	m_threshold=thresh;
 	m_gamma = gamma;
@@ -90,16 +91,14 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
-bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimensions)
+void CFisherLDA::fit(CFeatures* features)
+{
+	SG_SERROR("Labels for the given features are not specified!\n");
+}
+
+void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 {
 	REQUIRE(features, "Features are not provided!\n")
-
-	REQUIRE(features->get_feature_class()==C_DENSE,
-			"LDA only works with dense features. you provided %s\n",
-			features->get_name());
-
-	REQUIRE(features->get_feature_type()==F_DREAL,
-			"LDA only works with real features.\n");
 
 	REQUIRE(labels, "Labels for the given features are not specified!\n")
 
@@ -109,8 +108,7 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 	    "the type MulticlassLabels! you provided %s\n",
 	    labels->get_name());
 
-	CDenseFeatures<float64_t>* dense_features =
-	    static_cast<CDenseFeatures<float64_t>*>(features);
+	auto dense_features = features->as<CDenseFeatures<float64_t>>();
 	CMulticlassLabels* multiclass_labels =
 	    static_cast<CMulticlassLabels*>(labels);
 
@@ -127,8 +125,6 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 
 	REQUIRE(num_class > 1, "At least two classes are needed to perform LDA.\n")
 
-	m_num_dim=num_dimensions;
-
 	// clip number if Dimensions to be a valid number
 	if ((m_num_dim <= 0) || (m_num_dim > (num_class - 1)))
 		m_num_dim = (num_class - 1);
@@ -137,12 +133,12 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 	    m_method == AUTO_FLDA && num_vectors < num_features;
 
 	if ((m_method == CANVAR_FLDA) || lda_more_efficient)
-		return solver_canvar(dense_features, multiclass_labels);
+		solver_canvar(dense_features, multiclass_labels);
 	else
-		return solver_classic(dense_features, multiclass_labels);
+		solver_classic(dense_features, multiclass_labels);
 }
 
-bool CFisherLDA::solver_canvar(
+void CFisherLDA::solver_canvar(
     CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
 {
 	auto solver = std::unique_ptr<LDACanVarSolver<float64_t>>(
@@ -151,11 +147,9 @@ bool CFisherLDA::solver_canvar(
 
 	m_transformation_matrix = solver->get_eigenvectors();
 	m_eigenvalues_vector = solver->get_eigenvalues();
-
-	return true;
 }
 
-bool CFisherLDA::solver_classic(
+void CFisherLDA::solver_classic(
     CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
 {
 	SGMatrix<float64_t> data = features->get_feature_matrix();
@@ -199,8 +193,6 @@ bool CFisherLDA::solver_classic(
 		m_eigenvalues_vector[i] = eigenvalues[k];
 		m_transformation_matrix.set_column(k, eigenvectors.get_column(i));
 	}
-
-	return true;
 }
 
 void CFisherLDA::cleanup()
@@ -210,19 +202,10 @@ void CFisherLDA::cleanup()
 	m_eigenvalues_vector=SGVector<float64_t>();
 }
 
-SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
+SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	REQUIRE(features->get_feature_class()==C_DENSE,
-			"LDA only works with dense features\n");
-
-	REQUIRE(features->get_feature_type()==F_DREAL,
-			"LDA only works with real features\n");
-
-	SGMatrix<float64_t> m =
-	    ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-
-	int32_t num_vectors=m.num_cols;
-	int32_t num_features=m.num_rows;
+	auto num_vectors = matrix.num_cols;
+	auto num_features = matrix.num_rows;
 
 	SG_INFO("Transforming feature matrix\n")
 	Map<MatrixXd> transform_matrix(
@@ -231,7 +214,7 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	Map<MatrixXd> feature_matrix (m.matrix, num_features, num_vectors);
+	Map<MatrixXd> feature_matrix(matrix.matrix, num_features, num_vectors);
 
 	feature_matrix.block(0, 0, m_num_dim, num_vectors) =
 	    transform_matrix.transpose() * feature_matrix;
@@ -240,12 +223,11 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 	for (int32_t col=0; col<num_vectors; col++)
 	{
 		for (int32_t row=0; row<m_num_dim; row++)
-			m[col*m_num_dim+row]=feature_matrix(row, col);
+			matrix[col * m_num_dim + row] = feature_matrix(row, col);
 	}
-	m.num_rows=m_num_dim;
-	m.num_cols=num_vectors;
-	((CDenseFeatures<float64_t>*)features)->set_feature_matrix(m);
-	return m;
+	matrix.num_rows = m_num_dim;
+	matrix.num_cols = num_vectors;
+	return matrix;
 }
 
 SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vector)

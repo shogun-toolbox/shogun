@@ -3,8 +3,6 @@ MACRO(GENERATE_INTERFACE_TARGET INTERFACE_NAME INTERFACE_DIR INTERFACE_LIBRARIES
 get_target_property(ShogunIncludes shogun::shogun INTERFACE_INCLUDE_DIRECTORIES)
 INCLUDE_DIRECTORIES(${ShogunIncludes})
 
-# set compiler SWIG generated cxx compiler flags
-#SET(CMAKE_CXX_FLAGS ${SWIG_CXX_COMPILER_FLAGS})
 # unset any release or distribution flags
 # we don't want them when compiling SWIG generated source
 #SET(CMAKE_CXX_FLAGS_RELEASE "")

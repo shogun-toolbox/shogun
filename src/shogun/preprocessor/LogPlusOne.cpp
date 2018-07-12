@@ -4,10 +4,11 @@
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evgeniy Andreev
  */
 
-#include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/base/range.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/LogPlusOne.h>
 
 using namespace shogun;
 
@@ -19,15 +20,6 @@ CLogPlusOne::CLogPlusOne()
 
 CLogPlusOne::~CLogPlusOne()
 {
-}
-
-/// initialize preprocessor from features
-bool CLogPlusOne::init(CFeatures* features)
-{
-	ASSERT(features->get_feature_class()==C_DENSE)
-	ASSERT(features->get_feature_type()==F_DREAL)
-
-	return true;
 }
 
 /// clean up allocated memory
@@ -51,21 +43,14 @@ bool CLogPlusOne::save(FILE* f)
 	return false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CLogPlusOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	SGMatrix<float64_t> feature_matrix =
-			((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-
-	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+	for (auto& v : matrix)
 	{
-		for (int32_t j=0; j<feature_matrix.num_rows; j++)
-			feature_matrix.matrix[i * feature_matrix.num_rows + j] = std::log(
-			    feature_matrix.matrix[i * feature_matrix.num_rows + j] + 1.0);
+		v = std::log(v + 1.0);
 	}
-	return feature_matrix;
+
+	return matrix;
 }
 
 /// apply preproc on single feature vector

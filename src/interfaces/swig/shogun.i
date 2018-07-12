@@ -52,6 +52,7 @@
 
 %include "shogun_ignores.i"
 
+%include "Machine_includes.i"
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
 %include "Distance_includes.i"
@@ -81,13 +82,14 @@
 %include "Boost_includes.i"
 
 %include "SGBase.i"
-%include "Machine.i"
 %include "IO.i"
 %include "Library.i"
 %include "Mathematics.i"
 %include "Features.i"
+%include "Transformer.i"
 %include "Converter.i"
 %include "Preprocessor.i"
+%include "Machine.i"
 %include "Evaluation.i"
 %include "Distance.i"
 %include "Kernel.i"

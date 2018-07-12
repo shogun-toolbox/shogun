@@ -25,13 +25,6 @@ CDecompressString<ST>::~CDecompressString()
 }
 
 template <class ST>
-bool CDecompressString<ST>::init(CFeatures* f)
-{
-	ASSERT(f->get_feature_class()==C_STRING)
-	return true;
-}
-
-template <class ST>
 void CDecompressString<ST>::cleanup()
 {
 }
@@ -53,27 +46,15 @@ bool CDecompressString<ST>::save(FILE* f)
 }
 
 template <class ST>
-bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
+void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
 {
-	int32_t i;
-	int32_t num_vec=((CStringFeatures<ST>*)f)->get_num_vectors();
-
-	for (i=0; i<num_vec; i++)
+	for (auto i : range(string_list.num_strings))
 	{
-		int32_t len=0;
-		bool free_vec;
-		ST* vec=((CStringFeatures<ST>*)f)->
-			get_feature_vector(i, len, free_vec);
-
-		ST* decompressed=apply_to_string(vec, len);
-		((CStringFeatures<ST>*)f)->
-			free_feature_vector(vec, i, free_vec);
-		((CStringFeatures<ST>*)f)->
-			cleanup_feature_vector(i);
-		((CStringFeatures<ST>*)f)->
-			set_feature_vector(i, decompressed, len);
+		auto& vec = string_list.strings[i];
+		auto decompressed = apply_to_string(vec.string, vec.slen);
+		SG_FREE(vec.string);
+		vec.string = decompressed;
 	}
-	return true;
 }
 
 template <class ST>

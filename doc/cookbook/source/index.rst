@@ -106,6 +106,16 @@ Kernel
 
    examples/kernel/**
 
+Pipeline
+--------
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+    :caption: Pipeline
+
+    examples/pipeline/**
+
 Neural Networks
 ---------------
 

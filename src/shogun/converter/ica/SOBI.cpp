@@ -52,12 +52,9 @@ SGNDArray<float64_t> CSOBI::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CSOBI::apply(CFeatures* features)
+void CSOBI::fit_dense(CDenseFeatures<float64_t>* features)
 {
-	ASSERT(features);
-	SG_REF(features);
-
-	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto X = features->get_feature_matrix();
 
 	int n = X.num_rows;
 	int m = X.num_cols;
@@ -99,11 +96,6 @@ CFeatures* CSOBI::apply(CFeatures* features)
 	{
 		C.col(t) /= C.col(t).maxCoeff();
 	}
-
-	// Unmix
-	EX = C.inverse() * EX;
-
-	return features;
 }
 
 // Computing time delayed correlation matrix

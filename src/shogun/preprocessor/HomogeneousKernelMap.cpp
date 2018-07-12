@@ -5,8 +5,8 @@
  *          Evgeniy Andreev, Evan Shelhamer, Bjoern Esser
  */
 
+#include <shogun/base/range.h>
 #include <shogun/io/SGIO.h>
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/HomogeneousKernelMap.h>
 
@@ -43,13 +43,6 @@ CHomogeneousKernelMap::~CHomogeneousKernelMap()
 {
 }
 
-bool CHomogeneousKernelMap::init(CFeatures* features)
-{
-	ASSERT(features->get_feature_class()==C_DENSE)
-	ASSERT(features->get_feature_type()==F_DREAL)
-
-	return true;
-}
 
 void CHomogeneousKernelMap::cleanup()
 {
@@ -161,21 +154,19 @@ void CHomogeneousKernelMap::init()
 
 }
 
-SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features)
+SGMatrix<float64_t>
+CHomogeneousKernelMap::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
-	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
-	int32_t num_vectors = simple_features->get_num_vectors ();
-	int32_t num_features = simple_features->get_num_features ();
+	auto num_vectors = matrix.num_cols;
+	auto num_features = matrix.num_rows;
 
 	SGMatrix<float64_t> feature_matrix(num_features*(2*m_order+1),num_vectors);
-	for (int i = 0; i < num_vectors; ++i)
+	for (auto i : range(num_vectors))
 	{
-		SGVector<float64_t> transformed = apply_to_vector(simple_features->get_feature_vector(i));
-		for (int j=0; j<transformed.vlen; j++)
+		SGVector<float64_t> transformed = apply_to_vector(matrix.get_column(i));
+		for (auto j : range(transformed.vlen))
 			feature_matrix(j,i) = transformed[j];
 	}
-
-	simple_features->set_feature_matrix(feature_matrix);
 
 	return feature_matrix;
 }

@@ -31,20 +31,22 @@ TEST(CommUlongStringKernel, kernel_matrix)
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
 
-	CStringFeatures<char>* s_feats = new CStringFeatures<char>(list, RAWBYTE);
+	auto s_feats = some<CStringFeatures<char>>(list, RAWBYTE);
 
-	CAlphabet* alphabet = s_feats->get_alphabet();
-	CStringFeatures<uint64_t>* l_feats = new CStringFeatures<uint64_t>(alphabet);
+	auto alphabet = s_feats->get_alphabet();
+	auto l_feats = some<CStringFeatures<uint64_t>>(alphabet);
 	l_feats->obtain_from_char(s_feats, 5-1, 5, 0, false);
-	CSortUlongString* preproc = new CSortUlongString();
-	preproc->init(l_feats);
-	l_feats->add_preprocessor(preproc);
-	l_feats->apply_preprocessor();
-	CCommUlongStringKernel* kernel = new CCommUlongStringKernel(l_feats, l_feats);
-	CIdentityKernelNormalizer* normalizer = new CIdentityKernelNormalizer();
+	auto preproc = some<CSortUlongString>();
+	preproc->fit(l_feats);
+	l_feats =
+	    wrap(preproc->transform(l_feats)->as<CStringFeatures<uint64_t>>());
+
+	auto kernel = some<CCommUlongStringKernel>(l_feats, l_feats);
+	auto normalizer = some<CIdentityKernelNormalizer>();
 	kernel->set_normalizer(normalizer);
 
-	CHashedDocDotFeatures* h_feats = new CHashedDocDotFeatures(20, s_feats, new CNGramTokenizer(5), false);
+	auto h_feats =
+	    some<CHashedDocDotFeatures>(20, s_feats, new CNGramTokenizer(5), false);
 
 	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
 
@@ -61,8 +63,4 @@ TEST(CommUlongStringKernel, kernel_matrix)
 		for (index_t j=0; j<3; j++)
 			EXPECT_EQ(feat_matrix(i,j), kernel_matrix(i,j));
 	}
-
-	SG_UNREF(kernel);
-	SG_UNREF(alphabet);
-	SG_UNREF(h_feats);
 }

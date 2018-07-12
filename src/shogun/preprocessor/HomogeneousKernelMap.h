@@ -69,17 +69,8 @@ namespace shogun
 			/** destructor */
 			virtual ~CHomogeneousKernelMap();
 
-			/** initialize preprocessor from features */
-			virtual bool init(CFeatures* features);
-
 			/** cleanup */
 			virtual void cleanup();
-
-			/** applies to features
-			 * @param features features
-			 * @return feature matrix
-			 */
-			virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 			/** applies to feature vector
 			 * @param vector features vector
@@ -137,6 +128,10 @@ namespace shogun
 			 * @return period value
 			 */
 			float64_t get_period() const;
+
+		protected:
+		    virtual SGMatrix<float64_t>
+		    apply_to_matrix(SGMatrix<float64_t> matrix);
 
 		private:
 			void init ();

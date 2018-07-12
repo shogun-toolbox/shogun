@@ -51,14 +51,16 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	data(2,3)=-0.823586525156853;
 	data(2,4)=0.281984063670556;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(EVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(EVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.00000000000001;
 
@@ -97,9 +99,6 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	EXPECT_NEAR(1.249063286478502, s2*finalmat(2,2),epsilon);
 	EXPECT_NEAR(-2.210566542225781, s2*finalmat(2,3),epsilon);
 	EXPECT_NEAR(-1.248793953557132, s2*finalmat(2,4),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_N_equals_D_EVD)
@@ -115,14 +114,16 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(EVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(EVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.00000001;
 
@@ -155,9 +156,6 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	EXPECT_NEAR(2.21751537, s2*finalmat(2,0),epsilon);
 	EXPECT_NEAR(-2.26932988, s2*finalmat(2,1),epsilon);
 	EXPECT_NEAR(0.0518145101, s2*finalmat(2,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_N_less_D_EVD)
@@ -179,14 +177,16 @@ TEST(PCA, PCA_N_less_D_EVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(EVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(EVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 1E-13;
 
@@ -216,9 +216,6 @@ TEST(PCA, PCA_N_less_D_EVD)
 	EXPECT_NEAR(1.835430614937060, s1*finalmat(1,0),epsilon);
 	EXPECT_NEAR(-0.435473994643473, s1*finalmat(1,1),epsilon);
 	EXPECT_NEAR(-1.39995662029358, s1*finalmat(1,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_N_greater_D_SVD)
@@ -240,14 +237,16 @@ TEST(PCA, PCA_N_greater_D_SVD)
 	data(2,3)=-0.823586525156853;
 	data(2,4)=0.281984063670556;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(SVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(SVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.0000000000001;
 
@@ -282,9 +281,6 @@ TEST(PCA, PCA_N_greater_D_SVD)
 	EXPECT_NEAR(1.249063286478502,finalmat(0,2),epsilon);
 	EXPECT_NEAR(-2.210566542225781,finalmat(0,3),epsilon);
 	EXPECT_NEAR(-1.248793953557132,finalmat(0,4),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_N_equals_D_SVD)
@@ -300,14 +296,16 @@ TEST(PCA, PCA_N_equals_D_SVD)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(SVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(SVD);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.00000001;
 
@@ -335,9 +333,6 @@ TEST(PCA, PCA_N_equals_D_SVD)
 	EXPECT_NEAR(2.21751537,finalmat(0,0),epsilon);
 	EXPECT_NEAR(-2.26932988,finalmat(0,1),epsilon);
 	EXPECT_NEAR(0.0518145101,finalmat(0,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_N_less_D_SVD)
@@ -359,14 +354,16 @@ TEST(PCA, PCA_N_less_D_SVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(SVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(SVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.0000000000001;
 
@@ -393,9 +390,6 @@ TEST(PCA, PCA_N_less_D_SVD)
 	EXPECT_NEAR(-1.835430614937060,finalmat(0,0),epsilon);
 	EXPECT_NEAR(0.435473994643473,finalmat(0,1),epsilon);
 	EXPECT_NEAR(1.39995662029358,finalmat(0,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_MEM_IN_PLACE)
@@ -411,14 +405,16 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(AUTO,false,MEM_IN_PLACE);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(AUTO, false, MEM_IN_PLACE);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	float64_t epsilon = 0.00000001;
 
@@ -446,9 +442,6 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 	EXPECT_NEAR(2.21751537,finalmat(0,0),epsilon);
 	EXPECT_NEAR(-2.26932988,finalmat(0,1),epsilon);
 	EXPECT_NEAR(0.0518145101,finalmat(0,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_apply_to_feature_vector_methodTest)
@@ -477,10 +470,10 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	inputVector[3] = 0.350179410603312;
 	inputVector[4] = -0.299066030332982;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(SVD);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(SVD);
 	pca->set_target_dim(2);
-	pca->init(features);
+	pca->fit(features);
 
 	SGVector<float64_t> finalVector=pca->apply_to_feature_vector(inputVector);
 
@@ -488,9 +481,6 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(-1.835430614937060, finalVector[0], 1e-13);
 	EXPECT_NEAR(0.511467003751085, finalVector[1], 1e-13);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_WHITEN_SVD)
@@ -512,14 +502,16 @@ TEST(PCA, PCA_WHITEN_SVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(SVD,true);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(SVD, true);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
-	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+	auto transmat = pca->get_transformation_matrix();
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
+	auto eigvec = pca->get_eigenvalues();
 
 	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);
 	float64_t epsilon = 0.0000001;
@@ -567,9 +559,6 @@ TEST(PCA, PCA_WHITEN_SVD)
 	EXPECT_NEAR(0.0,covariance_mat(2,0),epsilon);
 	EXPECT_NEAR(0.0,covariance_mat(2,1),epsilon);
 	EXPECT_NEAR(0.0,covariance_mat(2,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }
 
 TEST(PCA, PCA_WHITEN_EVD)
@@ -591,12 +580,14 @@ TEST(PCA, PCA_WHITEN_EVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(EVD,true);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto pca = some<CPCA>(EVD, true);
 	pca->set_target_dim(3);
-	pca->init(features);
+	pca->fit(features);
 
-	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+	auto finalmat = pca->transform(features)
+	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->get_feature_matrix();
 
 	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);
 
@@ -611,7 +602,4 @@ TEST(PCA, PCA_WHITEN_EVD)
 	EXPECT_NEAR(0.0,covariance_mat(2,0),epsilon);
 	EXPECT_NEAR(0.0,covariance_mat(2,1),epsilon);
 	EXPECT_NEAR(1.0,covariance_mat(2,2),epsilon);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
 }

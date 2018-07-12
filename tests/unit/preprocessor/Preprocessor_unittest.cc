@@ -40,7 +40,7 @@
 
 using namespace shogun;
 
-TEST(Preprocessor, dense_apply)
+TEST(Preprocessor, dense)
 {
 	const index_t dim=2;
 	const index_t size=4;
@@ -48,21 +48,16 @@ TEST(Preprocessor, dense_apply)
 	for (index_t i=0; i<dim*size; ++i)
 		data.matrix[i]=CMath::randn_double();
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CDensePreprocessor<float64_t>* preproc=new CNormOne();
-	preproc->init(features);
+	auto features = some<CDenseFeatures<float64_t>>(data);
+	auto preproc = some<CNormOne>();
+	preproc->fit(features);
 
-	CFeatures* preprocessed=preproc->apply(features);
+	auto preprocessed = wrap(preproc->transform(features));
 
-	ASSERT_NE(preprocessed, (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
-
-	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
-	SG_UNREF(features);
 }
 
-TEST(Preprocessor, string_apply)
+TEST(Preprocessor, string)
 {
 	const index_t num_strings=3;
 	const index_t max_string_length=20;
@@ -83,15 +78,12 @@ TEST(Preprocessor, string_apply)
 	}
 
 	/* create num_features 2-dimensional vectors */
-	CStringFeatures<uint16_t>* features=new CStringFeatures<uint16_t>(strings, ALPHANUM);
-	CStringPreprocessor<uint16_t>* preproc=new CSortWordString();
-	preproc->init(features);
+	auto features = some<CStringFeatures<uint16_t>>(strings, ALPHANUM);
+	auto preproc = some<CSortWordString>();
+	preproc->fit(features);
 
-	CFeatures* preprocessed=preproc->apply(features);
+	auto preprocessed = wrap(preproc->transform(features));
 
-	ASSERT_NE(preprocessed, (CFeatures*)NULL);
+	ASSERT_NE(preprocessed.get(), (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_STRING);
-
-	SG_UNREF(preproc);
-	SG_UNREF(features);
 }

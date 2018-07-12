@@ -20,15 +20,6 @@ CSortWordString::~CSortWordString()
 {
 }
 
-/// initialize preprocessor from features
-bool CSortWordString::init(CFeatures* f)
-{
-	ASSERT(f->get_feature_class()==C_STRING)
-	ASSERT(f->get_feature_type()==F_WORD)
-
-	return true;
-}
-
 /// clean up allocated memory
 void CSortWordString::cleanup()
 {
@@ -50,26 +41,16 @@ bool CSortWordString::save(FILE* f)
 	return false;
 }
 
-/// apply preproc on feature matrix
-/// result in feature matrix
-/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-bool CSortWordString::apply_to_string_features(CFeatures* f)
+void CSortWordString::apply_to_string_list(SGStringList<uint16_t> string_list)
 {
-	int32_t i;
-	int32_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
-
-	for (i=0; i<num_vec; i++)
+	for (auto i : range(string_list.num_strings))
 	{
 		int32_t len = 0 ;
-		bool free_vec;
-		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len, free_vec);
-		ASSERT(!free_vec) // won't work with non-in-memory string features
+		auto& vec = string_list.strings[i];
 
 		//CMath::qsort(vec, len);
-		CMath::radix_sort(vec, len);
-
+		CMath::radix_sort(vec.string, vec.slen);
 	}
-	return true ;
 }
 
 /// apply preproc on single feature vector

@@ -7,11 +7,12 @@ Features feats = features(f_feats)
 #![create_features]
 
 #![set_parameters]
-Converter ica = converter("Jade", max_iter=200, tol=0.00001)
+Transformer ica = transformer("Jade", max_iter=200, tol=0.00001)
 #![set_parameters]
 
 #![apply_convert]
-Features converted = ica.apply(feats)
+ica.fit(feats)
+Features converted = ica.transform(feats)
 #![apply_convert]
 
 #![extract]

@@ -35,11 +35,6 @@ class CFastICA: public CICAConverter
 		/** destructor */
 		virtual ~CFastICA();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features);
-
 		/** setter for whiten flag
 		 * whether to whiten the data or not
 		 * @param whiten
@@ -58,6 +53,8 @@ class CFastICA: public CICAConverter
 
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features);
 
 	private:
 

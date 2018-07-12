@@ -40,11 +40,6 @@ class CSOBI: public CICAConverter
 		/** destructor */
 		virtual ~CSOBI();
 
-		/** apply to features
-		 * @param features features to embed
-		 */
-		virtual CFeatures* apply(CFeatures* features);
-
 		/** getter for tau parameter
 		 * @return tau vector
 		 */
@@ -67,6 +62,8 @@ class CSOBI: public CICAConverter
 
 		/** init */
 		void init();
+
+		virtual void fit_dense(CDenseFeatures<float64_t>* features);
 
 	private:
 

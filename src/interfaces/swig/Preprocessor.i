@@ -16,7 +16,6 @@
 %rename(PNorm) CPNorm;
 %rename(RescaleFeatures) CRescaleFeatures;
 
-%rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
 %rename(FisherLda) CFisherLDA;
@@ -28,7 +27,6 @@
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
 
-%newobject shogun::CFeatureSelection::apply;
 %newobject shogun::CFeatureSelection::remove_feats;
 
 %newobject shogun::CKernelPCA::apply_to_string_features;
@@ -61,8 +59,6 @@ namespace shogun
 #endif
 }
 
-/* Templates Class DimensionReductionPreprocessor */
-%include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 
 /* Templates Class StringPreprocessor*/
 %include <shogun/preprocessor/StringPreprocessor.h>

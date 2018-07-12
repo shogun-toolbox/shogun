@@ -35,16 +35,11 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CPruneVarSubMean();
 
-		/// initialize preprocessor from features
-		virtual bool init(CFeatures* features);
+		/// Fit preprocessor into features
+		virtual void fit(CFeatures* features);
 
 		/// cleanup
 		virtual void cleanup();
-
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
@@ -55,6 +50,9 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const { return P_PRUNEVARSUBMEAN; }
+
+	protected:
+		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
 
 	private:
 		void init();
@@ -71,9 +69,6 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		int32_t m_num_idx;
 		/** divide by std */
 		bool m_divide_by_std;
-
-		/// true when already initialized
-		bool m_initialized;
 };
 }
 #endif

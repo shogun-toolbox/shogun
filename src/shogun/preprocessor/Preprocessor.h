@@ -10,10 +10,11 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
+#include <shogun/transformer/Transformer.h>
 
 namespace shogun
 {
@@ -64,32 +65,22 @@ enum EPreprocessorType
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
  * CDensePreprocessor. Although, for providing a generic interface for this,
- * an abstract apply() method is there, which sub-classes may choose to use as
+ * an abstract transform() method is there, which sub-classes may choose to use
+ * as
  * a wrapper to more specific methods.
  */
-class CPreprocessor : public CSGObject
+class CPreprocessor : public CTransformer
 {
 public:
 	/** constructor */
-	CPreprocessor() : CSGObject()
-	{
-	};
+	CPreprocessor() : CTransformer(){};
 
 	/** destructor */
 	virtual ~CPreprocessor()
 	{
 	}
 
-	/** initialize preprocessor with features */
-	virtual bool init(CFeatures* features)=0;
-
-	/** generic interface for applying the preprocessor. sub-classes may use
-	 * this method as a wrapper to specific implementations
-	 *
-	 * @param features the input features
-	 * @return the result feature object after applying the preprocessor
-	 */
-	virtual CFeatures* apply(CFeatures* features)=0;
+	virtual CFeatures* transform(CFeatures* features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;

@@ -72,7 +72,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual CFeatures* apply(CFeatures* features);
+		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/** setter for number of neighbors k in local strategy
 		 *

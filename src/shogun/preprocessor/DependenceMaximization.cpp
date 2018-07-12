@@ -60,21 +60,6 @@ CDependenceMaximization::~CDependenceMaximization()
 	SG_UNREF(m_labels_feats);
 }
 
-bool CDependenceMaximization::init(CFeatures* features)
-{
-	REQUIRE(features, "Features are not initialized!\n");
-	REQUIRE(features->get_feature_class()==C_DENSE ||
-			features->get_feature_class()==C_SPARSE,
-			"Only allowed for dense/sparse features! Provided an instance of "
-			"%s which is of class %d!\n",
-			features->get_name(), features->get_feature_class());
-	REQUIRE(features->get_feature_type()==F_DREAL, "Only allowed for "
-			"features of double type! Provided %d!\n",
-			features->get_feature_type());
-
-	return true;
-}
-
 CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 		index_t idx)
 {

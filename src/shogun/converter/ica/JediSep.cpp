@@ -52,12 +52,9 @@ SGNDArray<float64_t> CJediSep::get_covs() const
 	return m_covs;
 }
 
-CFeatures* CJediSep::apply(CFeatures* features)
+void CJediSep::fit_dense(CDenseFeatures<float64_t>* features)
 {
-	REQUIRE(features, "features is null");
-	SG_REF(features);
-
-	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	auto X = features->get_feature_matrix();
 
 	int n = X.num_rows;
 	int m = X.num_cols;
@@ -90,11 +87,6 @@ CFeatures* CJediSep::apply(CFeatures* features)
 	// Normalize Estimated Mixing Matrix
 	for (int t = 0; t < C.cols(); t++)
 		C.col(t) /= C.col(t).maxCoeff();
-
-	// Unmix
-	EX = C.inverse() * EX;
-
-	return features;
 }
 
 // Computing time delayed correlation matrix

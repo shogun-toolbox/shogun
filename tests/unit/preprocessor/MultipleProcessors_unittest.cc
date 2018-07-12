@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-TEST(MultipleProcessors, apply_to_feature_matrix)
+TEST(MultipleProcessors, transform)
 {
 	float64_t data[6] = {1,2,3,4,5,6};
 	int32_t num_vectors = 2;
@@ -23,14 +23,11 @@ TEST(MultipleProcessors, apply_to_feature_matrix)
 	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
 	CSumOne* sum1 = new CSumOne();
 	CLogPlusOne* logp1 = new CLogPlusOne();
-	sum1->init(feats);
-	feats->add_preprocessor(sum1);
+	sum1->fit(feats);
+	feats = sum1->transform(feats)->as<CDenseFeatures<float64_t>>();
 
-	logp1->init(feats);
-	feats->add_preprocessor(logp1);
-	feats->apply_preprocessor();
-
-	EXPECT_EQ(2, feats->get_num_preprocessors());
+	logp1->fit(feats);
+	feats = logp1->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{
