@@ -234,14 +234,12 @@ namespace shogun
  *
  * @see linalg::pinvh
  */
-#define BACKEND_GENERIC_PINVH(Type, Container)                     \
-	virtual void pinvh(                                            \
-	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+#define BACKEND_GENERIC_PINVH(Type, Container)                                 \
+	virtual void pinvh(const SGMatrix<Type>& A, SGMatrix<Type>& result) const  \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_NON_INTEGER_PTYPE(
-		    BACKEND_GENERIC_PINVH, SGMatrix)
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINVH, SGMatrix)
 #undef BACKEND_GENERIC_PINVH
 
 /**
@@ -249,14 +247,12 @@ namespace shogun
  *
  * @see linalg::pinvh
  */
-#define BACKEND_GENERIC_PINV(Type, Container)                     \
-	virtual void pinv(                                            \
-	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
+#define BACKEND_GENERIC_PINV(Type, Container)                                  \
+	virtual void pinv(const SGMatrix<Type>& A, SGMatrix<Type>& result) const   \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_NON_INTEGER_PTYPE(
-		    BACKEND_GENERIC_PINV, SGMatrix)
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINV, SGMatrix)
 #undef BACKEND_GENERIC_PINV
 
 /**

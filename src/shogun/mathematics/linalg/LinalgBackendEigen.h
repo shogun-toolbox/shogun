@@ -118,22 +118,16 @@ namespace shogun
 #undef BACKEND_GENERIC_LDLT_FACTOR
 
 /** Implementation of @see LinalgBackendBase::pinvh */
-#define BACKEND_GENERIC_PINVH(Type, Container)                     \
-	virtual void pinvh(                                            \
-	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const;
-		DEFINE_FOR_NON_INTEGER_PTYPE(
-		    BACKEND_GENERIC_PINVH, SGMatrix)
+#define BACKEND_GENERIC_PINVH(Type, Container)                                 \
+	virtual void pinvh(const SGMatrix<Type>& A, SGMatrix<Type>& result) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINVH, SGMatrix)
 #undef BACKEND_GENERIC_PINVH
 
-
 /** Implementation of @see LinalgBackendBase::pinv */
-#define BACKEND_GENERIC_PINV(Type, Container)                     \
-	virtual void pinv(                                            \
-	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const;
-		DEFINE_FOR_NON_INTEGER_PTYPE(
-		    BACKEND_GENERIC_PINV, SGMatrix)
+#define BACKEND_GENERIC_PINV(Type, Container)                                  \
+	virtual void pinv(const SGMatrix<Type>& A, SGMatrix<Type>& result) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINV, SGMatrix)
 #undef BACKEND_GENERIC_PINV
-
 
 /** Implementation of @see LinalgBackendBase::ldlt_solver */
 #define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
@@ -485,14 +479,12 @@ namespace shogun
 
 		/** Eigen3 Pseudo inverse of self adjoint matrix */
 		template <typename T>
-		void
-		pinvh_impl(const SGMatrix<T>& A, SGMatrix<T>& result) const;
-		
+		void pinvh_impl(const SGMatrix<T>& A, SGMatrix<T>& result) const;
+
 		/** Eigen3 Pseudo inverse of self adjoint matrix */
 		template <typename T>
-		void
-		pinv_impl(const SGMatrix<T>& A, SGMatrix<T>& result) const;
-		
+		void pinv_impl(const SGMatrix<T>& A, SGMatrix<T>& result) const;
+
 		/** Eigen3 LDLT Cholesky solver */
 		template <typename T>
 		SGVector<T> ldlt_solver_impl(

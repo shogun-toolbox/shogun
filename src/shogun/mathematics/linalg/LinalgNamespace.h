@@ -484,7 +484,8 @@ namespace shogun
 			    ->add_col_vec(A, i, b, result, alpha, beta);
 		}
 
-		/** Calculates pseudo inverse A+ from eigen values solved by a self adjoint eigen solver.
+		/** Calculates pseudo inverse A+ from eigen values solved by a self
+		 * adjoint eigen solver.
 		 * User should pass an appropriately pre-allocated memory matrix
 		 * or pass the operand argument A as a result.
 		 *
@@ -499,14 +500,17 @@ namespace shogun
 			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
 			    "Dimension mismatch! A (%d x %d) vs result (%d x %d).\n",
 			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
-	
-			REQUIRE(A.num_rows == A.num_cols, "Given matrix is not square (%d x %d)", A.num_rows, A.num_cols);
-					
+
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Given matrix is not square (%d x %d)", A.num_rows, A.num_cols);
+
 			infer_backend(A)->pinvh(A, result);
 		}
 
 		/**
-		 * Calculates pseudo inverse A+ from eigen values solved by a self adjoint eigen solver.
+		 * Calculates pseudo inverse A+ from eigen values solved by a self
+		 * adjoint eigen solver.
 		 * This version returns the result in a newly created matrix.
 		 *
 		 * @param A The matrix
@@ -530,10 +534,11 @@ namespace shogun
 		void pinv(const SGMatrix<T>& A, SGMatrix<T>& result)
 		{
 			REQUIRE(
-					result.num_rows == A.num_cols && result.num_cols == A.num_rows,
-					"Dimension mismatch! result must be of (%d x %d) provided is (%d x %d).\n",
-					A.num_cols, A.num_rows, result.num_rows, result.num_cols);
-					
+			    result.num_rows == A.num_cols && result.num_cols == A.num_rows,
+			    "Dimension mismatch! Result must be of (%d x %d) provided is "
+			    "(%d x %d).\n",
+			    A.num_cols, A.num_rows, result.num_rows, result.num_cols);
+
 			infer_backend(A)->pinv(A, result);
 		}
 
