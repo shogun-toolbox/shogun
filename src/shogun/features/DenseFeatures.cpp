@@ -114,58 +114,48 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 
 	len = num_features;
 
-	if (feature_matrix.matrix)
-	{
-		dofree = false;
-		return &feature_matrix.matrix[real_num * int64_t(num_features)];
-	}
-
 	ST* feat = NULL;
 	dofree = false;
 
-	if (feature_cache)
+	if (feature_matrix.matrix)
 	{
-		feat = feature_cache->lock_entry(real_num);
-
-		if (feat)
-			return feat;
-		else
-			feat = feature_cache->set_entry(real_num);
+		feat = &feature_matrix.matrix[real_num * int64_t(num_features)];
 	}
+	else
+	{
+		if (feature_cache)
+			feat = feature_cache->lock_entry(real_num);
 
-	if (!feat)
-		dofree = true;
-	feat = compute_feature_vector(num, len, feat);
+		if (!feat)
+			feat = feature_cache->set_entry(real_num);
+		if (!feat)
+		{
+			dofree = true;
+			feat = compute_feature_vector(num, len, feat);
+		}
+	}
 
 	if (get_num_preprocessors())
 	{
-		int32_t tmp_len = len;
-		ST* tmp_feat_before = feat;
-		ST* tmp_feat_after = NULL;
+		SGVector<ST> feat_vec(feat, len, false);
 
-		for (int32_t i = 0; i < get_num_preprocessors(); i++)
+		for (auto i = 0; i < get_num_preprocessors(); i++)
 		{
-			CDensePreprocessor<ST>* p =
-					(CDensePreprocessor<ST>*) get_preprocessor(i);
+			auto preprocessor =
+				get_preprocessor(i)->as<CDensePreprocessor<ST>>();
 			// temporary hack
-			SGVector<ST> applied = p->apply_to_feature_vector(
-					SGVector<ST>(tmp_feat_before, tmp_len));
-			tmp_feat_after = applied.vector;
-			SG_UNREF(p);
+			SGVector<ST> applied =
+				preprocessor->apply_to_feature_vector(feat_vec);
 
-			if (i != 0) // delete feature vector, except for the the first one, i.e., feat
-				SG_FREE(tmp_feat_before);
-			tmp_feat_before = tmp_feat_after;
+			if (i == 0)
+				free_feature_vector(feat_vec.vector, num, dofree);
+			feat_vec = applied;
 		}
 
-		// note: tmp_feat_after should be checked as it is used by memcpy
-		if (tmp_feat_after)
-		{
-			sg_memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-			SG_FREE(tmp_feat_after);
-
-			len = tmp_len;
-		}
+		feat = SG_MALLOC(ST, feat_vec.vlen);
+		sg_memcpy(feat, feat_vec.vector, feat_vec.vlen * sizeof(ST));
+		dofree = true;
+		len = feat_vec.vlen;
 	}
 	return feat;
 }
