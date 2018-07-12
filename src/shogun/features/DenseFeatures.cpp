@@ -142,7 +142,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 		for (auto i = 0; i < get_num_preprocessors(); i++)
 		{
 			auto preprocessor =
-				get_preprocessor(i)->as<CDensePreprocessor<ST>>();
+				get_preprocessor(i)->template as<CDensePreprocessor<ST>>();
 			// temporary hack
 			SGVector<ST> applied =
 				preprocessor->apply_to_feature_vector(feat_vec);
