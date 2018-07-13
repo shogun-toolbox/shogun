@@ -84,7 +84,7 @@ def get_shogun_classes(tags):
         if base is not None:
             for mix in MIXINS:
                 if mix == base:
-                    mixin = mixin
+                    mixin = mix
                     # extract template parameter of mixin and use as base class
                     declaration = attrs[-4]
                     base = declaration[(declaration.find("<")+1):declaration.find(">")]
