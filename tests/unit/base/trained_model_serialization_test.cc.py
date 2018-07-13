@@ -86,7 +86,6 @@ def get_shogun_classes(tags):
             # extract template parameter of mixin and use as base class
             declaration = attrs[-4]
             base = declaration[(declaration.find("<")+1):declaration.find(">")]
-            break
 
         classes[symbol] = {
             'include': location,
