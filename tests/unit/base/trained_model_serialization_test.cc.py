@@ -87,8 +87,7 @@ def get_shogun_classes(tags):
                     mixin = mixin
                     # extract template parameter of mixin and use as base class
                     declaration = attrs[-4]
-                    b = declaration[(declaration.find("<")+1):declaration.find(">")]
-                    base = b
+                    base = declaration[(declaration.find("<")+1):declaration.find(">")]
                     break
 
         classes[symbol] = {
