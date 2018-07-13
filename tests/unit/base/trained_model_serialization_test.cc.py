@@ -81,14 +81,12 @@ def get_shogun_classes(tags):
         # parse mixings from declaration, using declarations of the like of
         # /^class CNewtonSVM : public CIterativeMachine<CLinearMachine>$/;"
         mixin = None
-        if base is not None:
-            for mix in MIXINS:
-                if mix == base:
-                    mixin = mix
-                    # extract template parameter of mixin and use as base class
-                    declaration = attrs[-4]
-                    base = declaration[(declaration.find("<")+1):declaration.find(">")]
-                    break
+        if base is not None and base in MIXINS:
+            mixin = base
+            # extract template parameter of mixin and use as base class
+            declaration = attrs[-4]
+            base = declaration[(declaration.find("<")+1):declaration.find(">")]
+            break
 
         classes[symbol] = {
             'include': location,
