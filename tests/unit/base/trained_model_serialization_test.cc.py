@@ -8,7 +8,7 @@
 # Classes to ignore: mostly because default initialization isn't enough
 # to setup the machine for training (i.e. Multitask and DomainAdaptation),
 # different reasons are given below.
-IGNORE = [
+IGNORE = set([
     # LinearMachines
     'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
     'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
@@ -33,7 +33,12 @@ IGNORE = [
     'CMKLMulticlass',
     'CScatterSVM', # error C <= 0
     'CMulticlassLibSVM' # error C <= 0
-]
+])
+
+# Classes that inherit from their template parameter, e.g.
+# template <class T> bar : public T { ... }
+# We need to check inheritance differently for those
+MIXINS = set(["CIterativeMachine"])
 
 def read_defined_guards(config_file):
     with open(config_file) as f:
@@ -72,9 +77,24 @@ def get_shogun_classes(tags):
         inherits_str = 'inherits:'
         symbol, location = attrs[0], attrs[1]
         base = attrs[-1][len(inherits_str):] if attrs[-1].startswith(inherits_str) else None
+        
+        # parse mixings from declaration, using declarations of the like of
+        # /^class CNewtonSVM : public CIterativeMachine<CLinearMachine>$/;"
+        mixin = None
+        if base is not None:
+            for mix in MIXINS:
+                if mix == base:
+                    mixin = mixin
+                    # extract template parameter of mixin and use as base class
+                    declaration = attrs[-4]
+                    b = declaration[(declaration.find("<")+1):declaration.find(">")]
+                    base = b
+                    break
+
         classes[symbol] = {
             'include': location,
-            'base': base}
+            'base': base,
+            'mixin': mixin}
     return classes
 
 
