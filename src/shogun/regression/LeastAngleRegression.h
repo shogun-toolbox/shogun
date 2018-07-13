@@ -12,7 +12,7 @@
 #include <shogun/lib/config.h>
 
 #include <vector>
-#include <shogun/machine/LinearMachine.h>
+#include <shogun/machine/TypedMachine.h>
 #include <shogun/features/DenseFeatures.h>
 
 namespace shogun
@@ -68,7 +68,7 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CLinearMachine
+class CLeastAngleRegression: public CTypedMachine<CLeastAngleRegression, CLinearMachine>
 {
 public:
 
@@ -190,16 +190,6 @@ public:
 	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
-	/**
-	* An interface method used call train_machine_templated - 
-	* this is called by the superclass's train method (@see CLinearMachine::train).  
-	* Checks to see if data is a dense feature vector,
-	* and that it's elements are floating point types.  It then calls 
-	* train_machine_templated with the appropriate template parameters
-	* @param data training data
-	* @see train_machine_templated
-	*/
-	bool train_machine(CFeatures * data);
 
 	template <typename ST>
 	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
