@@ -217,10 +217,7 @@ public:
 	template <typename ST>
 	bool train_machine_templated(CDenseFeatures<ST> * data);
 	
-	virtual bool support_dispatching()
-	{
-		return true;
-	}
+	virtual bool support_dispatching(){ return true; }
 private:
 
 	/** Initialize and register parameters */
