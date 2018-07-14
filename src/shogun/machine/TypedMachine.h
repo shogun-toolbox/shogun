@@ -46,6 +46,8 @@ namespace shogun
 
 			return false;
 		}
+		
+		virtual bool support_dispatching()=0;
 	};
 }
 #endif
