@@ -208,11 +208,7 @@ protected:
 		int32_t &imax, ST& vmax);
 	#endif
 
-private:
-
-	/** Initialize and register parameters */
-	void init();
-
+public:
 	/**
 	* A templated specialization of the train_machine method
 	* @param data training data
@@ -220,6 +216,10 @@ private:
 	*/
 	template <typename ST>
 	bool train_machine_templated(CDenseFeatures<ST> * data);
+private:
+
+	/** Initialize and register parameters */
+	void init();
 
 	void activate_variable(int32_t v)
 	{

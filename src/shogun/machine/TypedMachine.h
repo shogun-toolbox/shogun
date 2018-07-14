@@ -36,13 +36,13 @@ namespace shogun
 		virtual bool train_machine(CFeatures* data = NULL)
 		{
 			//check for type of CFeatures, then call the appropriate template method
-			P::set_compute_bias(true);
+			
 			if(data->get_feature_type() == F_DREAL)
-				return P::template train_machine_templated<float64_t>(data->as<CDenseFeatures<float64_t>>());
+				return this->template as<P>()->template train_machine_templated<float64_t>(data->as<CDenseFeatures<float64_t>>());
 			else if(data->get_feature_type() == F_SHORTREAL)
-				return P::template train_machine_templated<float32_t>(data->as<CDenseFeatures<float32_t>>());
+				return this->template as<P>()->template train_machine_templated<float32_t>(data->as<CDenseFeatures<float32_t>>());
 			else if(data->get_feature_type() == F_LONGREAL)
-				return P::template train_machine_templated<floatmax_t>(data->as<CDenseFeatures<floatmax_t>>());
+				return this->template as<P>()->template train_machine_templated<floatmax_t>(data->as<CDenseFeatures<floatmax_t>>());
 
 			return false;
 		}
