@@ -12,8 +12,7 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -152,24 +151,23 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		{
 			/* mus=zeros(dim, num_centers) ; */
 			centers.zero();
-			Map<MatrixXd> map_centers(centers.matrix, centers.num_rows, centers.num_cols);
 
 			for (int32_t i=0; i<lhs_size; i++)
 			{
 				int32_t cluster_i=cluster_assignments[i];
 
-				SGVector<float64_t>vec=lhs->get_feature_vector(i);
-				Map<VectorXd> map_vec(vec.vector, vec.size());
-
-				map_centers.col(cluster_i) += map_vec;
-
+				auto vec = lhs->get_feature_vector(i);
+				linalg::add_col_vec(centers, cluster_i, vec, centers);
 				lhs->free_feature_vector(vec, i);
 			}
 
 			for (int32_t i=0; i<num_centers; i++)
 			{
 				if (weights_set[i]!=0)
-					map_centers.col(i)*=1.0/weights_set[i];
+				{
+					auto col = centers.get_column(i);
+					linalg::scale(col, col, 1.0 / weights_set[i]);
+				}
 			}
 		}
 		if (iter%(max_iter/10) == 0)
