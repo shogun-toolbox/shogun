@@ -124,10 +124,13 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 	else
 	{
 		if (feature_cache)
+		{
 			feat = feature_cache->lock_entry(real_num);
 
-		if (!feat)
-			feat = feature_cache->set_entry(real_num);
+			if (!feat)
+				feat = feature_cache->set_entry(real_num);
+		}
+
 		if (!feat)
 		{
 			dofree = true;
