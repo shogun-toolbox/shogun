@@ -592,6 +592,13 @@ IF (CTAGS_FOUND)
         --c++-kinds=cfgp
         --fields=+im
         --exclude=*.cpp
+        --exclude=third_party
+        --exclude=GoogleMock
+        --exclude=rxcpp
+        --exclude=StanMath
+        --exclude=interfaces
+        --exclude=Eigen3
+        --exclude=external
         --languages=c++
         -R ${CMAKE_SOURCE_DIR})
 
