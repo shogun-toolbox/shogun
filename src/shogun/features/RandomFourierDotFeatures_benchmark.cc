@@ -47,15 +47,10 @@ public:
 	SGVector<float64_t> w;
 };
 
-DOTFEATURES_BENCHMARK_DENSEDOT(RFFixture, RandomFourierDotFeatures_DenseDot)
-DOTFEATURES_BENCHMARK_ADDDENSE(RFFixture, RandomFourierDotFeatures_AddDense)
+#define ADD_RANDOMFOURIER_ARGS(WHAT)	\
+	WHAT->RangeMultiplier(2)->Ranges({{128, 512}, {64, 512}})->Unit(benchmark::kMillisecond);
 
-BENCHMARK_REGISTER_F(RFFixture, RandomFourierDotFeatures_DenseDot)
-	->RangeMultiplier(2)
-	->Ranges({{128, 512}, {64, 512}})
-	->Unit(benchmark::kMillisecond);
-BENCHMARK_REGISTER_F(RFFixture, RandomFourierDotFeatures_AddDense)
-	->RangeMultiplier(2)
-	->Ranges({{128, 512}, {64, 512}})
-	->Unit(benchmark::kMillisecond);
+ADD_RANDOMFOURIER_ARGS(DOTFEATURES_BENCHMARK_DENSEDOT(RFFixture, RandomFourierDotFeatures_DenseDot))
+ADD_RANDOMFOURIER_ARGS(DOTFEATURES_BENCHMARK_ADDDENSE(RFFixture, RandomFourierDotFeatures_AddDense))
+
 }
