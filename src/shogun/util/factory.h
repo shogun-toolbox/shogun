@@ -106,6 +106,50 @@ namespace shogun
 		return result;
 	}
 
+	/** Create embed string features from string char features
+	 * @param features StringCharFeatures
+	 * @param start start
+	 * @param p_order order
+	 * @param gap gap
+	 * @param rev reverse
+	 * @param primitive_type primitive type of the string features
+	 * @return new instance of string features
+	 */
+	CFeatures* string_features(
+	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
+	    bool rev, EPrimitiveType primitive_type)
+	{
+
+		REQUIRE_E(features, std::invalid_argument, "No features provided.\n");
+		REQUIRE_E(
+		    features->get_feature_class() == C_STRING &&
+		        features->get_feature_type() == F_CHAR,
+		    std::invalid_argument, "Only StringCharFeatures are supported, "
+		                           "provided feature class (%d), feature type "
+		                           "(%d).\n",
+		    features->get_feature_class(), features->get_feature_type());
+
+		auto string_features = features->as<CStringFeatures<char>>();
+
+		switch (primitive_type)
+		{
+		case PT_UINT16:
+		{
+			auto result =
+			    new CStringFeatures<uint16_t>(string_features->get_alphabet());
+			bool success = result->obtain_from_char(
+			    string_features, start, p_order, gap, rev);
+			REQUIRE(success, "Failed to obtain from string char features.\n");
+			SG_REF(result);
+			return result;
+		}
+		default:
+			SG_SNOTIMPLEMENTED
+		}
+
+		return nullptr;
+	}
+
 	/** Factory for CDenseSubsetFeatures.
 	 * TODO: Should be removed once the concept of feature views has arrived
 	 */
