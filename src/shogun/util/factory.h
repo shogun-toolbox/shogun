@@ -106,7 +106,11 @@ namespace shogun
 		return result;
 	}
 
-	/** Create embed string features from string char features
+	/** Create embedded string features from string char features.
+	 * The new features has the same alphabet as the original features. Data of
+	 * the new features is obtained by calling `obtain_from_char` with the given
+	 * features and other arguments of this factory method.
+	 *
 	 * @param features StringCharFeatures
 	 * @param start start
 	 * @param p_order order
