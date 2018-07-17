@@ -335,38 +335,42 @@ class CMachine : public CStoppableSGObject
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
 			bool result = false;
-			if(support_features_dispatching())
+			if (support_features_dispatching())
 			{
-				switch(data->get_feature_class())
+				switch (data->get_feature_class())
 				{
-					case C_DENSE:
-						result = train_dense(data);
-						break;
-					case C_STRING:
-						result = train_string(data);
-						break;
-					default:
-					SG_ERROR("train_machine is not yet implemented for %s!\n",
-							get_name());
+				case C_DENSE:
+					result = train_dense(data);
+					break;
+				case C_STRING:
+					result = train_string(data);
+					break;
+				default:
+					SG_ERROR(
+					    "train_machine is not yet implemented for %s!\n",
+					    get_name());
 				}
 			}
 			return result;
 		}
-		
+
 		virtual bool train_dense(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED
 			return false;
 		}
-		
+
 		virtual bool train_string(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED
 			return false;
 		}
-		
-		virtual bool support_features_dispatching(){ return false; }
-		
+
+		virtual bool support_features_dispatching()
+		{
+			return false;
+		}
+
 		/** Continue Training
 		 *
 		 * This method can be used to continue a prematurely stopped

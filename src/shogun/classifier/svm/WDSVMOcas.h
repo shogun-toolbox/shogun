@@ -10,18 +10,19 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/machine/Machine.h>
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/common.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
+#include <shogun/machine/Machine.h>
 
 namespace shogun
 {
 template <class ST> class CStringFeatures;
 
 /** @brief class WDSVMOcas */
-class CWDSVMOcas : public CMachine
+class CWDSVMOcas : public CStringFeaturesDispatch<CWDSVMOcas, CMachine>
 {
 	public:
 		/** problem type */
@@ -302,7 +303,7 @@ class CWDSVMOcas : public CMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "WDSVMOcas"; }
 
-	protected:
+	public:
 		/** train classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -311,7 +312,8 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		template <typename ST>
+		bool train_machine_templated(CStringFeatures<ST>* data);
 
 	protected:
 		/** features */

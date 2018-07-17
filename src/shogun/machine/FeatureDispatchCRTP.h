@@ -77,15 +77,15 @@ namespace shogun
 
 			//check for type of CFeatures, then call the appropriate template method
 			auto obj = this->template as<P>();
-			if(data->get_feature_type() == F_DREAL)
-				return obj->template train_machine_templated<float64_t>(data->as<CStringFeatures<float64_t>>());
-			else if(data->get_feature_type() == F_SHORTREAL)
-				return obj->template train_machine_templated<float32_t>(data->as<CStringFeatures<float32_t>>());
-			else if(data->get_feature_type() == F_LONGREAL)
-				return obj->template train_machine_templated<floatmax_t>(data->as<CStringFeatures<floatmax_t>>());
+			if(data->get_feature_type() == F_BYTE)
+				return obj->template train_machine_templated<uint8_t>(data->as<CStringFeatures<uint8_t>>());
+			else if(data->get_feature_type() == F_CHAR)
+				return obj->template train_machine_templated<char>(data->as<CStringFeatures<char>>());
+			else if(data->get_feature_type() == F_WORD)
+				return obj->template train_machine_templated<uint16_t>(data->as<CStringFeatures<uint16_t>>());
 			else	
 			SG_SERROR("Feature-type (%d) must be of type F_SHORTREAL (%d), F_DREAL (%d) or F_LONGREAL (%d).\n", 	
-				data->get_feature_type(), F_SHORTREAL, F_DREAL, F_LONGREAL)	
+				data->get_feature_type(), F_BYTE, F_CHAR, F_WORD)	
 				
 			return false;
 		}

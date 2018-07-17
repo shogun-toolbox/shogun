@@ -23,15 +23,14 @@ using namespace Eigen;
 using namespace shogun;
 using namespace std;
 
-
-CLeastAngleRegression::CLeastAngleRegression() :
-	CTypedMachine<CLeastAngleRegression, CLinearMachine>()
+CLeastAngleRegression::CLeastAngleRegression()
+    : CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 }
 
-CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
-	CTypedMachine<CLeastAngleRegression, CLinearMachine>()
+CLeastAngleRegression::CLeastAngleRegression(bool lasso)
+    : CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 

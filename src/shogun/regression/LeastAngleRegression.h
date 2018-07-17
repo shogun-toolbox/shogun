@@ -11,9 +11,9 @@
 
 #include <shogun/lib/config.h>
 
-#include <vector>
-#include <shogun/machine/TypedMachine.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
+#include <vector>
 
 namespace shogun
 {
@@ -68,7 +68,8 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CTypedMachine<CLeastAngleRegression, CLinearMachine>
+class CLeastAngleRegression
+	: public CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>
 {
 public:
 
@@ -216,10 +217,13 @@ public:
 	*/
 	template <typename ST>
 	bool train_machine_templated(CDenseFeatures<ST> * data);
-	
-	virtual bool support_dispatching(){ return true; }
-private:
 
+	virtual bool support_dispatching()
+	{
+		return true;
+	}
+
+private:
 	/** Initialize and register parameters */
 	void init();
 

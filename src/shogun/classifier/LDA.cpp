@@ -20,7 +20,7 @@ using namespace Eigen;
 using namespace shogun;
 
 CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
-    : CTypedMachine<CLDA, CLinearMachine>()
+    : CDenseFeaturesDispatch<CLDA, CLinearMachine>()
 {
 	init();
 	m_method=method;
@@ -31,7 +31,7 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 CLDA::CLDA(
     float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
     ELDAMethod method, bool bdc_svd)
-    : CTypedMachine<CLDA, CLinearMachine>(), m_gamma(gamma)
+    : CDenseFeaturesDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
 	set_features(traindat);
@@ -46,8 +46,8 @@ void CLDA::init()
 	m_method=AUTO_LDA;
 	m_gamma=0;
 	m_bdc_svd = true;
-  set_compute_bias(false);
-  
+	set_compute_bias(false);
+
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",
 	    "Method used for LDA calculation", MS_NOT_AVAILABLE);
@@ -60,7 +60,7 @@ CLDA::~CLDA()
 }
 
 template <typename ST>
-bool CLDA::train_machine_templated(CDenseFeatures<ST> * data)
+bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
@@ -75,7 +75,7 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST> * data)
 }
 
 template <typename ST>
-bool CLDA::solver_svd(CDenseFeatures<ST> * data)
+bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
@@ -109,7 +109,7 @@ bool CLDA::solver_svd(CDenseFeatures<ST> * data)
 }
 
 template <typename ST>
-bool CLDA::solver_classic(CDenseFeatures<ST> * data)
+bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(

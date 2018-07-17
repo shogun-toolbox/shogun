@@ -107,8 +107,9 @@ void test_with_method(
 	auto features = some<CDenseFeatures<float64_t>>(feat);
 	auto labels = some<CBinaryLabels>(lab);
 
-	auto lda = some<CLDA>(0, features, labels, method);
-	lda->train();
+	auto lda = some<CLDA>(0, method);
+	lda->set_labels(labels);
+	lda->train(features);
 
 	auto results = lda->apply_regression(features);
 	projection = results->get_labels();
@@ -201,10 +202,11 @@ TEST(LDA, num_classes_in_labels_exception)
 	auto labels = some<CMulticlassLabels>();
 	labels->set_labels(lab);
 	auto features = some<CDenseFeatures<float64_t>>(feat);
-	auto lda = some<CLDA>(0, features, labels, SVD_LDA);
+	auto lda = some<CLDA>(0, SVD_LDA);
+	lda->set_labels(labels);
 	// should throw an incorrect number of classes exception (expected value is
 	// 2)
-	EXPECT_THROW(lda->train(), ShogunException);
+	EXPECT_THROW(lda->train(features), ShogunException);
 }
 
 //FLD template testing

@@ -11,10 +11,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/TypedMachine.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
 
 namespace shogun
 {
@@ -93,7 +93,7 @@ template <class ST> class CDenseFeatures;
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
 
-class CLDA : public CTypedMachine<CLDA, CLinearMachine>
+class CLDA : public CDenseFeaturesDispatch<CLDA, CLinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
@@ -183,17 +183,20 @@ class CLDA : public CTypedMachine<CLDA, CLinearMachine>
 		 * @return whether training was successful
 		 */
 		template <typename ST>
-		bool train_machine_templated(CDenseFeatures<ST> * data);
-		virtual bool support_dispatching(){ return true; }
-		
-	protected:	
+		bool train_machine_templated(CDenseFeatures<ST>* data);
+		virtual bool support_dispatching()
+		{
+			return true;
+		}
+
+	protected:
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
 		 * @param features training data
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd(CDenseFeatures<ST> * data);
+		bool solver_svd(CDenseFeatures<ST>* data);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -202,7 +205,7 @@ class CLDA : public CTypedMachine<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic(CDenseFeatures<ST> * data);
+		bool solver_classic(CDenseFeatures<ST>* data);
 
 	protected:
 
