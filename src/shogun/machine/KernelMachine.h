@@ -280,6 +280,14 @@ class CKernelMachine : public CMachine
 		/** @return whether machine supports locking */
 		virtual bool supports_locking() const;
 
+		/** Stores feature data of the SV indices and sets it to the lhs of the
+		 * underlying kernel. Then, all SV indices are set to identity.
+		 *
+		 * May be overwritten by subclasses in case the model should be stored
+		 * differently.
+		 */
+		virtual void store_model_features();
+
 	protected:
 
 		/** apply get outputs
@@ -288,14 +296,6 @@ class CKernelMachine : public CMachine
 		 * @return outputs
 		 */
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
-
-		/** Stores feature data of the SV indices and sets it to the lhs of the
-		 * underlying kernel. Then, all SV indices are set to identity.
-		 *
-		 * May be overwritten by subclasses in case the model should be stored
-		 * differently.
-		 */
-		virtual void store_model_features();
 
 	private:
 		/** register parameters and do misc init */

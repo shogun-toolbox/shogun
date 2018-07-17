@@ -133,6 +133,12 @@ class CLinearMachine : public CMachine
 		 */
 		virtual const char* get_name() const { return "LinearMachine"; }
 
+		/** Stores feature data of underlying model. Does nothing because
+		 * Linear machines store the normal vector of the separating hyperplane
+		 * and therefore the model anyway
+		 */
+		virtual void store_model_features();
+
 	protected:
 
 		/** apply get outputs
@@ -147,6 +153,12 @@ class CLinearMachine : public CMachine
 		 * and therefore the model anyway
 		 */
 		virtual void store_model_features();
+
+		/** Computes the added bias. The bias is computed 
+		 * as the mean error between the predictions and 
+		 * the true labels.
+		*/
+		void compute_bias(CFeatures* data);
 
 	private:
 

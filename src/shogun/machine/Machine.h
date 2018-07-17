@@ -321,6 +321,25 @@ class CMachine : public CStoppableSGObject
 			return true;
 		}
 
+		/** Stores feature data of underlying model.
+		 * After this method has been called, it is possible to change
+		 * the machine's feature data and call apply(), which is then performed
+		 * on the training feature data that is part of the machine's model.
+		 *
+		 * Base method, has to be implemented in order to allow cross-validation
+		 * and model selection.
+		 *
+		 * NOT IMPLEMENTED! Has to be done in subclasses
+		 */
+		virtual void store_model_features()
+		{
+			SG_ERROR(
+			    "Model storage and therefore unlocked Cross-Validation and"
+			    " Model-Selection is not supported for %s. Locked may"
+			    " work though.\n",
+			    get_name());
+		}
+
 	protected:
 		/** train machine
 		 *
@@ -379,23 +398,6 @@ class CMachine : public CStoppableSGObject
 		{
 			SG_ERROR("Training continuation not supported by this model.\n");
 			return false;
-		}
-
-		/** Stores feature data of underlying model.
-		 * After this method has been called, it is possible to change
-		 * the machine's feature data and call apply(), which is then performed
-		 * on the training feature data that is part of the machine's model.
-		 *
-		 * Base method, has to be implemented in order to allow cross-validation
-		 * and model selection.
-		 *
-		 * NOT IMPLEMENTED! Has to be done in subclasses
-		 */
-		virtual void store_model_features()
-		{
-			SG_ERROR("Model storage and therefore unlocked Cross-Validation and"
-					" Model-Selection is not supported for %s. Locked may"
-					" work though.\n", get_name());
 		}
 
 		/** check whether the labels is valid.

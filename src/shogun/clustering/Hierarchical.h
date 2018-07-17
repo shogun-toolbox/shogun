@@ -108,6 +108,11 @@ class CHierarchical : public CDistanceMachine
 			return false;
 		}
 
+		/** TODO: Ensures cluster centers are in lhs of underlying distance
+		 * Currently: does nothing.
+		 * */
+		virtual void store_model_features();
+
 	protected:
 		/** estimate hierarchical clustering
 		 *
@@ -118,11 +123,6 @@ class CHierarchical : public CDistanceMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
-
-		/** TODO: Ensures cluster centers are in lhs of underlying distance
-		 * Currently: does nothing.
-		 * */
-		virtual void store_model_features();
 
 	private:
 		/** Initialize attributes */
