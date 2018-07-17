@@ -222,4 +222,14 @@ namespace shogun
 	{
 		return shogun::get<CMachine*>(m_stages.back().second);
 	}
+
+	void CPipeline::set_store_model_features(bool store_model)
+	{
+		get_machine()->set_store_model_features(store_model);
+	}
+
+	void CPipeline::store_model_features()
+	{
+		get_machine()->store_model_features();
+	}
 }

@@ -114,6 +114,19 @@ namespace shogun
 		 */
 		CMachine* get_machine() const;
 
+		/** Setter for store-model-features-after-training flag. This will be
+		 * forwarded to `set_store_model_features` of underlying machines.
+		 *
+		 * @param store_model whether model should be stored after
+		 * training
+		 */
+		virtual void set_store_model_features(bool store_model) override;
+
+		/** Stores feature data of underlying model. This will be forwarded to
+		 * `store_model_features` of underlying machines.
+		 */
+		virtual void store_model_features() override;
+
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL) override;
 
