@@ -813,7 +813,7 @@ void CNeuralNetwork::init()
 		"Parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_param_regularizable, "param_regularizable",
 		"Parameter Regularizable", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_layers, "layers",
+	SG_ADD(&m_layers, "layers",
 		"DynamicObjectArray of NeuralNetwork objects",
 		MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
