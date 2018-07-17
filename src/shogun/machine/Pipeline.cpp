@@ -251,4 +251,9 @@ namespace shogun
 		}
 		return result;
 	}
+
+	EProblemType CPipeline::get_machine_problem_type() const
+	{
+		return get_machine()->get_machine_problem_type();
+	}
 }

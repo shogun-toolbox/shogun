@@ -129,6 +129,8 @@ namespace shogun
 
 		virtual CSGObject* clone() override;
 
+		virtual EProblemType get_machine_problem_type() const override;
+
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL) override;
 
