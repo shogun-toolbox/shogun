@@ -163,9 +163,8 @@ bool CWDSVMOcas::train_machine_templated(CStringFeatures<ST>* data)
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
-	
-	set_features((CStringFeatures<uint8_t>*) data);
-	
+
+	set_features((CStringFeatures<uint8_t>*)data);
 
 	ASSERT(get_features())
 	CAlphabet* alphabet=get_features()->get_alphabet();
