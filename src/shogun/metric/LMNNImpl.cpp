@@ -113,14 +113,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 	int32_t d = x->get_num_features();
 	SGMatrix<index_t> target_neighbors(k, x->get_num_vectors());
 	SGVector<float64_t> unique_labels = y->get_unique_labels();
-	CDenseFeatures<float64_t>* features_slice = new CDenseFeatures<float64_t>();
-	CMulticlassLabels* labels_slice = new CMulticlassLabels();
 	SGVector<index_t> idxsmap(x->get_num_vectors());
-
-	// increase ref count because a KNN instance will be created for each slice, and it
-	// decreses the ref count of its labels and features when destroyed
-	SG_REF(features_slice)
-	SG_REF(labels_slice)
 
 	for (index_t i = 0; i < unique_labels.vlen; ++i)
 	{
@@ -138,13 +131,14 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		for (int32_t j = 0; j < slice_size; ++j)
 			slice_mat.set_column(j, x->get_feature_vector(idxsmap[j]));
 
-		features_slice->set_feature_matrix(slice_mat);
 
 		//FIXME the labels are not actually necessary to get the nearest neighbors, the
 		//features suffice. The labels are needed when we want to classify.
 		SGVector<float64_t> labels_vec(slice_size);
 		labels_vec.set_const(unique_labels[i]);
-		labels_slice->set_labels(labels_vec);
+
+		auto features_slice = some<CDenseFeatures<float64_t>>(slice_mat);
+		auto labels_slice = some<CMulticlassLabels>(labels_vec);
 
 		CKNN* knn = new CKNN(k+1, new CEuclideanDistance(features_slice, features_slice), labels_slice);
 		SGMatrix<int32_t> target_slice = knn->nearest_neighbors();
@@ -160,10 +154,6 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		// clean up knn
 		SG_UNREF(knn)
 	}
-
-	// clean up features and labels
-	SG_UNREF(features_slice)
-	SG_UNREF(labels_slice)
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_target_nn().\n")
 

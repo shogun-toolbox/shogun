@@ -22,8 +22,7 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix);
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(matrix);
 
 	// Construct kernel and compute kernel matrix
 	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
@@ -56,8 +55,7 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix);
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(matrix);
 
 	// Construct kernel
 	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
@@ -94,8 +92,7 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix);
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	// Construct kernel
 	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
