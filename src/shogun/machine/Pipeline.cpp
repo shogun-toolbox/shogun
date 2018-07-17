@@ -9,6 +9,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 
 namespace shogun
 {
@@ -231,5 +232,23 @@ namespace shogun
 	void CPipeline::store_model_features()
 	{
 		get_machine()->store_model_features();
+	}
+
+	CSGObject* CPipeline::clone()
+	{
+		auto result = CMachine::clone()->as<CPipeline>();
+		for (auto&& stage : m_stages)
+		{
+			visit(
+			    [&](auto object) {
+				    result->m_stages.emplace_back(
+				        stage.first,
+				        object->clone()
+				            ->as<typename std::remove_pointer<decltype(
+				                object)>::type>());
+				},
+			    stage.second);
+		}
+		return result;
 	}
 }

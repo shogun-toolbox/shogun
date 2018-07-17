@@ -127,6 +127,8 @@ namespace shogun
 		 */
 		virtual void store_model_features() override;
 
+		virtual CSGObject* clone() override;
+
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL) override;
 
