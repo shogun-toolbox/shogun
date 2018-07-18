@@ -244,7 +244,7 @@ namespace shogun
 				    result->m_stages.emplace_back(
 				        stage.first,
 				        object->clone()
-				            ->as<typename std::remove_pointer<decltype(
+				            ->template as<typename std::remove_pointer<decltype(
 				                object)>::type>());
 				},
 			    stage.second);
