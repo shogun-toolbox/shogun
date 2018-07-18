@@ -108,8 +108,8 @@ namespace shogun
 
 	/** Create embedded string features from string char features.
 	 * The new features has the same alphabet as the original features. Data of
-	 * the new features is obtained by calling `obtain_from_char` with the given
-	 * features and other arguments of this factory method.
+	 * the new features is obtained by calling CStringFeatures::obtain_from_char
+	 * with the given features and other arguments of this factory method.
 	 *
 	 * @param features StringCharFeatures
 	 * @param start start
