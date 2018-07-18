@@ -1,7 +1,7 @@
-File f_feats_train = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
-File f_feats_test = csv_file("../../data/classifier_binary_2d_nonlinear_features_test.dat")
-File f_labels_train = csv_file("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
-File f_labels_test = csv_file("../../data/classifier_binary_2d_nonlinear_labels_test.dat")
+File f_feats_train = csv_file("../../data/fm_train_mnist_10x10.dat")
+File f_feats_test = csv_file("../../data/fm_test_mnist_10x10.dat")
+File f_labels_train = csv_file("../../data/labels_train_mnist_10x10.dat")
+File f_labels_test = csv_file("../../data/labels_test_mnist_10x10.dat")
 
 Math:init_random(1)
 
@@ -15,11 +15,13 @@ Labels labels_test = labels(f_labels_test)
 #![add_layers]
 int num_feats = features_train.get_int("num_features")
 DynamicObjectArray all_layers()
-NeuralLayer input = neural_layer("NeuralInputLayer", num_neurons=num_feats)
+NeuralLayer input = neural_layer("NeuralInputLayer", width=10, height=10, num_neurons=100)
 all_layers.append_element(input)
-NeuralLayer relu = neural_layer("NeuralRectifiedLinearLayer", num_neurons=10)
-all_layers.append_element(relu)
-NeuralLayer softmax = neural_layer("NeuralSoftmaxLayer", num_neurons=2)
+NeuralLayer conv1 = neural_layer("NeuralConvolutionalLayer", activation_function=enum EConvMapActivationFunction.CMAF_RECTIFIED_LINEAR, num_maps=3, radius_x=1, radius_y=1, pooling_width=2, pooling_height=2)
+all_layers.append_element(conv1)
+NeuralLayer conv2 = neural_layer("NeuralConvolutionalLayer", activation_function=enum EConvMapActivationFunction.CMAF_RECTIFIED_LINEAR, num_maps=5, radius_x=1, radius_y=1)
+all_layers.append_element(conv2)
+NeuralLayer softmax = neural_layer("NeuralSoftmaxLayer", num_neurons=3)
 all_layers.append_element(softmax)
 #![add_layers]
 
@@ -27,7 +29,7 @@ all_layers.append_element(softmax)
 NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train)
 network.set_layers(all_layers)
 network.quick_connect()
-network.initialize_neural_network()
+network.initialize_neural_network(0.1)
 #![create_instance]
 
 #![set_parameters]
@@ -41,7 +43,7 @@ network.set_gd_momentum(0.9)
 
 #![train_and_apply]
 network.train(features_train)
-Labels labels_predict = network.apply_binary(features_test)
+Labels labels_predict = network.apply(features_test)
 #![train_and_apply]
 
 #![get_params]
@@ -49,7 +51,7 @@ RealVector parameters = network.get_real_vector("params")
 #![get_params]
 
 #![evaluate_accuracy]
-Evaluation eval = evaluation("AccuracyMeasure")
+Evaluation eval = evaluation("MulticlassAccuracy")
 real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 

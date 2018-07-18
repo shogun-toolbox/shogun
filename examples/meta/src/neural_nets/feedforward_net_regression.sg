@@ -1,28 +1,31 @@
-CSVFile f_feats_train("../../data/regression_1d_sinc_features_train_with_9d_noise.dat")
-CSVFile f_feats_test("../../data/regression_1d_sinc_features_test_with_9d_noise.dat")
-CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
-CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+File f_feats_train = csv_file("../../data/regression_1d_sinc_features_train_with_9d_noise.dat")
+File f_feats_test = csv_file("../../data/regression_1d_sinc_features_test_with_9d_noise.dat")
+File f_labels_train = csv_file("../../data/regression_1d_sinc_labels_train.dat")
+File f_labels_test = csv_file("../../data/regression_1d_sinc_labels_test.dat")
 
 Math:init_random(1)
 
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-RegressionLabels labels_train(f_labels_train)
-RegressionLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![add_layers]
-int dimensions = features_train.get_int("num_features")
-NeuralLayers layers() 
-layers.input(dimensions)
-layers.rectified_linear(20)
-layers.linear(1)
-DynamicObjectArray all_layers = layers.done()
+int num_feats = features_train.get_int("num_features")
+DynamicObjectArray all_layers()
+NeuralLayer input = neural_layer("NeuralInputLayer", num_neurons=num_feats)
+all_layers.append_element(input)
+NeuralLayer relu = neural_layer("NeuralRectifiedLinearLayer", num_neurons=20)
+all_layers.append_element(relu)
+NeuralLayer linear = neural_layer("NeuralLinearLayer", num_neurons=1)
+all_layers.append_element(linear)
 #![add_layers]
 
 #![create_instance]
-NeuralNetwork network(all_layers)
+NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train)
+network.set_layers(all_layers)
 network.quick_connect()
 network.initialize_neural_network()
 #![create_instance]
@@ -36,19 +39,18 @@ network.set_gd_momentum(0.9)
 #![set_parameters]
 
 #![train_and_apply]
-network.set_labels(labels_train)
 network.train(features_train)
-RegressionLabels labels_predict = network.apply_regression(features_test)
+Labels labels_predict = network.apply_regression(features_test)
 #![train_and_apply]
 
 #![get_params]
-RealVector parameters = network.get_parameters()
+RealVector parameters = network.get_real_vector("params")
 #![get_params]
 
-#![evaluate_error]
-MeanSquaredError err()
-real mse = err.evaluate(labels_predict, labels_test)
-#![evaluate_error]
+#![evaluate_accuracy]
+Evaluation eval = evaluation("MeanSquaredError")
+real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
 
 # additional integration testing variables
-RealVector output = labels_predict.get_labels()
+RealVector output = labels_predict.get_real_vector("labels")
