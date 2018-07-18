@@ -22,6 +22,7 @@ CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
 	m_max_iterations = 1000;
 	learn_rate = 0.1;
 	m_initialize_hyperplane = true;
+	set_compute_bias(false);
 	SG_ADD(
 	    &m_initialize_hyperplane, "initialize_hyperplane",
 	    "Whether to initialize hyperplane.", MS_AVAILABLE);
