@@ -1,0 +1,33 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+Features feats_train = features(f_feats_train)
+Features feats_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![create_pipeline
+Transformer subMean = transformer("PruneVarSubMean")
+Machine svm = machine("LibLinear")
+
+PipelineBuilder builder()
+builder.over(subMean)
+Pipeline pipeline = builder.then(svm)
+#![create_pipeline]
+
+#![create_cross_validation]
+StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
+Evaluation evaluation_criteron = evaluation("AccuracyMeasure")
+CrossValidation cross(pipeline, feats_train, labels_train, splitting_strategy, evaluation_criteron, False)
+cross.set_num_runs(2)
+#![create_cross_validation]
+
+#![evaluate_and_get_result]
+EvaluationResult result = cross.evaluate() 
+real mean = result.get_real("mean")
+real stddev = result.get_real("std_dev")
+#![evaluate_and_get_result]
