@@ -55,7 +55,24 @@ bool CMachine::train(CFeatures* data)
 	}
 
 	auto sub = connect_to_signal_handler();
-	bool result = train_machine(data);
+  bool result = false;  
+  if (support_features_dispatching())
+  {
+    switch (data->get_feature_class())
+    {
+    case C_DENSE:
+      result = train_dense(data);
+      break;
+    case C_STRING:
+      result = train_string(data);
+      break;
+    default:
+      SG_ERROR("Dispatching is not implemented for this feature class");
+    }
+  }
+  else
+    train_machine(data);
+    
 	sub.unsubscribe();
 	reset_computation_variables();
 

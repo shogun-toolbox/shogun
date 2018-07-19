@@ -334,24 +334,10 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
-			bool result = false;
-			if (support_features_dispatching())
-			{
-				switch (data->get_feature_class())
-				{
-				case C_DENSE:
-					result = train_dense(data);
-					break;
-				case C_STRING:
-					result = train_string(data);
-					break;
-				default:
-					SG_ERROR(
-					    "train_machine is not yet implemented for %s!\n",
-					    get_name());
-				}
-			}
-			return result;
+			SG_ERROR(
+			    "train_machine is not yet implemented for %s!\n",
+			    get_name());
+			return false;
 		}
 
 		virtual bool train_dense(CFeatures* data)
