@@ -5,9 +5,9 @@
  *          Bjoern Esser, Thoralf Klein
  */
 
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/BinaryLabels.h>
 #include <gtest/gtest.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 

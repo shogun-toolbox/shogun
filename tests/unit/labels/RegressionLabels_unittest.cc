@@ -5,9 +5,8 @@
  */
 #include <gtest/gtest.h>
 #include <shogun/base/range.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
-
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 

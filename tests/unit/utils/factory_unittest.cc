@@ -75,9 +75,9 @@ TEST(Factory, string_features_from_file)
 	EXPECT_EQ(std::remove(filename.c_str()), 0);
 }
 
-template<class T>
-void test_label_factory_spawns_correct_type(SGVector<float64_t>& vec,
-		bool expects_fail=false)
+template <class T>
+void test_label_factory_spawns_correct_type(
+    SGVector<float64_t>& vec, bool expects_fail = false)
 {
 	std::string filename = "Factory-labels_from_file.XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));

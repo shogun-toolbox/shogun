@@ -263,7 +263,7 @@ namespace shogun
 		 */
 		int32_t get_num_labels() const override;
 
-		virtual const char* get_name() const=0;
+		virtual const char* get_name() const = 0;
 
 	public:
 		/** label designates classify reject */

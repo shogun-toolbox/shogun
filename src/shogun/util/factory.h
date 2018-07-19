@@ -187,7 +187,10 @@ namespace shogun
 
 #ifndef SWIG // SWIG should skip this part
 	template <typename LT,
-		  std::enable_if_t<std::is_base_of<CDenseLabels, typename std::remove_pointer<LT>::type>::value, LT>* = nullptr>
+	          std::enable_if_t<
+	              std::is_base_of<CDenseLabels, typename std::remove_pointer<
+	                                                LT>::type>::value,
+	              LT>* = nullptr>
 	void try_labels(CDenseLabels*& labels, const SGVector<float64_t>& data)
 	{
 		if (!labels)
@@ -212,14 +215,23 @@ namespace shogun
 
 		CDenseLabels* result = nullptr;
 
-		REQUIRE(dynamic_cast<CCSVFile*>(file), "Cannot load labels from %s(\"%s\").\n", file->get_name(), file->get_filename());
+		REQUIRE(
+		    dynamic_cast<CCSVFile*>(file),
+		    "Cannot load labels from %s(\"%s\").\n", file->get_name(),
+		    file->get_filename());
 
-		// try to interpret as all dense label types, from most restrictive to least restrictive
+		// try to interpret as all dense label types, from most restrictive to
+		// least restrictive
 		try_labels<CBinaryLabels>(result, labels);
 		try_labels<CMulticlassLabels>(result, labels);
 		try_labels<CRegressionLabels>(result, labels);
-		REQUIRE(result, "Cannot load labels from %s(\"%s\") as any of dense labels.\n", file->get_name(), file->get_filename());
-		SG_SINFO("Loaded labels from %s(\"%s\") as %s\n", file->get_name(), file->get_filename(), result->get_name())
+		REQUIRE(
+		    result,
+		    "Cannot load labels from %s(\"%s\") as any of dense labels.\n",
+		    file->get_name(), file->get_filename());
+		SG_SINFO(
+		    "Loaded labels from %s(\"%s\") as %s\n", file->get_name(),
+		    file->get_filename(), result->get_name())
 
 		SG_REF(result);
 		return result;

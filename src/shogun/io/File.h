@@ -496,7 +496,10 @@ public:
      */
     static char* read_whole_file(char* fname, size_t& len);
 
-    SG_FORCED_INLINE const char* get_filename() { return filename; }
+	SG_FORCED_INLINE const char* get_filename()
+	{
+		return filename;
+	}
 #endif // #ifndef SWIG
 
 protected:

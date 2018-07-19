@@ -95,28 +95,29 @@ bool CMultilabelLabels::is_valid() const
 {
 	for (int32_t label_j = 0; label_j < get_num_labels(); label_j++)
 		{
-		if (!CMath::is_sorted(m_labels[label_j]))
-			return false;
+		    if (!CMath::is_sorted(m_labels[label_j]))
+			    return false;
 
-			int32_t c_len = m_labels[label_j].vlen;
-			if (c_len <= 0)
-			{
-				continue;
-			}
+		    int32_t c_len = m_labels[label_j].vlen;
+		    if (c_len <= 0)
+		    {
+			    continue;
+		    }
 
-			if (m_labels[label_j].vector[0] < 0)
-				return false;
+		    if (m_labels[label_j].vector[0] < 0)
+			    return false;
 
-			if (m_labels[label_j].vector[c_len - 1] >= get_num_classes())
-				return false;
-		}
-	return true;
+		    if (m_labels[label_j].vector[c_len - 1] >= get_num_classes())
+			    return false;
+	    }
+	    return true;
 }
 
-void
-CMultilabelLabels::ensure_valid(const char * context)
+void CMultilabelLabels::ensure_valid(const char* context)
 {
-	REQUIRE(is_valid(), "Multilabel labels need to be sorted and in [0, num_classes-1].\n");
+	REQUIRE(
+	    is_valid(),
+	    "Multilabel labels need to be sorted and in [0, num_classes-1].\n");
 }
 
 

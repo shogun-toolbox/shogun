@@ -76,7 +76,7 @@ bool CBinaryLabels::is_valid() const
 	return true;
 }
 
-void CBinaryLabels::ensure_valid(const char * context)
+void CBinaryLabels::ensure_valid(const char* context)
 {
 	REQUIRE(is_valid(), "Binary Labels must be -1 or +1!\n");
 }

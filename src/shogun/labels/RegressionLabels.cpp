@@ -49,7 +49,8 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_REGRESSION:
-				return Some<CRegressionLabels>::from_raw(orig->as<CRegressionLabels>());
+				return Some<CRegressionLabels>::from_raw(
+				    orig->as<CRegressionLabels>());
 			default:
 				SG_SNOTIMPLEMENTED
 			}

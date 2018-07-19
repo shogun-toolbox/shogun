@@ -67,7 +67,6 @@ namespace shogun
 		 */
 		virtual void ensure_valid(const char* context = NULL) = 0;
 
-
 		/** get number of labels, depending on whether a subset is set
 		 *
 		 * @return number of labels
