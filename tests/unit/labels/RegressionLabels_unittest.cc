@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 #include <shogun/base/range.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/BinaryLabels.h>
+
 
 using namespace shogun;
 
@@ -35,9 +37,9 @@ TEST_F(RegressionLabels, regression_labels_from_regression)
 	EXPECT_EQ(labels, labels2);
 }
 
-TEST_F(RegressionLabels, regression_labels_from_dense)
+TEST_F(RegressionLabels, regression_labels_from_binary)
 {
-	auto labels = some<CDenseLabels>(n);
+	auto labels = some<CBinaryLabels>(n);
 	labels->set_labels(labels_regression);
 	labels->set_values(scores);
 

@@ -41,18 +41,6 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 
 namespace shogun
 {
-	Some<CRegressionLabels> regression_from_regression(CRegressionLabels* orig)
-	{
-		return Some<CRegressionLabels>::from_raw(orig);
-	}
-
-	Some<CRegressionLabels> regression_from_dense(CDenseLabels* orig)
-	{
-		auto result = new CRegressionLabels(orig->get_labels());
-		result->set_values(orig->get_values());
-		return Some<CRegressionLabels>::from_raw(result);
-	}
-
 	Some<CRegressionLabels> regression_labels(CLabels* orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
@@ -61,10 +49,7 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_REGRESSION:
-				return regression_from_regression(
-				    orig->as<CRegressionLabels>());
-			case LT_DENSE_GENERIC:
-				return regression_from_dense(orig->as<CDenseLabels>());
+				return Some<CRegressionLabels>::from_raw(orig->as<CRegressionLabels>());
 			default:
 				SG_SNOTIMPLEMENTED
 			}

@@ -68,6 +68,8 @@ namespace shogun
 			 */
 			bool set_latent_label(int32_t idx, CData* label);
 
+			virtual bool is_valid() const override;
+
 			/** Make sure the label is valid, otherwise raise SG_ERROR.
 			 *
 			 * possible with subset

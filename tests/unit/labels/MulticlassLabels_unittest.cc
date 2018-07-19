@@ -6,6 +6,7 @@
  */
 
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -76,21 +77,11 @@ TEST_F(MulticlassLabels, multiclass_labels_from_multiclass)
 	EXPECT_EQ(labels.get(), labels2.get());
 }
 
-TEST_F(MulticlassLabels, multiclass_labels_from_dense)
-{
-	auto labels = some<CDenseLabels>(labels_true.size());
-	labels->set_labels(labels_true);
-	auto labels2 = multiclass_labels(labels);
-	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2.get(), nullptr);
-	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
-}
-
-TEST_F(MulticlassLabels, multiclass_labels_from_dense_not_contiguous)
+TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
 {
 	// delete this test once multiclass labels dont need to be contiguous,
 	// i.e. [0,1,2,3,4,...], anymore
-	auto labels = some<CDenseLabels>(labels_true.size());
+	auto labels = some<CBinaryLabels>(labels_true.size());
 	labels->set_labels({0, 1, 3});
 	auto converted = multiclass_labels(labels);
 	ASSERT_NE(converted.get(), nullptr);

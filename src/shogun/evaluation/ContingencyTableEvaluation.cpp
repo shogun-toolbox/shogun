@@ -22,10 +22,6 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	auto predicted_binary = binary_labels(predicted);
 	auto ground_truth_binary = binary_labels(ground_truth);
 
-	/* commented out: what if a machine only returns +1 in apply() ??
-	 * Heiko Strathamn */
-//	predicted->ensure_valid();
-
 	ground_truth->ensure_valid();
 	compute_scores(predicted_binary.get(), ground_truth_binary.get());
 	switch (m_type)

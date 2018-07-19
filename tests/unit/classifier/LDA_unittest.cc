@@ -198,7 +198,7 @@ TEST(LDA, num_classes_in_labels_exception)
 {
 	SGVector<float64_t> lab{1, -1, 2};
 	SGMatrix<float64_t> feat(1, 3);
-	auto labels = some<CDenseLabels>();
+	auto labels = some<CMulticlassLabels>();
 	labels->set_labels(lab);
 	auto features = some<CDenseFeatures<float64_t>>(feat);
 	auto lda = some<CLDA>(0, features, labels, SVD_LDA);

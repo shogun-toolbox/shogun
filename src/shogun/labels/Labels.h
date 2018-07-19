@@ -57,6 +57,8 @@ namespace shogun
 		/** destructor */
 		virtual ~CLabels();
 
+		virtual bool is_valid() const = 0;
+
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
@@ -64,6 +66,7 @@ namespace shogun
 		* @param context optional message to convey the context
 		 */
 		virtual void ensure_valid(const char* context = NULL) = 0;
+
 
 		/** get number of labels, depending on whether a subset is set
 		 *

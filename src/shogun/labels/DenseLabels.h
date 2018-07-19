@@ -58,6 +58,8 @@ namespace shogun
 		/** destructor */
 		virtual ~CDenseLabels();
 
+		virtual bool is_valid() const override;
+
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
@@ -261,19 +263,7 @@ namespace shogun
 		 */
 		int32_t get_num_labels() const override;
 
-		/** get label type
-		 *
-		 * @return label type (binary, multiclass, ...)
-		 */
-		ELabelType get_label_type() const override
-		{
-			return LT_DENSE_GENERIC;
-		}
-
-		const char* get_name() const override
-		{
-			return "DenseLabels";
-		}
+		virtual const char* get_name() const=0;
 
 	public:
 		/** label designates classify reject */
