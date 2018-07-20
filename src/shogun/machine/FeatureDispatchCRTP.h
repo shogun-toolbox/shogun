@@ -35,34 +35,31 @@ namespace shogun
 	protected:
 		virtual bool train_dense(CFeatures* data)
 		{
-			REQUIRE(
-			    data->get_num_vectors() == this->m_labels->get_num_labels(),
-			    "Number of training vectors (%d) does not match number of "
-			    "labels (%d)\n",
-			    data->get_num_vectors(), this->m_labels->get_num_labels())
-
-			// check for type of CFeatures, then call the appropriate template
-			// method
 			auto obj = this->template as<P>();
-			if (data->get_feature_type() == F_DREAL)
+			switch (data->get_feature_type())
+			{
+			case F_DREAL:
 				return obj->template train_machine_templated<float64_t>(
 				    data->as<CDenseFeatures<float64_t>>());
-			else if (data->get_feature_type() == F_SHORTREAL)
+			case F_SHORTREAL:
 				return obj->template train_machine_templated<float32_t>(
 				    data->as<CDenseFeatures<float32_t>>());
-			else if (data->get_feature_type() == F_LONGREAL)
+			case F_LONGREAL:
 				return obj->template train_machine_templated<floatmax_t>(
 				    data->as<CDenseFeatures<floatmax_t>>());
-			else
-				SG_SERROR(
-				    "Feature-type (%d) must be of type F_SHORTREAL (%d), "
-				    "F_DREAL (%d) or F_LONGREAL (%d).\n",
-				    data->get_feature_type(), F_SHORTREAL, F_DREAL, F_LONGREAL)
-
+			default:
+				SG_SERROR("Training with DenseFeatures of provided type is not "
+				          "possible!");
+			}
 			return false;
 		}
 
 		virtual bool support_features_dispatching()
+		{
+			return true;
+		}
+
+		virtual bool support_dense_dispatching()
 		{
 			return true;
 		}
@@ -84,34 +81,31 @@ namespace shogun
 	protected:
 		virtual bool train_string(CFeatures* data)
 		{
-			REQUIRE(
-			    data->get_num_vectors() == this->m_labels->get_num_labels(),
-			    "Number of training vectors (%d) does not match number of "
-			    "labels (%d)\n",
-			    data->get_num_vectors(), this->m_labels->get_num_labels())
-
-			// check for type of CFeatures, then call the appropriate template
-			// method
 			auto obj = this->template as<P>();
-			if (data->get_feature_type() == F_BYTE)
+			switch (data->get_feature_type())
+			{
+			case F_BYTE:
 				return obj->template train_machine_templated<uint8_t>(
 				    data->as<CStringFeatures<uint8_t>>());
-			else if (data->get_feature_type() == F_CHAR)
+			case F_CHAR:
 				return obj->template train_machine_templated<char>(
 				    data->as<CStringFeatures<char>>());
-			else if (data->get_feature_type() == F_WORD)
+			case F_WORD:
 				return obj->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
-			else
-				SG_SERROR(
-				    "Feature-type (%d) must be of type F_SHORTREAL (%d), "
-				    "F_DREAL (%d) or F_LONGREAL (%d).\n",
-				    data->get_feature_type(), F_BYTE, F_CHAR, F_WORD)
-
+			default:
+				SG_SERROR("Training with StringFeatures of provided type is "
+				          "not possible!");
+			}
 			return false;
 		}
 
 		virtual bool support_features_dispatching()
+		{
+			return true;
+		}
+
+		virtual bool support_string_dispatching()
 		{
 			return true;
 		}

@@ -55,24 +55,29 @@ bool CMachine::train(CFeatures* data)
 	}
 
 	auto sub = connect_to_signal_handler();
-  bool result = false;  
-  if (support_features_dispatching())
-  {
-    switch (data->get_feature_class())
-    {
-    case C_DENSE:
-      result = train_dense(data);
-      break;
-    case C_STRING:
-      result = train_string(data);
-      break;
-    default:
-      SG_ERROR("Dispatching is not implemented for this feature class");
-    }
-  }
-  else
-    train_machine(data);
-    
+	bool result = false;
+
+	if (support_features_dispatching())
+	{
+		REQUIRE(data != NULL, "Features cannot be NULL!");
+		REQUIRE(
+		    data->get_num_vectors() == this->m_labels->get_num_labels(),
+		    "Number of training vectors (%d) does not match number of "
+		    "labels (%d)\n",
+		    data->get_num_vectors(), this->m_labels->get_num_labels())
+
+		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
+			result = train_dense(data);
+		else if (
+		    support_string_dispatching() &&
+		    data->get_feature_class() == C_STRING)
+			result = train_string(data);
+		else
+			SG_ERROR("Training with %s is not implemented!", data->get_name());
+	}
+	else
+		result = train_machine(data);
+
 	sub.unsubscribe();
 	reset_computation_variables();
 

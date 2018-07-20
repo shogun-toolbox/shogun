@@ -68,8 +68,7 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression
-	: public CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>
+class CLeastAngleRegression: public CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>
 {
 public:
 
