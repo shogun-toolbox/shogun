@@ -80,6 +80,8 @@ public:
 	 */
 	CBinaryLabels(const CDenseLabels& dense);
 
+	virtual bool is_valid() const override;
+
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
 	 * possible with subset

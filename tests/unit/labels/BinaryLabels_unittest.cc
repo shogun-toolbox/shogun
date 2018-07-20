@@ -105,14 +105,3 @@ TEST_F(BinaryLabels, binary_labels_from_binary)
 	auto labels2 = binary_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }
-
-TEST_F(BinaryLabels, binary_labels_from_dense)
-{
-	auto labels = some<CDenseLabels>(probabilities.size());
-	labels->set_values(probabilities);
-	labels->set_labels(labels_binary);
-
-	auto labels2 = binary_labels(labels);
-	EXPECT_EQ(probabilities.size(), labels2->get_num_labels());
-	EXPECT_EQ(probabilities, labels2->get_values());
-}

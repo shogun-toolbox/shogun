@@ -28,10 +28,14 @@ CStructuredLabels::~CStructuredLabels()
 	SG_UNREF(m_labels);
 }
 
+bool CStructuredLabels::is_valid() const
+{
+	return m_labels != nullptr;
+}
+
 void CStructuredLabels::ensure_valid(const char* context)
 {
-	if ( m_labels == NULL )
-		SG_ERROR("Non-valid StructuredLabels in %s", context)
+	REQUIRE(is_valid(), "Non-valid StructuredLabels in %s", context);
 }
 
 CDynamicObjectArray* CStructuredLabels::get_labels() const

@@ -57,6 +57,8 @@ namespace shogun
 		/** destructor */
 		virtual ~CLabels();
 
+		virtual bool is_valid() const = 0;
+
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset

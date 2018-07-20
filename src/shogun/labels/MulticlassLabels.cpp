@@ -86,22 +86,29 @@ SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
 	return confs;
 }
 
-void CMulticlassLabels::ensure_valid(const char* context)
+bool CMulticlassLabels::is_valid() const
 {
-    CDenseLabels::ensure_valid(context);
+	if (!CDenseLabels::is_valid())
+		return false;
 
-    int32_t subset_size=get_num_labels();
+	int32_t subset_size=get_num_labels();
     for (int32_t i=0; i<subset_size; i++)
     {
         int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-        int32_t label = int32_t(m_labels[real_i]);
+		int32_t label = int64_t(m_labels[real_i]);
 
-        if (label<0 || float64_t(label)!=m_labels[real_i])
+		if (label<0 || float64_t(label)!=m_labels[real_i])
 		{
-			SG_ERROR("%s%sMulticlass Labels must be in range 0...<nr_classes-1> and integers!\n",
-                    context?context:"", context?": ":"");
+			return false;
 		}
 	}
+	return true;
+}
+
+void CMulticlassLabels::ensure_valid(const char* context)
+{
+	REQUIRE(is_valid(), "Multiclass Labels must be in range "
+	                    "[0,...,num_classes] and integers!\n");
 }
 
 ELabelType CMulticlassLabels::get_label_type() const
@@ -233,8 +240,6 @@ namespace shogun
 			case LT_MULTICLASS:
 				return Some<CMulticlassLabels>::from_raw(
 				    (CMulticlassLabels*)orig);
-			case LT_DENSE_GENERIC:
-				return to_multiclass((CDenseLabels*)orig);
 			case LT_BINARY:
 				return to_multiclass((CBinaryLabels*)orig);
 			default:

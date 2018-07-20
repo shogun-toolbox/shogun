@@ -84,10 +84,14 @@ bool CLatentLabels::set_latent_label(int32_t idx, CData* label)
 	}
 }
 
+bool CLatentLabels::is_valid() const
+{
+	return m_latent_labels != nullptr;
+}
+
 void CLatentLabels::ensure_valid(const char* context)
 {
-	if (m_latent_labels == NULL)
-		SG_ERROR("Non-valid LatentLabels in %s", context)
+	REQUIRE(is_valid(), "Empty labels provided!\n");
 }
 
 int32_t CLatentLabels::get_num_labels() const

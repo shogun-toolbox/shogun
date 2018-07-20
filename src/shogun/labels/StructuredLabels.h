@@ -39,6 +39,8 @@ class CStructuredLabels : public CLabels
 		/** destructor */
 		virtual ~CStructuredLabels();
 
+		virtual bool is_valid() const override;
+
 		/** check if labeling is valid
 		 *
 		 * possible with subset

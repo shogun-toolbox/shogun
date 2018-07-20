@@ -159,9 +159,10 @@ void CLinearMachine::compute_bias(CFeatures* data)
     int32_t num_vec=data->get_num_vectors();
 
     Map<VectorXd> eigen_outputs(outputs,num_vec);
-    Map<VectorXd> eigen_labels(((CRegressionLabels*)m_labels)->get_labels(),num_vec);
+    auto my_labels = m_labels->as<CDenseLabels>()->get_labels();
+    Map<VectorXd> eigen_labels(my_labels,num_vec);
 
-     set_bias((eigen_labels - eigen_outputs).mean()) ;
+    set_bias((eigen_labels - eigen_outputs).mean()) ;
 }
 
 

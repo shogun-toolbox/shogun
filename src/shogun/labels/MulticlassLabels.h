@@ -74,6 +74,8 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		virtual void ensure_valid(const char* context=NULL);
 
+		bool is_valid() const;
+
 		/** get label type
 		 *
 		 * @return label type multiclass
