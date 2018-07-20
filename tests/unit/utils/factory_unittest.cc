@@ -36,30 +36,6 @@ TEST(Factory, features_from_matrix)
 	delete obj;
 }
 
-TEST(Factory, features_dense_from_file)
-{
-	std::string filename = "Factory-features_from_file.XXXXXX";
-
-	SGMatrix<float64_t> mat(2, 3);
-	mat.set_const(1);
-	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
-	mat.save(file_save);
-	file_save->close();
-
-	auto file_load = some<CCSVFile>(filename.c_str(), 'r');
-	auto* obj = features(file_load, PT_FLOAT64);
-	file_load->close();
-	EXPECT_TRUE(obj != nullptr);
-	auto* cast = dynamic_cast<CDenseFeatures<float64_t>*>(obj);
-	ASSERT_TRUE(cast != nullptr);
-	auto loaded_mat = cast->get_feature_matrix();
-	EXPECT_TRUE(loaded_mat.equals(mat));
-	delete obj;
-
-	EXPECT_EQ(std::remove(filename.c_str()), 0);
-}
-
 TEST(Factory, string_features_from_file)
 {
 	const std::string strings[] = {"GAGACGGACC", "GCGCATATT", "GCGCATATG"};
@@ -99,12 +75,11 @@ TEST(Factory, string_features_from_file)
 	EXPECT_EQ(std::remove(filename.c_str()), 0);
 }
 
-TEST(Factory, labels_from_file)
+template <class T>
+void test_label_factory_spawns_correct_type(
+    SGVector<float64_t>& vec, bool expects_fail = false)
 {
 	std::string filename = "Factory-labels_from_file.XXXXXX";
-
-	SGVector<float64_t> vec(3);
-	vec.set_const(1);
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
 	auto file_save = some<CCSVFile>(filename.c_str(), 'w');
 	vec.save(file_save);
@@ -113,12 +88,82 @@ TEST(Factory, labels_from_file)
 	auto file_load = some<CCSVFile>(filename.c_str(), 'r');
 	auto* obj = labels(file_load);
 	file_load->close();
-	EXPECT_TRUE(obj != nullptr);
-	auto* cast = dynamic_cast<CDenseLabels*>(obj);
-	ASSERT_TRUE(cast != nullptr);
-	auto loaded_vec = cast->get_labels();
-	EXPECT_TRUE(loaded_vec.equals(vec));
-	delete obj;
 
+	EXPECT_TRUE(obj != nullptr);
+	auto* cast = dynamic_cast<T*>(obj);
+
+	if (expects_fail)
+	{
+		EXPECT_TRUE(cast == nullptr);
+	}
+	else
+	{
+		ASSERT_TRUE(cast != nullptr);
+		auto loaded_vec = cast->get_labels();
+		EXPECT_TRUE(loaded_vec.equals(vec));
+	}
+
+	delete obj;
 	EXPECT_EQ(std::remove(filename.c_str()), 0);
+}
+
+TEST(Factory, labels_binary_from_file)
+{
+	SGVector<float64_t> vec;
+
+	vec = {-1, -1, 1, 1};
+	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+
+	vec = {-1};
+	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+
+	vec = {1, 1};
+	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+
+	vec = {0, 1};
+	test_label_factory_spawns_correct_type<CBinaryLabels>(vec, true);
+}
+
+TEST(Factory, labels_multiclass_from_file)
+{
+	SGVector<float64_t> vec;
+
+	vec = {0, 1, 2};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+
+	vec = {0};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+
+	vec = {1, 1, 3, 4};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+
+	// should create binary
+	vec = {1, 1};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+	vec = {1, -1};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+
+	// should create regression
+	vec = {1, 1.1};
+	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+}
+
+TEST(Factory, labels_regression_from_file)
+{
+	SGVector<float64_t> vec;
+
+	vec = {1.0, 1.1};
+	test_label_factory_spawns_correct_type<CRegressionLabels>(vec);
+
+	// should create binary
+	vec = {-1, 1};
+	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	vec = {1, 1};
+	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	vec = {-1, -1};
+	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+
+	// should create multiclass
+	vec = {0, 1};
+	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
 }

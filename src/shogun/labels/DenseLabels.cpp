@@ -140,10 +140,14 @@ void CDenseLabels::set_int_labels(SGVector<int64_t> lab)
 }
 #endif
 
+bool CDenseLabels::is_valid() const
+{
+	return (m_labels.data() != nullptr) && (m_labels.size() > 0);
+}
+
 void CDenseLabels::ensure_valid(const char* context)
 {
-    if (m_labels.vector == NULL)
-        SG_ERROR("%s%sempty content (NULL) for labels\n", context?context:"", context?": ":"")
+	REQUIRE(is_valid(), "Labels cannot be empty!\n");
 }
 
 void CDenseLabels::load(CFile* loader)

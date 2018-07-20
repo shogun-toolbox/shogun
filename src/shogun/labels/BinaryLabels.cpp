@@ -61,46 +61,24 @@ CBinaryLabels::CBinaryLabels(CFile * loader) : CDenseLabels(loader)
 {
 }
 
-void CBinaryLabels::ensure_valid(const char * context)
+bool CBinaryLabels::is_valid() const
 {
-	CDenseLabels::ensure_valid(context);
-	bool found_plus_one = false;
-	bool found_minus_one = false;
+	if (!CDenseLabels::is_valid())
+		return false;
 
 	int32_t subset_size = get_num_labels();
 	for (int32_t i = 0; i < subset_size; i++)
 	{
 		int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-		if (m_labels[real_i] == +1.0)
-		{
-			found_plus_one = true;
-		}
-		else if (m_labels[real_i] == -1.0)
-		{
-			found_minus_one = true;
-		}
-		else
-		{
-			SG_ERROR(
-			        "%s%s%s::ensure_valid(): Not a two class labeling label[%d]=%f (only +1/-1 "
-			        "allowed)\n", context ? context : "",
-			        context ? ": " : "", get_name(), i, m_labels[real_i]);
-		}
+		if (m_labels[real_i] != +1.0 && m_labels[real_i] != -1.0)
+			return false;
 	}
+	return true;
+}
 
-	if (!found_plus_one)
-	{
-		SG_WARNING(
-		        "%s%s%s::ensure_valid(): Not a two class labeling - no positively labeled examples found\n",
-		        context ? context : "", context ? ": " : "", get_name());
-	}
-
-	if (!found_minus_one)
-	{
-		SG_WARNING(
-		        "%s%s%s::ensure_valid): Not a two class labeling - no negatively labeled examples found\n",
-		        context ? context : "", context ? ": " : "", get_name());
-	}
+void CBinaryLabels::ensure_valid(const char* context)
+{
+	REQUIRE(is_valid(), "Binary Labels must be -1 or +1!\n");
 }
 
 ELabelType CBinaryLabels::get_label_type() const
@@ -167,10 +145,6 @@ namespace shogun
 			{
 			case LT_BINARY:
 				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
-			case LT_DENSE_GENERIC:
-			{
-				return some<CBinaryLabels>(*((CDenseLabels*)orig));
-			}
 			default:
 				SG_SNOTIMPLEMENTED
 			}
