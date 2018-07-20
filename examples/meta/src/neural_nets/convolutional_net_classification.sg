@@ -1,9 +1,9 @@
-File f_feats_train = csv_file("../../data/fm_train_mnist_10x10.dat")
-File f_feats_test = csv_file("../../data/fm_test_mnist_10x10.dat")
-File f_labels_train = csv_file("../../data/labels_train_mnist_10x10.dat")
-File f_labels_test = csv_file("../../data/labels_test_mnist_10x10.dat")
+File f_feats_train = csv_file("../../data/fm_train_mnist_16x16.dat")
+File f_feats_test = csv_file("../../data/fm_test_mnist_16x16.dat")
+File f_labels_train = csv_file("../../data/labels_train_mnist_16x16.dat")
+File f_labels_test = csv_file("../../data/labels_test_mnist_16x16.dat")
 
-Math:init_random(1)
+Math:init_random(10)
 
 #![create_features]
 Features features_train = features(f_feats_train)
@@ -14,45 +14,32 @@ Labels labels_test = labels(f_labels_test)
 
 #![add_layers]
 int num_feats = features_train.get_int("num_features")
-DynamicObjectArray all_layers()
-NeuralLayer input = neural_layer("NeuralInputLayer", width=10, height=10, num_neurons=100)
-all_layers.append_element(input)
-NeuralLayer conv1 = neural_layer("NeuralConvolutionalLayer", activation_function=enum EConvMapActivationFunction.CMAF_RECTIFIED_LINEAR, num_maps=3, radius_x=1, radius_y=1, pooling_width=2, pooling_height=2)
-all_layers.append_element(conv1)
-NeuralLayer conv2 = neural_layer("NeuralConvolutionalLayer", activation_function=enum EConvMapActivationFunction.CMAF_RECTIFIED_LINEAR, num_maps=5, radius_x=1, radius_y=1)
-all_layers.append_element(conv2)
-NeuralLayer softmax = neural_layer("NeuralSoftmaxLayer", num_neurons=3)
-all_layers.append_element(softmax)
+DynamicObjectArray layers_conv()
+NeuralLayer input=neural_layer("NeuralInputLayer", width=16, height=16,num_neurons=256) 
+layers_conv.append_element(input)
+NeuralLayer conv1 = neural_layer("NeuralConvolutionalLayer", num_maps=10, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+layers_conv.append_element(conv1)
+NeuralLayer conv2 = neural_layer("NeuralConvolutionalLayer", num_maps=15, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+layers_conv.append_element(conv2)
+NeuralLayer softmax = neural_layer("NeuralSoftmaxLayer", num_neurons=10)
+layers_conv.append_element(softmax)
 #![add_layers]
 
 #![create_instance]
-NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train)
-network.set_layers(all_layers)
+NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train, max_num_epochs=6, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
+network.set_layers(layers_conv)
 network.quick_connect()
-network.initialize_neural_network(0.1)
+network.initialize_neural_network()
 #![create_instance]
-
-#![set_parameters]
-network.set_l2_coefficient(0.01)
-network.set_dropout_hidden(0.5)
-network.set_max_num_epochs(50)
-network.set_gd_mini_batch_size(num_feats)
-network.set_gd_learning_rate(0.1)
-network.set_gd_momentum(0.9)
-#![set_parameters]
 
 #![train_and_apply]
 network.train(features_train)
-Labels labels_predict = network.apply(features_test)
+Labels labels_predict = network.apply_multiclass(features_train)
 #![train_and_apply]
-
-#![get_params]
-RealVector parameters = network.get_real_vector("params")
-#![get_params]
 
 #![evaluate_accuracy]
 Evaluation eval = evaluation("MulticlassAccuracy")
-real accuracy = eval.evaluate(labels_predict, labels_test)
+real accuracy = eval.evaluate(labels_predict, labels_train)
 #![evaluate_accuracy]
 
 # additional integration testing variables
