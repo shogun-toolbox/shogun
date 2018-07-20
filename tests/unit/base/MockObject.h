@@ -83,6 +83,9 @@ namespace shogun
 			watch_param("object", &m_object);
 			m_parameters->add(
 			    (CSGObject**)&m_object, "object", "The object (tm)");
+
+			m_string = "Shogun rocks!";
+			watch_param("string", &m_string);
 		}
 
 		void free_single()
@@ -246,6 +249,8 @@ namespace shogun
 		T* m_raw_matrix_basic;
 		index_t m_raw_matrix_basic_rows;
 		index_t m_raw_matrix_basic_cols;
+
+		std::string m_string;
 	};
 
 	/** @brief Used to test the tags-parameter framework
