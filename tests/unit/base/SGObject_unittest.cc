@@ -78,6 +78,16 @@ TYPED_TEST(SGObjectEquals, different_basic)
 	EXPECT_FALSE(obj2->equals(obj1));
 }
 
+TYPED_TEST(SGObjectEquals, different_string)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_string = "Oh no!";
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
 TYPED_TEST(SGObjectEquals, different_object)
 {
 	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
@@ -221,6 +231,7 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 {
 	auto obj = some<CCloneEqualsMock<TypeParam>>();
 	obj->m_basic -= 1;
+	obj->m_string = "Non empty string";
 	obj->m_object->m_some_value -= 1;
 	obj->m_sg_vector[0] -= 1;
 	obj->m_sg_matrix(0, 0) = 0;
