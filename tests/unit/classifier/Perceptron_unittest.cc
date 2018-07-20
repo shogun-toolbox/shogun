@@ -117,7 +117,6 @@ TEST(Perceptron, continue_training_consistency)
 	};
 	perceptron_stop->set_callback(callback);
 
-	perceptron_stop->set_compute_bias(false);
 	perceptron_stop->set_labels(labels);
 	perceptron_stop->train(features);
 

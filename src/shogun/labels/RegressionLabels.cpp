@@ -1,5 +1,6 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -37,6 +38,11 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
 	return shallow_copy_labels;
+}
+
+float64_t CRegressionLabels::compute_bias() const
+{
+	return linalg::mean(get_labels());
 }
 
 namespace shogun

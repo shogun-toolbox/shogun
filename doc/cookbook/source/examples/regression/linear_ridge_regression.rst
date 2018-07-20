@@ -25,19 +25,11 @@ We create an instance of :sgclass:`CLinearRidgeRegression` classifier, passing i
 
 .. sgexample:: linear_ridge_regression.sg:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels` and bias.
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels`.
 
 .. sgexample:: linear_ridge_regression.sg:train_and_apply
 
-Optionally the bias can be disabled to avoid redundant computation.
-
-.. sgexample:: linear_ridge_regression.sg:disable_bias
-
-Imagine, we know the bias term. We can set it as
-
-.. sgexample:: linear_ridge_regression.sg:set_bias_manually
-
-After training, we can extract :math:`{\bf w}`.
+After training, we can extract :math:`{\bf w}` and the bias.
 
 .. sgexample:: linear_ridge_regression.sg:extract_w
 

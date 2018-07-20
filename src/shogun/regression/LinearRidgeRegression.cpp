@@ -71,13 +71,14 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
 	linalg::add_diag(kernel_matrix, tau_vector);
 
-	auto labels = ((CRegressionLabels*)m_labels)->get_labels();
-	linalg::matrix_prod(feats_matrix, labels, y);
+	auto labels = regression_labels(m_labels);
+	linalg::matrix_prod(feats_matrix, labels->get_labels(), y);
 
 	auto decomposition = linalg::cholesky_factor(kernel_matrix);
 	y = linalg::cholesky_solver(decomposition, y);
 
 	set_w(y);
+	set_bias(labels->compute_bias());
 	return true;
 }
 
