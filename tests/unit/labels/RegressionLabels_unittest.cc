@@ -35,16 +35,3 @@ TEST_F(RegressionLabels, regression_labels_from_regression)
 	auto labels2 = regression_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }
-
-TEST_F(RegressionLabels, regression_labels_from_binary)
-{
-	auto labels = some<CBinaryLabels>(n);
-	labels->set_labels(labels_regression);
-	labels->set_values(scores);
-
-	auto labels2 = regression_labels(labels);
-	EXPECT_NE(labels, labels2);
-	ASSERT_NE(labels2.get(), nullptr);
-	EXPECT_EQ(labels->get_labels(), labels2->get_labels());
-	EXPECT_EQ(labels->get_values(), labels2->get_values());
-}
