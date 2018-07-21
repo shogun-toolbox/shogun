@@ -1,5 +1,5 @@
 ============================
-Cross Validation on Pipeline
+Cross Validation on a Pipeline
 ============================
 
 In this example, we illustrate how to use cross-validation with :sgclass:`CPipeline`.
@@ -9,22 +9,21 @@ For more information on cross-validation, check :doc:`./cross_validation`.
 -------
 Example
 -------
-We'll use as example a binary classification problem solvable by a pipeline consisted of a transformer :sgclass:`CPruneVarSubMean` and a machine :sgclass:`CLibLinear`.
+We demonstrate a pipeline consisting of a transformer :sgclass:`CPruneVarSubMean` for normalizing the features, and a machine :sgclass:`CLibLinear` for binary classification.
 
-Imagine we have files with training data. We create :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) as
+We create :sgclass:`CFeatures` and :sgclass:`CLabels` via loading from files
 
 .. sgexample:: cross_validation_pipeline:create_features
 
-
-We use :sgclass:`CPruneVarSubMean` to normalize the features and then use :sgclass:`CLibLinear` for classification.
-The transformer and the machine are chained as a :sgclass:`CPipeline`.
+We first chain all transformers, and then finalize the pipeline with the classifier.
 
 .. sgexample:: cross_validation_pipeline:create_pipeline
 
 Next, we initialize a splitting strategy :sgclass:`CStratifiedCrossValidationSplitting` to divide the dataset into :math:`k-` folds for the :math:`k-` fold cross validation.
-We also have to decide on an evaluation criterion class (from :sgclass:`CEvaluation`) to evaluate the performance of the trained models.
+We also have to decide on an evaluation criterion class (see :sgclass:`CEvaluation`) to evaluate the performance of the trained model.
 In this case, we use :sgclass:`CAccuracyMeasure`.
 We then instantiate :sgclass:`CCrossValidation` and set the number of cross validation's runs.
+The pipeline instance behaves just like a :sgclass:`CMachine` and this can be directly passed to :sgclass:`CCrossValidation`.
 
 .. sgexample:: cross_validation_pipeline:create_cross_validation
 
