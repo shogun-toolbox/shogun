@@ -48,13 +48,15 @@ namespace shogun
 				return obj->template train_machine_templated<floatmax_t>(
 				    data->as<CDenseFeatures<floatmax_t>>());
 			default:
-				SG_SERROR("Training with DenseFeatures of provided type is not "
-				          "possible!");
+				SG_SERROR(
+				    "Training with DenseFeatures of provided %s type is not "
+				    "possible!",
+				    feature_type(data->get_feature_type()));
 			}
 			return false;
 		}
 
-		virtual bool support_features_dispatching()
+		virtual bool support_feature_dispatching()
 		{
 			return true;
 		}
@@ -94,13 +96,15 @@ namespace shogun
 				return obj->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
 			default:
-				SG_SERROR("Training with StringFeatures of provided type is "
-				          "not possible!");
+				SG_SERROR(
+				    "Training with StringFeatures of provided %s type is "
+				    "not possible!",
+				    feature_type(data->get_feature_type()));
 			}
 			return false;
 		}
 
-		virtual bool support_features_dispatching()
+		virtual bool support_feature_dispatching()
 		{
 			return true;
 		}

@@ -57,14 +57,14 @@ bool CMachine::train(CFeatures* data)
 	auto sub = connect_to_signal_handler();
 	bool result = false;
 
-	if (support_features_dispatching())
+	if (support_feature_dispatching())
 	{
-		REQUIRE(data != NULL, "Features cannot be NULL!");
+		REQUIRE(data != NULL, "Features not provided!");
 		REQUIRE(
-		    data->get_num_vectors() == this->m_labels->get_num_labels(),
+		    data->get_num_vectors() == m_labels->get_num_labels(),
 		    "Number of training vectors (%d) does not match number of "
 		    "labels (%d)\n",
-		    data->get_num_vectors(), this->m_labels->get_num_labels())
+		    data->get_num_vectors(), m_labels->get_num_labels())
 
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
 			result = train_dense(data);

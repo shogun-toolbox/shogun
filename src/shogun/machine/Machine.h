@@ -351,7 +351,7 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
-		virtual bool support_features_dispatching()
+		virtual bool support_feature_dispatching()
 		{
 			return false;
 		}
