@@ -19,21 +19,18 @@ namespace shogun
 /** @brief Class LinearRidgeRegression implements Ridge Regression - a regularized least square
  * method for classification and regression.
  *
- * RR is closely related to Fishers Linear Discriminant (cf. LDA).
- *
  * Internally, it is solved via minimizing the following system
  *
  * \f[
- * \frac{1}{2}\left(\sum_{i=1}^N(y_i-{\bf w}\cdot {\bf x}_i)^2 + \tau||{\bf w}||^2\right)
+ * \frac{1}{2}\left(\sum_{i=1}^N(y_i-({\bf w}\cdot {\bf x}_i+b))^2 + \tau||{\bf w}||^2\right)
  * \f]
  *
  * which boils down to solving a linear system
  *
  * \f[
  * {\bf w} = \left(\tau {\bf I}+ \sum_{i=1}^N{\bf x}_i{\bf x}_i^T\right)^{-1}\left(\sum_{i=1}^N y_i{\bf x}_i\right)
+ * b = \frac{1}{N}/sum_{i=1}^Ny_i-{\bf w}\cdot /frac{1}{N}/sum_{i=1}^N{\bf x}_i
  * \f]
- *
- * The expressed solution is a linear method with bias b (cf. CLinearMachine).
  */
 class CLinearRidgeRegression : public CLinearMachine
 {

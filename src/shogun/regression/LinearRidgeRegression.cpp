@@ -76,9 +76,11 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 
 	auto decomposition = linalg::cholesky_factor(kernel_matrix);
 	y = linalg::cholesky_solver(decomposition, y);
+	auto lab = regression_labels(m_labels)->get_labels();
+	auto intercept = linalg::mean(y) - linalg::dot(y, feats->mean<float64_t>());
+	set_bias(intercept);
 
 	set_w(y);
-	set_bias(labels->compute_bias());
 	return true;
 }
 

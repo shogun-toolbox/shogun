@@ -17,6 +17,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/lib/SGMatrix.h>
 
@@ -302,6 +303,18 @@ public:
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
 			int32_t vec_idx2);
+
+	/** Computes the average feature vector.
+	 * @return Average feature vector
+	 */
+	template <typename X = typename std::enable_if_t<std::is_arithmetic<ST>::value>>
+	SGVector<ST> mean() const
+	{
+		// TODO optimize non batch mode, but get_feature_vector is non const :(
+		SGVector<ST> result = linalg::colwise_sum(get_feature_matrix());
+		linalg::scale(result, result, 1.0/get_num_vectors());
+		return result;
+	}
 
 	/** compute dot product between vector1 and a dense vector
 	 *

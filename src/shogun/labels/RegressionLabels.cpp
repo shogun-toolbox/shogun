@@ -40,11 +40,6 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-float64_t CRegressionLabels::compute_bias() const
-{
-	return linalg::mean(get_labels());
-}
-
 namespace shogun
 {
 	Some<CRegressionLabels> regression_labels(CLabels* orig)

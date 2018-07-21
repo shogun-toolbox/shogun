@@ -52,12 +52,6 @@ class CRegressionLabels : public CDenseLabels
 		 */
 		CRegressionLabels(CFile* loader);
 
-		/** Computes the label bias, that is, the average of all labels.
-		 * Works with subsets.
-		 *
-		 * @return bias*/
-		float64_t compute_bias() const;
-
 		/** get label type
 		 *
 		 * @return label type real
