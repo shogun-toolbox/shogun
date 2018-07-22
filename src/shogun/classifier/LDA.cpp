@@ -59,7 +59,7 @@ CLDA::~CLDA()
 {
 }
 
-template <typename ST>
+template <typename ST, typename U>
 bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	index_t num_feat = data->get_num_features();

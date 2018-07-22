@@ -101,7 +101,7 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 	}
 }
 
-template <typename ST>
+template <typename ST, typename U>
 bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 {
 	std::vector<std::vector<ST>> m_beta_path_t;		

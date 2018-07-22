@@ -351,17 +351,17 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
-		virtual bool support_feature_dispatching()
+		virtual bool support_feature_dispatching() const
 		{
 			return false;
 		}
 
-		virtual bool support_dense_dispatching()
+		virtual bool support_dense_dispatching() const 
 		{
 			return false;
 		}
 
-		virtual bool support_string_dispatching()
+		virtual bool support_string_dispatching() const
 		{
 			return false;
 		}
