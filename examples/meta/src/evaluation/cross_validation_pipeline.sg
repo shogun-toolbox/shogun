@@ -14,7 +14,7 @@ Labels labels_test = labels(f_labels_test)
 Transformer subMean = transformer("PruneVarSubMean")
 Machine svm = machine("LibLinear")
 
-PipelineBuilder builder()
+PipelineBuilder builder = pipeline()
 builder.over(subMean)
 Pipeline pipeline = builder.then(svm)
 #![create_pipeline]
