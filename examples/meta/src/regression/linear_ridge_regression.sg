@@ -17,18 +17,10 @@ Machine lrr = machine("LinearRidgeRegression", tau=0.001, labels=labels_train)
 #![train_and_apply]
 lrr.train(features_train)
 Labels labels_predict = lrr.apply(features_test)
-real b = lrr.get_real("bias")
 #![train_and_apply]
 
-#[!disable_bias]
-lrr.put("compute_bias", False)
-#[!disable_bias]
-
-#[!set_bias_manually]
-lrr.put("bias", b)
-#[!set_bias_manually]
-
 #[!extract_w]
+real b = lrr.get_real("bias")
 RealVector w = lrr.get_real_vector("w")
 #[!extract_w]
 

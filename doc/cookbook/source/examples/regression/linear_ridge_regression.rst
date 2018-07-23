@@ -2,14 +2,15 @@
 Linear Ridge Regression
 =======================
 
-A linear ridge regression model can be defined as :math:`y_i = \bf{w}^\top\bf{x_i}` where :math:`y_i` is the predicted value, :math:`\bf{x_i}` is a feature vector and :math:`\bf{w}` is the weight vector. We aim to find the linear function that best explains the data, i.e. minimizes the squared loss plus a :math:`L_2` regularization term. One can show the solution can be written as:
+A linear ridge regression model can be defined as :math:`y_i = \bf{w}^\top\bf{x_i} + b` where :math:`y_i` is the predicted value, :math:`\bf{x_i}` is a feature vector, :math:`\bf{w}` is the weight vector, and :math:`b` is a bias term.
+We aim to find the linear function that best explains the data, i.e. minimizes the squared loss plus a :math:`L_2` regularization term. One can show the solution can be written as:
 
 .. math::
-    {\bf w} = \left(\tau {\bf I}+ \sum_{i=1}^N{\bf x}_i{\bf x}_i^\top\right)^{-1}\left(\sum_{i=1}^N y_i{\bf x}_i\right)
+    {\bf w}=\left(\tau I_{D}+XX^{\top}\right)^{-1}X^{\top}y
 
-where :math:`N` is the number of training samples and :math:`\tau>0` scales the regularization term.
+where :math:`X=\left[{\bf x}_{1},\dots{\bf x}_{N}\right]\in\mathbb{R}^{D\times N}` is the training data matrix, containing :math:`N` training samples of dimension :math:`D`, :math:`y=[y_{1},\dots,y_{N}]^{\top}\in\mathbb{R}^{N}` are the labels, and :math:`\tau>0` scales the regularization term.
 
-A bias term, which is the squared empirical error, can also be calculated.
+The bias term is computed as :math:`b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}`, where :math:`\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}`.
 
 For the special case when :math:`\tau = 0`, a wrapper class :sgclass:`CLeastSquaresRegression` is available.
 
@@ -25,19 +26,11 @@ We create an instance of :sgclass:`CLinearRidgeRegression` classifier, passing i
 
 .. sgexample:: linear_ridge_regression.sg:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels` and bias.
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels`.
 
 .. sgexample:: linear_ridge_regression.sg:train_and_apply
 
-Optionally the bias can be disabled to avoid redundant computation.
-
-.. sgexample:: linear_ridge_regression.sg:disable_bias
-
-Imagine, we know the bias term. We can set it as
-
-.. sgexample:: linear_ridge_regression.sg:set_bias_manually
-
-After training, we can extract :math:`{\bf w}`.
+After training, we can extract :math:`{\bf w}` and the bias.
 
 .. sgexample:: linear_ridge_regression.sg:extract_w
 

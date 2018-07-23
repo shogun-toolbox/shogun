@@ -27,7 +27,6 @@ CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
 	prec = 1e-6;
 	C = 1;
 	t = 0;
-	set_compute_bias(true);
 }
 
 CNewtonSVM::CNewtonSVM(
@@ -41,7 +40,6 @@ CNewtonSVM::CNewtonSVM(
 	t = 0;
 	set_features(traindat);
 	set_labels(trainlab);
-	set_compute_bias(true);
 }
 
 

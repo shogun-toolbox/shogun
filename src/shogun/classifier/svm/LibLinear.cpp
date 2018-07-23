@@ -45,12 +45,10 @@ CLibLinear::CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 void CLibLinear::init()
 {
 	set_liblinear_solver_type(L2R_L1LOSS_SVC_DUAL);
-	set_bias_enabled(false);
+	set_bias_enabled(true);
 	set_C(1, 1);
 	set_max_iterations();
 	set_epsilon(1e-5);
-	/** Prevent default bias computation*/
-	set_compute_bias(false);
 
 	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
 	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);

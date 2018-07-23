@@ -11,42 +11,33 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 CLinearMachine::CLinearMachine(): CMachine()
 {
 	init();
 }
 
-CLinearMachine::CLinearMachine(bool comput_bias): CMachine()
-{
-	init();
-
-	set_compute_bias(comput_bias);
-}
-
 CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
 {
 	init();
+	REQUIRE(machine, "No machine provided.\n");
 
-	set_w(machine->get_w().clone());
+	auto w = machine->get_w();
+	auto w_clone = w.clone();
+	set_w(w_clone);
 	set_bias(machine->get_bias());
-	set_compute_bias(machine->get_compute_bias());
 }
 
 void CLinearMachine::init()
 {
 	bias = 0;
 	features = NULL;
-	m_compute_bias = true;
 
 	SG_ADD(&m_w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &features, "features", "Feature object.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_compute_bias, "compute_bias", "Whether bias is computed.", MS_NOT_AVAILABLE);
+	SG_ADD(&features, "features", "Feature object.", MS_NOT_AVAILABLE);
 }
 
 
@@ -114,16 +105,6 @@ float64_t CLinearMachine::get_bias()
 	return bias;
 }
 
-void CLinearMachine::set_compute_bias(bool comput_bias)
-{
-	m_compute_bias = comput_bias;
-}
-
-bool CLinearMachine::get_compute_bias()
-{
-	return m_compute_bias;
-}
-
 void CLinearMachine::set_features(CDotFeatures* feat)
 {
 	SG_REF(feat);
@@ -139,38 +120,4 @@ CDotFeatures* CLinearMachine::get_features()
 
 void CLinearMachine::store_model_features()
 {
-}
-
-void CLinearMachine::compute_bias(CFeatures* data)
-{
-    REQUIRE(m_labels,"No labels set\n");
-
-    if (!data)
-    	data=features;
-
-    REQUIRE(data,"No features provided and no featured previously set\n");
-
-    REQUIRE(m_labels->get_num_labels() == data->get_num_vectors(),
-    	"Number of training vectors (%d) does not match number of labels (%d)\n",
-    	m_labels->get_num_labels(), data->get_num_vectors());
-
-    SGVector<float64_t> outputs = apply_get_outputs(data);
-
-    int32_t num_vec=data->get_num_vectors();
-
-    Map<VectorXd> eigen_outputs(outputs,num_vec);
-    auto my_labels = m_labels->as<CDenseLabels>()->get_labels();
-    Map<VectorXd> eigen_labels(my_labels,num_vec);
-
-    set_bias((eigen_labels - eigen_outputs).mean()) ;
-}
-
-
-bool CLinearMachine::train(CFeatures* data)
-{
-	bool result = CMachine::train(data);
-	if (m_compute_bias)
-		compute_bias(data);
-
-	return result;
 }
