@@ -37,7 +37,7 @@ void CLibLinearRegression::init_defaults()
 	set_C(1.0);
 	set_epsilon(1e-2);
 	set_max_iter(10000);
-	set_use_bias(true);
+	set_use_bias(false);
 	set_liblinear_regression_type(L2R_L1LOSS_SVR_DUAL);
 }
 
