@@ -20,7 +20,7 @@ Pipeline pipeline = builder.then(svm)
 #![create_pipeline]
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
+SplittingStrategy strategy = splitting_strategy("CStratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2)
 Evaluation evaluation_criteron = evaluation("AccuracyMeasure")
 CrossValidation cross(pipeline, feats_train, labels_train, splitting_strategy, evaluation_criteron, False)
 cross.set_num_runs(2)
