@@ -20,15 +20,15 @@ namespace shogun
 #define IGNORE_IN_CLASSLIST
 
 	template <class P, class T>
-	IGNORE_IN_CLASSLIST class CDenseFeaturesDispatch : public T
+	IGNORE_IN_CLASSLIST class CDenseRealDispatch : public T
 	{
 	public:
 		/** Default constructor */
-		CDenseFeaturesDispatch() : T()
+		CDenseRealDispatch() : T()
 		{
 		}
 
-		virtual ~CDenseFeaturesDispatch()
+		virtual ~CDenseRealDispatch()
 		{
 		}
 

@@ -20,7 +20,7 @@ using namespace Eigen;
 using namespace shogun;
 
 CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
-    : CDenseFeaturesDispatch<CLDA, CLinearMachine>()
+    : CDenseRealDispatch<CLDA, CLinearMachine>()
 {
 	init();
 	m_method=method;
@@ -31,7 +31,7 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 CLDA::CLDA(
     float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
     ELDAMethod method, bool bdc_svd)
-    : CDenseFeaturesDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
+    : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
 	set_features(traindat);
@@ -46,7 +46,6 @@ void CLDA::init()
 	m_method=AUTO_LDA;
 	m_gamma=0;
 	m_bdc_svd = true;
-	set_compute_bias(false);
 
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",

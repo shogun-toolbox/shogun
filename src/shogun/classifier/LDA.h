@@ -93,7 +93,7 @@ template <class ST> class CDenseFeatures;
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
 
-class CLDA : public CDenseFeaturesDispatch<CLDA, CLinearMachine>
+class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
@@ -182,13 +182,8 @@ class CLDA : public CDenseFeaturesDispatch<CLDA, CLinearMachine>
 		 *
 		 * @return whether training was successful
 		 */
-		template <typename ST, typename U = typename std::enable_if<
-		                           std::is_floating_point<ST>::value>::type>
+		template <typename ST, typename U = typename std::enable_if_t<std::is_floating_point<ST>::value>>
 		bool train_machine_templated(CDenseFeatures<ST>* data);
-		virtual bool support_dispatching()
-		{
-			return true;
-		}
 
 	protected:
 		/**

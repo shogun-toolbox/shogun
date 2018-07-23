@@ -8,10 +8,10 @@
 
 using namespace shogun;
 
-class CMockModel : public CDenseFeaturesDispatch<CMockLinear, CMachine>
+class CMockModel : public CDenseRealDispatch<CMockModel, CMachine>
 {
 public:
-	CMockModel() : CDenseFeaturesDispatch<CMockLinear, CMachine>()
+	CMockModel() : CDenseRealDispatch<CMockModel, CMachine>()
 	{
 	}
 	~CMockModel()

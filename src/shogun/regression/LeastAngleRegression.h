@@ -68,7 +68,7 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>
+class CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
 {
 public:
 
@@ -214,8 +214,8 @@ public:
 	* @param data training data
 	* @see train_machine
 	*/
-	template <typename ST, typename U = typename std::enable_if<
-		                       std::is_floating_point<ST>::value>::type>
+	template <typename ST, typename U = typename std::enable_if_t<
+		                       std::is_floating_point<ST>::value>>
 	bool train_machine_templated(CDenseFeatures<ST>* data);
 
 	virtual bool support_dispatching()

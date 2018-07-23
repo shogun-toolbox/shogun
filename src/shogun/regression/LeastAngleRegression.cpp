@@ -24,13 +24,13 @@ using namespace shogun;
 using namespace std;
 
 CLeastAngleRegression::CLeastAngleRegression()
-    : CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>()
+    : CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 }
 
 CLeastAngleRegression::CLeastAngleRegression(bool lasso)
-    : CDenseFeaturesDispatch<CLeastAngleRegression, CLinearMachine>()
+    : CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 
