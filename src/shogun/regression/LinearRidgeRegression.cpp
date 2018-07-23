@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Chiyuan Zhang, Viktor Gal, 
- *          Abhinav Rai, Youssef Emad El-Din
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Chiyuan Zhang, Viktor Gal,
+ *          Abhinav Rai, Youssef Emad El-Din, Heiko Strathmann
  */
 #include <shogun/lib/config.h>
 
@@ -71,13 +71,19 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
 	linalg::add_diag(kernel_matrix, tau_vector);
 
-	auto labels = ((CRegressionLabels*)m_labels)->get_labels();
-	linalg::matrix_prod(feats_matrix, labels, y);
+	auto labels = regression_labels(m_labels);
+	auto lab = regression_labels(m_labels)->get_labels();
+	linalg::matrix_prod(feats_matrix, lab, y);
 
 	auto decomposition = linalg::cholesky_factor(kernel_matrix);
 	y = linalg::cholesky_solver(decomposition, y);
-
 	set_w(y);
+
+	auto x_bar = linalg::colwise_sum(feats_matrix);
+	linalg::scale(x_bar, x_bar, 1.0 / ((float64_t)x_bar.size()));
+	auto intercept = linalg::mean(lab) - linalg::dot(lab, x_bar);
+	set_bias(intercept);
+
 	return true;
 }
 

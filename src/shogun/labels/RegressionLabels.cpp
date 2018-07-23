@@ -1,5 +1,6 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 

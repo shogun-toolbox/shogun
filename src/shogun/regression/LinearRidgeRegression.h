@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
- *          Fernando Iglesias, Youssef Emad El-Din
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
+ *          Fernando Iglesias, Youssef Emad El-Din, Heiko Strathmann
  */
 
 #ifndef _LINEARRIDGEREGRESSION_H__
@@ -16,27 +16,32 @@
 
 namespace shogun
 {
-/** @brief Class LinearRidgeRegression implements Ridge Regression - a regularized least square
- * method for classification and regression.
- *
- * RR is closely related to Fishers Linear Discriminant (cf. LDA).
- *
- * Internally, it is solved via minimizing the following system
- *
- * \f[
- * \frac{1}{2}\left(\sum_{i=1}^N(y_i-{\bf w}\cdot {\bf x}_i)^2 + \tau||{\bf w}||^2\right)
- * \f]
- *
- * which boils down to solving a linear system
- *
- * \f[
- * {\bf w} = \left(\tau {\bf I}+ \sum_{i=1}^N{\bf x}_i{\bf x}_i^T\right)^{-1}\left(\sum_{i=1}^N y_i{\bf x}_i\right)
- * \f]
- *
- * The expressed solution is a linear method with bias b (cf. CLinearMachine).
- */
-class CLinearRidgeRegression : public CLinearMachine
-{
+	/** @brief Class LinearRidgeRegression implements Ridge Regression - a
+	 * regularized least square
+	 * method for classification and regression.
+	 *
+	 * Internally, it is solved via minimizing the following system
+	 *
+	 * \f[
+	 * \frac{1}{2}\left(\sum_{i=1}^N(y_i-({\bf w}\cdot {\bf x}_i+b))^2 +
+	 * \tau||{\bf w}||^2\right)
+	 * \f]
+	 *
+	 * Define \f$X=\left[{\bf x}_{1},\dots{\bf
+	 * x}_{N}\right]\in\mathbb{R}^{D\times N}\f$, and
+	 * \f$y=[y_{1},\dots,y_{N}]^{\top}\in\mathbb{R}^{N}\f$. Then the
+	 * solution boils down to solving a linear system
+	 *
+	 * \f[
+	 * {\bf w}=\left(\tau I_{D}+XX^{\top}\right)^{-1}X^{\top}y
+	 * \f]
+	 *
+	 * and \f$b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}\f$
+	 * for
+	 * \f$\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}\f$.
+	 */
+	class CLinearRidgeRegression : public CLinearMachine
+	{
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
