@@ -7,6 +7,7 @@
 #define __UTILS_H__
 
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 
 using namespace shogun;
@@ -25,5 +26,9 @@ void generate_temp_filename(char* file_name);
 void generate_toy_data_weather(
     SGMatrix<float64_t>& data, SGVector<float64_t>& labels,
     bool load_train_data = true);
+
+SGStringList<char> generateRandomStringData(
+    index_t num_strings = 10, index_t max_string_length = 20,
+    index_t min_string_length = 10);
 
 #endif //__UTILS_H__

@@ -214,8 +214,9 @@ public:
 	* @param data training data
 	* @see train_machine
 	*/
-	template <typename ST, typename U = typename std::enable_if<std::is_floating_point<ST>::value>::type>
-	bool train_machine_templated(CDenseFeatures<ST> * data);
+	template <typename ST, typename U = typename std::enable_if<
+		                       std::is_floating_point<ST>::value>::type>
+	bool train_machine_templated(CDenseFeatures<ST>* data);
 
 	virtual bool support_dispatching()
 	{

@@ -1,4 +1,4 @@
-#include "environments/LinearTestEnvironment.h"
+#include "utils/Utils.h"
 #include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
@@ -7,46 +7,75 @@
 #include <shogun/machine/LinearMachine.h>
 
 using namespace shogun;
-extern LinearTestEnvironment* linear_test_env;
 
-class CMockLinear : public CDenseFeaturesDispatch<CMockLinear, CMachine>
+class CMockModel : public CDenseFeaturesDispatch<CMockLinear, CMachine>
 {
 public:
-	CMockLinear() : CDenseFeaturesDispatch<CMockLinear, CMachine>()
+	CMockModel() : CDenseFeaturesDispatch<CMockLinear, CMachine>()
 	{
 	}
-	~CMockLinear()
+	~CMockModel()
 	{
 	}
 	template <typename T>
 	bool train_machine_templated(CDenseFeatures<T>* data)
 	{
-		if (data->get_feature_type() == F_DREAL)
+		if (data->get_feature_type() == val)
 			return true;
 		return false;
 	}
 	virtual const char* get_name() const
 	{
-		return "CMockLinear";
+		return "CMockModel";
 	}
+
+	EFeatureType val;
 };
 
-TEST(FeatureDispatchCRTP, train_with_dense)
+typedef ::testing::Types<float32_t, float64_t, floatmax_t> SGFloatTypes;
+
+template <typename T>
+class FeatureDispatchCRTP : public ::testing::Test
 {
-	auto features = SGMatrix<float64_t>(2, 2);
-	auto features_short = SGMatrix<float32_t>(2, 2);
-	features.set_const(1);
-	features_short.set_const(1);
+};
+
+TYPED_TEST_CASE(FeatureDispatchCRTP, SGFloatTypes);
+
+TYPED_TEST(FeatureDispatchCRTP, train_with_dense)
+{
+	auto feats = SGMatrix<TypeParam>(2, 2);
+	feats.set_const(1);
+	auto features = some<CDenseFeatures<TypeParam>>(feats);
 	auto labels = SGVector<float64_t>({1, -1});
 
-	auto mock_machine = some<CMockLinear>();
+	auto mock_machine = some<CMockModel>();
 	mock_machine->set_labels(some<CBinaryLabels>(labels));
 
-	// cannot train with null features
-	EXPECT_THROW(mock_machine->train(), ShogunException);
-	// features are F_DREAL and C_DENSE
-	EXPECT_TRUE(mock_machine->train(some<CDenseFeatures<float64_t>>(features)));
-	// features are F_SHORTREAL and C_DENSE
-	EXPECT_FALSE(
-	    mock_machine->train(some<CDenseFeatures<float32_t>>(features_short)));
+	mock_machine->val = features->get_feature_type();
+	EXPECT_TRUE(mock_machine->train(features));
+}
+
+TEST(TrainDense, train_dense_with_int)
+{
+	auto feats = SGMatrix<int16_t>(2, 2);
+	feats.set_const(1);
+	auto features = some<CDenseFeatures<int16_t>>(feats);
+	auto labels = SGVector<float64_t>({1, -1});
+
+	auto mock_machine = some<CMockModel>();
+	mock_machine->set_labels(some<CBinaryLabels>(labels));
+
+	EXPECT_THROW(mock_machine->train(features), ShogunException);
+}
+
+TEST(TrainDense, train_dense_with_string)
+{
+	auto strings = generateRandomStringData(2);
+	auto features = some<CStringFeatures<char>>(strings, ALPHANUM);
+
+	auto labels = SGVector<float64_t>({1, -1});
+
+	auto mock_machine = some<CMockModel>();
+	mock_machine->set_labels(some<CBinaryLabels>(labels));
+	EXPECT_THROW(mock_machine->train(features), ShogunException);
 }

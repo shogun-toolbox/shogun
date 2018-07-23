@@ -5,46 +5,17 @@
  *          Leon Kuchenbecker
  */
 
-#include <shogun/lib/memory.h>
+#include "utils/Utils.h"
+#include <gtest/gtest.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/SGStringList.h>
-#include <gtest/gtest.h>
+#include <shogun/lib/memory.h>
 
 using namespace shogun;
 
-SGStringList<char> generateRandomData(index_t num_strings=10, index_t max_string_length=20, index_t min_string_length=10)
-{
-	SGStringList<char> strings(num_strings, max_string_length);
-
-	//SG_SPRINT("original string data:\n");
-	for (index_t i=0; i<num_strings; ++i)
-	{
-		index_t len=CMath::random(min_string_length, max_string_length);
-		SGString<char> current(len);
-
-		//SG_SPRINT("[%i]: \"", i);
-		/* fill with random uppercase letters (ASCII) */
-		for (index_t j=0; j<len; ++j)
-		{
-			current.string[j]=(char)CMath::random('A', 'Z');
-
-			/* attach \0 to print letter */
-			char* string=SG_MALLOC(char, 2);
-			string[0]=current.string[j];
-			string[1]='\0';
-			//SG_SPRINT("%s", string);
-			SG_FREE(string);
-		}
-		//SG_SPRINT("\"\n");
-
-		strings.strings[i]=current;
-	}
-	return strings;
-}
-
 TEST(StringFeaturesTest,copy_subset)
 {
-	SGStringList<char> strings = generateRandomData();
+	SGStringList<char> strings = generateRandomStringData();
 
 	/* create num_feautres 2-dimensional vectors */
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
@@ -109,7 +80,7 @@ TEST(StringFeaturesTest,copy_subset)
 
 TEST(StringFeaturesTest,clone)
 {
-	SGStringList<char> strings = generateRandomData();
+	SGStringList<char> strings = generateRandomStringData();
 
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
 	CStringFeatures<char>* f_clone = (CStringFeatures<char> *) f->clone();
