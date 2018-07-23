@@ -18,6 +18,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/Pipeline.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -264,6 +265,17 @@ namespace shogun
 	CFile* csv_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CCSVFile(fname.c_str(), rw);
+		SG_REF(result);
+		return result;
+	}
+
+	/** Create a pipeline builder.
+	 * See also CPipelineBuilder and CPipeline.
+	 * @return new instance of CPipelineBuilder
+	 */
+	CPipelineBuilder* pipeline()
+	{
+		auto result = new CPipelineBuilder();
 		SG_REF(result);
 		return result;
 	}
