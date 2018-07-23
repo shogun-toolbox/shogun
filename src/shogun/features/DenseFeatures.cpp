@@ -88,10 +88,6 @@ template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
 	return new CDenseFeatures<ST>(*this);
 }
 
-{
-	return result;
-}
-
 template<class ST> CDenseFeatures<ST>::~CDenseFeatures()
 {
 	free_features();

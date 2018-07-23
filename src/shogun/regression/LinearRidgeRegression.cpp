@@ -2,7 +2,7 @@
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Chiyuan Zhang, Viktor Gal, 
- *          Abhinav Rai, Youssef Emad El-Din
+ *          Abhinav Rai, Youssef Emad El-Din, Heiko Strathmann
  */
 #include <shogun/lib/config.h>
 
@@ -68,20 +68,23 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
     tau_vector.zero();
     tau_vector.add(m_tau);
 
-	linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
-	linalg::add_diag(kernel_matrix, tau_vector);
+	  linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
+	  linalg::add_diag(kernel_matrix, tau_vector);
 
-	auto labels = regression_labels(m_labels);
-	linalg::matrix_prod(feats_matrix, labels->get_labels(), y);
+	  auto labels = regression_labels(m_labels);
+	  auto lab = regression_labels(m_labels)->get_labels();
+	  linalg::matrix_prod(feats_matrix, lab, y);
 
-	auto decomposition = linalg::cholesky_factor(kernel_matrix);
-	y = linalg::cholesky_solver(decomposition, y);
-	auto lab = regression_labels(m_labels)->get_labels();
-	auto intercept = linalg::mean(y) - linalg::dot(y, feats->mean<float64_t>());
-	set_bias(intercept);
+	  auto decomposition = linalg::cholesky_factor(kernel_matrix);
+	  y = linalg::cholesky_solver(decomposition, y);
+	  set_w(y);
+    
+    auto x_bar = linalg::colwise_sum(feats_matrix);
+    linalg::scale(x_bar, x_bar, 1.0/((float64_t)x_bar.size()));
+	  auto intercept = linalg::mean(lab) - linalg::dot(lab, x_bar);
+	  set_bias(intercept);
 
-	set_w(y);
-	return true;
+	  return true;
 }
 
 bool CLinearRidgeRegression::load(FILE* srcfile)
