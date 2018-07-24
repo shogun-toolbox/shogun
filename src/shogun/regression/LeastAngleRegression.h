@@ -70,6 +70,7 @@ class CFeatures;
  */
 class CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
 {
+	friend class CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>;
 public:
 
 	/** problem type */
@@ -208,7 +209,6 @@ protected:
 		int32_t &imax, ST& vmax);
 	#endif
 
-public:
 	/**
 	* A templated specialization of the train_machine method
 	* @param data training data

@@ -95,6 +95,7 @@ template <class ST> class CDenseFeatures;
 
 class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 {
+	friend class CDenseRealDispatch<CLDA, CLinearMachine>;
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
@@ -173,7 +174,6 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		/** @return object name */
 		virtual const char* get_name() const { return "LDA"; }
 
-	public:
 		/** train LDA classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
