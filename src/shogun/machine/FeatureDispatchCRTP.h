@@ -35,22 +35,22 @@ namespace shogun
 	protected:
 		virtual bool train_dense(CFeatures* data)
 		{
-			auto obj = this->template as<P>();
+			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:
-				return obj->template train_machine_templated<float64_t>(
+				return this_casted->template train_machine_templated<float64_t>(
 				    data->as<CDenseFeatures<float64_t>>());
 			case F_SHORTREAL:
-				return obj->template train_machine_templated<float32_t>(
+				return this_casted->template train_machine_templated<float32_t>(
 				    data->as<CDenseFeatures<float32_t>>());
 			case F_LONGREAL:
-				return obj->template train_machine_templated<floatmax_t>(
+				return this_casted->template train_machine_templated<floatmax_t>(
 				    data->as<CDenseFeatures<floatmax_t>>());
 			default:
-				SG_SERROR(
-				    "Training with DenseFeatures of provided %s type is not "
-				    "possible!",
+				SG_OBJ_ERROR(this_casted, 
+				    "Training with %s of provided type %s is not "
+				    "possible!",data->get_name(),
 				    feature_type(data->get_feature_type()));
 			}
 			return false;
@@ -83,22 +83,22 @@ namespace shogun
 	protected:
 		virtual bool train_string(CFeatures* data)
 		{
-			auto obj = this->template as<P>();
+			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_BYTE:
-				return obj->template train_machine_templated<uint8_t>(
+				return this_casted->template train_machine_templated<uint8_t>(
 				    data->as<CStringFeatures<uint8_t>>());
 			case F_CHAR:
-				return obj->template train_machine_templated<char>(
+				return this_casted->template train_machine_templated<char>(
 				    data->as<CStringFeatures<char>>());
 			case F_WORD:
-				return obj->template train_machine_templated<uint16_t>(
+				return this_casted->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
 			default:
-				SG_SERROR(
-				    "Training with StringFeatures of provided %s type is "
-				    "not possible!",
+				SG_OBJ_ERROR(this_casted,
+				    "Training with %s of provided type %s is "
+				    "not possible!",data->get_name(),
 				    feature_type(data->get_feature_type()));
 			}
 			return false;

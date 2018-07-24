@@ -44,8 +44,8 @@ struct wdocas_thread_params_add
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWDSVMOcas::CWDSVMOcas()
-    : CStringFeaturesDispatch<CWDSVMOcas, CMachine>(), use_bias(false),
-      bufsize(3000), C1(1), C2(1), epsilon(1e-3), method(SVM_OCAS)
+: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
+	epsilon(1e-3), method(SVM_OCAS)
 {
 	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas()", "\n")
 
@@ -60,8 +60,8 @@ CWDSVMOcas::CWDSVMOcas()
 }
 
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
-    : CStringFeaturesDispatch<CWDSVMOcas, CMachine>(), use_bias(false),
-      bufsize(3000), C1(1), C2(1), epsilon(1e-3), method(type)
+: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
+	epsilon(1e-3), method(type)
 {
 	w=NULL;
 	old_w=NULL;
@@ -74,10 +74,10 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 }
 
 CWDSVMOcas::CWDSVMOcas(
-    float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
-    CLabels* trainlab)
-    : CStringFeaturesDispatch<CWDSVMOcas, CMachine>(), use_bias(false),
-      bufsize(3000), C1(C), C2(C), epsilon(1e-3), degree(d), from_degree(from_d)
+	float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
+	CLabels* trainlab)
+: CMachine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
+	degree(d), from_degree(from_d)
 {
 	w=NULL;
 	old_w=NULL;
@@ -156,15 +156,21 @@ int32_t CWDSVMOcas::set_wd_weights()
 	return w_dim_single_c;
 }
 
-template <typename ST>
-bool CWDSVMOcas::train_machine_templated(CStringFeatures<ST>* data)
+bool CWDSVMOcas::train_machine(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
-
-	set_features((CStringFeatures<uint8_t>*)data);
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_BYTE)
+		{
+			SG_ERROR("Features not of class string type byte\n")
+		}
+		set_features((CStringFeatures<uint8_t>*) data);
+	}
 
 	ASSERT(get_features())
 	CAlphabet* alphabet=get_features()->get_alphabet();

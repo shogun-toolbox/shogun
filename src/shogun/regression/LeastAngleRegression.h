@@ -218,11 +218,6 @@ public:
 		                       std::is_floating_point<ST>::value>>
 	bool train_machine_templated(CDenseFeatures<ST>* data);
 
-	virtual bool support_dispatching()
-	{
-		return true;
-	}
-
 private:
 	/** Initialize and register parameters */
 	void init();
