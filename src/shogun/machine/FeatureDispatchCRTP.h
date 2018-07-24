@@ -45,13 +45,15 @@ namespace shogun
 				return this_casted->template train_machine_templated<float32_t>(
 				    data->as<CDenseFeatures<float32_t>>());
 			case F_LONGREAL:
-				return this_casted->template train_machine_templated<floatmax_t>(
-				    data->as<CDenseFeatures<floatmax_t>>());
+				return this_casted
+				    ->template train_machine_templated<floatmax_t>(
+				        data->as<CDenseFeatures<floatmax_t>>());
 			default:
-				SG_OBJ_ERROR(this_casted, 
+				SG_SERROR(
 				    "Training with %s of provided type %s is not "
-				    "possible!",data->get_name(),
-				    feature_type(data->get_feature_type()));
+				    "possible!",
+				    data->get_name(),
+				    feature_type(data->get_feature_type()).c_str());
 			}
 			return false;
 		}
@@ -96,10 +98,11 @@ namespace shogun
 				return this_casted->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
 			default:
-				SG_OBJ_ERROR(this_casted,
+				SG_SERROR(
 				    "Training with %s of provided type %s is "
-				    "not possible!",data->get_name(),
-				    feature_type(data->get_feature_type()));
+				    "not possible!",
+				    data->get_name(),
+				    feature_type(data->get_feature_type()).c_str());
 			}
 			return false;
 		}

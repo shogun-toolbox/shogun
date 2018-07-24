@@ -28,30 +28,6 @@ void generate_temp_filename(char* file_name)
 #endif
 }
 
-SGStringList<char> generateRandomStringData(
-    index_t num_strings, index_t max_string_length, index_t min_string_length)
-{
-	SGStringList<char> strings(num_strings, max_string_length);
-
-	for (index_t i = 0; i < num_strings; ++i)
-	{
-		index_t len = CMath::random(min_string_length, max_string_length);
-		SGString<char> current(len);
-		/* fill with random uppercase letters (ASCII) */
-		for (index_t j = 0; j < len; ++j)
-		{
-			current.string[j] = (char)CMath::random('A', 'Z');
-			char* string = SG_MALLOC(char, 2);
-			string[0] = current.string[j];
-			string[1] = '\0';
-			SG_FREE(string);
-		}
-
-		strings.strings[i] = current;
-	}
-	return strings;
-}
-
 void generate_toy_data_weather(
     SGMatrix<float64_t>& data, SGVector<float64_t>& labels,
     bool load_train_data)
