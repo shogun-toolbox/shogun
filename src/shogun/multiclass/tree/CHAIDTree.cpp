@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/multiclass/tree/CHAIDTree.h>
@@ -363,8 +364,8 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 			subweights[j]=weights[feat_index->get_element(j)];
 		}
 
-		auto feats_train = data->view(subset);
-		auto labels_train = labels->view(subset);
+		auto feats_train = view(data, subset);
+		auto labels_train = view(labels, subset);
 		node_t* child =
 		    CHAIDtrain(feats_train, subweights, labels_train, level + 1);
 		node->add_child(child);

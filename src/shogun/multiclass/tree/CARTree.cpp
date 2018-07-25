@@ -30,11 +30,11 @@
 
 #include <vector>
 
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/tree/CARTree.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/eigen3.h>
-
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/multiclass/tree/CARTree.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -480,15 +480,14 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 	}
 
 	// left child
-	auto feats_train =
-	    wrap(data->view(subsetl)->as<CDenseFeatures<float64_t>>());
-	auto labels_train = wrap(labels->view(subsetl)->as<CDenseLabels>());
+	auto feats_train = view(data, subsetl);
+	auto labels_train = view(labels, subsetl);
 	bnode_t* left_child =
 	    CARTtrain(feats_train, weightsl, labels_train, level + 1);
 
 	// right child
-	feats_train = wrap(data->view(subsetr)->as<CDenseFeatures<float64_t>>());
-	labels_train = wrap(labels->view(subsetr)->as<CDenseLabels>());
+	feats_train = view(data, subsetr);
+	labels_train = view(labels, subsetr);
 	bnode_t* right_child =
 	    CARTtrain(feats_train, weightsr, labels_train, level + 1);
 
@@ -1205,10 +1204,8 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 
 		SGVector<int32_t> subset(train_indices.data(),train_indices.size(),false);
 		auto dense_labels = m_labels->as<CDenseLabels>();
-		auto feats_train =
-		    wrap(data->view(subset)->as<CDenseFeatures<float64_t>>());
-		auto labels_train =
-		    wrap(dense_labels->view(subset)->as<CDenseLabels>());
+		auto feats_train = view(data, subset);
+		auto labels_train = view(dense_labels, subset);
 		SGVector<float64_t> subset_weights(train_indices.size());
 
 		for (index_t j = 0; j < train_indices.size(); ++j)
@@ -1223,8 +1220,8 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 		CDynamicObjectArray* pruned_trees=prune_tree(tmax);
 
 		subset=SGVector<int32_t>(test_indices.data(),test_indices.size(),false);
-		feats_train = wrap(data->view(subset)->as<CDenseFeatures<float64_t>>());
-		labels_train = wrap(dense_labels->view(subset)->as<CDenseLabels>());
+		feats_train = view(data, subset);
+		labels_train = view(dense_labels, subset);
 		subset_weights=SGVector<float64_t>(test_indices.size());
 		for (int32_t j=0;j<test_indices.size();++j)
 			subset_weights[j]=m_weights[test_indices.at(j)];

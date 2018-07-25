@@ -28,10 +28,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/tree/C45ClassifierTree.h>
-#include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/lib/View.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
+#include <shogun/multiclass/tree/C45ClassifierTree.h>
 
 using namespace shogun;
 
@@ -466,10 +467,8 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 			}
 
 			// prune the child subtree
-			auto feats_prune =
-			    wrap(feats->view(subset)->as<CDenseFeatures<float64_t>>());
-			auto gt_prune =
-			    wrap(gnd_truth->view(subset)->as<CMulticlassLabels>());
+			auto feats_prune = view(feats, subset);
+			auto gt_prune = view(gnd_truth, subset);
 			prune_tree_from_current_node(feats_prune, gt_prune, child, epsilon);
 
 			SG_UNREF(child);
@@ -505,10 +504,8 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		// count_left is 0 if entire validation data in current node moves to only right child
 		if (count_left > 0)
 		{
-			auto feats_prune =
-			    wrap(feats->view(left_subset)->as<CDenseFeatures<float64_t>>());
-			auto gt_prune =
-			    wrap(gnd_truth->view(left_subset)->as<CMulticlassLabels>());
+			auto feats_prune = view(feats, left_subset);
+			auto gt_prune = view(gnd_truth, left_subset);
 			// prune the left child subtree
 			prune_tree_from_current_node(
 			    feats_prune, gt_prune, left_child, epsilon);
@@ -517,10 +514,8 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		// count_left is equal to num_cols if entire validation data in current node moves only to left child
 		if (count_left<feature_matrix.num_cols)
 		{
-			auto feats_prune = wrap(
-			    feats->view(right_subset)->as<CDenseFeatures<float64_t>>());
-			auto gt_prune =
-			    wrap(gnd_truth->view(right_subset)->as<CMulticlassLabels>());
+			auto feats_prune = view(feats, right_subset);
+			auto gt_prune = view(gnd_truth, right_subset);
 
 			// prune the right child subtree
 			prune_tree_from_current_node(

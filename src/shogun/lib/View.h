@@ -14,6 +14,13 @@
 namespace shogun
 {
 
+	/** Creates a subset view of the viewable object containing the elements
+	 * whose indices are listed in the passed vector
+	 *
+	 * @param viewable pointer to the viewable object
+	 * @param subset subset of indices
+	 * @return new viewable instance
+	 */
 	template <class T>
 	T* view(T* viewable, const SGVector<index_t>& subset)
 	{
@@ -26,11 +33,19 @@ namespace shogun
 		return static_cast<T*>(result);
 	}
 
+	/** Creates a subset view of the viewable object containing the elements
+	 * whose indices are listed in the passed vector
+	 *
+	 * @param viewable pointer to the viewable object
+	 * @param subset subset of indices
+	 * @return new viewable instance
+	 */
 	template <class T>
-	T* view(Some<T> viewable, const SGVector<index_t>& subset)
+	Some<T> view(Some<T> viewable, const SGVector<index_t>& subset)
 	{
-		return view(viewable.get(), subset);
+		return wrap(view(viewable.get(), subset));
 	}
+
 } // namespace shogun
 
 #endif

@@ -30,6 +30,7 @@
 
 #include <shogun/base/progress.h>
 #include <shogun/base/some.h>
+#include <shogun/lib/View.h>
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
@@ -288,9 +289,8 @@ CStochasticGBMachine::get_subset(
 	sg_memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));
 
 	return std::make_tuple(
-	    wrap(f->view(subset)->as<CDenseFeatures<float64_t>>()),
-	    wrap(interf->view(subset)->as<CRegressionLabels>()),
-	    wrap(m_labels->view(subset)));
+	    wrap(view(f, subset)), wrap(view(interf, subset)),
+	    wrap(view(m_labels, subset)));
 }
 
 void CStochasticGBMachine::initialize_learners()

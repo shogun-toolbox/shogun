@@ -9,11 +9,12 @@
 #include <algorithm>
 #include <functional>
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-#include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/multiclass/tree/RelaxedTree.h>
+#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 
 using namespace shogun;
 
@@ -312,8 +313,8 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 		subset.vlen = k;
 
 		auto binary_labels = some<CBinaryLabels>(binlab);
-		auto feats_train = m_feats->view(subset);
-		auto labels_train = binary_labels->view(subset);
+		auto feats_train = view(m_feats, subset);
+		auto labels_train = view(binary_labels, subset);
 
 		CKernel *kernel = (CKernel *)m_kernel->shallow_copy();
 		kernel->init(feats_train, feats_train);

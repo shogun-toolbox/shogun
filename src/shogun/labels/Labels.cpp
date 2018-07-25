@@ -75,13 +75,6 @@ CSubsetStack* CLabels::get_subset_stack()
 	return m_subset_stack;
 }
 
-CLabels* CLabels::view(const SGVector<index_t>& subset)
-{
-	auto labels_view = this->duplicate();
-	labels_view->add_subset(subset);
-	return labels_view;
-}
-
 float64_t CLabels::get_value(int32_t idx)
 {
 	ASSERT(m_current_values.vector && idx < get_num_labels())

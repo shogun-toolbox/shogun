@@ -5,8 +5,9 @@
  */
 
 #include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/lib/View.h>
+#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 
 using namespace shogun;
 
@@ -25,14 +26,13 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	{
 		// subset for training
 		SGVector<index_t> inverse_subset_indices = split->generate_subset_inverse(i);
-		machine->set_labels(Y->view(inverse_subset_indices));
-		machine->train(X->view(inverse_subset_indices));
+		machine->set_labels(view(Y, inverse_subset_indices));
+		machine->train(view(X, inverse_subset_indices));
 
 		// subset for predicting
 		SGVector<index_t> subset_indices = split->generate_subset_indices(i);
-		auto feats_subset = wrap(X->view(subset_indices));
-		auto labels_subset =
-		    wrap(Y->view(subset_indices)->as<CMulticlassLabels>());
+		auto feats_subset = view(X, subset_indices);
+		auto labels_subset = view(Y, subset_indices);
 		CMulticlassLabels* pred = machine->apply_multiclass(feats_subset);
 
 		get_confusion_matrix(tmp_mat, labels_subset, pred);

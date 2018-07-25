@@ -265,13 +265,6 @@ void CFeatures::unset_property(EFeatureProperty p)
 	properties &= (properties | p) ^ p;
 }
 
-CFeatures* CFeatures::view(const SGVector<index_t>& subset)
-{
-	auto feats_view = this->duplicate();
-	feats_view->add_subset(subset);
-	return feats_view;
-}
-
 void CFeatures::add_subset(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset(subset);

@@ -28,12 +28,13 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/mathematics/Math.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/tree/ID3ClassifierTree.h>
+#include <shogun/lib/View.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/multiclass/tree/ID3ClassifierTree.h>
 
 using namespace shogun;
 
@@ -320,9 +321,8 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 			}
 		}
 
-		auto feats_train =
-		    wrap(feats->view(subset)->as<CDenseFeatures<float64_t>>());
-		auto gt_train = wrap(gnd_truth->view(subset)->as<CMulticlassLabels>());
+		auto feats_train = view(feats, subset);
+		auto gt_train = view(gnd_truth, subset);
 
 		// prune the child subtree
 		prune_tree_machine(feats_train, gt_train, child, epsilon);

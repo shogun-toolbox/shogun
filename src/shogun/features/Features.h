@@ -344,14 +344,6 @@ class CFeatures : public CSGObject
 		}
 #endif
 
-		/** Creates a subset view of the features containing the elements
-		 * whose indices are listed in the passed vector
-		 *
-		 * @param subset subset of indices
-		 * @return new CFeatures object wrapped by a smart pointer
-		 */
-		CFeatures* view(const SGVector<index_t>& subset);
-
 	private:
 		void init();
 

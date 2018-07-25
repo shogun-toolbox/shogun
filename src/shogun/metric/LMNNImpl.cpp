@@ -10,6 +10,7 @@
 #include <iterator>
 #include <unordered_map>
 
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/preprocessor/PCA.h>
@@ -398,8 +399,7 @@ SGMatrix<float64_t> CLMNNImpl::compute_sqdists(
 		//find_target_nn should be changed to return the output transposed wrt how it is
 		//done atm.
 		SGVector<index_t> subset_vec = target_nn.get_row_vector(i);
-		auto lx_subset =
-		    wrap(lx->view(subset_vec)->as<CDenseFeatures<float64_t>>());
+		auto lx_subset = view(lx, subset_vec);
 		// after the subset, there are still n columns, i.e. the subset is used to
 		// modify the order of the columns in x according to the target neighbors
 		auto diff = linalg::add(LX, lx_subset->get_feature_matrix(), 1.0, -1.0);
@@ -564,12 +564,10 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a
-	auto afeats = x->view(SGVector<index_t>(a.data(), a.size(), false))
-	                  ->as<CDenseFeatures<float64_t>>();
+	auto afeats = view(x, SGVector<index_t>(a.data(), a.size(), false));
 
 	// create new features only containing examples whose indices are in b
-	auto bfeats = x->view(SGVector<index_t>(b.data(), b.size(), false))
-	                  ->as<CDenseFeatures<float64_t>>();
+	auto bfeats = view(x, SGVector<index_t>(b.data(), b.size(), false));
 
 	// create and return distance
 	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);
