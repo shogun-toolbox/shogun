@@ -1,15 +1,16 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soumyajit De, Thoralf Klein, Heiko Strathmann, 
+ * Authors: Saurabh Mahindre, Soumyajit De, Thoralf Klein, Heiko Strathmann,
  *          Viktor Gal
  */
 
-#include <numeric>
 #include <algorithm>
+#include <gtest/gtest.h>
+#include <numeric>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
+#include <shogun/lib/View.h>
 
 namespace shogun
 {
@@ -261,8 +262,7 @@ TEST(DenseFeaturesTest, view)
 	auto feats_original = some<CDenseFeatures<float64_t>>(data);
 
 	SGVector<index_t> subset1{0, 2, 3};
-	auto feats_subset1 =
-	    wrap(feats_original->view(subset1)->as<CDenseFeatures<float64_t>>());
+	auto feats_subset1 = wrap(view(feats_original, subset1));
 	ASSERT_EQ(feats_subset1->get_num_features(), num_feats);
 	ASSERT_EQ(feats_subset1->get_num_vectors(), subset1.vlen);
 	auto feature_matrix_subset1 = feats_subset1->get_feature_matrix();
@@ -276,8 +276,7 @@ TEST(DenseFeaturesTest, view)
 
 	SGVector<index_t> subset2{
 	    0, 2}; // subset2 is column 0 & 3 of original features
-	auto feats_subset2 =
-	    wrap(feats_subset1->view(subset2)->as<CDenseFeatures<float64_t>>());
+	auto feats_subset2 = wrap(view(feats_subset1, subset2));
 	ASSERT_EQ(feats_subset2->get_num_features(), num_feats);
 	ASSERT_EQ(feats_subset2->get_num_vectors(), subset2.vlen);
 	auto feature_matrix_subset2 = feats_subset2->get_feature_matrix();

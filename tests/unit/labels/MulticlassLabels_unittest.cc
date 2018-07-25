@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Olivier NGuyen, Sergey Lisitsyn, Viktor Gal, 
+ * Authors: Heiko Strathmann, Olivier NGuyen, Sergey Lisitsyn, Viktor Gal,
  *          Bjoern Esser, Thoralf Klein
  */
 
@@ -9,6 +9,7 @@
 #include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/View.h>
 
 using namespace shogun;
 
@@ -98,7 +99,7 @@ TEST_F(MulticlassLabels, view)
 {
 	auto labels = some<CMulticlassLabels>(labels_true);
 	SGVector<index_t> subset{0, 2};
-	auto labels_subset = wrap(labels->view(subset)->as<CMulticlassLabels>());
+	auto labels_subset = wrap(view(labels, subset));
 
 	ASSERT_EQ(labels_subset->get_num_labels(), subset.vlen);
 	for (auto i : range(subset.vlen))
