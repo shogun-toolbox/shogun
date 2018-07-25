@@ -23,15 +23,14 @@ using namespace Eigen;
 using namespace shogun;
 using namespace std;
 
-
-CLeastAngleRegression::CLeastAngleRegression() :
-	CLinearMachine()
+CLeastAngleRegression::CLeastAngleRegression()
+    : CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 }
 
-CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
-	CLinearMachine()
+CLeastAngleRegression::CLeastAngleRegression(bool lasso)
+    : CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>()
 {
 	init();
 
@@ -102,39 +101,8 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 	}
 }
 
-bool CLeastAngleRegression::train_machine(CFeatures* data)
-{
-	if (!data)
-	{
-		REQUIRE(features, "No features provided.\n")
-		REQUIRE(features->get_feature_class() == C_DENSE,
-			"Feature-class (%d) must be of type C_DENSE (%d)\n", features->get_feature_class(), C_DENSE)
-			
-		data = features;
-	}
-	else
-		REQUIRE(data->get_feature_class() == C_DENSE,
-			"Feature-class must be of type C_DENSE (%d)\n", data->get_feature_class(), C_DENSE)
-
-	REQUIRE(data->get_num_vectors() == m_labels->get_num_labels(), "Number of training vectors (%d) does not match number of labels (%d)\n"
-		, data->get_num_vectors(), m_labels->get_num_labels())
-
-	//check for type of CFeatures, then call the appropriate template method
-	if(data->get_feature_type() == F_DREAL)
-		return CLeastAngleRegression::train_machine_templated((CDenseFeatures<float64_t> *) data);
-	else if(data->get_feature_type() == F_SHORTREAL)
-		return CLeastAngleRegression::train_machine_templated((CDenseFeatures<float32_t> *) data);
-	else if(data->get_feature_type() == F_LONGREAL)
-		return CLeastAngleRegression::train_machine_templated((CDenseFeatures<floatmax_t> *) data);
-	else
-		SG_ERROR("Feature-type (%d) must be of type F_SHORTREAL (%d), F_DREAL (%d) or F_LONGREAL (%d).\n", 
-			data->get_feature_type(), F_SHORTREAL, F_DREAL, F_LONGREAL)
-
-	return false;
-}
-
-template <typename ST>
-bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
+template <typename ST, typename U>
+bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	std::vector<std::vector<ST>> m_beta_path_t;		
 

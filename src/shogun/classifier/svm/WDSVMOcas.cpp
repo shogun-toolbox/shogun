@@ -638,4 +638,3 @@ void CWDSVMOcas::compute_W(
 	o->bias = bias;
 	o->old_bias = old_bias;
 }
-

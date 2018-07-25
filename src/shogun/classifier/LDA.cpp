@@ -19,7 +19,8 @@
 using namespace Eigen;
 using namespace shogun;
 
-CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd) : CLinearMachine()
+CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
+    : CDenseRealDispatch<CLDA, CLinearMachine>()
 {
 	init();
 	m_method=method;
@@ -30,7 +31,7 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd) : CLinearMachine()
 CLDA::CLDA(
     float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
     ELDAMethod method, bool bdc_svd)
-    : CLinearMachine(), m_gamma(gamma)
+    : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
 	set_features(traindat);
@@ -45,6 +46,7 @@ void CLDA::init()
 	m_method=AUTO_LDA;
 	m_gamma=0;
 	m_bdc_svd = true;
+
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",
 	    "Method used for LDA calculation", MS_NOT_AVAILABLE);
@@ -56,54 +58,24 @@ CLDA::~CLDA()
 {
 }
 
-bool CLDA::train_machine(CFeatures *data)
+template <typename ST, typename U>
+bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
-	REQUIRE(m_labels, "Labels for the given features are not specified!\n")
-
-	if(data)
-	{
-		if(!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
-	else if (!features)
-	{
-		REQUIRE(data, "Features have not been provided.\n")
-	}
-
-	REQUIRE(
-	    features->get_feature_class() == C_DENSE,
-	    "LDA only works with dense features")
-
-	if (features->get_feature_type() == F_SHORTREAL)
-		return CLDA::train_machine_templated<float32_t>();
-	else if (features->get_feature_type() == F_DREAL)
-		return CLDA::train_machine_templated<float64_t>();
-	else if (features->get_feature_type() == F_LONGREAL)
-		return CLDA::train_machine_templated<floatmax_t>();
-
-	return false;
-}
-
-template <typename ST>
-bool CLDA::train_machine_templated()
-{
-	index_t num_feat = ((CDenseFeatures<ST>*)features)->get_num_features();
-	index_t num_vec = features->get_num_vectors();
+	index_t num_feat = data->get_num_features();
+	index_t num_vec = data->get_num_vectors();
 	;
 
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
 	if (m_method == SVD_LDA || lda_more_efficient)
-		return solver_svd<ST>();
+		return solver_svd<ST>(data);
 	else
-		return solver_classic<ST>();
+		return solver_classic<ST>(data);
 }
 
 template <typename ST>
-bool CLDA::solver_svd()
+bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 {
-	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
 	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
@@ -113,7 +85,7 @@ bool CLDA::solver_svd()
 	const index_t projection_dim = 1;
 	auto solver = std::unique_ptr<LDACanVarSolver<ST>>(
 	    new LDACanVarSolver<ST>(
-	        dense_feat, labels, projection_dim, m_gamma, m_bdc_svd));
+	        data, labels, projection_dim, m_gamma, m_bdc_svd));
 
 	SGVector<ST> w_st(solver->get_eigenvectors());
 
@@ -124,7 +96,7 @@ bool CLDA::solver_svd()
 	// change the sign of w if needed to get the correct labels
 	float64_t sign = (m_pos > m_neg) ? 1 : -1;
 
-	SGVector<float64_t> w(dense_feat->get_num_features());
+	SGVector<float64_t> w(data->get_num_features());
 	// copy w_st into w
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = sign * w_st[i];
@@ -136,17 +108,16 @@ bool CLDA::solver_svd()
 }
 
 template <typename ST>
-bool CLDA::solver_classic()
+bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 {
-	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
 	    labels->get_num_classes() == 2, "Number of classes (%d) must be 2\n",
 	    labels->get_num_classes())
-	index_t num_feat = dense_feat->get_num_features();
+	index_t num_feat = data->get_num_features();
 
 	auto solver = std::unique_ptr<LDASolver<ST>>(
-	    new LDASolver<ST>(dense_feat, labels, m_gamma));
+	    new LDASolver<ST>(data, labels, m_gamma));
 
 	auto class_mean = solver->get_class_mean();
 	auto class_count = solver->get_class_count();

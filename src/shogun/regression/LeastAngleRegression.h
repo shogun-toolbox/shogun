@@ -11,9 +11,9 @@
 
 #include <shogun/lib/config.h>
 
-#include <vector>
-#include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
+#include <vector>
 
 namespace shogun
 {
@@ -68,8 +68,9 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CLinearMachine
+class CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
 {
+	friend class CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>;
 public:
 
 	/** problem type */
@@ -190,16 +191,6 @@ public:
 	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
-	/**
-	* An interface method used call train_machine_templated - 
-	* this is called by the superclass's train method (@see CLinearMachine::train).  
-	* Checks to see if data is a dense feature vector,
-	* and that it's elements are floating point types.  It then calls 
-	* train_machine_templated with the appropriate template parameters
-	* @param data training data
-	* @see train_machine_templated
-	*/
-	bool train_machine(CFeatures * data);
 
 	template <typename ST>
 	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
@@ -218,18 +209,18 @@ protected:
 		int32_t &imax, ST& vmax);
 	#endif
 
-private:
-
-	/** Initialize and register parameters */
-	void init();
-
 	/**
 	* A templated specialization of the train_machine method
 	* @param data training data
 	* @see train_machine
 	*/
-	template <typename ST>
-	bool train_machine_templated(CDenseFeatures<ST> * data);
+	template <typename ST, typename U = typename std::enable_if_t<
+		                       std::is_floating_point<ST>::value>>
+	bool train_machine_templated(CDenseFeatures<ST>* data);
+
+private:
+	/** Initialize and register parameters */
+	void init();
 
 	void activate_variable(int32_t v)
 	{

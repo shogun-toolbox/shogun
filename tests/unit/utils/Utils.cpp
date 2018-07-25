@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 #include <string>
 
 #ifdef _MSC_VER

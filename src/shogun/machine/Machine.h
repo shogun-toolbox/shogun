@@ -334,8 +334,35 @@ class CMachine : public CStoppableSGObject
 		 */
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
-			SG_ERROR("train_machine is not yet implemented for %s!\n",
-					get_name());
+			SG_ERROR(
+			    "train_machine is not yet implemented for %s!\n", get_name());
+			return false;
+		}
+
+		virtual bool train_dense(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED
+			return false;
+		}
+
+		virtual bool train_string(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED
+			return false;
+		}
+
+		virtual bool support_feature_dispatching()
+		{
+			return false;
+		}
+
+		virtual bool support_dense_dispatching()
+		{
+			return false;
+		}
+
+		virtual bool support_string_dispatching()
+		{
 			return false;
 		}
 

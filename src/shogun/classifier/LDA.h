@@ -11,10 +11,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/LinearMachine.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
 
 namespace shogun
 {
@@ -93,8 +93,9 @@ template <class ST> class CDenseFeatures;
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
 
-class CLDA : public CLinearMachine
+class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 {
+	friend class CDenseRealDispatch<CLDA, CLinearMachine>;
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
@@ -173,7 +174,6 @@ class CLDA : public CLinearMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "LDA"; }
 
-	protected:
 		/** train LDA classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -182,24 +182,18 @@ class CLDA : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		template <typename ST, typename U = typename std::enable_if_t<
+		                           std::is_floating_point<ST>::value>>
+		bool train_machine_templated(CDenseFeatures<ST>* data);
 
-	   	/**
-		 * A templated specialization of the train_machine method
-		 * @param features training data
-		 * @param labels labels for training data
-		 * @see train_machine
-		 */
-		template <typename ST>
-		bool train_machine_templated();
-
+	protected:
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
 		 * @param features training data
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd();
+		bool solver_svd(CDenseFeatures<ST>* data);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -208,7 +202,7 @@ class CLDA : public CLinearMachine
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic();
+		bool solver_classic(CDenseFeatures<ST>* data);
 
 	protected:
 
