@@ -65,5 +65,6 @@ namespace shogun
 		FP_DOT = 1,
 		FP_STREAMING_DOT = 2
 	};
+	std::string feature_type(EFeatureType f);
 }
 #endif // _FEATURE_TYPES__H__
