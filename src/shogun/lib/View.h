@@ -27,7 +27,7 @@ namespace shogun
 		static_assert(
 		    std::is_base_of<CFeatures, T>::value ||
 		        std::is_base_of<CLabels, T>::value,
-		    "Only CFeatures and CLabels are viewable.");
+		    "Class is not viewable.");
 		auto result = viewable->duplicate();
 		result->add_subset(subset);
 		return static_cast<T*>(result);
