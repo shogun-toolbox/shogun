@@ -56,7 +56,7 @@ namespace shogun
 		CDenseLabels(CFile* loader);
 
 		/** destructor */
-		virtual ~CDenseLabels();
+		virtual ~CDenseLabels() override;
 
 		virtual bool is_valid() const override;
 
@@ -74,7 +74,7 @@ namespace shogun
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(CFile* loader) override;
 
 		/** save labels to file
 		 *
@@ -82,7 +82,7 @@ namespace shogun
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(CFile* writer) override;
 
 		/** set label
 		 *

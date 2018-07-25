@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Evgeniy Andreev, Yuyu Zhang, Fernando Iglesias, 
+ * Authors: Viktor Gal, Evgeniy Andreev, Yuyu Zhang, Fernando Iglesias,
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 
@@ -39,7 +39,7 @@ namespace shogun
 			CLatentLabels(CLabels* labels);
 
 			/** destructor */
-			virtual ~CLatentLabels();
+			virtual ~CLatentLabels() override;
 
 			/** get all the stored latent labels
 			 *
@@ -76,25 +76,25 @@ namespace shogun
 			 *
 			 * @param context optional message to convey the context
 			 */
-			virtual void ensure_valid(const char* context=NULL);
+			virtual void ensure_valid(const char* context=NULL) override;
 
 			/** get label type
 			 *
 			 * @return label type (binary, multiclass, ...)
 			 */
-			virtual ELabelType get_label_type() const { return LT_LATENT; }
+			virtual ELabelType get_label_type() const override { return LT_LATENT; }
 
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentLabels"; }
+			virtual const char* get_name() const override { return "LatentLabels"; }
 
 			/** get the number of stored labels
 			 *
 			 * @return the number of labels
 			 */
-			virtual int32_t get_num_labels() const;
+			virtual int32_t get_num_labels() const override;
 
 			/** set labels
 			 *

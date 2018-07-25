@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Thoralf Klein, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Fernando Iglesias, Thoralf Klein, Evgeniy Andreev, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -37,7 +37,7 @@ class CStructuredLabels : public CLabels
 		CStructuredLabels(int32_t num_labels);
 
 		/** destructor */
-		virtual ~CStructuredLabels();
+		virtual ~CStructuredLabels() override;
 
 		virtual bool is_valid() const override;
 
@@ -47,7 +47,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if labeling is valid
 		 */
-		virtual void ensure_valid(const char* context = NULL);
+		virtual void ensure_valid(const char* context = NULL) override;
 
 		/**
 		 * add a new label to the vector of labels, effectively
@@ -57,7 +57,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(CStructuredData* label);
+		virtual void add_label(CStructuredData* label) override;
 
 		/** get labels
 		 *
@@ -73,7 +73,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual CStructuredData* get_label(int32_t idx) override;
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -85,22 +85,22 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(int32_t idx, CStructuredData* label) override;
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		virtual int32_t get_num_labels() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "StructuredLabels"; }
+		virtual const char* get_name() const override { return "StructuredLabels"; }
 
 		/** get label type
 		 *
 		 * @return label type LT_STRUCTURED
 		 */
-		virtual ELabelType get_label_type() const { return LT_STRUCTURED; }
+		virtual ELabelType get_label_type() const override { return LT_STRUCTURED; }
 
 		/** get structured data type the labels are composed of
 		 *
