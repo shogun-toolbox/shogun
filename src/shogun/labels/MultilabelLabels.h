@@ -84,13 +84,13 @@ public:
 	 *
 	 * @return label type multiclass
 	 */
-	virtual ELabelType get_label_type() const
+	virtual ELabelType get_label_type() const override
 	{
 		return LT_SPARSE_MULTILABEL;
 	}
 
 	/** @return object name */
-	virtual const char * get_name() const
+	virtual const char * get_name() const override
 	{
 		return "MultilabelLabels";
 	}
@@ -99,13 +99,13 @@ public:
 	 *
 	 * @return the number of labels
 	 */
-	virtual int32_t get_num_labels() const;
+	virtual int32_t get_num_labels() const override;
 
 	/** return number of classes (per label)
 	 *
 	 * @return number of classes
 	 */
-	virtual int32_t  get_num_classes() const;
+	virtual int32_t get_num_classes() const override;
 
 	/** set labels
 	 *
