@@ -1,15 +1,16 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soumyajit De, Thoralf Klein, Heiko Strathmann, 
+ * Authors: Saurabh Mahindre, Soumyajit De, Thoralf Klein, Heiko Strathmann,
  *          Viktor Gal
  */
 
-#include <numeric>
 #include <algorithm>
+#include <gtest/gtest.h>
+#include <numeric>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
+#include <shogun/lib/View.h>
 
 namespace shogun
 {
@@ -245,5 +246,45 @@ TEST(DenseFeaturesTest, copy_feature_matrix)
 	{
 		for (index_t i=0; i<dim; ++i)
 			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
+	}
+}
+
+TEST(DenseFeaturesTest, view)
+{
+	auto num_feats = 2;
+	auto num_vectors = 4;
+	SGMatrix<float64_t> data(num_feats, num_vectors);
+
+	for (auto i : range(num_feats * num_vectors))
+	{
+		data[i] = i;
+	}
+	auto feats_original = some<CDenseFeatures<float64_t>>(data);
+
+	SGVector<index_t> subset1{0, 2, 3};
+	auto feats_subset1 = wrap(view(feats_original, subset1));
+	ASSERT_EQ(feats_subset1->get_num_features(), num_feats);
+	ASSERT_EQ(feats_subset1->get_num_vectors(), subset1.vlen);
+	auto feature_matrix_subset1 = feats_subset1->get_feature_matrix();
+
+	// check feature_matrix(i, j) == feature_matrix_original(i, subset(j))
+	for (auto j : range(subset1.vlen))
+	{
+		for (auto i : range(num_feats))
+			EXPECT_EQ(feature_matrix_subset1(i, j), data(i, subset1[j]));
+	}
+
+	SGVector<index_t> subset2{
+	    0, 2}; // subset2 is column 0 & 3 of original features
+	auto feats_subset2 = wrap(view(feats_subset1, subset2));
+	ASSERT_EQ(feats_subset2->get_num_features(), num_feats);
+	ASSERT_EQ(feats_subset2->get_num_vectors(), subset2.vlen);
+	auto feature_matrix_subset2 = feats_subset2->get_feature_matrix();
+
+	for (auto j : range(subset2.size()))
+	{
+		for (auto i : range(num_feats))
+			EXPECT_EQ(
+			    feature_matrix_subset2(i, j), data(i, subset1[subset2[j]]));
 	}
 }

@@ -14,11 +14,11 @@ CSubset::CSubset()
 	init();
 }
 
-CSubset::CSubset(SGVector<index_t> subset_idx)
+CSubset::CSubset(const SGVector<index_t>& subset_idx)
 {
 	init();
 
-	m_subset_idx=subset_idx;
+	m_subset_idx = subset_idx.clone();
 }
 
 CSubset::~CSubset()

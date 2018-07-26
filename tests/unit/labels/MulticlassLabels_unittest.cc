@@ -1,13 +1,15 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Olivier NGuyen, Sergey Lisitsyn, Viktor Gal, 
+ * Authors: Heiko Strathmann, Olivier NGuyen, Sergey Lisitsyn, Viktor Gal,
  *          Bjoern Esser, Thoralf Klein
  */
 
 #include <gtest/gtest.h>
+#include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/View.h>
 
 using namespace shogun;
 
@@ -91,4 +93,17 @@ TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
 	auto converted2 = multiclass_labels(labels);
 	ASSERT_NE(converted2.get(), nullptr);
 	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
+}
+
+TEST_F(MulticlassLabels, view)
+{
+	auto labels = some<CMulticlassLabels>(labels_true);
+	SGVector<index_t> subset{0, 2};
+	auto labels_subset = wrap(view(labels, subset));
+
+	ASSERT_EQ(labels_subset->get_num_labels(), subset.vlen);
+	for (auto i : range(subset.vlen))
+	{
+		EXPECT_EQ(labels_subset->get_int_label(i), labels_true[subset[i]]);
+	}
 }

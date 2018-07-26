@@ -35,6 +35,13 @@ CMulticlassLabels::CMulticlassLabels(CBinaryLabels* labels)
 		m_labels[i] = (labels->get_label(i) == 1 ? 1 : 0);
 }
 
+CMulticlassLabels::CMulticlassLabels(const CMulticlassLabels& orig)
+    : CDenseLabels(orig)
+{
+	init();
+	m_multiclass_confidences = orig.m_multiclass_confidences;
+}
+
 CMulticlassLabels::~CMulticlassLabels()
 {
 }
@@ -192,6 +199,11 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 	CMulticlassLabels* casted = dynamic_cast<CMulticlassLabels*>(labels);
 	SG_REF(casted)
 	return casted;
+}
+
+CLabels* CMulticlassLabels::duplicate() const
+{
+	return new CMulticlassLabels(*this);
 }
 
 namespace shogun
