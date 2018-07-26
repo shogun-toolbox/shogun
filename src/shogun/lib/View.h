@@ -22,7 +22,7 @@ namespace shogun
 	 * @return new viewable instance
 	 */
 	template <class T>
-	T* view(T* viewable, const SGVector<index_t>& subset)
+	T* view(const T* viewable, const SGVector<index_t>& subset)
 	{
 		static_assert(
 		    std::is_base_of<CFeatures, T>::value ||
@@ -41,7 +41,7 @@ namespace shogun
 	 * @return new viewable instance
 	 */
 	template <class T>
-	Some<T> view(Some<T> viewable, const SGVector<index_t>& subset)
+	Some<T> view(const Some<T> viewable, const SGVector<index_t>& subset)
 	{
 		return wrap(view(viewable.get(), subset));
 	}
