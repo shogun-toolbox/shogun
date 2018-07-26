@@ -261,8 +261,7 @@ CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CReg
 CRegressionLabels* CStochasticGBMachine::compute_pseudo_residuals(
     CRegressionLabels* inter_f, CLabels* labs)
 {
-	SGVector<float64_t> labels =
-	    (dynamic_cast<CDenseLabels*>(labs))->get_labels();
+	auto labels = labs->as<CDenseLabels>()->get_labels();
 	SGVector<float64_t> f=inter_f->get_labels();
 
 	SGVector<float64_t> residuals(f.vlen);
