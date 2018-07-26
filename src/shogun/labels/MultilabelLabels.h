@@ -78,7 +78,7 @@ public:
 	 *
 	 * @param context optional message to convey the context
 	 */
-	void ensure_valid(const char * context = NULL);
+	void ensure_valid(const char * context = NULL) override;
 
 	/** get label type
 	 *
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @return number of classes
 	 */
-	virtual int32_t get_num_classes() const override;
+	virtual int32_t get_num_classes() const;
 
 	/** set labels
 	 *
