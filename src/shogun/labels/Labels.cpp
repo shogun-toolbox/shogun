@@ -24,6 +24,13 @@ CLabels::CLabels(const CLabels& orig)
     : CSGObject(orig), m_current_values(orig.m_current_values)
 {
 	init();
+
+	if (orig.m_subset_stack != NULL)
+	{
+		SG_UNREF(m_subset_stack);
+		m_subset_stack = new CSubsetStack(*orig.m_subset_stack);
+		SG_REF(m_subset_stack);
+	}
 }
 
 CLabels::~CLabels()

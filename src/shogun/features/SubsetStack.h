@@ -58,7 +58,7 @@ public:
 	 *
 	 * @param subset subset of indices to add
 	 * */
-	virtual void add_subset(SGVector<index_t> subset);
+	virtual void add_subset(const SGVector<index_t>& subset);
 
 	/** Sets/changes latest added subset. This allows to add multiple subsets
 	 * with in-place memory requirements. They cannot be removed one-by-one

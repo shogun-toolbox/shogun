@@ -134,6 +134,11 @@ CBinaryLabels::CBinaryLabels(const CDenseLabels& dense) : CDenseLabels(dense)
 	ensure_valid();
 }
 
+CLabels* CBinaryLabels::duplicate() const
+{
+	return new CBinaryLabels(*this);
+}
+
 namespace shogun
 {
 	Some<CBinaryLabels> binary_labels(CLabels* orig)

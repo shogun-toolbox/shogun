@@ -10,6 +10,7 @@
 #include <iterator>
 #include <unordered_map>
 
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/preprocessor/PCA.h>
@@ -361,23 +362,16 @@ SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* 
 
 	// Substract the mean of the features
 	// Create clone of the features to keep the input features unmodified
-	CDenseFeatures<float64_t>* cloned_features =
-			new CDenseFeatures<float64_t>(features->get_feature_matrix().clone());
-	CPruneVarSubMean* mean_substractor =
-			new CPruneVarSubMean(false); // false to avoid variance normalization
-	mean_substractor->fit(cloned_features);
-	cloned_features = mean_substractor->transform(cloned_features)
-	                      ->as<CDenseFeatures<float64_t>>();
+	auto mean_substractor =
+	    some<CPruneVarSubMean>(false); // false to avoid variance normalization
+	mean_substractor->fit(features);
+	auto centered_feats = mean_substractor->transform(features)->as<CDenseFeatures<float64_t>>();
 
 	// Obtain the linear transform applying PCA
-	CPCA* pca = new CPCA();
-	pca->set_target_dim(cloned_features->get_num_features());
-	pca->fit(cloned_features);
+	auto pca = some<CPCA>();
+	pca->set_target_dim(centered_feats->get_num_features());
+	pca->fit(centered_feats);
 	SGMatrix<float64_t> pca_transform = pca->get_transformation_matrix();
-
-	SG_UNREF(pca);
-	SG_UNREF(mean_substractor);
-	SG_UNREF(cloned_features);
 
 	return pca_transform;
 }
@@ -405,15 +399,13 @@ SGMatrix<float64_t> CLMNNImpl::compute_sqdists(
 		//find_target_nn should be changed to return the output transposed wrt how it is
 		//done atm.
 		SGVector<index_t> subset_vec = target_nn.get_row_vector(i);
-		lx->add_subset(subset_vec);
+		auto lx_subset = view(lx, subset_vec);
 		// after the subset, there are still n columns, i.e. the subset is used to
 		// modify the order of the columns in x according to the target neighbors
-		auto diff = linalg::add(LX, lx->get_feature_matrix(), 1.0, -1.0);
+		auto diff = linalg::add(LX, lx_subset->get_feature_matrix(), 1.0, -1.0);
 		auto sum = linalg::colwise_sum(linalg::element_prod(diff, diff));
 		for (int j = 0; j < sum.vlen; j++)
 			sqdists(i, j) = sum[j] + 1;
-
-		lx->remove_subset();
 	}
 
 	// clean up features used to apply subset
@@ -572,14 +564,10 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a
-	x->add_subset(SGVector<index_t>(a.data(), a.size(), false));
-	CDenseFeatures<float64_t>* afeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
-	x->remove_subset();
+	auto afeats = view(x, SGVector<index_t>(a.data(), a.size(), false));
 
 	// create new features only containing examples whose indices are in b
-	x->add_subset(SGVector<index_t>(b.data(), b.size(), false));
-	CDenseFeatures<float64_t>* bfeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
-	x->remove_subset();
+	auto bfeats = view(x, SGVector<index_t>(b.data(), b.size(), false));
 
 	// create and return distance
 	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);

@@ -28,8 +28,6 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	init();
 	m_labels = SGVector<float64_t>(num_lab);
 	m_current_values=SGVector<float64_t>(num_lab);
-	linalg::zero(m_labels);
-	linalg::zero(m_current_values);
 }
 
 CDenseLabels::CDenseLabels(const CDenseLabels& orig)

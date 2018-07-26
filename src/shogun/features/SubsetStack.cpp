@@ -81,7 +81,7 @@ void CSubsetStack::init()
 	SG_REF(m_active_subsets_stack);
 }
 
-void CSubsetStack::add_subset(SGVector<index_t> subset)
+void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 {
 	/* if there are already subsets on stack, do some legality checks */
 	if (m_active_subsets_stack->get_num_elements())

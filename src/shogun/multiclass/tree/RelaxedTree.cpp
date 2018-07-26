@@ -9,11 +9,12 @@
 #include <algorithm>
 #include <functional>
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-#include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/multiclass/tree/RelaxedTree.h>
+#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 
 using namespace shogun;
 
@@ -311,20 +312,15 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 
 		subset.vlen = k;
 
-		CBinaryLabels *binary_labels = new CBinaryLabels(binlab);
-		SG_REF(binary_labels);
-		binary_labels->add_subset(subset);
-		m_feats->add_subset(subset);
+		auto binary_labels = some<CBinaryLabels>(binlab);
+		auto feats_train = view(m_feats, subset);
+		auto labels_train = view(binary_labels, subset);
 
 		CKernel *kernel = (CKernel *)m_kernel->shallow_copy();
-		kernel->init(m_feats, m_feats);
+		kernel->init(feats_train, feats_train);
 		svm->set_kernel(kernel);
-		svm->set_labels(binary_labels);
+		svm->set_labels(labels_train);
 		svm->train();
-
-		binary_labels->remove_subset();
-		m_feats->remove_subset();
-		SG_UNREF(binary_labels);
 
 		std::copy(&mu[0], &mu[mu.vlen], &prev_mu[0]);
 

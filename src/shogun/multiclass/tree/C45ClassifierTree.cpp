@@ -28,10 +28,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/tree/C45ClassifierTree.h>
-#include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/lib/View.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
+#include <shogun/multiclass/tree/C45ClassifierTree.h>
 
 using namespace shogun;
 
@@ -465,14 +466,10 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 				}
 			}
 
-			feats->add_subset(subset);
-			gnd_truth->add_subset(subset);
-
 			// prune the child subtree
-			prune_tree_from_current_node(feats,gnd_truth,child,epsilon);
-
-			feats->remove_subset();
-			gnd_truth->remove_subset();
+			auto feats_prune = wrap(view(feats, subset));
+			auto gt_prune = wrap(view(gnd_truth, subset));
+			prune_tree_from_current_node(feats_prune, gt_prune, child, epsilon);
 
 			SG_UNREF(child);
 		}
@@ -505,25 +502,24 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		}
 
 		// count_left is 0 if entire validation data in current node moves to only right child
-		if (count_left>0)
+		if (count_left > 0)
 		{
-			feats->add_subset(left_subset);
-			gnd_truth->add_subset(left_subset);
+			auto feats_prune = wrap(view(feats, left_subset));
+			auto gt_prune = wrap(view(gnd_truth, left_subset));
 			// prune the left child subtree
-			prune_tree_from_current_node(feats,gnd_truth,left_child,epsilon);
-			feats->remove_subset();
-			gnd_truth->remove_subset();
+			prune_tree_from_current_node(
+			    feats_prune, gt_prune, left_child, epsilon);
 		}
 
 		// count_left is equal to num_cols if entire validation data in current node moves only to left child
 		if (count_left<feature_matrix.num_cols)
 		{
-			feats->add_subset(right_subset);
-			gnd_truth->add_subset(right_subset);
+			auto feats_prune = wrap(view(feats, right_subset));
+			auto gt_prune = wrap(view(gnd_truth, right_subset));
+
 			// prune the right child subtree
-			prune_tree_from_current_node(feats,gnd_truth,right_child,epsilon);
-			feats->remove_subset();
-			gnd_truth->remove_subset();
+			prune_tree_from_current_node(
+			    feats_prune, gt_prune, right_child, epsilon);
 		}
 
 		SG_UNREF(left_child);

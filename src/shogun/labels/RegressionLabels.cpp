@@ -40,6 +40,11 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
+CLabels* CRegressionLabels::duplicate() const
+{
+	return new CRegressionLabels(*this);
+}
+
 namespace shogun
 {
 	Some<CRegressionLabels> regression_labels(CLabels* orig)
