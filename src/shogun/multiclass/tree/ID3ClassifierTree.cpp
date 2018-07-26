@@ -321,8 +321,8 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 			}
 		}
 
-		auto feats_train = view(feats, subset);
-		auto gt_train = view(gnd_truth, subset);
+		auto feats_train = wrap(view(feats, subset));
+		auto gt_train = wrap(view(gnd_truth, subset));
 
 		// prune the child subtree
 		prune_tree_machine(feats_train, gt_train, child, epsilon);
