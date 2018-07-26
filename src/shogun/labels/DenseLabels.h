@@ -74,7 +74,7 @@ namespace shogun
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(CFile* loader) override;
+		virtual void load(CFile* loader);
 
 		/** save labels to file
 		 *
@@ -82,7 +82,7 @@ namespace shogun
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* writer) override;
+		virtual void save(CFile* writer);
 
 		/** set label
 		 *
@@ -263,7 +263,7 @@ namespace shogun
 		 */
 		int32_t get_num_labels() const override;
 
-		virtual const char* get_name() const = 0;
+		virtual const char* get_name() const override = 0;
 
 	public:
 		/** label designates classify reject */

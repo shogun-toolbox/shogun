@@ -102,14 +102,14 @@ less than number of data points (%d)\n", m_num_rkhs_basis, n);
 	bool train_machine(CFeatures *data) override;
 
 	/** @return object name */
-	virtual const char* get_name() const { return "KRRNystrom"; }
+	virtual const char* get_name() const override { return "KRRNystrom"; }
 
 protected:
 	/** Train regression using the Nyström method.
 	 *
 	 * @return boolean to indicate success
 	 */
-	virtual bool solve_krr_system();
+	virtual bool solve_krr_system() override;
 
 	/** Sample indices to pick rows/columns from kernel matrix
 	 *

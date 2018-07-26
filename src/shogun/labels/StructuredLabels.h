@@ -57,7 +57,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(CStructuredData* label) override;
+		virtual void add_label(CStructuredData* label);
 
 		/** get labels
 		 *
@@ -73,7 +73,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx) override;
+		virtual CStructuredData* get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -85,7 +85,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label) override;
+		virtual bool set_label(int32_t idx, CStructuredData* label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
