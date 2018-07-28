@@ -41,7 +41,7 @@ network.set_gd_momentum(0.9)
 
 #![train_and_apply]
 network.train(features_train)
-Labels labels_predict = network.apply_binary(features_test)
+Labels labels_predict = network.apply(features_test)
 #![train_and_apply]
 
 #![get_params]
