@@ -24,20 +24,8 @@ all_layers.append_element(softmax)
 #![add_layers]
 
 #![create_instance]
-NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train)
-network.set_layers(all_layers)
-network.quick_connect()
-network.initialize_neural_network()
+Machine network = machine("NeuralNetwork", labels=labels_train, layers=all_layers, l2_coefficient=0.01, dropout_hidden=0.5, max_num_epochs=50, gd_mini_batch_size=num_feats, gd_learning_rate=0.1, gd_momentum=0.9)
 #![create_instance]
-
-#![set_parameters]
-network.set_l2_coefficient(0.01)
-network.set_dropout_hidden(0.5)
-network.set_max_num_epochs(50)
-network.set_gd_mini_batch_size(num_feats)
-network.set_gd_learning_rate(0.1)
-network.set_gd_momentum(0.9)
-#![set_parameters]
 
 #![train_and_apply]
 network.train(features_train)

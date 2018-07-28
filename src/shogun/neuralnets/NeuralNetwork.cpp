@@ -60,10 +60,20 @@ void CNeuralNetwork::set_layers(CDynamicObjectArray* layers)
 	SG_UNREF(m_layers);
 	SG_REF(layers);
 	m_layers = layers;
+	init_adj_matrix();
+}
 
+void CNeuralNetwork::connect(int32_t i, int32_t j)
+{
+	REQUIRE("i<j", "i(%i) must be less that j(%i)\n", i, j);
+	m_adj_matrix(i, j) = true;
+	m_is_connected = true;
+}
+
+void CNeuralNetwork::init_adj_matrix()
+{
 	m_num_layers = m_layers->get_num_elements();
 	m_adj_matrix = SGMatrix<bool>(m_num_layers, m_num_layers);
-	m_adj_matrix.zero();
 
 	m_num_inputs = 0;
 	for (int32_t i=0; i<m_num_layers; i++)
@@ -71,19 +81,16 @@ void CNeuralNetwork::set_layers(CDynamicObjectArray* layers)
 		if (get_layer(i)->is_input())
 			m_num_inputs += get_layer(i)->get_num_neurons();
 	}
-}
-
-void CNeuralNetwork::connect(int32_t i, int32_t j)
-{
-	REQUIRE("i<j", "i(%i) must be less that j(%i)\n", i, j);
-	m_adj_matrix(i,j) = true;
+	m_adj_matrix.zero();
 }
 
 void CNeuralNetwork::quick_connect()
 {
-	m_adj_matrix.zero();
+	init_adj_matrix();
 	for (int32_t i=1; i<m_num_layers; i++)
 		m_adj_matrix(i-1, i) = true;
+
+	m_is_connected = true;
 }
 
 void CNeuralNetwork::disconnect(int32_t i, int32_t j)
@@ -94,10 +101,12 @@ void CNeuralNetwork::disconnect(int32_t i, int32_t j)
 void CNeuralNetwork::disconnect_all()
 {
 	m_adj_matrix.zero();
+	m_is_connected = false;
 }
 
 void CNeuralNetwork::initialize_neural_network(float64_t sigma)
 {
+	m_is_initialized = true;
 	for (int32_t j=0; j<m_num_layers; j++)
 	{
 		if (!get_layer(j)->is_input())
@@ -229,6 +238,15 @@ CDenseFeatures< float64_t >* CNeuralNetwork::transform(
 
 bool CNeuralNetwork::train_machine(CFeatures* data)
 {
+	if (!m_is_connected)
+	{
+		quick_connect();
+	}
+	if (!m_is_initialized)
+	{
+		initialize_neural_network();
+	}
+
 	REQUIRE(m_max_num_epochs>=0,
 		"Maximum number of epochs (%i) must be >= 0\n", m_max_num_epochs);
 
@@ -772,6 +790,8 @@ void CNeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
+	m_is_connected = false;
+	m_is_initialized = false;
 
 	SG_ADD((machine_int_t*)&m_optimization_method, "optimization_method",
 	       "Optimization Method", MS_NOT_AVAILABLE);
@@ -813,9 +833,13 @@ void CNeuralNetwork::init()
 		"Parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_param_regularizable, "param_regularizable",
 		"Parameter Regularizable", MS_NOT_AVAILABLE);
-	SG_ADD(&m_layers, "layers",
-		"DynamicObjectArray of NeuralNetwork objects",
-		MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_layers, "layers", "DynamicObjectArray of NeuralNetwork objects",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_connected, "is_connected", "is_connected", MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
 		"is_training", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_is_initialized, "is_initialized", "is_initialized",
+	    MS_NOT_AVAILABLE);
 }

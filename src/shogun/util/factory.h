@@ -21,9 +21,8 @@
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
-#include <shogun/transformer/Transformer.h>
 #include <shogun/neuralnets/NeuralLayer.h>
-#include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/transformer/Transformer.h>
 
 namespace shogun
 {
@@ -37,7 +36,6 @@ namespace shogun
 	CECOCDecoder* ecoc_decoder(const std::string& name);
 	CTransformer* transformer(const std::string& name);
 	CNeuralLayer* neural_layer(const std::string& name);
-	CNeuralNetwork* neural_network(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -58,8 +56,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
 	BASE_CLASS_FACTORY(CTransformer, transformer)
 	BASE_CLASS_FACTORY(CNeuralLayer, neural_layer)
-	BASE_CLASS_FACTORY(CNeuralNetwork, neural_network)
-	
+
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
 	{

@@ -136,6 +136,10 @@ public:
 	 */
 	virtual void connect(int32_t i, int32_t j);
 
+	/** Initialize adjacency matrix
+	 */
+	virtual void init_adj_matrix();
+
 	/** Connects each layer to the layer after it. That is, connects layer i to
 	 * as input to layer i+1 for all i.
 	 */
@@ -621,6 +625,16 @@ protected:
 	 * initial value is false
 	 */
 	bool m_is_training;
+
+	/** True if the network layers are connected
+	 * initial value is false
+	 */
+	bool m_is_connected;
+
+	/** True if the network has been initialized
+	 * initial value is false
+	 */
+	bool m_is_initialized;
 
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod m_optimization_method;

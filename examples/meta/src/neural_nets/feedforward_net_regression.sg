@@ -24,19 +24,8 @@ all_layers.append_element(linear)
 #![add_layers]
 
 #![create_instance]
-NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train)
-network.set_layers(all_layers)
-network.quick_connect()
-network.initialize_neural_network()
+Machine network = machine("NeuralNetwork", labels=labels_train, layers=all_layers, l2_coefficient=0.1, epsilon=0.0, max_num_epochs=40, gd_learning_rate=0.1, gd_momentum=0.9)
 #![create_instance]
-
-#![set_parameters]
-network.set_l2_coefficient(0.1)
-network.set_max_num_epochs(40)
-network.set_epsilon(0.0)
-network.set_gd_learning_rate(0.1)
-network.set_gd_momentum(0.9)
-#![set_parameters]
 
 #![train_and_apply]
 network.train(features_train)

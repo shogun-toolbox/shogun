@@ -26,10 +26,7 @@ layers_conv.append_element(softmax)
 #![add_layers]
 
 #![create_instance]
-NeuralNetwork network = neural_network("NeuralNetwork", labels=labels_train, max_num_epochs=4, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
-network.set_layers(layers_conv)
-network.quick_connect()
-network.initialize_neural_network()
+Machine network = machine("NeuralNetwork", labels=labels_train, max_num_epochs=4, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5, layers=layers_conv)
 #![create_instance]
 
 #![train_and_apply]
