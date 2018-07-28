@@ -67,7 +67,6 @@ void CNeuralNetwork::connect(int32_t i, int32_t j)
 {
 	REQUIRE("i<j", "i(%i) must be less that j(%i)\n", i, j);
 	m_adj_matrix(i, j) = true;
-	m_is_connected = true;
 }
 
 void CNeuralNetwork::init_adj_matrix()
@@ -89,8 +88,6 @@ void CNeuralNetwork::quick_connect()
 	init_adj_matrix();
 	for (int32_t i=1; i<m_num_layers; i++)
 		m_adj_matrix(i-1, i) = true;
-
-	m_is_connected = true;
 }
 
 void CNeuralNetwork::disconnect(int32_t i, int32_t j)
@@ -101,12 +98,11 @@ void CNeuralNetwork::disconnect(int32_t i, int32_t j)
 void CNeuralNetwork::disconnect_all()
 {
 	m_adj_matrix.zero();
-	m_is_connected = false;
 }
 
 void CNeuralNetwork::initialize_neural_network(float64_t sigma)
 {
-	m_is_initialized = true;
+	m_sigma = sigma;
 	for (int32_t j=0; j<m_num_layers; j++)
 	{
 		if (!get_layer(j)->is_input())
@@ -154,7 +150,7 @@ void CNeuralNetwork::initialize_neural_network(float64_t sigma)
 			get_section(m_param_regularizable, i);
 
 		get_layer(i)->initialize_parameters(layer_param,
-			layer_param_regularizable, sigma);
+			layer_param_regularizable, m_sigma);
 
 		get_layer(i)->set_batch_size(m_batch_size);
 	}
@@ -238,14 +234,12 @@ CDenseFeatures< float64_t >* CNeuralNetwork::transform(
 
 bool CNeuralNetwork::train_machine(CFeatures* data)
 {
-	if (!m_is_connected)
+	if (m_auto_quick_connect)
 	{
 		quick_connect();
 	}
-	if (!m_is_initialized)
-	{
-		initialize_neural_network();
-	}
+	initialize_neural_network(m_sigma);
+	
 
 	REQUIRE(m_max_num_epochs>=0,
 		"Maximum number of epochs (%i) must be >= 0\n", m_max_num_epochs);
@@ -790,8 +784,8 @@ void CNeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
-	m_is_connected = false;
-	m_is_initialized = false;
+	m_auto_quick_connect = true;
+	m_sigma = 0.01f;
 
 	SG_ADD((machine_int_t*)&m_optimization_method, "optimization_method",
 	       "Optimization Method", MS_NOT_AVAILABLE);
@@ -836,10 +830,10 @@ void CNeuralNetwork::init()
 	SG_ADD(
 	    &m_layers, "layers", "DynamicObjectArray of NeuralNetwork objects",
 	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_is_connected, "is_connected", "is_connected", MS_NOT_AVAILABLE);
+	SG_ADD(&m_auto_quick_connect, "auto_quick_connect", "auto_quick_connect", MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
 		"is_training", MS_NOT_AVAILABLE);
 	SG_ADD(
-	    &m_is_initialized, "is_initialized", "is_initialized",
+	    &m_sigma, "sigma", "sigma",
 	    MS_NOT_AVAILABLE);
 }

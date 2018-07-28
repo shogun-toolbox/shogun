@@ -626,16 +626,16 @@ protected:
 	 */
 	bool m_is_training;
 
-	/** True if the network layers are connected
-	 * initial value is false
+	/** True if the network layers are to be quick connected
+	 * initial value is True
 	 */
-	bool m_is_connected;
-
-	/** True if the network has been initialized
-	 * initial value is false
-	 */
-	bool m_is_initialized;
-
+	bool m_auto_quick_connect;
+	
+	/** Standard deviation of the gaussian used to randomly
+	* initialize the parameters
+	*/
+	float64_t m_sigma;
+	
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod m_optimization_method;
 

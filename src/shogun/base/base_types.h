@@ -19,7 +19,7 @@ namespace shogun
 	class CECOCEncoder;
 	class CECOCDecoder;
 	class CMulticlassStrategy;
-	class CDynamicObjectArray;
+	class CNeuralLayer;
 	// type trait to enable certain methods only for shogun base types
 	template <class T>
 	struct is_sg_base
@@ -32,7 +32,7 @@ namespace shogun
 	                    std::is_same<CECOCEncoder, T>::value ||
 	                    std::is_same<CECOCDecoder, T>::value ||
 	                    std::is_same<CMulticlassStrategy, T>::value ||
-	                    std::is_same<CDynamicObjectArray, T>::value>
+	                    std::is_same<CNeuralLayer, T>::value>
 	{
 	};
 }

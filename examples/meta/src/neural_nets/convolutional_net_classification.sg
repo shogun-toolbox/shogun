@@ -12,22 +12,22 @@ Labels labels_train = labels(f_labels_train)
 Labels labels_test = labels(f_labels_test)
 #![create_features]
 
+#![create_instance]
+Machine network = machine("NeuralNetwork", labels=labels_train, max_num_epochs=4, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
+#![create_instance]
+
 #![add_layers]
 int num_feats = features_train.get_int("num_features")
 DynamicObjectArray layers_conv()
-NeuralLayer input=neural_layer("NeuralInputLayer", width=16, height=16,num_neurons=256) 
-layers_conv.append_element(input)
+NeuralLayer input = neural_layer("NeuralInputLayer", width=16, height=16,num_neurons=256) 
+network.add("layers", input)
 NeuralLayer conv1 = neural_layer("NeuralConvolutionalLayer", num_maps=10, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
-layers_conv.append_element(conv1)
+network.add("layers", conv1)
 NeuralLayer conv2 = neural_layer("NeuralConvolutionalLayer", num_maps=15, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
-layers_conv.append_element(conv2)
+network.add("layers", conv2)
 NeuralLayer softmax = neural_layer("NeuralSoftmaxLayer", num_neurons=10)
-layers_conv.append_element(softmax)
+network.add("layers", softmax)
 #![add_layers]
-
-#![create_instance]
-Machine network = machine("NeuralNetwork", labels=labels_train, max_num_epochs=4, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5, layers=layers_conv)
-#![create_instance]
 
 #![train_and_apply]
 network.train(features_train)
