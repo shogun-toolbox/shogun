@@ -15,7 +15,7 @@ We create :sgclass:`CFeatures` and :sgclass:`CLabels` via loading from files
 
 .. sgexample:: cross_validation_pipeline:create_features
 
-We first chain all transformers, and then finalize the pipeline with the classifier.
+We first chain transformers, and then finalize the pipeline with the classifier.
 
 .. sgexample:: cross_validation_pipeline:create_pipeline
 
