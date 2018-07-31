@@ -1,7 +1,7 @@
-File f_feats_train = csv_file("../../data/fm_train_mnist_16x16.dat")
-File f_feats_test = csv_file("../../data/fm_test_mnist_16x16.dat")
-File f_labels_train = csv_file("../../data/labels_train_mnist_16x16.dat")
-File f_labels_test = csv_file("../../data/labels_test_mnist_16x16.dat")
+File f_feats_train = csv_file("../../data/classifier_3class_256d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_3class_256d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_3class_256d_linear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_3class_256d_linear_labels_test.dat")
 
 Math:init_random(10)
 
@@ -17,25 +17,24 @@ Machine network = machine("NeuralNetwork", labels=labels_train, auto_quick_initi
 #![create_instance]
 
 #![add_layers]
-int num_feats = features_train.get_int("num_features")
-NeuralLayer input = layer("NeuralInputLayer", width=16, height=16, num_neurons=num_feats) 
+NeuralLayer input = layer("NeuralInputLayer", width=16, height=16, num_neurons=256) 
 network.add("layers", input)
-NeuralLayer conv1 = layer("NeuralConvolutionalLayer", num_maps=10, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+NeuralLayer conv1 = layer("NeuralConvolutionalLayer", num_maps=3, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
 network.add("layers", conv1)
-NeuralLayer conv2 = layer("NeuralConvolutionalLayer", num_maps=15, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+NeuralLayer conv2 = layer("NeuralConvolutionalLayer", num_maps=3, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
 network.add("layers", conv2)
-NeuralLayer softmax = layer("NeuralSoftmaxLayer", num_neurons=10)
+NeuralLayer softmax = layer("NeuralSoftmaxLayer", num_neurons=3)
 network.add("layers", softmax)
 #![add_layers]
 
 #![train_and_apply]
 network.train(features_train)
-Labels labels_predict = network.apply(features_train)
+Labels labels_predict = network.apply(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
 Evaluation eval = evaluation("MulticlassAccuracy")
-real accuracy = eval.evaluate(labels_predict, labels_train)
+real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
