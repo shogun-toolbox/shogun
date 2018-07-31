@@ -35,7 +35,7 @@ namespace shogun
 	CECOCEncoder* ecoc_encoder(const std::string& name);
 	CECOCDecoder* ecoc_decoder(const std::string& name);
 	CTransformer* transformer(const std::string& name);
-	CNeuralLayer* neural_layer(const std::string& name);
+	CNeuralLayer* layer(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -55,7 +55,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CECOCEncoder, ecoc_encoder)
 	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
 	BASE_CLASS_FACTORY(CTransformer, transformer)
-	BASE_CLASS_FACTORY(CNeuralLayer, neural_layer)
+	BASE_CLASS_FACTORY(CNeuralLayer, layer)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)

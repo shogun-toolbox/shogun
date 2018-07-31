@@ -12,20 +12,19 @@ Labels labels_train = labels(f_labels_train)
 Labels labels_test = labels(f_labels_test)
 #![create_features]
 
-#![add_layers]
+#![create_instance]
 int num_feats = features_train.get_int("num_features")
-DynamicObjectArray all_layers()
-NeuralLayer input = neural_layer("NeuralInputLayer", num_neurons=num_feats)
-all_layers.append_element(input)
-NeuralLayer relu = neural_layer("NeuralRectifiedLinearLayer", num_neurons=20)
-all_layers.append_element(relu)
-NeuralLayer linear = neural_layer("NeuralLinearLayer", num_neurons=1)
-all_layers.append_element(linear)
-#![add_layers]
+Machine network = machine("NeuralNetwork", labels=labels_train, auto_quick_initialize=True, l2_coefficient=0.1, epsilon=0.0, max_num_epochs=40, gd_learning_rate=0.1, gd_momentum=0.9)
+#![create_instance]
 
-#![create_instance]
-Machine network = machine("NeuralNetwork", labels=labels_train, layers=all_layers, l2_coefficient=0.1, epsilon=0.0, max_num_epochs=40, gd_learning_rate=0.1, gd_momentum=0.9)
-#![create_instance]
+#![add_layers]
+NeuralLayer input = layer("NeuralInputLayer", num_neurons=num_feats)
+network.add("layers", input)
+NeuralLayer relu = layer("NeuralRectifiedLinearLayer", num_neurons=20)
+network.add("layers", relu)
+NeuralLayer linear = layer("NeuralLinearLayer", num_neurons=1)
+network.add("layers", linear)
+#![add_layers]
 
 #![train_and_apply]
 network.train(features_train)

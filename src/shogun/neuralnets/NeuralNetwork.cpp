@@ -234,11 +234,11 @@ CDenseFeatures< float64_t >* CNeuralNetwork::transform(
 
 bool CNeuralNetwork::train_machine(CFeatures* data)
 {
-	if (m_auto_quick_connect)
+	if (m_auto_quick_initialize)
 	{
 		quick_connect();
+		initialize_neural_network(m_sigma);
 	}
-	initialize_neural_network(m_sigma);
 	
 
 	REQUIRE(m_max_num_epochs>=0,
@@ -784,9 +784,11 @@ void CNeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
-	m_auto_quick_connect = true;
+	m_auto_quick_initialize = false;
 	m_sigma = 0.01f;
-
+	m_layers=new CDynamicObjectArray();
+	SG_REF(m_layers);
+	
 	SG_ADD((machine_int_t*)&m_optimization_method, "optimization_method",
 	       "Optimization Method", MS_NOT_AVAILABLE);
 	SG_ADD(&m_gd_mini_batch_size, "gd_mini_batch_size",
@@ -830,7 +832,7 @@ void CNeuralNetwork::init()
 	SG_ADD(
 	    &m_layers, "layers", "DynamicObjectArray of NeuralNetwork objects",
 	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_auto_quick_connect, "auto_quick_connect", "auto_quick_connect", MS_NOT_AVAILABLE);
+	SG_ADD(&m_auto_quick_initialize, "auto_quick_initialize", "auto_quick_initialize", MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
 		"is_training", MS_NOT_AVAILABLE);
 	SG_ADD(

@@ -626,10 +626,10 @@ protected:
 	 */
 	bool m_is_training;
 
-	/** True if the network layers are to be quick connected
-	 * initial value is True
+	/** True if the network layers are to be quick connected and initialized
+	 * initial value is False
 	 */
-	bool m_auto_quick_connect;
+	bool m_auto_quick_initialize;
 	
 	/** Standard deviation of the gaussian used to randomly
 	* initialize the parameters
