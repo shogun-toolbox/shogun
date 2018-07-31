@@ -3,13 +3,12 @@ Convolutional Neural Network for Classification
 ===============================================
 
 Convolutional neural network  is a class of deep, feed-forward artificial neural networks, most commonly applied to analyzing visual imagery. 
-The network is a directed acyclic graph composed of an input layer, a few hidden layers can be convolutional layers, pooling layers, 
-fully connected layers or normalization layers and a softmax output layer.
+The network is a directed acyclic graph composed of an input layer, a few hidden layers can be convolutional layers, pooling layers, fully connected layers or normalization layers and a softmax output layer.
 To compute the pre-nonlinearity input to some unit :math:`x_{ij}^{l}` in any layer, we can sum up the contributions from the previous layer cells:
 
 .. math::
 
-x_{ij}^{l}=\sum_{a=0}^{m-1}\sum_{b=0}^{m-1}w_{ab}y_{(i+1)(j+1)}^{l-1}
+    x_{ij}^{l}=\sum_{a=0}^{m-1}\sum_{b=0}^{m-1}w_{ab}y_{(i+1)(j+1)}^{l-1}
 
 where :math:`x_{ij}^{l}` is the input to a neuron in layer :math:`l`, :math:`y_{ij}^{l}` is output of the neuron and :math:`w_{ij}` is it's weight.
 See chapter 9 in :cite:`Goodfellow-et-al-2016-Book` for a detailed introduction.

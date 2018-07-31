@@ -1,7 +1,7 @@
-File f_feats_train = csv_file("../../data/classifier_3class_256d_linear_features_train.dat")
-File f_feats_test = csv_file("../../data/classifier_3class_256d_linear_features_test.dat")
-File f_labels_train = csv_file("../../data/classifier_3class_256d_linear_labels_train.dat")
-File f_labels_test = csv_file("../../data/classifier_3class_256d_linear_labels_test.dat")
+File f_feats_train = csv_file("../../data/mnist_3class_256d_features_train.dat")
+File f_feats_test = csv_file("../../data/mnist_3class_256d_features_test.dat")
+File f_labels_train = csv_file("../../data/mnist_3class_256d_labels_train.dat")
+File f_labels_test = csv_file("../../data/mnist_3class_256d_labels_test.dat")
 
 Math:init_random(10)
 
