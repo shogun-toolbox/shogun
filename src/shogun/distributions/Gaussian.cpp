@@ -167,7 +167,7 @@ float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
 			    CblasRowMajor, num_dim, num_dim, alpha_k[j], v.vector, 1,
 			    v.vector, 1, (double*)cov_sum.matrix, num_dim);
 #else
-			linalg::dger<float64_t>(alpha_k[j], v, v, cov_sum);
+			linalg::rank_update(cov_sum, v, alpha_k[j]);
 #endif
 			break;
 		case DIAG:

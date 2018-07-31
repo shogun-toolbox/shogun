@@ -46,7 +46,7 @@
 	METHODNAME(floatmax_t, Container);                                         \
 	METHODNAME(complex128_t, Container);
 
-#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
+#define DEFINE_FOR_NON_COMPLEX_PTYPE(METHODNAME, Container)                    \
 	METHODNAME(bool, Container);                                               \
 	METHODNAME(char, Container);                                               \
 	METHODNAME(int8_t, Container);                                             \

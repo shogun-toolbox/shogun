@@ -45,6 +45,16 @@ using namespace shogun;
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_FACTOR
 
+#define BACKEND_GENERIC_CHOLESKY_RANK_UPDATE(Type, Container)                  \
+	void LinalgBackendEigen::cholesky_rank_update(                             \
+	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
+	    const bool lower) const                                                \
+	{                                                                          \
+		cholesky_rank_update_impl(L, b, alpha, lower);                         \
+	}
+DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
+
 #define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
 	void LinalgBackendEigen::ldlt_factor(                                      \
 	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
@@ -66,7 +76,7 @@ DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
 #undef BACKEND_GENERIC_SVD
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
 
@@ -99,6 +109,24 @@ SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
 	    "Matrix is not Hermitian positive definite!\n");
 
 	return c;
+}
+
+#include <iostream>
+
+template <typename T>
+void LinalgBackendEigen::cholesky_rank_update_impl(
+    SGMatrix<T>& L, const SGVector<T>& b, T alpha, bool lower) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
+	typename SGVector<T>::EigenVectorXtMap b_eig = b;
+
+	if (lower == false)
+	{
+		auto U = L_eig.transpose();
+		Eigen::internal::llt_rank_update_lower(U, b_eig, alpha);
+	}
+	else
+		Eigen::internal::llt_rank_update_lower(L_eig, b_eig, alpha);
 }
 
 template <typename T>

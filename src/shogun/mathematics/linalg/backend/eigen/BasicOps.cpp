@@ -30,6 +30,7 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#include <shogun/base/range.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
 #include <shogun/mathematics/linalg/LinalgMacros.h>
 
@@ -67,6 +68,14 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
 #undef BACKEND_GENERIC_ADD_DIAG
 
+#define BACKEND_GENERIC_ADD_RIDGE(Type, Container)                             \
+	void LinalgBackendEigen::add_ridge(SGMatrix<Type>& A, Type beta) const     \
+	{                                                                          \
+		add_ridge_impl(A, beta);                                               \
+	}
+DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_RIDGE, SGMatrix)
+#undef BACKEND_GENERIC_ADD_RIDGE
+
 #define BACKEND_GENERIC_PINVH(Type, Container)                                 \
 	void LinalgBackendEigen::pinvh(                                            \
 	    const SGMatrix<Type>& A, SGMatrix<Type>& result) const                 \
@@ -75,6 +84,15 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
 	}
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_PINVH, SGMatrix)
 #undef BACKEND_GENERIC_PINVH
+
+#define BACKEND_GENERIC_RANK_UPDATE(Type, Container)                           \
+	void LinalgBackendEigen::rank_update(                                      \
+	    SGMatrix<Type>& A, const SGVector<Type>& b, Type alpha) const          \
+	{                                                                          \
+		rank_update_impl(A, b, alpha);                                         \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_RANK_UPDATE
 
 #define BACKEND_GENERIC_PINV(Type, Container)                                  \
 	void LinalgBackendEigen::pinv(                                             \
@@ -176,7 +194,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
 
@@ -227,6 +245,13 @@ void LinalgBackendEigen::add_diag_impl(
 }
 
 template <typename T>
+void LinalgBackendEigen::add_ridge_impl(SGMatrix<T>& A, T beta) const
+{
+	for (auto i : range(std::min(A.num_rows, A.num_cols)))
+		A(i, i) += beta;
+}
+
+template <typename T>
 void LinalgBackendEigen::pinvh_impl(
     const SGMatrix<T>& A, SGMatrix<T>& result) const
 {
@@ -264,6 +289,25 @@ void LinalgBackendEigen::pinv_impl(
 	s_eig.array() =
 	    (s_eig.array() > pinv_tol).select(s_eig.array().inverse(), 0);
 	result_eig = V_eig * s_eig.asDiagonal() * U_eig.transpose();
+}
+
+template <typename T>
+void LinalgBackendEigen::rank_update_impl(
+    SGMatrix<T>& A, const SGVector<T>& b, T alpha) const
+{
+	T x;
+	T update;
+	for (auto j : range(A.num_cols))
+	{
+		x = b[j];
+		for (auto i : range(j))
+		{
+			update = alpha * x * b[i];
+			A(i, j) += update;
+			A(j, i) += update;
+		}
+		A(j, j) += alpha * x * x;
+	}
 }
 
 template <typename T>

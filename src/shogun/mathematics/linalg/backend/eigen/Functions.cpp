@@ -40,8 +40,8 @@ using namespace shogun;
 	{                                                                          \
 		return max_impl(a);                                                    \
 	}
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
 #undef BACKEND_GENERIC_MAX
 
 #define BACKEND_GENERIC_REAL_MEAN(Type, Container)                             \
@@ -49,8 +49,8 @@ DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
 	{                                                                          \
 		return mean_impl(a);                                                   \
 	}
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
 #undef BACKEND_GENERIC_REAL_MEAN
 
 #define BACKEND_GENERIC_COMPLEX_MEAN(Container)                                \
@@ -144,7 +144,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
 #undef BACKEND_GENERIC_TRACE
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
 
