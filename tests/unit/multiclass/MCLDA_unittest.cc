@@ -1,8 +1,13 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/multiclass/MCLDA.h>
-#include <gtest/gtest.h>
 
 #define NUM  50
 #define DIMS 2

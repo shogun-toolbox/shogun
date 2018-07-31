@@ -30,12 +30,12 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
+#include <gtest/gtest.h>
 #include <shogun/neuralnets/DeepBeliefNetwork.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

@@ -5,12 +5,12 @@
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
+#include <gtest/gtest.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

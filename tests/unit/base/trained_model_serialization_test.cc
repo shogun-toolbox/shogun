@@ -1,8 +1,8 @@
+#include <gtest/gtest.h>
 #include "environments/LinearTestEnvironment.h"
 #include "environments/MultiLabelTestEnvironment.h"
 #include "environments/RegressionTestEnvironment.h"
 #include "utils/Utils.h"
-#include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>

@@ -28,13 +28,13 @@
 * either expressed or implied, of the Shogun Development Team.
 */
 
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/KRRNystrom.h>
 #include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/base/some.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

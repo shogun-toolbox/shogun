@@ -4,8 +4,8 @@
  * Authors: Viktor Gal, Sanuj Sharma, Soeren Sonnenburg
  */
 
-#include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
+#include <shogun/preprocessor/RescaleFeatures.h>
 
 using namespace shogun;
 

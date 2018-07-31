@@ -8,9 +8,6 @@
 %rename(Regression) CRegression;
 %rename(KernelRidgeRegression) CKernelRidgeRegression;
 %rename(KRRNystrom) CKRRNystrom;
-%rename(LinearRidgeRegression) CLinearRidgeRegression;
-%rename(LeastSquaresRegression) CLeastSquaresRegression;
-%rename(LeastAngleRegression) CLeastAngleRegression;
 %rename(LibSVR) CLibSVR;
 %rename(LibLinearRegression) CLibLinearRegression;
 %rename(MKL) CMKL;
@@ -25,9 +22,6 @@
 %include <shogun/regression/Regression.h>
 %include <shogun/regression/KernelRidgeRegression.h>
 %include <shogun/regression/KRRNystrom.h>
-%include <shogun/regression/LinearRidgeRegression.h>
-%include <shogun/regression/LeastSquaresRegression.h>
-%include <shogun/regression/LeastAngleRegression.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/regression/svr/LibLinearRegression.h>
 %include <shogun/classifier/mkl/MKL.h>

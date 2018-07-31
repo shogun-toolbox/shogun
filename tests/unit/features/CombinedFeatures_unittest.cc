@@ -5,9 +5,9 @@
  *          Evangelos Anagnostopoulos
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

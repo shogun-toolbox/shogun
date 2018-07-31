@@ -28,10 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/KernelDensity.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

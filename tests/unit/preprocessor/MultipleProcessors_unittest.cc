@@ -4,11 +4,11 @@
  * Authors: Shubham Shukla, Soeren Sonnenburg
  */
 
+#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/SumOne.h>
 #include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

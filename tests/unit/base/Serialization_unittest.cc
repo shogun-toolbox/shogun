@@ -5,13 +5,13 @@
  *          Heiko Strathmann
  */
 
+#include <gtest/gtest.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

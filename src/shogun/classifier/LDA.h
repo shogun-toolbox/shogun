@@ -174,6 +174,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		/** @return object name */
 		virtual const char* get_name() const { return "LDA"; }
 
+	protected:
 		/** train LDA classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -186,7 +187,6 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		                           std::is_floating_point<ST>::value>>
 		bool train_machine_templated(CDenseFeatures<ST>* data);
 
-	protected:
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
 		 * @param features training data

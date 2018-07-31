@@ -5,6 +5,7 @@
  *          Bjoern Esser
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
@@ -13,7 +14,6 @@
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/Hash.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
