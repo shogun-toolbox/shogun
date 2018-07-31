@@ -141,6 +141,8 @@ enum EProblemType
  */
 class CMachine : public CStoppableSGObject
 {
+	friend class CPipeline;
+
 	public:
 		/** constructor */
 		CMachine();
