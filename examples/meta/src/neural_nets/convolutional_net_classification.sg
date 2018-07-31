@@ -1,0 +1,41 @@
+File f_feats_train = csv_file("../../data/mnist_3class_256d_features_train.dat")
+File f_feats_test = csv_file("../../data/mnist_3class_256d_features_test.dat")
+File f_labels_train = csv_file("../../data/mnist_3class_256d_labels_train.dat")
+File f_labels_test = csv_file("../../data/mnist_3class_256d_labels_test.dat")
+
+Math:init_random(10)
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![create_instance]
+Machine network = machine("NeuralNetwork", labels=labels_train, auto_quick_initialize=True, max_num_epochs=4, epsilon=0.0, optimization_method=enum ENNOptimizationMethod.NNOM_GRADIENT_DESCENT, gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
+#![create_instance]
+
+#![add_layers]
+NeuralLayer input = layer("NeuralInputLayer", width=16, height=16, num_neurons=256) 
+network.add("layers", input)
+NeuralLayer conv1 = layer("NeuralConvolutionalLayer", num_maps=3, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+network.add("layers", conv1)
+NeuralLayer conv2 = layer("NeuralConvolutionalLayer", num_maps=3, radius_x=2, radius_y=2, pooling_width=2, pooling_height=2, stride_x=1, stride_y=1)
+network.add("layers", conv2)
+NeuralLayer softmax = layer("NeuralSoftmaxLayer", num_neurons=3)
+network.add("layers", softmax)
+#![add_layers]
+
+#![train_and_apply]
+network.train(features_train)
+Labels labels_predict = network.apply(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+Evaluation eval = evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_real_vector("labels")
