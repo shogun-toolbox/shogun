@@ -122,11 +122,6 @@ namespace shogun
 		 */
 		virtual void set_store_model_features(bool store_model) override;
 
-		/** Stores feature data of underlying model. This will be forwarded to
-		 * `store_model_features` of underlying machines.
-		 */
-		virtual void store_model_features() override;
-
 		virtual CSGObject* clone() override;
 
 		virtual EProblemType get_machine_problem_type() const override;
@@ -137,6 +132,11 @@ namespace shogun
 		std::vector<std::pair<std::string, variant<CTransformer*, CMachine*>>>
 		    m_stages;
 		virtual bool train_require_labels() const override;
+
+		/** Stores feature data of underlying model. This will be forwarded to
+		 * `store_model_features` of underlying machines.
+		 */
+		virtual void store_model_features() override;
 	};
 }
 
