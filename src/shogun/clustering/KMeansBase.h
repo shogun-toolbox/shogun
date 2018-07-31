@@ -148,12 +148,12 @@ class CKMeansBase : public CDistanceMachine
 			return false;
 		}
 
-		/** Ensures cluster centers are in lhs of underlying distance */
-		virtual void store_model_features();
-
 	protected:
 		/** Initialize training for KMeans algorithms */
 		void initialize_training(CFeatures* data=NULL);
+
+		/** Ensures cluster centers are in lhs of underlying distance */
+		virtual void store_model_features();
 
 		/** K-Means++ algorithm to initialize cluster centers
 		*

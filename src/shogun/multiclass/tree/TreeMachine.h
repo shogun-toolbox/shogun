@@ -146,6 +146,8 @@ public:
 		return cloned_tree;
 	}
 
+protected:
+
 	/**  enable unlocked cross-validation - no model features to store */
 	virtual void store_model_features() { }
 

@@ -210,13 +210,13 @@ class CKNN : public CDistanceMachine
 			m_lsh_t = t;
 		}
 
+	protected:
 		/** Stores feature data of underlying model.
 		 *
 		 * Replaces lhs and rhs of underlying distance with copies of themselves
 		 */
 		virtual void store_model_features();
 
-	protected:
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */

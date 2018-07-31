@@ -92,6 +92,7 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual float64_t apply_one(int32_t num);
 
+	protected:
 		/** Ensures cluster centers are in lhs of underlying distance
 		 *
 		 * NOT IMPLEMENTED!
