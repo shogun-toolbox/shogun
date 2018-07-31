@@ -187,7 +187,7 @@ SGMatrix<float64_t> CLMNNImpl::sum_outer_products(
 		{
 			auto dx = linalg::add(
 			    X.get_column(i), X.get_column(target_nn(j, i)), 1.0, -1.0);
-			linalg::dger(1.0, dx, dx, sop);
+			linalg::rank_update(sop, dx);
 		}
 	}
 
@@ -257,8 +257,8 @@ void CLMNNImpl::update_gradient(
 		    X.get_column(it->example), X.get_column(it->target), 1.0, -1.0);
 		auto dx2 = linalg::add(
 		    X.get_column(it->example), X.get_column(it->impostor), 1.0, -1.0);
-		linalg::dger(-regularization, dx1, dx1, G);
-		linalg::dger(regularization, dx2, dx2, G);
+		linalg::rank_update(G, dx1, -regularization);
+		linalg::rank_update(G, dx2, regularization);
 	}
 
 	// add the gradient contributions of the new impostors
@@ -269,8 +269,8 @@ void CLMNNImpl::update_gradient(
 		    X.get_column(it->example), X.get_column(it->target), 1.0, -1.0);
 		auto dx2 = linalg::add(
 		    X.get_column(it->example), X.get_column(it->impostor), 1.0, -1.0);
-		linalg::dger(regularization, dx1, dx1, G);
-		linalg::dger(-regularization, dx2, dx2, G);
+		linalg::rank_update(G, dx1, regularization);
+		linalg::rank_update(G, dx2, -regularization);
 	}
 }
 

@@ -69,7 +69,7 @@ namespace shogun
 	METHODNAME(floatmax_t, Container);                                         \
 	METHODNAME(complex128_t, Container);
 
-#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
+#define DEFINE_FOR_NON_COMPLEX_PTYPE(METHODNAME, Container)                    \
 	METHODNAME(bool, Container);                                               \
 	METHODNAME(char, Container);                                               \
 	METHODNAME(int8_t, Container);                                             \
@@ -80,6 +80,11 @@ namespace shogun
 	METHODNAME(uint32_t, Container);                                           \
 	METHODNAME(int64_t, Container);                                            \
 	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);
+
+#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
 	METHODNAME(float32_t, Container);                                          \
 	METHODNAME(float64_t, Container);                                          \
 	METHODNAME(floatmax_t, Container);
@@ -139,6 +144,20 @@ namespace shogun
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix);
 #undef BACKEND_GENERIC_ADD_DIAG
+
+/**
+ * Wrapper method of add diagonal vector A.diagonal = A.diagonal + beta * b.
+ *
+ * @see linalg::add_ridge
+ */
+#define BACKEND_GENERIC_ADD_RIDGE(Type, Container)                             \
+	virtual void add_ridge(SGMatrix<Type>& A, Type beta) const                 \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_RIDGE, SGMatrix);
+#undef BACKEND_GENERIC_ADD_RIDGE
 
 /**
  * Wrapper method of add vector to each column of matrix.
@@ -213,6 +232,33 @@ namespace shogun
 	}
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
+
+/**
+ * Wrapper for rank one update of Cholesky decomposition
+ *
+ * @see linalg::cholesky_factor
+ */
+#define BACKEND_GENERIC_CHOLESKY_RANK_UPDATE(Type, Container)                  \
+	virtual void cholesky_rank_update(                                         \
+	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
+	    const bool lower) const                                                \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
+
+/**
+ * Wrapper for rank one update of a square matrix
+ */
+#define BACKEND_GENERIC_RANK_UPDATE(Type, Container)                           \
+	virtual void rank_update(                                                  \
+	    Container<Type>& A, const SGVector<Type>& b, Type alpha) const         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_RANK_UPDATE
 
 /**
  * Wrapper method of LDLT Cholesky decomposition
@@ -469,8 +515,8 @@ namespace shogun
 		SG_SNOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
 	}
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
 #undef BACKEND_GENERIC_REAL_MEAN
 
 /**
@@ -849,7 +895,7 @@ namespace shogun
 #undef BACKEND_GENERIC_FROM_GPU
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 	};
 }

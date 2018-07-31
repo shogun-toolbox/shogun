@@ -225,6 +225,31 @@ TEST(LinalgBackendEigen, add_diag)
 	EXPECT_THROW(add_diag(A3, b3), ShogunException);
 }
 
+TEST(LinalgBackendEigen, add_ridge)
+{
+	SGMatrix<float64_t> A1(2, 3);
+
+	A1(0, 0) = 1;
+	A1(0, 1) = 2;
+	A1(0, 2) = 3;
+	A1(1, 0) = 4;
+	A1(1, 1) = 5;
+	A1(1, 2) = 6;
+
+	add_ridge(A1, 1.0);
+
+	EXPECT_NEAR(A1(0, 0), 2, 1e-15);
+	EXPECT_NEAR(A1(0, 1), 2, 1e-15);
+	EXPECT_NEAR(A1(0, 2), 3, 1e-15);
+	EXPECT_NEAR(A1(1, 0), 4, 1e-15);
+	EXPECT_NEAR(A1(1, 1), 6, 1e-15);
+	EXPECT_NEAR(A1(1, 2), 6, 1e-15);
+
+	// test error cases
+	SGMatrix<float64_t> A2;
+	EXPECT_THROW(add_ridge(A2, 1.0), ShogunException);
+}
+
 TEST(LinalgBackendEigen, add_vector)
 {
 	const float64_t alpha = 0.7;
@@ -340,6 +365,68 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
 		0.0, 1E-15);
 	EXPECT_EQ(m.num_rows, U.num_rows);
 	EXPECT_EQ(m.num_cols, U.num_cols);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_cholesky_rank_update_upper)
+{
+	const index_t size = 2;
+	SGMatrix<float64_t> A(size, size);
+	SGMatrix<float64_t> U(size, size);
+	SGVector<float64_t> b(size);
+	Map<MatrixXd> A_eig(A.matrix, size, size);
+	Map<MatrixXd> U_eig(U.matrix, size, size);
+	Map<VectorXd> b_eig(b.vector, size);
+
+	U(0, 0) = 2.0;
+	U(0, 1) = 1.0;
+	U(1, 1) = 2.5;
+	b[0] = 2;
+	b[1] = 3;
+	A_eig = U_eig.transpose() * U_eig;
+
+	auto A2 = A.clone();
+	Map<MatrixXd> A2_eig(A2.matrix, A2.num_rows, A2.num_cols);
+	A2(0, 0) += b[0] * b[0];
+	A2(0, 1) += b[0] * b[1];
+	A2(1, 0) += b[1] * b[0];
+	A2(1, 1) += b[1] * b[1];
+
+	cholesky_rank_update(U, b, 1.0, false);
+	EXPECT_NEAR((A2_eig - U_eig.transpose() * U_eig).norm(), 0.0, 1e-14);
+
+	cholesky_rank_update(U, b, -1., false);
+	EXPECT_NEAR((A_eig - U_eig.transpose() * U_eig).norm(), 0.0, 1e-14);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_cholesky_rank_update_lower)
+{
+	const index_t size = 2;
+	SGMatrix<float64_t> A(size, size);
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> b(size);
+	Map<MatrixXd> A_eig(A.matrix, size, size);
+	Map<MatrixXd> L_eig(L.matrix, size, size);
+	Map<VectorXd> b_eig(b.vector, size);
+
+	L(0, 0) = 2.0;
+	L(1, 0) = 1.0;
+	L(1, 1) = 2.5;
+	b[0] = 2;
+	b[1] = 3;
+	A_eig = L_eig * L_eig.transpose();
+
+	auto A2 = A.clone();
+	Map<MatrixXd> A2_eig(A2.matrix, A2.num_rows, A2.num_cols);
+	A2(0, 0) += b[0] * b[0];
+	A2(0, 1) += b[0] * b[1];
+	A2(1, 0) += b[1] * b[0];
+	A2(1, 1) += b[1] * b[1];
+
+	cholesky_rank_update(L, b);
+	EXPECT_NEAR((A2_eig - L_eig * L_eig.transpose()).norm(), 0.0, 1e-14);
+
+	cholesky_rank_update(L, b, -1.);
+	EXPECT_NEAR((A_eig - L_eig * L_eig.transpose()).norm(), 0.0, 1e-14);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_cholesky_ldlt_lower)
@@ -1972,4 +2059,33 @@ TEST(LinalgBackendEigen, SGMatrix_zero)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_EQ(A[i], 0);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_rank_update)
+{
+	const index_t size = 2;
+	SGMatrix<float64_t> A(size, size);
+	SGVector<float64_t> b(size);
+	Map<MatrixXd> A_eig(A.matrix, size, size);
+	Map<VectorXd> b_eig(b.vector, size);
+
+	A(0, 0) = 2.0;
+	A(1, 0) = 1.0;
+	A(0, 1) = 1.0;
+	A(1, 1) = 2.5;
+	b[0] = 2;
+	b[1] = 3;
+
+	auto A2 = A.clone();
+	Map<MatrixXd> A2_eig(A2.matrix, size, size);
+	A2(0, 0) += b[0] * b[0];
+	A2(0, 1) += b[0] * b[1];
+	A2(1, 0) += b[1] * b[0];
+	A2(1, 1) += b[1] * b[1];
+
+	rank_update(A, b);
+	EXPECT_NEAR((A2_eig - A_eig).norm(), 0.0, 1e-14);
+
+	rank_update(A, b, -1.);
+	EXPECT_NEAR((A_eig - A_eig).norm(), 0.0, 1e-14);
 }

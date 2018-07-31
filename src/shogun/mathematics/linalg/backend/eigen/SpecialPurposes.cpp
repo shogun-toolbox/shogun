@@ -78,7 +78,7 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
 	{                                                                          \
 		rectified_linear_impl(a, result);                                      \
 	}
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
 #define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
@@ -99,7 +99,7 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 #undef BACKEND_GENERIC_SQUARED_ERROR
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
 

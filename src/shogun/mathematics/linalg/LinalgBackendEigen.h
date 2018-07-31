@@ -73,6 +73,12 @@ namespace shogun
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
 #undef BACKEND_GENERIC_ADD_DIAG
 
+/** Implementation of @see LinalgBackendBase::add_ridge */
+#define BACKEND_GENERIC_ADD_RIDGE(Type, Container)                             \
+	virtual void add_ridge(SGMatrix<Type>& A, Type beta) const;
+		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_RIDGE, SGMatrix)
+#undef BACKEND_GENERIC_ADD_RIDGE
+
 /** Implementation of @see LinalgBackendBase::add_vector */
 #define BACKEND_GENERIC_ADD(Type, Container)                                   \
 	virtual void add_vector(                                                   \
@@ -100,6 +106,21 @@ namespace shogun
 	    const Container<Type>& A, const bool lower) const;
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_FACTOR
+
+/** Implementation of @see LinalgBackendBase::cholesky_rank_update */
+#define BACKEND_GENERIC_CHOLESKY_RANK_UPDATE(Type, Container)                  \
+	virtual void cholesky_rank_update(                                         \
+	    Container<Type>& L, const SGVector<Type>& b, Type alpha,               \
+	    const bool lower) const;
+		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_CHOLESKY_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_CHOLESKY_RANK_UPDATE
+
+/** Implementation of @see LinalgBackendBase::rank_update */
+#define BACKEND_GENERIC_RANK_UPDATE(Type, Container)                           \
+	virtual void rank_update(                                                  \
+	    Container<Type>& A, const SGVector<Type>& b, Type alpha) const;
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANK_UPDATE, SGMatrix)
+#undef BACKEND_GENERIC_RANK_UPDATE
 
 /** Implementation of @see LinalgBackendBase::cholesky_solver */
 #define BACKEND_GENERIC_CHOLESKY_SOLVER(Type, Container)                       \
@@ -230,15 +251,15 @@ namespace shogun
 /** Implementation of @see LinalgBackendBase::max */
 #define BACKEND_GENERIC_MAX(Type, Container)                                   \
 	virtual Type max(const Container<Type>& a) const;
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
 #undef BACKEND_GENERIC_MAX
 
 /** Implementation of @see LinalgBackendBase::mean */
 #define BACKEND_GENERIC_REAL_MEAN(Type, Container)                             \
 	virtual float64_t mean(const Container<Type>& a) const;
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
 #undef BACKEND_GENERIC_REAL_MEAN
 
 /** Implementation of @see LinalgBackendBase::mean */
@@ -283,7 +304,7 @@ namespace shogun
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
 	virtual void rectified_linear(                                             \
 	    const Container<Type>& a, Container<Type>& result) const;
-		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
 /** Implementation of @see linalg::scale */
@@ -409,7 +430,7 @@ namespace shogun
 #undef BACKEND_GENERIC_ZERO
 
 #undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
 
@@ -443,6 +464,10 @@ namespace shogun
 		void add_diag_impl(
 		    SGMatrix<T>& A, const SGVector<T>& b, T alpha, T beta) const;
 
+		/** Eigen3 add diagonal scalar method */
+		template <typename T>
+		void add_ridge_impl(SGMatrix<T>& A, T beta) const;
+
 		/** Eigen3 add vector to each column of matrix method */
 		template <typename T>
 		void add_vector_impl(
@@ -465,6 +490,17 @@ namespace shogun
 		template <typename T>
 		SGMatrix<T>
 		cholesky_factor_impl(const SGMatrix<T>& A, const bool lower) const;
+
+		/** Eigen3 Cholesky rank one update */
+		template <typename T>
+		void cholesky_rank_update_impl(
+		    SGMatrix<T>& L, const SGVector<T>& b, T alpha,
+		    const bool lower) const;
+
+		/** Eigen3 rank one update */
+		template <typename T>
+		void
+		rank_update_impl(SGMatrix<T>& A, const SGVector<T>& b, T alpha) const;
 
 		/** Eigen3 Cholesky solver */
 		template <typename T>

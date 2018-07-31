@@ -591,8 +591,8 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			switch (cov_type)
 			{
 				case FULL:
-				    linalg::dger(
-				        alpha.matrix[j * alpha.num_cols + i], v, v, cov_sum);
+				    linalg::rank_update(
+				        cov_sum, v, alpha.matrix[j * alpha.num_cols + i]);
 				    break;
 			    case DIAG:
 			    {

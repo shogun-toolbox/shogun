@@ -584,6 +584,21 @@ namespace shogun
 		}
 
 		/**
+		 * Performs the operation A.diagonal = A.diagonal + beta.
+		 * The matrix is not required to be square.
+		 *
+		 * @param A The matrix
+		 * @param beta Constant to be multiplied by the vector
+		 */
+		template <typename T>
+		void add_ridge(SGMatrix<T>& A, T beta)
+		{
+			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
+			REQUIRE(diagonal_len > 0, "Matrix can't be empty.\n");
+			infer_backend(A)->add_ridge(A, beta);
+		}
+
+		/**
 		 * Performs the operation result = alpha * A.col(i) + beta * b,
 		 * for each column of A.
 		 * User should pass an appropriately pre-allocated memory matrix
@@ -614,7 +629,7 @@ namespace shogun
 		}
 
 		/**
-		 * Adds a scalar to each element of a vector or a matrix in-place.
+		 * Adds a scalar to the matrix/vector in place.
 		 *
 		 * @param a Vector or matrix
 		 * @param b Scalar to be added
@@ -645,33 +660,11 @@ namespace shogun
 		}
 
 		/**
-		 * Performs the operation A = alpha * x * y' + A
-		 *
-		 * @param alpha scaling factor for vector x
-		 * @param x vector
-		 * @param y vector
-		 * @param A m artix
-		 */
-		template <typename T>
-		void
-		dger(T alpha, const SGVector<T> x, const SGVector<T> y, SGMatrix<T>& A)
-		{
-			auto x_martix =
-			    SGVector<T>::convert_to_matrix(x, A.num_rows, 1, false);
-			auto y_martix =
-			    SGVector<T>::convert_to_matrix(y, A.num_cols, 1, false);
-
-			auto temp_martix = SGMatrix<T>::matrix_multiply(
-			    x_martix, y_martix, false, true, alpha);
-			add(A, temp_martix, A);
-		}
-
-		/**
 		 * Compute the cholesky decomposition \f$A = L L^{*}\f$ or \f$A = U^{*}
 		 * U\f$
 		 * of a Hermitian positive definite matrix
 		 *
-		 * @param A The matrix whose cholesky decomposition is to be computed
+		 * @param A The matrix whose Cholesky decomposition is to be computed
 		 * @param lower Whether to compute the upper or lower triangular
 		 *  Cholesky factorization (default: lower)
 		 * @return The upper or lower triangular Cholesky factorization
@@ -680,7 +673,61 @@ namespace shogun
 		SGMatrix<T>
 		cholesky_factor(const SGMatrix<T>& A, const bool lower = true)
 		{
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", A.num_rows,
+			    A.num_cols);
 			return infer_backend(A)->cholesky_factor(A, lower);
+		}
+
+		/**
+		 * Updates the Cholesky factorization \f$A = L L^{*}\f$ with a rank one
+		 * term in-place.
+		 * If A = LL^T before the update, then after it
+		 * LL^{*} = A + alpha * b b^{*}
+		 *
+		 * @param L Triangular matrix, Cholesky factorization of A
+		 * @param b Vector whose outer product with itself is the update
+		 * @param alpha Scaling factor
+		 * @param lower Whether to use L as the upper or lower triangular
+		 *  Cholesky factorization (default:lower)
+		 */
+		template <typename T>
+		void cholesky_rank_update(
+		    SGMatrix<T>& L, const SGVector<T>& b, T alpha = 1,
+		    bool lower = true)
+		{
+			REQUIRE(
+			    L.num_rows == L.num_cols, "Matrix (%dx%d) is not square\n",
+			    L.num_rows, L.num_cols);
+			REQUIRE(
+			    L.num_rows == b.size(),
+			    "Vector size (%d) must match matrix size (%dx%d)\n", b.size(),
+			    L.num_rows, L.num_rows);
+			return infer_backend(L, SGMatrix<T>(b))
+			    ->cholesky_rank_update(L, b, alpha, lower);
+		}
+
+		/**
+		 * Updates a matrix \f$A\f$ with a rank one term in-place,If A = LL^T
+		 * before the update, then after it
+		 * A = A + alpha * b b^{*}
+		 *
+		 * @param A square matrix
+		 * @param b Vector whose outer product with itself is the update
+		 * @param alpha Scaling factor
+		 */
+		template <typename T>
+		void rank_update(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols, "Matrix (%dx%d) is not square\n",
+			    A.num_rows, A.num_cols);
+			REQUIRE(
+			    A.num_rows == b.size(),
+			    "Vector size (%d) must match matrix size (%dx%d)\n", b.size(),
+			    A.num_rows, A.num_rows);
+			return infer_backend(A, SGMatrix<T>(b))->rank_update(A, b, alpha);
 		}
 
 		/**
@@ -698,6 +745,14 @@ namespace shogun
 		SGVector<T> cholesky_solver(
 		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower = true)
 		{
+			REQUIRE(
+			    L.num_rows == L.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", L.num_rows,
+			    L.num_cols);
+			REQUIRE(
+			    L.num_rows == b.size(),
+			    "Vector size (%d) must match matrix size (%dx%d)\n", b.size(),
+			    L.num_rows);
 			return infer_backend(L, SGMatrix<T>(b))
 			    ->cholesky_solver(L, b, lower);
 		}
@@ -763,6 +818,20 @@ namespace shogun
 		    const SGMatrix<T>& L, const SGVector<T>& d, SGVector<index_t>& p,
 		    const SGVector<T>& b, const bool lower = true)
 		{
+			REQUIRE(
+			    L.num_rows == L.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", L.num_rows,
+			    L.num_cols);
+			REQUIRE(
+			    d.vlen == L.num_rows, "Length of vector d (%d) doesn't match "
+			                          "length of diagonal of matrix L (%d)\n",
+			    d.vlen, L.num_rows);
+			REQUIRE(
+			    p.vlen = L.num_rows, "Length of transpositions vector p (%d) "
+			                         "doesn't match length of diagonal of "
+			                         "matrix L (%d)\n",
+			    p.vlen, L.num_rows);
+
 			return infer_backend(L, SGMatrix<T>(d), SGMatrix<T>(b))
 			    ->ldlt_solver(L, d, p, b, lower);
 		}
