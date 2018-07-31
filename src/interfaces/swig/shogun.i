@@ -256,6 +256,7 @@ PUT_ADD(CECOCDecoder)
 PUT_ADD(CMulticlassStrategy)
 PUT_ADD(CCombinationRule)
 PUT_ADD(CDifferentiableFunction)
+PUT_ADD(CNeuralLayer)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;

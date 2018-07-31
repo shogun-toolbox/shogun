@@ -12,17 +12,13 @@ Imagine we have files with training and test data. We create CDenseFeatures (her
 
 .. sgexample:: feedforward_net_regression.sg:create_features
 
-We create instances of :sgclass:`CNeuralLayers` and add an input layer, hidden layer and output layer which are building blocks of :sgclass:`CNeuralNetwork`
-
-.. sgexample:: feedforward_net_regression.sg:add_layers
-
-We create a :sgclass:`CNeuralNetwork` instance by using the above layers and randomly initialize the network parameters by sampling from a gaussian distribution.
+We create a :sgclass:`CNeuralNetwork` instance by using the above layers and randomly initialize the network parameters by sampling from a gaussian distribution. We set appropriate parameters like regularization coefficient, number of epochs, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`CNeuralNetwork`.
 
 .. sgexample:: feedforward_net_regression.sg:create_instance
 
-Before training, we need to set appropriate parameters like regularization coefficient, number of epochs, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`CNeuralNetwork`.
+We create instances of :sgclass:`CNeuralLayers` and add an input layer, hidden layer and output layer which are building blocks of :sgclass:`CNeuralNetwork`
 
-.. sgexample:: feedforward_net_regression.sg:set_parameters
+.. sgexample:: feedforward_net_regression.sg:add_layers
 
 We train the model and apply it to test data.
 
