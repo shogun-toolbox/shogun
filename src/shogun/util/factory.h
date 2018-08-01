@@ -80,6 +80,9 @@ namespace shogun
 			case PT_FLOAT32:
 				result = new CDenseFeatures<float32_t>();
 				break;
+			case PT_FLOATMAX:
+				result = new CDenseFeatures<floatmax_t>();
+				break;	
 			default:
 				SG_SNOTIMPLEMENTED
 			}
