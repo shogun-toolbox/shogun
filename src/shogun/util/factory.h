@@ -77,6 +77,9 @@ namespace shogun
 			case PT_FLOAT64:
 				result = new CDenseFeatures<float64_t>();
 				break;
+			case PT_FLOAT32:
+				result = new CDenseFeatures<float32_t>();
+				break;
 			default:
 				SG_SNOTIMPLEMENTED
 			}
