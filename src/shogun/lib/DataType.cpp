@@ -36,9 +36,9 @@ namespace shogun
 		case PT_INT32:
 			return "INT32";
 		case PT_UINT32:
-			return "UINT32";	
+			return "UINT32";
 		case PT_INT64:
-			return "INT64";	
+			return "INT64";
 		case PT_UINT64:
 			return "UINT64";
 		case PT_FLOAT32:
@@ -46,7 +46,7 @@ namespace shogun
 		case PT_FLOAT64:
 			return "FLOAT64";
 		case PT_FLOATMAX:
-			return "FLOATMAX";	
+			return "FLOATMAX";
 		case PT_SGOBJECT:
 			return "SGOBJECT";
 		case PT_COMPLEX128:

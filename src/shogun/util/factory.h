@@ -65,7 +65,7 @@ namespace shogun
 		return features;
 	}
 
-	CFeatures* features(CFile* file, EPrimitiveType primitive_type = PT_FLOAT64)
+	CFeatures* features(CFile* file, machine_int_t primitive_type = PT_FLOAT64)
 	{
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
@@ -82,7 +82,7 @@ namespace shogun
 				break;
 			case PT_FLOATMAX:
 				result = new CDenseFeatures<floatmax_t>();
-				break;	
+				break;
 			default:
 				SG_SNOTIMPLEMENTED
 			}
