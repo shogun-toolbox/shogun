@@ -19,3 +19,7 @@ Features converted = ica.transform(feats)
 RealMatrix mixing_matrix = ica.get_real_matrix("mixing_matrix")
 RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
 #![extract]
+
+#![inverse_transform]
+Features feats_original = ica.inverse_transform(converted)
+#![inverse_transform]
