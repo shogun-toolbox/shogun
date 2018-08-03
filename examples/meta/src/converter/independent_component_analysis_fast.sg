@@ -23,3 +23,5 @@ RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
 #![inverse_transform]
 Features feats_original = ica.inverse_transform(converted)
 #![inverse_transform]
+
+RealMatrix signal_original = feats_original.get_real_matrix("feature_matrix")
