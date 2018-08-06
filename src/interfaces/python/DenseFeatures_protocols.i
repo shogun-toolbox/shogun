@@ -658,11 +658,11 @@ int frombuffer(PyObject* exporter, bool copy)
 
 	if (copy)
 	{
-		$self->set_feature_matrix(new_feat_matrix.clone());
+		$self->put("feature_matrix", new_feat_matrix.clone());
 	}
 	else
 	{
-		$self->set_feature_matrix(new_feat_matrix);
+		$self->put("feature_matrix", new_feat_matrix);
 	}
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
