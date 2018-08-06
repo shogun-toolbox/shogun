@@ -193,19 +193,6 @@ public:
 	 */
 	SGMatrix<ST> get_feature_matrix() const;
 
-	/** Setter for feature matrix
-	 *
-	 * any subset is removed
-	 *
-	 * num_cols is number of feature vectors
-	 * num_rows is number of dims of vectors
-	 * see below for definition of feature_matrix
-	 *
-	 * @param matrix feature matrix to set
-	 *
-	 */
-	void set_feature_matrix(SGMatrix<ST> matrix);
-
 	/** get the pointer to the feature matrix
 	 * num_feat,num_vectors are returned by reference
 	 *
@@ -483,6 +470,19 @@ protected:
 	 * Any subset is removed
 	 */
 	void free_features();
+
+	/** Setter for feature matrix
+	 *
+	 * any subset is removed
+	 *
+	 * num_cols is number of feature vectors
+	 * num_rows is number of dims of vectors
+	 * see below for definition of feature_matrix
+	 *
+	 * @param matrix feature matrix to set
+	 *
+	 */
+	void set_feature_matrix(SGMatrix<ST> matrix);
 
 private:
 	void init();
