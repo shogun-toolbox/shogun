@@ -1,9 +1,9 @@
 ==============================
-Dense feature type Dispatching
+Dense feature type dispatching
 ==============================
 
-Dense features, like those read from a :sgclass:`CCSVFIle`, can be read into memory in multiple primitive types, e.g. 32 bit or 64 bit floating point numbers.
-Downstream all algorithms that inherit from :sgclass:`CDenseRealDispatch` can deal with multiples of such types, and they will carry out required computations in the corresponding primitive type.
+:sgclass:`DenseFeatures`, like those read from a :sgclass:`CCSVFIle`, can be read into memory in multiple primitive types, e.g. 32 bit or 64 bit floating point numbers.
+All algorithms that inherit from :sgclass:`CDenseRealDispatch` downstream can deal with multiples of such types, and they will carry out required computations in the corresponding primitive type.
 Reducing from 64 bit float to 32 bit float can be beneficial if for example very large matrices have to be stored.
 
 -------

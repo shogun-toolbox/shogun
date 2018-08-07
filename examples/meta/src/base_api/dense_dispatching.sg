@@ -3,8 +3,8 @@ File f_feats_float = csv_file("../../data/classifier_binary_2d_linear_features_t
 File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
 
 #![create_features]
-Features features_float = features(f_feats_float, enum EPrimitiveType.PT_FLOAT64)
-Features features_double = features(f_feats_double, enum EPrimitiveType.PT_FLOAT32)
+Features features_float = features(f_feats_float, enum EPrimitiveType.PT_FLOAT32)
+Features features_double = features(f_feats_double, enum EPrimitiveType.PT_FLOAT64)
 Labels labels_train = labels(f_labels_train)
 #![create_features]
 
