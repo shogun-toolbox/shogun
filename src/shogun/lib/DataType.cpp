@@ -25,16 +25,32 @@ namespace shogun
 			return "BOOL";
 		case PT_CHAR:
 			return "CHAR";
+		case PT_INT8:
+			return "INT8";
+		case PT_UINT8:
+			return "UINT8";
+		case PT_INT16:
+			return "INT16";
+		case PT_UINT16:
+			return "INT16";
 		case PT_INT32:
 			return "INT32";
+		case PT_UINT32:
+			return "UINT32";
 		case PT_INT64:
 			return "INT64";
+		case PT_UINT64:
+			return "UINT64";
 		case PT_FLOAT32:
 			return "FLOAT32";
 		case PT_FLOAT64:
 			return "FLOAT64";
+		case PT_FLOATMAX:
+			return "FLOATMAX";
 		case PT_SGOBJECT:
 			return "SGOBJECT";
+		case PT_COMPLEX128:
+			return "COMPLEX128";
 		default:
 			SG_SNOTIMPLEMENTED
 			return "UNKNOWN";
