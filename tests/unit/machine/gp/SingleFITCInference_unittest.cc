@@ -29,6 +29,7 @@
  *
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -38,7 +39,6 @@
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

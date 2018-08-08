@@ -1,8 +1,13 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/preprocessor/KernelPCA.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/lib/SGMatrix.h>
 
-#include <gtest/gtest.h>
 
 using ::testing::Test;
 using namespace shogun;

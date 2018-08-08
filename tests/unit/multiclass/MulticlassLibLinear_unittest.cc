@@ -1,6 +1,11 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

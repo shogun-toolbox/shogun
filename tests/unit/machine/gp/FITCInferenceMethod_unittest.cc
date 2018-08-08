@@ -31,6 +31,7 @@
  */
 
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -41,7 +42,6 @@
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

@@ -30,6 +30,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -38,7 +39,6 @@
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/ConstMean.h>
 

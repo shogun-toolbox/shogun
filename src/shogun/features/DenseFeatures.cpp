@@ -19,6 +19,19 @@
 #include <algorithm>
 #include <string.h>
 
+#define ASSERT_FLOATING_POINT                                                  \
+	switch (get_feature_type())                                                \
+	{                                                                          \
+	case F_SHORTREAL:                                                          \
+	case F_DREAL:                                                              \
+	case F_LONGREAL:                                                           \
+		break;                                                                 \
+	default:                                                                   \
+		REQUIRE(                                                               \
+		    false, "Only defined for %s with real type, not for %s.\n",        \
+		    get_name(), demangled_type<ST>().c_str());                         \
+	}
+
 namespace shogun {
 
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatures(size)
@@ -999,6 +1012,53 @@ template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_gen
 			"base_features must be of dynamic type CDenseFeatures\n")
 
 	return (CDenseFeatures< ST >*) base_features;
+}
+
+template <typename ST>
+SGVector<ST> CDenseFeatures<ST>::sum() const
+{
+	// TODO optimize non batch mode, but get_feature_vector is non const :(
+	SGVector<ST> result = linalg::rowwise_sum(get_feature_matrix());
+	return result;
+}
+
+template <typename ST>
+SGVector<ST> CDenseFeatures<ST>::mean() const
+{
+	ASSERT_FLOATING_POINT
+
+	auto result = sum();
+	ST scale = ((ST)1.0) / get_num_vectors();
+	linalg::scale(result, result, scale);
+	return result;
+}
+
+template <typename ST>
+SGMatrix<ST> CDenseFeatures<ST>::cov() const
+{
+	// TODO optimize non batch mode, but get_feature_vector is non const :(
+	auto mat = get_feature_matrix();
+	return linalg::matrix_prod(mat, mat, false, true);
+}
+
+template <typename ST>
+SGMatrix<ST> CDenseFeatures<ST>::gram() const
+{
+	// TODO optimize non batch mode, but get_feature_vector is non const :(
+	auto mat = get_feature_matrix();
+	return linalg::matrix_prod(mat, mat, true, false);
+}
+
+template <typename ST>
+SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
+{
+	REQUIRE(
+		get_num_vectors() == other.size(), "Number of feature vectors (%d) "
+		                                   "must match provided vector's size "
+		                                   "(%d).\n",
+		get_num_features(), other.size());
+	// TODO optimize non batch mode, but get_feature_vector is non const :(
+	return linalg::matrix_prod(get_feature_matrix(), other, false);
 }
 
 template class CDenseFeatures<bool>;

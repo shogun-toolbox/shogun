@@ -4,12 +4,12 @@
  * Authors: pl8787, Elfarouk Yasser
  */
 
+#include <gtest/gtest.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

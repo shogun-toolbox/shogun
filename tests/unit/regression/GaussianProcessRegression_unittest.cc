@@ -31,6 +31,7 @@
  */
 
  
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
@@ -42,7 +43,6 @@
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <gtest/gtest.h>
 #include <shogun/machine/gp/VarDTCInferenceMethod.h>
 
 using namespace shogun;

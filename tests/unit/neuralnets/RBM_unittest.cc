@@ -30,12 +30,11 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
- 
+#include <gtest/gtest.h>
 #include <shogun/neuralnets/RBM.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

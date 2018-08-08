@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -40,7 +41,6 @@
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/ProbitVGLikelihood.h>
 #include <shogun/machine/gp/StudentsTVGLikelihood.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

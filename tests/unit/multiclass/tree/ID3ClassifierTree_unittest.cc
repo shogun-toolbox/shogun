@@ -28,10 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

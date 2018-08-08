@@ -1,6 +1,11 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Kevin Hughes, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 
 #include <shogun/mathematics/eigen3.h>
 

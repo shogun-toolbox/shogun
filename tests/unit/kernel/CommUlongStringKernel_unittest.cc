@@ -1,10 +1,15 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/kernel/string/CommUlongStringKernel.h>
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

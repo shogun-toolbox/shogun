@@ -32,6 +32,8 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
  
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 
@@ -46,7 +48,6 @@
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>

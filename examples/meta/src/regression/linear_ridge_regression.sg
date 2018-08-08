@@ -24,10 +24,19 @@ real b = lrr.get_real("bias")
 RealVector w = lrr.get_real_vector("w")
 #[!extract_w]
 
+#[!manual_bias]
+Machine lrr2 = machine("LinearRidgeRegression", tau=0.001, labels=labels_train, use_bias=False)
+lrr2.train(features_train)
+real my_bias = 0.1
+lrr2.put("bias", my_bias)
+Labels labels_predict2 = lrr2.apply(features_test)
+#[!manual_bias]
+
 #![evaluate_error]
 Evaluation eval = evaluation("MeanSquaredError")
 real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables
-RealVector output = labels_test.get_real_vector("labels")
+RealVector output = labels_predict.get_real_vector("labels")
+RealVector output2 = labels_predict2.get_real_vector("labels")

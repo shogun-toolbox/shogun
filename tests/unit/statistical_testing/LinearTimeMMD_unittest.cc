@@ -29,13 +29,13 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

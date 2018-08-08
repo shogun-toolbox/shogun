@@ -1,10 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <shogun/base/class_list.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/Machine.h>
-
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

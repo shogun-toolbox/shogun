@@ -2,7 +2,7 @@
 Linear Ridge Regression
 =======================
 
-A linear ridge regression model can be defined as :math:`y_i = \bf{w}^\top\bf{x_i} + b` where :math:`y_i` is the predicted value, :math:`\bf{x_i}` is a feature vector, :math:`\bf{w}` is the weight vector, and :math:`b` is a bias term.
+A linear ridge regression model can be defined as :math:`y_i = \bf{w}^\top\bf{x_i}` where :math:`y_i` is the predicted value, :math:`\bf{x_i}` is a feature vector, :math:`\bf{w}` is the weight vector.
 We aim to find the linear function that best explains the data, i.e. minimizes the squared loss plus a :math:`L_2` regularization term. One can show the solution can be written as:
 
 .. math::
@@ -10,7 +10,13 @@ We aim to find the linear function that best explains the data, i.e. minimizes t
 
 where :math:`X=\left[{\bf x}_{1},\dots{\bf x}_{N}\right]\in\mathbb{R}^{D\times N}` is the training data matrix, containing :math:`N` training samples of dimension :math:`D`, :math:`y=[y_{1},\dots,y_{N}]^{\top}\in\mathbb{R}^{N}` are the labels, and :math:`\tau>0` scales the regularization term.
 
-The bias term is computed as :math:`b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}`, where :math:`\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}`.
+Alternatively if :math:`D>N`, the solution can be written as
+.. math::
+    {\bf w}=X\left(\tau I_{N}+X^{\top}X\right)^{-1}y
+
+In practice, an additional bias :math:`b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}` for
+:math:`\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}` can also be included, which effectively centers the :math:`X` before
+computing the solution.
 
 For the special case when :math:`\tau = 0`, a wrapper class :sgclass:`CLeastSquaresRegression` is available.
 
@@ -33,6 +39,10 @@ Then we train the regression model and apply it to test data to get the predicte
 After training, we can extract :math:`{\bf w}` and the bias.
 
 .. sgexample:: linear_ridge_regression.sg:extract_w
+
+We could also have trained without bias and set it manually.
+
+.. sgexample:: linear_ridge_regression.sg:manual_bias
 
 Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
 

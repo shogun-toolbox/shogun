@@ -28,11 +28,11 @@
 * either expressed or implied, of the Shogun Development Team.
 */
 
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/regression/LeastAngleRegression.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>

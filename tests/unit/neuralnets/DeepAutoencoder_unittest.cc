@@ -30,6 +30,7 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
+#include <gtest/gtest.h>
 #include <shogun/neuralnets/DeepAutoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
@@ -38,7 +39,6 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

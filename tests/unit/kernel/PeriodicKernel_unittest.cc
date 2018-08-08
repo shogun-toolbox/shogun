@@ -1,7 +1,12 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Esben Sorig, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/kernel/PeriodicKernel.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

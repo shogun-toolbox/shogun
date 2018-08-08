@@ -4,6 +4,7 @@
  * Authors: Heiko Strathmann, Thoralf Klein, Wu Lin
  */
 
+#include <gtest/gtest.h>
 #include "MockObject.h"
 #include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
@@ -21,7 +22,7 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
-#include <gtest/gtest.h>
+
 
 using namespace shogun;
 

@@ -1,7 +1,12 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Sergey Lisitsyn, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

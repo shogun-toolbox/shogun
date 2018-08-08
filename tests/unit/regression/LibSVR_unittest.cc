@@ -3,11 +3,11 @@
  *
  * Authors: Heiko Strathmann, Evgeniy Andreev, Fernando Iglesias, Sanuj Sharma
  */
+#include <gtest/gtest.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/regression/svr/LibSVR.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

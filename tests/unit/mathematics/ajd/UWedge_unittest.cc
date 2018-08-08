@@ -1,5 +1,5 @@
-#include <shogun/lib/common.h>
 #include <gtest/gtest.h>
+#include <shogun/lib/common.h>
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>

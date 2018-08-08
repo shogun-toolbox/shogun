@@ -5,12 +5,12 @@
  *          Soumyajit De, Bjoern Esser
  */
 
+#include <gtest/gtest.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubSamplesFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/init.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
