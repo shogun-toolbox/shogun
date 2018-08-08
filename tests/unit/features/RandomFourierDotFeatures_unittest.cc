@@ -1,6 +1,11 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
 
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

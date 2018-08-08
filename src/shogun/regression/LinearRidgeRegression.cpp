@@ -14,13 +14,14 @@
 using namespace shogun;
 
 CLinearRidgeRegression::CLinearRidgeRegression()
-: CLinearMachine()
+    : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
 {
 	init();
 }
 
-CLinearRidgeRegression::CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
-: CLinearMachine()
+CLinearRidgeRegression::CLinearRidgeRegression(
+    float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
+    : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
 {
 	init();
 
@@ -32,57 +33,65 @@ CLinearRidgeRegression::CLinearRidgeRegression(float64_t tau, CDenseFeatures<flo
 void CLinearRidgeRegression::init()
 {
 	set_tau(1e-6);
+	m_use_bias = true;
 
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
+	SG_ADD(
+	    &m_use_bias, "use_bias", "Whether or not to fit an offset term",
+	    MS_NOT_AVAILABLE);
 }
 
-bool CLinearRidgeRegression::train_machine(CFeatures* data)
+template <typename T>
+bool CLinearRidgeRegression::train_machine_templated(
+    const CDenseFeatures<T>* feats)
 {
-    REQUIRE(m_labels,"No labels set\n");
+	auto N = feats->get_num_vectors();
+	auto D = feats->get_num_features();
 
-    if (!data)
-    	data=features;
+	auto y = regression_labels(m_labels)->get_labels().as<T>();
+	T tau = m_tau;
 
-    REQUIRE(data,"No features provided and no featured previously set\n");
+	SGVector<T> x_mean;
+	T y_mean;
+	if (m_use_bias)
+	{
+		x_mean = feats->mean();
+		y_mean = linalg::mean(y);
+	}
 
-    REQUIRE(m_labels->get_num_labels() == data->get_num_vectors(),
-    	"Number of training vectors (%d) does not match number of labels (%d)\n",
-    	m_labels->get_num_labels(), data->get_num_vectors());
+	SGVector<T> w;
+	if (N >= D)
+	{
+		SGMatrix<T> cov = feats->cov();
+		linalg::add_ridge(cov, tau);
+		if (m_use_bias)
+			linalg::rank_update(cov, x_mean, (T)-N);
 
-    REQUIRE(data->get_feature_class() == C_DENSE,
-    	"Expected Dense Features (%d) but got (%d)\n",
-    	C_DENSE, data->get_feature_class());
+		auto L = linalg::cholesky_factor(cov);
+		auto Xy = feats->dot(y);
+		if (m_use_bias)
+			linalg::add(Xy, x_mean, Xy, (T)1, -N * y_mean);
 
-    REQUIRE(data->get_feature_type() == F_DREAL,
-    	"Expected Real Features (%d) but got (%d)\n",
-    	F_DREAL, data->get_feature_type());
+		w = linalg::cholesky_solver(L, Xy);
+	}
+	else
+	{
+		if (m_use_bias)
+			SG_NOTIMPLEMENTED
 
-    CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
-    int32_t num_feat=feats->get_num_features();
+		SGMatrix<T> gram = feats->gram();
+		linalg::add_ridge(gram, tau);
+		auto L = linalg::cholesky_factor(gram);
+		auto b = linalg::cholesky_solver(L, y);
+		w = feats->dot(b);
+	}
+	set_w(w.template as<float64_t>());
 
-    SGMatrix<float64_t> kernel_matrix(num_feat,num_feat);
-    SGMatrix<float64_t> feats_matrix(feats->get_feature_matrix());
-    SGVector<float64_t> y(num_feat);
-    SGVector<float64_t> tau_vector(num_feat);
-
-    tau_vector.zero();
-    tau_vector.add(m_tau);
-
-	linalg::matrix_prod(feats_matrix, feats_matrix, kernel_matrix, false, true);
-	linalg::add_diag(kernel_matrix, tau_vector);
-
-	auto labels = regression_labels(m_labels);
-	auto lab = regression_labels(m_labels)->get_labels();
-	linalg::matrix_prod(feats_matrix, lab, y);
-
-	auto decomposition = linalg::cholesky_factor(kernel_matrix);
-	y = linalg::cholesky_solver(decomposition, y);
-	set_w(y);
-
-	auto x_bar = linalg::colwise_sum(feats_matrix);
-	linalg::scale(x_bar, x_bar, 1.0 / ((float64_t)x_bar.size()));
-	auto intercept = linalg::mean(lab) - linalg::dot(lab, x_bar);
-	set_bias(intercept);
+	if (m_use_bias)
+	{
+		float64_t intercept = y_mean - linalg::dot(w, x_mean);
+		set_bias(intercept);
+	}
 
 	return true;
 }

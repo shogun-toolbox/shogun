@@ -1,8 +1,8 @@
+#include <gtest/gtest.h>
 #include <shogun/converter/MultidimensionalScaling.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

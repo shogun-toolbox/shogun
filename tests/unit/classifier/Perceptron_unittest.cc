@@ -31,12 +31,13 @@
 * policies,
 * either expressed or implied, of the Shogun Development Team.
 */
+#include <gtest/gtest.h>
+
 #include <functional>
 #include <rxcpp/rx-lite.hpp>
 #include <shogun/lib/Signal.h>
 
 #include "environments/LinearTestEnvironment.h"
-#include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>

@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <memory>
 #include <numeric>
 #include <algorithm>
@@ -36,7 +37,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/statistical_testing/internals/StreamingDataFetcher.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

@@ -123,6 +123,15 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Wraps an Eigen3 row vector around the data of this matrix */
 		operator EigenRowVectorXtMap() const;
+
+		/** @return a (copied) typed vector with same content */
+		template <class X>
+		SGVector<X> as() const
+		{
+			SGVector<X> v(vlen);
+			std::copy(v.begin(), v.end(), vector);
+			return v;
+		}
 #endif // SWIG
 
 		/** Set vector to a constant

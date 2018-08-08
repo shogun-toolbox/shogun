@@ -4,10 +4,10 @@
  * Authors: Heiko Strathmann, Thoralf Klein, Bjoern Esser
  */
 
+#include <gtest/gtest.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

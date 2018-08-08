@@ -6,6 +6,7 @@
  */
 
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #ifdef USE_GPL_SHOGUN
@@ -29,7 +30,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
 
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

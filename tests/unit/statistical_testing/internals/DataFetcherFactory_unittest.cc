@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <memory>
 #include <cstring>
 #include <shogun/lib/SGMatrix.h>
@@ -37,7 +38,6 @@
 #include <shogun/statistical_testing/internals/DataFetcher.h>
 #include <shogun/statistical_testing/internals/StreamingDataFetcher.h>
 #include <shogun/statistical_testing/internals/DataFetcherFactory.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

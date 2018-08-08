@@ -1,7 +1,12 @@
+/*
+* This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/SparseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

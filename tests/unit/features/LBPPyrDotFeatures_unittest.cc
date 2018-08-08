@@ -4,9 +4,9 @@
  * Authors: Thoralf Klein, Bjoern Esser, Evangelos Anagnostopoulos
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/lib/SGMatrix.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

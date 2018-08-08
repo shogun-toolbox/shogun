@@ -10,9 +10,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/regression/Regression.h>
-#include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/machine/FeatureDispatchCRTP.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/regression/Regression.h>
 
 namespace shogun
 {
@@ -23,7 +24,7 @@ namespace shogun
 	 * Internally, it is solved via minimizing the following system
 	 *
 	 * \f[
-	 * \frac{1}{2}\left(\sum_{i=1}^N(y_i-({\bf w}\cdot {\bf x}_i+b))^2 +
+	 * \frac{1}{2}\left(\sum_{i=1}^N(y_i-({\bf w}\cdot {\bf x}_i))^2 +
 	 * \tau||{\bf w}||^2\right)
 	 * \f]
 	 *
@@ -36,12 +37,25 @@ namespace shogun
 	 * {\bf w}=\left(\tau I_{D}+XX^{\top}\right)^{-1}X^{\top}y
 	 * \f]
 	 *
-	 * and \f$b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}\f$
+	 * If the dimension of the data \f$D\f$ is larger than the number of data
+	 * \f$N\f$, the weights are computed via the gram matrix
+	 *
+	 * \f[
+	 * X=\left[{\bf x}_{1},\dots{\bf x}_{N}\right]\in\mathbb{R}^{D\times N}
+	 * \f]
+	 *
+	 * 	 *
+	 * In practice, an additional bias term
+	 * \f$b=\frac{1}{N}\sum_{i=1}^{N}y_{i}-{\bf w}\cdot\bar{\mathbf{x}}\f$
 	 * for
-	 * \f$\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}\f$.
+	 * \f$\bar{\mathbf{x}}=\frac{1}{N}\sum_{i=1}^{N}{\bf x}_{i}\f$
+	 * can also be included, which effectively centers the \f$X\f$ before
+	 * computing the solution.
 	 */
-	class CLinearRidgeRegression : public CLinearMachine
+	class CLinearRidgeRegression : public CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>
 	{
+		friend class CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>;
+
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
@@ -91,15 +105,8 @@ namespace shogun
 		virtual const char* get_name() const { return "LinearRidgeRegression"; }
 
 	protected:
-		/** train regression
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressors are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		template <typename T>
+		bool train_machine_templated(const CDenseFeatures<T>* feats);
 
 	private:
 		void init();
@@ -107,6 +114,9 @@ namespace shogun
 	protected:
 		/** regularization parameter tau */
 		float64_t m_tau;
+
+		/** Whether or not to compute an offset term */
+		bool m_use_bias;
 };
 }
 #endif // _LINEARRIDGEREGRESSION_H__

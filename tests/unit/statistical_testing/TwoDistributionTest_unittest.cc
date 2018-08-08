@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <shogun/base/some.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -37,8 +39,6 @@
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/statistical_testing/TwoDistributionTest.h>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 namespace shogun
 {

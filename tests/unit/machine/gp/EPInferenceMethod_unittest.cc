@@ -4,6 +4,7 @@
  * Authors: Roman Votyakov, Wu Lin, Pan Deng
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/BinaryLabels.h>
@@ -12,7 +13,6 @@
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

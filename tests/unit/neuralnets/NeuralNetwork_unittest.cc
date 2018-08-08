@@ -31,6 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
@@ -45,7 +46,6 @@
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/NeuralLayers.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

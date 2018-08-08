@@ -29,6 +29,7 @@
  *
  *
  */
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -39,7 +40,6 @@
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

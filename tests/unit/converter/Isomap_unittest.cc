@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Sergey Lisitsyn, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <vector>
 #include <set>
 #include <queue>
@@ -8,7 +14,6 @@
 #include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

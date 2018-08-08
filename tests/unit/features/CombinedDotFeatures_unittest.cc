@@ -5,10 +5,10 @@
  *          Bjoern Esser, Viktor Gal
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
-#include <gtest/gtest.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;

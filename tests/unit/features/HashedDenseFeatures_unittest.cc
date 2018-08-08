@@ -4,10 +4,10 @@
  * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/hashed/HashedDenseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

@@ -30,6 +30,7 @@
  */
 
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -39,7 +40,6 @@
 #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

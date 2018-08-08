@@ -29,12 +29,12 @@
  *
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/features/DenseSubSamplesFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 #include <shogun/lib/SGMatrix.h>
 
 using namespace shogun;

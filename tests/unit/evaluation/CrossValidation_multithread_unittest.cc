@@ -29,6 +29,7 @@
  *
  */
 
+#include <gtest/gtest.h>
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
@@ -37,7 +38,6 @@
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <gtest/gtest.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>

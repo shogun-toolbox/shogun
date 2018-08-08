@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
@@ -37,7 +38,6 @@
 #include <shogun/kernel/GaussianARDKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

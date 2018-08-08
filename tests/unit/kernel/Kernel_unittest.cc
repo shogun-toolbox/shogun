@@ -28,12 +28,12 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

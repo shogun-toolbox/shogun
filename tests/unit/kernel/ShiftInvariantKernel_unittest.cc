@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_CXX11
@@ -39,7 +40,6 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <algorithm>
 #include <numeric>

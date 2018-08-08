@@ -5,11 +5,11 @@
  * Copyright (C) 2014 Abinash Panda
  */
 
+#include <gtest/gtest.h>
 #include <shogun/structure/MultilabelModel.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/structure/MultilabelSOLabels.h>
-#include <gtest/gtest.h>
 
 #define DIMS 3
 #define NUM_SAMPLES 2

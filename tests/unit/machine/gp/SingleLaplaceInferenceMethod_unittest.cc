@@ -4,6 +4,7 @@
  * Authors: Heiko Strathmann, Wu Lin
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -16,7 +17,6 @@
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

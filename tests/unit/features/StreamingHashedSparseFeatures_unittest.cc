@@ -4,10 +4,10 @@
  * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Bjoern Esser
  */
 
+#include <gtest/gtest.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/streaming/StreamingHashedSparseFeatures.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

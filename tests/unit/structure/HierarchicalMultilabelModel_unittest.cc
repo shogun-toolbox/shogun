@@ -5,12 +5,12 @@
  * Written(W) 2014 Abinash Panda
  */
 
+#include <gtest/gtest.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/HierarchicalMultilabelModel.h>
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

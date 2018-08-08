@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann
+ */
+#include <gtest/gtest.h>
 #include <shogun/converter/HashedDocConverter.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/lib/SGVector.h>
@@ -6,7 +12,6 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

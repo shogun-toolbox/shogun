@@ -4,9 +4,9 @@
  * Authors: Shubham Shukla, Soeren Sonnenburg
  */
 
+#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/LogPlusOne.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

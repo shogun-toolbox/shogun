@@ -11,14 +11,13 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Cache.h>
-#include <shogun/io/File.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/io/File.h>
+#include <shogun/lib/Cache.h>
 #include <shogun/lib/DataType.h>
-
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/common.h>
 
 namespace shogun {
 template<class ST> class CStringFeatures;
@@ -302,6 +301,46 @@ public:
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
 			int32_t vec_idx2);
+
+	/** Computes the sum of all feature vectors
+	 * @return Sum of all feature vectors
+	 */
+	SGVector<ST> sum() const;
+
+	/** Computes the empirical mean of all feature vectors
+	 * @return Mean of all feature vectors
+	 */
+	SGVector<ST> mean() const;
+
+	/** Computes the \f$DxD\f$ (uncentered, un-normalized) covariance matrix
+	 *
+	 *\f[
+	 * X X^\top
+	 * \f]
+	 *
+	 * where \f$X\f$ is the \f$DxN\f$ dimensional feature matrix with \f$N\f$
+	 * feature vectors of dimension \f$D\f$.
+	 */
+	SGMatrix<ST> cov() const;
+	/** Computes the \f$fNxN\f$ (uncentered, un-normalized) gram matrix of
+	 * pairwise dot products, that is
+	 *
+	 *\f[
+	 * X^\top X
+	 * \f]
+	 *
+	 * where \f$X\f$ is the \f$DxN\f$ dimensional feature matrix with \f$N\f$
+	 * feature vectors of dimension \f$D\f$.
+	 */
+	SGMatrix<ST> gram() const;
+
+	/** Computes the dot product of the feature matrix with a given vector.
+	 *
+	 * @param other Vector to compute dot products with, size must match number
+	 * of feature vectors
+	 * @return Vector as many entries as feature dimensions
+	 */
+	SGVector<ST> dot(const SGVector<ST>& other) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *

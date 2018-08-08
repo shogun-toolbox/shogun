@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/StringFeatures.h>
@@ -36,7 +37,6 @@
 #include <shogun/preprocessor/SortWordString.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 

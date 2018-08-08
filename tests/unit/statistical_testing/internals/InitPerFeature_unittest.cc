@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <algorithm>
 #include <type_traits>
 #include <shogun/lib/common.h>
@@ -35,7 +36,6 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

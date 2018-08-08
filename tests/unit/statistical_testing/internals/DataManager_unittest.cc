@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <numeric>
 #include <vector>
 #include <algorithm>
@@ -38,7 +39,6 @@
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;

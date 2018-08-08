@@ -28,13 +28,13 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <gtest/gtest.h>
 #include <numeric>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/statistical_testing/internals/Block.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace internal;
