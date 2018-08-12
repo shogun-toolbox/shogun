@@ -43,7 +43,7 @@ namespace shogun
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
-		CPipeline* then(CMachine* machine);
+		CMachine* then(CMachine* machine);
 
 		/** Add a machine with given name to pipeline. Pipeline may have only
 		 * one machine. build() will be called to create a new pipeline
@@ -52,7 +52,7 @@ namespace shogun
 		 * @param machine the machine
 		 * @return the current pipeline
 		 */
-		CPipeline* then(const std::string& name, CMachine* machine);
+		CMachine* then(const std::string& name, CMachine* machine);
 
 		/** Add a list of stages to pipeline. Stages in the list must be
 		 * transformers or machines.
@@ -65,7 +65,7 @@ namespace shogun
 		 * pipeline builder will become invalid after calling this method.
 		 * @return the new pipeline instance
 		 */
-		CPipeline* build();
+		CMachine* build();
 
 		virtual const char* get_name() const override
 		{

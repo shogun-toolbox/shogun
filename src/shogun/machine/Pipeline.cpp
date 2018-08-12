@@ -43,13 +43,12 @@ namespace shogun
 		return this;
 	}
 
-	CPipeline* CPipelineBuilder::then(CMachine* machine)
+	CMachine* CPipelineBuilder::then(CMachine* machine)
 	{
 		return then(machine->get_name(), machine);
 	}
 
-	CPipeline*
-	CPipelineBuilder::then(const std::string& name, CMachine* machine)
+	CMachine* CPipelineBuilder::then(const std::string& name, CMachine* machine)
 	{
 		REQUIRE_E(
 		    m_stages.empty() ||
@@ -89,7 +88,7 @@ namespace shogun
 		return this;
 	}
 
-	CPipeline* CPipelineBuilder::build()
+	CMachine* CPipelineBuilder::build()
 	{
 		check_pipeline();
 
