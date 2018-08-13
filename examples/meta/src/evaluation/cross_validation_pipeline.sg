@@ -21,8 +21,8 @@ Machine pipeline = builder.then(svm)
 
 #![create_cross_validation]
 SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2)
-Evaluation evaluation_criteron = evaluation("AccuracyMeasure")
-MachineEvaluation cross = machine_evaluation("CrossValidation", machine=pipeline, features=feats_train, labels=labels_train, splitting_strategy=strategy, evaluation_criteron=evaluation_criteron, autolock=False, num_runs=2)
+Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=pipeline, features=feats_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, autolock=False, num_runs=2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
