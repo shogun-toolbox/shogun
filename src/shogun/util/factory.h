@@ -285,14 +285,5 @@ namespace shogun
 		SG_REF(result);
 		return result;
 	}
-
-	/** Cast a pointer of CMachine to CPipeline
-	 * @param machine pointer to the machine
-	 * @return pointer to the pipeline
-	 */
-	CPipeline* pipeline(CMachine* machine)
-	{
-		return machine->as<CPipeline>();
-	}
 }
 #endif // FACTORY_H_
