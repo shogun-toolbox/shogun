@@ -21,7 +21,7 @@ Machine kmeans = machine("KMeans", distance=d, k=2)
 PipelineBuilder builder()
 builder.over(subMean)
 builder.over(pca)
-Machine pipeline = builder.then(kmeans)
+Pipeline pipeline = builder.then(kmeans)
 #![create_pipeline]
 
 #![train_and_apply]
