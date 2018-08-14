@@ -29,6 +29,10 @@ We can also extract the estimated mixing matrix.
 
 .. sgexample:: independent_component_analysis_fast.sg:extract
 
+:sgclass:`CICAConverter` supports inverse transformation. We can mix signals using the mixing matrix learnt before.
+
+.. sgexample:: independent_component_analysis_fast.sg:inverse_transform
+
 ----------
 References
 ----------
