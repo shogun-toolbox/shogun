@@ -259,6 +259,7 @@ PUT_ADD(CDifferentiableFunction)
 PUT_ADD(CNeuralLayer)
 PUT_ADD(CSplittingStrategy)
 PUT_ADD(CEvaluation)
+PUT_ADD(CPipeline)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;
