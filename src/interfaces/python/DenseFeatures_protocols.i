@@ -658,11 +658,11 @@ int frombuffer(PyObject* exporter, bool copy)
 
 	if (copy)
 	{
-		$self->put("feature_matrix", new_feat_matrix.clone());
+		$self->put(Tag<SGMatrix< type_name >>("feature_matrix"), new_feat_matrix.clone());
 	}
 	else
 	{
-		$self->put("feature_matrix", new_feat_matrix);
+		$self->put(Tag<SGMatrix< type_name >>("feature_matrix"), new_feat_matrix);
 	}
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
