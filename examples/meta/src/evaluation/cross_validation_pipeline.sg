@@ -1,3 +1,5 @@
+Math:init_random(10)
+
 File f_feats_train = csv_file("../../data/classifier_binary_2d_linear_features_train.dat")
 File f_feats_test = csv_file("../../data/classifier_binary_2d_linear_features_test.dat")
 File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_train.dat")
