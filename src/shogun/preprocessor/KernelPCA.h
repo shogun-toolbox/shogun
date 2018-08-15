@@ -44,6 +44,11 @@ public:
 
 		virtual void fit(CFeatures* features);
 
+		/** Apply transformation to features. In-place mode is not supported.
+		 *	@param features features to transform
+		 *	@param inplace whether transform in place
+		 *	@return the result feature object after applying the transformer
+		 */
 		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
 
 		/// cleanup
