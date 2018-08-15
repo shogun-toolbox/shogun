@@ -45,8 +45,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
 
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
+	auto rhs_cache = distance->get_rhs();
 
 	SGVector<int32_t> cluster_assignments=SGVector<int32_t>(lhs_size);
 	cluster_assignments.zero();
@@ -68,10 +67,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				   	Terminating. \n", iter)
 
 		changed=0;
-		rhs_mus->set_feature_matrix(centers.clone());
-		rhs_mus->initialize_cache();
-
-		distance->precompute_rhs();
+		auto rhs_mus = some<CDenseFeatures<float64_t>>(centers.clone());
+		distance->replace_rhs(rhs_mus);
 
 #pragma omp parallel for firstprivate(lhs_size, dim, num_centers) \
 		shared(centers, cluster_assignments, weights_set) \
@@ -175,8 +172,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	}
 	distance->reset_precompute();
 	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;
 	SG_UNREF(lhs);
+	SG_UNREF(rhs_cache);
 }
 
 bool CKMeans::train_machine(CFeatures* data)

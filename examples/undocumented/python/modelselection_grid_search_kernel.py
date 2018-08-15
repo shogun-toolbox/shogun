@@ -85,8 +85,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	matrix=random.rand(dim_vectors, num_vectors)
 
 	# create num_feautres 2-dimensional vectors
-	features=RealFeatures()
-	features.set_feature_matrix(matrix)
+	features=RealFeatures(matrix)
 
 	# create labels, two classes
 	labels=BinaryLabels(num_vectors)

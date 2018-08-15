@@ -130,15 +130,10 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 {
 	assert_fitted();
 
-	if (!inplace)
-		features = dynamic_cast<CFeatures*>(features->clone());
-
 	if (dynamic_cast<CDenseFeatures<float64_t>*>(features))
 	{
 		auto feature_matrix = apply_to_feature_matrix(features);
-		features->as<CDenseFeatures<float64_t>>()->set_feature_matrix(
-		    feature_matrix);
-		return features;
+		return new CDenseFeatures<float64_t>(feature_matrix);
 	}
 
 	if (features->get_feature_class() == C_STRING)
