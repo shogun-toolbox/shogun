@@ -814,3 +814,4 @@ TEST(Any, compare_object_maps)
         Any any_rhs = make_any(rhs);
         EXPECT_EQ(any_lhs, any_rhs);
 }
+
