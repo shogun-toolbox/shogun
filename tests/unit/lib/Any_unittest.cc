@@ -691,3 +691,13 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_FALSE(any.visitable());
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
 }
+
+TEST(Any, compare_string_vectors)
+{
+	std::string str("some string");
+	std::vector<std::string> lhs{str};
+	std::vector<std::string> rhs{str};
+	Any any_lhs = make_any(lhs);
+	Any any_rhs = make_any(rhs);
+	EXPECT_EQ(any_lhs, any_rhs);
+}
