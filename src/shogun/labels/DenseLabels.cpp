@@ -1,13 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Fernando Iglesias, Michele Mazzoni, Chiyuan Zhang
  */
 
 #include <shogun/base/Parameter.h>
@@ -35,6 +30,12 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	m_current_values=SGVector<float64_t>(num_lab);
 	linalg::zero(m_labels);
 	linalg::zero(m_current_values);
+}
+
+CDenseLabels::CDenseLabels(const CDenseLabels& orig)
+    : CLabels(orig), m_labels(orig.m_labels)
+{
+	init();
 }
 
 CDenseLabels::CDenseLabels(CFile* loader)
@@ -82,7 +83,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 	m_labels = v;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels()
+SGVector<float64_t> CDenseLabels::get_labels() const
 {
 	if (m_subset_stack->has_subsets())
 		return get_labels_copy();
@@ -90,7 +91,7 @@ SGVector<float64_t> CDenseLabels::get_labels()
 	return m_labels;
 }
 
-SGVector<float64_t> CDenseLabels::get_labels_copy()
+SGVector<float64_t> CDenseLabels::get_labels_copy() const
 {
 	if (!m_subset_stack->has_subsets())
 		return m_labels.clone();
@@ -184,7 +185,7 @@ bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 		return false;
 }
 
-float64_t CDenseLabels::get_label(int32_t idx)
+float64_t CDenseLabels::get_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())

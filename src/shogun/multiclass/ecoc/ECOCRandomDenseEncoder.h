@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Yuyu Zhang, Sergey Lisitsyn, Viktor Gal
  */
 
 #ifndef ECOCRANDOMDENSEENCODER_H__
@@ -60,8 +56,9 @@ public:
      */
     int32_t get_default_code_length(int32_t num_classes) const
     {
-        return static_cast<int32_t>(CMath::round(10 * CMath::log(static_cast<float64_t>(num_classes))));
-    }
+		return static_cast<int32_t>(
+			CMath::round(10 * std::log(static_cast<float64_t>(num_classes))));
+	}
 
 protected:
     int32_t   m_maxiter; ///< max number of iterations

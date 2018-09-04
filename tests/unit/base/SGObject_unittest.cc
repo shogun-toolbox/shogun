@@ -1,26 +1,23 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Heiko Strathmann
- * Written (W) 2014 Thoralf Klein
- * Written (W) 2015 Wu Lin
+ * Authors: Heiko Strathmann, Thoralf Klein, Wu Lin
  */
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/neuralnets/NeuralNetwork.h>
 #include "MockObject.h"
+#include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/regression/GaussianProcessRegression.h>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -28,28 +25,219 @@
 
 using namespace shogun;
 
-TEST(SGObject,equals_same)
+// fixture for SGObject::equals tests
+template <typename T>
+class SGObjectEquals : public ::testing::Test
 {
-	CGaussianKernel* kernel=new CGaussianKernel();
-	EXPECT_TRUE(kernel->equals(kernel));
-	SG_UNREF(kernel);
+};
+
+// fixture for SGObject::clone tests
+template <typename T>
+class SGObjectClone : public ::testing::Test
+{
+};
+
+// types that go into SGVector<> and co
+// TODO: SGString doesn't support complex128_t, so omitted here
+typedef ::testing::Types<bool, char, int8_t, int16_t, int32_t, int64_t,
+                         float32_t, float64_t, floatmax_t>
+    SGBasicTypes;
+
+TYPED_TEST_CASE(SGObjectEquals, SGBasicTypes);
+TYPED_TEST_CASE(SGObjectClone, SGBasicTypes);
+
+TYPED_TEST(SGObjectEquals, mock_allocate_delete)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
 }
 
-TEST(SGObject,equals_NULL_parameter)
+TYPED_TEST(SGObjectEquals, same)
 {
-	SGMatrix<float64_t> data(3,10);
-	for (index_t i=0; i<data.num_rows*data.num_cols; ++i)
-		data.matrix[i]=CMath::randn_double();
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
-	CGaussianKernel* kernel=new CGaussianKernel();
-	CGaussianKernel* kernel2=new CGaussianKernel();
-	kernel2->init(feats, feats);
+	EXPECT_TRUE(obj1->equals(obj1));
+	EXPECT_TRUE(obj1->equals(obj2));
+	EXPECT_TRUE(obj2->equals(obj1));
+}
 
-	EXPECT_FALSE(kernel->equals(kernel2));
+TYPED_TEST(SGObjectEquals, different_null)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
 
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
+	EXPECT_FALSE(obj1->equals(nullptr));
+}
+
+TYPED_TEST(SGObjectEquals, different_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_basic -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_object)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_object->m_some_value -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+	obj1->m_object->m_some_value += 1;
+
+	delete obj1->m_object;
+	obj1->m_object = nullptr;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_vector)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_vector[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_sparse_vector)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_sparse_vector.features[0].entry -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_sparse_matrix)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_sg_matrix)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_sg_matrix(0, 0) = 0;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_raw_vector_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_raw_vector_basic[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_raw_vector_sg_string)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_raw_vector_sg_string[0].string[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_raw_vector_object)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_raw_vector_object[0]->m_some_value -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+	obj1->m_raw_vector_object[0]->m_some_value += 1;
+
+	delete obj1->m_raw_vector_object[0];
+	obj1->m_raw_vector_object[0] = nullptr;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectEquals, different_raw_matrix_basic)
+{
+	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+
+	obj1->m_raw_matrix_basic[0] -= 1;
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TEST(SGObjectEquals, different_type)
+{
+	auto obj1 = some<CCloneEqualsMock<int>>();
+	auto obj2 = some<CCloneEqualsMock<float>>();
+
+	EXPECT_FALSE(obj1->equals(obj2));
+	EXPECT_FALSE(obj2->equals(obj1));
+}
+
+TYPED_TEST(SGObjectClone, basic_checks)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+
+	CSGObject* clone = obj->clone();
+
+	EXPECT_NE(clone, obj);
+	ASSERT_NE(clone, nullptr);
+	EXPECT_EQ(clone->ref_count(), 1);
+
+	auto clone_casted = dynamic_cast<CCloneEqualsMock<TypeParam>*>(clone);
+	ASSERT_NE(clone_casted, nullptr);
+
+	EXPECT_NE(clone_casted->m_object, obj->m_object);
+	EXPECT_EQ(clone_casted->m_object->m_was_cloned, true);
+
+	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
+
+	SG_UNREF(clone);
+}
+
+TYPED_TEST(SGObjectClone, equals_empty)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+
+	CSGObject* clone = obj->clone();
+	EXPECT_TRUE(clone->equals(obj));
+
+	SG_UNREF(clone);
+}
+
+TYPED_TEST(SGObjectClone, equals_non_empty)
+{
+	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	obj->m_basic -= 1;
+	obj->m_object->m_some_value -= 1;
+	obj->m_sg_vector[0] -= 1;
+	obj->m_sg_matrix(0, 0) = 0;
+	obj->m_sg_sparse_vector.features[0].entry -= 1;
+	obj->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
+	obj->m_raw_vector_basic[0] -= 1;
+	obj->m_raw_matrix_basic[0] -= 1;
+	obj->m_raw_vector_sg_string[0].string[0] -= 1;
+	obj->m_raw_vector_object[0]->m_some_value -= 1;
+
+	CSGObject* clone = obj->clone();
+	EXPECT_TRUE(clone->equals(obj));
+
+	SG_UNREF(clone);
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
@@ -78,67 +266,6 @@ TEST(SGObject,ref_unref_simple)
 
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
-}
-
-TEST(SGObject,equals_null)
-{
-	CBinaryLabels* labels=new CBinaryLabels(10);
-
-	EXPECT_FALSE(labels->equals(NULL));
-
-	SG_UNREF(labels);
-}
-
-TEST(SGObject,equals_different_name)
-{
-	CBinaryLabels* labels=new CBinaryLabels(10);
-	CRegressionLabels* labels2=new CRegressionLabels(10);
-
-	EXPECT_FALSE(labels->equals(labels2));
-
-	SG_UNREF(labels);
-	SG_UNREF(labels2);
-}
-
-TEST(SGObject,equals_DynamicObjectArray_equal)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
-}
-
-TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	/* enforce a resize */
-	for (index_t i=0; i<1000; ++i)
-		array1->append_element(new CGaussianKernel());
-
-	array1->reset_array();
-
-	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
-}
-
-TEST(SGObject,equals_DynamicObjectArray_different)
-{
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
-
-	array1->append_element(new CGaussianKernel());
-
-	EXPECT_FALSE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -210,9 +337,10 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(file);
 
 	/* now compare */
-	floatmax_t accuracy=1E-10;
-	EXPECT_TRUE(predictions->equals(predictions_copy, accuracy));
-	EXPECT_TRUE(gpr->equals(gpr_copy, accuracy));
+	set_global_fequals_epsilon(1e-10);
+	EXPECT_TRUE(predictions->equals(predictions_copy));
+	EXPECT_TRUE(gpr->equals(gpr_copy));
+	set_global_fequals_epsilon(0);
 
 	SG_UNREF(predictions);
 	SG_UNREF(predictions_copy);
@@ -320,8 +448,8 @@ TEST(SGObject, tags_set_get_string_sgvector)
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 
-	obj->set("vector", vec);
-	EXPECT_THROW(obj->set("foo", vec), ShogunException);
+	obj->put("vector", vec);
+	EXPECT_THROW(obj->put("foo", vec), ShogunException);
 
 	auto retr = obj->get<SGVector<float64_t> >("vector");
 
@@ -338,9 +466,10 @@ TEST(SGObject, tags_set_get_tag_sgvector)
 	vec[0] = 1;
 	float64_t bar = 1.0;
 
-	obj->set(Tag<SGVector<float64_t> >("vector"), vec);
-	EXPECT_THROW(obj->set(Tag<SGVector<float64_t> >("foo"), vec), ShogunException);
-	EXPECT_THROW(obj->set(Tag<float64_t>("vector"), bar), ShogunException);
+	obj->put(Tag<SGVector<float64_t>>("vector"), vec);
+	EXPECT_THROW(
+	    obj->put(Tag<SGVector<float64_t>>("foo"), vec), ShogunException);
+	EXPECT_THROW(obj->put(Tag<float64_t>("vector"), bar), ShogunException);
 
 	auto retr = obj->get<SGVector<float64_t> >("vector");
 
@@ -355,7 +484,7 @@ TEST(SGObject, tags_set_get_int)
 	auto obj = some<CMockObject>();
 
 	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
-	obj->set("int", 10);
+	obj->put("int", 10);
 	EXPECT_EQ(obj->get(Tag<int32_t>("int")), 10);
 	EXPECT_THROW(obj->get<float64_t>("int"), ShogunException);
 	EXPECT_THROW(obj->get(Tag<float64_t>("int")), ShogunException);
@@ -372,7 +501,7 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has<float64_t>("int"), false);
 	EXPECT_EQ(obj->has<int32_t>("int"), true);
 
-	obj->set("int", 10);
+	obj->put("int", 10);
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
 	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
 	EXPECT_EQ(obj->has("int"), true);
@@ -382,4 +511,29 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has("foo"), false);
 	EXPECT_EQ(obj->has<int32_t>("foo"), false);
 	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
+}
+
+TEST(SGObject, watched_parameter)
+{
+	auto obj = some<CMockObject>();
+
+	obj->put("watched_int", 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 89);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+	obj->set_watched(12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), 12);
+	EXPECT_EQ(obj->get<int32_t>("watched_int"), obj->get_watched());
+}
+
+TEST(SGObject, watched_parameter_object)
+{
+	auto obj = some<CMockObject>();
+	auto other_obj = some<CMockObject>();
+
+	EXPECT_EQ(other_obj->ref_count(), 1);
+	obj->put(Tag<CMockObject*>("watched_object"), other_obj.get());
+	EXPECT_EQ(other_obj->ref_count(), 2);
+	EXPECT_FALSE(other_obj->equals(obj));
+	obj = nullptr;
+	EXPECT_EQ(other_obj->ref_count(), 1);
 }

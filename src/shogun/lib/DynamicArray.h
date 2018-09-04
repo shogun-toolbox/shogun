@@ -1,11 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, 
+ *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein, 
+ *          Fernando Iglesias, Björn Esser
  */
 
 #ifndef _DYNAMIC_ARRAY_H_
@@ -625,6 +623,8 @@ template <class T> class CDynamicArray :public CSGObject
 			m_parameters->add_vector(&m_array.array,
 					&m_array.current_num_elements, "array",
 					"Memory for dynamic array.");
+			watch_param("array", &m_array.array, &m_array.current_num_elements);
+
 			SG_ADD(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.", MS_NOT_AVAILABLE);

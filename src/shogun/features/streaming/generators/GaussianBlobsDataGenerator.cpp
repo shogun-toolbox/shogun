@@ -1,10 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Heiko Strathmann
+ * Authors: Heiko Strathmann
  */
 
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
@@ -46,7 +43,7 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 
 	/* diagonal eigenvalue matrix */
 	SGMatrix<float64_t> L(2, 2);
-	L(0, 0)=CMath::sqrt(stretch);
+	L(0, 0) = std::sqrt(stretch);
 	L(1, 0)=0;
 	L(0, 1)=0;
 	L(1, 1)=1;

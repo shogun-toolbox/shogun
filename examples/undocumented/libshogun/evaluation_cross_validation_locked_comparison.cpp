@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Evgeniy Andreev, Soumyajit De, 
+ *          Jacob Walker, Sergey Lisitsyn
  */
 
 #include <shogun/base/init.h>
@@ -60,6 +58,7 @@ void test_cross_validation()
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
 	CBinaryLabels* labels=new CBinaryLabels(lab);
+	SG_REF(labels);
 
 	/* gaussian kernel */
 	CGaussianKernel* kernel=new CGaussianKernel();
@@ -76,6 +75,7 @@ void test_cross_validation()
 	SG_SPRINT("starting normal training\n");
 	svm->train(features);
 	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
+	SG_REF(output);
 
 	/* evaluation criterion */
 	CContingencyTableEvaluation* eval_crit=
@@ -149,6 +149,8 @@ void test_cross_validation()
 	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
 	/* clean up */
+	SG_UNREF(labels);
+	SG_UNREF(output);
 	SG_UNREF(cross);
 	SG_UNREF(features);
 }

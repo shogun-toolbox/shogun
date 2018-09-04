@@ -1,10 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Sergey Lisitsyn
+ * Authors: Soeren Sonnenburg, Sanuj Sharma, Sergey Lisitsyn, Leon Kuchenbecker
  */
 
 #include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
@@ -58,6 +55,12 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 
 float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
+	REQUIRE(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+	REQUIRE(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
+
+        CBinaryLabels* predicted_binary = (CBinaryLabels*)predicted;
+        CBinaryLabels* ground_truth_binary = (CBinaryLabels*)ground_truth;
+
 	//SG_SPRINT("Evaluate\n")
 	predicted->remove_all_subsets();
 	ground_truth->remove_all_subsets();
@@ -68,7 +71,7 @@ float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_
 		//m_tasks_indices[t].display_vector();
 		predicted->add_subset(m_tasks_indices[t]);
 		ground_truth->add_subset(m_tasks_indices[t]);
-		result += evaluate_roc(predicted,ground_truth)/m_tasks_indices[t].vlen;
+		result += evaluate_roc(predicted_binary,ground_truth_binary)/m_tasks_indices[t].vlen;
 		predicted->remove_subset();
 		ground_truth->remove_subset();
 	}

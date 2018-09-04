@@ -172,6 +172,15 @@ TEST(SGMatrixTest,equals_different_size)
 	EXPECT_FALSE(a.equals(b));
 }
 
+TEST(SGMatrixTest, equals_both_empty)
+{
+	SGMatrix<float64_t> a;
+	SGMatrix<float64_t> b;
+
+	EXPECT_TRUE(a.equals(b));
+	EXPECT_TRUE(b.equals(a));
+}
+
 #ifdef HAVE_VIENNACL
 TEST(SGMatrixTest,pointer_equal_equal)
 {
@@ -590,6 +599,17 @@ TEST(SGMatrixTest, clone)
 
 	SGMatrix<float32_t> copy=mat.clone();
 
+	EXPECT_NE(mat.data(), copy.data());
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, clone_empty)
+{
+	SGMatrix<float32_t> mat;
+	ASSERT_EQ(mat.data(), nullptr);
+
+	SGMatrix<float32_t> copy = mat.clone();
+	EXPECT_EQ(copy.data(), mat.data());
 	EXPECT_TRUE(mat.equals(copy));
 }
 

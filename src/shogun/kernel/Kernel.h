@@ -18,6 +18,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
+
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/mathematics/Math.h>
@@ -921,7 +922,8 @@ class CKernel : public CSGObject
 			int32_t i_start;
 
 			if (symmetric)
-				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+				i_start = (int32_t)CMath::floor(
+				    n - std::sqrt(CMath::sq((float64_t)n) - offs));
 			else
 				i_start=(int32_t) (offs/int64_t(n));
 

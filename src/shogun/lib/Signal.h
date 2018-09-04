@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2017 Giovanni De Toni
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Viktor Gal, Yuyu Zhang, 
+ *          Thoralf Klein, Evan Shelhamer, Sergey Lisitsyn
  */
 
 #ifndef __SIGNAL__H_
@@ -34,7 +30,7 @@ namespace shogun
 	 *  option bewteen: immediately exit the running method and fall back to
 	 *  the command line, prematurely stop the current algoritmh and do nothing.
 	 */
-	class CSignal : CSGObject
+	class CSignal : public CSGObject
 	{
 	public:
 		typedef rxcpp::subjects::subject<int> SGSubjectS;
@@ -75,11 +71,12 @@ namespace shogun
 		};
 #endif
 
-		/** Enable signal handler
+		/** Enable/Disable custon Shogun's signal handler
+		 * @param enable true to enable the handler, false otherwise.
 		*/
-		void enable_handler()
+		void enable_handler(bool enable)
 		{
-			m_active = true;
+			m_active = enable;
 		}
 		/**
 		 * Reset handler in case of multiple instantiation

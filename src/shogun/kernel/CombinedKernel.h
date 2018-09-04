@@ -1,12 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Jacob Walker, 
+ *          Sergey Lisitsyn, Roman Votyakov, Michele Mazzoni, Heiko Strathmann, 
+ *          Yuyu Zhang, Evgeniy Andreev, Evan Shelhamer, Wu Lin
  */
 
 #ifndef _COMBINEDKERNEL_H___
@@ -461,6 +458,21 @@ class CCombinedKernel : public CKernel
 
 	private:
 		void init();
+		/**
+		 * The purpose of this function is to make customkernels aware of any
+		 * subsets present, regardless whether the features passed are of type
+		 * CCombinedFeatures or not
+		 * @param lhs combined features
+		 * @param rhs rombined features
+		 * @param lhs_subset subset present on lhs - pass identity subset if
+		 * none
+		 * @param rhs_subset subset present on rhs - pass identity subset if
+		 * none
+		 * @return init succesful
+		 */
+		bool init_with_extracted_subsets(
+		    CFeatures* lhs, CFeatures* rhs, SGVector<index_t> lhs_subset,
+		    SGVector<index_t> rhs_subset);
 
 	protected:
 		/** list of kernels */

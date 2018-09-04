@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2007-2009 Soeren Sonnenburg
- * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Chiyuan Zhang
  */
 
 #include <shogun/lib/common.h>
@@ -71,7 +67,7 @@ float64_t CSparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,
 		(CSparseFeatures<float64_t>*) rhs, sq_rhs, idx_b);
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 void CSparseEuclideanDistance::init()

@@ -30,6 +30,8 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#include <cmath>
+#include <shogun/base/range.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
 #include <shogun/mathematics/linalg/LinalgMacros.h>
 
@@ -44,6 +46,17 @@ using namespace shogun;
 	}
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
+
+#define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
+	SGVector<Type> LinalgBackendEigen::ldlt_solver(                            \
+	    const Container<Type>& L, const SGVector<Type>& d,                     \
+	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
+	    const                                                                  \
+	{                                                                          \
+		return ldlt_solver_impl(L, d, p, b, lower);                            \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_SOLVER
 
 #define BACKEND_GENERIC_QR_SOLVER(Type, Container)                             \
 	Container<Type> LinalgBackendEigen::qr_solver(                             \
@@ -100,6 +113,67 @@ SGVector<T> LinalgBackendEigen::cholesky_solver_impl(
 	}
 
 	return x;
+}
+
+template <typename T>
+SGVector<T> LinalgBackendEigen::ldlt_solver_impl(
+    const SGMatrix<T>& L, const SGVector<T>& d, const SGVector<index_t>& p,
+    const SGVector<T>& b, const bool lower) const
+{
+	SGVector<T> result(b.vlen);
+	set_const(result, 0);
+
+	typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
+	typename SGVector<T>::EigenVectorXtMap b_eig = b;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+	typename SGVector<index_t>::EigenVectorXtMap p_eig = p;
+	Eigen::Transpositions<Eigen::Dynamic> transpositions(p_eig);
+
+	// result = P b
+	result_eig = transpositions * b_eig;
+
+	// result = L^-1 (P b)
+	if (lower)
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
+		                      Eigen::Lower>(L_eig)
+		    .solveInPlace(result_eig);
+	else
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
+		                      Eigen::Upper>(L_eig)
+		    .transpose()
+		    .solveInPlace(result_eig);
+
+	auto tolerance =
+	    1.0 / Eigen::NumTraits<typename Eigen::NumTraits<T>::Real>::highest();
+
+	// result = D^-1 L^-1 P b
+	for (auto i : range(d.vlen))
+	{
+		if (std::abs(d[i]) > tolerance)
+			result_eig.row(i) /= d[i];
+		else
+			result_eig.row(i).setZero();
+	}
+
+	// result = U^-1 (D^-1 L^-1 P b)
+	if (lower)
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
+		                      Eigen::Lower>(L_eig)
+		    .transpose()
+		    .solveInPlace(result_eig);
+	else
+		Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+		                                 Eigen::Stride<0, 0>>,
+		                      Eigen::Upper>(L_eig)
+		    .solveInPlace(result_eig);
+
+	// result = P^-1 (U^-1 D^-1 L^-1 P b) = A^-1 b
+	result_eig = transpositions.transpose() * result_eig;
+
+	return result;
 }
 
 template <typename T>

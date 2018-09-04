@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Kevin Hughes
- * ported from scikit-learn
+ * Authors: Kevin Hughes, Weijie Lin, Heiko Strathmann, Björn Esser
  */
 
 #include <shogun/converter/ica/FastICA.h>
@@ -109,7 +105,7 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		// see Hyvarinen (13.6) p.267 Here WX is white and data
 		// in X has been projected onto a subspace by PCA
 		WX = K * SPX;
-		WX *= CMath::sqrt((float64_t)p);
+		WX *= std::sqrt((float64_t)p);
 	}
 	else
 	{

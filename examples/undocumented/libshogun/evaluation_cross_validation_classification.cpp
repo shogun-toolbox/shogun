@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Jacob Walker, Evgeniy Andreev, 
+ *          Soumyajit De, Sergey Lisitsyn
  */
 
 #include <shogun/base/init.h>
@@ -62,6 +59,7 @@ void test_cross_validation()
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
 	CBinaryLabels* labels=new CBinaryLabels(lab);
+	SG_REF(labels);
 
 	/* gaussian kernel */
 	int32_t kernel_cache=100;
@@ -78,6 +76,7 @@ void test_cross_validation()
 	/* train and output */
 	svm->train(features);
 	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
+	SG_REF(output);
 	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
@@ -116,6 +115,8 @@ void test_cross_validation()
 	result->print_result();
 
 	/* clean up */
+	SG_UNREF(labels);
+	SG_UNREF(output)
 	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
@@ -124,8 +125,6 @@ void test_cross_validation()
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
-
-	sg_io->set_loglevel(MSG_DEBUG);
 
 	test_cross_validation();
 

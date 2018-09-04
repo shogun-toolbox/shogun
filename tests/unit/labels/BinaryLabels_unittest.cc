@@ -6,11 +6,11 @@
  *
  * Written (W) 2012-2013 Heiko Strathmann
  */
+#include "utils/Utils.h"
 #include <gtest/gtest.h>
+#include <shogun/base/range.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/labels/BinaryLabels.h>
-
-#include "utils/Utils.h"
 
 using namespace shogun;
 
@@ -18,43 +18,26 @@ class BinaryLabels : public ::testing::Test
 {
 public:
 	SGVector<float64_t> probabilities;
-	const int32_t n_A = 4;
+	SGVector<float64_t> labels_binary;
+
+	const int32_t n = 4;
+	float64_t threshold = 0.5;
 
 	virtual void SetUp()
 	{
-		auto A = SGVector<float64_t>(n_A);
-		A[0] = 0.1;
-		A[1] = 0.4;
-		A[2] = 0.6;
-		A[3] = 0.9;
-		probabilities = A;
+		probabilities = {0.1, 0.4, 06, 0.9};
+
+		auto t = threshold;
+		labels_binary = SGVector<float64_t>(n);
+		std::transform(
+		    probabilities.begin(), probabilities.end(), labels_binary.begin(),
+		    [t](float64_t a) { return a > t ? 1 : -1; });
 	}
 
 	virtual void TearDown()
 	{
 	}
 };
-
-TEST_F(BinaryLabels, scores_to_probabilities)
-{
-	CBinaryLabels* labels=new CBinaryLabels(10);
-	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));
-
-	for (index_t i=0; i<labels->get_num_labels(); ++i)
-		labels->set_value(i%2==0 ? 1 : -1, i);
-
-	//labels->get_values().display_vector("scores");
-	// call with 0,0 to make the method compute sigmoid parameters itself
-	// g-test somehow does not allow std parameters
-	labels->scores_to_probabilities(0,0);
-
-	/* only two probabilities will be the result. Results from implementation that
-	 * comes with the original paper, see BinaryLabels documentation */
-	EXPECT_NEAR(labels->get_value(0), 0.8571428439385661, 10E-15);
-	EXPECT_NEAR(labels->get_value(1), 0.14285715606143384, 10E-15);
-
-	SG_UNREF(labels);
-}
 
 TEST_F(BinaryLabels, serialization)
 {
@@ -94,7 +77,6 @@ TEST_F(BinaryLabels, serialization)
 
 TEST_F(BinaryLabels, set_values_labels_from_constructor)
 {
-	const float64_t threshold = 0.5;
 	CBinaryLabels* labels = new CBinaryLabels(probabilities, threshold);
 
 	SGVector<float64_t> labels_vector = labels->get_labels();
@@ -103,13 +85,13 @@ TEST_F(BinaryLabels, set_values_labels_from_constructor)
 	ASSERT(labels_vector);
 	ASSERT(values_vector);
 
-	ASSERT_EQ(n_A, labels_vector.size());
-	ASSERT_EQ(n_A, values_vector.size());
+	ASSERT_EQ(n, labels_vector.size());
+	ASSERT_EQ(n, values_vector.size());
 
-	EXPECT_FLOAT_EQ(-1.0, labels_vector[0]);
-	EXPECT_FLOAT_EQ(-1.0, labels_vector[1]);
-	EXPECT_FLOAT_EQ(+1.0, labels_vector[2]);
-	EXPECT_FLOAT_EQ(+1.0, labels_vector[3]);
+	for (auto i : range(n))
+	{
+		EXPECT_FLOAT_EQ(labels_binary[i], labels_vector[i]);
+	}
 
 	for (int i = 0; i < values_vector.size(); ++i)
 	{
@@ -117,4 +99,22 @@ TEST_F(BinaryLabels, set_values_labels_from_constructor)
 	}
 
 	SG_UNREF(labels);
+}
+
+TEST_F(BinaryLabels, binary_labels_from_binary)
+{
+	auto labels = some<CBinaryLabels>(probabilities, 0.5);
+	auto labels2 = binary_labels(labels);
+	EXPECT_EQ(labels, labels2);
+}
+
+TEST_F(BinaryLabels, binary_labels_from_dense)
+{
+	auto labels = some<CDenseLabels>(probabilities.size());
+	labels->set_values(probabilities);
+	labels->set_labels(labels_binary);
+
+	auto labels2 = binary_labels(labels);
+	EXPECT_EQ(probabilities.size(), labels2->get_num_labels());
+	EXPECT_EQ(probabilities, labels2->get_values());
 }

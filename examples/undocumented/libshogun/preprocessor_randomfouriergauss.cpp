@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2010 Soeren Sonnenburg, Alexander Binder
- * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Sergey Lisitsyn, Björn Esser
  */
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
@@ -196,8 +191,9 @@ int main()
 
 	// ************************************************************
 	// set parameters of the preprocessor
-	// ******************************** !!!!!!!!!!!!!!!!! CMath::sqrt(rbf_width/2.0)
-	rfgauss->set_kernelwidth( CMath::sqrt(rbf_width/2.0) );
+	// ******************************** !!!!!!!!!!!!!!!!!
+	// std::sqrt(rbf_width/2.0)
+	rfgauss->set_kernelwidth(std::sqrt(rbf_width / 2.0));
 	rfgauss->set_dim_input_space(dims);
 	rfgauss->set_dim_feature_space(randomfourier_featurespace_dim);
 
@@ -358,7 +354,7 @@ for(int i=0; i<m ;++i)
 {
 	for(int l=0; l<i ;++l)
 	{
-		avgdist1+= -CMath::log(kertr1[i+l*m])*2.0/m/(m+1.0);
+		avgdist1 += -std::log(kertr1[i + l * m]) * 2.0 / m / (m + 1.0);
 	}
 }
 
@@ -378,7 +374,8 @@ for(int i=0; i<m ;++i)
 		}
 		else
 		{
-		avgdist2+= -CMath::log(std::max(kertr2[i+l*m],1e-10))*2.0/m/(m+1.0);
+			avgdist2 += -std::log(std::max(kertr2[i + l * m], 1e-10)) * 2.0 /
+				        m / (m + 1.0);
 		}
 	}
 }

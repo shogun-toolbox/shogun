@@ -1,23 +1,27 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Weijie Lin, Thoralf Klein,
+ *          Leon Kuchenbecker
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/common.h>
 
 using namespace shogun;
 
 CLabels::CLabels()
 	: CSGObject()
+{
+	init();
+}
+
+CLabels::CLabels(const CLabels& orig)
+    : CSGObject(orig), m_current_values(orig.m_current_values)
 {
 	init();
 }
@@ -95,7 +99,7 @@ void CLabels::set_values(SGVector<float64_t> values)
 	m_current_values = values;
 }
 
-SGVector<float64_t> CLabels::get_values()
+SGVector<float64_t> CLabels::get_values() const
 {
 	return m_current_values;
 }

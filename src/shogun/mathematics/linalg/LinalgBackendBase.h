@@ -97,8 +97,8 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
 	virtual void add(                                                          \
-	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
-	    Container<Type>& result) const                                         \
+	    const Container<Type>& a, const Container<Type>& b, Type alpha,        \
+	    Type beta, Container<Type>& result) const                              \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -122,6 +122,23 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
+
+/**
+ * Wrapper method of add diagonal vector A.diagonal = alpha * A.diagonal +
+ * beta * b.
+ *
+ * @see linalg::add_diag
+ */
+#define BACKEND_GENERIC_ADD_DIAG(Type, Container)                              \
+	virtual void add_diag(                                                     \
+	    SGMatrix<Type>& A, const SGVector<Type>& b, Type alpha, Type beta)     \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix);
+#undef BACKEND_GENERIC_ADD_DIAG
 
 /**
  * Wrapper method of add vector to each column of matrix.
@@ -198,6 +215,38 @@ namespace shogun
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 /**
+ * Wrapper method of LDLT Cholesky decomposition
+ *
+ * @see linalg::ldlt_factor
+ */
+#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
+	virtual void ldlt_factor(                                                  \
+	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
+	    SGVector<index_t>& p, const bool lower) const                          \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_FACTOR
+
+/**
+ * Wrapper method of LDLT Cholesky solver
+ *
+ * @see linalg::ldlt_solver
+ */
+#define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
+	virtual SGVector<Type> ldlt_solver(                                        \
+	    const Container<Type>& L, const SGVector<Type>& d,                     \
+	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_SOLVER
+
+/**
  * Wrapper method of cross entropy.
  *
  * @see linalg::cross_entropy
@@ -259,18 +308,36 @@ namespace shogun
 #undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /**
+ * Wrapper method of in-place vector elementwise product.
+ *
+ * @see linalg::element_prod
+ */
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
+	virtual void element_prod(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD
+
+/**
  * Wrapper method of in-place matrix elementwise product.
  *
  * @see linalg::element_prod
  */
-#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container)          \
 	virtual void element_prod(                                                 \
-	    Container<Type>& a, Container<Type>& b, Container<Type>& result) const \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 /**
  * Wrapper method of in-place matrix block elementwise product.
@@ -279,8 +346,9 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
-	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
-	    Container<Type>& result) const                                         \
+	    const linalg::Block<Container<Type>>& a,                               \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
+	    bool transpose_A, bool transpose_B) const                              \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -323,7 +391,8 @@ namespace shogun
  * @see linalg::logistic
  */
 #define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const   \
+	virtual void logistic(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -337,8 +406,8 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	virtual void matrix_prod(                                                  \
-	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
-	    bool transpose_A, bool transpose_B) const                              \
+	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const     \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -402,7 +471,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
 	virtual void multiply_by_logistic_derivative(                              \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -417,7 +486,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
 	virtual void multiply_by_rectified_linear_derivative(                      \
-	    Container<Type>& a, Container<Type>& result) const                     \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -445,8 +514,8 @@ namespace shogun
  * @see linalg::rectified_linear
  */
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
-	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
-	    const                                                                  \
+	virtual void rectified_linear(                                             \
+	    const Container<Type>& a, Container<Type>& result) const               \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
@@ -477,7 +546,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	virtual void scale(                                                        \
-	    Container<Type>& a, Type alpha, Container<Type>& result) const         \
+	    const Container<Type>& a, Type alpha, Container<Type>& result) const   \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}

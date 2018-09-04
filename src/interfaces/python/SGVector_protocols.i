@@ -201,7 +201,7 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get
 		ret=(PyObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 						0, shape,
 						strides, data,
-						NPY_FARRAY | NPY_WRITEABLE,
+						NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE,
 						(PyObject *) self);
 	}
 
@@ -288,7 +288,7 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					1, shape,
 					strides, data,
-					NPY_FARRAY | NPY_WRITEABLE,
+					NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE,
 					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;

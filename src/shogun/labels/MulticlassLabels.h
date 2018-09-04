@@ -1,13 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
+ *          Saurabh Mahindre, Olivier NGuyen, Thoralf Klein, Giovanni De Toni, 
+ *          Heiko Strathmann, Michele Mazzoni, Evgeniy Andreev, Yuyu Zhang, 
+ *          Chiyuan Zhang, Viktor Gal, Björn Esser
  */
 
 #ifndef _MULTICLASS_LABELS__H__
@@ -130,6 +127,12 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		void allocate_confidences_for(int32_t n_classes);
 
+		/** Returns confidence scores for given class
+		* @param i Class index
+		* @return Confidences of class i
+		*/
+		SGVector<float64_t> get_confidences_for_class(int32_t i);
+
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
 #ifndef SWIG // SWIG should skip this part
@@ -151,5 +154,9 @@ class CMulticlassLabels : public CDenseLabels
 		/** multiclass confidences */
 		SGMatrix<float64_t> m_multiclass_confidences;
 };
+
+#ifndef SWIG
+Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
+#endif // SWIG
 }
 #endif

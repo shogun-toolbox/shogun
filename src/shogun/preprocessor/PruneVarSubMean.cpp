@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Viktor Gal, Evgeniy Andreev, Evan Shelhamer, 
+ *          Sergey Lisitsyn, Björn Esser
  */
 
 #include <shogun/preprocessor/PruneVarSubMean.h>
@@ -96,7 +92,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		{
 			m_idx[j]=idx_ok[j] ;
 			new_mean[j]=m_mean[idx_ok[j]];
-			m_std[j]=CMath::sqrt(var[idx_ok[j]]);
+			m_std[j] = std::sqrt(var[idx_ok[j]]);
 		}
 		m_num_idx = num_ok;
 		SG_FREE(idx_ok);

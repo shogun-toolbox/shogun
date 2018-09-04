@@ -1,5 +1,6 @@
 /* base includes required by any module */
 %include "stdint.i"
+%include "std_string.i"
 %include "exception.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
@@ -12,6 +13,7 @@
 %{
 import org.shogun.SerializableFile;
 import org.shogun.SerializableAsciiFile;
+import org.jblas.*;
 %}
 %typemap(javacode) shogun::CSGObject
 %{
@@ -126,6 +128,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
  using namespace shogun;
+
 %}
 
 #if  defined (SWIGPERL) && defined(HAVE_PDL)
@@ -227,7 +230,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
             }
 
             CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-            fprintf(f, "%s", obj->get_name());
+            std::string s = obj->to_string();
+            fprintf(f, "%s", s.c_str());
             return 0;
         }
 %}
@@ -257,7 +261,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
       return SWIG_ERROR;
     }
     CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
-    fprintf(f, "%s", obj->get_name());
+    std::string s = obj->to_string();
+    fprintf(f, "%s", s.c_str());
     return 0;
   }
 %}
@@ -284,7 +289,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     }
     catch (shogun::ShogunException e)
     {
-        SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+        SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
         SWIG_fail;
 #endif
@@ -304,16 +309,16 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
+%include <shogun/lib/ShogunException.h>
 
 %include "swig_typemaps.i"
 
-#if !defined(SWIGJAVA)
 %include "std_vector.i"
 namespace std {
     %template(IntStdVector) vector<int32_t>;
     %template(DoubleStdVector) vector<float64_t>;
+    %template(StringStdVector) vector<string>;
 }
-#endif
 
 #ifndef SWIGR
 %include <shogun/base/init.h>
@@ -329,20 +334,20 @@ namespace shogun
 
     %extend CSGObject
     {
-        const char* __str__() const
+        std::string __str__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
-        const char* __repr__() const
+        std::string __repr__() const
         {
-            return $self->get_name();
+            return $self->to_string();
         }
 
         PyObject* __reduce_ex__(int proto)
         {
-            pickle_ascii= (proto==0) ? 1 : 0;
-            return NULL;
+            pickle_ascii = (proto==0) ? 1 : 0;
+            Py_RETURN_NONE;
         }
 
         PyObject* __getstate__()
@@ -425,7 +430,7 @@ namespace shogun
                     SG_SERROR("File contains an HDF5 stream but " \
                             "Shogun was not compiled with HDF5" \
                             " support! -  cannot load file %s." \
-                            " (exception was %s)", e.get_exception_string());
+                            " (exception was %s)", e.what());
             }
 #endif
             $self->load_serializable(fstream);
@@ -502,6 +507,5 @@ _py_orig_reconstructor=copy_reg._reconstructor
 copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}
-
 
 #endif /* SWIGPYTHON  */

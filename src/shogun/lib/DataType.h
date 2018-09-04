@@ -1,22 +1,17 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Fernando Jose Iglesias Garcia
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
+ *          Evgeniy Andreev, Fernando Iglesias, Soumyajit De, Chiyuan Zhang, 
+ *          Thoralf Klein, Evan Shelhamer, Yuyu Zhang
  */
 
 #ifndef __DATATYPE_H__
 #define __DATATYPE_H__
 
-#include <shogun/lib/config.h>
-
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
 
@@ -62,6 +57,12 @@ enum EPrimitiveType
 	PT_COMPLEX128=14,
 	PT_UNDEFINED=15
 };
+
+/** Returns string representation of primitive type
+ * @param pt primitive type
+ * @return string for primitive type
+ */
+std::string ptype_name(EPrimitiveType pt);
 #endif
 
 /** @brief Datatypes that shogun supports. */

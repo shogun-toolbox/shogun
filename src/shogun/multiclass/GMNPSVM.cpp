@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Sergey Lisitsyn
  */
 
 #include <shogun/io/SGIO.h>
@@ -46,6 +42,8 @@ CGMNPSVM::init()
 							 &m_basealphas_y, &m_basealphas_x,
 							 "m_basealphas",
 							 "Is the basic untransformed alpha.");
+	watch_param(
+	    "m_basealphas", &m_basealphas, &m_basealphas_y, &m_basealphas_x);
 
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }

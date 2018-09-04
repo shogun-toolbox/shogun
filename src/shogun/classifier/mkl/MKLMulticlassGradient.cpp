@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Alexander Binder
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
- *
- * Update to patch 0.10.0 - thanks to Eric aka Yoo (thereisnoknife@gmail.com)
- *
+ * Authors: Soeren Sonnenburg, Björn Esser, Saurabh Goyal, Chiyuan Zhang, 
+ *          Viktor Gal
  */
 
 #include <shogun/classifier/mkl/MKLMulticlassGradient.h>
@@ -410,7 +404,7 @@ finalbeta=oldweights;
 	for( int32_t p=0; p<num_kernels; ++p )
 		preR += CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
 
-	const float64_t R = CMath::sqrt( preR / pnorm ) * epsRegul;
+	const float64_t R = std::sqrt(preR / pnorm) * epsRegul;
 	if( !( R >= 0 ) )
 	{
 		SG_PRINT("MKL-direct: p = %.3f\n", pnorm )
@@ -424,7 +418,7 @@ finalbeta=oldweights;
 		}
 		SG_PRINT("MKL-direct: preR = %e\n", preR )
 		SG_PRINT("MKL-direct: preR/p = %e\n", preR/pnorm )
-		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/pnorm) )
+		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", std::sqrt(preR / pnorm))
 		SG_PRINT("MKL-direct: R = %e\n", R )
 		SG_ERROR("Assertion R >= 0 failed!\n" )
 	}

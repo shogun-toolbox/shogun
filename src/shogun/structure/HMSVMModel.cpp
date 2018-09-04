@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Authors: Fernando Iglesias, Abinash Panda, Sanuj Sharma, Shell Hu, 
+ *          Sergey Lisitsyn, Soeren Sonnenburg, Viktor Gal
  */
 
 #include <shogun/structure/HMSVMModel.h>
@@ -163,8 +160,7 @@ CResultSet* CHMSVMModel::argmax(
 		int32_t feat_idx,
 		bool const training)
 {
-	int32_t dim = get_dim();
-	ASSERT( w.vlen == get_dim() )
+	ASSERT(w.vlen == get_dim())
 
 	// Shorthand for the number of features of the feature vector
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;

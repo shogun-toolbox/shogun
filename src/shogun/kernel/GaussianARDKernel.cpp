@@ -1,13 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2015 Wu Lin
- * Written (W) 2012 Jacob Walker
- *
- * Adapted from WeightedDegreeRBFKernel.cpp
+ * Authors: Wu Lin, Jacob Walker, Roman Votyakov, Pan Deng, Heiko Strathmann,
+ *          Soumyajit De, Viktor Gal, Björn Esser, Soeren Sonnenburg
  */
 
 #include <shogun/kernel/GaussianARDKernel.h>
@@ -45,7 +40,7 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	if (m_ARD_type==KT_SCALAR)
 	{
 		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*CDotKernel::compute(idx_a,idx_b));
-		result*=CMath::exp(2.0*m_log_weights[0]);
+		result *= std::exp(2.0 * m_log_weights[0]);
 	}
 	else
 	{
@@ -123,7 +118,7 @@ float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<
 	if (m_ARD_type==KT_SCALAR)
 	{
 		left=SGMatrix<float64_t>(avec.vector,1,avec.vlen,false);
-		scalar_weight=CMath::exp(m_log_weights[0]);
+		scalar_weight = std::exp(m_log_weights[0]);
 	}
 	else if(m_ARD_type==KT_FULL || m_ARD_type==KT_DIAG)
 	{
@@ -143,7 +138,8 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	float64_t result=0.0;
 
 	if(m_ARD_type==KT_DIAG)
-		result=2.0*avec[index]*bvec[index]*CMath::exp(2.0*m_log_weights[index]);
+		result = 2.0 * avec[index] * bvec[index] *
+		         std::exp(2.0 * m_log_weights[index]);
 	else
 	{
 		SGMatrix<float64_t> res;
@@ -153,7 +149,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 			SGMatrix<float64_t> left(avec.vector,1,avec.vlen,false);
 			SGMatrix<float64_t> right(bvec.vector,bvec.vlen,1,false);
 			res=linalg::matrix_prod(left, right);
-			result=2.0*res[0]*CMath::exp(2.0*m_log_weights[0]);
+			result = 2.0 * res[0] * std::exp(2.0 * m_log_weights[0]);
 		}
 		else if(m_ARD_type==KT_FULL)
 		{
@@ -170,8 +166,10 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 			}
 			col_index+=row_index;
 
-			SGVector<float64_t> row_vec=SGVector<float64_t>(m_log_weights.vector+total_offset,m_weights_rows-row_index,false);   
-			row_vec[0]=CMath::exp(row_vec[0]);
+			SGVector<float64_t> row_vec = SGVector<float64_t>(
+			    m_log_weights.vector + total_offset, m_weights_rows - row_index,
+			    false);
+			row_vec[0] = std::exp(row_vec[0]);
 
 			SGMatrix<float64_t> row_vec_r(row_vec.vector,row_vec.vlen,1,false);
 			SGMatrix<float64_t> left(avec.vector+row_index,1,avec.vlen-row_index,false);
@@ -187,7 +185,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 
 			if(row_index==col_index)
 				result*=row_vec[0];
-			row_vec[0]=CMath::log(row_vec[0]);
+			row_vec[0] = std::log(row_vec[0]);
 		}
 		else
 		{
@@ -227,7 +225,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 				if (m_ARD_type==KT_SCALAR)
 				{
 					float64_t dist=distance(j,j);
-					derivative[j]=CMath::exp(-dist)*(-dist*2.0);
+					derivative[j] = std::exp(-dist) * (-dist * 2.0);
 				}
 				else
 				{
@@ -284,7 +282,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 				if (m_ARD_type==KT_SCALAR)
 				{
 					float64_t dist=distance(j,k);
-					derivative(j,k)=CMath::exp(-dist)*(-dist*2.0);
+					derivative(j, k) = std::exp(-dist) * (-dist * 2.0);
 				}
 				else
 				{

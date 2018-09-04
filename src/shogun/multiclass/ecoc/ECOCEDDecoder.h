@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Yuyu Zhang, Björn Esser
  */
 
 #ifndef ECOCEDDECODER_H__
@@ -51,8 +47,8 @@ protected:
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)
             dist += (outputs[i]-code[i])*(outputs[i]-code[i]);
-        return CMath::sqrt(dist);
-    }
+		return std::sqrt(dist);
+	}
 };
 
 } /* shogun */

@@ -76,8 +76,6 @@ CKernel::~CKernel()
 
 	remove_lhs_and_rhs();
 	SG_UNREF(normalizer);
-
-	SG_INFO("Kernel deleted (%p).\n", this)
 }
 
 #ifdef USE_SVMLIGHT
@@ -635,7 +633,6 @@ void CKernel::save(CFile* writer)
 
 void CKernel::remove_lhs_and_rhs()
 {
-	SG_DEBUG("entering CKernel::remove_lhs_and_rhs\n")
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
@@ -649,7 +646,6 @@ void CKernel::remove_lhs_and_rhs()
 #ifdef USE_SVMLIGHT
 	cache_reset();
 #endif //USE_SVMLIGHT
-	SG_DEBUG("leaving CKernel::remove_lhs_and_rhs\n")
 }
 
 void CKernel::remove_lhs()
@@ -928,10 +924,13 @@ void CKernel::save_serializable_post() throw (ShogunException)
 void CKernel::register_params()   {
 	SG_ADD(&cache_size, "cache_size",
 	    "Cache size in MB.", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &lhs, "lhs",
-      "Feature vectors to occur on left hand side.", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &rhs, "rhs",
-      "Feature vectors to occur on right hand side.", MS_NOT_AVAILABLE);
+
+	SG_ADD(
+	    &lhs, "lhs", "Feature vectors to occur on left hand side.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &rhs, "rhs", "Feature vectors to occur on right hand side.",
+	    MS_NOT_AVAILABLE);
 	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",
 	    "If features on lhs are the same as on rhs.", MS_NOT_AVAILABLE);
 	SG_ADD(&num_lhs, "num_lhs", "Number of feature vectors on left hand side.",

@@ -1,16 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Viktor Gal, Heiko Strathmann, Fernando Iglesias, 
+ *          Sanuj Sharma, Pan Deng, Sergey Lisitsyn, Thoralf Klein, 
+ *          Soumyajit De, Michele Mazzoni, Evgeniy Andreev, Chiyuan Zhang, 
+ *          Björn Esser, Weijie Lin, Khaled Nasr, Koen van de Sande, 
+ *          Somya Anand
  */
 
 #include <shogun/lib/config.h>
@@ -20,10 +15,11 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/File.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/mathematics/lapack.h>
 #include <algorithm>
+#include <limits>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -92,7 +88,7 @@ template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
-	vector=SG_MALLOC(T, len);
+	vector=SG_CALLOC(T, len);
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
@@ -270,6 +266,11 @@ SGVector<T> SGVector<T>::clone() const
 template<class T>
 T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 {
+	if (!vec || !len)
+		return nullptr;
+
+	REQUIRE(len > 0, "Number of elements (%d) has to be positive!\n", len);
+
 	T* result = SG_MALLOC(T, len);
 	sg_memcpy(result, vec, sizeof(T)*len);
 	return result;
@@ -391,12 +392,15 @@ void SGVector<T>::free_data()
 	gpu_ptr=NULL;
 }
 
-template<class T>
-bool SGVector<T>::equals(SGVector<T>& other)
+template <class T>
+bool SGVector<T>::equals(const SGVector<T>& other) const
 {
 	assert_on_cpu();
 	if (other.vlen!=vlen)
 		return false;
+
+	if (vector == other.vector)
+		return true;
 
 	for (index_t i=0; i<vlen; ++i)
 	{
@@ -406,6 +410,33 @@ bool SGVector<T>::equals(SGVector<T>& other)
 
 	return true;
 }
+
+#ifndef REAL_EQUALS
+#define REAL_EQUALS(real_t)                                                    \
+	template <>                                                                \
+	bool SGVector<real_t>::equals(const SGVector<real_t>& other) const         \
+	{                                                                          \
+		assert_on_cpu();                                                       \
+		if (other.vlen != vlen)                                                \
+			return false;                                                      \
+                                                                               \
+		if (vector == other.vector)                                            \
+			return true;                                                       \
+                                                                               \
+		for (index_t i = 0; i < vlen; ++i)                                     \
+		{                                                                      \
+			if (!CMath::fequals(                                               \
+			        vector[i], other.vector[i],                                \
+			        std::numeric_limits<real_t>::epsilon()))                   \
+				return false;                                                  \
+		}                                                                      \
+		return true;                                                           \
+	}
+REAL_EQUALS(float32_t)
+REAL_EQUALS(float64_t)
+REAL_EQUALS(floatmax_t)
+#undef REAL_EQUALS
+#endif // REAL_EQUALS
 
 template<class T>
 void SGVector<T>::display_vector(const char* name,
@@ -651,7 +682,7 @@ int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -661,7 +692,7 @@ uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -671,7 +702,7 @@ int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -681,7 +712,7 @@ uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -691,7 +722,7 @@ int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -701,7 +732,7 @@ uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -711,7 +742,7 @@ int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -721,7 +752,7 @@ uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -731,7 +762,7 @@ float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -741,7 +772,7 @@ float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 	return cblas_dnrm2(n, v, 1);
 #else
 	SGVector<float64_t> wrapper(const_cast<float64_t*>(v), n, false);
-	return CMath::sqrt(linalg::dot(wrapper, wrapper));
+	return std::sqrt(linalg::dot(wrapper, wrapper));
 #endif
 }
 
@@ -752,7 +783,7 @@ floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <>
@@ -762,7 +793,7 @@ complex128_t SGVector<complex128_t>::twonorm(const complex128_t* x, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 template <class T>
@@ -902,7 +933,7 @@ void SGVector<T>::scale(T alpha)
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	REQUIRE(loader, "Require a valid 'c FILE pointer'\n");
+	REQUIRE(loader, "No file provided.\n");
 	unref();
 
 	SG_SET_LOCALE_C;

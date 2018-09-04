@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg
  */
 
 #include <shogun/base/init.h>
@@ -42,7 +37,7 @@ void test_ev()
 	SGMatrix<float64_t>::display_matrix(A.matrix, A.num_rows, A.num_cols, "A");
 	SGVector<float64_t>::display_vector(ev.vector, ev.vlen, "eigenvalues");
 
-	float64_t sqrt22=CMath::sqrt(2.0)/2.0;
+	float64_t sqrt22 = std::sqrt(2.0) / 2.0;
 	float64_t eps=10E-16;
 
 	/* check for correct eigenvectors */

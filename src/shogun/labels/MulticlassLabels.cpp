@@ -1,5 +1,6 @@
-#include <shogun/labels/DenseLabels.h>
+#include <set>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
@@ -69,6 +70,20 @@ void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 			"labels to store confidences", get_name());
 
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
+}
+
+SGVector<float64_t> CMulticlassLabels::get_confidences_for_class(int32_t i)
+{
+	REQUIRE(
+	    (m_multiclass_confidences.num_rows != 0) &&
+	        (m_multiclass_confidences.num_cols != 0),
+	    "Empty confidences, which need to be allocated before fetching.\n");
+
+	SGVector<float64_t> confs(m_multiclass_confidences.num_cols);
+	for (index_t j = 0; j < confs.size(); j++)
+		confs[j] = m_multiclass_confidences(i, j);
+
+	return confs;
 }
 
 void CMulticlassLabels::ensure_valid(const char* context)
@@ -171,3 +186,50 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 	SG_REF(casted)
 	return casted;
 }
+
+namespace shogun
+{
+	SG_FORCED_INLINE Some<CMulticlassLabels> to_multiclass(CDenseLabels* orig)
+	{
+		auto int_labels = orig->get_int_labels();
+		std::set<int32_t> unique(int_labels.begin(), int_labels.end());
+		// TODO: anything discrete should be a possible multiclasslabels.
+		// Once that is the case, this check can be removed
+		// For now, if we don't enforce this, there will be crashes as the
+		// class is used to index vectors
+		REQUIRE(
+		    (*std::min_element(unique.begin(), unique.end())) == 0 &&
+		        (*std::max_element(unique.begin(), unique.end())) ==
+		            (index_t)unique.size() - 1,
+		    "Multiclass labels must be contiguous integers in [0, ..., "
+		    "num_classes -1].\n");
+
+		return some<CMulticlassLabels>(orig->get_labels());
+	}
+
+	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
+	{
+		REQUIRE(orig, "No labels provided.\n");
+		try
+		{
+			switch (orig->get_label_type())
+			{
+			case LT_MULTICLASS:
+				return Some<CMulticlassLabels>::from_raw(
+				    orig->as<CMulticlassLabels>());
+			case LT_DENSE_GENERIC:
+				return to_multiclass(orig->as<CDenseLabels>());
+			default:
+				SG_SNOTIMPLEMENTED
+			}
+		}
+		catch (const ShogunException& e)
+		{
+			SG_SERROR(
+			    "Cannot convert %s to multiclass labels: %s\n",
+			    orig->get_name(), e.what());
+		}
+
+		return Some<CMulticlassLabels>::from_raw(nullptr);
+	}
+} // namespace shogun

@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Jacob Walker, Giovanni De Toni, 
+ *          Evgeniy Andreev, Soumyajit De, Viktor Gal, Sergey Lisitsyn
  */
 
 #include <shogun/base/init.h>
@@ -67,6 +64,7 @@ void test_cross_validation()
 	/* train and output */
 	krr->train(features);
 	CRegressionLabels* output= CLabelsFactory::to_regression(krr->apply());
+	SG_REF(output);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		SG_SPRINT("x=%f, train=%f, predict=%f\n", train_dat.matrix[i],

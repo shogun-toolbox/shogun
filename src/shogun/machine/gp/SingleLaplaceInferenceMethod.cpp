@@ -1,17 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2016 Wu Lin 
- * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
- *
- * Code adapted from Gaussian Process Machine Learning Toolbox
- * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * This code specifically adapted from infLaplace.m
+ * Authors: Wu Lin, Heiko Strathmann, Fernando Iglesias, Viktor Gal
  */
 
 #include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
@@ -56,7 +46,7 @@ public:
 
 		// compute alpha=alpha+x*dalpha and f=K*alpha+m
 		(*alpha)=start_alpha+x*dalpha;
-		eigen_f=K*(*alpha)*CMath::exp(log_scale*2.0)+eigen_m;
+		eigen_f = K * (*alpha) * std::exp(log_scale * 2.0) + eigen_m;
 
 		// get first and second derivatives of log likelihood
 		(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
@@ -232,13 +222,22 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 		// compute sW = sqrt(W)
 		eigen_sW=eigen_W.cwiseSqrt();
 
-		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp((m_obj->m_log_scale)*2.0))+
-			MatrixXd::Identity( (m_obj->m_ktrtr).num_rows, (m_obj->m_ktrtr).num_cols));
+		LLT<MatrixXd> L(
+			(eigen_sW * eigen_sW.transpose())
+			    .cwiseProduct(
+			        eigen_ktrtr * std::exp((m_obj->m_log_scale) * 2.0)) +
+			MatrixXd::Identity(
+			    (m_obj->m_ktrtr).num_rows, (m_obj->m_ktrtr).num_cols));
 
 		VectorXd b=eigen_W.cwiseProduct(eigen_mu - eigen_mean)+eigen_dlp;
 
-		VectorXd dalpha=b-eigen_sW.cwiseProduct(
-			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::exp((m_obj->m_log_scale)*2.0))))-eigen_alpha;
+		VectorXd dalpha = b -
+			              eigen_sW.cwiseProduct(
+			                  L.solve(
+			                      eigen_sW.cwiseProduct(
+			                          eigen_ktrtr * b *
+			                          std::exp((m_obj->m_log_scale) * 2.0)))) -
+			              eigen_alpha;
 
 #ifdef USE_GPL_SHOGUN
 		// perform Brent's optimization
@@ -343,8 +342,9 @@ float64_t CSingleLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 		Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
 		Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_sW.asDiagonal());
+		FullPivLU<MatrixXd> lu(
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols) +
+			eigen_ktrtr * std::exp(m_log_scale * 2.0) * eigen_sW.asDiagonal());
 
 		result=(eigen_alpha.dot(eigen_mu-eigen_mean))/2.0-
 			lp+log(lu.determinant())/2.0;
@@ -368,14 +368,15 @@ void CSingleLaplaceInferenceMethod::update_approx_cov()
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
-	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
+	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
+		eigen_sW.asDiagonal() * eigen_K * std::exp(m_log_scale * 2.0));
 
 	// compute covariance matrix of the posterior:
 	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
 	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
 	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma =
+		eigen_K * std::exp(m_log_scale * 2.0) - eigen_V.adjoint() * eigen_V;
 }
 
 void CSingleLaplaceInferenceMethod::update_chol()
@@ -411,8 +412,8 @@ void CSingleLaplaceInferenceMethod::update_chol()
 	{
 		//A = eye(n)+K.*repmat(w',n,1);
 		FullPivLU<MatrixXd> lu(
-			MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_W.asDiagonal());
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols) +
+			eigen_ktrtr * std::exp(m_log_scale * 2.0) * eigen_W.asDiagonal());
 		// compute cholesky: L = -(K + 1/W)^-1
 		//-iA = -inv(A)
 		eigen_L=-lu.inverse();
@@ -423,7 +424,8 @@ void CSingleLaplaceInferenceMethod::update_chol()
 	{
 		// compute cholesky: L = chol(sW * sW' .* K + I)
 		LLT<MatrixXd> L(
-			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp(m_log_scale*2.0))+
+			(eigen_sW * eigen_sW.transpose())
+			    .cwiseProduct(eigen_ktrtr * std::exp(m_log_scale * 2.0)) +
 			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
 		eigen_L = L.matrixU();
@@ -477,7 +479,8 @@ void CSingleLaplaceInferenceMethod::update_init()
 		Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 		// compute f = K * alpha + m
-		eigen_mu=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
+		eigen_mu = eigen_ktrtr * std::exp(m_log_scale * 2.0) * eigen_alpha +
+			       eigen_mean;
 
 		Psi_New=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-
 			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
@@ -548,7 +551,8 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 	// compute f = K * alpha + m
-	eigen_mu=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
+	eigen_mu =
+		eigen_ktrtr * std::exp(m_log_scale * 2.0) * eigen_alpha + eigen_mean;
 }
 
 void CSingleLaplaceInferenceMethod::update_deriv()
@@ -575,12 +579,16 @@ void CSingleLaplaceInferenceMethod::update_deriv()
 		eigen_Z=-eigen_L;
 
 		// compute iA = (I + K * diag(W))^-1
-		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-				eigen_K*CMath::exp(m_log_scale*2.0)*eigen_W.asDiagonal());
+		FullPivLU<MatrixXd> lu(
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols) +
+			eigen_K * std::exp(m_log_scale * 2.0) * eigen_W.asDiagonal());
 		MatrixXd iA=lu.inverse();
 
 		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
-		eigen_g=(iA.cwiseProduct(eigen_K*CMath::exp(m_log_scale*2.0))).rowwise().sum()/2.0;
+		eigen_g = (iA.cwiseProduct(eigen_K * std::exp(m_log_scale * 2.0)))
+			          .rowwise()
+			          .sum() /
+			      2.0;
 	}
 	else
 	{
@@ -591,12 +599,13 @@ void CSingleLaplaceInferenceMethod::update_deriv()
 		eigen_Z=eigen_sW.asDiagonal()*eigen_Z;
 
 		// solve L'*C=diag(sW)*K
-		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
-				eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
+		MatrixXd C = eigen_L.triangularView<Upper>().adjoint().solve(
+			eigen_sW.asDiagonal() * eigen_K * std::exp(m_log_scale * 2.0));
 
 		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
-		eigen_g=(eigen_K.diagonal()*CMath::exp(m_log_scale*2.0)-
-				(C.cwiseProduct(C)).colwise().sum().adjoint())/2.0;
+		eigen_g = (eigen_K.diagonal() * std::exp(m_log_scale * 2.0) -
+			       (C.cwiseProduct(C)).colwise().sum().adjoint()) /
+			      2.0;
 	}
 
 	// create shogun and eigen representation of the vector dfhat
@@ -632,8 +641,10 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_inference_
 	VectorXd b=eigen_K*eigen_dlp;
 
 	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*b));
-	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
+	result[0] = result[0] -
+		        eigen_dfhat.dot(
+		            b - eigen_K * std::exp(m_log_scale * 2.0) * (eigen_Z * b));
+	result[0] *= std::exp(m_log_scale * 2.0) * 2.0;
 
 	return result;
 }
@@ -666,8 +677,9 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_likelihood
 	VectorXd b=eigen_K*eigen_dlp_dhyp;
 
 	// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
-	result[0]=-eigen_g.dot(eigen_d2lp_dhyp)-eigen_lp_dhyp.sum()-
-		eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*b));
+	result[0] = -eigen_g.dot(eigen_d2lp_dhyp) - eigen_lp_dhyp.sum() -
+		        eigen_dfhat.dot(
+		            b - eigen_K * std::exp(m_log_scale * 2.0) * (eigen_Z * b));
 
 	return result;
 }
@@ -706,9 +718,11 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		VectorXd b=eigen_dK*eigen_dlp;
 
 		// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*
-				(eigen_Z*b));
-		result[i]*=CMath::exp(m_log_scale*2.0);
+		result[i] =
+			result[i] -
+			eigen_dfhat.dot(
+			    b - eigen_K * std::exp(m_log_scale * 2.0) * (eigen_Z * b));
+		result[i] *= std::exp(m_log_scale * 2.0);
 	}
 
 	return result;
@@ -740,8 +754,11 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 
 		// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
-		result[i]=-eigen_alpha.dot(eigen_dmu)-eigen_dfhat.dot(eigen_dmu-
-				eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*eigen_dmu));
+		result[i] =
+			-eigen_alpha.dot(eigen_dmu) -
+			eigen_dfhat.dot(
+			    eigen_dmu -
+			    eigen_K * std::exp(m_log_scale * 2.0) * (eigen_Z * eigen_dmu));
 	}
 
 	return result;
@@ -774,8 +791,8 @@ float64_t CSingleLaplaceInferenceMethod::get_psi_wrt_alpha()
 	Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f.vector,
 		m_mean_f.vlen);
 	/* f = K * alpha + mean_f given alpha*/
-	eigen_f
-		= kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
+	eigen_f =
+		kernel * ((eigen_alpha)*std::exp(m_log_scale * 2.0)) + eigen_mean_f;
 
 	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
 	float64_t psi = eigen_alpha.dot(eigen_f - eigen_mean_f) * 0.5;
@@ -800,7 +817,8 @@ void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> g
 		m_mean_f.vlen);
 
 	/* f = K * alpha + mean_f given alpha*/
-	eigen_f = kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
+	eigen_f =
+		kernel * ((eigen_alpha)*std::exp(m_log_scale * 2.0)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
 		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
@@ -808,7 +826,8 @@ void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> g
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
 	/* g_alpha = K * (alpha - dlp_f)*/
-	eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::exp(m_log_scale*2.0));
+	eigen_gradient =
+		kernel * ((eigen_alpha - eigen_dlp_f) * std::exp(m_log_scale * 2.0));
 }
 
 

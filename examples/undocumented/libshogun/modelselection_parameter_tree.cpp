@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Jacob Walker, Chiyuan Zhang, 
+ *          Roman Votyakov, Pan Deng, Wu Lin
  */
 
 #include <shogun/base/init.h>
@@ -104,7 +101,7 @@ CModelSelectionParameters* create_param_tree_1()
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
 			new CModelSelectionParameters("log_width");
-	param_gaussian_kernel_width->build_values(0.0, 0.5*CMath::log(2), R_LINEAR);
+	param_gaussian_kernel_width->build_values(0.0, 0.5 * std::log(2), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
@@ -317,7 +314,8 @@ CModelSelectionParameters* create_param_tree_5()
 	CModelSelectionParameters* param_inf_gaussian_sigma=
 			new CModelSelectionParameters("log_sigma");
 	param_inf_gaussian->append_child(param_inf_gaussian_sigma);
-	param_inf_gaussian_sigma->build_values(2.0*CMath::log(2.0), 3.0*CMath::log(2.0), R_LINEAR);
+	param_inf_gaussian_sigma->build_values(
+	    2.0 * std::log(2.0), 3.0 * std::log(2.0), R_LINEAR);
 
 	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
 			"kernel", gaussian_kernel);
@@ -326,7 +324,7 @@ CModelSelectionParameters* create_param_tree_5()
 	CModelSelectionParameters* param_inf_kernel_width=
 			new CModelSelectionParameters("log_width");
 	param_inf_kernel_1->append_child(param_inf_kernel_width);
-	param_inf_kernel_width->build_values(0.0, 0.5*CMath::log(2.0), R_LINEAR);
+	param_inf_kernel_width->build_values(0.0, 0.5 * std::log(2.0), R_LINEAR);
 
 	CModelSelectionParameters* param_inf_kernel_2=new CModelSelectionParameters(
 			"kernel", linear_kernel);

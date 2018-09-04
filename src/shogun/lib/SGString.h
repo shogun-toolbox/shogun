@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Written (W) 2012 Jacob Walker
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker, Thoralf Klein, 
+ *          Björn Esser
  */
 #ifndef __SGSTRING_H__
 #define __SGSTRING_H__
@@ -41,8 +35,11 @@ public:
 	/** copy constructor */
 	SGString(const SGString &orig);
 
-	/** equality operator */
+	/** @return true iff pointer and size are equal */
 	bool operator==(const SGString & other) const;
+
+	/** @return true iff content is equal */
+	bool equals(const SGString& other) const;
 
 	/** free string */
 	void free_string();

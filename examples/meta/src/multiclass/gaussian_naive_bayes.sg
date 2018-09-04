@@ -1,0 +1,20 @@
+File f_feats_train = csv_file("../../data/classifier_4class_2d_linear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_4class_2d_linear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_4class_2d_linear_labels_train.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+#![create_features]
+
+
+#![create_instance]
+Machine gnb = machine("GaussianNaiveBayes", features=features_train, labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+gnb.train()
+Labels labels_predict = gnb.apply(features_test)
+RealVector labels = labels_predict.get_real_vector("labels")
+#![train_and_apply]

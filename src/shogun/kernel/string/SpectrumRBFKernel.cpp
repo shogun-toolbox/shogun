@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, 
+ *          Weijie Lin, Björn Esser, Saurabh Goyal
  */
 
 #include <vector>
@@ -387,7 +383,10 @@ void CSpectrumRBFKernel::register_param()
 	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
 	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence",
 	    MS_NOT_AVAILABLE);
+
 	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
+	watch_param("sequences", &sequences, &nof_sequences);
+
 	SG_ADD(&max_sequence_length,
 	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
 }

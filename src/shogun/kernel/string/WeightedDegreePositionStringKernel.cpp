@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Heiko Strathmann, Viktor Gal, Weijie Lin, Björn Esser
  */
 
 #include <shogun/base/Parallel.h>
@@ -1131,10 +1127,11 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 	if (block_weights)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
+			block_weights[i - 1] = CMath::pow(std::log((float64_t)i), 2);
 
 		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
+			block_weights[i - 1] =
+			    i - degree + 1 + CMath::pow(std::log(degree + 1.0), 2);
 	}
 
 	return (block_weights!=NULL);
@@ -1938,18 +1935,32 @@ void CWeightedDegreePositionStringKernel::init()
 
 	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
 			"weights", "WD Kernel weights.");
+	watch_param("weights", &weights, &weights_degree, &weights_length);
+
 	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
+	watch_param("position_weights", &position_weights, &position_weights_len);
+
 	m_parameters->add_vector(&position_weights_lhs, &position_weights_lhs_len,
 			"position_weights_lhs",
 			"Weights per position left hand side.");
+	watch_param(
+	    "position_weights_lhs", &position_weights_lhs,
+	    &position_weights_lhs_len);
+
 	m_parameters->add_vector(&position_weights_rhs, &position_weights_rhs_len,
 			"position_weights_rhs",
 			"Weights per position right hand side.");
+	watch_param(
+	    "position_weights_rhs", &position_weights_rhs,
+	    &position_weights_rhs_len);
+
 	m_parameters->add_vector(&shift, &shift_len,
 			"shift",
 			"Shift Vector.");
+	watch_param("shift", &shift, &shift_len);
+
 	SG_ADD(&max_shift, "max_shift", "Maximal shift.", MS_AVAILABLE);
 	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);

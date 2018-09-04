@@ -139,9 +139,11 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 
 	// compute negative log marginal likelihood:
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
-	float64_t result=eigen_chol_utr.diagonal().array().log().sum()+
-		(-eigen_t.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
-		 m_ktrtr_diag.vlen*CMath::log(2*CMath::PI))/2.0;
+	float64_t result =
+	    eigen_chol_utr.diagonal().array().log().sum() +
+	    (-eigen_t.array().log().sum() + eigen_r.dot(eigen_r) -
+	     eigen_be.dot(eigen_be) + m_ktrtr_diag.vlen * std::log(2 * CMath::PI)) /
+	        2.0;
 
 	return result;
 }
@@ -164,8 +166,10 @@ void CFITCInferenceMethod::update_chol()
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
 	//Luu  = chol(Kuu+snu2*eye(nu));                         % Kuu + snu2*I = Luu'*Luu
-	LLT<MatrixXd> Luu(eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
-		m_kuu.num_rows, m_kuu.num_cols));
+	LLT<MatrixXd> Luu(
+	    eigen_kuu * std::exp(m_log_scale * 2.0) +
+	    std::exp(m_log_ind_noise) *
+	        MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
 	// inducing features Luu (m_chol_uu and eigen_chol_uu)
@@ -179,8 +183,8 @@ void CFITCInferenceMethod::update_chol()
 
 	m_V=SGMatrix<float64_t>(m_chol_uu.num_cols, m_ktru.num_cols);
 	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru*
-			CMath::exp(m_log_scale*2.0));
+	V = eigen_chol_uu.triangularView<Upper>().adjoint().solve(
+	    eigen_ktru * std::exp(m_log_scale * 2.0));
 
 	// create shogun and eigen3 representation of
 	// dg = diag(K) + sn2 - diag(Q)
@@ -189,8 +193,9 @@ void CFITCInferenceMethod::update_chol()
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 
 	//g_sn2 = diagK + sn2 - sum(V.*V,1)';          % g + sn2 = diag(K) + sn2 - diag(Q)
-	eigen_t=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)+CMath::sq(sigma)*
-		VectorXd::Ones(m_t.vlen)-(V.cwiseProduct(V)).colwise().sum().adjoint();
+	eigen_t = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) +
+	          CMath::sq(sigma) * VectorXd::Ones(m_t.vlen) -
+	          (V.cwiseProduct(V)).colwise().sum().adjoint();
 	eigen_t=MatrixXd::Ones(eigen_t.rows(),1).cwiseQuotient(eigen_t);
 
 	// solve Lu' * Lu = V * diag(1/dg) * V' + I
@@ -306,7 +311,7 @@ void CFITCInferenceMethod::update_deriv()
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
 	//B = iKuu*Ku; w = B*al;
-	eigen_B=iKuu*eigen_Ktru*CMath::exp(m_log_scale*2.0);
+	eigen_B = iKuu * eigen_Ktru * std::exp(m_log_scale * 2.0);
 
 	// create shogun and eigen representation of w
 	m_w=SGVector<float64_t>(m_B.num_rows);
@@ -350,7 +355,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 	//time complexity of the following operation is O(m*n)
-	eigen_mu=CMath::exp(m_log_scale*2.0)*eigen_Ktru.adjoint()*eigen_alpha;
+	eigen_mu = std::exp(m_log_scale * 2.0) * eigen_Ktru.adjoint() * eigen_alpha;
 
 	return SGVector<float64_t>(m_mu);
 }
@@ -390,8 +395,8 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 	MatrixXd part1=eigen_V.adjoint()*(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols)));
 	eigen_Sigma=part1*part1.adjoint();
-	VectorXd part2=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)-(
-		eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
+	VectorXd part2 = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) -
+	                 (eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 	eigen_Sigma+=part2.asDiagonal();
 
 	return SGMatrix<float64_t>(m_Sigma);

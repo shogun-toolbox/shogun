@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Alesis Novik
- * Written (W) 2014 Parijat Mazumdar
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Weijie Lin, Alesis Novik, Heiko Strathmann,
+ *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Björn Esser
  */
 #include <shogun/lib/config.h>
 
@@ -47,17 +43,17 @@ CGaussian::CGaussian(
 
 void CGaussian::init()
 {
-	m_constant=CMath::log(2*M_PI)*m_mean.vlen;
+	m_constant = std::log(2 * M_PI) * m_mean.vlen;
 	switch (m_cov_type)
 	{
 		case FULL:
 		case DIAG:
-			for (int32_t i=0; i<m_d.vlen; i++)
-				m_constant+=CMath::log(m_d.vector[i]);
-			break;
-		case SPHERICAL:
-			m_constant+=m_mean.vlen*CMath::log(m_d.vector[0]);
-			break;
+			for (const auto& v: m_d)
+			    m_constant += std::log(v);
+		    break;
+	    case SPHERICAL:
+		    m_constant += m_mean.vlen * std::log(m_d.vector[0]);
+		    break;
 	}
 }
 
@@ -117,19 +113,17 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	return answer;
 }
 
-float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
+float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
 {
-	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
-	REQUIRE(
-	    dotdata, "dynamic cast from CFeatures to CDotFeatures returned NULL\n");
+	CDotFeatures* dotdata=features->as<CDotFeatures>();
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	// compute mean
-
 	float64_t alpha_k_sum=0;
 	SGVector<float64_t> mean(num_dim);
-	mean.fill_vector(mean.vector, mean.vlen, 0);
-	for (int32_t i = 0; i < len; i++)
+	linalg::zero(mean);
+
+	for (auto i: range(alpha_k.vlen))
 	{
 		alpha_k_sum+=alpha_k[i];
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
@@ -160,7 +154,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		cov_sum.zero();
 	}
 
-	for (int32_t j=0; j<len; j++)
+	for (auto j: range(alpha_k.vlen))
 	{
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
 		linalg::add(v, mean, v, -1.0, 1.0);
@@ -303,7 +297,6 @@ void CGaussian::set_d(const SGVector<float64_t> d)
 SGMatrix<float64_t> CGaussian::get_cov()
 {
 	SGMatrix<float64_t> cov(m_mean.vlen, m_mean.vlen);
-	cov.zero();
 
 	if (m_cov_type==FULL)
 	{
@@ -312,7 +305,6 @@ SGMatrix<float64_t> CGaussian::get_cov()
 
 		SGMatrix<float64_t> temp_holder(m_mean.vlen, m_mean.vlen);
 		SGMatrix<float64_t> diag_holder(m_mean.vlen, m_mean.vlen);
-		diag_holder.zero();
 		for (int32_t i = 0; i < m_d.vlen; i++)
 			diag_holder(i, i) = m_d.vector[i];
 #ifdef HAVE_LAPACK
@@ -399,12 +391,12 @@ SGVector<float64_t> CGaussian::sample()
 	case FULL:
 	case DIAG:
 		for (int32_t i = 0; i < m_mean.vlen; i++)
-			r_matrix(i, i) = CMath::sqrt(m_d.vector[i]);
+			r_matrix(i, i) = std::sqrt(m_d.vector[i]);
 
 		break;
 	case SPHERICAL:
 		for (int32_t i = 0; i < m_mean.vlen; i++)
-			r_matrix(i, i) = CMath::sqrt(m_d.vector[0]);
+			r_matrix(i, i) = std::sqrt(m_d.vector[0]);
 
 		break;
 	}

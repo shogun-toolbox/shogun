@@ -93,8 +93,8 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0/(CMath::sqrt(2*CMath::PI)*m_sigma))*
-			CMath::exp(-CMath::sq(x-m_mu)/(2.0*CMath::sq(m_sigma)));
+		return (1.0 / (std::sqrt(2 * CMath::PI) * m_sigma)) *
+			   std::exp(-CMath::sq(x - m_mu) / (2.0 * CMath::sq(m_sigma)));
 	}
 
 private:
@@ -159,10 +159,14 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		float64_t lZ=CStatistics::lgamma((m_nu+1.0)/2.0)-CStatistics::lgamma(m_nu/2.0)-
-			CMath::log(m_nu*CMath::PI*CMath::sq(m_sigma))/2.0;
-		return CMath::exp(lZ-((m_nu+1.0)/2.0)*CMath::log(1.0+CMath::sq(x-m_mu)/
-			(m_nu*CMath::sq(m_sigma))));
+		float64_t lZ = CStatistics::lgamma((m_nu + 1.0) / 2.0) -
+			           CStatistics::lgamma(m_nu / 2.0) -
+			           std::log(m_nu * CMath::PI * CMath::sq(m_sigma)) / 2.0;
+		return std::exp(
+			lZ -
+			((m_nu + 1.0) / 2.0) *
+			    std::log(
+			        1.0 + CMath::sq(x - m_mu) / (m_nu * CMath::sq(m_sigma))));
 	}
 
 private:
@@ -277,7 +281,7 @@ CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df)
 void CStudentsTLikelihood::init()
 {
 	m_log_sigma=0.0;
-	m_log_df=CMath::log(2.0);
+	m_log_df = std::log(2.0);
 	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
@@ -314,8 +318,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
 		eigen_result=CMath::INFTY*VectorXd::Ones(result.vlen);
 	else
 	{
-		eigen_result+=CMath::exp(m_log_sigma*2.0)*df/(df-2.0)*
-			VectorXd::Ones(result.vlen);
+		eigen_result += std::exp(m_log_sigma * 2.0) * df / (df - 2.0) *
+			            VectorXd::Ones(result.vlen);
 	}
 
 	return result;
@@ -341,13 +345,15 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(const CLabels* l
 
 	float64_t df=get_degrees_freedom();
 	// compute lZ=log(gamma(df/2+1/2))-log(gamma(df/2))-log(df*pi*sigma^2)/2
-	VectorXd eigen_lZ=(CStatistics::lgamma(df/2.0+0.5)-
-		CStatistics::lgamma(df/2.0)-log(df*CMath::PI*CMath::exp(m_log_sigma*2.0))/2.0)*
+	VectorXd eigen_lZ =
+		(CStatistics::lgamma(df / 2.0 + 0.5) - CStatistics::lgamma(df / 2.0) -
+		 log(df * CMath::PI * std::exp(m_log_sigma * 2.0)) / 2.0) *
 		VectorXd::Ones(r.vlen);
 
 	// compute log probability: lp=lZ-(df+1)*log(1+(y-f).^2./(df*sigma^2))/2
 	eigen_r=eigen_y-eigen_f;
-	eigen_r=eigen_r.cwiseProduct(eigen_r)/(df*CMath::exp(m_log_sigma*2.0));
+	eigen_r =
+		eigen_r.cwiseProduct(eigen_r) / (df * std::exp(m_log_sigma * 2.0));
 	eigen_r=eigen_lZ-(df+1)*
 		(eigen_r+VectorXd::Ones(r.vlen)).array().log().matrix()/2.0;
 
@@ -379,7 +385,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	float64_t df=get_degrees_freedom();
 
 	// compute a=(y-f).^2+df*sigma^2
-	VectorXd a=eigen_r2+VectorXd::Ones(r.vlen)*df*CMath::exp(m_log_sigma*2.0);
+	VectorXd a =
+		eigen_r2 + VectorXd::Ones(r.vlen) * df * std::exp(m_log_sigma * 2.0);
 
 	if (i==1)
 	{
@@ -391,7 +398,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	{
 		// compute second derivative of log probability wrt f:
 		// d2lp=(df+1)*((y-f)^2-df*sigma^2)./a.^2
-		VectorXd b=eigen_r2-VectorXd::Ones(r.vlen)*df*CMath::exp(m_log_sigma*2.0);
+		VectorXd b = eigen_r2 -
+			         VectorXd::Ones(r.vlen) * df * std::exp(m_log_sigma * 2.0);
 
 		eigen_r=(df+1)*b.cwiseQuotient(a.cwiseProduct(a));
 	}
@@ -399,7 +407,9 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	{
 		// compute third derivative of log probability wrt f:
 		// d3lp=(f+1)*2*(y-f).*((y-f)^2-3*f*sigma^2)./a.^3
-		VectorXd c=eigen_r2-VectorXd::Ones(r.vlen)*3*df*CMath::exp(m_log_sigma*2.0);
+		VectorXd c =
+			eigen_r2 -
+			VectorXd::Ones(r.vlen) * 3 * df * std::exp(m_log_sigma * 2.0);
 		VectorXd a2=a.cwiseProduct(a);
 
 		eigen_r=(df+1)*2*eigen_r.cwiseProduct(c).cwiseQuotient(
@@ -440,11 +450,19 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 		eigen_r=(df*(CStatistics::dlgamma(df*0.5+0.5)-
 			CStatistics::dlgamma(df*0.5))*0.5-0.5)*VectorXd::Ones(r.vlen);
 
-		eigen_r-=df*(VectorXd::Ones(r.vlen)+
-			eigen_r2/(df*CMath::exp(m_log_sigma*2.0))).array().log().matrix()/2.0;
+		eigen_r -= df *
+			       (VectorXd::Ones(r.vlen) +
+			        eigen_r2 / (df * std::exp(m_log_sigma * 2.0)))
+			           .array()
+			           .log()
+			           .matrix() /
+			       2.0;
 
-		eigen_r+=(df/2.0+0.5)*eigen_r2.cwiseQuotient(
-			eigen_r2+VectorXd::Ones(r.vlen)*(df*CMath::exp(m_log_sigma*2.0)));
+		eigen_r +=
+			(df / 2.0 + 0.5) *
+			eigen_r2.cwiseQuotient(
+			    eigen_r2 +
+			    VectorXd::Ones(r.vlen) * (df * std::exp(m_log_sigma * 2.0)));
 
 		eigen_r*=(1.0-1.0/df);
 
@@ -454,8 +472,11 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 	{
 		// compute derivative of log probability wrt sigma:
 		// lp_dsigma=(df+1)*r2./a-1
-		eigen_r=(df+1)*eigen_r2.cwiseQuotient(eigen_r2+
-			VectorXd::Ones(r.vlen)*(df*CMath::exp(m_log_sigma*2.0)));
+		eigen_r =
+			(df + 1) *
+			eigen_r2.cwiseQuotient(
+			    eigen_r2 +
+			    VectorXd::Ones(r.vlen) * (df * std::exp(m_log_sigma * 2.0)));
 		eigen_r-=VectorXd::Ones(r.vlen);
 
 		return r;
@@ -488,15 +509,21 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 	float64_t df=get_degrees_freedom();
 
 	// compute a=r+sigma^2*df and a2=a.^2
-	VectorXd a=eigen_r2+CMath::exp(m_log_sigma*2.0)*df*VectorXd::Ones(r.vlen);
+	VectorXd a =
+		eigen_r2 + std::exp(m_log_sigma * 2.0) * df * VectorXd::Ones(r.vlen);
 	VectorXd a2=a.cwiseProduct(a);
 
 	if (!strcmp(param->m_name, "log_df"))
 	{
 		// compute derivative of first derivative of log probability wrt df:
 		// dlp_ddf=df*r.*(a-sigma^2*(df+1))./a2
-		eigen_r=df*eigen_r.cwiseProduct(a-CMath::exp(m_log_sigma*2.0)*(df+1.0)*
-			VectorXd::Ones(r.vlen)).cwiseQuotient(a2);
+		eigen_r = df *
+			      eigen_r
+			          .cwiseProduct(
+			              a -
+			              std::exp(m_log_sigma * 2.0) * (df + 1.0) *
+			                  VectorXd::Ones(r.vlen))
+			          .cwiseQuotient(a2);
 		eigen_r*=(1.0-1.0/df);
 
 		return r;
@@ -505,8 +532,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 	{
 		// compute derivative of first derivative of log probability wrt sigma:
 		// dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
-		eigen_r=-(df+1.0)*2*df*CMath::exp(m_log_sigma*2.0)*
-			eigen_r.cwiseQuotient(a2);
+		eigen_r = -(df + 1.0) * 2 * df * std::exp(m_log_sigma * 2.0) *
+			      eigen_r.cwiseQuotient(a2);
 
 		return r;
 	}
@@ -538,14 +565,15 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 	float64_t df=get_degrees_freedom();
 
 	// compute a=r+sigma^2*df and a3=a.^3
-	VectorXd a=eigen_r2+CMath::exp(m_log_sigma*2.0)*df*VectorXd::Ones(r.vlen);
+	VectorXd a =
+		eigen_r2 + std::exp(m_log_sigma * 2.0) * df * VectorXd::Ones(r.vlen);
 	VectorXd a3=(a.cwiseProduct(a)).cwiseProduct(a);
 
 	if (!strcmp(param->m_name, "log_df"))
 	{
 		// compute derivative of second derivative of log probability wrt df:
 		// d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
-		float64_t sigma2=CMath::exp(m_log_sigma*2.0);
+		float64_t sigma2 = std::exp(m_log_sigma * 2.0);
 
 		eigen_r=df*(eigen_r2.cwiseProduct(eigen_r2-3*sigma2*(1.0+df)*
 			VectorXd::Ones(r.vlen))+(df*CMath::sq(sigma2))*VectorXd::Ones(r.vlen));
@@ -559,8 +587,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 	{
 		// compute derivative of second derivative of log probability wrt sigma:
 		// d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3
-		eigen_r=(df+1.0)*2*df*CMath::exp(m_log_sigma*2.0)*
-			(a-4.0*eigen_r2).cwiseQuotient(a3);
+		eigen_r = (df + 1.0) * 2 * df * std::exp(m_log_sigma * 2.0) *
+			      (a - 4.0 * eigen_r2).cwiseQuotient(a3);
 
 		return r;
 	}
@@ -601,7 +629,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	CStudentsTPDF* g=new CStudentsTPDF();
 
 	g->set_nu(get_degrees_freedom());
-	g->set_sigma(CMath::exp(m_log_sigma));
+	g->set_sigma(std::exp(m_log_sigma));
 
 	// create an object of product of Student's-t pdf and normal pdf
 	CProductFunction* h=new CProductFunction(f, g);
@@ -614,7 +642,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	{
 		// set normal pdf parameters
 		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
+		f->set_sigma(std::sqrt(s2[i]));
 
 		// set Stundent's-t pdf parameters
 		g->set_mu(y[i]);
@@ -631,7 +659,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	SG_UNREF(h);
 
 	for (index_t i=0; i<r.vlen; i++)
-		r[i]=CMath::log(r[i]);
+		r[i] = std::log(r[i]);
 
 	return r;
 }
@@ -652,10 +680,11 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g=new CStudentsTPDF(CMath::exp(m_log_sigma), get_degrees_freedom(), y[i]);
+	CStudentsTPDF* g =
+		new CStudentsTPDF(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
 	CProductFunction* h=new CProductFunction(f, g);
@@ -698,10 +727,11 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g=new CStudentsTPDF(CMath::exp(m_log_sigma), get_degrees_freedom(), y[i]);
+	CStudentsTPDF* g =
+		new CStudentsTPDF(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
 	CProductFunction* h=new CProductFunction(f, g);

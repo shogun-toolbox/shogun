@@ -1,13 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2012 Heiko Strathmann
- * Written (W) 2012 Jacob Walker
- *
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Jacob Walker, Heiko Strathmann, Evgeniy Andreev, 
+ *          Björn Esser, Leon Kuchenbecker
  */
 
 #include <shogun/modelselection/ModelSelectionParameters.h>
@@ -234,6 +229,8 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
+			watch_param(m_node_name, &param_vect, m_vector_length);
+
 			break;
 		}
 		case MSPT_INT32_SGVECTOR:
@@ -260,6 +257,8 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
+			watch_param(m_node_name, &param_vect, m_vector_length);
+
 			break;
 		}
 		case MSPT_FLOAT64:

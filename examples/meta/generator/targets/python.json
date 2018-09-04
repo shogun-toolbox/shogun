@@ -12,8 +12,14 @@
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = $typeName($arguments)",
-        "Copy": "$name = $expr",
+        "Construct": "$name = $typeName($arguments)$kwargs",
+        "Copy": "$name = $expr$kwargs",
+        "KeywordArguments": {
+            "List": "\n$elements",
+            "Element": "$name.put(\"$keyword\", $expr)",
+            "Separator": "\n",
+            "InitialSeperatorWhenArgs>0": false
+        },
         "BoolVector": "$name = np.zeros( ($arguments), dtype='bool')",
         "CharVector": "$name = np.zeros( ($arguments), dtype='|S1')",
         "ByteVector": "$name = np.zeros( ($arguments), dtype='uint8')",
@@ -49,7 +55,9 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
-        "MethodCall": "$object.$method($arguments)",
+        "MethodCall": {
+            "Default": "$object.$method($arguments)"
+        },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",

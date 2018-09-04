@@ -1,15 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando Jose Iglesias Garcia
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Fernando Iglesias, Viktor Gal, 
+ *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Koen van de Sande, 
+ *          Pan Deng, Chiyuan Zhang, Thoralf Klein, Khaled Nasr, 
+ *          Evgeniy Andreev, Michele Mazzoni, Björn Esser, Yuyu Zhang
  */
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
@@ -100,13 +95,13 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Construct SGVector from InputIterator list */
 		template<typename InputIt>
-		SGVector(InputIt begin, InputIt end):
+		SGVector(InputIt beginIt, InputIt endIt):
 			SGReferencedData(true),
-			vlen(std::distance(begin, end)),
+			vlen(std::distance(beginIt, endIt)),
 			gpu_ptr(nullptr)
 		{
 			vector = SG_MALLOC(T, vlen);
-			std::copy(begin, end, vector);
+			std::copy(beginIt, endIt, vector);
 			m_on_gpu.store(false, std::memory_order_release);
 		}
 
@@ -169,6 +164,26 @@ template<class T> class SGVector : public SGReferencedData
 		iterator end() noexcept { return iterator(vector + vlen); }
 
 		SGVector<T>& operator=(const SGVector<T>&);
+
+		/** Check for pointer identity */
+		SG_FORCED_INLINE bool operator==(const SGVector<T>& other) const
+		{
+			if (vlen != other.vlen)
+				return false;
+
+			if (on_gpu())
+			{
+				if (!other.on_gpu())
+					return false;
+				if (gpu_ptr != other.gpu_ptr)
+					return false;
+			}
+
+			if (vector != other.vector)
+				return false;
+
+			return true;
+		}
 
 		/** Cast to pointer */
 		operator T*() { return vector; }
@@ -368,7 +383,7 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return false if any element differs or if sizes are different,
 		 * true otherwise
 		 */
-		bool equals(SGVector<T>& other);
+		bool equals(const SGVector<T>& other) const;
 
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);

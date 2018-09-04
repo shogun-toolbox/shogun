@@ -187,7 +187,7 @@ float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 
 	float64_t cost=obj_prt->m_fun->get_cost();
 
-	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+	if (CMath::is_nan(cost) || std::isinf(cost))
 		return cost;
 
 	//get the gradient wrt variable_new

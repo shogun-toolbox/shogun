@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Roman Votyakov, 
+ *          Sergey Lisitsyn, Wu Lin
  */
 
 #include <shogun/labels/BinaryLabels.h>
@@ -58,7 +55,7 @@ int main(int argc, char** argv)
 	{
 
 		float64_t width=CMath::pow(2.0,k);
-		float64_t log_width=CMath::log(width/2.0)/2.0;
+		float64_t log_width = std::log(width / 2.0) / 2.0;
 
 		/* create parameter to change current kernel width */
 		Parameter* param=new Parameter();

@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Alesis Novik
- * Written (W) 2014 Parijat Mazumdar
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Alesis Novik, Heiko Strathmann, Evgeniy Andreev,
+ *          Viktor Gal, Weijie Lin, Evan Shelhamer, Thoralf Klein
  */
 
 #ifndef _GAUSSIAN_H__
@@ -104,10 +100,9 @@ class CGaussian : public CDistribution
 		 * this distribution is a part
 		 *
 		 * @param alpha_k "belongingness" values of various data points
-		 * @param len length of alpha_k array
 		 * @return sum of values in alpha_k
 		 */
-		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
+		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
 
 		/** compute PDF
 		 *
@@ -116,7 +111,7 @@ class CGaussian : public CDistribution
 		 */
 		virtual float64_t compute_PDF(SGVector<float64_t> point)
 		{
-			return CMath::exp(compute_log_PDF(point));
+			return std::exp(compute_log_PDF(point));
 		}
 
 		/** compute log PDF
@@ -215,6 +210,9 @@ class CGaussian : public CDistribution
 		 * Note that the object is SG_REF'ed
 		 * @return casted CGaussian object
 		 */
+#ifndef SWIG
+		[[deprecated("use .as template function")]]
+#endif
 		static CGaussian* obtain_from_generic(CDistribution* distribution);
 
 		/** @return object name */

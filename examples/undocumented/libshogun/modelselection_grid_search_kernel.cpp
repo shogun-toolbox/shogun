@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Jacob Walker, Soumyajit De, 
+ *          Sergey Lisitsyn, Roman Votyakov, Wu Lin
  */
 
 #include <shogun/base/init.h>
@@ -53,7 +50,7 @@ CModelSelectionParameters* create_param_tree()
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
 			new CModelSelectionParameters("log_width");
-	gaussian_kernel_width->build_values(-CMath::log(2.0), 0.0, R_LINEAR, 1.0);
+	gaussian_kernel_width->build_values(-std::log(2.0), 0.0, R_LINEAR, 1.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
 

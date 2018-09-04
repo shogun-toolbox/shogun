@@ -75,7 +75,10 @@ public:
 	 *
 	 * @return noise standard deviation
 	 */
-	float64_t get_sigma() { return CMath::exp(m_log_sigma); }
+	float64_t get_sigma()
+	{
+		return std::exp(m_log_sigma);
+	}
 
 	/** sets the noise standard deviation
 	 *
@@ -85,7 +88,7 @@ public:
 	{
 		REQUIRE(sigma>0.0, "Standard deviation (%f) must be greater than zero\n",
 			sigma)
-		m_log_sigma=CMath::log(sigma);
+		m_log_sigma = std::log(sigma);
 	}
 
 	/** helper method used to specialize a base class instance

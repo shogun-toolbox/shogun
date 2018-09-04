@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Roman Votyakov, Yuyu Zhang
  */
 
 #ifndef CONTINGENCYTABLEEVALUATION_H_
@@ -165,7 +161,9 @@ public:
 		if (!m_computed)
 				SG_ERROR("Uninitialized, please call evaluate first")
 
-		return (m_TP*m_TN-m_FP*m_FN)/CMath::sqrt((m_TP+m_FP)*(m_TP+m_FN)*(m_TN+m_FP)*(m_TN+m_FN));
+		return (m_TP * m_TN - m_FP * m_FN) / std::sqrt(
+			                                     (m_TP + m_FP) * (m_TP + m_FN) *
+			                                     (m_TN + m_FP) * (m_TN + m_FN));
 	};
 
 	/** recall

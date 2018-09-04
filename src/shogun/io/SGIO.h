@@ -1,13 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2013 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010-2013 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Viktor Gal, Giovanni De Toni, Sergey Lisitsyn,
+ *          Heiko Strathmann, Yuyu Zhang, Shashwat Lal Das, Thoralf Klein,
+ *          Björn Esser, Evangelos Anagnostopoulos, Sanuj Sharma,
+ *          Saurabh Goyal
  */
 
 #ifndef __SGIO_H__
@@ -137,7 +134,6 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_GPL_ONLY { io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_DEPRECATED { io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define SG_DONE() {								\
 	if (SG_UNLIKELY(io->get_show_progress()))	\
@@ -171,7 +167,6 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 
 #define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_SGPL_ONLY { sg_io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
-#define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\

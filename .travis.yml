@@ -10,6 +10,9 @@ notifications:
     on_failure: always
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
+env:
+  global:
+    - INTERFACE_TEST_OPTIONS="-DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_META_CPP=ON"
 matrix:
   fast_finish: true
   include:
@@ -25,64 +28,50 @@ matrix:
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_PYTHON=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_PYTHON=ON ${INTERFACE_TEST_OPTIONS}"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_RUBY=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_RUBY=ON ${INTERFACE_TEST_OPTIONS}"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_JAVA=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_JAVA=ON ${INTERFACE_TEST_OPTIONS}"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_CSHARP=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-        - CC=clang
-        - CXX=clang++
-    - compiler: clang
-      services: docker
-      env:
-        - CMAKE_OPTIONS="-DINTERFACE_LUA=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_CSHARP=ON ${INTERFACE_TEST_OPTIONS}"
         - CC=clang
         - CXX=clang++
     - compiler: gcc
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_OCTAVE=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_OCTAVE=ON ${INTERFACE_TEST_OPTIONS}"
         - INTERFACE_OCTAVE=true
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DINTERFACE_R=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_R=ON ${INTERFACE_TEST_OPTIONS}"
         - CC=clang
         - CXX=clang++
-#    - compiler: clang
-#      services: docker
-#      env:
-#        - CMAKE_OPTIONS="-DScala=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-#        - CC=clang
-#        - CXX=clang++
+  allow_failures:
+    - compiler: gcc
+      services: docker
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DENABLE_CCACHE=OFF"
+        - CODE_COVERAGE=1
 before_install:
-  - docker pull shogun/shogun-dev
-  - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/travis.env.in > travis.env
-  - docker run -t -d -P --env-file travis.env --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - $TRAVIS_BUILD_DIR/scripts/travis_before_install.sh
 before_script:
-  - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
+  - $TRAVIS_BUILD_DIR/scripts/travis_before_script.sh
 script:
-  - |
-    if [ $CC == "gcc" ] && [ -z ${INTERFACE_OCTAVE} ]; then
-      docker exec -t devenv /bin/sh -c "cd /opt/shogun/;  if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./scripts/check_format.sh "$TRAVIS_PULL_REQUEST_BRANCH" "$TRAVIS_BRANCH"; fi"
-    fi
-  - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"
-  - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
-  - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; ctest --output-on-failure -j 2"
+  - $TRAVIS_BUILD_DIR/scripts/travis_script.sh
 after_success:
   - |
     if [ $CODE_COVERAGE ] ; then

@@ -1,19 +1,18 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013-2014 Thoralf Klein
- * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang,
+ *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang,
+ *          Viktor Gal, Björn Esser, Evangelos Anagnostopoulos, Pan Deng
  */
 
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
+#include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -26,6 +25,7 @@
 #include <shogun/lib/tag.h>
 
 #include <utility>
+#include <vector>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -76,38 +76,34 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD4(param, name, description, ms_available) {\
-		m_parameters->add(param, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add(param, name, description);\
-}
+#define SG_ADD4(param, name, description, ms_available)                        \
+	{                                                                          \
+		m_parameters->add(param, name, description);                           \
+		watch_param(                                                           \
+		    name, param,                                                       \
+		    AnyParameterProperties(                                            \
+		        description, ms_available, GRADIENT_NOT_AVAILABLE));           \
+		if (ms_available)                                                      \
+			m_model_selection_parameters->add(param, name, description);       \
+	}
 
-#define SG_ADD5(param, name, description, ms_available, gradient_available) {\
-		m_parameters->add(param, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add(param, name, description);\
-		if (gradient_available)\
-			m_gradient_parameters->add(param, name, description);\
-}
+#define SG_ADD5(param, name, description, ms_available, gradient_available)    \
+	{                                                                          \
+		m_parameters->add(param, name, description);                           \
+		watch_param(                                                           \
+		    name, param, AnyParameterProperties(                               \
+		                     description, ms_available, gradient_available));  \
+		if (ms_available)                                                      \
+			m_model_selection_parameters->add(param, name, description);       \
+		if (gradient_available)                                                \
+			m_gradient_parameters->add(param, name, description);              \
+	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
 
 /*******************************************************************************
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
-
-/** model selection availability */
-enum EModelSelectionAvailability {
-	MS_NOT_AVAILABLE=0,
-	MS_AVAILABLE=1,
-};
-
-/** gradient availability */
-enum EGradientAvailability
-{
-	GRADIENT_NOT_AVAILABLE=0,
-	GRADIENT_AVAILABLE=1
-};
 
 /** @brief Class SGObject is the base class of all shogun objects.
  *
@@ -124,10 +120,13 @@ enum EGradientAvailability
 class CSGObject
 {
 public:
+	/** Definition of observed subject */
 	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	/** Definition of observable */
 	typedef rxcpp::observable<ObservedValue,
 		                      rxcpp::dynamic_observable<ObservedValue>>
 		SGObservable;
+	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
 		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
 		SGSubscriber;
@@ -194,6 +193,14 @@ public:
 	/** set generic type to T
 	 */
 	template<class T> void set_generic();
+
+	/** Returns generic type.
+	 * @return generic type of this object
+	 */
+	EPrimitiveType get_generic() const
+	{
+		return m_generic;
+	}
 
 	/** unset generic type
 	 *
@@ -301,10 +308,7 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name
 	 */
-	bool has(const std::string& name) const
-	{
-		return type_erased_has(BaseTag(name));
-	}
+	bool has(const std::string& name) const;
 
 	/** Checks if object has a class parameter identified by a Tag.
 	 *
@@ -322,13 +326,13 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name and type
 	 */
-	template <typename T, typename U=void>
-	bool has(const std::string& name) const
+	template <typename T, typename U = void>
+	bool has(const std::string& name) const throw(ShogunException)
 	{
 		BaseTag tag(name);
-		if(!type_erased_has(tag))
+		if (!has_parameter(tag))
 			return false;
-		const Any value = type_erased_get(tag);
+		const Any value = get_parameter(tag).get_value();
 		return value.same_type<T>();
 	}
 
@@ -339,36 +343,103 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T>
-	void set(const Tag<T>& _tag, const T& value)
+	void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
 	{
-		if(type_erased_has(_tag))
+		if (has_parameter(_tag))
 		{
-			if(has<T>(_tag.name()))
-				type_erased_set(_tag, erase_type(value));
-			else
+			try
 			{
-				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
-					_tag.name().c_str());
+				any_cast<T>(get_parameter(_tag).get_value());
 			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+					"Cannot set parameter %s::%s of type %s, incompatible "
+					"provided type %s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str());
+			}
+			ref_value(value);
+			update_parameter(_tag, make_any(value));
 		}
 		else
 		{
-			SG_ERROR("\"%s\" does not have a parameter with name \"%s\".\n",
-				get_name(), _tag.name().c_str());
+			SG_ERROR(
+				"Parameter %s::%s does not exist.\n", get_name(),
+				_tag.name().c_str());
 		}
 	}
 
-	/** Setter for a class parameter, identified by a name.
-	 * Throws an exception if the class does not have such a parameter.
+#ifndef SWIG
+	template <typename T>
+	bool put_sgobject_type_dispatcher(const std::string& name, CSGObject* value)
+	{
+		if (dynamic_cast<T*>(value))
+		{
+			put(Tag<T*>(name), (T*)value);
+			return true;
+		}
+		return false;
+	}
+
+	template <typename T>
+	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	{
+		if (has<T*>(name))
+		{
+			T* result = get<T*>(name);
+			SG_REF(result)
+			return (CSGObject*)result;
+		}
+
+		return nullptr;
+	}
+#endif // SWIG
+
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
+	 */
+	void put(const std::string& name, CSGObject* value);
+
+	/** Untyped getter for an object class parameter, identified by a name.
+	 * Will attempt to get specified object of appropriate internal type.
+	 *
+	 * @param name name of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name);
+
+#ifndef SWIG
+	/** Untyped setter for an object class parameter, identified by a name.
+	 * Will attempt to convert passed object to appropriate type.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter, wrapped in smart pointer
+	 */
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
+	void put(const std::string& name, Some<T> value)
+	{
+		put(name, (CSGObject*)(value.get()));
+	}
+#endif // SWIG
+
+	/** Typed setter for a non-object class parameter, identified by a name.
 	 *
 	 * @param name name of the parameter
 	 * @param value value of the parameter along with type information
 	 */
-	template <typename T, typename U=void>
-	void set(const std::string& name, const T& value)
+	template <typename T,
+		      typename T2 = typename std::enable_if<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>::type>
+	void put(const std::string& name, T value)
 	{
-		Tag<T> tag(name);
-		set(tag, value);
+		put(Tag<T>(name), value);
 	}
 
 	/** Getter for a class parameter, identified by a Tag.
@@ -378,20 +449,23 @@ public:
 	 * @return value of the parameter identified by the input tag
 	 */
 	template <typename T>
-	T get(const Tag<T>& _tag) const
+	T get(const Tag<T>& _tag) const throw(ShogunException)
 	{
-		const Any value = type_erased_get(_tag);
+		const Any value = get_parameter(_tag).get_value();
 		try
 		{
-			return recall_type<T>(value);
+			return any_cast<T>(value);
 		}
-		catch (const std::logic_error&)
+		catch (const TypeMismatchException& exc)
 		{
-			SG_ERROR("Type for parameter with name \"%s\" is not correct in \"%s\".\n",
-					_tag.name().c_str(), get_name());
+			SG_ERROR(
+				"Cannot get parameter %s::%s of type %s, incompatible "
+				"requested type %s.\n",
+				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				exc.expected().c_str());
 		}
 		// we won't be there
-		return recall_type<T>(value);
+		return any_cast<T>(value);
 	}
 
 	/** Getter for a class parameter, identified by a name.
@@ -400,13 +474,53 @@ public:
 	 * @param name name of the parameter
 	 * @return value of the parameter corresponding to the input name and type
 	 */
-	template <typename T, typename U=void>
-	T get(const std::string& name) const
+	template <typename T, typename U = void>
+	T get(const std::string& name) const throw(ShogunException)
 	{
 		Tag<T> tag(name);
 		return get(tag);
 	}
 
+	/** Returns string representation of the object that contains
+	 * its name and parameters.
+	 *
+	 */
+	std::string to_string() const;
+
+	/** Returns set of all parameter names of the object.
+	 *
+	 */
+	std::vector<std::string> parameter_names() const;
+
+	/** Specializes a provided object to the specified type.
+	 * Throws exception if the object cannot be specialized.
+	 *
+	 * @param sgo object of CSGObject base type
+	 * @return The requested type
+	 */
+	template<class T> static T* as(CSGObject* sgo)
+	{
+		REQUIRE(sgo, "No object provided!\n");
+		return sgo->as<T>();
+	}
+
+	/** Specializes the object to the specified type.
+	 * Throws exception if the object cannot be specialized.
+	 *
+	 * @return The requested type
+	 */
+	template<class T> T* as()
+	{
+		auto c = dynamic_cast<T*>(this);
+		if (c)
+			return c;
+
+		SG_SERROR(
+			"Object of type %s cannot be converted to type %s.\n",
+			demangled_type<std::remove_pointer_t<decltype(this)>>().c_str(),
+			demangled_type<T>().c_str());
+		return nullptr;
+	}
 #ifndef SWIG
 	/**
 	  * Get parameters observable
@@ -462,7 +576,8 @@ protected:
 	virtual void save_serializable_post() throw (ShogunException);
 
 	/** Registers a class parameter which is identified by a tag.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param _tag name and type information of parameter
@@ -471,11 +586,12 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		type_erased_set(_tag, erase_type(value));
+		create_parameter(_tag, AnyParameter(make_any(value)));
 	}
 
 	/** Registers a class parameter which is identified by a name.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by put() and retrieved by
+	 * get().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param name name of the parameter
@@ -485,7 +601,63 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		type_erased_set(tag, erase_type(value));
+		create_parameter(tag, AnyParameter(make_any(value)));
+	}
+
+	/** Puts a pointer to some parameter into the parameter map.
+	 *
+	 * @param name name of the parameter
+	 * @param value pointer to the parameter value
+	 * @param properties properties of the parameter (e.g. if model selection is supported)
+	 */
+	template <typename T>
+	void watch_param(
+		const std::string& name, T* value,
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+	{
+		BaseTag tag(name);
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+	}
+
+	/** Puts a pointer to some parameter array into the parameter map.
+	 *
+	 * @param name name of the parameter array
+	 * @param value pointer to the first element of the parameter array
+	 * @param len number of elements in the array
+	 * @param properties properties of the parameter (e.g. if model selection is
+	 * supported)
+	 */
+	template <typename T, typename S>
+	void watch_param(
+		const std::string& name, T** value, S* len,
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+	{
+		BaseTag tag(name);
+		create_parameter(
+			tag, AnyParameter(make_any_ref(value, len), properties));
+	}
+
+	/** Puts a pointer to some 2d parameter array (i.e. a matrix) into the
+	 * parameter map.
+	 *
+	 * @param name name of the parameter array
+	 * @param value pointer to the first element of the parameter array
+	 * @param rows number of rows in the array
+	 * @param cols number of columns in the array
+	 * @param properties properties of the parameter (e.g. if model selection is
+	 * supported)
+	 */
+	template <typename T, typename S>
+	void watch_param(
+		const std::string& name, T** value, S* rows, S* cols,
+		AnyParameterProperties properties = AnyParameterProperties(
+		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+	{
+		BaseTag tag(name);
+		create_parameter(
+			tag, AnyParameter(make_any_ref(value, rows, cols), properties));
 	}
 
 public:
@@ -497,19 +669,12 @@ public:
 	 */
 	virtual bool parameter_hash_changed();
 
-	/** Recursively compares the current SGObject to another one. Compares all
-	 * registered numerical parameters, recursion upon complex (SGObject)
-	 * parameters. Does not compare pointers!
-	 *
-	 * May be overwritten but please do with care! Should not be necessary in
-	 * most cases.
+	/** Deep comparison of two objects.
 	 *
 	 * @param other object to compare with
-	 * @param accuracy accuracy to use for comparison (optional)
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return true if all parameters were equal, false if not
+	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(CSGObject* other, float64_t accuracy=0.0, bool tolerant=false);
+	virtual bool equals(const CSGObject* other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
@@ -522,7 +687,18 @@ public:
 	virtual CSGObject* clone();
 
 protected:
-	/* Iteratively clones all parameters of the provided instance into this instance.
+	/** Returns an empty instance of own type.
+	 *
+	 * When inheriting from CSGObject from outside the main source tree (i.e.
+	 * customized classes, or in a unit test), then this method has to be
+	 * overloaded manually to return an empty instance.
+	 * Shogun can only instantiate empty class instances from its source tree.
+	 *
+	 * @return empty instance of own type
+	 */
+	virtual CSGObject* create_empty() const;
+
+	/** Iteratively clones all parameters of the provided instance into this instance.
 	 * This will fail if the objects have different sets of registered parameters,
 	 * or if they have a different type as defined by get_name().
 	 *
@@ -536,6 +712,23 @@ private:
 	void unset_global_objects();
 	void init();
 
+	/** Overloaded helper to increase reference counter */
+	static void ref_value(CSGObject* value)
+	{
+		SG_REF(value);
+	}
+
+	/** Overloaded helper to increase reference counter
+	 * Here a no-op for non CSGobject pointer parameters */
+	template <typename T,
+		      std::enable_if_t<
+		          !std::is_base_of<
+		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		          T>* = nullptr>
+	static void ref_value(T value)
+	{
+	}
+
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.
 	 * See its usage in has() and has<T>().
@@ -543,15 +736,21 @@ private:
 	 * @param _tag name information of parameter
 	 * @return true if the parameter exists with the input tag
 	 */
-	bool type_erased_has(const BaseTag& _tag) const;
+	bool has_parameter(const BaseTag& _tag) const;
 
-	/** Registers and modifies a class parameter, identified by a BaseTag.
-	 * Throws an exception if the class does not have such a parameter.
+	/** Creates a parameter identified by a BaseTag.
 	 *
 	 * @param _tag name information of parameter
-	 * @param any value without type information of the parameter
+	 * @param parameter parameter to be created
 	 */
-	void type_erased_set(const BaseTag& _tag, const Any& any);
+	void create_parameter(const BaseTag& _tag, const AnyParameter& parameter);
+
+	/** Updates a parameter identified by a BaseTag.
+	 *
+	 * @param _tag name information of parameter
+	 * @param value new value of parameter
+	 */
+	void update_parameter(const BaseTag& _tag, const Any& value);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -559,7 +758,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	Any type_erased_get(const BaseTag& _tag) const;
+	AnyParameter get_parameter(const BaseTag& _tag) const;
 
 	/** Gets an incremental hash of all parameters as well as the parameters of
 	 * CSGObject children of the current object's parameters.

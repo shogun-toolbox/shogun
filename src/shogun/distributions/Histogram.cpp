@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Evan Shelhamer, Sergey Lisitsyn
  */
 
 #include <shogun/distributions/Histogram.h>
@@ -133,7 +128,7 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 			free_feature_vector(vector, num_example, free_vec);
 
 		if (num_occurences>0)
-			deriv+=CMath::log((float64_t) num_occurences)-hist[num_param];
+			deriv += std::log((float64_t)num_occurences) - hist[num_param];
 		else
 			deriv=-CMath::INFTY;
 
@@ -162,4 +157,3 @@ SGVector<float64_t> CHistogram::get_histogram()
 {
 	return SGVector<float64_t>(hist,get_num_model_parameters(),false);
 }
-

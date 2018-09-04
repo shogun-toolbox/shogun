@@ -88,7 +88,7 @@ float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
 	const DataManager& data_mgr = get_data_mgr();
 	const index_t Nx = data_mgr.num_samples_at(0);
 	const index_t Ny = data_mgr.num_samples_at(1);
-	return CMath::sqrt(Nx * Ny / float64_t(Nx + Ny)) * statistic;
+	return std::sqrt(Nx * Ny / float64_t(Nx + Ny)) * statistic;
 }
 
 const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
@@ -125,21 +125,23 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq = gaussian_variance(compute_variance());
-			float64_t std_dev = CMath::sqrt(sigma_sq);
-			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
-			break;
-		}
-		case NAM_PERMUTATION:
-		{
-			SG_SERROR("Null approximation via permutation does not make sense "
-					"for linear time MMD. Use the Gaussian approximation instead.\n");
-			break;
-		}
-		default:
-		{
-			result = CHypothesisTest::compute_p_value(statistic);
-			break;
-		}
+		    float64_t std_dev = std::sqrt(sigma_sq);
+		    result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		    break;
+	    }
+	    case NAM_PERMUTATION:
+	    {
+		    SG_SERROR(
+		        "Null approximation via permutation does not make sense "
+		        "for linear time MMD. Use the Gaussian approximation "
+		        "instead.\n");
+		    break;
+	    }
+	    default:
+	    {
+		    result = CHypothesisTest::compute_p_value(statistic);
+		    break;
+	    }
 	}
 	return result;
 }
@@ -152,15 +154,16 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq = gaussian_variance(compute_variance());
-			float64_t std_dev = CMath::sqrt(sigma_sq);
-			result = 1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
-			break;
-		}
-		default:
-		{
-			result = CHypothesisTest::compute_threshold(alpha);
-			break;
-		}
+		    float64_t std_dev = std::sqrt(sigma_sq);
+		    result =
+		        1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		    break;
+	    }
+	    default:
+	    {
+		    result = CHypothesisTest::compute_threshold(alpha);
+		    break;
+	    }
 	}
 	return result;
 }

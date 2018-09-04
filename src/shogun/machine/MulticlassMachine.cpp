@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2011 Soeren Sonnenburg
- * Written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
- * Written (W) 2013 Shell Hu and Heiko Strathmann
- * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
+ * Authors: Sergey Lisitsyn, Chiyuan Zhang, Fernando Iglesias, 
+ *          Soeren Sonnenburg, Heiko Strathmann, Jiaolong Xu, Evgeniy Andreev, 
+ *          Evan Shelhamer, Shell Hu, Thoralf Klein, Viktor Gal
  */
 
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>

@@ -1,15 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2006 Fabio De Bona
- * Written (W) 2006 Konrad Rieck
- * Written (W) 2006-2008 Christian Gehl
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Viktor Gal, Soumyajit De, Thoralf Klein
  */
 
 #ifndef __COMMON_H__
@@ -83,12 +75,6 @@ constexpr size_t CPU_CACHE_LINE_SIZE_BYTES = CPU_CACHE_LINE_SIZE/8;
 #ifdef _WIN32
 #include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
-#endif
-
-#ifdef _MSC_VER
-#define SG_FORCED_INLINE __forceinline
-#else
-#define SG_FORCED_INLINE inline __attribute__((always_inline))
 #endif
 
 #include <shogun/lib/memory.h>

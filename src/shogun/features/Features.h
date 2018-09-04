@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Saurabh Mahindre, Evgeniy Andreev, Wu Lin, Vladislav Horbatiuk,
+ *          Yuyu Zhang, Björn Esser, Soumyajit De
  */
 
 #ifndef _CFEATURES__H__
@@ -339,19 +335,19 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool support_compatible_class() const {return false;}
 
-		/** Given a class in right hand side, does this class support compatible computation? 
+		/** Given a class in right hand side, does this class support compatible computation?
 		 *
 		 * for example, is this->dot(rhs_prt) valid,
-		 * where rhs_prt is the class in right hand side 
+		 * where rhs_prt is the class in right hand side
 		 *
-		 * @param rhs the class in right hand side 
+		 * @param rhs the class in right hand side
 		 * @return whether this class supports compatible computation
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CFeatures* shallow_subset_copy() 
-		{ 
+		virtual CFeatures* shallow_subset_copy()
+		{
 			SG_SNOTIMPLEMENTED;
 			return NULL;
 		}

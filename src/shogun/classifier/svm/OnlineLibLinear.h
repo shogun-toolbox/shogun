@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2007-2010 Soeren Sonnenburg
- * Written (W) 2011 Shashwat Lal Das
- * Modifications (W) 2013 Thoralf Klein
- * Copyright (c) 2007-2009 The LIBLINEAR Project.
- * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Chiyuan Zhang, 
+ *          Thoralf Klein, Shashwat Lal Das, Viktor Gal, Fernando Iglesias, 
+ *          Björn Esser
  */
 
 #ifndef _ONLINELIBLINEAR_H__

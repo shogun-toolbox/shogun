@@ -142,7 +142,7 @@ float64_t CStochasticGBMachine::get_learning_rate() const
 CRegressionLabels* CStochasticGBMachine::apply_regression(CFeatures* data)
 {
 	REQUIRE(data,"test data supplied is NULL\n")
-	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
+	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
 	SGVector<float64_t> retlabs(feats->get_num_vectors());
 	retlabs.fill_vector(retlabs.vector,retlabs.vlen,0);
@@ -173,7 +173,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 	REQUIRE(m_machine,"machine not set!\n")
 	REQUIRE(m_loss,"loss function not specified\n")
 
-	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
+	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
 	// initialize weak learners array and gamma array
 	initialize_learners();

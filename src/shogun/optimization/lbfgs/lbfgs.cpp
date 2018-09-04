@@ -385,196 +385,228 @@ int32_t lbfgs(
     /*
        Make sure that the initial variables are not a minimizer.
      */
-    xnorm = CMath::sqrt(linalg::dot(x_wrap, x_wrap));
-    if (param.orthantwise_c == 0.) {
-        gnorm = CMath::sqrt(linalg::dot(g, g));
-    } else {
-        gnorm = CMath::sqrt(linalg::dot(pg, pg));
-    }
-    if (xnorm < 1.0) xnorm = 1.0;
-    if (gnorm / xnorm <= param.epsilon) {
-        ret = LBFGS_ALREADY_MINIMIZED;
-        goto lbfgs_exit;
-    }
+	xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
+	if (param.orthantwise_c == 0.)
+	{
+		gnorm = std::sqrt(linalg::dot(g, g));
+	}
+	else
+	{
+		gnorm = std::sqrt(linalg::dot(pg, pg));
+	}
+	if (xnorm < 1.0)
+		xnorm = 1.0;
 
-    /* Compute the initial step:
-        step = 1.0 / sqrt(vecdot(d, d, n))
-     */
-    step = 1.0 / CMath::sqrt(linalg::dot(d, d));
+	if (gnorm / xnorm <= param.epsilon)
+	{
+		ret = LBFGS_ALREADY_MINIMIZED;
+		goto lbfgs_exit;
+	}
 
-    k = 1;
-    end = 0;
-    for (;;) {
-        /* Store the current position and gradient vectors. */
-        sg_memcpy(xp.vector, x, n*sizeof(float64_t));
-        sg_memcpy(gp.vector, g.vector, n*sizeof(float64_t));
+	/* Compute the initial step:
+		step = 1.0 / sqrt(vecdot(d, d, n))
+	*/
+	step = 1.0 / std::sqrt(linalg::dot(d, d));
 
-        /* Search for an optimal step. */
-        if (param.orthantwise_c == 0.) {
-            ls = linesearch(n, x, &fx, g, d, &step, xp, gp, w, &cd, &param);
-        } else {
-            ls = linesearch(n, x, &fx, g, d, &step, xp, pg, w, &cd, &param);
-            owlqn_pseudo_gradient(
-                pg.vector, x, g.vector, n,
-                param.orthantwise_c, param.orthantwise_start, param.orthantwise_end
-                );
-        }
-        if (ls < 0) {
-            /* Revert to the previous point. */
-            sg_memcpy(x, xp.vector, n*sizeof(float64_t));
-            sg_memcpy(g.vector, gp.vector, n*sizeof(float64_t));
-            ret = ls;
+	k = 1;
+	end = 0;
+	for (;;)
+	{
+		/* Store the current position and gradient vectors. */
+		sg_memcpy(xp.vector, x, n * sizeof(float64_t));
+		sg_memcpy(gp.vector, g.vector, n * sizeof(float64_t));
 
-            /* Roll back */
-            if (ls==LBFGSERR_INVALID_VALUE)
-                fx = cd.proc_evaluate(cd.instance, x, g.vector, cd.n, step);
+		/* Search for an optimal step. */
+		if (param.orthantwise_c == 0.)
+		{
+			ls = linesearch(n, x, &fx, g, d, &step, xp, gp, w, &cd, &param);
+		}
+		else
+		{
+			ls = linesearch(n, x, &fx, g, d, &step, xp, pg, w, &cd, &param);
+			owlqn_pseudo_gradient(
+				pg.vector, x, g.vector, n, param.orthantwise_c,
+				param.orthantwise_start, param.orthantwise_end);
+		}
+		if (ls < 0)
+		{
+			/* Revert to the previous point. */
+			sg_memcpy(x, xp.vector, n * sizeof(float64_t));
+			sg_memcpy(g.vector, gp.vector, n * sizeof(float64_t));
+			ret = ls;
 
-            goto lbfgs_exit;
-        }
+			/* Roll back */
+			if (ls == LBFGSERR_INVALID_VALUE)
+				fx = cd.proc_evaluate(cd.instance, x, g.vector, cd.n, step);
 
-        /* Compute x and g norms. */
-        xnorm = CMath::sqrt(linalg::dot(x_wrap, x_wrap));
-        if (param.orthantwise_c == 0.) {
-            gnorm = CMath::sqrt(linalg::dot(g, g));
-        } else {
-            gnorm = CMath::sqrt(linalg::dot(pg, pg));
-        }
+			goto lbfgs_exit;
+		}
 
-        /* Report the progress. */
-        if (cd.proc_progress) {
-            if ((ret = cd.proc_progress(cd.instance, x, g, fx, xnorm, gnorm, step, cd.n, k, ls))) {
-                goto lbfgs_exit;
-            }
-        }
+		/* Compute x and g norms. */
+		xnorm = std::sqrt(linalg::dot(x_wrap, x_wrap));
+		if (param.orthantwise_c == 0.)
+		{
+			gnorm = std::sqrt(linalg::dot(g, g));
+		}
+		else
+		{
+			gnorm = std::sqrt(linalg::dot(pg, pg));
+		}
 
-        /*
-            Convergence test.
-            The criterion is given by the following formula:
-                |g(x)| / \max2(1, |x|) < \epsilon
-         */
-        if (xnorm < 1.0) xnorm = 1.0;
-        if (gnorm / xnorm <= param.epsilon) {
-            /* Convergence. */
-            ret = LBFGS_SUCCESS;
-            break;
-        }
+		/* Report the progress. */
+		if (cd.proc_progress)
+		{
+			if ((ret = cd.proc_progress(
+				     cd.instance, x, g, fx, xnorm, gnorm, step, cd.n, k, ls)))
+			{
+				goto lbfgs_exit;
+			}
+		}
 
-        /*
-            Test for stopping criterion.
-            The criterion is given by the following formula:
-                (f(past_x) - f(x)) / f(x) < \delta
-         */
-        if (pf != NULL) {
-            /* We don't test the stopping criterion while k < past. */
-            if (param.past <= k) {
-                /* Compute the relative improvement from the past. */
-                rate = (pf[k % param.past] - fx) / fx;
+		/*
+			Convergence test.
+			The criterion is given by the following formula:
+			|g(x)| / \max2(1, |x|) < \epsilon
+		 */
+		if (xnorm < 1.0)
+			xnorm = 1.0;
+		if (gnorm / xnorm <= param.epsilon)
+		{
+			/* Convergence. */
+			ret = LBFGS_SUCCESS;
+			break;
+		}
 
-                /* The stopping criterion. */
-                if (rate < param.delta) {
-                    ret = LBFGS_STOP;
-                    break;
-                }
-            }
+		/*
+			Test for stopping criterion.
+			The criterion is given by the following formula:
+			(f(past_x) - f(x)) / f(x) < \delta
+		 */
+		if (pf != NULL)
+		{
+			/* We don't test the stopping criterion while k < past. */
+			if (param.past <= k)
+			{
+				/* Compute the relative improvement from the past. */
+				rate = (pf[k % param.past] - fx) / fx;
 
-            /* Store the current value of the objective function. */
-            pf[k % param.past] = fx;
-        }
+				/* The stopping criterion. */
+				if (rate < param.delta)
+				{
+					ret = LBFGS_STOP;
+					break;
+				}
+			}
 
-        if (param.max_iterations != 0 && param.max_iterations < k+1) {
-            /* Maximum number of iterations. */
-            ret = LBFGSERR_MAXIMUMITERATION;
-            break;
-        }
+			/* Store the current value of the objective function. */
+			pf[k % param.past] = fx;
+		}
 
-        /*
-            Update vectors s and y:
-                s_{k+1} = x_{k+1} - x_{k} = \step * d_{k}.
-                y_{k+1} = g_{k+1} - g_{k}.
-         */
-        it = std::next(lm.begin(), end);
-        linalg::add(x_wrap, xp, it->s, 1.0, -1.0);
-        linalg::add(g, gp, it->y, 1.0, -1.0);
+		if (param.max_iterations != 0 && param.max_iterations < k + 1)
+		{
+			/* Maximum number of iterations. */
+			ret = LBFGSERR_MAXIMUMITERATION;
+			break;
+		}
 
-        /*
-            Compute scalars ys and yy:
-                ys = y^t \cdot s = 1 / \rho.
-                yy = y^t \cdot y.
-            Notice that yy is used for scaling the hessian matrix H_0 (Cholesky factor).
-         */
-        ys = linalg::dot(it->y, it->s);
-        yy = linalg::dot(it->y, it->y);
-        it->ys = ys;
+		/*
+			Update vectors s and y:
+			s_{k+1} = x_{k+1} - x_{k} = \step * d_{k}.
+			y_{k+1} = g_{k+1} - g_{k}.
+		 */
+		it = std::next(lm.begin(), end);
+		linalg::add(x_wrap, xp, it->s, 1.0, -1.0);
+		linalg::add(g, gp, it->y, 1.0, -1.0);
 
-        /*
-            Recursive formula to compute dir = -(H \cdot g).
-                This is described in page 779 of:
-                Jorge Nocedal.
-                Updating Quasi-Newton Matrices with Limited Storage.
-                Mathematics of Computation, Vol. 35, No. 151,
-                pp. 773--782, 1980.
-         */
-        bound = (m <= k) ? m : k;
-        ++k;
-        end = (end + 1) % m;
+		/*
+			Compute scalars ys and yy:
+			ys = y^t \cdot s = 1 / \rho.
+			yy = y^t \cdot y.
+			Notice that yy is used for scaling the hessian matrix H_0 (Cholesky
+			factor).
+		 */
+		ys = linalg::dot(it->y, it->s);
+		yy = linalg::dot(it->y, it->y);
+		it->ys = ys;
 
-        /* Compute the steepest direction. */
-        if (param.orthantwise_c == 0.) {
-            /* Compute the negative of gradients. */
-            sg_memcpy(d.vector, g.vector, n*sizeof(float64_t));
-            linalg::scale(d, d, -1.0);
-        } else {
-            sg_memcpy(d.vector, pg.vector, n*sizeof(float64_t));
-            linalg::scale(d, d, -1.0);
-        }
+		/*
+			Recursive formula to compute dir = -(H \cdot g).
+			This is described in page 779 of:
+			Jorge Nocedal.
+			Updating Quasi-Newton Matrices with Limited Storage.
+			Mathematics of Computation, Vol. 35, No. 151,
+			pp. 773--782, 1980.
+		 */
+		bound = (m <= k) ? m : k;
+		++k;
+		end = (end + 1) % m;
 
-        j = end;
-        for (i = 0;i < bound;++i) {
-            j = (j + m - 1) % m;    /* if (--j == -1) j = m-1; */
-            it = std::next(lm.begin(), j);
-            /* \alpha_{j} = \rho_{j} s^{t}_{j} \cdot q_{k+1}. */
-            it->alpha = linalg::dot(it->s, d) / it->ys;
-            /* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
-            linalg::add(d, it->y, d, 1.0, -(it->alpha));
-        }
+		/* Compute the steepest direction. */
+		if (param.orthantwise_c == 0.)
+		{
+			/* Compute the negative of gradients. */
+			sg_memcpy(d.vector, g.vector, n * sizeof(float64_t));
+			linalg::scale(d, d, -1.0);
+		}
+		else
+		{
+			sg_memcpy(d.vector, pg.vector, n * sizeof(float64_t));
+			linalg::scale(d, d, -1.0);
+		}
 
-        linalg::scale(d, d, ys/yy);
-        for (i = 0;i < bound;++i) {
-            it = std::next(lm.begin(), j);
-            /* \beta_{j} = \rho_{j} y^t_{j} \cdot \gamma_{i}. */
-            beta = linalg::dot(it->y, d) / it->ys;
-            /* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
-            linalg::add(d, it->s, d, 1.0, it->alpha-beta);
-            j = (j + 1) % m;        /* if (++j == m) j = 0; */
-        }
+		j = end;
+		for (i = 0; i < bound; ++i)
+		{
+			j = (j + m - 1) % m; /* if (--j == -1) j = m-1; */
+			it = std::next(lm.begin(), j);
+			/* \alpha_{j} = \rho_{j} s^{t}_{j} \cdot q_{k+1}. */
+			it->alpha = linalg::dot(it->s, d) / it->ys;
+			/* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
+			linalg::add(d, it->y, d, 1.0, -(it->alpha));
+		}
 
-        /*
-            Constrain the search direction for orthant-wise updates.
-         */
-        if (param.orthantwise_c != 0.) {
-            for (i = param.orthantwise_start;i < param.orthantwise_end;++i) {
-                if (d[i] * pg[i] >= 0) {
-                    d[i] = 0;
-                }
-            }
-        }
+		linalg::scale(d, d, ys / yy);
+		for (i = 0; i < bound; ++i)
+		{
+			it = std::next(lm.begin(), j);
+			/* \beta_{j} = \rho_{j} y^t_{j} \cdot \gamma_{i}. */
+			beta = linalg::dot(it->y, d) / it->ys;
+			/* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
+			linalg::add(d, it->s, d, 1.0, it->alpha - beta);
+			j = (j + 1) % m; /* if (++j == m) j = 0; */
+		}
 
-        /*
-            Now the search direction d is ready. We try step = 1 first.
-         */
-        step = 1.0;
-    }
+		/*
+			Constrain the search direction for orthant-wise updates.
+		 */
+		if (param.orthantwise_c != 0.)
+		{
+			for (i = param.orthantwise_start; i < param.orthantwise_end; ++i)
+			{
+				if (d[i] * pg[i] >= 0)
+				{
+					d[i] = 0;
+				}
+			}
+		}
+
+		/*
+			Now the search direction d is ready. We try step = 1 first.
+		 */
+		step = 1.0;
+	}
 
 lbfgs_exit:
-    /* Return the final value of the objective function. */
-    if (ptr_fx != NULL) {
-        *ptr_fx = fx;
-    }
+	/* Return the final value of the objective function. */
+	if (ptr_fx != NULL)
+	{
+		*ptr_fx = fx;
+	}
 
-    /* Free memory blocks used by this function. */
-    lm.clear();
+	/* Free memory blocks used by this function. */
+	lm.clear();
 
-    return ret;
+	return ret;
 }
 
 
@@ -623,7 +655,7 @@ static int32_t line_search_backtracking(
 
         for(index_t j=0; j<n; j++)
         {
-            if (CMath::is_nan(s[j]) || CMath::is_infinity(s[j]))
+            if (CMath::is_nan(s[j]) || std::isinf(s[j]))
                 return LBFGSERR_INVALID_VALUE;
         }
 
@@ -636,7 +668,7 @@ static int32_t line_search_backtracking(
             /* Evaluate the function and gradient values. */
             *f = cd->proc_evaluate(cd->instance, x, g.vector, cd->n, *stp);
             ++count;
-            if (CMath::is_nan(*f) || CMath::is_infinity(*f))
+            if (CMath::is_nan(*f) || std::isinf(*f))
                 *stp*=decay;
             else
                 break;

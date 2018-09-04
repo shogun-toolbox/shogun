@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011-2016 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
- *
- * Most cdf routines are wrappers for CDFLIB, part of the public domain NETLIB.
- * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
+ * Authors: Heiko Strathmann, Soumyajit De, Soeren Sonnenburg, Roman Votyakov, 
+ *          Fernando Iglesias, Sanuj Sharma, Sergey Lisitsyn, Wu Lin, 
+ *          Evgeniy Andreev, Björn Esser, Saurabh Goyal
  */
 
 #ifndef __STATISTICS_H_
@@ -300,7 +295,33 @@ public:
 		float64_t b;
 	};
 
-	/** Converts a given vector of scores to calibrated probabilities by fitting a
+	/** Converts a given vector of scores to calibrated probabilities by fitting
+	 * a
+	 * sigmoid function using the method described in
+	 * Lin, H., Lin, C., and Weng, R. (2007).
+	 * A note on Platt's probabilistic outputs for support vector machines.
+	 *
+	 * This can be used to transform scores to probabilities as setting
+	 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and computing
+	 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
+	 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise
+	 *
+	 * @param scores uncalibrated scores
+	 * @param labels ground truth labels
+	 * @param maxiter maximum number of iterations
+	 * @param minstep minimum step taken in line search
+	 * @param sigma set to a value greater than zero to ensure that Hessian
+	 * matrix is positive semi-definite
+	 * @param eps stopping criteria
+	 * @return struct containing the sigmoid's shape parameters a and b
+	 */
+	static SigmoidParamters fit_sigmoid(
+		SGVector<float64_t> scores, SGVector<float64_t> labels,
+		index_t maxiter = 100, float64_t minstep = 1E-10,
+		float64_t sigma = 1E-12, float64_t eps = 1E-5);
+
+	/** Converts a given vector of scores to calibrated probabilities by fitting
+	 * a
 	 * sigmoid function using the method described in
 	 * Lin, H., Lin, C., and Weng, R. (2007).
 	 * A note on Platt's probabilistic outputs for support vector machines.

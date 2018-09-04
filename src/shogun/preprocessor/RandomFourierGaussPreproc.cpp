@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010-2011 Alexander Binder
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010-2011 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal, 
+ *          Sergey Lisitsyn, Björn Esser, Sanuj Sharma, Saurabh Goyal
  */
 
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
@@ -92,7 +88,14 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", MS_AVAILABLE);
 
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		watch_param(
+		    "randomcoeff_additive", &randomcoeff_additive,
+		    &cur_dim_feature_space);
+
 		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		watch_param(
+		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
+		    &cur_dim_feature_space, &cur_dim_input_space);
 	}
 
 }
@@ -121,7 +124,14 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", MS_AVAILABLE);
 
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		watch_param(
+		    "randomcoeff_additive", &randomcoeff_additive,
+		    &cur_dim_feature_space);
+
 		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		watch_param(
+		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
+		    &cur_dim_feature_space, &cur_dim_input_space);
 	}
 
 	copy(feats);
@@ -246,8 +256,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 				s=x1*x1+x2*x2;
 			}
 
-			// =  x1/CMath::sqrt(val)* CMath::sqrt(-2*CMath::log(val));
-			randomcoeff_multiplicative[i*cur_dim_input_space+k] =  x1*CMath::sqrt(-2*CMath::log(s)/s )/kernelwidth;
+			// =  x1/std::sqrt(val)* std::sqrt(-2*std::log(val));
+			randomcoeff_multiplicative[i * cur_dim_input_space + k] =
+			    x1 * std::sqrt(-2 * std::log(s) / s) / kernelwidth;
 		}
 	}
 
@@ -357,7 +368,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
 	}
 
-	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+	float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
 	SGVector<float64_t> res(cur_dim_feature_space);
 
 	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
@@ -390,7 +401,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 	{
 		SGMatrix<float64_t> res(cur_dim_feature_space,num_vectors);
 
-		float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+		float64_t val = std::sqrt(2.0 / cur_dim_feature_space);
 
 		for (int32_t vec = 0; vec < num_vectors; vec++)
 		{

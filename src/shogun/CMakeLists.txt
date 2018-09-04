@@ -46,13 +46,13 @@ IF (LICENSE_GPL_SHOGUN)
 
             SET(USE_GPL_SHOGUN 1)
         ELSE()
-            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download or disable.\n")
+            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download or disable with LICENSE_GPL_SHOGUN=OFF.\n")
         ENDIF()
 ENDIF()
 
 OPTION(USE_SVMLIGHT "SVMLight" ON)
 IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
-	MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included")
+    MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
 ENDIF()
 
 # add target to compile the libshogun sources
@@ -69,8 +69,7 @@ ADD_CUSTOM_TARGET(
       -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
       -D DST=${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h
       -D ROOT_DIR=${CMAKE_SOURCE_DIR}
-      -D PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-      -P ${CMAKE_MODULE_PATH}/version.cmake
+      -P ${CMAKE_SOURCE_DIR}/cmake/version.cmake
     COMMENT "Generating version header"
 )
 add_dependencies(libshogun version)
@@ -458,9 +457,11 @@ IF (CTAGS_FOUND)
     SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
     ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
         COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
-        # functions, classes, macroses, enumerations, enumerators, typedefs
-        --c++-kinds=fcdgetp
+        # classes, enums, functions
+        --c++-kinds=cfgp
         --fields=+im
+        --exclude=*.cpp
+        --languages=c++
         -R ${CMAKE_SOURCE_DIR})
 
     ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})

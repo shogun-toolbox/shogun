@@ -1,12 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
+ *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin, 
+ *          Fernando Iglesias, Thoralf Klein
  */
 
 #include <shogun/base/progress.h>
@@ -636,7 +633,7 @@ void CKernelMachine::init()
 	use_linadd=true;
 	use_bias=true;
 
-	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD(&kernel, "kernel", "", MS_AVAILABLE);
 	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",

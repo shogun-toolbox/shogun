@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2009 Alexander Binder
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Sergey Lisitsyn
  */
 
 #include <shogun/kernel/PyramidChi2.h>
@@ -229,8 +225,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			}
 		}
 	}
-	result= CMath::exp(-result/width);
-
+	result = std::exp(-result / width);
 
 	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -1,14 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2010 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Evgeniy Andreev, Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal,
+ *          Thoralf Klein, Björn Esser, Soumyajit De
  */
 
 #ifndef _SPARSEFEATURES__H__
@@ -76,6 +71,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** copy constructor */
 		CSparseFeatures(const CSparseFeatures & orig);
+
+		/** copy constructor from DenseFeatures */
+		CSparseFeatures(CDenseFeatures<ST>* dense);
 
 		/** constructor loading features from file
 		 *
@@ -253,14 +251,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return if applying was successful
 		 */
 		virtual bool apply_preprocessor(bool force_preprocessing=false);
-
-		/** obtain sparse features from simple features
-		 *
-		 * subset on input is ignored, subset of this instance is removed
-		 *
-		 * @param sf simple features
-		 */
-		void obtain_from_simple(CDenseFeatures<ST>* sf);
 
 		/** get number of feature vectors, possibly of subset
 		 *

@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Viktor Gal
- * Copyright (C) 2013 Viktor Gal
+ * Authors: Viktor Gal, Saurabh Mahindre, Heiko Strathmann, Thoralf Klein, 
+ *          Olivier NGuyen, Björn Esser, Weijie Lin
  */
 
 #include <shogun/ensemble/CombinationRule.h>
@@ -396,6 +393,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		default:
 			SG_ERROR("Unsupported label type\n");
 	}
+	SG_REF(predicted);
 
 	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
 	float64_t res = eval->evaluate(predicted, m_labels);

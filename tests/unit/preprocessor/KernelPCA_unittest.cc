@@ -41,10 +41,15 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	CDenseFeatures<float64_t>* test_feats =
 	    new CDenseFeatures<float64_t>(test_matrix);
 
+	SG_REF(train_feats)
+	SG_REF(test_feats)
+
 	CGaussianKernel* kernel = new CGaussianKernel();
+	SG_REF(kernel)
 	kernel->set_width(1);
 
 	CKernelPCA* kpca = new CKernelPCA(kernel);
+	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
 	kpca->init(train_feats);
 
@@ -54,7 +59,10 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
 		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
-	SG_FREE(kpca);
+	SG_UNREF(train_feats)
+	SG_UNREF(test_feats)
+	SG_UNREF(kpca);
+	SG_UNREF(kernel);
 }
 
 TEST(KernelPCA, apply_to_feature_vector)
@@ -65,11 +73,14 @@ TEST(KernelPCA, apply_to_feature_vector)
 
 	CDenseFeatures<float64_t>* train_feats =
 	    new CDenseFeatures<float64_t>(train_matrix);
+	SG_REF(train_feats)
 
 	CGaussianKernel* kernel = new CGaussianKernel();
+	SG_REF(kernel)
 	kernel->set_width(1);
 
 	CKernelPCA* kpca = new CKernelPCA(kernel);
+	SG_REF(kpca)
 	kpca->set_target_dim(target_dim);
 	kpca->init(train_feats);
 
@@ -79,5 +90,7 @@ TEST(KernelPCA, apply_to_feature_vector)
 	for (index_t i = 0; i < target_dim; ++i)
 		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
-	SG_FREE(kpca);
+	SG_UNREF(train_feats)
+	SG_UNREF(kpca);
+	SG_UNREF(kernel);
 }

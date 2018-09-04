@@ -1,16 +1,13 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Sergey Lisitsyn, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ *          Fernando Iglesias, Soeren Sonnenburg, Jiaolong Xu
  */
 #ifndef _LABEL_TYPES__H__
 #define _LABEL_TYPES__H__
 
 #include <shogun/lib/config.h>
-
 
 enum ELabelType
 {
@@ -20,11 +17,14 @@ enum ELabelType
 	LT_MULTICLASS = 1,
 	/// real valued labels (e.g. for regression, classifier outputs)
 	LT_REGRESSION = 3,
-	/// structured labels (e.g. sequences, trees) used in Structured Output problems
+	/// structured labels (e.g. sequences, trees) used in Structured Output
+	/// problems
 	LT_STRUCTURED = 4,
 	/// latent latent labels
 	LT_LATENT = 5,
 	/// sparse label class for multilabel classification (sets of labels)
 	LT_SPARSE_MULTILABEL = 6,
+	/// generic dense labels type
+	LT_DENSE_GENERIC = 7
 };
 #endif

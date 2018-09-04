@@ -115,7 +115,84 @@
 %include "Boost.i"
 
 %include "ParameterObserver.i"
+%include "factory.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
 #endif
+
+%pragma(java) moduleimports=%{
+import org.jblas.*;
+%}
+
+namespace shogun
+{
+%extend CSGObject
+{
+	template <typename T, typename U= typename std::enable_if_t<std::is_arithmetic<T>::value>>
+	void put_scalar_dispatcher(const std::string& name, T value)
+	{
+		Tag<T> tag_t(name);
+		Tag<int32_t> tag_int32(name);
+		Tag<int64_t> tag_int64(name);
+		Tag<float64_t> tag_float64(name);
+
+		if ($self->has(tag_int32))
+			$self->put(tag_int32, (int32_t)value);
+		else if ($self->has(tag_int64))
+			$self->put(tag_int64, (int64_t)value);
+		else if ($self->has(tag_float64))
+			$self->put(tag_float64, (float64_t)value);
+		else
+			$self->put(tag_t, value);
+	}
+	
+#ifdef SWIGJAVA
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
+	void put_vector_or_matrix_dispatcher(const std::string& name, T value)
+	{
+		Tag<SGVector<X>> tag_vec(name);
+		Tag<T> tag_mat(name);
+	
+		if ((value.num_rows==1 || value.num_cols==1) && $self->has(tag_vec))
+		{
+			SGVector<X> vec(value.data(), value.size(), false);
+			$self->put(tag_vec, vec);
+		}
+		else
+			$self->put(tag_mat, value);
+	}
+	
+	template <typename T, typename X = typename std::enable_if_t<std::is_same<SGMatrix<typename extract_value_type<T>::value_type>, T>::value> >
+	T get_vector_as_matrix_dispatcher(const std::string& name)
+	{
+		SGVector<X> vec = $self->get<SGVector<X>>(name);
+		T mat(vec.data(), 1, vec.vlen, false);
+		return mat;
+	}
+#endif // SWIGJAVA
+}
+
+%template(put) CSGObject::put_scalar_dispatcher<int32_t, int32_t>;
+#ifndef SWIGJAVA
+%template(put) CSGObject::put_scalar_dispatcher<int64_t, int64_t>;
+#endif // SWIGJAVA
+%template(put) CSGObject::put_scalar_dispatcher<float64_t, float64_t>;
+
+
+#ifndef SWIGJAVA
+%template(put) CSGObject::put<SGVector<float64_t>, SGVector<float64_t>>;
+%template(put) CSGObject::put<SGMatrix<float64_t>, SGMatrix<float64_t>>;
+#else // SWIGJAVA
+%template(put) CSGObject::put_vector_or_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+#endif // SWIGJAVA
+
+%template(get_real) CSGObject::get<float64_t, void>;
+%template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
+#ifndef SWIGJAVA
+%template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
+#else // SWIGJAVA
+%template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
+#endif // SWIGJAVA
+
+} // namespace shogun

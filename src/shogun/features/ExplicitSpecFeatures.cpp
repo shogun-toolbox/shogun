@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, Viktor Gal, 
+ *          Evan Shelhamer, Evangelos Anagnostopoulos, Sanuj Sharma
  */
 
 #include <shogun/features/ExplicitSpecFeatures.h>
@@ -130,7 +127,7 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 			for (int32_t j=0; j<spec_size; j++)
 				n+=CMath::sq(k_spectrum[i][j]);
 
-			n=CMath::sqrt(n);
+			n = std::sqrt(n);
 
 			for (int32_t j=0; j<spec_size; j++)
 				k_spectrum[i][j]/=n;

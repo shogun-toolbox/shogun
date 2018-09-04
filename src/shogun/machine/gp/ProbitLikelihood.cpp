@@ -130,14 +130,15 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 		if (v<CStatistics::ERFC_CASE2)
 		{
 			//dlp( id2) = abs(den./num) * sqrt(2/pi); % strictly positive first derivative
-			eigen_dlp[j]=CMath::sqrt(2.0/CMath::PI)
-				/CMath::abs(CStatistics::erfc8_weighted_sum(v));
+			eigen_dlp[j] = std::sqrt(2.0 / CMath::PI) /
+			               CMath::abs(CStatistics::erfc8_weighted_sum(v));
 		}
 		else
 		{
 			//dlp(~id2) = exp(-z(~id2).*z(~id2)/2-lp(~id2))/sqrt(2*pi); % safe computation
-			eigen_dlp[j]=CMath::exp(-v*v/2.0-CStatistics::lnormal_cdf(v))
-				/CMath::sqrt(2.0*CMath::PI);
+			eigen_dlp[j] =
+			    std::exp(-v * v / 2.0 - CStatistics::lnormal_cdf(v)) /
+			    std::sqrt(2.0 * CMath::PI);
 		}
 	}
 
@@ -224,16 +225,18 @@ float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
-	float64_t z=y[i]*mu[i]/CMath::sqrt(1.0+s2[i]);
+	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 
 	// compute ncdf=normal_cdf(z)
 	float64_t ncdf=CStatistics::normal_cdf(z);
 
 	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
-	float64_t npdf=(1.0/CMath::sqrt(2.0*CMath::PI))*CMath::exp(-0.5*CMath::sq(z));
+	float64_t npdf =
+	    (1.0 / std::sqrt(2.0 * CMath::PI)) * std::exp(-0.5 * CMath::sq(z));
 
 	// compute the 1st moment: E[x] = mu + (y*s2*N(z))/(Phi(z)*sqrt(1+s2))
-	float64_t Ex=mu[i]+(npdf/ncdf)*(y[i]*s2[i])/CMath::sqrt(1.0+s2[i]);
+	float64_t Ex =
+	    mu[i] + (npdf / ncdf) * (y[i] * s2[i]) / std::sqrt(1.0 + s2[i]);
 
 	return Ex;
 }
@@ -253,13 +256,14 @@ float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 
-	float64_t z=y[i]*mu[i]/CMath::sqrt(1.0+s2[i]);
+	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 
 	// compute ncdf=normal_cdf(z)
 	float64_t ncdf=CStatistics::normal_cdf(z);
 
 	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
-	float64_t npdf=(1.0/CMath::sqrt(2.0*CMath::PI))*CMath::exp(-0.5*CMath::sq(z));
+	float64_t npdf =
+	    (1.0 / std::sqrt(2.0 * CMath::PI)) * std::exp(-0.5 * CMath::sq(z));
 
 	SGVector<float64_t> r(y.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);

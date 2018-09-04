@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ *          Chinmay Kousik, Leon Kuchenbecker
  */
 
 #include <shogun/evaluation/ROCEvaluation.h>
@@ -19,15 +16,24 @@ CROCEvaluation::~CROCEvaluation()
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	return evaluate_roc(predicted,ground_truth);
+	REQUIRE(predicted, "No predicted labels provided.\n");
+	REQUIRE(ground_truth, "No ground truth labels provided.\n");
+	REQUIRE(
+	    predicted->get_label_type() == LT_BINARY,
+	    "Given predicted labels (%d) must be binary (%d).\n",
+	    predicted->get_label_type(), LT_BINARY);
+	REQUIRE(
+	    ground_truth->get_label_type() == LT_BINARY,
+	    "Given ground truth labels (%d) must be binary (%d).\n",
+	    ground_truth->get_label_type(), LT_BINARY);
+
+	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 }
 
-float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth)
+float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
-	ASSERT(predicted->get_label_type()==LT_BINARY)
-	ASSERT(ground_truth->get_label_type()==LT_BINARY)
 	ground_truth->ensure_valid();
 
 	// assume threshold as negative infinity
@@ -76,7 +82,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
 	{
-		if (ground_truth->get_value(i) >= 0)
+		if (ground_truth->get_label(i) >= 0)
 			pos_count++;
 		else
 			neg_count++;
@@ -106,7 +112,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 
 		m_thresholds[i]=threshold;
 
-		if (ground_truth->get_value(idxs[i]) > 0)
+		if (ground_truth->get_label(idxs[i]) > 0)
 			tp+=1.0;
 		else
 			fp+=1.0;

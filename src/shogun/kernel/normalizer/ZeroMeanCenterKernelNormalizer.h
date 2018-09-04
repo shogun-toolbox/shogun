@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Gorden Jemwa
- * Copyright (C) 2010 University of Stellenbosch
+ * Authors: Soeren Sonnenburg, Yuyu Zhang
  */
 
 #ifndef _ZEROMEANCENTERKERNELNORMALIZER_H___
@@ -51,8 +47,11 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		{
 			m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
 					"num_ktrain", "Train row means.");
+			watch_param("num_ktrain", &ktrain_row_means, &num_ktrain);
+
 			m_parameters->add_vector(&ktest_row_means, &num_ktest,
 					"num_ktest","Test row means.");
+			watch_param("num_ktest", &ktest_row_means, &num_ktest);
 		}
 
 		/** default destructor */

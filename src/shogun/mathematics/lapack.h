@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2006-2007 Mikio L. Braun
- * Written (W) 2008 Jochen Garcke
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Soumyajit De,
+ *          Evan Shelhamer, Björn Esser
  */
 
 #ifndef _LAPACK_H__
@@ -25,13 +19,7 @@ extern "C" {
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
 #elif defined(HAVE_MVEC)
-//FIXME: Accelerate framework's vForce.h forward declares
-// std::complex<> classes that causes major errors
-// in c++11 mode and Eigen3
-// this define basically disables the include of vForce.h
-#ifdef HAVE_CXX11
 #define __VFORCE_H 1
-#endif
 #if !(defined(EIGEN_USE_LAPACKE) || defined(EIGEN_USE_LAPACKE_STRICT))
 #include <Accelerate/Accelerate.h>
 #else

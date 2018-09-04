@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Giovanni De Toni, Sergey Lisitsyn, Viktor Gal
  */
 
 #include <shogun/base/Parallel.h>
@@ -583,7 +579,7 @@ void CHashedWDFeaturesTransposed::set_normalization_const(float64_t n)
 		for (int32_t i=0; i<degree; i++)
 			normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
-		normalization_const=CMath::sqrt(normalization_const);
+		normalization_const = std::sqrt(normalization_const);
 	}
 	else
 		normalization_const=n;

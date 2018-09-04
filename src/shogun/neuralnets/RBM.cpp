@@ -35,6 +35,7 @@
 
 
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -136,7 +137,8 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 		buffer = SGMatrix<float64_t>(m_num_hidden, m_batch_size);
 
 	int32_t counter = 0;
-	for (int32_t i=0; i<max_num_epochs; i++)
+
+	for (auto i : progress(range(0, max_num_epochs)))
 	{
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{
@@ -296,7 +298,7 @@ float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t >
 	float64_t wv_term = 0;
 	for (int32_t i=0; i<m_num_hidden; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			wv_term += CMath::log(1.0+CMath::exp(wv_buffer(i,j)));
+			wv_term += std::log(1.0 + std::exp(wv_buffer(i, j)));
 
 	float64_t F = -1.0*(bv_term+wv_term)/m_batch_size;
 
@@ -444,7 +446,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	for (int32_t j=0; j<m_batch_size; j++)
 		visible(indices[j],j) = 1.0-visible(indices[j],j);
 
-	return m_num_visible*CMath::log(1.0/(1+CMath::exp(f1-f2)));
+	return m_num_visible * std::log(1.0 / (1 + std::exp(f1 - f2)));
 }
 
 void CRBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > result)
@@ -462,7 +464,7 @@ void CRBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > resu
 
 	int32_t len = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<len; i++)
-		result[i] = 1.0/(1.0+CMath::exp(-1.0*result[i]));
+		result[i] = 1.0 / (1.0 + std::exp(-1.0 * result[i]));
 }
 
 void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > result)
@@ -486,7 +488,8 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 		{
 			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
 				for (int32_t j=0; j<m_batch_size; j++)
-					result(i+offset,j) = 1.0/(1.0+CMath::exp(-1.0*result(i+offset,j)));
+					result(i + offset, j) =
+					    1.0 / (1.0 + std::exp(-1.0 * result(i + offset, j)));
 		}
 		if (m_visible_group_types->element(k)==RBMVUT_SOFTMAX)
 		{
@@ -504,13 +507,13 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 			{
 				float64_t sum = 0;
 				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
-					sum += CMath::exp(result(i+offset,j)-max);
+					sum += std::exp(result(i + offset, j) - max);
 
-				float64_t normalizer = CMath::log(sum);
+				float64_t normalizer = std::log(sum);
 
 				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
-					result(i+offset,j) =
-						CMath::exp(result(i+offset,j)-max-normalizer);
+					result(i + offset, j) =
+					    std::exp(result(i + offset, j) - max - normalizer);
 			}
 		}
 	}
@@ -662,4 +665,3 @@ void CRBM::init()
 	       "Number of Parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_params, "params", "Parameters", MS_NOT_AVAILABLE);
 }
-

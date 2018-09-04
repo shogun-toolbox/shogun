@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev, 
+ *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Björn Esser
  */
 
 #include <shogun/base/init.h>
@@ -47,6 +44,13 @@ namespace shogun
 	CRandom* sg_rand=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
+
+	// Two global variables to over-ride CMath::fequals for certain
+	// serialization
+	// unit tests to pass. These should be removed if possible and serialization
+	// formats should be fixed.
+	float64_t sg_fequals_epsilon = 0.0;
+	bool sg_fequals_tolerant = 0.0;
 
 	/// function called to print normal messages
 	std::function<void(FILE*, const char*)> sg_print_message(nullptr);
@@ -145,6 +149,26 @@ namespace shogun
 	{
 		SG_REF(sg_io);
 		return sg_io;
+	}
+
+	float64_t get_global_fequals_epsilon()
+	{
+		return sg_fequals_epsilon;
+	}
+
+	void set_global_fequals_epsilon(float64_t fequals_epsilon)
+	{
+		sg_fequals_epsilon = fequals_epsilon;
+	}
+
+	void set_global_fequals_tolerant(bool fequals_tolerant)
+	{
+		sg_fequals_tolerant = fequals_tolerant;
+	}
+
+	bool get_global_fequals_tolerant()
+	{
+		return sg_fequals_tolerant;
 	}
 
 	void set_global_parallel(Parallel* parallel)

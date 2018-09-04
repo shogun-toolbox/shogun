@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Pan Deng, Björn Esser, 
+ *          Sanuj Sharma
  */
 
 #include <algorithm>
@@ -146,7 +143,8 @@ void CShareBoost::compute_rho()
 		{ // j loop samples
 			int32_t label = lab->get_int_label(j);
 
-			m_rho(i,j) = CMath::exp((label == i) - m_pred(j, label) + m_pred(j, i));
+			m_rho(i, j) =
+			    std::exp((label == i) - m_pred(j, label) + m_pred(j, i));
 		}
 	}
 

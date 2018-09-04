@@ -47,13 +47,13 @@ CInference::CInference()
 
 float64_t CInference::get_scale() const
 {
-	return CMath::exp(m_log_scale);
+	return std::exp(m_log_scale);
 }
 
 void CInference::set_scale(float64_t scale)
 {
 	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
-	m_log_scale=CMath::log(scale);
+	m_log_scale = std::log(scale);
 }
 
 SGMatrix<float64_t> CInference::get_multiclass_E()
@@ -154,7 +154,7 @@ float64_t CInference::get_marginal_likelihood_estimate(
 	sg_memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
 			sizeof(float64_t)*m_ktrtr.num_rows*m_ktrtr.num_cols);
 	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
-		scaled_kernel.matrix[i]*=CMath::exp(m_log_scale*2.0);
+		scaled_kernel.matrix[i] *= std::exp(m_log_scale * 2.0);
 
 	/* add ridge */
 	for (index_t i=0; i<m_ktrtr.num_rows; ++i)

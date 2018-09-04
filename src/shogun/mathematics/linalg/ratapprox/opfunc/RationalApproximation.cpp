@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
- * Written (W) 2013 Heiko Strathmann
+ * Authors: Soumyajit De, Heiko Strathmann, Sunil Mahendrakar, Björn Esser
  */
 
 #include <shogun/lib/config.h>
@@ -19,7 +15,6 @@
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {
@@ -33,13 +28,9 @@ CRationalApproximation::CRationalApproximation()
 }
 
 CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
-	float64_t desired_accuracy,
-	EOperatorFunction function_type)
-	: COperatorFunction<float64_t>(linear_operator, computation_engine,
-	  function_type)
+	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+	float64_t desired_accuracy, EOperatorFunction function_type)
+	: COperatorFunction<float64_t>(linear_operator, function_type)
 {
 	init();
 
@@ -136,11 +127,12 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
 	float64_t min_eig=m_eigen_solver->get_min_eigenvalue();
 
-	float64_t log_cond_number=CMath::log(max_eig)-CMath::log(min_eig);
+	float64_t log_cond_number = std::log(max_eig) - std::log(min_eig);
 	float64_t two_pi_sq=2.0*M_PI*M_PI;
 
-	int32_t num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
-			*CMath::log(m_desired_accuracy)/two_pi_sq);
+	int32_t num_shifts = static_cast<index_t>(
+		-1.5 * (log_cond_number + 6.0) * std::log(m_desired_accuracy) /
+		two_pi_sq);
 
 	return num_shifts;
 }
@@ -163,7 +155,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// k=$\frac{(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}-1}
 	// {(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}+1}$
 	float64_t k=(m_div-1)/(m_div+1);
-	float64_t L=-CMath::log(k)/PI;
+	float64_t L = -std::log(k) / PI;
 
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
@@ -208,7 +200,7 @@ void CRationalApproximation::compute_shifts_weights_const()
 			m_weights[i]=dzdt;
 			break;
 		case OF_LOG:
-			m_weights[i]=2.0*CMath::log(w)*dzdt/w;
+			m_weights[i] = 2.0 * std::log(w) * dzdt / w;
 			break;
 		case OF_POLY:
 			SG_NOTIMPLEMENTED

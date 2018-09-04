@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Berlin Institute of Technology
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, 
+ *          Sergey Lisitsyn
  */
 
 #include <shogun/lib/common.h>
@@ -184,8 +181,12 @@ void CSNPStringKernel::register_params()
 	SG_ADD(&m_win_len, "m_win_len", "the window length", MS_AVAILABLE);
 	SG_ADD(&m_inhomogene, "m_inhomogene",
 	  "the mark of whether it's an inhomogeneous poly kernel", MS_NOT_AVAILABLE);
+
 	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
+	watch_param("m_str_min", &m_str_min, &m_str_len);
+
 	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");
+	watch_param("m_str_maj", &m_str_maj, &m_str_len);
 }
 
 void CSNPStringKernel::init()

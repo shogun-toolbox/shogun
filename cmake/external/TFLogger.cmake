@@ -1,5 +1,3 @@
-GetCompilers()
-
 include(ExternalProject)
 ExternalProject_Add(
         rxcpp
@@ -8,8 +6,8 @@ ExternalProject_Add(
         URL https://github.com/shogun-toolbox/tflogger/archive/master.zip
         CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_BINARY_DIR}/src/shogun/lib/external
-        -DCMAKE_C_COMPILER:STRING=${C_COMPILER}
-        -DCMAKE_CXX_COMPILER:STRING=${CXX_COMPILER}
+        -DCMAKE_C_COMPILER:STRING=${CMAKE_C_COMPILER}
+        -DCMAKE_CXX_COMPILER:STRING=${CMAKE_CXX_COMPILER}
         BUILD_COMMAND ""
         )
 

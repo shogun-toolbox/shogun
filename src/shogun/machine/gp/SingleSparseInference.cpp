@@ -233,7 +233,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 	SGVector<float64_t> result(1);
 
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
-	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
+	result[0] *= std::exp(m_log_scale * 2.0) * 2.0;
 	return result;
 }
 
@@ -273,7 +273,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_kernel(
 				deriv_tru.num_cols);
 
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
-		result[i]*=CMath::exp(m_log_scale*2.0);
+		result[i] *= std::exp(m_log_scale * 2.0);
 	}
 	SG_UNREF(inducing_features);
 	return result;

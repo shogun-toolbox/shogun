@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Evangelos Anagnostopoulos
- * Copyright (C) 2013 Evangelos Anagnostopoulos
+ * Authors: Evangelos Anagnostopoulos, Sergey Lisitsyn, Björn Esser
  */
 
 #include <shogun/converter/HashedDocConverter.h>
@@ -173,7 +169,7 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	/** Normalizing vector */
 	if (should_normalize)
 	{
-		float64_t norm_const = CMath::sqrt((float64_t) document.size());
+		float64_t norm_const = std::sqrt((float64_t)document.size());
 		for (index_t i=0; i<sparse_doc_rep.num_feat_entries; i++)
 			sparse_doc_rep.features[i].entry /= norm_const;
 	}

@@ -1,12 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias,
+ *          Wu Lin, Sergey Lisitsyn, Sanuj Sharma, Josh Klontz,
+ *          Shashwat Lal Das, Philippe Tillet, Evan Shelhamer, Saurabh Goyal
  */
 #include <shogun/lib/config.h>
 
@@ -66,7 +63,7 @@ CMath::CMath()
     init_log_table();
 #else
 	int32_t i=0;
-	while ((float64_t)log(1+((float64_t)exp(-float64_t(i)))))
+	while ((float64_t)std::log(1 + ((float64_t)std::exp(-float64_t(i)))))
 		i++;
 
 	LOGRANGE=i;
@@ -88,27 +85,34 @@ int32_t CMath::determine_logrange()
     float64_t acc=0;
     for (i=0; i<50; i++)
 	{
-		acc=((float64_t)log(1+((float64_t)exp(-float64_t(i)))));
+		acc = ((float64_t)log(1 + ((float64_t)std::exp(-float64_t(i)))));
 		if (acc<=(float64_t)LOG_TABLE_PRECISION)
 			break;
 	}
 
-    SG_SINFO("determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc)
-    return i;
+	SG_SINFO(
+	    "determined range for x in table log(1+std::exp(-x)) is:%d "
+	    "(error:%G)\n",
+	    i, acc)
+	return i;
 }
 
 int32_t CMath::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
-    SG_SINFO("determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range)
-    return range;
+	SG_SINFO(
+	    "determined accuracy for x in table log(1+std::exp(-x)) is:%d "
+	    "(error:%G)\n",
+	    range, 1.0 / (double)range)
+	return range;
 }
 
 //init log table of form log(1+exp(x))
 void CMath::init_log_table()
 {
   for (int32_t i=0; i< LOGACCURACY*LOGRANGE; i++)
-    logtable[i]=log(1+exp(float64_t(-i)/float64_t(LOGACCURACY)));
+	  logtable[i] =
+		  std::log(1 + std::exp(float64_t(-i) / float64_t(LOGACCURACY)));
 }
 #endif
 
@@ -210,11 +214,6 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 int CMath::is_nan(double f)
 {
   return std::isnan(f);
-}
-
-int CMath::is_infinity(double f)
-{
-  return std::isinf(f);
 }
 
 int CMath::is_finite(double f)
@@ -331,7 +330,8 @@ float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance
 	float64_t abs_tolerance = rel_tolerance;
 	if (abs(true_value)>0.0)
 	{
-		if (log(abs(true_value)) + log(rel_tolerance) < log(F_MIN_VAL64))
+		if (std::log(abs(true_value)) + std::log(rel_tolerance) <
+		    std::log(F_MIN_VAL64))
 			abs_tolerance = F_MIN_VAL64;
 		else
 			abs_tolerance = abs(true_value * rel_tolerance);

@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Viktor Gal
- * Copyright (C) 2013 Viktor Gal
+ * Authors: Viktor Gal, Björn Esser, Thoralf Klein, Heiko Strathmann,
+ *          Soeren Sonnenburg
  */
 #ifdef _WIN32
 #define _CRT_RAND_S
@@ -312,15 +309,15 @@ float64_t CRandom::sample_tail() const
 	float64_t m_R_reciprocal = 1.0 / m_R;
 	do
 	{
-	    x = -CMath::log(random_half_open()) * m_R_reciprocal;
-	    y = -CMath::log(random_half_open());
+		x = -std::log(random_half_open()) * m_R_reciprocal;
+		y = -std::log(random_half_open());
 	} while(y+y < x*x);
 	return m_R + x;
 }
 
 float64_t CRandom::GaussianPdfDenorm(float64_t x) const
 {
-	return CMath::exp(-(x*x * 0.5));
+	return std::exp(-(x * x * 0.5));
 }
 
 float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
@@ -330,7 +327,7 @@ float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
     // y=0 so it doesn't matter. Remember that a Gaussian effectively has a tail going
     // off into x == infinity, hence asking what is x when y=0 is an invalid question
     // in the context of this class.
-    return CMath::sqrt(-2.0 * CMath::log(y));
+	return std::sqrt(-2.0 * std::log(y));
 }
 
 void CRandom::reinit(uint32_t seed)

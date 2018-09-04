@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Viktor Gal
- * Copyright (C) 2008 Chun-Nam Yu
+ * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu, 
+ *          Thoralf Klein, Björn Esser, Sanuj Sharma
  */
 
 #include <shogun/structure/CCSOSVM.h>
@@ -385,7 +382,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
 		}
 
-		z_k_norm = CMath::sqrt(linalg::dot(m_w, m_w));
+		z_k_norm = std::sqrt(linalg::dot(m_w, m_w));
 		m_w.vec1_plus_scalar_times_vec2(m_w.vector, rho/(1+rho), w_b.vector, w_b.vlen);
 
 		/* detect if step size too small */

@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn
  */
 
 #include <shogun/structure/TwoStateModel.h>
@@ -274,14 +270,18 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	{
 		SGVector< int32_t > lab(exm_len);
 		lab.zero();
-		rnb = num_blocks[0] + CMath::ceil((num_blocks[1]-num_blocks[0])*
-			CMath::random(0.0, 1.0)) - 1;
+		rnb = num_blocks[0] +
+		      std::ceil(
+		          (num_blocks[1] - num_blocks[0]) * CMath::random(0.0, 1.0)) -
+		      1;
 
 		for ( int32_t j = 0 ; j < rnb ; ++j )
 		{
-			rl = block_len[0] + CMath::ceil((block_len[1]-block_len[0])*
-				CMath::random(0.0, 1.0)) - 1;
-			rp = CMath::ceil((exm_len-rl)*CMath::random(0.0, 1.0));
+			rl = block_len[0] +
+			     std::ceil(
+			         (block_len[1] - block_len[0]) * CMath::random(0.0, 1.0)) -
+			     1;
+			rp = std::ceil((exm_len - rl) * CMath::random(0.0, 1.0));
 
 			for ( int32_t idx = rp-1 ; idx < rp+rl ; ++idx )
 			{

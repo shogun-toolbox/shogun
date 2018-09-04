@@ -1,19 +1,16 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Heiko Strathmann, Saurabh Mahindre, Sergey Lisitsyn,
+ *          Soeren Sonnenburg, Fernando Iglesias, Evgeniy Andreev,
+ *          Chiyuan Zhang, Olivier NGuyen, Thoralf Klein
  */
 
-#include <shogun/labels/DenseLabels.h>
+#include <shogun/base/range.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -132,8 +129,9 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 	for (index_t i = 0; i < m_current_values.vlen; ++i)
 	{
 		float64_t fApB = m_current_values[i] * a + b;
-		m_current_values[i] = fApB >= 0 ? CMath::exp(-fApB) / (1.0 + CMath::exp(-fApB)) :
-		                      1.0 / (1 + CMath::exp(fApB));
+		m_current_values[i] = fApB >= 0
+		                          ? std::exp(-fApB) / (1.0 + std::exp(-fApB))
+		                          : 1.0 / (1 + std::exp(fApB));
 	}
 
 	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
@@ -152,3 +150,38 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+CBinaryLabels::CBinaryLabels(const CDenseLabels& dense) : CDenseLabels(dense)
+{
+	ensure_valid();
+}
+
+namespace shogun
+{
+	Some<CBinaryLabels> binary_labels(CLabels* orig)
+	{
+		REQUIRE(orig, "No labels provided.\n");
+		try
+		{
+			switch (orig->get_label_type())
+			{
+			case LT_BINARY:
+				return Some<CBinaryLabels>::from_raw(orig->as<CBinaryLabels>());
+			case LT_DENSE_GENERIC:
+			{
+				return some<CBinaryLabels>(*(orig->as<CDenseLabels>()));
+			}
+			default:
+				SG_SNOTIMPLEMENTED
+			}
+		}
+		catch (const ShogunException& e)
+		{
+			SG_SERROR(
+			    "Cannot convert %s to binary labels: %s\n", orig->get_name(),
+			    e.what());
+		}
+
+		return Some<CBinaryLabels>::from_raw(nullptr);
+	}
+} // namespace shogun

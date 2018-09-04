@@ -9,4 +9,8 @@
 #include <shogun/clustering/GMM.h>
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
+#include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
+#include <shogun/distributions/kernel_exp_family/KernelExpFamilyLite.h>
+#include <shogun/distributions/kernel_exp_family/KernelExpFamilySum.h>
 %}

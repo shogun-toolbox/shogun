@@ -19,9 +19,23 @@ IF (LAPACK_FOUND)
         NAMES lapacke
         PATHS /usr/lib /usr/local/lib $ENV{LAPACKE_PATH})
       if (LAPACKE_LIBRARY)
-        MESSAGE(STATUS "Enabling Accelerate.framework as LAPACK backend for Eigen.")
-        SET(EIGEN_USE_LAPACKE_STRICT 1)
-        LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
+        # no comes some magic as on osx el capitalismo and sierra leone
+        # versions things are working in some magic way (vecLib that is)
+        # see #4136
+        include(CheckCXXSourceCompiles)
+        CHECK_CXX_SOURCE_COMPILES(
+          "#include <vecLib/cblas.h>
+          int main(void){
+              return 0;
+          }" VECLIB_INCLUDE_WORKS)
+
+        if (VECLIB_INCLUDE_WORKS)
+          MESSAGE(STATUS "Enabling Accelerate.framework as LAPACK backend for Eigen.")
+          SET(EIGEN_USE_LAPACKE_STRICT 1)
+          LIST(APPEND LAPACK_LIBRARIES ${LAPACKE_LIBRARY})
+        else()
+          MESSAGE(STATUS "Could not include <vecLib/cblas.h> hence not enabling LAPACK as an Eigen backend")
+        endif()
       endif()
     endif()
   ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_.*")
@@ -91,6 +105,22 @@ IF (LAPACK_FOUND)
       ENDIF()
     ENDIF()
 
+    IF(FOUND_CBLAS_DGEMV AND NOT HAVE_ATLAS)
+      #check is detected BLAS/LAPACK is OpenBLAS by looking for an OpenBLAS specific function
+      check_library_exists("${LAPACK_LIBRARIES}" openblas_set_num_threads "" OpenBLAS_FOUND)
+      IF(OpenBLAS_FOUND)
+        #check if cblas.h exists
+        FIND_PATH(CBLAS_INCLUDE_DIR cblas.h)
+          IF(NOT CBLAS_INCLUDE_DIR)
+	    MESSAGE(STATUS "Make sure that cblas.h header is available within the header search path in order to use OpenBLAS as BLAS/Lapack backend")
+	    UNSET(LAPACK_FOUND CACHE)
+	    UNSET(LAPACK_LIBRARIES)
+	    UNSET(HAVE_LAPACK)
+          ELSE()
+            MESSAGE("Found OPENBLAS using as BLAS/LAPACK backend.")
+          ENDIF()
+      ENDIF()
+    ENDIF()
     # if LaPack is detected and Eigen is 3.3 or later
     # use the lapack/blas backend in Eigen
     IF(${EIGEN_VERSION} VERSION_GREATER 3.3.0 AND ENABLE_EIGEN_LAPACK AND HAVE_LAPACK)

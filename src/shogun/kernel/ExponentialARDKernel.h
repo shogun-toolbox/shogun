@@ -1,13 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * (W) 2015 Wu Lin
- * (W) 2012 Jacob Walker
- *
- * Adapted from WeightedDegreeRBFKernel.h
+ * Authors: Wu Lin, Pan Deng
  */
 
 #ifndef EXPONENTIALARDKERNEL_H
@@ -147,7 +141,7 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 	{
-		return CMath::exp(-distance(idx_a,idx_b));
+		return std::exp(-distance(idx_a, idx_b));
 	}
 
 public:

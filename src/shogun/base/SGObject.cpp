@@ -1,13 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2008-2009 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013-2014 Thoralf Klein
- * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein,
+ *          Giovanni De Toni, Jacob Walker, Fernando Iglesias, Roman Votyakov,
+ *          Soumyajit De, Evgeniy Andreev, Evangelos Anagnostopoulos,
+ *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
 #include <shogun/lib/config.h>
@@ -20,23 +17,33 @@
 #include <shogun/base/Version.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 #include <shogun/base/class_list.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <typeinfo>
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
 
+#include <algorithm>
 #include <unordered_map>
+#include <memory>
+
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/labels/Labels.h>
 
 namespace shogun
 {
-	typedef std::map<BaseTag, Any> ParametersMap;
+
+	typedef std::map<BaseTag, AnyParameter> ParametersMap;
 	typedef std::unordered_map<std::string,
 	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
@@ -44,15 +51,30 @@ namespace shogun
 	class CSGObject::Self
 	{
 	public:
-		void set(const BaseTag& tag, const Any& any)
+		void create(const BaseTag& tag, const AnyParameter& parameter)
 		{
-			map[tag] = any;
+			if (has(tag))
+			{
+				SG_SERROR("Can not register %s twice", tag.name().c_str())
+			}
+			map[tag] = parameter;
 		}
 
-		Any get(const BaseTag& tag) const
+		void update(const BaseTag& tag, const Any& value)
+		{
+			if (!has(tag))
+			{
+				SG_SERROR(
+				    "Can not update unregistered parameter %s",
+				    tag.name().c_str())
+			}
+			map.at(tag).set_value(value);
+		}
+
+		AnyParameter get(const BaseTag& tag) const
 		{
 			if(!has(tag))
-				return Any();
+				return AnyParameter();
 			return map.at(tag);
 		}
 
@@ -356,8 +378,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::save_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+				   "%s\n", prefix, get_name(), e.what());
 		return false;
 	}
 
@@ -379,8 +400,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::save_serializable_post(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+				   "%s\n", prefix, get_name(), e.what());
 		return false;
 	}
 
@@ -413,8 +433,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::load_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+				   "%s\n", prefix, get_name(), e.what());
 		return false;
 	}
 	if (!m_load_pre_called)
@@ -435,8 +454,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
-		            "%s\n", prefix, get_name(),
-		            e.get_exception_string());
+		            "%s\n", prefix, get_name(), e.what());
 		return false;
 	}
 
@@ -653,95 +671,18 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
-{
-	SG_DEBUG("entering %s::equals()\n", get_name());
-
-	if (other==this)
-	{
-		SG_DEBUG("leaving %s::equals(): other object is me\n", get_name());
-		return true;
-	}
-
-	if (!other)
-	{
-		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
-		return false;
-	}
-
-	SG_DEBUG("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
-
-	/* a crude type check based on the get_name */
-	if (strcmp(other->get_name(), get_name()))
-	{
-		SG_INFO("leaving %s::equals(): name of other object differs\n", get_name());
-		return false;
-	}
-
-	/* should not be necessary but just ot be sure that type has not changed.
-	 * Will assume that parameters are in same order with same name from here */
-	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
-	{
-		SG_INFO("leaving %s::equals(): number of parameters of other object "
-				"differs\n", get_name());
-		return false;
-	}
-
-	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
-	{
-		SG_DEBUG("comparing parameter %d\n", i);
-
-		TParameter* this_param=m_parameters->get_parameter(i);
-		TParameter* other_param=other->m_parameters->get_parameter(i);
-
-		/* some checks to make sure parameters have same order and names and
-		 * are not NULL. Should never be the case but check anyway. */
-		if (!this_param && !other_param)
-			continue;
-
-		if (!this_param && other_param)
-		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is NULL where other's "
-					"parameter \"%s\" is not\n", get_name(), other_param->m_name);
-			return false;
-		}
-
-		if (this_param && !other_param)
-		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is \"%s\" where other's "
-						"parameter is NULL\n", get_name(), this_param->m_name);
-			return false;
-		}
-
-		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
-				this_param->m_name, other_param->m_name);
-
-		/* use equals method of TParameter from here */
-		if (!this_param->equals(other_param, accuracy, tolerant))
-		{
-			SG_INFO("leaving %s::equals(): parameters at position %d with name"
-					" \"%s\" differs from other object parameter with name "
-					"\"%s\"\n",
-					get_name(), i, this_param->m_name, other_param->m_name);
-			return false;
-		}
-	}
-
-	SG_DEBUG("leaving %s::equals(): object are equal\n", get_name());
-	return true;
-}
-
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	CSGObject* copy = create(get_name(), this->m_generic);
+	CSGObject* copy = create_empty();
 
-	SG_REF(copy);
-
-	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
-			"this usually is that get_name() of the class returns something "
-			"wrong, or that a class has a wrongly set generic type.\n",
-			get_name());
+	REQUIRE(
+	    copy, "Could not create empty instance of %s. The reason for "
+	          "this usually is that get_name() of the class returns something "
+	          "wrong, that a class has a wrongly set generic type, or that it "
+	          "lies outside the main source tree and does not have "
+	          "CSGObject::create_empty() overridden.\n",
+	    get_name());
 
 	SG_DEBUG("Cloning all parameters of %s\n", get_name());
 	if (!copy->clone_parameters(this))
@@ -787,23 +728,30 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::type_erased_set(const BaseTag& _tag, const Any& any)
+void CSGObject::create_parameter(
+    const BaseTag& _tag, const AnyParameter& parameter)
 {
-	self->set(_tag, any);
+	self->create(_tag, parameter);
 }
 
-Any CSGObject::type_erased_get(const BaseTag& _tag) const
+void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	Any any = self->get(_tag);
-	if(any.empty())
+	self->update(_tag, value);
+}
+
+AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
+{
+	const auto& parameter = self->get(_tag);
+	if (parameter.get_value().empty())
 	{
-		SG_ERROR("There is no parameter called \"%s\" in %s",
-			_tag.name().c_str(), get_name());
+		SG_ERROR(
+		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+		    get_name());
 	}
-	return any;
+	return parameter;
 }
 
-bool CSGObject::type_erased_has(const BaseTag& _tag) const
+bool CSGObject::has_parameter(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
@@ -886,4 +834,254 @@ void CSGObject::list_observable_parameters()
 		    param_obs_list->type_name(x.second.first).c_str(),
 		    x.second.second.c_str());
 	}
+}
+
+bool CSGObject::has(const std::string& name) const
+{
+	return has_parameter(BaseTag(name));
+}
+
+class ToStringVisitor : public AnyVisitor
+{
+public:
+	ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
+	{
+	}
+
+	virtual void on(const bool* v)
+	{
+		stream() << (*v ? "true" : "false");
+	}
+	virtual void on(const int32_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(const int64_t* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(const float* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(const double* v)
+	{
+		stream() << *v;
+	}
+	virtual void on(const CSGObject** v)
+	{
+		if (*v)
+		{
+			stream() << (*v)->get_name() << "(...)";
+		}
+		else
+		{
+			stream() << "null";
+		}
+	}
+	virtual void on(const SGVector<int>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(const SGVector<float>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(const SGVector<double>* v)
+	{
+		to_string(v);
+	}
+	virtual void on(const SGMatrix<int>* mat)
+	{
+		to_string(mat);
+	}
+	virtual void on(const SGMatrix<float>* mat)
+	{
+		to_string(mat);
+	}
+	virtual void on(const SGMatrix<double>* mat)
+	{
+		to_string(mat);
+	}
+
+private:
+	std::stringstream& stream()
+	{
+		return *m_stream;
+	}
+
+	template <class T>
+	void to_string(const SGMatrix<T>* m)
+	{
+		if (m)
+		{
+			stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
+			         << "," << m->num_cols << "): [";
+			for (auto col : range(m->num_cols))
+			{
+				stream() << "[";
+				for (auto row : range(m->num_rows))
+				{
+					stream() << (*m)(row, col);
+					if (row < m->num_rows - 1)
+						stream() << ",";
+				}
+				stream() << "]";
+				if (col < m->num_cols)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
+	}
+
+	template <class T>
+	void to_string(const SGVector<T>* v)
+	{
+		if (v)
+		{
+			stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
+			         << "): [";
+			for (auto i : range(v->vlen))
+			{
+				stream() << (*v)[i];
+				if (i < v->vlen - 1)
+					stream() << ",";
+			}
+			stream() << "]";
+		}
+	}
+
+private:
+	std::stringstream* m_stream;
+};
+
+std::string CSGObject::to_string() const
+{
+	std::stringstream ss;
+	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
+	ss << get_name();
+	ss << "(";
+	for (auto it = self->map.begin(); it != self->map.end(); ++it)
+	{
+		ss << it->first.name() << "=";
+		it->second.get_value().visit(visitor.get());
+		if (std::next(it) != (self->map.end()))
+		{
+			ss << ",";
+		}
+	}
+	ss << ")";
+	return ss.str();
+}
+
+std::vector<std::string> CSGObject::parameter_names() const
+{
+	std::vector<std::string> result;
+	std::transform(self->map.cbegin(), self->map.cend(), std::back_inserter(result),
+		// FIXME: const auto& each fails on gcc 4.8.4
+		[](const std::pair<BaseTag, AnyParameter>& each) -> std::string { return each.first.name(); });
+	return result;
+}
+
+bool CSGObject::equals(const CSGObject* other) const
+{
+	if (other == this)
+		return true;
+
+	if (other == nullptr)
+	{
+		SG_DEBUG("No object to compare to provided.\n");
+		return false;
+	}
+
+	/* Assumption: can use SGObject::get_name to distinguish types */
+	if (strcmp(this->get_name(), other->get_name()))
+	{
+		SG_DEBUG(
+		    "Own type %s differs from provided %s.\n", get_name(),
+		    other->get_name());
+		return false;
+	}
+
+	/* Assumption: objects of same type have same set of tags. */
+	for (const auto it : self->map)
+	{
+		auto tag = it.first;
+		auto own = it.second;
+		auto given = other->get_parameter(tag);
+
+		SG_SDEBUG(
+		    "Comparing parameter %s::%s of type %s.\n", this->get_name(),
+		    tag.name().c_str(), own.get_value().type().c_str());
+		if (own != given)
+		{
+			if (io->get_loglevel() <= MSG_DEBUG)
+			{
+				std::stringstream ss;
+				std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
+
+				ss << "Own parameter " << this->get_name() << "::" << tag.name()
+				   << "=";
+				own.get_value().visit(visitor.get());
+
+				ss << " different from provided " << other->get_name()
+				   << "::" << tag.name() << "=";
+				given.get_value().visit(visitor.get());
+
+				SG_SDEBUG("%s\n", ss.str().c_str());
+			}
+
+			return false;
+		}
+	}
+
+	SG_SDEBUG("All parameters of %s equal.\n", this->get_name());
+	return true;
+}
+
+CSGObject* CSGObject::create_empty() const
+{
+	CSGObject* object = create(this->get_name(), this->m_generic);
+	SG_REF(object);
+	return object;
+}
+
+void CSGObject::put(const std::string& name, CSGObject* value)
+{
+	REQUIRE(
+	    value, "Cannot put %s::%s, no object provided.\n", get_name(),
+	    name.c_str());
+
+	if (put_sgobject_type_dispatcher<CKernel>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CDistance>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CFeatures>(name, value))
+		return;
+	if (put_sgobject_type_dispatcher<CLabels>(name, value))
+		return;
+
+	SG_ERROR(
+	    "Cannot put object %s as parameter %s::%s of type %s, type does not "
+	    "match.\n",
+	    value->get_name(), get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+}
+
+CSGObject* CSGObject::get(const std::string& name)
+{
+	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CKernel>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CFeatures>(name))
+		return result;
+	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
+		return result;
+
+	SG_ERROR(
+	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
+	    get_name(), name.c_str(),
+	    self->map[BaseTag(name)].get_value().type().c_str());
+	return nullptr;
 }

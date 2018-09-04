@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Thoralf Klein, 
+ *          Björn Esser
  */
 
 #include <string.h>
@@ -18,6 +14,33 @@
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
+
+namespace shogun
+{
+	std::string ptype_name(EPrimitiveType pt)
+	{
+		switch (pt)
+		{
+		case PT_BOOL:
+			return "BOOL";
+		case PT_CHAR:
+			return "CHAR";
+		case PT_INT32:
+			return "INT32";
+		case PT_INT64:
+			return "INT64";
+		case PT_FLOAT32:
+			return "FLOAT32";
+		case PT_FLOAT64:
+			return "FLOAT64";
+		case PT_SGOBJECT:
+			return "SGOBJECT";
+		default:
+			SG_SNOTIMPLEMENTED
+			return "UNKNOWN";
+		}
+	}
+}
 
 TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype)

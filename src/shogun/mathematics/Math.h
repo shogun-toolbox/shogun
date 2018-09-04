@@ -1,20 +1,11 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Thoralf Klein
- * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando Jose Iglesias Garcia
- * Written (W) 2011 Siddharth Kherada
- * Written (W) 2011 Justin Patera
- * Written (W) 2011 Alesis Novik
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2007 Konrad Rieck
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Fernando Iglesias,
+ *          Sergey Lisitsyn, Sanuj Sharma, Soumyajit De, Shashwat Lal Das,
+ *          Thoralf Klein, Wu Lin, Chiyuan Zhang, Harshit Syal, Evan Shelhamer,
+ *          Philippe Tillet, Björn Esser, Yuyu Zhang, Abhinav Agarwalla,
+ *          Saurabh Goyal
  */
 
 #ifndef __MATHEMATICS_H_
@@ -178,7 +169,7 @@ class CMath : public CSGObject
 		{
 			float64_t a_real=a.real();
 			float64_t a_imag=a.imag();
-			return (CMath::sqrt(a_real*a_real+a_imag*a_imag));
+			return (std::sqrt(a_real * a_real + a_imag * a_imag));
 		}
 		//@}
 
@@ -301,32 +292,38 @@ class CMath : public CSGObject
 		 * @param a first value to compare
 		 * @param b second value to compare
 		 * @param eps threshold for values to be equal/different
-		 * @param tolerant allows linient check on float equality (within accuracy)
 		 * @return true if values are equal within eps accuracy, false if not.
 		 */
-		template <class T, class = typename std::enable_if<std::is_floating_point<T>::value>::type>
-			static inline bool fequals(const T& a, const T& b,
-				const float64_t eps, bool tolerant=false)
-			{
-				const T absA = CMath::abs<T>(a);
-				const T absB = CMath::abs<T>(b);
-				const T diff = CMath::abs<T>((a-b));
+		    template <class T, class = typename std::enable_if<
+		                           std::is_floating_point<T>::value>::type>
+		    static inline bool
+		    fequals(const T& a, const T& b, const float64_t eps_)
+		    {
+			    // global fequals epsilon might override passed one
+			    // hack for lossy serialization formats
+			    float64_t eps = std::max(eps_, get_global_fequals_epsilon());
 
-				// Handle this separately since NAN is unordered
-				if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
-					return true;
+			    const T absA = CMath::abs<T>(a);
+			    const T absB = CMath::abs<T>(b);
+			    const T diff = CMath::abs<T>((a - b));
+
+			    // Handle this separately since NAN is unordered
+			    if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
+				    return true;
 
 				// Required for JSON Serialization Tests
-				if (tolerant)
-					return CMath::fequals_abs<T>(a, b, eps);
+			    if (get_global_fequals_tolerant())
+				    return CMath::fequals_abs<T>(a, b, eps);
 
-				// handles float32_t and float64_t separately
-				T comp = (std::is_same<float32_t, T>::value) ? CMath::F_MIN_NORM_VAL32 : CMath::F_MIN_NORM_VAL64;
+			    // handles float32_t and float64_t separately
+			    T comp = (std::is_same<float32_t, T>::value)
+			                 ? CMath::F_MIN_NORM_VAL32
+			                 : CMath::F_MIN_NORM_VAL64;
 
-				if (a == b)
-					return true;
+			    if (a == b)
+				    return true;
 
-				// both a and b are 0 and relative error is less meaningful
+			    // both a and b are 0 and relative error is less meaningful
 				else if ((a == 0) || (b == 0) || (diff < comp))
 					return (diff < (eps * comp));
 				// use max(relative error, diff) to handle large eps
@@ -375,15 +372,6 @@ class CMath : public CSGObject
 		static inline float64_t floor(float64_t d)
 		{
 			return std::floor(d);
-		}
-
-		/** The value of x rounded upward (as a floating-point value)
-		 * @param d input decimal value
-		 * @return rounded off value
-		 */
-		static inline float64_t ceil(float64_t d)
-		{
-			return std::ceil(d);
 		}
 
 		/** Signum of input value
@@ -545,17 +533,6 @@ class CMath : public CSGObject
 		}
 		//@}
 
-		/** Computes e^x where e=2.71828 approx.
-		 * @param x exponent
-		 */
-		static inline float64_t exp(float64_t x)
-		{
-			return std::exp(x);
-		}
-
-		/// exp(x), x being a complex128_t
-		COMPLEX128_STDMATH(exp)
-
 		/**
 		 * @name Trignometric and Hyperbolic Functions
 		 */
@@ -707,17 +684,6 @@ class CMath : public CSGObject
 			return std::log2(v);
 		}
 
-		/** Computes natural logarithm input
-		 * @param v input
-		 * @return log base e of v or ln(v)
-		 */
-		static inline float64_t log(float64_t v)
-		{
-			return std::log(v);
-		}
-
-		/// log(x), x being a complex128_t
-		COMPLEX128_STDMATH(log)
 
 		static inline index_t floor_log(index_t n)
 		{
@@ -899,7 +865,8 @@ class CMath : public CSGObject
 			} while ((rand_s == 0) || (rand_s >= 1));
 
 			// the meat & potatos, and then the mean & standard deviation shifting...
-			ret = static_cast<float32_t>(rand_u*CMath::sqrt(-2.0*CMath::log(rand_s)/rand_s));
+			ret = static_cast<float32_t>(
+			    rand_u * std::sqrt(-2.0 * std::log(rand_s) / rand_s));
 			ret = std_dev*ret + mean;
 			return ret;
 		}
@@ -1087,12 +1054,12 @@ class CMath : public CSGObject
 			{
 				if (from_idx!=min_index)
 				{
-					values_without_X0[to_idx]=exp(values[from_idx]-X0);
+					values_without_X0[to_idx] = std::exp(values[from_idx] - X0);
 					to_idx++;
 				}
 			}
 
-			return X0+log(SGVector<T>::sum(values_without_X0)+1);
+			return X0 + std::log(SGVector<T>::sum(values_without_X0) + 1);
 		}
 
 		/** Computes \f$\log(\frac{1}{n}\sum_{i=1}^n \exp(x_i))\f$ for given
@@ -1104,7 +1071,7 @@ class CMath : public CSGObject
 		template <class T>
 		static T log_mean_exp(SGVector<T> values)
 		{
-			return log_sum_exp(values) - log(values.vlen);
+			return log_sum_exp(values) - std::log(values.vlen);
 		}
 
 		/** Performs a bubblesort on a given matrix a.
@@ -1770,9 +1737,6 @@ class CMath : public CSGObject
 		/// checks whether a float is finite
 		static int is_finite(double f);
 
-		/// checks whether a float is infinity
-		static int is_infinity(double f);
-
 		/// checks whether a float is nan
 		static int is_nan(double f);
 
@@ -1824,8 +1788,8 @@ class CMath : public CSGObject
 				return p;
 			diff = p - q;
 			if (diff > 0)
-				return diff > LOGRANGE? p : p + log(1 + exp(-diff));
-			return -diff > LOGRANGE? q : q + log(1 + exp(diff));
+				return diff > LOGRANGE ? p : p + std::log(1 + std::exp(-diff));
+			return -diff > LOGRANGE ? q : q + std::log(1 + std::exp(diff));
 		}
 #endif
 #ifdef USE_LOGSUMARRAY
@@ -2110,7 +2074,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
 	template <class T>
 void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
-	if (6*n*size<13*size*CMath::log(size))
+	if (6 * n * size < 13 * size * std::log(size))
 		for (int32_t i=0; i<n; i++)
 			min(&output[i], &index[i], size-i);
 	else

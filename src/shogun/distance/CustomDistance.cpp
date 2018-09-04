@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn, 
+ *          Evan Shelhamer
  */
 
 #include <shogun/base/Parameter.h>
@@ -126,6 +123,8 @@ void CCustomDistance::init()
 	upper_diagonal=false;
 
 	m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix");
+	watch_param("dmatrix", &dmatrix, &num_rows, &num_cols);
+
 	m_parameters->add(&upper_diagonal, "upper_diagonal", "Upper diagonal");
 }
 

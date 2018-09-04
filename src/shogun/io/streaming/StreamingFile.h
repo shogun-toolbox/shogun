@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Shashwat Lal Das
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Heiko Strathmann, Saloni Nigam, 
+ *          Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILE_H__
 #define __STREAMING_FILE_H__
@@ -19,7 +16,7 @@
 namespace shogun
 {
 template <class ST> struct SGSparseVectorEntry;
-class VwExample;
+
 
 /** @brief A Streaming File access class.
  *
@@ -265,22 +262,6 @@ class VwExample;
 
 		//@}
 
-		/**
-		 * Function to read VW examples without labels
-		 *
-		 * @param ex example
-		 * @param len length of feature vector
-		 */
-		virtual void get_vector(VwExample*& ex, int32_t& len);
-
-		/**
-		 * Function to read VW examples with labels
-		 *
-		 * @param ex example
-		 * @param len length of feature vector
-		 * @param label label
-		 */
-		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
 #endif // #ifndef SWIG // SWIG should skip this
 
 

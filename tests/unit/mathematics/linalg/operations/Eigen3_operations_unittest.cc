@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <shogun/base/range.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
-#include <shogun/lib/ShogunException.h>
 
 using namespace shogun;
 using namespace linalg;
@@ -189,6 +190,41 @@ TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
 		}
 }
 
+TEST(LinalgBackendEigen, add_diag)
+{
+	SGMatrix<float64_t> A1(2, 3);
+	SGVector<float64_t> b1(2);
+
+	A1(0, 0) = 1;
+	A1(0, 1) = 2;
+	A1(0, 2) = 3;
+	A1(1, 0) = 4;
+	A1(1, 1) = 5;
+	A1(1, 2) = 6;
+
+	b1[0] = 1;
+	b1[1] = 2;
+
+	add_diag(A1, b1, 0.5, 2.0);
+
+	EXPECT_NEAR(A1(0, 0), 2.5, 1e-15);
+	EXPECT_NEAR(A1(0, 1), 2, 1e-15);
+	EXPECT_NEAR(A1(0, 2), 3, 1e-15);
+	EXPECT_NEAR(A1(1, 0), 4, 1e-15);
+	EXPECT_NEAR(A1(1, 1), 6.5, 1e-15);
+	EXPECT_NEAR(A1(1, 2), 6, 1e-15);
+
+	// test error cases
+	SGMatrix<float64_t> A2(2, 2);
+	SGVector<float64_t> b2(3);
+	SGMatrix<float64_t> A3;
+	SGVector<float64_t> b3;
+	EXPECT_THROW(add_diag(A2, b2), ShogunException);
+	EXPECT_THROW(add_diag(A2, b3), ShogunException);
+	EXPECT_THROW(add_diag(A3, b2), ShogunException);
+	EXPECT_THROW(add_diag(A3, b3), ShogunException);
+}
+
 TEST(LinalgBackendEigen, add_vector)
 {
 	const float64_t alpha = 0.7;
@@ -306,6 +342,45 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
 	EXPECT_EQ(m.num_cols, U.num_cols);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_cholesky_ldlt_lower)
+{
+	const index_t size = 3;
+	SGMatrix<float64_t> m(size, size);
+	m(0, 0) = 0.0;
+	m(0, 1) = 0.0;
+	m(0, 2) = 0.0;
+	m(1, 0) = 0.0;
+	m(1, 1) = 1.0;
+	m(1, 2) = 2.0;
+	m(2, 0) = 0.0;
+	m(2, 1) = 2.0;
+	m(2, 2) = 3.0;
+
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> d(size);
+	SGVector<index_t> p(size);
+
+	linalg::ldlt_factor(m, L, d, p);
+
+	EXPECT_NEAR(d[0], 3.0, 1e-15);
+	EXPECT_NEAR(d[1], -0.333333333333333, 1e-15);
+	EXPECT_NEAR(d[2], 0.0, 1e-15);
+
+	EXPECT_NEAR(L(0, 0), 1.0, 1e-15);
+	EXPECT_NEAR(L(0, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(0, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(1, 0), 0.666666666666666, 1e-15);
+	EXPECT_NEAR(L(1, 1), 1.0, 1e-15);
+	EXPECT_NEAR(L(1, 2), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 0), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 1), 0.0, 1e-15);
+	EXPECT_NEAR(L(2, 2), 1.0, 1e-15);
+
+	EXPECT_EQ(p[0], 2);
+	EXPECT_EQ(p[1], 1);
+	EXPECT_EQ(p[2], 2);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 {
 	const index_t size=2;
@@ -331,6 +406,44 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_ldlt_solver)
+{
+	const index_t size = 3;
+	SGMatrix<float64_t> A(size, size);
+	A(0, 0) = 0.0;
+	A(0, 1) = 0.0;
+	A(0, 2) = 0.0;
+	A(1, 0) = 0.0;
+	A(1, 1) = 1.0;
+	A(1, 2) = 2.0;
+	A(2, 0) = 0.0;
+	A(2, 1) = 2.0;
+	A(2, 2) = 3.0;
+
+	SGVector<float64_t> b(size);
+	b[0] = 0.0;
+	b[1] = 5.0;
+	b[2] = 11.0;
+
+	SGVector<float64_t> x_ref(size), x(size);
+	x_ref[0] = 0.0;
+	x_ref[1] = 7.0;
+	x_ref[2] = -1.0;
+
+	SGMatrix<float64_t> L(size, size);
+	SGVector<float64_t> d(size);
+	SGVector<index_t> p(size);
+
+	linalg::ldlt_factor(A, L, d, p, true);
+	x = linalg::ldlt_solver(L, d, p, b, true);
+	for (auto i : range(size))
+		EXPECT_NEAR(x[i], x_ref[i], 1e-15);
+
+	linalg::ldlt_factor(A, L, d, p, false);
+	x = linalg::ldlt_solver(L, d, p, b, false);
+	for (auto i : range(size))
+		EXPECT_NEAR(x[i], x_ref[i], 1e-15);
+}
 TEST(LinalgBackendEigen, SGMatrix_cross_entropy)
 {
 	SGMatrix<float64_t> A(4, 3);
@@ -345,7 +458,7 @@ TEST(LinalgBackendEigen, SGMatrix_cross_entropy)
 
 	float64_t ref = 0;
 	for (int32_t i = 0; i < size; i++)
-		ref += A[i] * CMath::log(B[i] + 1e-30);
+		ref += A[i] * std::log(B[i] + 1e-30);
 	ref *= -1;
 
 	auto result = linalg::cross_entropy(A, B);
@@ -438,42 +551,73 @@ TEST(LinalgBackendEigen, eigensolver_symmetric)
 
 TEST(LinalgBackendEigen, SGMatrix_elementwise_product)
 {
-	const index_t nrows = 3;
-	const index_t ncols = 3;
-	SGMatrix<float64_t> A(nrows,ncols);
-	SGMatrix<float64_t> B(nrows,ncols);
-	SGMatrix<float64_t> C(nrows,ncols);
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
+	for (auto i : range(m * m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
 
-	C = element_prod(A, B);
+	auto result = element_prod(A, B);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, true, false);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, false, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A, B, true, true);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
 {
-	const index_t nrows = 3;
-	const index_t ncols = 3;
-	SGMatrix<float64_t> A(nrows,ncols);
-	SGMatrix<float64_t> B(nrows,ncols);
-	SGMatrix<float64_t> C(nrows,ncols);
+	const auto m = 3;
+	SGMatrix<float64_t> A(m, m);
+	SGMatrix<float64_t> B(m, m);
+	SGMatrix<float64_t> result(m, m);
 
-	for (index_t i = 0; i < nrows*ncols; ++i)
+	for (auto i : range(m * m))
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
-		C[i] = i;
 	}
 
-	element_prod(A, B, A);
-	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+	element_prod(A, B, result);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, true, false);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, false, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	element_prod(A, B, result, true, true);
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
@@ -484,23 +628,89 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 	SGMatrix<float64_t> A(nrows,ncols);
 	SGMatrix<float64_t> B(ncols,nrows);
 
-	for (index_t i = 0; i < nrows; ++i)
-		for (index_t j = 0; j < ncols; ++j)
+	for (auto i : range(nrows))
+		for (auto j : range(ncols))
 		{
 			A(i, j) = i * 10 + j + 1;
 			B(j, i) = i + j;
 		}
 
-	auto A_block = linalg::block(A, 0, 0, 2, 2);
-	auto B_block = linalg::block(B, 0, 0, 2, 2);
+	const auto m = 2;
+	auto A_block = linalg::block(A, 0, 0, m, m);
+	auto B_block = linalg::block(B, 0, 0, m, m);
 	auto result = element_prod(A_block, B_block);
 
-	ASSERT_EQ(result.num_rows, 2);
-	ASSERT_EQ(result.num_cols, 2);
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
 
-	for (index_t i = 0; i < 2; ++i)
-		for (index_t j = 0; j < 2; ++j)
+	for (auto i : range(m))
+		for (auto j : range(m))
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+
+	result = element_prod(A_block, B_block, true, false);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(i, j), 1E-15);
+
+	result = element_prod(A_block, B_block, false, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(i, j) * B(j, i), 1E-15);
+
+	result = element_prod(A_block, B_block, true, true);
+
+	ASSERT_EQ(result.num_rows, m);
+	ASSERT_EQ(result.num_cols, m);
+
+	for (auto i : range(m))
+		for (auto j : range(m))
+			EXPECT_NEAR(result(i, j), A(j, i) * B(j, i), 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_elementwise_product)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	SGVector<float64_t> b(len);
+	SGVector<float64_t> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = 0.5 * i;
+	}
+
+	c = element_prod(a, b);
+
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(a[i] * b[i], c[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_elementwise_product_in_place)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	SGVector<float64_t> b(len);
+	SGVector<float64_t> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = 0.5 * i;
+		c[i] = i;
+	}
+
+	element_prod(a, b, a);
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(c[i] * b[i], a[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_exponent)
@@ -557,7 +767,7 @@ TEST(LinalgBackendEigen, logistic)
 	linalg::logistic(A, B);
 
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(1.0/(1+CMath::exp(-1*A[i])), B[i], 1e-15);
+		EXPECT_NEAR(1.0 / (1 + std::exp(-1 * A[i])), B[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod)
@@ -924,7 +1134,7 @@ TEST(LinalgBackendEigen, SGVector_norm)
 		v[i] = i;
 		gt += i * i;
 	}
-	gt = CMath::sqrt(gt);
+	gt = std::sqrt(gt);
 
 	auto result = norm(v);
 
@@ -1092,7 +1302,7 @@ TEST(LinalgBackendEigen, SGMatrix_softmax)
 		A[i] = i / 12;
 
 	for (index_t i = 0; i < 12; ++i)
-		ref[i] = CMath::exp(A[i]);
+		ref[i] = std::exp(A[i]);
 
 	for (index_t j = 0; j < ref.num_cols; ++j)
 	{
@@ -1522,6 +1732,23 @@ TEST(LinalgBackendEigen, SGMatrix_trace)
 		tr += A.get_element(i, i);
 
 	EXPECT_NEAR(trace(A), tr, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_trace_dot)
+{
+	const index_t m = 2;
+	float64_t data_A[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194};
+	float64_t data_B[] = {0.30786772, 0.25503552, 0.34367041, 0.66491478};
+
+	SGMatrix<float64_t> A(data_A, m, m, false);
+	SGMatrix<float64_t> B(data_B, m, m, false);
+
+	auto C = matrix_prod(A, B);
+	auto tr = 0.0;
+	for (auto i : range(m))
+		tr += C(i, i);
+
+	EXPECT_NEAR(tr, trace_dot(A, B), 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_transpose_matrix)

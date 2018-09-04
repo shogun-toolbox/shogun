@@ -1,10 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
+ * Authors: Soumyajit De, Heiko Strathmann, Björn Esser
  */
 
 #include <shogun/lib/config.h>
@@ -70,6 +67,10 @@ void CSparseMatrixOperator<T>::init()
 		this->m_parameters->add_vector(&m_operator.sparse_matrix,
 				&m_operator.num_vectors, "sparse_matrix",
 				"The sparse matrix of the linear operator.");
+		this->watch_param(
+		    "sparse_matrix", &m_operator.sparse_matrix,
+		    &m_operator.num_vectors);
+
 		this->m_parameters->add(&m_operator.num_features,
 				"m_operator.num_features", "Number of features.");
 	}

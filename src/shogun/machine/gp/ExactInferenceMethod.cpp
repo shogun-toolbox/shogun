@@ -137,9 +137,10 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 
 	// compute negative log of the marginal likelihood:
 	// nlZ=(y-m)'*alpha/2+sum(log(diag(L)))+n*log(2*pi*sigma^2)/2
-	float64_t result=(eigen_y-eigen_m).dot(eigen_alpha)/2.0+
-		eigen_L.diagonal().array().log().sum()+m_L.num_rows*
-		CMath::log(2*CMath::PI*CMath::sq(sigma))/2.0;
+	float64_t result =
+	    (eigen_y - eigen_m).dot(eigen_alpha) / 2.0 +
+	    eigen_L.diagonal().array().log().sum() +
+	    m_L.num_rows * std::log(2 * CMath::PI * CMath::sq(sigma)) / 2.0;
 
 	return result;
 }
@@ -188,8 +189,9 @@ void CExactInferenceMethod::update_chol()
 	/* creates views on kernel and cholesky matrix and perform cholesky */
 	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	LLT<MatrixXd> llt(K*(CMath::exp(m_log_scale*2.0)/CMath::sq(sigma))+
-		MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
+	LLT<MatrixXd> llt(
+	    K * (std::exp(m_log_scale * 2.0) / CMath::sq(sigma)) +
+	    MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 	L=llt.matrixU();
 }
 
@@ -232,7 +234,7 @@ void CExactInferenceMethod::update_mean()
 	m_mu=SGVector<float64_t>(m.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 
-	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha;
+	eigen_mu = eigen_K * std::exp(m_log_scale * 2.0) * eigen_alpha;
 }
 
 void CExactInferenceMethod::update_cov()
@@ -247,8 +249,8 @@ void CExactInferenceMethod::update_cov()
 			m_Sigma.num_cols);
 
 	// compute V = L^(-1) * K, using upper triangular factor L^T
-	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_K*CMath::exp(m_log_scale*2.0));
+	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
+	    eigen_K * std::exp(m_log_scale * 2.0));
 
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
@@ -256,7 +258,8 @@ void CExactInferenceMethod::update_cov()
 	eigen_V = eigen_V/sigma;
 
 	// compute covariance matrix of the posterior: Sigma = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma =
+	    eigen_K * std::exp(m_log_scale * 2.0) - eigen_V.adjoint() * eigen_V;
 }
 
 void CExactInferenceMethod::update_deriv()
@@ -299,7 +302,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 
 	// compute derivative wrt kernel scale: dnlZ=sum(Q.*K*scale*2)/2
 	result[0]=(eigen_Q.cwiseProduct(eigen_K)).sum();
-	result[0]*=CMath::exp(m_log_scale*2.0);
+	result[0] *= std::exp(m_log_scale * 2.0);
 
 	return result;
 }
@@ -365,7 +368,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_kernel(
 
 		// compute derivative wrt kernel parameter: dnlZ=sum(Q.*dK*scale)/2.0
 		result[i]=(eigen_Q.cwiseProduct(eigen_dK)).sum();
-		result[i]*=CMath::exp(m_log_scale*2.0)/2.0;
+		result[i] *= std::exp(m_log_scale * 2.0) / 2.0;
 	}
 
 	return result;

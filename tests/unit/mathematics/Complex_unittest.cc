@@ -19,17 +19,17 @@ TEST(CMath, complex_test)
 	complex128_t a(5.0, 6.0), result;
 
 	EXPECT_NEAR(CMath::abs(a), 7.81024967590665439412, 1E-14);
-	result=CMath::log(a);
+	result = std::log(a);
 	EXPECT_NEAR(result.real(), 2.05543693208665567695, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.87605805059819341629, 1E-14);
 	result=CMath::log10(a);
 	EXPECT_NEAR(result.real(), 0.89266491750538345951, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.38046717720171513433, 1E-14);
-	result=CMath::exp(a);
+	result = std::exp(a);
 	EXPECT_NEAR(result.real(), 142.50190551820736573063, 1E-13);
 	EXPECT_NEAR(result.imag(), -41.46893678992289267171, 1E-13);
 
-	result=CMath::sqrt(a);
+	result = std::sqrt(a);
 	EXPECT_NEAR(result.real(), 2.53083481048315883655, 1E-14);
 	EXPECT_NEAR(result.imag(), 1.18537961765559618499, 1E-14);
 	result=CMath::pow(a, 0.25);

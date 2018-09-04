@@ -203,7 +203,7 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					1, shape+1,
 					strides+1, data,
-					NPY_FARRAY | NPY_WRITEABLE,
+					NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE,
 					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;
@@ -291,7 +291,7 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					2, shape,
 					strides, data,
-					NPY_FARRAY | NPY_WRITEABLE,
+					NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE,
 					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;
@@ -430,13 +430,13 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 		if (type_item1==1)
 		{
 			// transpose
-			shape++;
-			strides++;
-			ndims--;
+			++shape;
+			++strides;
+			--ndims;
 		}
 		if (type_item2==1)
 		{
-			ndims--;
+			--ndims;
 		}
 
 		if (ndims==0 && get_scalar)
@@ -448,7 +448,7 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 			ret=(PyObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					ndims, shape,
 					strides, data,
-					NPY_FARRAY | NPY_WRITEABLE,
+					NPY_ARRAY_FARRAY | NPY_ARRAY_WRITEABLE,
 					(PyObject *) self);
 		}
 
@@ -555,7 +555,7 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 		}
 		catch (shogun::ShogunException e)
 		{
-			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.what()));
 
 			SWIG_fail;
 

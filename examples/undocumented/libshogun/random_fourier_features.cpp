@@ -1,14 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Evangelos Anagnostopoulos
- * Copyright (C) 2013 Evangelos Anagnostopoulos
- *
- * This example demonstrates the use of the Random Fourier Dot Features with
- * a linear classifier.
+ * Authors: Björn Esser, Evangelos Anagnostopoulos
  */
 
 #include <shogun/base/init.h>

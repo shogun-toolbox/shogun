@@ -77,7 +77,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, \
+	virtual void add(const Container<Type>& a, const Container<Type>& b, Type alpha, \
 		Type beta, Container<Type>& result) const \
 	{  \
 		add_impl(a, b, alpha, beta, result); \
@@ -107,18 +107,18 @@ namespace shogun
 	#undef BACKEND_GENERIC_DOT
 
 	/** Implementation of @see LinalgBackendBase::element_prod */
-	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
-	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
-		Container<Type>& result) const \
+	#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container) \
+	virtual void element_prod(const Container<Type>& a, const Container<Type>& b,\
+		Container<Type>& result, bool transpose_A, bool transpose_B) const \
 	{  \
-		element_prod_impl(a, b, result); \
+		element_prod_impl(a, b, result, transpose_A, transpose_B); \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 	/** Implementation of @see LinalgBackendBase::logistic */
 	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const \
+	virtual void logistic(const Container<Type>& a, Container<Type>& result) const \
 	{  \
 		logistic_impl(a, result); \
 	}
@@ -127,7 +127,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::matrix_prod */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
-	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
+	virtual void matrix_prod(const SGMatrix<Type>& a, const Container<Type>& b,\
 		Container<Type>& result, bool transpose_A, bool transpose_B) const \
 	{  \
 		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
@@ -158,7 +158,7 @@ namespace shogun
 
 	/** Implementation of @see linalg::multiply_by_logistic_derivative */
 	#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
-	virtual void multiply_by_logistic_derivative(Container<Type>& a,\
+	virtual void multiply_by_logistic_derivative(const Container<Type>& a,\
 		Container<Type>& result) const \
 	{  \
 		multiply_by_logistic_derivative_impl(a, result); \
@@ -168,7 +168,7 @@ namespace shogun
 
 	/** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
 	#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
-	virtual void multiply_by_rectified_linear_derivative(Container<Type>& a,\
+	virtual void multiply_by_rectified_linear_derivative(const Container<Type>& a,\
 		Container<Type>& result) const \
 	{  \
 		multiply_by_rectified_linear_derivative_impl(a, result); \
@@ -178,7 +178,7 @@ namespace shogun
 
 	/** Implementation of @see linalg::rectified_linear */
 	#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
-	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) const \
+	virtual void rectified_linear(const Container<Type>& a, Container<Type>& result) const \
 	{  \
 		rectified_linear_impl(a, result); \
 	}
@@ -187,7 +187,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::scale */
 	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
-	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
+	virtual void scale(const Container<Type>& a, Type alpha, Container<Type>& result) const \
 	{  \
 		scale_impl(a, result, alpha); \
 	}
@@ -293,7 +293,7 @@ namespace shogun
 		/** ViennaCL vector result = alpha * A + beta * B method */
 		template <typename T>
 		void add_impl(
-		    SGVector<T>& a, SGVector<T>& b, T alpha, T beta,
+		    const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta,
 		    SGVector<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
@@ -308,7 +308,7 @@ namespace shogun
 		/** ViennaCL matrix result = alpha * A + beta * B method */
 		template <typename T>
 		void add_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta,
 		    SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
@@ -364,21 +364,45 @@ namespace shogun
 		/** ViennaCL matrix in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
 
-			result_gpu->data_matrix(a.num_rows, a.num_cols) =
-			    viennacl::linalg::element_prod(
-			        a_gpu->data_matrix(a.num_rows, a.num_cols),
-			        b_gpu->data_matrix(a.num_rows, a.num_cols));
+			if (transpose_A && transpose_B)
+				result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				    viennacl::linalg::element_prod(
+				        viennacl::trans(
+				            a_gpu->data_matrix(a.num_rows, a.num_cols)),
+				        viennacl::trans(
+				            b_gpu->data_matrix(b.num_rows, b.num_cols)));
+
+			else if (transpose_A)
+				result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				    viennacl::linalg::element_prod(
+				        viennacl::trans(
+				            a_gpu->data_matrix(a.num_rows, a.num_cols)),
+				        b_gpu->data_matrix(b.num_rows, b.num_cols));
+
+			else if (transpose_B)
+				result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				    viennacl::linalg::element_prod(
+				        a_gpu->data_matrix(a.num_rows, a.num_cols),
+				        viennacl::trans(
+				            b_gpu->data_matrix(b.num_rows, b.num_cols)));
+
+			else
+				result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				    viennacl::linalg::element_prod(
+				        a_gpu->data_matrix(a.num_rows, a.num_cols),
+				        b_gpu->data_matrix(b.num_rows, b.num_cols));
 		}
 
 		/** ViennaCL logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>
-		void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+		void logistic_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
@@ -409,8 +433,8 @@ namespace shogun
 		/** ViennaCL matrix * vector in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result, bool transpose,
-		    bool transpose_B = false) const
+		    const SGMatrix<T>& a, const SGVector<T>& b, SGVector<T>& result,
+		    bool transpose, bool transpose_B = false) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
@@ -429,7 +453,7 @@ namespace shogun
 		/** ViennaCL matrices in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
 		    bool transpose_A, bool transpose_B) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
@@ -503,7 +527,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void multiply_by_logistic_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
@@ -539,7 +563,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void multiply_by_rectified_linear_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
@@ -571,7 +595,8 @@ namespace shogun
 
 		/** Applies the elementwise rectified linear function f(x) = max(0,x) */
 		template <typename T>
-		void rectified_linear_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+		void
+		rectified_linear_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
@@ -602,7 +627,8 @@ namespace shogun
 
 		/** ViennaCL vector inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGVector<T>& a, SGVector<T>& result, T alpha) const
+		void
+		scale_impl(const SGVector<T>& a, SGVector<T>& result, T alpha) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
@@ -613,7 +639,8 @@ namespace shogun
 
 		/** ViennaCL vector inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGMatrix<T>& a, SGMatrix<T>& result, T alpha) const
+		void
+		scale_impl(const SGMatrix<T>& a, SGMatrix<T>& result, T alpha) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 			GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);

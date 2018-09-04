@@ -1,18 +1,14 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ *          Fernando Iglesias, Youssef Emad El-Din
  */
 
 #ifndef _LINEARRIDGEREGRESSION_H__
 #define _LINEARRIDGEREGRESSION_H__
 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_LAPACK
 
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/LinearMachine.h>
@@ -108,5 +104,4 @@ class CLinearRidgeRegression : public CLinearMachine
 		float64_t m_tau;
 };
 }
-#endif // HAVE_LAPACK
 #endif // _LINEARRIDGEREGRESSION_H__

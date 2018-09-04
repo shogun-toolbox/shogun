@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Leon Kuchenbecker, 
+ *          Sergey Lisitsyn
  */
 
 #include <shogun/classifier/svm/LibSVM.h>
@@ -51,7 +48,6 @@ bool CLibSVM::train_machine(CFeatures* data)
 	struct svm_node* x_space;
 
 	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
@@ -63,6 +59,10 @@ bool CLibSVM::train_machine(CFeatures* data)
 		}
 		kernel->init(data, data);
 	}
+	REQUIRE(
+	    kernel->get_num_vec_lhs() == m_labels->get_num_labels(),
+	    "Number of training data (%d) must match number of labels (%d)\n",
+	    kernel->get_num_vec_lhs(), m_labels->get_num_labels())
 
 	problem.l=m_labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", problem.l)
@@ -91,9 +91,10 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
+	auto labels = binary_labels(m_labels);
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=((CBinaryLabels*) m_labels)->get_label(i);
+		problem.y[i] = labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -103,7 +104,6 @@ bool CLibSVM::train_machine(CFeatures* data)
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	ASSERT(kernel && kernel->has_features())
-	ASSERT(kernel->get_num_vec_lhs()==problem.l)
 
 	switch (solver_type)
 	{

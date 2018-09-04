@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Weijie Lin, Sergey Lisitsyn
  */
 
 #include <shogun/lib/common.h>
@@ -77,7 +73,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 		sum+=weights[i];
 	}
 	for (i=0; i<degree; i++)
-		weights[i]=CMath::sqrt(weights[i]/sum);
+		weights[i] = std::sqrt(weights[i] / sum);
 
 	return weights!=NULL;
 }
@@ -89,7 +85,7 @@ bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 	SG_FREE(weights);
 	weights = w.vector;
 	for (int32_t i=0; i<degree; i++)
-		weights[i]=CMath::sqrt(weights[i]);
+		weights[i] = std::sqrt(weights[i]);
 	return true;
 }
 
@@ -316,4 +312,5 @@ void CWeightedCommWordStringKernel::init()
 
 	m_parameters->add_vector(&weights, &degree, "weights",
 			"weights for each of the subkernels of degree 1...d");
+	watch_param("weights", &weights, &degree);
 }

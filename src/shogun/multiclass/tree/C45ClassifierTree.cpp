@@ -673,7 +673,7 @@ float64_t CC45ClassifierTree::entropy(CMulticlassLabels* labels, SGVector<float6
 		}
 
 		log_ratios[i]=weight_count/total_weight;
-		log_ratios[i]=CMath::log(log_ratios[i]);
+		log_ratios[i] = std::log(log_ratios[i]);
 	}
 
 	return CStatistics::entropy(log_ratios.vector,log_ratios.vlen);

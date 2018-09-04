@@ -1,7 +1,7 @@
 # find python library for the found python interpreter
 # i.e. versions should match!
 FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
-FIND_PACKAGE(NumPy REQUIRED)
+FIND_PACKAGE(NumPy 1.7 REQUIRED)
 
 SET(HAVE_PYTHON 1)
 
@@ -26,14 +26,31 @@ ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
 include(ShogunInterfaces)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
-#TODO: check for SWIG version where this bug has been applied already:
-# https://github.com/swig/swig/pull/70
+EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_config_var('LDSHARED'))"
+                RESULT_VARIABLE PYTHON_CVPY_PROCESS
+                OUTPUT_VARIABLE PYTHON_LDSHARED
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-IF (NOT MSVC)
-  SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -Wno-c++11-narrowing")
+IF ("${PYTHON_LDSHARED}" MATCHES "dynamic_lookup")
+    MESSAGE("Using static linking for Python")
+    SET(PYTHON_LINK_LIBRARIES "NO")
+ELSE()
+    SET(PYTHON_LINK_LIBRARIES "${PYTHON_LIBRARIES}")
 ENDIF()
 
-GENERATE_INTERFACE_TARGET(python ${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_LIBRARIES})
+GENERATE_INTERFACE_TARGET(python "${CMAKE_CURRENT_SOURCE_DIR}" "${PYTHON_LINK_LIBRARIES}")
+
+IF (NOT PYTHON_LINK_LIBRARIES)
+    IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        SET_TARGET_PROPERTIES(${SWIG_MODULE_interface_python_REAL_NAME} PROPERTIES
+                              LINK_FLAGS "-Wl,-flat_namespace,-undefined,dynamic_lookup")
+    ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        SET_TARGET_PROPERTIES(${SWIG_MODULE_interface_python_REAL_NAME} PROPERTIES
+                              LINK_FLAGS "-undefined dynamic_lookup")
+    ELSE()
+        MESSAGE(FATAL_ERROR "No libraries to link with the interface are provided but don't know how to handle dynamic lookup")
+    ENDIF()
+ENDIF()
 
 # pacakges directory
 if(CMAKE_HOST_UNIX)

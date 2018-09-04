@@ -51,7 +51,7 @@ CNeuralNetwork* CNeuralNetworkFileReader::read_file(const char* file_path)
 {
 	json_object* json_network = json_object_from_file(file_path);
 
-	if (is_error(json_network))
+	if (json_network == nullptr)
 	{
 		SG_ERROR("Error while opening file: %s!\n", file_path);
 		return NULL;
@@ -68,7 +68,7 @@ CNeuralNetwork* CNeuralNetworkFileReader::read_string(const char* str)
 {
 	json_object* json_network = json_tokener_parse(str);
 
-	if (is_error(json_network))
+	if (json_network == nullptr)
 	{
 		SG_ERROR("Error while parsing the given string\n");
 		return NULL;

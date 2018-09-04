@@ -49,6 +49,7 @@
 using namespace shogun;
 using namespace internal;
 using namespace mmd;
+using std::shared_ptr;
 using std::unique_ptr;
 
 struct CQuadraticTimeMMD::Self
@@ -66,7 +67,7 @@ struct CQuadraticTimeMMD::Self
 	SGVector<float64_t> gamma_fit_null();
 
 	CQuadraticTimeMMD& owner;
-	unique_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
+	shared_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
 
 	/**
 	 * Whether to precompute the kernel matrix. by default this is true.
@@ -191,7 +192,8 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* sampl
 void CQuadraticTimeMMD::init()
 {
 	self=unique_ptr<Self>(new Self(*this));
-	self->multi_kernel=unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
+	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
+	    new CMultiKernelQuadraticTimeMMD(this));
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
@@ -586,7 +588,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 
 CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
 {
-	return self->multi_kernel.get();
+	CMultiKernelQuadraticTimeMMD* result = self->multi_kernel.get();
+	SG_REF(result);
+	return result;
 }
 
 void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)

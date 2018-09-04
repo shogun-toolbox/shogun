@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sanuj Sharma, Sergey Lisitsyn, 
+ *          Viktor Gal
  */
 
 #include <vector>
@@ -242,7 +239,7 @@ float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnod
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
 	// use sigmoid function to turn the decision value into valid probability
-	return 1.0/(1+CMath::exp(-pred));
+	return 1.0 / (1 + std::exp(-pred));
 }
 
 int32_t CConditionalProbabilityTree::create_machine(CStreamingDenseFeatures<float32_t>* ex)

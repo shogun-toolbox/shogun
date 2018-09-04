@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg, 
+ *          Thoralf Klein, Björn Esser
  */
 
 #include <shogun/base/progress.h>
@@ -76,8 +73,8 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	SGVector<int32_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<int32_t> train_labels =
+	    multiclass_labels(m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// find minimal and maximal label
@@ -201,13 +198,15 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 			continue;
 		}
 		else
-			m_rates.vector[i] = CMath::log(m_label_prob.vector[i]);
+			m_rates.vector[i] = std::log(m_label_prob.vector[i]);
 
 		// product all conditional gaussian probabilities
 		for (k=0; k<m_dim; k++)
 			if (m_variances(k,i)!=0.0)
-				m_rates.vector[i]+= CMath::log(0.39894228/CMath::sqrt(m_variances(k, i))) -
-					0.5*CMath::sq(feature_vector.vector[k]-m_means(k, i))/(m_variances(k, i));
+				m_rates.vector[i] +=
+				    std::log(0.39894228 / std::sqrt(m_variances(k, i))) -
+				    0.5 * CMath::sq(feature_vector.vector[k] - m_means(k, i)) /
+				        (m_variances(k, i));
 	}
 
 	// find label with maximum rate
@@ -236,4 +235,7 @@ void CGaussianNaiveBayes::init()
 	SG_ADD(&m_label_prob, "m_label_prob",
 		"a priori probabilities of labels", MS_NOT_AVAILABLE);
 	SG_ADD(&m_rates, "m_rates", "label rates", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    (CFeatures**)&m_features, "features", "Training features",
+	    MS_NOT_AVAILABLE);
 }

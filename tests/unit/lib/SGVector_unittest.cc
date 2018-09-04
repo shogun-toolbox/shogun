@@ -39,7 +39,7 @@ TEST(SGVectorTest,ctor)
 	/* test iterator */
 	std::vector<float64_t> src {1.0, 2.0, 3.0, 4.0, 5.0};
 	SGVector<float64_t> d(src.begin(), src.end());
-	EXPECT_EQ(src.size(), d.vlen);
+	EXPECT_EQ(src.size(), static_cast<size_t>(d.vlen));
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(b[i], c[i]);
 
@@ -118,7 +118,7 @@ TEST(SGVectorTest,norm)
 	a.random(-50.0, 1024.0);
 
 	/* check l-2 norm */
-	float64_t l2_norm = CMath::sqrt(linalg::dot(a,a));
+	float64_t l2_norm = std::sqrt(linalg::dot(a, a));
 	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
 
 	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);
@@ -271,6 +271,16 @@ TEST(SGVectorTest,equals_different_size)
 	b.zero();
 
 	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGVectorTest, clone_empty)
+{
+	SGVector<float32_t> vec;
+	ASSERT_EQ(vec.data(), nullptr);
+
+	SGVector<float32_t> copy = vec.clone();
+	EXPECT_EQ(copy.data(), vec.data());
+	EXPECT_TRUE(vec.equals(copy));
 }
 
 TEST(SGVectorTest, convert_to_matrix)

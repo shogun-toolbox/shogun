@@ -29,6 +29,7 @@ TEST(SGObject,clone_equals_{{class}})
 	CSGObject* object2 = create(class_name, PT_NOT_GENERIC);
 	ASSERT_TRUE(object2 != NULL);
 	ASSERT_TRUE(object->equals(object2));
+	ASSERT_TRUE(object2->equals(object));
 	SG_UNREF(object2);
 
 	/* test for .clone() */
@@ -37,6 +38,7 @@ TEST(SGObject,clone_equals_{{class}})
 
 	/* test for .clone() + .equals() */
 	EXPECT_TRUE(object->equals(clone));
+	EXPECT_TRUE(clone->equals(object));
 
 	SG_UNREF(object);
 	SG_UNREF(clone);
@@ -62,6 +64,7 @@ TEST(SGObject,clone_equals_{{class}}_{{type}})
 	CSGObject* object2 = create(class_name, {{type}});
 	ASSERT_TRUE(object2 != NULL);
 	ASSERT_TRUE(object->equals(object2));
+	ASSERT_TRUE(object2->equals(object));
 	SG_UNREF(object2);
 
 	/* test for .clone() */
@@ -70,6 +73,7 @@ TEST(SGObject,clone_equals_{{class}}_{{type}})
 
 	/* test for .clone() + .equals() */
 	EXPECT_TRUE(object->equals(clone));
+	EXPECT_TRUE(clone->equals(object));
 
 	SG_UNREF(object);
 	SG_UNREF(clone);

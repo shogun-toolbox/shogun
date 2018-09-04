@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2004-2009 Soeren Sonnenburg, Gunnar Raetsch
- *                       Alexander Zien, Marius Kloft, Chen Guohua
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Ryota Tomioka (University of Tokyo)
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal, 
+ *          Fernando Iglesias, Giovanni De Toni, Evan Shelhamer, Björn Esser, 
+ *          Evangelos Anagnostopoulos, Leon Kuchenbecker, Saurabh Goyal
  */
 
 #include <list>
@@ -280,7 +276,10 @@ void CMKL::register_params()
 	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", MS_NOT_AVAILABLE);
 	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter", MS_NOT_AVAILABLE);
 	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter", MS_NOT_AVAILABLE);
+
 	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
+	watch_param("beta_local", &beta_local, &beta_local_size);
+
 	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", MS_NOT_AVAILABLE);
 	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", MS_NOT_AVAILABLE);
 	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.", MS_NOT_AVAILABLE);
@@ -622,7 +621,7 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 	{
 		if (sumw[p] >= 0.0 && old_beta[p] >= 0.0 )
 		{
-			beta[p] = CMath::sqrt(sumw[p]*old_beta[p]*old_beta[p]);
+			beta[p] = std::sqrt(sumw[p] * old_beta[p] * old_beta[p]);
 			Z += beta[p];
 		}
 		else
@@ -641,7 +640,7 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 	preR = 0.0;
 	for( p=0; p<num_kernels; ++p )
 		preR += CMath::pow( beta_local[p] - beta[p], 2.0 );
-	const float64_t R = CMath::sqrt( preR ) * epsRegul;
+	const float64_t R = std::sqrt(preR) * epsRegul;
 	if( !( R >= 0 ) )
 	{
 		SG_PRINT("MKL-direct: p = %.3f\n", 1.0 )
@@ -655,7 +654,7 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 		}
 		SG_PRINT("MKL-direct: preR = %e\n", preR )
 		SG_PRINT("MKL-direct: preR/p = %e\n", preR )
-		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR) )
+		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", std::sqrt(preR))
 		SG_PRINT("MKL-direct: R = %e\n", R )
 		SG_ERROR("Assertion R >= 0 failed!\n" )
 	}
@@ -702,7 +701,7 @@ void CMKL::elasticnet_dual(float64_t *ff, float64_t *gg, float64_t *hh,
 	float64_t gam = 1.0-lambda;
 	for (int32_t i=0; i<len;i++)
 	{
-		if (nm[i]>=CMath::sqrt(2*del*gam))
+		if (nm[i] >= std::sqrt(2 * del * gam))
 			I.push_back(i);
 	}
 	int32_t M=I.size();
@@ -714,9 +713,10 @@ void CMKL::elasticnet_dual(float64_t *ff, float64_t *gg, float64_t *hh,
 	{
 		float64_t nmit = nm[*it];
 
-		*ff += del*gam*CMath::pow(nmit/CMath::sqrt(2*del*gam)-1,2)/lambda;
-		*gg += CMath::sqrt(gam/(2*del))*nmit;
-		*hh += -0.5*CMath::sqrt(gam/(2*CMath::pow(del,3)))*nmit;
+		*ff += del * gam * CMath::pow(nmit / std::sqrt(2 * del * gam) - 1, 2) /
+		       lambda;
+		*gg += std::sqrt(gam / (2 * del)) * nmit;
+		*hh += -0.5 * std::sqrt(gam / (2 * CMath::pow(del, 3))) * nmit;
 	}
 }
 
@@ -759,7 +759,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			SG_UNREF(kn);
 		}
 		// initial delta
-		del = del/CMath::sqrt(2*(1-ent_lambda));
+		del = del / std::sqrt(2 * (1 - ent_lambda));
 
 		// Newton's method to optimize delta
 		k=0;
@@ -776,7 +776,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			float64_t step=1.0;
 			do
 			{
-				del=del_old*CMath::exp(-step*gg/(hh*del+gg));
+				del = del_old * std::exp(-step * gg / (hh * del + gg));
 				elasticnet_dual(&ff, &gg, &hh, del, nm, num_kernels, ent_lambda);
 				step/=2;
 			} while(ff>ff_old+1e-4*gg_old*(del-del_old));
@@ -877,7 +877,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 	for( p=0; p<num_kernels; ++p )
 		preR += CMath::sq( old_beta[p] - beta[p]);
 
-	const float64_t R = CMath::sqrt( preR / mkl_norm ) * epsRegul;
+	const float64_t R = std::sqrt(preR / mkl_norm) * epsRegul;
 	if( !( R >= 0 ) )
 	{
 		SG_PRINT("MKL-direct: p = %.3f\n", mkl_norm )
@@ -891,7 +891,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 		}
 		SG_PRINT("MKL-direct: preR = %e\n", preR )
 		SG_PRINT("MKL-direct: preR/p = %e\n", preR/mkl_norm )
-		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/mkl_norm) )
+		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", std::sqrt(preR / mkl_norm))
 		SG_PRINT("MKL-direct: R = %e\n", R )
 		SG_ERROR("Assertion R >= 0 failed!\n" )
 	}
@@ -1054,7 +1054,8 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 				for( p=0; p<num_kernels; ++p )
 				{
 					if( inLogSpace )
-						newtBeta[p] = beta[p] * CMath::exp( + stepSize * newtDir[p] );
+						newtBeta[p] =
+						    beta[p] * std::exp(+stepSize * newtDir[p]);
 					else
 						newtBeta[p] = beta[p] + stepSize * newtDir[p];
 					if( !( newtBeta[p] >= epsBeta ) )

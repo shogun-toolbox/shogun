@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2007-2009 Soeren Sonnenburg
- * Written (W) 2016 Soumyajit De
- * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Saurabh Mahindre, Soumyajit De, Chiyuan Zhang, Viktor Gal, 
+ *          Björn Esser, Soeren Sonnenburg
  */
 
 #include <shogun/lib/common.h>
@@ -77,7 +73,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	result=m_lhs_squared_norms[idx_a]+m_rhs_squared_norms[idx_b]-2*result;
 	if (disable_sqrt)
 		return result;
-	return CMath::sqrt(result);
+	return std::sqrt(result);
 }
 
 void CEuclideanDistance::precompute_lhs()
@@ -173,7 +169,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	}
 
 	if (!disable_sqrt)
-		result=CMath::sqrt(result);
+		result = std::sqrt(result);
 
 	return result;
 }

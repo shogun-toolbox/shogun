@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2017 Giovanni De Toni
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Thoralf Klein, Viktor Gal
  */
 
 #include <csignal>
@@ -19,7 +14,7 @@
 using namespace shogun;
 using namespace rxcpp;
 
-bool CSignal::m_active = false;
+bool CSignal::m_active = true;
 CSignal::SGSubjectS* CSignal::m_subject = new rxcpp::subjects::subject<int>();
 
 CSignal::SGObservableS* CSignal::m_observable =
@@ -37,9 +32,9 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-	/* If the handler is not enabled, then return */
+	/* If the handler is not enabled exit */
 	if (!m_active)
-		return;
+		exit(-1);
 
 	if (signal == SIGINT)
 	{

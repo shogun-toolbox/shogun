@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2006-2009 Christian Gehl
- * Copyright (C) 2006-2009 Fraunhofer Institute FIRST
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn
  */
 
 #include <shogun/lib/config.h>
@@ -76,7 +72,7 @@ float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 	if(s==0 || nx==0 || ny==0)
 		return 0;
 
-	d/=CMath::sqrt(nx*ny);
+	d /= std::sqrt(nx * ny);
 
 	// can only happen due to numerical problems
 	if (CMath::abs(d)>1.0)

@@ -1,12 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
 #include <shogun/classifier/svm/SVMOcas.h>
-#endif // USE_GPL_SHOGUN
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
-
-#include <gtest/gtest.h>
 
 #include "environments/LinearTestEnvironment.h"
 
@@ -14,7 +12,6 @@ using namespace shogun;
 
 extern LinearTestEnvironment* linear_test_env;
 
-#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
@@ -36,6 +33,7 @@ TEST(SVMOcasTest,train)
 	EXPECT_NEAR(objective, 0.024344632618686062, 1e-2);
 
 	CLabels* pred = ocas->apply(test_feats);
+	SG_REF(pred);
 	CAccuracyMeasure evaluate = CAccuracyMeasure();
 	evaluate.evaluate(pred, ground_truth);
 	EXPECT_GT(evaluate.get_accuracy(), 0.99);
@@ -44,5 +42,3 @@ TEST(SVMOcasTest,train)
 	SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK
-#endif //USE_GPL_SHOGUN
-

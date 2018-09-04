@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2010 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Viktor Gal
  */
 
 #include <shogun/io/SerializableFile.h>
@@ -88,7 +83,7 @@ CSerializableFile::is_task_warn(char rw, const char* name,
 {
 	if (m_task == 'r' && m_reader == NULL) {
 		string_t dest_version;
-		strncpy(dest_version, "(unkown)", STRING_LEN);
+		strncpy(dest_version, "(unknown)", STRING_LEN);
 		m_reader = new_reader(dest_version, STRING_LEN);
 		if (m_reader == NULL) {
 			SG_WARNING("`%s' has file-version `%s', which is not "

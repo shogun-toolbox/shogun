@@ -1,27 +1,26 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ *          Fernando Iglesias, Chiyuan Zhang, Giovanni De Toni, Evgeniy Andreev, 
+ *          Viktor Gal, Shell Hu, Tejas Jogi, Roman Votyakov, Evan Shelhamer, 
+ *          Yuyu Zhang, Harshit Syal, Khaled Nasr, Thoralf Klein, Jacob Walker, 
+ *          Wu Lin
  */
 
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
-#include <shogun/lib/config.h>
-
-#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/LatentLabels.h>
+#include <shogun/base/class_list.h>
 #include <shogun/features/Features.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/LatentLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/StructuredLabels.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #include <condition_variable>
 #include <mutex>

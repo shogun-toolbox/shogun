@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
+ * Authors: Heiko Strathmann, Viktor Gal, Weijie Lin, Sergey Lisitsyn,
+ *          Björn Esser, Soeren Sonnenburg, Evangelos Anagnostopoulos
  */
 
 #include <shogun/lib/config.h>
@@ -34,7 +32,7 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 {
 	int32_t points_per_class = num_points / num_classes;
 
-	int32_t grid_size = (int32_t ) CMath::ceil(CMath::sqrt((float64_t ) num_classes));
+	int32_t grid_size = (int32_t)std::ceil(std::sqrt((float64_t)num_classes));
 	float64_t cell_size = (float64_t ) 1 / grid_size;
 	SGVector<float64_t> grid_idx(dim);
 	for (index_t i=0; i<dim; i++)

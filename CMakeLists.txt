@@ -32,7 +32,7 @@ include(ShogunUtils)
 SET(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 #### set required C++ standard level of the compiler
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (MSVC)
@@ -64,18 +64,39 @@ IF(NOT ("${BUILD_TYPE_UC}" STREQUAL "DISTRIBUTION"))
 	SET(CMAKE_CXX_FLAGS "")
 ENDIF(NOT ("${BUILD_TYPE_UC}" STREQUAL "DISTRIBUTION"))
 
-# CCACHE
-OPTION(ENABLE_CCACHE "Enable ccache for compilation" ON)
-FIND_PACKAGE(CCache)
-if(CCACHE_FOUND AND ENABLE_CCACHE)
-	SET(CCACHE "ccache" CACHE STRING "ccache")
-	SET(CMAKE_C_COMPILER_ARG1 ${CMAKE_C_COMPILER})
-	SET(CMAKE_C_COMPILER ${CCACHE})
-	SET(CMAKE_CXX_COMPILER_ARG1 ${CMAKE_CXX_COMPILER})
-	SET(CMAKE_CXX_COMPILER ${CCACHE})
-	SET(CMAKE_C_FLAGS "${CCACHE_FLAGS} ${CMAKE_C_FLAGS}")
-	SET(CMAKE_CXX_FLAGS "${CCACHE_FLAGS} ${CMAKE_CXX_FLAGS}")
+# compilation cache
+if (("${CMAKE_GENERATOR}" STREQUAL "Unix Makefiles") OR
+	("${CMAKE_GENERATOR}" STREQUAL "NMake Makefiles") OR
+	("${CMAKE_GENERATOR}" STREQUAL "Ninja"))
+	OPTION(ENABLE_COMPILER_CACHE "Enable cache for compilation" ON)
 endif()
+
+if (ENABLE_COMPILER_CACHE)
+	if (MSVC)
+		find_program(CLCACHE_FOUND clcache)
+		if (CLCACHE_FOUND)
+			foreach(LANG C CXX)
+				if (NOT CMAKE_${LANG}_COMPILER MATCHES ".*/${CLCACHE_FOUND}$")
+					message(STATUS "Enabling ${CLCACHE_FOUND} for ${LANG}")
+					set(CMAKE_${LANG}_COMPILER ${CLCACHE_FOUND} CACHE STRING "")
+				endif ()
+			endforeach()
+		endif ()
+	else()
+		FIND_PACKAGE(CCache)
+		if (CCACHE_FOUND)
+			SET(COMPILER_CACHE_EXECUTABLE "ccache")
+			SET(CMAKE_C_FLAGS "${CCACHE_FLAGS} ${CMAKE_C_FLAGS}")
+			SET(CMAKE_CXX_FLAGS "${CCACHE_FLAGS} ${CMAKE_CXX_FLAGS}")
+			foreach(LANG C CXX)
+				if(NOT DEFINED CMAKE_${LANG}_COMPILER_LAUNCHER AND NOT CMAKE_${LANG}_COMPILER MATCHES ".*/${COMPILER_CACHE_EXECUTABLE}$")
+					message(STATUS "Enabling ${COMPILER_CACHE_EXECUTABLE} for ${LANG}")
+					set(CMAKE_${LANG}_COMPILER_LAUNCHER ${COMPILER_CACHE_EXECUTABLE} CACHE STRING "")
+				endif()
+			endforeach()
+		endif ()
+	endif()
+endif ()
 
 ################# VARIABLES #####################
 SET(INCLUDES "")
@@ -111,25 +132,15 @@ SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
 IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
 IF (${ANY_INTERFACE_ENABLED})
-	# SWIG3 is the minimum requirement because of C++11 support
-	SET(SWIG_VERSION_MINIMUM 3.0.0)
+	# SWIG 3.0.12 is the minimum requirement because of c++11 and extending
+	# a class with template function
+	SET(SWIG_VERSION_MINIMUM 3.0.12)
 
 	IF(INTERFACE_CSHARP)
-		# We require SWIG 3.0.7 to support functions with a few SGVector or
-		# SGMatrix arguments. The required SWIG feature is called
-		# "Support for special variable expansion in typemap attributes."
-		# and was introduced just in 3.0.7.
-		SET(SWIG_VERSION_MINIMUM 3.0.7)
-
 		# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(INTERFACE_PYTHON)
-		# SWIG was broken for combining -builtin and -modernargs
-		# from v3.0.0 and until 3.0.4.  This bug was fixed in
-		# v3.0.5.  Make CMake emit an error and fail to configure.
-		SET(SWIG_VERSION_MINIMUM 3.0.5)
 	ENDIF()
 
 	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
@@ -523,7 +534,6 @@ ENDIF()
 
 OPTION(ENABLE_TESTING "Enable testing" OFF)
 OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
-OPTION(TRAVIS_DISABLE_LIBSHOGUN_TESTS "Disable libshogun tests to speed up jobs on travis-ci" OFF)
 OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
@@ -555,11 +565,6 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
     IF(ENABLE_TESTING OR BUILD_EXAMPLES)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
-
-    # always build minimal example(s)
-    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/minimal)
-        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/minimal)
-    ENDIF()
 
 	IF(BUILD_META_EXAMPLES)
         # allow meta examples without adding examples dir itself

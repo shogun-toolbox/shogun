@@ -1,10 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Soumyajit De
+ * Authors: Heiko Strathmann, Soumyajit De, Björn Esser
  */
 
 #ifndef DENSE_MATRIX_EXACT_LOG_H_
@@ -19,8 +16,6 @@ namespace shogun
 
 template<class T> class SGVector;
 template<class T> class CDenseMatrixOperator;
-class CJobResultAggregator;
-class CIndependentComputationEngine;
 
 /** @brief Class that generates jobs for computing logarithm of
  *  a dense matrix linear operator
@@ -35,10 +30,8 @@ public:
 	 * constructor
 	 *
 	 * @param op the dense matrix linear operator for this operator function
-	 * @param engine the computation engine for the independent jobs
 	 */
-	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op,
-		CIndependentComputationEngine* engine);
+	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op);
 
 	/** destructor */
 	virtual ~CDenseMatrixExactLog();
@@ -51,14 +44,9 @@ public:
 	virtual void precompute();
 
 	/**
-	 * method that creates a scalar job result aggregator, then creates one
-	 * job per sample, attaches the aggregator with it, and submits the job to
-	 * computation engine and then returns the aggregator
-	 *
-	 * @param sample the vector for which a new computation job has to be created
-	 * @return the array of generated independent jobs
+	 * method that solves the result for a sample
 	 */
-	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample);
+	virtual float64_t compute(SGVector<float64_t> sample);
 
 	/** @return object name */
 	virtual const char* get_name() const

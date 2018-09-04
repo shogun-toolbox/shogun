@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Yuyu Zhang
  */
 
 #ifndef _SHOGUN_EXCEPTION_H_
@@ -13,21 +9,28 @@
 
 #include <shogun/lib/config.h>
 
+#include <exception>
+#include <string>
+
 namespace shogun
 {
 /** @brief Class ShogunException defines an exception which is thrown whenever an
  * error inside of shogun occurs.
  */
-class ShogunException
+class ShogunException: public std::exception
 {
-	void init(const char* str);
-
 	public:
 		/** constructor
 		 *
 		 * @param str exception string
 		 */
-		ShogunException(const char* str);
+		explicit ShogunException(const std::string& what_arg);
+
+		/** constructor
+		 *
+		 * @param str exception string
+		 */
+		explicit ShogunException(const char* what_arg);
 
 		/** copy constructor
 		 *
@@ -39,15 +42,11 @@ class ShogunException
 		 */
         virtual ~ShogunException();
 
-		/** get exception string
-		 *
-		 * @return the exception string
-		 */
-		inline const char* get_exception_string() { return val; }
+		virtual const char* what() const noexcept override;
 
 	private:
 		/** exception string */
-		char* val;
+		std::string msg;
 };
 }
 #endif // _SHOGUN_EXCEPTION_H_

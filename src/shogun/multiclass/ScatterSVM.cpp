@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Written (W) 2009 Marius Kloft
- * Copyright (C) 2009 TU Berlin and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Chiyuan Zhang, Viktor Gal, 
+ *          Leon Kuchenbecker, Kyle McQuisten
  */
 #include <shogun/multiclass/ScatterSVM.h>
 
@@ -49,8 +45,13 @@ CScatterSVM::~CScatterSVM()
 void CScatterSVM::register_params()
 {
 	SG_ADD((machine_int_t*) &scatter_type, "scatter_type", "Type of scatter SVM", MS_NOT_AVAILABLE);
+
 	m_parameters->add_vector(&norm_wc, &norm_wc_len, "norm_wc", "Norm of w_c");
+	watch_param("norm_wc", &norm_wc, &norm_wc_len);
+
 	m_parameters->add_vector(&norm_wcw, &norm_wcw_len, "norm_wcw", "Norm of w_cw");
+	watch_param("norm_wcw", &norm_wcw, &norm_wcw_len);
+
 	SG_ADD(&rho, "rho", "Scatter SVM rho", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
@@ -391,7 +392,7 @@ void CScatterSVM::compute_norm_wc()
 	}
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
-		norm_wc[i]=CMath::sqrt(norm_wc[i]);
+		norm_wc[i] = std::sqrt(norm_wc[i]);
 
 	SGVector<float64_t>::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
 }

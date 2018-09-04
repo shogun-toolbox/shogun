@@ -1,16 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2016-2017 Pan Deng
- * Written (W) 2013-2017 Soumyajit De
- * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2012 Fernando Jose Iglesias Garcia
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Thoralf Klein, 
+ *          Pan Deng, Fernando Iglesias, Sergey Lisitsyn, Viktor Gal, 
+ *          Michele Mazzoni, Yingrui Chang, Weijie Lin, Khaled Nasr, 
+ *          Koen van de Sande, Roman Votyakov
  */
 
 #include <shogun/lib/config.h>
@@ -148,36 +142,46 @@ bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 	if (*this==other)
 		return true;
 
-	// avoid uninitialized memory read in case the matrices are not initialized
-	if (matrix==nullptr || other.matrix==nullptr)
+	// both empty
+	if (!(num_rows || num_cols || other.num_rows || other.num_cols))
+		return true;
+
+	// only one empty
+	if (!matrix || !other.matrix)
 		return false;
 
+	// different size
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
+	// content
 	return std::equal(matrix, matrix+size(), other.matrix);
 }
 
 #ifndef REAL_EQUALS
-#define REAL_EQUALS(real_t)	\
-template <>	\
-bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const	\
-{	\
-	if (*this==other)	\
-		return true;	\
-	\
-	if (matrix==nullptr || other.matrix==nullptr)	\
-		return false;	\
-	\
-	if (num_rows!=other.num_rows || num_cols!=other.num_cols)	\
-		return false;	\
-	\
-	return std::equal(matrix, matrix+size(), other.matrix,	\
-			[](const real_t& a, const real_t& b)	\
-			{	\
-				return CMath::fequals<real_t>(a, b, std::numeric_limits<real_t>::epsilon());	\
-			});	\
-}
+#define REAL_EQUALS(real_t)                                                    \
+	template <>                                                                \
+	bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const         \
+	{                                                                          \
+		if (*this == other)                                                    \
+			return true;                                                       \
+                                                                               \
+		if (!(num_rows || num_cols || other.num_rows || other.num_cols))       \
+			return true;                                                       \
+                                                                               \
+		if (!matrix || !other.matrix)                                          \
+			return false;                                                      \
+                                                                               \
+		if (num_rows != other.num_rows || num_cols != other.num_cols)          \
+			return false;                                                      \
+                                                                               \
+		return std::equal(                                                     \
+		    matrix, matrix + size(), other.matrix,                             \
+		    [](const real_t& a, const real_t& b) {                             \
+			    return CMath::fequals<real_t>(                                 \
+			        a, b, std::numeric_limits<real_t>::epsilon());             \
+			});                                                                \
+	}
 
 REAL_EQUALS(float32_t)
 REAL_EQUALS(float64_t)
@@ -344,9 +348,11 @@ SGMatrix<T> SGMatrix<T>::clone() const
 template <class T>
 T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 {
-	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
-	REQUIRE(nrows>0, "Number of rows (%d) has to be positive!\n", nrows);
-	REQUIRE(ncols>0, "Number of cols (%d) has to be positive!\n", ncols);
+	if (!matrix || !nrows || !ncols)
+		return nullptr;
+
+	REQUIRE(nrows > 0, "Number of rows (%d) has to be positive!\n", nrows);
+	REQUIRE(ncols > 0, "Number of cols (%d) has to be positive!\n", ncols);
 
 	auto size=int64_t(nrows)*ncols;
 	T* result=SG_MALLOC(T, size);

@@ -84,23 +84,23 @@ TEST(CMath, float64_tests)
 	EXPECT_NEAR(CMath::round(7.5), 8.0, 1E-15);
 	EXPECT_NEAR(CMath::round(7.5-1E-15), 7.0, 1E-15);
 	EXPECT_NEAR(CMath::floor(8-1E-15), 7.0, 1E-15);
-	EXPECT_NEAR(CMath::ceil(7+1E-15), 8.0, 1E-15);
+	EXPECT_NEAR(std::ceil(7 + 1E-15), 8.0, 1E-15);
 
 	float64_t a=5.78123516567856743364;
 	// x^2, x^(1/2)
 	EXPECT_NEAR(CMath::sq(a), 33.42268004087848964900, 1E-15);
-	EXPECT_NEAR(CMath::sqrt(33.42268004087848964900), a, 1E-15);
+	EXPECT_NEAR(std::sqrt(33.42268004087848964900), a, 1E-15);
 	EXPECT_NEAR(CMath::pow(a, 2), 33.42268004087848964900, 1E-15);
 	EXPECT_NEAR(CMath::pow(33.42268004087848964900, 0.5), a, 1E-15);
 
 	// e^x, log_{b}(x)
-	EXPECT_NEAR(CMath::exp(a), 324.15933372813628920994, 1E-15);
+	EXPECT_NEAR(std::exp(a), 324.15933372813628920994, 1E-15);
 	EXPECT_NEAR(CMath::log2(a), 2.53137775864743908016, 1E-15);
 	EXPECT_NEAR(CMath::log10(a), 0.76202063570953693095, 1E-15);
 
 	// exp and log identities
-	EXPECT_NEAR(CMath::log(CMath::exp(a)), a, 1E-15);
-	EXPECT_NEAR(CMath::exp(CMath::log(a)), a, 1E-15);
+	EXPECT_NEAR(std::log(std::exp(a)), a, 1E-15);
+	EXPECT_NEAR(std::exp(std::log(a)), a, 1E-15);
 
 	// trigonometric functions
 	EXPECT_NEAR(CMath::sin(a), -0.48113603605414501097, 1E-15);
@@ -180,7 +180,7 @@ TEST(CMath, strtofloat)
 	EXPECT_TRUE(CMath::is_nan(float_result));
 
 	EXPECT_TRUE(CMath::strtof("inf", &float_result));
-	EXPECT_TRUE(CMath::is_infinity(float_result));
+	EXPECT_TRUE(std::isinf(float_result));
 
 	EXPECT_TRUE(CMath::strtof("-inf", &float_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, float_result);
@@ -196,7 +196,7 @@ TEST(CMath, strtodouble)
 	EXPECT_TRUE(CMath::is_nan(double_result));
 
 	EXPECT_TRUE(CMath::strtod("inf", &double_result));
-	EXPECT_TRUE(CMath::is_infinity(double_result));
+	EXPECT_TRUE(std::isinf(double_result));
 
 	EXPECT_TRUE(CMath::strtod("-inf", &double_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, double_result);
@@ -212,7 +212,7 @@ TEST(CMath, strtolongdouble)
 	EXPECT_TRUE(CMath::is_nan(long_double_result));
 
 	EXPECT_TRUE(CMath::strtold("inf", &long_double_result));
-	EXPECT_TRUE(CMath::is_infinity(long_double_result));
+	EXPECT_TRUE(std::isinf(long_double_result));
 
 	EXPECT_TRUE(CMath::strtold("-inf", &long_double_result));
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, long_double_result);

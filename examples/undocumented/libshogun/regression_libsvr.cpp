@@ -1,10 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Heiko Strathmann
+ * Authors: Heiko Strathmann, Thoralf Klein, Evgeniy Andreev, Fernando Iglesias
  */
 
 #include <shogun/base/init.h>
@@ -41,7 +38,9 @@ void test_libsvr()
 
 	/* shogun representation */
 	CLabels* labels_train=new CRegressionLabels(lab_train);
+	SG_REF(labels_train);
 	CLabels* labels_test=new CRegressionLabels(lab_test);
+	SG_REF(labels_test);
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
 			feat_train);
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
@@ -58,6 +57,7 @@ void test_libsvr()
 	/* predict */
 	CRegressionLabels* predicted_labels=CLabelsFactory::to_regression(
 			svm->apply(features_test));
+	SG_REF(predicted_labels);
 
 	/* evaluate */
 	CEvaluation* eval=new CMeanSquaredError();
@@ -69,6 +69,7 @@ void test_libsvr()
 	SG_UNREF(labels_test)
 	SG_UNREF(predicted_labels);
 	SG_UNREF(svm);
+	SG_UNREF(labels_train);
 }
 
 int main()

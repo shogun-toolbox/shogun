@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2007-2010 Soeren Sonnenburg
- * Copyright (c) 2007-2009 The LIBLINEAR Project.
- * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ *          Evgeniy Andreev, Weijie Lin, Fernando Iglesias
  */
 
 #ifndef _LIBLINEAR_H___
@@ -14,8 +10,8 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 
@@ -41,25 +37,28 @@ namespace shogun
 		L2R_LR_DUAL
 	};
 
-/** @brief This class provides an interface to the LibLinear library for large-
- * scale linear learning focusing on SVM [1]. This is the classification interface. For
- * regression, see CLibLinearRegression. There is also an online version, see
- * COnlineLibLinear.
- *
- * LIBLINEAR is a linear SVM solver for data with millions of instances and
- * features. It supports (for classification)
- *
- * - L2-regularized classifiers
- * - L2-loss linear SVM, L1-loss linear SVM, and logistic regression (LR)
- * - L1-regularized classifiers
- * - L2-loss linear SVM and logistic regression (LR)
- *
- * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers.
- *
- * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
- * */
-class CLibLinear : public CLinearMachine
-{
+	/** @brief This class provides an interface to the LibLinear library for
+	 * large-
+	 * scale linear learning focusing on SVM [1]. This is the classification
+	 * interface. For
+	 * regression, see CLibLinearRegression. There is also an online version,
+	 * see
+	 * COnlineLibLinear.
+	 *
+	 * LIBLINEAR is a linear SVM solver for data with millions of instances and
+	 * features. It supports (for classification)
+	 *
+	 * - L2-regularized classifiers
+	 * - L2-loss linear SVM, L1-loss linear SVM, and logistic regression (LR)
+	 * - L1-regularized classifiers
+	 * - L2-loss linear SVM and logistic regression (LR)
+	 *
+	 * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers.
+	 *
+	 * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
+	 * */
+	class CLibLinear : public CLinearMachine
+	{
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
@@ -78,9 +77,7 @@ class CLibLinear : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab training labels
 		 */
-		CLibLinear(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+		CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab);
 
 		/** destructor */
 		virtual ~CLibLinear();
@@ -99,60 +96,88 @@ class CLibLinear : public CLinearMachine
 		 */
 		inline void set_liblinear_solver_type(LIBLINEAR_SOLVER_TYPE st)
 		{
-			liblinear_solver_type=st;
+			liblinear_solver_type = st;
 		}
 
 		/** get classifier type
 		 *
 		 * @return the classifier type
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIBLINEAR; }
+		virtual EMachineType get_classifier_type()
+		{
+			return CT_LIBLINEAR;
+		}
 
 		/** set C
 		 *
 		 * @param c_neg C1
 		 * @param c_pos C2
 		 */
-		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
+		inline void set_C(float64_t c_neg, float64_t c_pos)
+		{
+			C1 = c_neg;
+			C2 = c_pos;
+		}
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline float64_t get_C1() { return C1; }
+		inline float64_t get_C1()
+		{
+			return C1;
+		}
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline float64_t get_C2() { return C2; }
+		inline float64_t get_C2()
+		{
+			return C2;
+		}
 
 		/** set epsilon
 		 *
 		 * @param eps new epsilon
 		 */
-		inline void set_epsilon(float64_t eps) { epsilon=eps; }
+		inline void set_epsilon(float64_t eps)
+		{
+			epsilon = eps;
+		}
 
 		/** get epsilon
 		 *
 		 * @return epsilon
 		 */
-		inline float64_t get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon()
+		{
+			return epsilon;
+		}
 
 		/** set if bias shall be enabled
 		 *
 		 * @param enable_bias if bias shall be enabled
 		 */
-		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+		inline void set_bias_enabled(bool enable_bias)
+		{
+			use_bias = enable_bias;
+		}
 
 		/** check if bias is enabled
 		 *
 		 * @return if bias is enabled
 		 */
-		inline bool get_bias_enabled() { return use_bias; }
+		inline bool get_bias_enabled()
+		{
+			return use_bias;
+		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LibLinear"; }
+		virtual const char* get_name() const
+		{
+			return "LibLinear";
+		}
 
 		/** get the maximum number of iterations liblinear is allowed to do */
 		inline int32_t get_max_iterations()
@@ -161,9 +186,9 @@ class CLibLinear : public CLinearMachine
 		}
 
 		/** set the maximum number of iterations liblinear is allowed to do */
-		inline void set_max_iterations(int32_t max_iter=1000)
+		inline void set_max_iterations(int32_t max_iter = 1000)
 		{
-			max_iterations=max_iter;
+			max_iterations = max_iter;
 		}
 
 		/** set the linear term for qp */
@@ -175,6 +200,17 @@ class CLibLinear : public CLinearMachine
 		/** set the linear term for qp */
 		void init_linear_term();
 
+		/** check if linear_term been inited
+		 * @return if linear_term been inited
+		 */
+		bool linear_term_inited()
+		{
+			if (!m_linear_term.vlen || !m_linear_term.vector)
+				return false;
+
+			return true;
+		}
+
 	protected:
 		/** train linear SVM classifier
 		 *
@@ -184,21 +220,28 @@ class CLibLinear : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data = NULL);
 
 	private:
 		/** set up parameters */
-        void init();
+		void init();
 
-		void train_one(const liblinear_problem *prob, const liblinear_parameter *param, double Cp, double Cn);
+		void train_one(
+		    const liblinear_problem* prob, const liblinear_parameter* param,
+		    double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
-			SGVector<float64_t>& w,
-			const liblinear_problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
+		    SGVector<float64_t>& w, const liblinear_problem* prob, double eps,
+		    double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
 
-		void solve_l1r_l2_svc(SGVector<float64_t>& w, liblinear_problem *prob_col, double eps, double Cp, double Cn);
-		void solve_l1r_lr(SGVector<float64_t>& w, const liblinear_problem *prob_col, double eps, double Cp, double Cn);
-		void solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_problem *prob, double eps, double Cp, double Cn);
-
+		void solve_l1r_l2_svc(
+		    SGVector<float64_t>& w, liblinear_problem* prob_col, double eps,
+		    double Cp, double Cn);
+		void solve_l1r_lr(
+		    SGVector<float64_t>& w, const liblinear_problem* prob_col,
+		    double eps, double Cp, double Cn);
+		void solve_l2r_lr_dual(
+		    SGVector<float64_t>& w, const liblinear_problem* prob, double eps,
+		    double Cp, double Cn);
 
 	protected:
 		/** C1 */
@@ -217,7 +260,7 @@ class CLibLinear : public CLinearMachine
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
-};
+	};
 
 } /* namespace shogun  */
 

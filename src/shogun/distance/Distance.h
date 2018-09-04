@@ -1,12 +1,10 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2006-2009 Christian Gehl
- * Written (W) 2006-2009 Soeren Sonnenburg
- * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn, 
+ *          Saurabh Mahindre, Chiyuan Zhang, Michele Mazzoni, Evgeniy Andreev, 
+ *          Evan Shelhamer, Yuyu Zhang, Heiko Strathmann, Thoralf Klein, 
+ *          Björn Esser, Soumyajit De, Saurabh Goyal
  */
 
 #ifndef _DISTANCE_H___
@@ -175,7 +173,8 @@ class CDistance : public CSGObject
 			int32_t i_start;
 
 			if (symmetric)
-				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+				i_start = (int32_t)CMath::floor(
+				    n - std::sqrt(CMath::sq((float64_t)n) - offs));
 			else
 				i_start=(int32_t) (offs/int64_t(n));
 

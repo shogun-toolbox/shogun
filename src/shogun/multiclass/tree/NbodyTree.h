@@ -174,7 +174,7 @@ protected:
 		if (m_dist==D_MANHATTAN)
 			return dists;
 
-		return CMath::sqrt(dists);
+		return std::sqrt(dists);
 	}
 
 	/** distance between 2 vectors
@@ -289,7 +289,7 @@ private:
 		if (a==-CMath::INFTY)
 			return -CMath::INFTY;
 
-		return a+CMath::log(CMath::exp(x-a)+CMath::exp(y-a));
+		return a + std::log(std::exp(x - a) + std::exp(y - a));
 	}
 
 	/** log-diff-exp trick for 2 numbers
@@ -303,7 +303,7 @@ private:
 		if (x<=y)
 			return -CMath::INFTY;
 
-		return x+CMath::log(1-CMath::exp(y-x));
+		return x + std::log(1 - std::exp(y - x));
 	}
 
 	/** initialize parameters */

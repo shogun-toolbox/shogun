@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Soumyajit De, Heiko Strathmann
  */
 
 #include <shogun/lib/config.h>
@@ -155,7 +151,8 @@ SerializableJsonReader00::read_stringentry_begin_wrapped(
 	json_object* m = m_file->m_stack_stream.back();
 
 	json_object* buf = json_object_array_get_idx(m, y);
-	if (is_error(buf)) return false;
+	if (buf == nullptr)
+		return false;
 
 	m_file->push_object(buf);
 	return true;
@@ -203,7 +200,8 @@ SerializableJsonReader00::read_sparseentry_begin_wrapped(
 
 	json_object* buf_obj
 		= json_object_array_get_idx(m, y);
-	if (is_error(buf_obj)) return false;
+	if (buf_obj == nullptr)
+		return false;
 	if (!json_object_is_type(buf_obj, json_type_object)) return false;
 
 	json_object* buf;

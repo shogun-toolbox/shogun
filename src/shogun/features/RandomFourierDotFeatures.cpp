@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Evangelos Anagnostopoulos
- * Copyright (C) 2013 Evangelos Anagnostopoulos
+ * Authors: Evangelos Anagnostopoulos, Björn Esser
  */
 
 #include <shogun/base/Parameter.h>
@@ -57,7 +53,7 @@ void CRandomFourierDotFeatures::init(KernelName kernel_name, SGVector<float64_t>
 	kernel = kernel_name;
 	kernel_params = params;
 
-	constant = num_samples>0 ? CMath::sqrt(2.0 / num_samples) : 1;
+	constant = num_samples > 0 ? std::sqrt(2.0 / num_samples) : 1;
 	m_parameters->add(&kernel_params, "kernel_params",
 			"The parameters of the kernel to approximate");
 	SG_ADD((machine_int_t* ) &kernel, "kernel",
@@ -90,8 +86,8 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 		case GAUSSIAN:
 			for (index_t i=0; i<vec.vlen-1; i++)
 			{
-				vec[i] = CMath::sqrt((float64_t) 1/kernel_params[0]) *
-							CMath::sqrt(2.0) * CMath::normal_random(0.0, 1);
+				vec[i] = std::sqrt((float64_t)1 / kernel_params[0]) *
+				         std::sqrt(2.0) * CMath::normal_random(0.0, 1);
 			}
 
 			vec[vec.vlen-1] = CMath::random(0.0, 2 * CMath::PI);

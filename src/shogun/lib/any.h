@@ -35,9 +35,13 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
+#include <shogun/base/init.h>
+
+#include <algorithm>
+#include <limits>
 #include <stdexcept>
-#include <string>
 #include <string.h>
+#include <string>
 #include <typeinfo>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
@@ -50,7 +54,7 @@ namespace shogun
 	 * @return human readable name of class
 	 */
 	template <typename T>
-	std::string demangledType()
+	std::string demangled_type()
 	{
 #ifdef HAVE_CXA_DEMANGLE
 		size_t length;
@@ -71,6 +75,337 @@ namespace shogun
 		NON_OWNING
 	};
 
+	class CSGObject;
+	template <class T>
+	class SGVector;
+	template <class T>
+	class SGMatrix;
+
+	class TypeMismatchException : public std::exception
+	{
+	public:
+		TypeMismatchException(
+		    const std::string& expected, const std::string& actual)
+		    : m_expected(expected), m_actual(actual)
+		{
+		}
+		TypeMismatchException(const TypeMismatchException& other)
+		    : m_expected(other.m_expected), m_actual(other.m_actual)
+		{
+		}
+		std::string expected() const
+		{
+			return m_expected;
+		}
+		std::string actual() const
+		{
+			return m_actual;
+		}
+
+	private:
+		std::string m_expected;
+		std::string m_actual;
+	};
+
+	template <class T, class S>
+	class ArrayReference
+	{
+	public:
+		ArrayReference(T** ptr, S* length) : m_ptr(ptr), m_length(length)
+		{
+		}
+		ArrayReference(const ArrayReference<T, S>& other)
+		    : m_ptr(other.m_ptr), m_length(other.m_length)
+		{
+		}
+		ArrayReference<T, S> operator=(const ArrayReference<T, S>& other)
+		{
+			throw std::logic_error("Assignment not supported");
+		}
+		bool equals(const ArrayReference<T, S>& other) const;
+		void reset(const ArrayReference<T, S>& other);
+
+	private:
+		T** m_ptr;
+		S* m_length;
+	};
+
+	template <class T, class S>
+	class Array2DReference
+	{
+	public:
+		Array2DReference(T** ptr, S* rows, S* cols)
+		    : m_ptr(ptr), m_rows(rows), m_cols(cols)
+		{
+		}
+		Array2DReference(const Array2DReference<T, S>& other)
+		    : m_ptr(other.m_ptr), m_rows(other.m_rows), m_cols(other.m_cols)
+		{
+		}
+		Array2DReference<T, S> operator=(const Array2DReference<T, S>& other)
+		{
+			throw std::logic_error("Assignment not supported");
+		}
+		bool equals(const Array2DReference<T, S>& other) const;
+		void reset(const Array2DReference<T, S>& other);
+
+	private:
+		T** m_ptr;
+		S* m_rows;
+		S* m_cols;
+	};
+
+	/** Used to denote an empty Any object */
+	struct Empty
+	{
+		/** Equality operator */
+		bool operator==(const Empty& other) const
+		{
+			return true;
+		}
+	};
+
+	class AnyVisitor
+	{
+	public:
+		virtual ~AnyVisitor() = default;
+
+		virtual void on(const bool*) = 0;
+		virtual void on(const int32_t*) = 0;
+		virtual void on(const int64_t*) = 0;
+		virtual void on(const float*) = 0;
+		virtual void on(const double*) = 0;
+		virtual void on(const CSGObject**) = 0;
+		virtual void on(const SGVector<int>*) = 0;
+		virtual void on(const SGVector<float>*) = 0;
+		virtual void on(const SGVector<double>*) = 0;
+		virtual void on(const SGMatrix<int>*) = 0;
+		virtual void on(const SGMatrix<float>*) = 0;
+		virtual void on(const SGMatrix<double>*) = 0;
+
+		void on(Empty*)
+		{
+		}
+
+		void on(...)
+		{
+		}
+	};
+
+	namespace any_detail
+	{
+
+		struct by_default
+		{
+		};
+
+		struct general : by_default
+		{
+		};
+
+		struct more_important : general
+		{
+		};
+
+		struct maybe_most_important : more_important
+		{
+		};
+
+		template <class T>
+		auto compare_impl(by_default, const T& lhs, const T& rhs) = delete;
+
+		template <class T>
+		bool compare_impl_eq(const T& lhs, const T& rhs)
+		{
+			return lhs == rhs;
+		}
+		template <>
+		bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
+		template <>
+		bool compare_impl_eq(const float64_t& lhs, const float64_t& rhs);
+		template <>
+		bool compare_impl_eq(const floatmax_t& lhs, const floatmax_t& rhs);
+		template <>
+		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
+
+		template <class T>
+		auto compare_impl(general, const T& lhs, const T& rhs)
+		    -> decltype(lhs == rhs)
+		{
+			return compare_impl_eq(lhs, rhs);
+		}
+
+		template <class T>
+		auto compare_impl(more_important, const T& lhs, const T& rhs)
+		    -> decltype(lhs.equals(rhs))
+		{
+			return lhs.equals(rhs);
+		}
+
+		template <class T>
+		auto compare_impl(maybe_most_important, T* lhs, T* rhs)
+		    -> decltype(lhs->equals(rhs))
+		{
+			if (lhs && rhs)
+				return lhs->equals(rhs);
+			else if (!lhs && !rhs)
+				return true;
+			else
+				return false;
+		}
+
+		template <class T>
+		inline bool compare(const T& lhs, const T& rhs)
+		{
+			return compare_impl(maybe_most_important(), lhs, rhs);
+		}
+
+		template <class T>
+		inline T clone_impl(general, T& value)
+		{
+			return T(value);
+		}
+
+		template <class T>
+		inline auto clone_impl(more_important, const T& value)
+		    -> decltype(value.clone())
+		{
+			return value.clone();
+		}
+
+		template <class T>
+		inline auto clone_impl(maybe_most_important, T* value)
+		    -> decltype(static_cast<void*>(value->clone()))
+		{
+			if (!value)
+				return nullptr;
+
+			return static_cast<void*>(value->clone());
+		}
+
+		template <class T>
+		inline T& mutable_value_of(void** ptr)
+		{
+			return *static_cast<T*>(*ptr);
+		}
+
+		template <class T>
+		inline T const* typed_pointer(const void* ptr)
+		{
+			return static_cast<T const*>(ptr);
+		}
+
+		template <class T>
+		inline auto clone(void** storage, T& value)
+		    -> decltype(clone_impl(maybe_most_important(), value))
+		{
+			auto cloned = clone_impl(maybe_most_important(), value);
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
+			return cloned;
+		}
+
+		template <class T, class S>
+		inline auto clone(void** storage, const ArrayReference<T, S>& value)
+		{
+			auto existing = mutable_value_of<ArrayReference<T, S>>(storage);
+			existing.reset(value);
+		}
+
+		template <class T, class S>
+		inline auto clone(void** storage, const Array2DReference<T, S>& value)
+		{
+			auto existing = mutable_value_of<Array2DReference<T, S>>(storage);
+			existing.reset(value);
+		}
+
+		template <class T>
+		inline const T& value_of(T const* ptr)
+		{
+			return *ptr;
+		}
+
+		template <class T, class S>
+		inline auto free_array(T* ptr, S size)
+		{
+			SG_FREE(ptr);
+		}
+
+		template <class S>
+		inline auto free_array(CSGObject** ptr, S size)
+		{
+			for (S i = 0; i < size; ++i)
+			{
+				ptr[i]->unref();
+			}
+			SG_FREE(ptr);
+		}
+	}
+
+	using any_detail::typed_pointer;
+	using any_detail::value_of;
+	using any_detail::mutable_value_of;
+	using any_detail::compare;
+
+	template <class T, class S>
+	bool ArrayReference<T, S>::equals(const ArrayReference<T, S>& other) const
+	{
+		if (*(m_length) != *(other.m_length))
+		{
+			return false;
+		}
+		if (*(m_ptr) == *(other.m_ptr))
+		{
+			return true;
+		}
+		return std::equal(
+		    *(m_ptr), *(m_ptr) + *(m_length), *(other.m_ptr),
+		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+	}
+
+	template <class T, class S>
+	void ArrayReference<T, S>::reset(const ArrayReference<T, S>& other)
+	{
+		auto src = *(other.m_ptr);
+		auto len = *(other.m_length);
+		auto& dst = *(this->m_ptr);
+		any_detail::free_array(dst, len);
+		dst = new T[len];
+		*(this->m_length) = len;
+		std::copy(src, src + len, dst);
+	}
+
+	template <class T, class S>
+	bool
+	Array2DReference<T, S>::equals(const Array2DReference<T, S>& other) const
+	{
+		if ((*(m_rows) != *(other.m_rows)) || (*(m_cols) != *(other.m_cols)))
+		{
+			return false;
+		}
+		if (*(m_ptr) == *(other.m_ptr))
+		{
+			return true;
+		}
+		int64_t size = int64_t(*(m_rows)) * (*(m_cols));
+		return std::equal(
+		    *(m_ptr), *(m_ptr) + size, *(other.m_ptr),
+		    [](T lhs, T rhs) -> bool { return any_detail::compare(lhs, rhs); });
+	}
+
+	template <class T, class S>
+	void Array2DReference<T, S>::reset(const Array2DReference<T, S>& other)
+	{
+		auto src = *(other.m_ptr);
+		auto rows = *(other.m_rows);
+		auto cols = *(other.m_cols);
+		auto& dst = *(this->m_ptr);
+		any_detail::free_array(dst, (rows * cols));
+		dst = new T[rows * cols];
+		*(this->m_rows) = rows;
+		*(this->m_cols) = cols;
+		std::copy(src, src + (rows * cols), dst);
+	}
+
 	/** @brief An interface for a policy to store a value.
 	 * Value can be any data like primitive data-types, shogun objects, etc.
 	 * Policy defines how to handle this data. It works with a
@@ -85,6 +420,12 @@ namespace shogun
 		 * @param v pointer to value
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
+
+		/** Clones value provided by from into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param from pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* from) const = 0;
 
 		/** Clears storage.
 		 * @param storage pointer to a pointer to storage
@@ -107,22 +448,31 @@ namespace shogun
 		 */
 		virtual bool matches(const std::type_info& ti) const = 0;
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const = 0;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		virtual bool equals(void** storage, void** other_storage) const = 0;
-
-		/** Returns the name of policy.
-		 * @return name of policy
-		 */
-		virtual std::string policy_name() const = 0;
+		virtual bool
+		equals(const void* storage, const void* other_storage) const = 0;
 
 		/** Returns the type of policy.
 		 * @return type of policy
 		 */
 		virtual PolicyType policy_type() const = 0;
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
 	};
 
 	/** @brief This is one concrete implementation of policy that
@@ -138,7 +488,16 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const
 		{
-			*(storage) = new T(*reinterpret_cast<T const*>(v));
+			*(storage) = new T(value_of(typed_pointer<T>(v)));
+		}
+
+		/** Clones value provided by from into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param from pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* from) const
+		{
+			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
 
 		/** Clears storage.
@@ -146,7 +505,7 @@ namespace shogun
 		 */
 		virtual void clear(void** storage) const
 		{
-			delete reinterpret_cast<T*>(*storage);
+			delete typed_pointer<T>(*storage);
 		}
 
 		/** Returns type-name as string.
@@ -154,7 +513,7 @@ namespace shogun
 		 */
 		virtual std::string type() const
 		{
-			return demangledType<T>();
+			return demangled_type<T>();
 		}
 
 		/** Returns type info
@@ -174,26 +533,38 @@ namespace shogun
 			return typeid(T) == ti;
 		}
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(void** storage, void** other_storage) const
+		bool equals(const void* storage, const void* other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
-		}
-
-		virtual std::string policy_name() const
-		{
-			return "owning";
+			const T& typed_storage = value_of(typed_pointer<T>(storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
+			return compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
 		{
 			return PolicyType::OWNING;
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to a pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const
+		{
+			visitor->on(typed_pointer<T>(storage));
 		}
 	};
 
@@ -207,7 +578,16 @@ namespace shogun
 		 */
 		virtual void set(void** storage, const void* v) const
 		{
-			*(storage) = const_cast<void*>(v);
+			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
+		}
+
+		/** Clones value provided by from into storage
+		 * @param storage pointer to a pointer to storage
+		 * @param from pointer to value to clone
+		 */
+		virtual void clone(void** storage, const void* from) const
+		{
+			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
 
 		/** Clears storage.
@@ -222,7 +602,7 @@ namespace shogun
 		 */
 		virtual std::string type() const
 		{
-			return demangledType<T>();
+			return demangled_type<T>();
 		}
 
 		/** Returns type info
@@ -242,26 +622,38 @@ namespace shogun
 			return typeid(T) == ti;
 		}
 
+		/** Checks if policies are compatible.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool matches(BaseAnyPolicy* other) const;
+
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
 		 * @param other_storage pointer to a pointer to another storage
 		 * @return true if both storages have same value
 		 */
-		bool equals(void** storage, void** other_storage) const
+		bool equals(const void* storage, const void* other_storage) const
 		{
-			T typed_storage = *(reinterpret_cast<T*>(*storage));
-			T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-			return typed_storage == typed_other_storage;
-		}
-
-		virtual std::string policy_name() const
-		{
-			return "non owning";
+			const T& typed_storage = value_of(typed_pointer<T>(storage));
+			const T& typed_other_storage =
+			    value_of(typed_pointer<T>(other_storage));
+			return compare(typed_storage, typed_other_storage);
 		}
 
 		virtual PolicyType policy_type() const
 		{
 			return PolicyType::NON_OWNING;
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param storage pointer to storage
+		 * @param visitor abstract visitor to use
+		 */
+		virtual void visit(void* storage, AnyVisitor* visitor) const
+		{
+			visitor->on(typed_pointer<T>(storage));
 		}
 	};
 
@@ -281,6 +673,34 @@ namespace shogun
 		return &policy;
 	}
 
+	template <class T>
+	bool NonOwningAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == owning_policy<T>())
+		{
+			return true;
+		}
+		return matches(other->type_info());
+	}
+
+	template <class T>
+	bool PointerValueAnyPolicy<T>::matches(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == non_owning_policy<T>())
+		{
+			return true;
+		}
+		return matches(other->type_info());
+	}
+
 	/** @brief Allows to store objects of arbitrary types
 	 * by using a BaseAnyPolicy and provides a type agnostic API.
 	 * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
@@ -290,11 +710,15 @@ namespace shogun
 	class Any
 	{
 	public:
-		/** Used to denote an empty Any object */
-		struct Empty;
 
 		/** Empty value constructor */
 		Any() : Any(owning_policy<Empty>(), nullptr)
+		{
+		}
+
+		/** Base constructor */
+		Any(BaseAnyPolicy* the_policy, void* the_storage)
+		    : policy(the_policy), storage(the_storage)
 		{
 		}
 
@@ -305,17 +729,16 @@ namespace shogun
 			policy->set(&storage, &v);
 		}
 
-		/** Base constructor */
-		Any(BaseAnyPolicy* the_policy, void* the_storage)
-		    : policy(the_policy), storage(the_storage)
-		{
-		}
-
 		/** Copy constructor */
 		Any(const Any& other) : Any(other.policy, nullptr)
 		{
-			assert_same_policy_type(other.policy);
-			policy->set(&storage, other.storage);
+			set_or_inherit(other);
+		}
+
+		/** Move constructor */
+		Any(Any&& other) : Any(other.policy, nullptr)
+		{
+			set_or_inherit(other);
 		}
 
 		/** Assignment operator
@@ -324,10 +747,38 @@ namespace shogun
 		 */
 		Any& operator=(const Any& other)
 		{
-			assert_same_policy_type(other.policy);
+			if (empty())
+			{
+				policy = other.policy;
+				set_or_inherit(other);
+				return *(this);
+			}
+			if (!policy->matches(other.policy))
+			{
+				throw TypeMismatchException(
+				    other.policy->type(), policy->type());
+			}
 			policy->clear(&storage);
-			policy = other.policy;
-			policy->set(&storage, other.storage);
+			if (other.policy->policy_type() == PolicyType::NON_OWNING)
+			{
+				policy = other.policy;
+				storage = other.storage;
+			}
+			else
+			{
+				policy->set(&storage, other.storage);
+			}
+			return *(this);
+		}
+
+		Any& clone_from(const Any& other)
+		{
+			if (!policy->matches(other.policy))
+			{
+				throw TypeMismatchException(
+				    other.policy->type(), policy->type());
+			}
+			policy->clone(&storage, other.storage);
 			return *(this);
 		}
 
@@ -355,17 +806,16 @@ namespace shogun
 		 * @return type-casted value
 		 */
 		template <typename T>
-		T& as() const
+		const T& as() const
 		{
 			if (same_type<T>())
 			{
-				return *(reinterpret_cast<T*>(storage));
+				return value_of(typed_pointer<T>(storage));
 			}
 			else
 			{
-				throw std::logic_error(
-				    "Bad cast to " + demangledType<T>() + " but the type is " +
-				    policy->type());
+				throw TypeMismatchException(
+				    demangled_type<T>(), policy->type());
 			}
 		}
 
@@ -396,14 +846,33 @@ namespace shogun
 			return policy->type_info();
 		}
 
-	private:
-		void assert_same_policy_type(BaseAnyPolicy* other_policy)
+		/** Returns type-name of policy as string.
+		 * @return name of type class
+		 */
+		std::string type() const
 		{
-			if (policy->policy_type() != other_policy->policy_type())
+			return policy->type();
+		}
+
+		/** Visitor pattern. Calls the appropriate 'on' method of AnyVisitor.
+		 *
+		 * @param visitor visitor object to use
+		 */
+		void visit(AnyVisitor* visitor) const
+		{
+			policy->visit(storage, visitor);
+		}
+
+	private:
+		void set_or_inherit(const Any& other)
+		{
+			if (other.policy->policy_type() == PolicyType::NON_OWNING)
 			{
-				throw std::logic_error(
-				    "The policies are different: " + policy->policy_name() +
-				    " and " + other_policy->policy_name());
+				storage = other.storage;
+			}
+			else
+			{
+				policy->set(&storage, other.storage);
 			}
 		}
 
@@ -414,10 +883,17 @@ namespace shogun
 
 	inline bool operator==(const Any& lhs, const Any& rhs)
 	{
+		if (lhs.empty() || rhs.empty())
+		{
+			return lhs.empty() && rhs.empty();
+		}
+		if (!lhs.policy->matches(rhs.policy))
+		{
+			return false;
+		}
 		void* lhs_storage = lhs.storage;
 		void* rhs_storage = rhs.storage;
-		return lhs.policy == rhs.policy &&
-		       lhs.policy->equals(&lhs_storage, &rhs_storage);
+		return lhs.policy->equals(lhs_storage, rhs_storage);
 	}
 
 	inline bool operator!=(const Any& lhs, const Any& rhs)
@@ -425,34 +901,36 @@ namespace shogun
 		return !(lhs == rhs);
 	}
 
-	/** Used to denote an empty Any object */
-	struct Any::Empty
-	{
-		/** Equality operator */
-		bool operator==(const Empty& other) const
-		{
-			return true;
-		}
-	};
-
 	/** Erases value type i.e. converts it to Any
 	 * For input object of any type, it returns an Any object
 	 * which stores the input object's raw value. It saves the type
-	 * information internally to be recalled later by using recall_type().
+	 * information internally to be cast back later by using any_cast().
 	 *
 	 * @param v value
 	 * @return Any object with the input value
 	 */
 	template <typename T>
-	inline Any erase_type(const T& v)
+	inline Any make_any(const T& v)
 	{
 		return Any(v);
 	}
 
 	template <typename T>
-	inline Any erase_type_non_owning(T* v)
+	inline Any make_any_ref(T* v)
 	{
 		return Any(non_owning_policy<T>(), v);
+	}
+
+	template <typename T, typename S>
+	inline Any make_any_ref(T** ptr, S* length)
+	{
+		return make_any(ArrayReference<T, S>(ptr, length));
+	}
+
+	template <typename T, typename S>
+	inline Any make_any_ref(T** ptr, S* rows, S* cols)
+	{
+		return make_any(Array2DReference<T, S>(ptr, rows, cols));
 	}
 
 	/** Tries to recall Any type, fails when type is wrong.
@@ -464,7 +942,7 @@ namespace shogun
 	 * @return type-casted value
 	 */
 	template <typename T>
-	inline T recall_type(const Any& any)
+	inline T any_cast(const Any& any)
 	{
 		return any.as<T>();
 	}

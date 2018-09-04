@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Soeren Sonnenburg
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Weijie Lin, Evan Shelhamer, Sergey Lisitsyn
  */
 #include <shogun/distributions/PositionalPWM.h>
 #include <shogun/mathematics/Math.h>
@@ -49,9 +45,9 @@ float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
 		return m_pwm[num_param];
 	}
 	else if (num_param<m_pwm.num_rows*m_pwm.num_cols+1)
-		return CMath::log(m_sigma);
+		return std::log(m_sigma);
 	else
-		return CMath::log(m_mean);
+		return std::log(m_mean);
 }
 
 float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
@@ -87,8 +83,8 @@ float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
 {
 	ASSERT(m_pwm.num_cols == len)
-	float64_t score = CMath::log(1/(m_sigma*CMath::sqrt(2*M_PI))) -
-			CMath::sq(pos-m_mean)/(2*CMath::sq(m_sigma));
+	float64_t score = std::log(1 / (m_sigma * std::sqrt(2 * M_PI))) -
+	                  CMath::sq(pos - m_mean) / (2 * CMath::sq(m_sigma));
 
 	for (int32_t i=0; i<m_pwm.num_cols; i++)
 		score+=m_pwm[m_pwm.num_rows*i+window[i]];

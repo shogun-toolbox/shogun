@@ -1143,7 +1143,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		}
 		else
 		{
-			int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
+			int32_t offs = std::ceil(2.0 * sizeof(int32_t) / sizeof(ST));
 			features[i].string=SG_MALLOC(ST, len_compressed+offs);
 			features[i].slen=len_compressed+offs;
 			int32_t* feat32ptr=((int32_t*) (features[i].string));
@@ -1730,12 +1730,17 @@ template<class ST> void CStringFeatures<ST>::init()
 	original_num_symbols=0;
 
 	m_parameters->add((CSGObject**) &alphabet, "alphabet");
+
 	m_parameters->add_vector(&features, &num_vectors, "features",
 			"This contains the array of features.");
+	watch_param("features", &features, &num_vectors);
+
 	m_parameters->add_vector(&single_string,
 			&length_of_single_string,
 			"single_string",
 			"Created by sliding window.");
+	watch_param("single_string", &single_string, &length_of_single_string);
+
 	m_parameters->add(&max_string_length, "max_string_length",
 			"Length of longest string.");
 	m_parameters->add(&num_symbols, "num_symbols",
@@ -1748,6 +1753,7 @@ template<class ST> void CStringFeatures<ST>::init()
 			"Preprocess on-the-fly?");
 
 	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
+	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);
 }
 
 /** get feature type the char feature can deal with

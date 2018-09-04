@@ -44,6 +44,23 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 	m_subset_stack=orig.m_subset_stack;
 	SG_REF(m_subset_stack);
 }
+
+template <class ST>
+CSparseFeatures<ST>::CSparseFeatures(CDenseFeatures<ST>* dense)
+	: CDotFeatures(0), feature_cache(NULL)
+{
+	init();
+
+	SGMatrix<ST> fm=dense->get_feature_matrix();
+	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
+	set_full_feature_matrix(fm);
+}
+
+template<> CSparseFeatures<complex128_t>::CSparseFeatures(CDenseFeatures<complex128_t>* dense)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
 : CDotFeatures(), feature_cache(NULL)
 {
@@ -314,18 +331,6 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 		SG_WARNING("no sparse feature matrix available or features already preprocessed - skipping.\n")
 		return false;
 	}
-}
-
-template<class ST> void CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
-{
-	SGMatrix<ST> fm=sf->get_feature_matrix();
-	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
-	set_full_feature_matrix(fm);
-}
-
-template<> void CSparseFeatures<complex128_t>::obtain_from_simple(CDenseFeatures<complex128_t>* sf)
-{
-	SG_NOTIMPLEMENTED;
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
@@ -612,6 +617,10 @@ template<class ST> void CSparseFeatures<ST>::init()
 	m_parameters->add_vector(&sparse_feature_matrix.sparse_matrix, &sparse_feature_matrix.num_vectors,
 			"sparse_feature_matrix",
 			"Array of sparse vectors.");
+	watch_param(
+		"sparse_feature_matrix", &sparse_feature_matrix.sparse_matrix,
+		&sparse_feature_matrix.num_vectors);
+
 	m_parameters->add(&sparse_feature_matrix.num_features, "sparse_feature_matrix.num_features",
 			"Total number of features.");
 }

@@ -1,11 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Michal Uricar
- * Copyright (C) 2012 Michal Uricar
+ * Authors: Michal Uricar, Fernando Iglesias, Soeren Sonnenburg, 
+ *          Heiko Strathmann, Evgeniy Andreev, Shell Hu, Thoralf Klein, 
+ *          Björn Esser, Sergey Lisitsyn, Sanuj Sharma, Viktor Gal
  */
 
 #include <shogun/lib/config.h>

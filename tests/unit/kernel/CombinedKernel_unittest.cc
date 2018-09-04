@@ -1,7 +1,12 @@
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/io/SerializableAsciiFile.h>
 #include <gtest/gtest.h>
+#include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -34,6 +39,133 @@ TEST(CombinedKernelTest,test_array_operations)
 	SG_UNREF(k_1);
 	SG_UNREF(k_2);
 	SG_UNREF(k_3);
+	SG_UNREF(combined);
+}
+
+TEST(CombinedKernelTest, test_subset_mixed)
+{
+
+	int n_runs = 10;
+
+	auto gen = new CMeanShiftDataGenerator(0, 2);
+	CFeatures* feats = gen->get_streamed_features(n_runs);
+
+	CCombinedFeatures* feats_combined = new CCombinedFeatures();
+
+	CCombinedKernel* combined = new CCombinedKernel();
+
+	CGaussianKernel* gaus_1 = new CGaussianKernel(5);
+	CGaussianKernel* gaus_2 = new CGaussianKernel(5);
+
+	CGaussianKernel* gaus_ck = new CGaussianKernel(5);
+	gaus_ck->init(feats, feats);
+
+	CCustomKernel* custom_1 = new CCustomKernel(gaus_ck);
+	CCustomKernel* custom_2 = new CCustomKernel(gaus_ck);
+	;
+
+	combined->append_kernel(custom_1);
+	combined->append_kernel(gaus_1);
+	feats_combined->append_feature_obj(feats);
+
+	combined->append_kernel(custom_2);
+	combined->append_kernel(gaus_2);
+	feats_combined->append_feature_obj(feats);
+
+	SGVector<index_t> inds(10);
+	inds.range_fill();
+
+	for (index_t i = 0; i < n_runs; ++i)
+	{
+		CMath::permute(inds);
+
+		feats_combined->add_subset(inds);
+		combined->init(feats_combined, feats_combined);
+
+		CKernel* ground_truth_kernel = combined->get_kernel(1);
+		CKernel* custom_kernel_1 = combined->get_kernel(0);
+		CKernel* custom_kernel_2 = combined->get_kernel(2);
+
+		SGMatrix<float64_t> gauss_matrix =
+		    ground_truth_kernel->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 =
+		    custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 =
+		    custom_kernel_2->get_kernel_matrix();
+
+		for (index_t j = 0; j < n_runs; ++j)
+		{
+			for (index_t k = 0; k < n_runs; ++k)
+			{
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+			}
+		}
+
+		feats_combined->remove_subset();
+		SG_UNREF(ground_truth_kernel);
+		SG_UNREF(custom_kernel_1);
+		SG_UNREF(custom_kernel_2);
+	}
+
+	SG_UNREF(gaus_ck);
+	SG_UNREF(combined);
+}
+
+TEST(CombinedKernelTest, test_subset_combined_only)
+{
+
+	int n_runs = 10;
+
+	auto gen = new CMeanShiftDataGenerator(0, 2);
+	CFeatures* feats = gen->get_streamed_features(n_runs);
+
+	CCombinedKernel* combined = new CCombinedKernel();
+
+	CGaussianKernel* gaus_ck = new CGaussianKernel(5);
+	gaus_ck->init(feats, feats);
+
+	CCustomKernel* custom_1 = new CCustomKernel(gaus_ck);
+	CCustomKernel* custom_2 = new CCustomKernel(gaus_ck);
+
+	combined->append_kernel(custom_1);
+	combined->append_kernel(custom_2);
+
+	SGVector<index_t> inds(n_runs);
+	inds.range_fill();
+
+	for (index_t i = 0; i < n_runs; ++i)
+	{
+		CMath::permute(inds);
+
+		feats->add_subset(inds);
+		combined->init(feats, feats);
+		gaus_ck->init(feats, feats);
+
+		CKernel* custom_kernel_1 = combined->get_kernel(0);
+		CKernel* custom_kernel_2 = combined->get_kernel(1);
+
+		SGMatrix<float64_t> gauss_matrix = gaus_ck->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_1 =
+		    custom_kernel_1->get_kernel_matrix();
+		SGMatrix<float64_t> custom_matrix_2 =
+		    custom_kernel_2->get_kernel_matrix();
+
+		for (index_t j = 0; j < n_runs; ++j)
+		{
+			for (index_t k = 0; k < n_runs; ++k)
+			{
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+				EXPECT_NEAR(gauss_matrix(j, k), custom_matrix_1(j, k), 1e-6);
+			}
+		}
+
+		feats->remove_subset();
+		SG_UNREF(custom_kernel_1);
+		SG_UNREF(custom_kernel_2);
+	}
+
+	SG_UNREF(gaus_ck);
 	SG_UNREF(combined);
 }
 

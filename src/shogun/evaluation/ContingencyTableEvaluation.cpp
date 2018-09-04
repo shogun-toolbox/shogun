@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ *          Roman Votyakov, Viktor Gal
  */
 
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
@@ -15,15 +12,22 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted->get_label_type()==LT_BINARY)
-	ASSERT(ground_truth->get_label_type()==LT_BINARY)
+	REQUIRE(
+	    predicted->get_num_labels() == ground_truth->get_num_labels(),
+	    "Number of predicted labels (%d) must be "
+	    "equal to number of ground truth labels (%d)!\n",
+	    get_name(), predicted->get_num_labels(),
+	    ground_truth->get_num_labels());
+
+	auto predicted_binary = binary_labels(predicted);
+	auto ground_truth_binary = binary_labels(ground_truth);
 
 	/* commented out: what if a machine only returns +1 in apply() ??
 	 * Heiko Strathamn */
 //	predicted->ensure_valid();
 
 	ground_truth->ensure_valid();
-	compute_scores((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
+	compute_scores(predicted_binary.get(), ground_truth_binary.get());
 	switch (m_type)
 	{
 		case ACCURACY:
@@ -85,15 +89,6 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 
 void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
-	ASSERT(ground_truth->get_label_type() == LT_BINARY)
-	ASSERT(predicted->get_label_type() == LT_BINARY)
-
-	if (predicted->get_num_labels()!=ground_truth->get_num_labels())
-	{
-		SG_ERROR("%s::compute_scores(): Number of predicted labels (%d) is not "
-				"equal to number of ground truth labels (%d)!\n", get_name(),
-				predicted->get_num_labels(), ground_truth->get_num_labels());
-	}
 	m_TP = 0.0;
 	m_FP = 0.0;
 	m_TN = 0.0;

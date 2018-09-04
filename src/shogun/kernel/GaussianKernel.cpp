@@ -1,15 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2010 Soeren Sonnenburg
- * Written (W) 2011 Abhinav Maurya
- * Written (W) 2012 Heiko Strathmann
- * Written (W) 2016 Soumyajit De
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Jacob Walker, Chiyuan Zhang, Wu Lin,
+ *          Heiko Strathmann, Roman Votyakov, Soumyajit De, Viktor Gal,
+ *          Tonmoy Saikia, Sergey Lisitsyn, Matt Aasted, Sanuj Sharma
  */
 
 #include <shogun/lib/common.h>
@@ -92,12 +86,12 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 void CGaussianKernel::set_width(float64_t w)
 {
 	REQUIRE(w>0, "width (%f) must be positive\n",w);
-	m_log_width=CMath::log(w/2.0)/2.0;
+	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
 float64_t CGaussianKernel::get_width() const
 {
-	return CMath::exp(m_log_width*2.0)*2.0;
+	return std::exp(m_log_width * 2.0) * 2.0;
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
@@ -114,7 +108,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 			for (int j=0; j<num_lhs; j++)
 			{
 				float64_t element=distance(j, k);
-				derivative(j, k)=CMath::exp(-element)*element*2.0;
+				derivative(j, k) = std::exp(-element) * element * 2.0;
 			}
 		}
 		return derivative;
@@ -129,7 +123,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* pa
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
     float64_t result=distance(idx_a, idx_b);
-    return CMath::exp(-result);
+	return std::exp(-result);
 }
 
 void CGaussianKernel::load_serializable_post() throw (ShogunException)

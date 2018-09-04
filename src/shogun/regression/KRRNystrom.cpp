@@ -81,13 +81,13 @@ bool CKRRNystrom::solve_krr_system()
 
 	if (m_num_rkhs_basis == 0)
 	{
-		set_num_rkhs_basis((int32_t)CMath::ceil(n/2.0));
+		set_num_rkhs_basis((int32_t)std::ceil(n / 2.0));
 		SG_SWARNING("Number of sampled rows not set, default is half (%d) "
 					"of the number of data points (%d)\n", m_num_rkhs_basis, n);
 	}
 
 	SGVector<float64_t> y=((CRegressionLabels*)m_labels)->get_labels();
-	if (y==NULL)
+	if (!y.data())
 		SG_ERROR("Labels not set.\n");
 	SGVector<int32_t> col=subsample_indices();
 	SGMatrix<float64_t> K_mm(m_num_rkhs_basis, m_num_rkhs_basis);

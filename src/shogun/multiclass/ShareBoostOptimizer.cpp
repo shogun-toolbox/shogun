@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Björn Esser
  */
 
 #include <algorithm>
@@ -77,7 +73,7 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	float64_t objval = 0;
 	for (int32_t ii=0; ii < fea.num_cols; ++ii)
 	{
-		objval += CMath::log(optimizer->m_sb->m_rho_norm[ii]);
+		objval += std::log(optimizer->m_sb->m_rho_norm[ii]);
 	}
 	objval /= fea.num_cols;
 

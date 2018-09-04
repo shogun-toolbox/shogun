@@ -1,16 +1,14 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 
 #ifndef __SG_INIT_H__
 #define __SG_INIT_H__
 
+#include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
 #include <functional>
@@ -65,6 +63,29 @@ namespace shogun
 	 * @return io object
 	 */
 	SGIO* get_global_io();
+
+	/** @return the globally over-ridden floating point epsilon for
+	 * CMath::fequals
+	 */
+	float64_t get_global_fequals_epsilon();
+
+	/** Globally over-ride the floating point epsilon for CMath::fequals.
+	 * Hack required for CSGObject::equals checks for certain serialization
+	 * formats.
+	 * @param fequals_epsilon new epsilon to use
+	 */
+	void set_global_fequals_epsilon(float64_t fequals_epsilon);
+
+	/** @return whether global linient check for CMath::fequals is enabled
+	 */
+	bool get_global_fequals_tolerant();
+
+	/** Globally enable linient check for CMath::fequals.
+	 * Hack required for CSGObject::equals checks for certain serialization
+	 * formats.
+	 * @param fequals_tolerant whether or not to use tolerant check
+	 */
+	void set_global_fequals_tolerant(bool fequals_tolerant);
 
 	/** set the global parallel object
 	 *

@@ -1,14 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2008,2011 Soeren Sonnenburg
- * Written (W) 2014 Parijat Mazumdar
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2011 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal,
+ *          Evan Shelhamer, Evgeniy Andreev, Marc Zimmermann, Björn Esser
  */
 #include <shogun/lib/config.h>
 
@@ -203,8 +197,8 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 				continue;
 			}
 
-			transformMatrix.col(i) /=
-			CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
+			transformMatrix.col(i) /= std::sqrt(
+			    eigenValues[i + max_dim_allowed - num_dim] * (num_vectors - 1));
 		}
 	}
 }
@@ -276,7 +270,8 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 				continue;
 			}
 
-			transformMatrix.col(i) /= CMath::sqrt(eigenValues[i] * (num_vectors - 1));
+			transformMatrix.col(i) /=
+			    std::sqrt(eigenValues[i] * (num_vectors - 1));
 		}
 	}
 }
@@ -293,7 +288,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
 	ASSERT(features != NULL)
-	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
+	SGMatrix<float64_t> m = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
 

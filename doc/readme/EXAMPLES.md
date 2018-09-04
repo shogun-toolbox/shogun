@@ -26,9 +26,8 @@ The C++ examples are always available, you can compile them using `make` or more
 
 and run them as from their folder straight-away (you might have to set environmental variables, see [INTERFACES.md](INTERFACES.md))
 
-    cd examples/meta/cpp/multiclass_classifier
-    ./knn
-    ./svm
+    cd examples/meta/cpp/multiclass
+    ./cpp-multiclass-k_nearest_neighbours
 
 As the examples are part of the tests, you can easily run them as described in [DEVELOPING.md](DEVELOPING.md#testing).
 Alternatively, you see [INTERFACES.md](INTERFACES.md) on how to run them manually.
@@ -54,9 +53,9 @@ The pages are rendered with [our own plugin](https://github.com/shogun-toolbox/s
 
 ## Adding a page
 To add an entry for an existing example, create a markdown `*.rst` file with matching filename and directory.
-E.g. for the example `examples/meta/src/multiclass_classifier/knn.sg`, this would be
+E.g. for the example `examples/meta/src/multiclass/k_nearest_neighbours.sg`, this would be
 
-    touch doc/cookbook/source/examples/multiclass_classifier/knn.rst
+    touch doc/cookbook/source/examples/multiclass/k_nearest_neighbours.rst
 
 Edit the file so that it contains details on API example and references to code snippets.
 The point is to **not** show the full file listing but only snippets.

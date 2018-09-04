@@ -50,8 +50,8 @@ namespace shogun
 /** Implementation of @see LinalgBackendBase::add */
 #define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
 	virtual void add(                                                          \
-	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
-	    Container<Type>& result) const;
+	    const Container<Type>& a, const Container<Type>& b, Type alpha,        \
+	    Type beta, Container<Type>& result) const;
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_ADD
@@ -64,6 +64,14 @@ namespace shogun
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
+
+/** Implementation of @see LinalgBackendBase::add_diag */
+#define BACKEND_GENERIC_ADD_DIAG(Type, Container)                              \
+	virtual void add_diag(                                                     \
+	    SGMatrix<Type>& A, const SGVector<Type>& b, Type alpha, Type beta)     \
+	    const;
+		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_DIAG, SGMatrix)
+#undef BACKEND_GENERIC_ADD_DIAG
 
 /** Implementation of @see LinalgBackendBase::add_vector */
 #define BACKEND_GENERIC_ADD(Type, Container)                                   \
@@ -101,6 +109,23 @@ namespace shogun
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
+/** Implementation of @see LinalgBackendBase::ldlt_factor */
+#define BACKEND_GENERIC_LDLT_FACTOR(Type, Container)                           \
+	virtual void ldlt_factor(                                                  \
+	    const Container<Type>& A, Container<Type>& L, SGVector<Type>& d,       \
+	    SGVector<index_t>& p, const bool lower) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_FACTOR
+
+/** Implementation of @see LinalgBackendBase::ldlt_solver */
+#define BACKEND_GENERIC_LDLT_SOLVER(Type, Container)                           \
+	virtual SGVector<Type> ldlt_solver(                                        \
+	    const Container<Type>& L, const SGVector<Type>& d,                     \
+	    const SGVector<index_t>& p, const SGVector<Type>& b, const bool lower) \
+	    const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_LDLT_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_LDLT_SOLVER
+
 /** Implementation of @see linalg::cross_entropy */
 #define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
 	virtual Type cross_entropy(                                                \
@@ -133,18 +158,29 @@ namespace shogun
 #undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /** Implementation of @see LinalgBackendBase::element_prod */
-#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+#define BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD(Type, Container)          \
 	virtual void element_prod(                                                 \
-	    Container<Type>& a, Container<Type>& b, Container<Type>& result)       \
-	    const;
-		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result) const;
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD, SGVector)
+#undef BACKEND_GENERIC_IN_PLACE_VECTOR_ELEMENT_PROD
+
+/** Implementation of @see LinalgBackendBase::element_prod */
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD(Type, Container)          \
+	virtual void element_prod(                                                 \
+	    const Container<Type>& a, const Container<Type>& b,                    \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const;
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_ELEMENT_PROD
 
 /** Implementation of @see LinalgBackendBase::element_prod */
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
-	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
-	    Container<Type>& result) const;
+	    const linalg::Block<Container<Type>>& a,                               \
+	    const linalg::Block<Container<Type>>& b, Container<Type>& result,      \
+	    bool transpose_A, bool transpose_B) const;
 		DEFINE_FOR_ALL_PTYPE(
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
@@ -165,15 +201,16 @@ namespace shogun
 
 /** Implementation of @see LinalgBackendBase::logistic */
 #define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const;
+	virtual void logistic(const Container<Type>& a, Container<Type>& result)   \
+	    const;
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
 #undef BACKEND_GENERIC_LOGISTIC
 
 /** Implementation of @see LinalgBackendBase::matrix_prod */
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	virtual void matrix_prod(                                                  \
-	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
-	    bool transpose_A, bool transpose_B) const;
+	    const SGMatrix<Type>& a, const Container<Type>& b,                     \
+	    Container<Type>& result, bool transpose_A, bool transpose_B) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
@@ -202,7 +239,7 @@ namespace shogun
 /** Implementation of @see linalg::multiply_by_logistic_derivative */
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
 	virtual void multiply_by_logistic_derivative(                              \
-	    Container<Type>& a, Container<Type>& result) const;
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_NUMERIC_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
@@ -210,7 +247,7 @@ namespace shogun
 /** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
 #define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
 	virtual void multiply_by_rectified_linear_derivative(                      \
-	    Container<Type>& a, Container<Type>& result) const;
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
 		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
@@ -232,15 +269,15 @@ namespace shogun
 
 /** Implementation of @see linalg::rectified_linear */
 #define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
-	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
-	    const;
+	virtual void rectified_linear(                                             \
+	    const Container<Type>& a, Container<Type>& result) const;
 		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
 /** Implementation of @see linalg::scale */
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	virtual void scale(                                                        \
-	    Container<Type>& a, Type alpha, Container<Type>& result) const;
+	    const Container<Type>& a, Type alpha, Container<Type>& result) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_SCALE
@@ -368,13 +405,13 @@ namespace shogun
 		/** Eigen3 vector result = alpha*A + beta*B method */
 		template <typename T>
 		void add_impl(
-		    SGVector<T>& a, SGVector<T>& b, T alpha, T beta,
+		    const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta,
 		    SGVector<T>& result) const;
 
 		/** Eigen3 matrix result = alpha*A + beta*B method */
 		template <typename T>
 		void add_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta,
 		    SGMatrix<T>& result) const;
 
 		/** Eigen3 add column vector method */
@@ -388,6 +425,11 @@ namespace shogun
 		void add_col_vec_impl(
 		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
 		    SGVector<T>& result, T alpha, T beta) const;
+
+		/** Eigen3 add diagonal vector method */
+		template <typename T>
+		void add_diag_impl(
+		    SGMatrix<T>& A, const SGVector<T>& b, T alpha, T beta) const;
 
 		/** Eigen3 add vector to each column of matrix method */
 		template <typename T>
@@ -416,6 +458,19 @@ namespace shogun
 		template <typename T>
 		SGVector<T> cholesky_solver_impl(
 		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower) const;
+
+		/** Eigen3 LDLT Cholesky decomposition */
+		template <typename T>
+		void ldlt_factor_impl(
+		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
+		    SGVector<index_t>& p, const bool lower) const;
+
+		/** Eigen3 LDLT Cholesky solver */
+		template <typename T>
+		SGVector<T> ldlt_solver_impl(
+		    const SGMatrix<T>& L, const SGVector<T>& d,
+		    const SGVector<index_t>& p, const SGVector<T>& b,
+		    const bool lower) const;
 
 		/** Eigen3 cross_entropy method
 		 * The cross entropy is defined as \f$ H(P,Q) = - \sum_{ij}
@@ -452,13 +507,21 @@ namespace shogun
 		/** Eigen3 matrix in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const;
 
 		/** Eigen3 matrix block in-place elementwise product method */
 		template <typename T>
 		void element_prod_impl(
-		    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
-		    SGMatrix<T>& result) const;
+		    const linalg::Block<SGMatrix<T>>& a,
+		    const linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const;
+
+		/** Eigen3 vector in-place elementwise product method */
+		template <typename T>
+		void element_prod_impl(
+		    const SGVector<T>& a, const SGVector<T>& b,
+		    SGVector<T>& result) const;
 
 		/** Eigen3 vector exponent method */
 		template <typename T>
@@ -474,18 +537,18 @@ namespace shogun
 
 		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>
-		void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
+		void logistic_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 matrix * vector in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result, bool transpose,
-		    bool transpose_B = false) const;
+		    const SGMatrix<T>& a, const SGVector<T>& b, SGVector<T>& result,
+		    bool transpose, bool transpose_B = false) const;
 
 		/** Eigen3 matrix in-place product method */
 		template <typename T>
 		void matrix_prod_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
 		    bool transpose_A, bool transpose_B) const;
 
 		/** Return the largest element in the vector with Eigen3 library */
@@ -513,14 +576,14 @@ namespace shogun
 		 */
 		template <typename T>
 		void multiply_by_logistic_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 multiply_by_rectified_linear_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j
 		 */
 		template <typename T>
 		void multiply_by_rectified_linear_derivative_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector QR solver. */
 		template <typename T>
@@ -538,15 +601,18 @@ namespace shogun
 
 		/** Applies the elementwise rectified linear function f(x) = max(0,x) */
 		template <typename T>
-		void rectified_linear_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
+		void
+		rectified_linear_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const;
+		void
+		scale_impl(const SGVector<T>& a, T alpha, SGVector<T>& result) const;
 
 		/** Eigen3 matrix inplace scale method: result = alpha * A */
 		template <typename T>
-		void scale_impl(SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
+		void
+		scale_impl(const SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const;
 
 		/** Eigen3 set const method */
 		template <typename T, template <typename> class Container>

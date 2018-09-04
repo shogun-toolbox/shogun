@@ -1,11 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Jacob Walker, 
+ *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Sergey Lisitsyn, 
+ *          Evangelos Anagnostopoulos, Heiko Strathmann
  */
 #include <shogun/features/SparsePolyFeatures.h>
 #include <shogun/lib/Hash.h>
@@ -160,7 +158,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 					if (i==j)
 						v=v1*v1;
 					else
-						v=CMath::sqrt(2.0)*v1*v2;
+						v = std::sqrt(2.0) * v1 * v2;
 
 					result+=v*vec2[h];
 				}
@@ -210,7 +208,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 				if (i==j)
 					v=alpha*v1*v1;
 				else
-					v=alpha*CMath::sqrt(2.0)*v1*v2;
+					v = alpha * std::sqrt(2.0) * v1 * v2;
 
 				if (abs_val)
 					vec2[h]+=CMath::abs(v);
@@ -234,7 +232,7 @@ void CSparsePolyFeatures::store_normalization_values()
 	m_normalization_values=SG_MALLOC(float64_t, m_normalization_values_len);
 	for (int i=0; i<m_normalization_values_len; i++)
 	{
-		float64_t val = CMath::sqrt(dot(i, this,i));
+		float64_t val = std::sqrt(dot(i, this, i));
 		if (val==0)
 			// trap division by zero
 			m_normalization_values[i]=1.0;
@@ -259,9 +257,14 @@ void CSparsePolyFeatures::init()
 			"Dimensions of the input space.");
 	m_parameters->add(&m_output_dimensions, "output_dimensions",
 			"Dimensions of the feature space of the polynomial kernel.");
+
 	m_normalization_values_len = get_num_vectors();
 	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
 			"m_normalization_values", "Norm of each training example");
+	watch_param(
+	    "m_normalization_values", &m_normalization_values,
+	    &m_normalization_values_len);
+
 	m_parameters->add(&mask, "mask", "Mask.");
 	m_parameters->add(&m_hash_bits, "m_hash_bits", "Number of bits in hash");
 }

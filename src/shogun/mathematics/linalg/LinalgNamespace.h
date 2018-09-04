@@ -106,6 +106,45 @@ namespace shogun
 				return sg_linalg->get_cpu_backend();
 		}
 
+		/** Infer the appropriate backend for linalg operations
+		 * from the input SGVector or SGMatrix (Container).
+		 * Raise error if the backends of the Containers conflict.
+		 *
+		 * @param a The first SGVector/SGMatrix
+		 * @param b The second SGVector/SGMatrix
+		 * @param c The third SGVector/SGMatrix
+		 * @return @see LinalgBackendBase pointer
+		 */
+		template <typename T, template <typename> class Container>
+		LinalgBackendBase* infer_backend(
+		    const Container<T>& a, const Container<T>& b, const Container<T>& c)
+		{
+			if (a.on_gpu() && b.on_gpu() && c.on_gpu())
+			{
+				if (sg_linalg->get_gpu_backend())
+					return sg_linalg->get_gpu_backend();
+				else
+				{
+					SG_SERROR(
+					    "Vector or matrix is on GPU but no GPU backend registered. \
+					  This can happen if the GPU backend was de-activated \
+					  after memory has been transferred to GPU.\n");
+					return NULL;
+				}
+			}
+			else if (a.on_gpu() || b.on_gpu() || c.on_gpu())
+			{
+				SG_SERROR(
+				    "Cannot operate with first vector/matrix on_gpu flag(%d),\
+					second vector/matrix on_gpu flag (%d) and third vector/matrix \
+					on_gpu flag (%d).\n",
+				    a.on_gpu(), b.on_gpu(), c.on_gpu());
+				return NULL;
+			}
+			else
+				return sg_linalg->get_cpu_backend();
+		}
+
 		/**
 		 * Transfers data to GPU memory.
 		 * Shallow-copy of SGVector with vector on CPU if GPU backend not
@@ -115,7 +154,7 @@ namespace shogun
 		 * @param b SGVector to be set
 		 */
 		template <typename T>
-		void to_gpu(SGVector<T>& a, SGVector<T>& b)
+		void to_gpu(const SGVector<T>& a, SGVector<T>& b)
 		{
 			sg_linalg->m_gpu_transfer.lock();
 
@@ -151,7 +190,7 @@ namespace shogun
 		 * @param b SGMatrix to be set
 		 */
 		template <typename T>
-		void to_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
+		void to_gpu(const SGMatrix<T>& a, SGMatrix<T>& b)
 		{
 			sg_linalg->m_gpu_transfer.lock();
 
@@ -295,8 +334,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGVector<T>& a, SGVector<T>& b, SGVector<T>& result, T alpha = 1,
-		    T beta = 1)
+		add(const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result,
+		    T alpha = 1, T beta = 1)
 		{
 			REQUIRE(
 			    a.vlen == b.vlen,
@@ -335,8 +374,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, T alpha = 1,
-		    T beta = 1)
+		add(const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result,
+		    T alpha = 1, T beta = 1)
 		{
 			REQUIRE(
 			    (a.num_rows == b.num_rows),
@@ -373,7 +412,8 @@ namespace shogun
 		 */
 		template <typename T, template <typename> class Container>
 		Container<T>
-		add(Container<T>& a, Container<T>& b, T alpha = 1, T beta = 1)
+		add(const Container<T>& a, const Container<T>& b, T alpha = 1,
+		    T beta = 1)
 		{
 			auto result = a.clone();
 			add(a, b, result, alpha, beta);
@@ -442,6 +482,32 @@ namespace shogun
 
 			infer_backend(A, SGMatrix<T>(b))
 			    ->add_col_vec(A, i, b, result, alpha, beta);
+		}
+
+		/**
+		 * Performs the operation A.diagonal = alpha * A.diagonal + beta * b.
+		 * The matrix is not required to be square.
+		 *
+		 * @param A The matrix
+		 * @param b The vector
+		 * @param alpha Constant to be multiplied by the main diagonal of the
+		 * matrix
+		 * @param beta Constant to be multiplied by the vector
+		 */
+		template <typename T>
+		void
+		add_diag(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1, T beta = 1)
+		{
+			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
+			REQUIRE(
+			    diagonal_len == b.vlen, "Length of main diagonal of matrix A "
+			                            "(%d) doesn't match length of vector b "
+			                            "(%d).\n",
+			    diagonal_len, b.vlen);
+			REQUIRE(
+			    diagonal_len > 0 && b.vlen > 0, "Matrix / vector can't be "
+			                                    "empty.\n");
+			infer_backend(A, SGMatrix<T>(b))->add_diag(A, b, alpha, beta);
 		}
 
 		/**
@@ -564,6 +630,71 @@ namespace shogun
 		}
 
 		/**
+		 * Compute the LDLT cholesky decomposition \f$A = P^{T} L D L^{*} P\f$
+		 * or \f$A = P^{T} U^{*} D U P\f$
+		 * of a positive semidefinite or negative semidefinite Hermitan matrix
+		 *
+		 * @param A The matrix whose LDLT cholesky decomposition is to be
+		 *  computed
+		 * @param L The matrix that saves the triangular LDLT
+		 *  Cholesky factorization (default: lower)
+		 * @param d The vector that saves the diagonal of the diagonal matrix D
+		 * @param p The vector that saves the permutation matrix P as a
+		 * transposition sequence
+		 * @param lower Whether to use L as the upper or lower triangular
+		 *  Cholesky factorization (default:lower)
+		 */
+		template <typename T>
+		void ldlt_factor(
+		    const SGMatrix<T>& A, SGMatrix<T>& L, SGVector<T>& d,
+		    SGVector<index_t>& p, const bool lower = true)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols,
+			    "Matrix dimensions (%dx%d) are not square\n", A.num_rows,
+			    A.num_cols);
+			REQUIRE(
+			    A.num_rows == L.num_rows && A.num_cols == L.num_cols,
+			    "Shape of matrix A (%d, %d) doesn't match matrix L (%d, %d)\n",
+			    A.num_rows, A.num_cols, L.num_rows, L.num_rows);
+			REQUIRE(
+			    d.vlen == A.num_rows, "Length of vector d (%d) doesn't match "
+			                          "length of diagonal of matrix L (%d)\n",
+			    d.vlen, A.num_rows);
+			REQUIRE(
+			    p.vlen = A.num_rows, "Length of transpositions vector p (%d) "
+			                         "doesn't match length of diagonal of "
+			                         "matrix L (%d)\n",
+			    p.vlen, A.num_rows);
+
+			infer_backend(A)->ldlt_factor(A, L, d, p, lower);
+		}
+
+		/**
+		 * Solve the linear equations \f$Ax=b\f$, given the LDLT Cholesky
+		 * factorization of A,
+		 * where \f$A\f$ is a positive semidefinite or negative semidefinite
+		 * Hermitan matrix @see ldlt_factor
+		 *
+		 * @param L Triangular matrix, LDLT Cholesky factorization of A
+		 * @param d The diagonal of the diagonal matrix D
+		 * @param p The permuattion matrix P as a
+		 * transposition sequence
+		 * @param b Right-hand side array
+		 * @param lower Whether to use L as the upper or lower triangular
+		 *  Cholesky factorization (default:lower)
+		 * @return \f$\x\f$
+		 */
+		template <typename T>
+		SGVector<T> ldlt_solver(
+		    const SGMatrix<T>& L, const SGVector<T>& d, SGVector<index_t>& p,
+		    const SGVector<T>& b, const bool lower = true)
+		{
+			return infer_backend(L, SGMatrix<T>(d), SGMatrix<T>(b))
+			    ->ldlt_solver(L, d, p, b, lower);
+		}
+
+		/**
 		 * Vector dot-product that works with generic vectors.
 		 *
 		 * @param a First vector
@@ -681,23 +812,31 @@ namespace shogun
 		 *
 		 * This operation works with CPU backends only.
 		 *
-		 * @param a First matrix block
-		 * @param b Second matrix block
+		 * @param A First matrix block
+		 * @param B Second matrix block
 		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
 		void element_prod(
-		    Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b, SGMatrix<T>& result)
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    SGMatrix<T>& result, bool transpose_A = false,
+		    bool transpose_B = false)
 		{
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
+
 			REQUIRE(
-			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.m_row_size,
-			    a.m_col_size, b.m_row_size, b.m_col_size);
+			    (num_rows == transpose_B ? B.m_col_size : B.m_row_size) &&
+			        (num_cols == transpose_B ? B.m_row_size : B.m_col_size),
+			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", A.m_row_size,
+			    A.m_col_size, B.m_row_size, B.m_col_size);
+
 			REQUIRE(
-			    a.m_row_size == result.num_rows &&
-			        a.m_col_size == result.num_cols,
+			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
-			    a.m_row_size, a.m_col_size, result.num_rows, result.num_cols);
+			    A.m_row_size, A.m_col_size, result.num_rows, result.num_cols);
 
 			REQUIRE(
 			    !result.on_gpu(),
@@ -705,7 +844,8 @@ namespace shogun
 	 		as matrix blocks are on CPU.\n",
 			    result.on_gpu());
 
-			sg_linalg->get_cpu_backend()->element_prod(a, b, result);
+			sg_linalg->get_cpu_backend()->element_prod(
+			    A, B, result, transpose_A, transpose_B);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise
@@ -716,20 +856,21 @@ namespace shogun
 		 *
 		 * @param A First matrix block
 		 * @param B Second matrix block
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T> element_prod(Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b)
+		SGMatrix<T> element_prod(
+		    const Block<SGMatrix<T>>& A, const Block<SGMatrix<T>>& B,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
-			REQUIRE(
-			    a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.m_row_size,
-			    a.m_col_size, b.m_row_size, b.m_col_size);
+			auto num_rows = transpose_A ? A.m_col_size : A.m_row_size;
+			auto num_cols = transpose_A ? A.m_row_size : A.m_col_size;
 
-			SGMatrix<T> result(a.m_row_size, a.m_col_size);
-			result.zero();
+			SGMatrix<T> result(num_rows, num_cols);
 
-			element_prod(a, b, result);
+			element_prod(A, B, result, transpose_A, transpose_B);
 
 			return result;
 		}
@@ -744,31 +885,30 @@ namespace shogun
 		 * @param a First matrix
 		 * @param b Second matrix
 		 * @param result Result matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 */
 		template <typename T>
-		void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)
+		void element_prod(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
+
 			REQUIRE(
-			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.num_rows,
-			    a.num_cols, b.num_rows, b.num_cols);
+			    (num_rows == transpose_B ? B.num_cols : B.num_rows) &&
+			        (num_cols == transpose_B ? B.num_rows : B.num_cols),
+			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", A.num_rows,
+			    A.num_cols, B.num_rows, B.num_cols);
+
 			REQUIRE(
-			    a.num_rows == result.num_rows && a.num_cols == result.num_cols,
+			    num_rows == result.num_rows && num_cols == result.num_cols,
 			    "Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
-			    a.num_rows, a.num_cols, result.num_rows, result.num_cols);
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
 
-			REQUIRE(
-			    !(result.on_gpu() ^ a.on_gpu()),
-			    "Cannot operate with matrix result on_gpu (%d) and \
-			 matrix A on_gpu (%d).\n",
-			    result.on_gpu(), a.on_gpu());
-			REQUIRE(
-			    !(result.on_gpu() ^ b.on_gpu()),
-			    "Cannot operate with matrix result on_gpu (%d) and \
-			 matrix B on_gpu (%d).\n",
-			    result.on_gpu(), b.on_gpu());
-
-			infer_backend(a, b)->element_prod(a, b, result);
+			infer_backend(A, B, result)
+			    ->element_prod(A, B, result, transpose_A, transpose_B);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise
@@ -776,21 +916,70 @@ namespace shogun
 		 *
 		 * This version returns the result in a newly created matrix.
 		 *
-		 * @param a First matrix
-		 * @param b Second matrix
+		 * @param A First matrix
+		 * @param B Second matrix
+		 * @param transpose_A whether to transpose matrix A
+		 * @param transpose_B whether to transpose matrix B
 		 * @return The result of the operation
 		 */
 		template <typename T>
-		SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
+		SGMatrix<T> element_prod(
+		    const SGMatrix<T>& A, const SGMatrix<T>& B,
+		    bool transpose_A = false, bool transpose_B = false)
+		{
+			auto num_rows = transpose_A ? A.num_cols : A.num_rows;
+			auto num_cols = transpose_A ? A.num_rows : A.num_cols;
+
+			SGMatrix<T> result(num_rows, num_cols);
+
+			if (A.on_gpu())
+				to_gpu(result);
+			element_prod(A, B, result, transpose_A, transpose_B);
+
+			return result;
+		}
+
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		void element_prod(
+		    const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
 		{
 			REQUIRE(
-			    a.num_rows == b.num_rows && a.num_cols == b.num_cols,
-			    "Dimension mismatch! A(%d x %d) vs B(%d x %d)\n", a.num_rows,
-			    a.num_cols, b.num_rows, b.num_cols);
+			    a.vlen == b.vlen, "Dimension mismatch! A(%d) vs B(%d)\n",
+			    a.vlen, b.vlen);
+			REQUIRE(
+			    a.vlen == result.vlen,
+			    "Dimension mismatch! A(%d) vs result(%d)\n", a.vlen,
+			    result.vlen);
 
-			SGMatrix<T> result;
-			result = a.clone();
+			infer_backend(a, b)->element_prod(a, b, result);
+		}
 
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGVector<T> element_prod(const SGVector<T>& a, const SGVector<T>& b)
+		{
+			REQUIRE(
+			    a.vlen == b.vlen, "Dimension mismatch! A(%d) vs B(%d)\n",
+			    a.vlen, b.vlen);
+
+			SGVector<T> result = a.clone();
 			element_prod(a, b, result);
 
 			return result;
@@ -838,7 +1027,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void matrix_prod(
-		    SGMatrix<T>& A, SGVector<T>& b, SGVector<T>& result,
+		    const SGMatrix<T>& A, const SGVector<T>& b, SGVector<T>& result,
 		    bool transpose = false)
 		{
 			if (transpose)
@@ -892,8 +1081,8 @@ namespace shogun
 		 * @return result Result vector
 		 */
 		template <typename T>
-		SGVector<T>
-		matrix_prod(SGMatrix<T>& A, SGVector<T>& b, bool transpose = false)
+		SGVector<T> matrix_prod(
+		    const SGMatrix<T>& A, const SGVector<T>& b, bool transpose = false)
 		{
 			SGVector<T> result;
 			if (transpose)
@@ -936,7 +1125,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void matrix_prod(
-		    SGMatrix<T>& A, SGMatrix<T>& B, SGMatrix<T>& result,
+		    const SGMatrix<T>& A, const SGMatrix<T>& B, SGMatrix<T>& result,
 		    bool transpose_A = false, bool transpose_B = false)
 		{
 			REQUIRE(
@@ -1037,8 +1226,8 @@ namespace shogun
 		 */
 		template <typename T>
 		SGMatrix<T> matrix_prod(
-		    SGMatrix<T>& A, SGMatrix<T>& B, bool transpose_A = false,
-		    bool transpose_B = false)
+		    const SGMatrix<T>& A, const SGMatrix<T>& B,
+		    bool transpose_A = false, bool transpose_B = false)
 		{
 			SGMatrix<T> result;
 
@@ -1101,8 +1290,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void dgemv(
-		    T alpha, SGMatrix<T> a, bool transpose, SGVector<T> x, T beta,
-		    SGVector<T>& y)
+		    T alpha, const SGMatrix<T>& a, bool transpose, const SGVector<T>& x,
+		    T beta, SGVector<T>& y)
 		{
 			auto temp_vector = matrix_prod(a, x, transpose);
 			add(temp_vector, y, y, alpha, beta);
@@ -1125,8 +1314,8 @@ namespace shogun
 		 */
 		template <typename T>
 		void dgemm(
-		    T alpha, SGMatrix<T> a, SGMatrix<T> b, bool transpose_a,
-		    bool transpose_b, T beta, SGMatrix<T>& c)
+		    T alpha, const SGMatrix<T>& a, const SGMatrix<T>& b,
+		    bool transpose_a, bool transpose_b, T beta, SGMatrix<T>& c)
 		{
 			auto temp_matrix = matrix_prod(a, b, transpose_a, transpose_b);
 			add(temp_matrix, c, c, alpha, beta);
@@ -1186,7 +1375,7 @@ namespace shogun
 		T norm(const SGVector<T>& a)
 		{
 			REQUIRE(a.size() > 0, "Vector cannot be empty!\n");
-			return CMath::sqrt(dot(a, a));
+			return std::sqrt(dot(a, a));
 		}
 
 		/**
@@ -1231,7 +1420,7 @@ namespace shogun
 		 * @param result The vector of alpha * a
 		 */
 		template <typename T>
-		void scale(SGVector<T>& a, SGVector<T>& result, T alpha = 1)
+		void scale(const SGVector<T>& a, SGVector<T>& result, T alpha = 1)
 		{
 			REQUIRE(
 			    result.vlen == a.vlen,
@@ -1251,7 +1440,7 @@ namespace shogun
 		 * @param result The matrix of alpha * A
 		 */
 		template <typename T>
-		void scale(SGMatrix<T>& A, SGMatrix<T>& result, T alpha = 1)
+		void scale(const SGMatrix<T>& A, SGMatrix<T>& result, T alpha = 1)
 		{
 			REQUIRE(
 			    (A.num_rows == result.num_rows), "Number of rows of matrix A "
@@ -1275,7 +1464,7 @@ namespace shogun
 		 * @return Vector or matrix of alpha * A
 		 */
 		template <typename T, template <typename> class Container>
-		Container<T> scale(Container<T>& a, T alpha = 1)
+		Container<T> scale(const Container<T>& a, T alpha = 1)
 		{
 			auto result = a.clone();
 			scale(a, result, alpha);
@@ -1499,6 +1688,19 @@ namespace shogun
 		SGMatrix<T> transpose_matrix(const SGMatrix<T>& A)
 		{
 			return infer_backend(A)->transpose_matrix(A);
+		}
+
+		/**
+		 * Method that computes the trace of \f$AB\f$ as \f$sum(A.*B')$\f
+		 *
+		 * @param A The matrix A
+		 * @param B The matrix B
+		 * @return The trace of the product of A and B
+		 */
+		template <typename T>
+		T trace_dot(const SGMatrix<T>& A, const SGMatrix<T>& B)
+		{
+			return sum(element_prod(A, B, false, true));
 		}
 
 		/**

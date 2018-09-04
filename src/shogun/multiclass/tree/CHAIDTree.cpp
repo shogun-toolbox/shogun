@@ -154,9 +154,8 @@ void CCHAIDTree::set_dependent_vartype(int32_t var)
 bool CCHAIDTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data, "Data required for training\n")
-	REQUIRE(data->get_feature_class()==C_DENSE,"Dense data required for training\n")
 
-	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
+	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
 	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
 	" (%d here) is not the same as the number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
@@ -204,7 +203,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 
 	node_t* node=new node_t();
 	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
-	SGMatrix<float64_t> mat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
+	SGMatrix<float64_t> mat=data->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	int32_t num_feats=mat.num_rows;
 	int32_t num_vecs=mat.num_cols;
 
@@ -665,7 +664,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 
 CLabels* CCHAIDTree::apply_tree(CFeatures* data)
 {
-	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
+	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
 
 	// modify test data matrix (continuous to ordinal)
 	if (m_cont_breakpoints.num_cols>0)
@@ -819,30 +818,35 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 			float64_t sum=0.;
 			for (int32_t v=0;v<fnum_cat;v++)
 			{
-				float64_t lterm=inum_cat*CMath::log(fnum_cat-v);
-				for (int32_t j=1;j<=v;j++)
-					lterm-=CMath::log(j);
+			    float64_t lterm = inum_cat * std::log(fnum_cat - v);
+			    for (int32_t j = 1; j <= v; j++)
+				    lterm -= std::log(j);
 
-				for (int32_t j=1;j<=fnum_cat-v;j++)
-					lterm-=CMath::log(j);
+			    for (int32_t j = 1; j <= fnum_cat - v; j++)
+				    lterm -= std::log(j);
 
-				if (v%2==0)
-					sum+=CMath::exp(lterm);
-				else
-					sum-=CMath::exp(lterm);
-			}
+			    if (v % 2 == 0)
+				    sum += std::exp(lterm);
+			    else
+				    sum -= std::exp(lterm);
+		    }
 
-			return sum*up_value;
-		}
-		case 1:
-		{
-			if (!is_missing)
-				return CMath::nchoosek(inum_cat-1,fnum_cat-1)*up_value;
-			else
-				return up_value*(CMath::nchoosek(inum_cat-2,fnum_cat-2)+fnum_cat*CMath::nchoosek(inum_cat-2,fnum_cat-1));
-		}
-		default:
-			SG_ERROR("Feature type must be either 0 (nominal) or 1 (ordinal). It is currently set as %d\n",ft)
+		    return sum * up_value;
+	    }
+	    case 1:
+	    {
+		    if (!is_missing)
+			    return CMath::nchoosek(inum_cat - 1, fnum_cat - 1) * up_value;
+		    else
+			    return up_value *
+			           (CMath::nchoosek(inum_cat - 2, fnum_cat - 2) +
+			            fnum_cat * CMath::nchoosek(inum_cat - 2, fnum_cat - 1));
+	    }
+	    default:
+		    SG_ERROR(
+		        "Feature type must be either 0 (nominal) or 1 (ordinal). It is "
+		        "currently set as %d\n",
+		        ft)
 	}
 
 	return 0.0;
@@ -994,7 +998,8 @@ float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVec
 	for (int32_t i=0;i<r;i++)
 	{
 		for (int32_t j=0;j<c;j++)
-			ret+=expmat_row_effects(i,j)*CMath::log(expmat_row_effects(i,j)/expmat_indep(i,j));
+			ret += expmat_row_effects(i, j) *
+			       std::log(expmat_row_effects(i, j) / expmat_indep(i, j));
 	}
 
 	return 2*ret;

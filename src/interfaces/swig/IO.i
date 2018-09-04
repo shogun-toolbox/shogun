@@ -16,8 +16,7 @@
 %rename(CSVFile) CCSVFile;
 %rename(LibSVMFile) CLibSVMFile;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
-%rename(StreamingVwFile) CStreamingVwFile;
-%rename(StreamingVwCacheFile) CStreamingVwCacheFile;
+
 %rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 %rename(BinaryFile) CBinaryFile;
 %rename(HDF5File) CHDF5File;
@@ -29,7 +28,7 @@
 %rename(NeuralNetworkFileReader) CNeuralNetworkFileReader;
 %rename(SimpleFile) CSimpleFile;
 %rename(MemoryMappedFile) CMemoryMappedFile;
-%rename(VwParser) CVwParser;
+
 
 %include <shogun/io/File.h>
 %include <shogun/io/streaming/StreamingFile.h>
@@ -122,9 +121,7 @@ namespace shogun
 %include <shogun/io/CSVFile.h>
 %include <shogun/io/LibSVMFile.h>
 %include <shogun/io/streaming/StreamingAsciiFile.h>
-%include <shogun/classifier/vw/VwParser.h>
-%include <shogun/io/streaming/StreamingVwFile.h>
-%include <shogun/io/streaming/StreamingVwCacheFile.h>
+
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
 %include <shogun/io/SerializableFile.h>

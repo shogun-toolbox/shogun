@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Giovanni De Toni
  */
 
 #include <shogun/lib/ShogunException.h>
@@ -17,30 +13,27 @@
 
 using namespace shogun;
 
-void
-ShogunException::init(const char* str)
+ShogunException::ShogunException(const std::string& what_arg):
+	std::exception(),
+	msg(what_arg)
 {
-	size_t n = strlen(str) + 1;
-
-	val = (char*) malloc(n);
-	if (val)
-		strncpy(val, str, n);
-	else {
-		fprintf(stderr, "Could not even allocate memory for exception"
-				" - dying.\n");
-		exit(1);
-	}
 }
 
-ShogunException::ShogunException(const char* str)
-{
-#ifndef WIN32
-#endif
 
-	init(str);
+ShogunException::ShogunException(const char* what_arg):
+	std::exception(),
+	msg(what_arg)
+{
 }
 
 ShogunException::ShogunException(const ShogunException& orig)
-{ init(orig.val); }
+{ msg = orig.msg; }
 
-ShogunException::~ShogunException() { free(val); }
+ShogunException::~ShogunException()
+{
+}
+
+const char* ShogunException::what() const noexcept
+{
+	return msg.c_str();
+}

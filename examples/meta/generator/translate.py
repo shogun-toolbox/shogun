@@ -81,7 +81,7 @@ def getSGTypesToStore():
 def getSGTypeToStoreMethodName(sgType):
     """ Translates given SG* type into meta language type """
     assert sgType in getSGTypesToStore()
-    
+
     if sgType=="RealVector":
         return "real_vector"
     elif sgType=="FloatVector":
@@ -90,10 +90,10 @@ def getSGTypeToStoreMethodName(sgType):
         return "real_matrix"
     elif sgType=="FloatMatrix":
         return "float_matrix"
-    
+
     else:
         raise RuntimeError("Given Shogun type \"%s\" cannot be translated to meta type", sgType)
-        
+
 
 def getVarsToStore(program):
     """ Extracts all variables in program that should be stored """
@@ -104,19 +104,80 @@ def getVarsToStore(program):
         typeObject = init[0]
         nameString = init[1]["Identifier"]
 
-        append_store = False
+        appendStore = False
         if "ShogunSGType" in init[0]:
             if init[0]["ShogunSGType"] in getSGTypesToStore():
-                append_store = True
+                appendStore = True
 
         elif "BasicType" in init[0]:
             if init[0]["BasicType"] in getBasicTypesToStore():
-                append_store = True
+                appendStore = True
 
-        if append_store:
+        if appendStore:
             varsToStore.append((typeObject, nameString))
 
     return varsToStore
+
+def findPath(key, dictionary, path=[]):
+    """ Recursively search a dictionary for a key """
+    for k, v in dictionary.items():
+        if k == key:
+            yield v, path + [k]
+        if isinstance(v, dict):
+            for result, p in findPath(key, v, path + [k]):
+                yield result, p
+        if isinstance(v, list):
+            for idx, d in enumerate(v):
+                for result, p in findPath(key, d, path + [k, idx]):
+                    yield result, p
+
+def validateProgram(program, filePath=None):
+    """ Checks that a program is valid. Throws exceptions if not. """
+
+    for d, path in findPath('KeywordArgument', program):
+        # Check that any keyword argument appears either in a constructor call
+        # or in the first global call of a init by copy statement
+        try:
+            initByGlobalCall = path[-8:-2] == ['Init', 2, 'Expr', 'GlobalCall', 1, 'ArgumentList']
+            initByConstructor = path[-5:-2] == ['Init', 2, 'ArgumentList']
+        except:
+            initByGlobalCall = False
+            initByConstructor = False
+
+        if not (initByGlobalCall or initByConstructor):
+            raise TranslationFailure('Keyword arguments must only appear in initialisation of variables')
+
+    for d, path in findPath('ArgumentList', program):
+        # Check that normal arguments always come before kwargs
+        if not isinstance(d, list):
+            raise TranslationFailure('ArgumentList should be a list')
+
+        kwargObserved = False
+        for arg in d:
+            if 'KeywordArgument' in arg:
+                kwargObserved = True
+            else:
+                if kwargObserved:
+                    raise TranslationFailure('Keyword argument must come after normal arguments')
+
+    # Warn against misspelled boolean literals
+    for identifier, path in findPath('Identifier', program):
+        # Retrieve the line number of the identifier
+        lineNo = None
+        if "Statement" in path:
+            lineNoDict = program
+            for p in path:
+                if p == "Statement":
+                    break
+                lineNoDict = lineNoDict[p]
+            lineNo = lineNoDict.get("__PARSER_INFO_LINE_NO")
+
+        if identifier.lower() == 'true' or identifier.lower() == 'false':
+            boolLiteral = identifier[0].upper() + identifier[1:].lower()
+            warn_text = 'Detected identifier "{}". Did you mean the boolean literal "{}"?'.format(
+                identifier, boolLiteral
+            )
+            warnings.showwarning(warn_text, UserWarning, filePath, lineNo)
 
 
 class TranslationFailure(Exception):
@@ -140,6 +201,12 @@ class Translator:
                                               statementAST,
                                               statementAST, ..]}
         """
+
+        try:
+            filePath = program["FilePath"]
+        except KeyError:
+            filePath = None
+
         if storeVars:
             varsToStore = getVarsToStore(program)
 
@@ -155,16 +222,19 @@ class Translator:
         for line in program["Program"]:
             try:
                 if "Statement" in line:
+                    validateProgram(line, filePath=filePath)
                     targetProgram += self.translateStatement(line["Statement"])
                 elif "Comment" in line:
                     targetProgram += self.translateComment(line["Comment"])
-            except Exception as e:
-                print("Translation failed on line\n%s\n" % line)
+            except:
                 try:
-                    print("Failed on line {}".format(line["__PARSER_INFO_LINE_NO"]))
-                except KeyError as e2:
+                    print("File {}: Translation failed on line {}".format(
+                        filePath, line["__PARSER_INFO_LINE_NO"])
+                    )
+                except:
+                    print("Translation failed on line\n%s\n" % line)
                     pass
-                raise e
+                raise
 
         allClasses, interfacedClasses, enums, globalFunctions = getDependencies(program)
         try:
@@ -185,8 +255,8 @@ class Translator:
         """ Injects statements at the end of the program that perform variable
             storing
         """
-        storage = "__sg_storage"
-        storageFile = "__sg_storage_file"
+        storage = "sg_storage"
+        storageFile = "sg_storage_file"
 
         # TODO: handle directories
         storageFilename = {
@@ -195,7 +265,7 @@ class Translator:
         # 'w'
         storageFilemode = {"Expr": {"CharLiteral": 'w'}}
         storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
-        storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
+        storageInit = {"Init": [{"ObjectType": "DynamicObjectArray"},
                                 {"Identifier": storage},
                                 {"ArgumentList": []}]}
         storageFileInit = {
@@ -221,16 +291,20 @@ class Translator:
             # i.e. one key
             # python2/3 compatible key accessing
             sgType = vartypeAST[list(vartypeAST.keys())[0]]
-
             assert sgType in getBasicTypesToStore() or sgType in getSGTypesToStore()
-            if sgType in getBasicTypesToStore():
-                methodNameSuffix = sgType
-            elif sgType in getSGTypesToStore():
-                methodNameSuffix = getSGTypeToStoreMethodName(sgType)
-            
+
+            appendElementIdentifier = "append_element"
+            if not ("cpp" in self.targetDict["FileExtension"]):
+                suffix = "_"
+                if sgType in getBasicTypesToStore():
+                    suffix += sgType
+                elif sgType in getSGTypesToStore():
+                    suffix += getSGTypeToStoreMethodName(sgType)
+                appendElementIdentifier += suffix
+
             methodCall = {
                 "MethodCall": [{"Identifier": storage},
-                               {"Identifier": "append_wrapped_%s" % methodNameSuffix},
+                               {"Identifier": appendElementIdentifier},
                                {"ArgumentList": [varnameIdentifierExpr,
                                                  varnameExpr]}]
             }
@@ -311,12 +385,12 @@ class Translator:
 
     def getIncludePathForClass(self, type_):
         translatedType = self.translateType({"ObjectType": type_})
-        template_parameter_matcher = '\<[0-9a-zA-Z_]*\>'
+        templateParameterMatcher = '\<[0-9a-zA-Z_]*\>'
         variants = [
             'C' + translatedType,
             translatedType,
-            'C' + re.sub(template_parameter_matcher, '', translatedType),
-            re.sub(template_parameter_matcher, '', translatedType)
+            'C' + re.sub(templateParameterMatcher, '', translatedType),
+            re.sub(templateParameterMatcher, '', translatedType)
         ]
 
         candidates = []
@@ -324,19 +398,19 @@ class Translator:
             if variant in self.tags:
                 candidates.append(self.tags[variant])
 
-        unique_candidates = [path for i, path in enumerate(candidates)
+        uniqueCandidates = [path for i, path in enumerate(candidates)
                                       if candidates.index(path) == i]
 
-        if len(unique_candidates) == 1:
-            return unique_candidates[0]
+        if len(uniqueCandidates) == 1:
+            return uniqueCandidates[0]
 
-        elif len(unique_candidates) > 1:
+        elif len(uniqueCandidates) > 1:
             msg = "Several possible include paths for type {}.\n"\
                   "Candidate paths: {}\nChosen: {}"
             warnings.warn(msg.format(type_,
-                                     unique_candidates,
-                                     unique_candidates[0]))
-            return unique_candidates[0]
+                                     uniqueCandidates,
+                                     uniqueCandidates[0]))
+            return uniqueCandidates[0]
 
         raise TranslationFailure('Failed to obtain include path for %s' %
                                  (' or '.join(variants)))
@@ -387,10 +461,21 @@ class Translator:
         # python2/3 safe dictionary keys
         if list(initialisation.keys())[0] == "Expr":
             template = Template(self.targetDict["Init"]["Copy"])
-            exprString = self.translateExpr(initialisation["Expr"])
+            result = self.translateExpr(
+                initialisation["Expr"], returnKwargs=True
+            )
+            exprString = result
+            kwargs = []
+            if isinstance(result, tuple):
+                exprString, kwargs = result
+
+            kwargsString = self.translateKwargs(
+                kwargs, nameString, typeString
+            )
             return template.substitute(name=nameString,
                                        typeName=typeString,
-                                       expr=exprString)
+                                       expr=exprString,
+                                       kwargs=kwargsString)
         elif list(initialisation.keys())[0] == "ArgumentList":
             template = Template(self.targetDict["Init"]["Construct"])
 
@@ -399,10 +484,22 @@ class Translator:
                and init[0][typeKey] in self.targetDict["Init"]:
                 template = Template(self.targetDict["Init"][init[0][typeKey]])
 
-            argsString = self.translateArgumentList(initialisation["ArgumentList"])
+            argsString, kwargs = self.translateArgumentList(
+                initialisation, returnKwargs=True
+            )
+
+            normalArgs = [
+                arg for arg in initialisation["ArgumentList"]
+                    if not "KeywordArgument" in arg
+            ]
+            kwargsString = self.translateKwargs(
+                kwargs, nameString, typeString,
+                argsGtZero=len(normalArgs) > 0
+            )
             return template.substitute(name=nameString,
                                        typeName=typeString,
-                                       arguments=argsString)
+                                       arguments=argsString,
+                                       kwargs=kwargsString)
 
     def translateAssign(self, assign):
         """ Translatie assignment AST
@@ -430,7 +527,7 @@ class Translator:
             raise TranslationFailure("Uknown assignment structure: " +
                                      str(assign))
 
-    def translateExpr(self, expr):
+    def translateExpr(self, expr, returnKwargs=False):
         """ Translate expression AST
         Args:
             expr: objects like
@@ -446,50 +543,13 @@ class Translator:
         key = list(expr.keys())[0]
 
         if key == "MethodCall":
-            template = Template(self.targetDict["Expr"]["MethodCall"])
-            object = expr[key][0]["Identifier"]
-            method = expr[key][1]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][2]
-            except IndexError:
-                pass
-            translatedArgsList = self.translateArgumentList(argsList)
-
-            assert object in self.variableTypes, \
-                "Variable {} not initialised".format(identifier)
-
-            return template.substitute(object=object,
-                                       method=method,
-                                       arguments=translatedArgsList)
+            return self.translateMethodCall(expr[key])
 
         elif key == "StaticCall":
-            template = Template(self.targetDict["Expr"]["StaticCall"])
-            type_ = self.translateType(expr[key][0])
-            method = expr[key][1]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][2]
-            except IndexError:
-                pass
-            translatedArgsList = self.translateArgumentList(argsList)
-
-            return template.substitute(typeName=type_,
-                                       method=method,
-                                       arguments=translatedArgsList)
+            return self.translateStaticCall(expr[key])
 
         elif key == "GlobalCall":
-            template = Template(self.targetDict["Expr"]["GlobalCall"])
-            method = expr[key][0]["Identifier"]
-            argsList = None
-            try:
-                argsList = expr[key][2]
-            except IndexError:
-                pass
-            translatedArgsList = self.translateArgumentList(argsList)
-
-            return template.substitute(typeName=type,method=method,
-                                       arguments=translatedArgsList)
+            return self.translateGlobalCall(expr[key], returnKwargs=returnKwargs)
 
         elif key == "ElementAccess":
             return self.translateElementAccess(expr[key])
@@ -500,7 +560,7 @@ class Translator:
         elif key == "StringLiteral":
             template = Template(self.targetDict["Expr"]["StringLiteral"])
             return template.substitute(literal=expr[key])
-        
+
         elif key == "CharLiteral":
             template = Template(self.targetDict["Expr"]["CharLiteral"])
             return template.substitute(literal=expr[key])
@@ -528,6 +588,86 @@ class Translator:
 
         raise TranslationFailure("Unknown expression type: " + key)
 
+    def translateMethodCall(self, methodCall):
+        """ Translates a method call expression
+        Args:
+            methodCall: object like [identifierAST, identifierAST, argumentListAST]
+        """
+
+        object = methodCall[0]["Identifier"]
+        method = methodCall[1]["Identifier"]
+        argsList = None
+        try:
+            argsList = methodCall[2]
+        except IndexError:
+            pass
+        translatedArgsList = self.translateArgumentList(argsList)
+
+        if object not in self.variableTypes:
+            raise TranslationFailure("Variable {} not initialised".format(identifier))
+
+        template = Template(self.targetDict["Expr"]["MethodCall"]["Default"])
+        if method in self.targetDict["Expr"]["MethodCall"]:
+            template = Template(self.targetDict["Expr"]["MethodCall"][method])
+
+        return template.substitute(object=object,
+                                   method=method,
+                                   arguments=translatedArgsList)
+
+    def translateStaticCall(self, staticCall):
+        """ Translates a method call expression
+        Args:
+            staticCall: object like [identifierAST, identifierAST, argumentListAST]
+        """
+        template = Template(self.targetDict["Expr"]["StaticCall"])
+        type_ = self.translateType(staticCall[0])
+        method = staticCall[1]["Identifier"]
+        argsList = None
+        try:
+            argsList = staticCall[2]
+        except IndexError:
+            pass
+        translatedArgsList = self.translateArgumentList(argsList)
+
+        return template.substitute(typeName=type_,
+                                   method=method,
+                                   arguments=translatedArgsList)
+
+    def translateGlobalCall(self, globalCall, returnKwargs):
+        """ Translates a method call expression
+        Args:
+            staticCall: object like [identifierAST, argumentListAST]
+        """
+        template = Template(self.targetDict["Expr"]["GlobalCall"])
+        method = globalCall[0]["Identifier"]
+        argsList = None
+        try:
+            argsList = globalCall[1]
+        except IndexError:
+            pass
+
+        translatedArgsList, kwargs = self.translateArgumentList(
+            argsList, returnKwargs=True
+        )
+
+        normalArgs = [
+            arg for arg in argsList["ArgumentList"]
+                if not "KeywordArgument" in arg
+        ]
+        kwargsString = self.translateKwargs(
+            kwargs, argsGtZero=len(normalArgs) > 0
+        )
+
+        translation = template.substitute(
+            typeName=type,method=method, arguments=translatedArgsList,
+            kwargs=kwargsString
+        )
+
+        if returnKwargs:
+            return translation, kwargs
+
+        return translation
+
     def translatePrint(self, printStmt):
         template = Template(self.targetDict["Print"])
         return template.substitute(expr=self.translateExpr(printStmt["Expr"]))
@@ -553,28 +693,56 @@ class Translator:
 
         return template.substitute(typeName=type[typeKey])
 
-    def translateArgumentList(self, argumentList):
+    def translateArgumentList(self, argumentList, returnKwargs=False):
         """ Translate argument list AST
         Args:
             argumentList: object like None, {"Expr": exprAST},
-                          [{"Expr": exprAST}, {"Expr": exprAST}], etc.
+                          [{"Expr": exprAST}, {"Expr": exprAST}],
+                          [{"KeywordArgument":[identifier, expr]], etc.
         """
-        if argumentList is None or argumentList == []:
+        kwargs = []
+        translation = ""
+        initialArg = True
+        for el in argumentList["ArgumentList"]:
+            if "Expr" in el:
+                if not initialArg:
+                    translation += ", "
+                translation += self.translateExpr(el["Expr"])
+                initialArg = False
+            elif "KeywordArgument" in el:
+                kwargs.append(el)
+
+        if returnKwargs:
+            return translation, kwargs
+
+        return translation
+
+    def translateKwargs(self, kwargs, name="", typeName="", argsGtZero=False):
+        if len(kwargs) == 0:
             return ""
-        if isinstance(argumentList, list):
-            head = argumentList[0]
-            tail = argumentList[1:]
 
-            translation = self.translateArgumentList(head)
-            if len(tail) > 0:
-                translation += ", " + self.translateArgumentList(tail)
+        kwarglist = Template(self.targetDict["Init"]["KeywordArguments"]["List"])
+        elem = Template(self.targetDict["Init"]["KeywordArguments"]["Element"])
+        sep = self.targetDict["Init"]["KeywordArguments"]["Separator"]
+        initialSep = self.targetDict["Init"]["KeywordArguments"]["InitialSeperatorWhenArgs>0"]
 
-            return translation
-        else:
-            if "Expr" in argumentList:
-                return self.translateExpr(argumentList["Expr"])
-            elif "ArgumentList" in argumentList:
-                return self.translateArgumentList(argumentList["ArgumentList"])
+        elements = []
+        for kwarg in kwargs:
+            elements.append(
+                elem.substitute(
+                    name=name,
+                    typeName=typeName,
+                    keyword=self.translateExpr(kwarg["KeywordArgument"][0]),
+                    expr=self.translateExpr(kwarg["KeywordArgument"][1]["Expr"])
+                )
+            )
+
+        separatedElements = sep.join(elements)
+        if initialSep and argsGtZero and len(elements) > 0:
+            separatedElements = sep + separatedElements
+
+        return kwarglist.substitute(elements=separatedElements)
+
 
     def translateElementAccess(self, elementAccess, expr=None):
         """ Translate element access AST
@@ -644,7 +812,10 @@ class Translator:
 
 def translate(ast, targetDict, tags, storeVars):
     translator = Translator(targetDict, tags)
-    programName = os.path.basename(ast["FilePath"]).split(".")[0]
+    try:
+        programName = os.path.basename(ast["FilePath"]).split(".")[0]
+    except KeyError:
+        programName = "Unknown"
 
     return translator.translateProgram(ast,
                                        programName,
@@ -682,7 +853,11 @@ if __name__ == "__main__":
     target = "python"
     if args.target:
         target = args.target
-    targetDict = loadTargetDict("targets/" + target + ".json")
+
+    targetsDirPath = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), 'targets'
+    )
+    targetDict = loadTargetDict(os.path.join(targetsDirPath, target + ".json"))
 
     # Load ctags file
     tags = {}

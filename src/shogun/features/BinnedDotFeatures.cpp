@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, 
+ *          Evan Shelhamer, Sergey Lisitsyn
  */
 
 #include <shogun/features/BinnedDotFeatures.h>
@@ -111,7 +109,7 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	((CBinnedDotFeatures*) df)->m_features->free_feature_vector(vec2, vec_idx2);
 
 	if (m_fill && m_norm_one && sum1!=0 && sum2!=0)
-		result/=CMath::sqrt(sum1*sum2);
+		result /= std::sqrt(sum1 * sum2);
 
 	return result;
 
@@ -156,7 +154,7 @@ float64_t CBinnedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	m_features->free_feature_vector(vec1, vec_idx1);
 
 	if (m_fill && m_norm_one && sum!=0)
-		result/=CMath::sqrt(sum);
+		result /= std::sqrt(sum);
 
 	return result;
 }
@@ -184,7 +182,7 @@ void CBinnedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 		if (alpha_correction==0.0)
 			return;
 
-		alpha/=CMath::sqrt(alpha_correction);
+		alpha /= std::sqrt(alpha_correction);
 	}
 
 	for (int32_t i=0; i<m_bins.num_cols; i++)

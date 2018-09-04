@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2010,2012 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
- * Copyright (C) 2012 Soeren Sonnenburg
+ * Authors: Soeren Sonnenburg, Soumyajit De, Sergey Lisitsyn, Yingrui Chang, 
+ *          Evgeniy Andreev, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ *          Fernando Iglesias, Björn Esser
  */
 
 #ifndef __SGSPARSEMATRIX_H__
@@ -187,8 +183,20 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		/** sort the indices of the sparse matrix such that they are in ascending order */
 		void sort_features();
 
-protected:
+		/** Pointer identify comparison.
+		 *  @return true iff number of vectors and features and pointer are
+		 * equal
+		 */
+		bool operator==(const SGSparseMatrix<T>& other) const;
 
+		/** Equals method up to precision for matrix (element-wise)
+		 * @param other matrix to compare with
+		 * @return false if any element differs or if shapes are different,
+		 * true otherwise
+		 */
+		bool equals(const SGSparseMatrix<T>& other) const;
+
+	protected:
 		/** copy data */
 		virtual void copy_data(const SGReferencedData& orig);
 

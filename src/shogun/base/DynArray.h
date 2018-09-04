@@ -1,12 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2012 Engeniy Andreev (gsomix)
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, 
+ *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias, 
+ *          Björn Esser, Sergey Lisitsyn
  */
 
 #ifndef _DYNARRAY_H_

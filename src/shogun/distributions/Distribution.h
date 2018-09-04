@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2014 Parijat Mazumdar
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Björn Esser, Thoralf Klein, Fernando Iglesias,
+ *          Yuyu Zhang
  */
 
 #ifndef _DISTRIBUTION_H___
@@ -192,16 +188,18 @@ class CDistribution : public CSGObject
 		 * abstract base method
 		 *
 		 * @param alpha_k "belongingness" values of various data points
-		 * @param len length of alpha_k array
 		 * @return sum of alpha_k values
 		 */
-		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
+		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
 
 		/** obtain from generic
 		 *
 		 * @param object generic object
 		 * @return Distribution object
 		 */
+#ifndef SWIG
+		[[deprecated("use .as template function")]]
+#endif
 		static CDistribution* obtain_from_generic(CSGObject* object);
 
 	protected:

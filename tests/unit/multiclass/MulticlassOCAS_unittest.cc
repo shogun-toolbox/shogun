@@ -1,9 +1,9 @@
+#include <gtest/gtest.h>
+
 #include "environments/MultiLabelTestEnvironment.h"
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
-#include <gtest/gtest.h>
-#ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/MulticlassOCAS.h>
 
 using namespace shogun;
@@ -36,4 +36,3 @@ TEST(MulticlassOCASTest,train)
   SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK
-#endif //USE_GPL_SHOGUN

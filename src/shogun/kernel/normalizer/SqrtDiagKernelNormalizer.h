@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Sergey Lisitsyn
  */
 
 #ifndef _SQRTDIAGKERNELNORMALIZER_H___
@@ -42,8 +38,12 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		{
 			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
 							  "sqrt(K(x,x)) for left hand side examples.");
+			watch_param("sqrtdiag_lhs", &sqrtdiag_lhs, &num_sqrtdiag_lhs);
+
 			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs",
 							  "sqrt(K(x,x)) for right hand side examples.");
+			watch_param("sqrtdiag_rhs", &sqrtdiag_rhs, &num_sqrtdiag_rhs);
+
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
 					"flat if optimized diagonal computation is used", MS_NOT_AVAILABLE);

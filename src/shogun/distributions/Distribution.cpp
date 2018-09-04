@@ -1,12 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2014 Parijat Mazumdar
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg
  */
 
 #include <shogun/distributions/Distribution.h>
@@ -75,7 +70,7 @@ SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
 	return result;
 }
 
-float64_t CDistribution::update_params_em(float64_t* alpha_k, int32_t len)
+float64_t CDistribution::update_params_em(const SGVector<float64_t> alpha_k)
 {
 	SG_WARNING("Not implemented in this class. This class cannot be used for Mixture models.\n")
 	SG_NOTIMPLEMENTED

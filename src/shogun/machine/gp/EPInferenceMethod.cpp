@@ -184,7 +184,7 @@ void CEPInferenceMethod::update()
 
 	// get and scale diagonal of the kernel matrix
 	SGVector<float64_t> ktrtr_diag=m_ktrtr.get_diagonal_vector();
-	ktrtr_diag.scale(CMath::exp(m_log_scale*2.0));
+	ktrtr_diag.scale(std::exp(m_log_scale * 2.0));
 
 	// marginal likelihood for ttau = tnu = 0
 	float64_t nlZ0=-SGVector<float64_t>::sum(m_model->get_log_zeroth_moments(
@@ -207,7 +207,7 @@ void CEPInferenceMethod::update()
 		// copy data manually, since we don't have appropriate method
 		for (index_t i=0; i<m_ktrtr.num_rows; i++)
 			for (index_t j=0; j<m_ktrtr.num_cols; j++)
-				m_Sigma(i,j)=m_ktrtr(i,j)*CMath::exp(m_log_scale);
+				m_Sigma(i, j) = m_ktrtr(i, j) * std::exp(m_log_scale);
 
 		CREATE_SGVECTOR(m_mu, n, float64_t);
 		m_mu.zero();
@@ -261,7 +261,7 @@ void CEPInferenceMethod::update()
 
 			// compute ttau and sqrt(ttau)
 			m_ttau[i]=CMath::max(1.0/s2-tau_n[i], 0.0);
-			m_sttau[i]=CMath::sqrt(m_ttau[i]);
+			m_sttau[i] = std::sqrt(m_ttau[i]);
 
 			// compute tnu
 			m_tnu[i]=mu/s2-nu_n[i];
@@ -328,8 +328,9 @@ void CEPInferenceMethod::update_alpha()
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 	// solve LL^T * v = tS^(1/2) * K * tnu
-	VectorXd eigen_v=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sttau.cwiseProduct(eigen_K*CMath::exp(m_log_scale*2.0)*eigen_tnu));
+	VectorXd eigen_v = eigen_L.triangularView<Upper>().adjoint().solve(
+	    eigen_sttau.cwiseProduct(
+	        eigen_K * std::exp(m_log_scale * 2.0) * eigen_tnu));
 	eigen_v=eigen_L.triangularView<Upper>().solve(eigen_v);
 
 	// compute alpha = (I - tS^(1/2) * B^(-1) * tS(1/2) * K) * tnu =
@@ -351,9 +352,10 @@ void CEPInferenceMethod::update_chol()
 
 	// compute upper triangular factor L^T of the Cholesky decomposion of the
 	// matrix: B = tS^(1/2) * K * tS^(1/2) + I
-	LLT<MatrixXd> eigen_chol((eigen_sttau*eigen_sttau.adjoint()).cwiseProduct(
-			eigen_K*CMath::exp(m_log_scale*2.0))+
-			MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
+	LLT<MatrixXd> eigen_chol(
+	    (eigen_sttau * eigen_sttau.adjoint())
+	        .cwiseProduct(eigen_K * std::exp(m_log_scale * 2.0)) +
+	    MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
 
 	eigen_L=eigen_chol.matrixU();
 }
@@ -371,14 +373,15 @@ void CEPInferenceMethod::update_approx_cov()
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
 
 	// compute V = L^(-1) * tS^(1/2) * K, using upper triangular factor L^T
-	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sttau.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
+	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
+	    eigen_sttau.asDiagonal() * eigen_K * std::exp(m_log_scale * 2.0));
 
 	// compute covariance matrix of the posterior:
 	// Sigma = K - K * tS^(1/2) * (L * L^T)^(-1) * tS^(1/2) * K =
 	// K - (K * tS^(1/2)) * (L^T)^(-1) * L^(-1) * tS^(1/2) * K =
 	// K - (tS^(1/2) * K)^T * (L^(-1))^T * L^(-1) * tS^(1/2) * K = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma =
+	    eigen_K * std::exp(m_log_scale * 2.0) - eigen_V.adjoint() * eigen_V;
 }
 
 void CEPInferenceMethod::update_approx_mean()
@@ -485,7 +488,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 
 	// compute derivative wrt kernel scale: dnlZ=-sum(F.*K*scale*2)/2
 	result[0]=-(eigen_F.cwiseProduct(eigen_K)).sum();
-	result[0]*=CMath::exp(m_log_scale*2.0);
+	result[0] *= std::exp(m_log_scale * 2.0);
 
 	return result;
 }
@@ -521,7 +524,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 
 		// compute derivative wrt kernel parameter: dnlZ=-sum(F.*dK*scale^2)/2.0
 		result[i]=-(eigen_F.cwiseProduct(eigen_dK)).sum();
-		result[i]*=CMath::exp(m_log_scale*2.0)/2.0;
+		result[i] *= std::exp(m_log_scale * 2.0) / 2.0;
 	}
 
 	return result;

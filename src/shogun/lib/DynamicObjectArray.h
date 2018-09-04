@@ -1,22 +1,22 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011-2016 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev,
+ *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein,
+ *          Fernando Iglesias, Björn Esser
  */
 
 #ifndef _DYNAMIC_OBJECT_ARRAY_H_
 #define _DYNAMIC_OBJECT_ARRAY_H_
+
+#include <type_traits>
 
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/io/Serializable.h>
 
 namespace shogun
 {
@@ -277,6 +277,27 @@ class CDynamicObjectArray : public CSGObject
 			return success;
 		}
 
+		template <typename T, typename T2 = typename std::enable_if_t<std::is_arithmetic<T>::value>>
+		inline bool append_element(T e, const char* name="")
+		{
+			auto serialized_element = new CSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
+		template <typename T>
+		inline bool append_element(SGVector<T> e, const char* name="")
+		{
+			auto serialized_element = new CVectorSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
+		template <typename T>
+		inline bool append_element(SGMatrix<T> e, const char* name="")
+		{
+			auto serialized_element = new CMatrixSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
 		/** append array element to the end of array
 		 *
 		 * @param e element to append
@@ -397,6 +418,10 @@ class CDynamicObjectArray : public CSGObject
 		virtual const char* get_name() const
 		{ return "DynamicObjectArray"; }
 
+		// without this definition R interface is missing these inherited functions
+		using CSGObject::save_serializable;
+		using CSGObject::load_serializable;
+
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -444,6 +469,8 @@ class CDynamicObjectArray : public CSGObject
 		{
 			m_parameters->add_vector(&m_array.array, &m_array.current_num_elements, "array",
 									 "Memory for dynamic array.");
+			watch_param("array", &m_array.array, &m_array.current_num_elements);
+
 			SG_ADD(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.", MS_NOT_AVAILABLE);

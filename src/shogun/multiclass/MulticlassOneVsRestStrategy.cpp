@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Shell Hu, Soeren Sonnenburg, Sergey Lisitsyn, 
+ *          Björn Esser, Sanuj Sharma
  */
 
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
@@ -118,7 +115,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> ou
 	}
 
 	for (int32_t i=0; i<outputs.vlen; i++)
-		outputs[i] = CMath::exp(-As[i]*outputs[i]-Bs[i]);
+		outputs[i] = std::exp(-As[i] * outputs[i] - Bs[i]);
 
 	float64_t norm = SGVector<float64_t>::sum(outputs);
 	norm += 1E-10;

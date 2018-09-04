@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Written (W) 2011-2013 Heiko Strathmann
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker, 
+ *          Thoralf Klein, Soumyajit De, Yuyu Zhang, Evan Shelhamer
  */
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
@@ -59,49 +55,6 @@ struct TParameter
 	 * @param prefix prefix
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
-
-	/** Numerically this instance with another instance. Compares recursively
-	 * in case of non-numerical parameters
-	 *
-	 * @param other other instance to compare with
-	 * @param accuracy accuracy for numerical comparison
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return true if given parameter instance is equal, false otherwise
-	 */
-	bool equals(TParameter* other, float64_t accuracy=0.0, bool tolerant=false);
-
-	/** Given two pointers to a scalar element of a given primitive-type, this
-	 * method compares the values up to a given accuracy.
-	 *
-	 * If the type of the data is SGObject, recursively calls equals on the
-	 * object.
-	 *
-	 * @param ptype primitive type of both data
-	 * @param data1 pointer 1
-	 * @param data2 pointer 2
-	 * @param accuracy accuracy to compare
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return whether the data was equal
-	 */
-	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
-			float64_t accuracy=0.0, bool tolerant=false);
-
-	/** Given two pointers to a string element of a given primitive-type, this
-	 * method compares the values up to a given accuracy.
-	 *
-	 * If the type of the data is SGObject, recursively calls equals on the
-	 * object.
-	 *
-	 * @param stype string type of both data
-	 * @param ptype primitive type of both data
-	 * @param data1 pointer 1
-	 * @param data2 pointer 2
-	 * @param accuracy accuracy to compare
-	 * @param tolerant allows linient check on float equality (within accuracy)
-	 * @return whether the data was equal
-	 */
-	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
-			void* data1, void* data2, float64_t accuracy=0.0, bool tolerant=false);
 
 	/** copy primitive type from source to target
 	 *
@@ -380,6 +333,15 @@ public:
 	 */
 	void add(CSGObject** param,
 			 const char* name, const char* description="");
+
+	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+		                                   T>* = nullptr>
+	void add(T** param, const char* name, const char* description = "")
+	{
+		TSGDataType type(CT_SCALAR, ST_NONE, PT_SGOBJECT);
+		add_type(&type, (CSGObject**)param, name, description);
+	}
+
 	/** add param
 	 * @param param parameter itself
 	 * @param name name of parameter

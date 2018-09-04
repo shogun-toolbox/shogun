@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
+ *          Saurabh Mahindre, Fernando Iglesias, Evgeniy Andreev, Yuyu Zhang,
+ *          Chiyuan Zhang, Thoralf Klein
  */
 
 #ifndef _BINARY_LABELS__H__
@@ -15,9 +11,10 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/LabelTypes.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
@@ -77,6 +74,12 @@ public:
 	 */
 	CBinaryLabels(CFile * loader);
 
+	/** Cast constructor
+	 *
+	 * @param dense CDenseLabels containing the binary labels
+	 */
+	CBinaryLabels(const CDenseLabels& dense);
+
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
 	 * possible with subset
@@ -116,9 +119,14 @@ public:
 	{
 		return "BinaryLabels";
 	}
+
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy();
 #endif
 };
+
+#ifndef SWIG
+Some<CBinaryLabels> binary_labels(CLabels* orig);
+#endif // SWIG
 }
 #endif

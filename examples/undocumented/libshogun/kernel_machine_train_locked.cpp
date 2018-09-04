@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Evgeniy Andreev, 
+ *          Sergey Lisitsyn
  */
 
 #include <shogun/base/init.h>
@@ -93,6 +90,7 @@ void test()
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -106,6 +104,7 @@ void test()
 	indices.vector[2]=3;
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -118,6 +117,7 @@ void test()
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
@@ -128,6 +128,7 @@ void test()
 	svm->data_unlock();
 	svm->train();
 	output=CLabelsFactory::to_binary(svm->apply());
+	SG_REF(output);
 	ASSERT(eval->evaluate(output, labels)==1);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");

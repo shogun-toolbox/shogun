@@ -83,7 +83,7 @@ SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	eigen_result=eigen_result.array()+CMath::exp(m_log_sigma*2.0);
+	eigen_result = eigen_result.array() + std::exp(m_log_sigma * 2.0);
 
 	return result;
 }
@@ -108,8 +108,10 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 
 	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
 	eigen_result=eigen_y-eigen_f;
-	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2.0*CMath::exp(m_log_sigma*2.0))-
-		VectorXd::Ones(result.vlen)*log(2.0*CMath::PI*CMath::exp(m_log_sigma*2.0))/2.0;
+	eigen_result = -eigen_result.cwiseProduct(eigen_result) /
+	                   (2.0 * std::exp(m_log_sigma * 2.0)) -
+	               VectorXd::Ones(result.vlen) *
+	                   log(2.0 * CMath::PI * std::exp(m_log_sigma * 2.0)) / 2.0;
 
 	return result;
 }
@@ -138,9 +140,10 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 
 	// compute derivatives of log probability wrt f
 	if (i == 1)
-		eigen_result/=CMath::exp(m_log_sigma*2.0);
+		eigen_result /= std::exp(m_log_sigma * 2.0);
 	else if (i == 2)
-		eigen_result=-VectorXd::Ones(result.vlen)/CMath::exp(m_log_sigma*2.0);
+		eigen_result =
+		    -VectorXd::Ones(result.vlen) / std::exp(m_log_sigma * 2.0);
 	else if (i == 3)
 		eigen_result=VectorXd::Zero(result.vlen);
 
@@ -171,7 +174,8 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	// dlp_dlogsigma
 	// lp_dsigma=(y-f).^2/sigma^2-1
 	eigen_result=eigen_y-eigen_f;
-	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::exp(m_log_sigma*2.0);
+	eigen_result =
+	    eigen_result.cwiseProduct(eigen_result) / std::exp(m_log_sigma * 2.0);
 	eigen_result-=VectorXd::Ones(result.vlen);
 
 	return result;
@@ -200,7 +204,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	// compute derivative of (the first log_sigma derivative of log probability) wrt f:
 	// d2lp_dlogsigma_df == d2lp_df_dlogsigma
 	// dlp_dsigma=2*(f-y)/sigma^2
-	eigen_result=2.0*(eigen_f-eigen_y)/CMath::exp(m_log_sigma*2.0);
+	eigen_result = 2.0 * (eigen_f - eigen_y) / std::exp(m_log_sigma * 2.0);
 
 	return result;
 }
@@ -225,7 +229,8 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	// compute derivative of (the derivative of the first log_sigma derivative of log probability) wrt f:
 	// d3lp_dlogsigma_df_df == d3lp_df_df_dlogsigma
 	// d2lp_dsigma=2/sigma^2
-	eigen_result=2.0*VectorXd::Ones(result.vlen)/CMath::exp(m_log_sigma*2.0);
+	eigen_result =
+	    2.0 * VectorXd::Ones(result.vlen) / std::exp(m_log_sigma * 2.0);
 
 	return result;
 }
@@ -265,7 +270,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	// compule lZ=-(y-mu).^2./(sn2+s2)/2-log(2*pi*(sn2+s2))/2
-	eigen_s2=eigen_s2.array()+CMath::exp(m_log_sigma*2.0);
+	eigen_s2 = eigen_s2.array() + std::exp(m_log_sigma * 2.0);
 	eigen_result=-(eigen_y-eigen_mu).array().square()/(2.0*eigen_s2.array())-
 		(2.0*CMath::PI*eigen_s2.array()).log()/2.0;
 
@@ -288,7 +293,8 @@ float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// compute 1st moment
-	float64_t Ex=mu[i]+s2[i]*(y[i]-mu[i])/(CMath::exp(m_log_sigma*2.0)+s2[i]);
+	float64_t Ex =
+	    mu[i] + s2[i] * (y[i] - mu[i]) / (std::exp(m_log_sigma * 2.0) + s2[i]);
 
 	return Ex;
 }
@@ -307,7 +313,8 @@ float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
 			"Labels must be type of CRegressionLabels\n")
 
 	// compute 2nd moment
-	float64_t Var=s2[i]-CMath::sq(s2[i])/(CMath::exp(m_log_sigma*2.0)+s2[i]);
+	float64_t Var =
+	    s2[i] - CMath::sq(s2[i]) / (std::exp(m_log_sigma * 2.0) + s2[i]);
 
 	return Var;
 }

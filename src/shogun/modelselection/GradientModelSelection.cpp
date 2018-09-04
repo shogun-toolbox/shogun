@@ -1,11 +1,9 @@
-/* * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2016 Wu Lin
- * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
+ * Authors: Jacob Walker, Wu Lin, Heiko Strathmann, Roman Votyakov, Viktor Gal, 
+ *          Weijie Lin, Fernando Iglesias, Sergey Lisitsyn, Björn Esser, 
+ *          Soeren Sonnenburg
  */
 
 #include <shogun/modelselection/GradientModelSelection.h>
@@ -89,10 +87,12 @@ private:
 			"obj in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 		m_func_data = NULL;
 		m_val = SGVector<float64_t>();
-		SG_ADD(m_val, "GradientModelSelectionCostFunction__m_val",
+		SG_ADD(
+			&m_val, "GradientModelSelectionCostFunction__m_val",
 			"val in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 		m_grad = SGVector<float64_t>();
-		SG_ADD(m_grad, "GradientModelSelectionCostFunction__m_grad",
+		SG_ADD(
+			&m_grad, "GradientModelSelectionCostFunction__m_grad",
 			"grad in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
 	}
 
@@ -189,7 +189,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	float64_t cost = SGVector<float64_t>::sum(value);
 
-	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+	if (CMath::is_nan(cost) || std::isinf(cost))
 	{
 		if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
 			return cost;

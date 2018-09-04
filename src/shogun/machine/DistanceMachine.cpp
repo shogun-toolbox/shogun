@@ -1,11 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Christian Gehl
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, 
+ *          Viktor Gal, Evan Shelhamer
  */
 
 #include <shogun/machine/DistanceMachine.h>
@@ -38,7 +35,7 @@ void CDistanceMachine::init()
 	set_store_model_features(true);
 
 	distance=NULL;
-	m_parameters->add((CSGObject**)&distance, "distance", "Distance to use");
+	SG_ADD(&distance, "distance", "Distance to use", MS_AVAILABLE);
 }
 
 void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)

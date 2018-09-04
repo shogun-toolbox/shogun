@@ -1,10 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2013 Heiko Strathmann
+ * Authors: Roman Votyakov, Heiko Strathmann, Soumyajit De, Sergey Lisitsyn, 
+ *          Wu Lin
  */
 
 #include <shogun/base/init.h>
@@ -33,7 +31,7 @@ CModelSelectionParameters* build_param_tree(CKernel* kernel)
 	CModelSelectionParameters * params_kernel=new CModelSelectionParameters("kernel", kernel);
 	root->append_child(params_kernel);
 	CModelSelectionParameters * params_kernel_width=new CModelSelectionParameters("log_width");
-	params_kernel_width->build_values(-CMath::log(2.0), 0.0, R_LINEAR);
+	params_kernel_width->build_values(-std::log(2.0), 0.0, R_LINEAR);
 	params_kernel->append_child(params_kernel_width);
 
 	return root;

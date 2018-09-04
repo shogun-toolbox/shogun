@@ -6,18 +6,24 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
     GET_META_EXAMPLE_VARS(${META_EXAMPLE} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
 
+    if(WIN32)
+        SET(SHOGUN_LIBRARY shogun::shogun-static)
+    else()
+        SET(SHOGUN_LIBRARY shogun::shogun)
+    endif()
+
     # meta examples have to be generated before executable and test is added
     SET(GENERATED_CPP ${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.cpp)
-    SET(GENERATED_CPP_BINARY ${EXAMPLE_NAME})
+    SET(GENERATED_CPP_BINARY cpp-${EXAMPLE_REL_DIR}-${EXAMPLE_NAME})
 
     # generate binary in relative directory
     SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_REL_DIR})
 
     ADD_EXECUTABLE(${GENERATED_CPP_BINARY} ${GENERATED_CPP})
-    ADD_DEPENDENCIES(${GENERATED_CPP_BINARY} meta_examples shogun::shogun)
+    ADD_DEPENDENCIES(${GENERATED_CPP_BINARY} meta_examples ${SHOGUN_LIBRARY})
     SET_SOURCE_FILES_PROPERTIES(${GENERATED_CPP} PROPERTIES GENERATED 1)
 
-    TARGET_LINK_LIBRARIES(${GENERATED_CPP_BINARY} shogun ${SANITIZER_LIBRARY})
+    TARGET_LINK_LIBRARIES(${GENERATED_CPP_BINARY} ${SHOGUN_LIBRARY} ${SANITIZER_LIBRARY})
 
 	# Suppress unused variable warnings
 	# if we are not testing the meta_examples

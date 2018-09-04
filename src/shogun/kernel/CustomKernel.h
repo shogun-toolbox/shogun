@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Evgeniy Andreev, 
+ *          Sergey Lisitsyn, Yuyu Zhang, Evan Shelhamer, Pan Deng
  */
 
 #ifndef _CUSTOMKERNEL_H___
@@ -170,7 +166,7 @@ class CCustomKernel: public CKernel
 			ASSERT(tri_kernel_matrix.vector)
 
 			int64_t len = tri_kernel_matrix.vlen;
-			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
+			int64_t cols = (int64_t)floor(-0.5 + std::sqrt(0.25 + 2 * len));
 
 			if (cols*(cols+1)/2 != len)
 			{

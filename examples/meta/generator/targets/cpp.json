@@ -10,8 +10,14 @@
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
-        "Construct": "auto $name = some<C$typeName>($arguments)",
-        "Copy": "auto $name = $expr",
+        "Construct": "auto $name = some<C$typeName>($arguments)$kwargs",
+        "Copy": "auto $name = wrap($expr)$kwargs",
+        "KeywordArguments": {
+            "List": ";\n$elements",
+            "Element": "$name->put(\"$keyword\", $expr)",
+            "Separator": ";\n",
+            "InitialSeperatorWhenArgs>0": false
+        },
         "BoolVector": "auto $name = SGVector<bool>($arguments)",
         "CharVector": "auto $name = SGVector<char>($arguments)",
         "ByteVector": "auto $name = SGVector<uint8_t>($arguments)",
@@ -84,7 +90,12 @@
         "IntLiteral": "$number",
         "RealLiteral": "$number",
         "FloatLiteral": "${number}f",
-        "MethodCall": "$object->$method($arguments)",
+        "MethodCall": {
+            "Default": "$object->$method($arguments)",
+            "get_real": "$object->get<float64_t>($arguments)",
+            "get_real_vector": "$object->get<SGVector<float64_t>>($arguments)",
+            "get_real_matrix": "$object->get<SGMatrix<float64_t>>($arguments)"
+        },
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",

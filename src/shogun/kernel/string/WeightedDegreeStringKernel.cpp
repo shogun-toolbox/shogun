@@ -1,12 +1,8 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Björn Esser,
+ *          Viktor Gal
  */
 
 #include <shogun/base/Parallel.h>
@@ -787,10 +783,11 @@ bool CWeightedDegreeStringKernel::init_block_weights_log()
 	block_weights=SG_MALLOC(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
-		block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
+		block_weights[i - 1] = CMath::pow(std::log((float64_t)i), 2);
 
 	for (int32_t i=degree+1; i<seq_length+1 ; i++)
-		block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
+		block_weights[i - 1] =
+		    i - degree + 1 + CMath::pow(std::log(degree + 1.0), 2);
 
 	return true;
 }
@@ -1014,9 +1011,13 @@ void CWeightedDegreeStringKernel::init()
 
 	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
 			"weights", "WD Kernel weights.");
+	watch_param("weights", &weights, &weights_degree, &weights_length);
+
 	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
+	watch_param("position_weights", &position_weights, &position_weights_len);
+
 	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
 	SG_ADD(&max_mismatch, "max_mismatch",

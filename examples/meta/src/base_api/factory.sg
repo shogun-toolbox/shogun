@@ -1,0 +1,13 @@
+Machine lib_svm = machine("LibSVM")
+Machine lda = machine("LDA")
+Kernel kernel_gaussian = kernel("GaussianKernel")
+Kernel kernel_linear = kernel("LinearKernel")
+
+RealMatrix real_matrix(2,2)
+Features features_from_matrix = features(real_matrix)
+
+File features_file = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
+Features features_from_file = features(features_file, enum EPrimitiveType.PT_FLOAT64)
+
+File labels_file = csv_file("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
+Labels labels_from_file = labels(labels_file)

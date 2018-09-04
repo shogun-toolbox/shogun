@@ -1,11 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sanuj Sharma, Björn Esser
  */
 
 #include <algorithm>
@@ -199,10 +195,10 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, 
         float64_t MI_i = 0;
         for (int j=0; j < 10; ++j)
             MI_i += (hist1[j]-hist2[j])*(hist1[j]-hist2[j]);
-        MI += CMath::sqrt(MI_i);
-    }
+		MI += std::sqrt(MI_i);
+	}
 
-    return MI;
+	return MI;
 }
 
 void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,

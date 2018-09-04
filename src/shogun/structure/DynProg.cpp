@@ -1,13 +1,9 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Written (W) 1999-2007 Gunnar Raetsch
- * Written (W) 2008-2009 Jonas Behr
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, Viktor Gal, 
+ *          Weijie Lin, Evan Shelhamer, Björn Esser, Giovanni De Toni, 
+ *          Leon Kuchenbecker, Saurabh Goyal
  */
 
 #include <shogun/structure/DynProg.h>
@@ -1180,122 +1176,143 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					/* if the transition is an ORF or we do computation with loss, we have to disable long transitions */
 					if ((m_orf_info.element(ii,0)!=-1) || (m_orf_info.element(j,1)!=-1) || (!long_transitions))
 					{
-						look_back.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						//look_back_orig.set_element(CMath::ceil(penij->get_max_value()), j, ii) ;
-						if (CMath::ceil(penij->get_max_value()) > max_look_back)
-						{
-							SG_DEBUG("%d %d -> value: %f\n", ii,j,penij->get_max_value())
-							max_look_back = (int32_t) (CMath::ceil(penij->get_max_value()));
-						}
-					}
-					else
-					{
-						look_back.set_element(CMath::min( (int32_t)CMath::ceil(penij->get_max_value()), m_long_transition_threshold ), j, ii) ;
-						//look_back_orig.set_element( (int32_t)CMath::ceil(penij->get_max_value()), j, ii) ;
-					}
+					    look_back.set_element(
+					        std::ceil(penij->get_max_value()), j, ii);
+					    // look_back_orig.set_element(CMath::ceil(penij->get_max_value()),
+					    // j, ii) ;
+					    if (std::ceil(penij->get_max_value()) > max_look_back)
+					    {
+						    SG_DEBUG(
+						        "%d %d -> value: %f\n", ii, j,
+						        penij->get_max_value())
+						    max_look_back =
+						        (int32_t)(std::ceil(penij->get_max_value()));
+					    }
+				    }
+				    else
+				    {
+					    look_back.set_element(
+					        CMath::min(
+					            (int32_t)std::ceil(penij->get_max_value()),
+					            m_long_transition_threshold),
+					        j, ii);
+					    // look_back_orig.set_element(
+					    // (int32_t)CMath::ceil(penij->get_max_value()), j, ii)
+					    // ;
+				    }
 
-					if (penij->uses_svm_values())
-						use_svm=true ;
-				}
-			}
-			/* make sure max_look_back is at least as long as a long transition */
-			if (long_transitions)
-				max_look_back = CMath::max(m_long_transition_threshold, max_look_back) ;
+				    if (penij->uses_svm_values())
+					    use_svm = true;
+			    }
+		    }
+		    /* make sure max_look_back is at least as long as a long transition
+		    */
+		    if (long_transitions)
+			    max_look_back =
+			        CMath::max(m_long_transition_threshold, max_look_back);
 
-			/* make sure max_look_back is not longer than the whole string */
-			max_look_back = CMath::min(m_genestr.get_dim1(), max_look_back) ;
+		    /* make sure max_look_back is not longer than the whole string */
+		    max_look_back = CMath::min(m_genestr.get_dim1(), max_look_back);
 
-			int32_t num_long_transitions = 0 ;
-			for (int32_t i=0; i<m_N; i++)
-				for (int32_t j=0; j<m_N; j++)
-				{
-					if (look_back.get_element(i,j)==m_long_transition_threshold)
-						num_long_transitions++ ;
-					if (look_back.get_element(i,j)==INT_MAX)
-					{
-						if (long_transitions)
-						{
-							look_back.set_element(m_long_transition_threshold, i, j) ;
-							//look_back_orig.set_element(m_long_transition_max, i, j) ;
-						}
-						else
-						{
-							look_back.set_element(max_look_back, i, j) ;
-							//look_back_orig.set_element(m_long_transition_max, i, j) ;
-						}
-					}
-				}
-			SG_DEBUG("Using %i long transitions\n", num_long_transitions)
-		}
-		//SG_PRINT("max_look_back: %i \n", max_look_back)
+		    int32_t num_long_transitions = 0;
+		    for (int32_t i = 0; i < m_N; i++)
+			    for (int32_t j = 0; j < m_N; j++)
+			    {
+				    if (look_back.get_element(i, j) ==
+				        m_long_transition_threshold)
+					    num_long_transitions++;
+				    if (look_back.get_element(i, j) == INT_MAX)
+				    {
+					    if (long_transitions)
+					    {
+						    look_back.set_element(
+						        m_long_transition_threshold, i, j);
+						    // look_back_orig.set_element(m_long_transition_max,
+						    // i, j);
+					    }
+					    else
+					    {
+						    look_back.set_element(max_look_back, i, j);
+						    // look_back_orig.set_element(m_long_transition_max,
+						    // i, j);
+					    }
+				    }
+			    }
+		    SG_DEBUG("Using %i long transitions\n", num_long_transitions)
+	    }
+	    // SG_PRINT("max_look_back: %i \n", max_look_back)
 
-		//SG_PRINT("use_svm=%i, genestr_len: \n", use_svm, m_genestr.get_dim1())
-		SG_DEBUG("use_svm=%i\n", use_svm)
+	    // SG_PRINT("use_svm=%i, genestr_len: \n", use_svm,
+	    // m_genestr.get_dim1())
+	    SG_DEBUG("use_svm=%i\n", use_svm)
 
-		SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest)
-		const int32_t look_back_buflen = (max_look_back*m_N+1)*nbest ;
-		SG_DEBUG("look_back_buflen=%i\n", look_back_buflen)
-		/*const float64_t mem_use = (float64_t)(m_seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))+
-		  look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
-		  m_seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
-		  m_genestr.get_dim1()*sizeof(bool))/(1024*1024);*/
+	    SG_DEBUG("maxlook: %d m_N: %d nbest: %d \n", max_look_back, m_N, nbest)
+	    const int32_t look_back_buflen = (max_look_back * m_N + 1) * nbest;
+	    SG_DEBUG("look_back_buflen=%i\n", look_back_buflen)
+	    /*const float64_t mem_use =
+	      (float64_t)(m_seq_len*m_N*nbest*(sizeof(T_STATES)+sizeof(int16_t)+sizeof(int32_t))
+	      +
+	      look_back_buflen*(2*sizeof(float64_t)+sizeof(int32_t))+
+	      m_seq_len*(sizeof(T_STATES)+sizeof(int32_t))+
+	      m_genestr.get_dim1()*sizeof(bool))/(1024*1024);*/
 
-		//bool is_big = (mem_use>200) || (m_seq_len>5000) ;
+	    // bool is_big = (mem_use>200) || (m_seq_len>5000) ;
 
-		/*if (is_big)
-		  {
-		  SG_DEBUG("calling compute_nbest_paths: m_seq_len=%i, m_N=%i, lookback=%i nbest=%i\n",
-		  m_seq_len, m_N, max_look_back, nbest) ;
-		  SG_DEBUG("allocating %1.2fMB of memory\n",
-		  mem_use) ;
-		  }*/
-		ASSERT(nbest<32000)
+	    /*if (is_big)
+	      {
+	      SG_DEBUG("calling compute_nbest_paths: m_seq_len=%i, m_N=%i,
+	      lookback=%i nbest=%i\n",
+	      m_seq_len, m_N, max_look_back, nbest) ;
+	      SG_DEBUG("allocating %1.2fMB of memory\n",
+	      mem_use) ;
+	      }*/
+	    ASSERT(nbest < 32000)
 
-		CDynamicArray<float64_t> delta(m_seq_len, m_N, nbest) ; // 3d
-		float64_t* delta_array = delta.get_array() ;
-		//delta.set_const(0) ;
+	    CDynamicArray<float64_t> delta(m_seq_len, m_N, nbest); // 3d
+	    float64_t* delta_array = delta.get_array();
+	    // delta.set_const(0) ;
 
-		CDynamicArray<T_STATES> psi(m_seq_len, m_N, nbest) ; // 3d
-		//psi.set_const(0) ;
+	    CDynamicArray<T_STATES> psi(m_seq_len, m_N, nbest); // 3d
+	    // psi.set_const(0) ;
 
-		CDynamicArray<int16_t> ktable(m_seq_len, m_N, nbest) ; // 3d
-		//ktable.set_const(0) ;
+	    CDynamicArray<int16_t> ktable(m_seq_len, m_N, nbest); // 3d
+	    // ktable.set_const(0) ;
 
-		CDynamicArray<int32_t> ptable(m_seq_len, m_N, nbest) ; // 3d
-		//ptable.set_const(0) ;
+	    CDynamicArray<int32_t> ptable(m_seq_len, m_N, nbest); // 3d
+	    // ptable.set_const(0) ;
 
-		CDynamicArray<float64_t> delta_end(nbest) ;
-		//delta_end.set_const(0) ;
+	    CDynamicArray<float64_t> delta_end(nbest);
+	    // delta_end.set_const(0) ;
 
-		CDynamicArray<T_STATES> path_ends(nbest) ;
-		//path_ends.set_const(0) ;
+	    CDynamicArray<T_STATES> path_ends(nbest);
+	    // path_ends.set_const(0) ;
 
-		CDynamicArray<int16_t> ktable_end(nbest) ;
-		//ktable_end.set_const(0) ;
+	    CDynamicArray<int16_t> ktable_end(nbest);
+	    // ktable_end.set_const(0) ;
 
-		float64_t * fixedtempvv=SG_MALLOC(float64_t, look_back_buflen);
-		memset(fixedtempvv, 0, look_back_buflen*sizeof(float64_t)) ;
-		int32_t * fixedtempii=SG_MALLOC(int32_t, look_back_buflen);
-		memset(fixedtempii, 0, look_back_buflen*sizeof(int32_t)) ;
+	    float64_t* fixedtempvv = SG_MALLOC(float64_t, look_back_buflen);
+	    memset(fixedtempvv, 0, look_back_buflen * sizeof(float64_t));
+	    int32_t* fixedtempii = SG_MALLOC(int32_t, look_back_buflen);
+	    memset(fixedtempii, 0, look_back_buflen * sizeof(int32_t));
 
-		CDynamicArray<float64_t> oldtempvv(look_back_buflen) ;
+	    CDynamicArray<float64_t> oldtempvv(look_back_buflen);
 
-		CDynamicArray<float64_t> oldtempvv2(look_back_buflen) ;
-		//oldtempvv.set_const(0) ;
-		//oldtempvv.display_size() ;
+	    CDynamicArray<float64_t> oldtempvv2(look_back_buflen);
+	    // oldtempvv.set_const(0) ;
+	    // oldtempvv.display_size() ;
 
-		CDynamicArray<int32_t> oldtempii(look_back_buflen) ;
+	    CDynamicArray<int32_t> oldtempii(look_back_buflen);
 
-		CDynamicArray<int32_t> oldtempii2(look_back_buflen) ;
-		//oldtempii.set_const(0) ;
+	    CDynamicArray<int32_t> oldtempii2(look_back_buflen);
+	    // oldtempii.set_const(0);
 
-		CDynamicArray<T_STATES> state_seq(m_seq_len) ;
-		//state_seq.set_const(0) ;
+	    CDynamicArray<T_STATES> state_seq(m_seq_len);
+	    // state_seq.set_const(0) ;
 
-		CDynamicArray<int32_t> pos_seq(m_seq_len) ;
-		//pos_seq.set_const(0) ;
+	    CDynamicArray<int32_t> pos_seq(m_seq_len);
+    // pos_seq.set_const(0) ;
 
-		////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNPROG_DEBUG
 		state_seq.display_size() ;

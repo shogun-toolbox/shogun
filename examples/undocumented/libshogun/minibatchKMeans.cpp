@@ -1,15 +1,7 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * This is an example of mini-batch KMeans compared with classical KMeans.
- * Refer: http://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf
- * While the accuracy of mini-batch KMeans is lower than Lloyd's KMeans,
- * the former is much faster than the latter.
- *
- * Written (W) 2014 Parijat Mazumdar
+ * Authors: Björn Esser
  */
 
 #include <shogun/base/init.h>
@@ -52,7 +44,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
-	CDenseFeatures<float64_t>* centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	CDenseFeatures<float64_t>* centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix,
 			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using Lloyd's KMeans");
