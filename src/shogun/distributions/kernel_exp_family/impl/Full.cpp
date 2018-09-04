@@ -223,7 +223,7 @@ void Full::fit()
 	auto solver = LLT<MatrixXd>();
 	solver.compute(eigen_G);
 
-	if (!solver.info() == Eigen::Success)
+	if (solver.info() != Eigen::Success)
 	{
 		SG_SERROR("Numerical problems computing LLT. This usually means that"
 				" either the regularizer is too small, or the problem is "

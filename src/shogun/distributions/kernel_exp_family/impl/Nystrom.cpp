@@ -49,7 +49,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 		float64_t lambda_l2, bool init_base_and_data)
 		: Full(basis, kernel, lambda, 0.0, false)
 {
-	if (init_base_and_data);
+	if (init_base_and_data)
 	{
 		auto N = data.num_cols;
 		SG_SINFO("Using m=%d of N=%d user provided basis points.\n",
@@ -66,7 +66,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
 		: Full(data, kernel, lambda, 0.0, false)
 {
 
-	if (init_base_and_data);
+	if (init_base_and_data)
 	{
 		auto N = data.num_cols;
 		SG_SINFO("Subsampling m=%d of N=%d user provided data points as basis.\n",
@@ -89,7 +89,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 	SG_SINFO("Uniformaly subsampling m=%d of N=%d data as basis.\n",
 			num_subsample_basis, data.num_cols);
 
-	if (init_base_and_data);
+	if (init_base_and_data)
 	{
 		m_basis_inds = choose_m_in_n(num_subsample_basis, N);
 		auto basis = subsample_matrix_cols(m_basis_inds, data);
