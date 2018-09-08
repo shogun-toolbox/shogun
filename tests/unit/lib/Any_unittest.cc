@@ -701,3 +701,15 @@ TEST(Any, compare_string_vectors)
 	Any any_rhs = make_any(rhs);
 	EXPECT_EQ(any_lhs, any_rhs);
 }
+
+TEST(Any, compare_object_vectors)
+{
+	auto lhs_obj = std::make_shared<Object>();
+	auto rhs_obj = std::make_shared<Object>();
+	EXPECT_TRUE(lhs_obj->equals(rhs_obj.get()));
+	std::vector<CSGObject*> lhs{lhs_obj.get()};
+	std::vector<CSGObject*> rhs{rhs_obj.get()};
+	Any any_lhs = make_any(lhs);
+	Any any_rhs = make_any(rhs);
+	EXPECT_EQ(any_lhs, any_rhs);
+}

@@ -276,6 +276,27 @@ namespace shogun
 		}
 
 		template <class T>
+		bool compare_impl(
+		    maybe_most_important, const std::vector<T>& lhs,
+		    const std::vector<T>& rhs)
+		{
+			if (lhs.size() != rhs.size())
+			{
+				return false;
+			}
+			for (auto l = lhs.cbegin(), r = rhs.cbegin(); l != lhs.cend();
+			     ++l, ++r)
+			{
+				if (!compare(*l, *r))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		template <class T>
 		inline T clone_impl(general, T& value)
 		{
 			return T(value);
