@@ -322,3 +322,6 @@ If you have doxygen installed, you can generate the documentation locally via ru
     make doxygen
 
 and then opening `build/doc/doxygen/html/index.html` with the browser.
+
+With the `DOXYGEN_HTML_OUTPUT` cmake flag one can turn off HTML generation of the API documentation (`-DDOXYGEN_GENERATE_HTML=NO`).
+
