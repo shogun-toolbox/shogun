@@ -1,0 +1,14 @@
+name: shogun
+channels:
+  - conda-forge
+  - QuantStack
+dependencies:
+  - shogun
+  - pandas
+  - matplotlib
+  - notebook
+  - xeus-cling
+  - scipy
+  - networkx
+  - xwidgets
+  - xplot
