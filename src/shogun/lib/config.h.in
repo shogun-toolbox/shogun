@@ -106,4 +106,9 @@
 #cmakedefine HAVE_ARC4RANDOM 1
 #cmakedefine DEV_RANDOM "@DEV_RANDOM@"
 
+#ifdef __CLING__
+#pragma cling add_library_path(@SHOGUN_CLING_LIBRARY_DIR@)
+#pragma cling load("libshogun")
+#endif
+
 #endif /* __SHOGUN_LIB_CONFIG_H__ */
