@@ -480,8 +480,8 @@ IF(BUILD_DASHBOARD_REPORTS)
 ENDIF()
 
 OPTION(ENABLE_TESTING "Enable testing" OFF)
-OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
-OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
+OPTION(DISABLE_UNIT_TESTS "Disable unit testing" OFF)
+OPTION(DISABLE_META_CPP "Disable cpp meta examples and integration testing" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
 IF((ENABLE_TESTING AND NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
@@ -490,24 +490,9 @@ IF((ENABLE_TESTING AND NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_D
 	# according to the logic below
 	SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
 ENDIF()
-IF(ENABLE_TESTING)
-	IF (NOT LIBSHOGUN)
-		MESSAGE(FATAL_ERROR "Cannot compile tests without libshogun!")
-	ENDIF()
 
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
-		IF(NOT BUILD_DASHBOARD_REPORTS)
-			enable_testing()
-		ENDIF()
-
-		IF (NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
-		ENDIF()
-
-		IF(BUILD_META_EXAMPLES AND NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
-		ENDIF()
-	ENDIF()
+IF(ENABLE_TESTING AND NOT BUILD_DASHBOARD_REPORTS)
+	enable_testing()
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
@@ -521,6 +506,21 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	IF(BUILD_META_EXAMPLES)
 		# allow meta examples without adding examples dir itself
 		add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
+	ENDIF()
+ENDIF()
+
+IF(ENABLE_TESTING)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+		IF (NOT DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
+			if (NOT LIBSHOGUN)
+				MESSAGE(FATAL_ERROR "Cannot compile tests without libshogun!")
+			ENDIF()
+			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
+		ENDIF()
+
+		IF(BUILD_META_EXAMPLES AND NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
+            add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
+        ENDIF()
 	ENDIF()
 ENDIF()
 

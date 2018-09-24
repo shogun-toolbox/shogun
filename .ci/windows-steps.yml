@@ -1,0 +1,74 @@
+parameters:
+  buildConfiguration: Release
+
+jobs:
+- job: Windows
+  displayName: Windows CI Tests
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  strategy:
+    matrix:
+      py36:
+        CONDA_PY: "36"
+        CONDA_ENV: shogun
+
+  variables:
+    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
+    clcacheArtifactName: 'ccache-vs14'
+    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
+
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 5
+    submodules: true
+
+  - template: ./download-extract.yml
+    parameters:
+      name: 'CLcache'
+      artifactName: $(clcacheArtifactName)
+      destinationFolder: $(clcacheDir)
+      downloadPath: $(build.binariesDirectory)
+
+  - task: CondaEnvironment@1
+    displayName: Install dependencies
+    inputs:
+      createCustomEnvironment: True
+      environmentName: shogun
+      packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply mkl-devel jinja2'
+      createOptions: '-c conda-forge'
+      updateConda: false
+
+  - script: |
+      .ci\\setup_clcache.cmd
+    displayName: Setup CLCache
+
+  - task: CMake@1
+    displayName: Setup
+    inputs:
+      cmakeArgs: ${{ format('-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE={0} -DCMAKE_INSTALL_PREFIX=$(CONDA_PREFIX)\Library -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..', parameters.buildConfiguration) }}
+
+  - task: VSBuild@1
+    displayName: Build
+    inputs:
+      solution: 'build/shogun.sln'
+      vsVersion: '14.0'
+      platform: x64
+      msbuildArgs: '/p:TrackFileAccess=false /p:CLToolExe=clcache.exe'
+      configuration: ${{ parameters.buildConfiguration }}
+
+  - script: ctest -j%NUMBER_OF_PROCESSORS% -C ${{ parameters.buildConfiguration }}
+    displayName: Test
+    workingDirectory: build
+
+  - script: clcache -s
+    displayName: CLCache statistics
+
+  - template: ./archive-deploy.yml
+    parameters:
+      name: 'CLcache'
+      dir: $(clcacheDir)
+      archive: $(clcacheArchive)
+      artifactName: $(clcacheArtifactName)
+
