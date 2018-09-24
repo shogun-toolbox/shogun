@@ -45,6 +45,8 @@ namespace shogun
 		{
 		}
 
+		virtual ~GPUMemoryBase() = default;
+
 		/** Clone GPU memory, i.e. vector or matrix
 		 *
 		 * @param gpu_ptr GPUMemoryBase structure pointer

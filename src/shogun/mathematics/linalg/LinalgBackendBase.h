@@ -53,6 +53,7 @@ namespace shogun
 	class LinalgBackendBase
 	{
 	public:
+		virtual ~LinalgBackendBase() = default;
 #define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container)                            \
 	METHODNAME(bool, Container);                                               \
 	METHODNAME(char, Container);                                               \
