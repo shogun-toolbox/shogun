@@ -1,0 +1,21 @@
+parameters:
+  artifactName: ''
+  archive: ''
+  name: ''
+  dir: ''
+
+steps:
+- task: ArchiveFiles@2
+  displayName: ${{ format('Archive {0}', parameters.name) }}
+  inputs:
+    rootFolderOrFile: ${{ parameters.dir }}
+    includeRootFolder: false
+    archiveType: tar
+    archiveFile: ${{ parameters.archive }}
+
+- task: PublishBuildArtifacts@1
+  displayName: ${{ format('Publish {0} archive', parameters.name) }}
+  inputs:
+    pathtoPublish: ${{ parameters.archive }}
+    artifactName: ${{ parameters.artifactName }}
+    publishLocation: 'Container'

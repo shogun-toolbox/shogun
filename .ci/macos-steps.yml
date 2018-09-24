@@ -1,0 +1,43 @@
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 5
+  submodules: true
+
+- script: mkdir $(ccacheDir)
+  condition:
+  displayName: Create CCache directory
+
+- template: ./download-extract.yml
+  parameters:
+    name: 'CCache'
+    artifactName: $(ccacheArtifactName)
+    destinationFolder: $(ccacheDir)
+    downloadPath: $(build.binariesDirectory)
+
+- bash: |
+    brew update
+    brew install ccache pkg-config arpack eigen glpk hdf5 json-c lapack lzo nlopt snappy xz
+  displayName: Install dependencies
+
+- task: CMake@1
+  displayName: Setup
+  inputs:
+    cmakeArgs: -DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF ..
+
+- script: make -j4
+  displayName: Build
+  workingDirectory: build
+  env:
+    CCACHE_DIR: $(ccacheDir)
+
+- script: ctest --output-on-failure -j 2
+  displayName: Test
+  workingDirectory: build
+
+- template: ./archive-deploy.yml
+  parameters:
+    name: 'CCache'
+    dir: $(ccacheDir)
+    archive: $(ccacheArchive)
+    artifactName: $(ccacheArtifactName)

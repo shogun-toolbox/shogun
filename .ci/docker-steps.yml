@@ -1,0 +1,110 @@
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 5
+  submodules: true
+
+- script: mkdir $(ccacheDir) $(targetPrefix)
+  condition:
+  displayName: Create artifact directories
+
+- template: ./download-extract.yml
+  parameters:
+    name: 'CCache'
+    artifactName: $(ccacheArtifactName)
+    destinationFolder: $(ccacheDir)
+    downloadPath: $(build.binariesDirectory)
+
+- ${{ if eq(parameters.swig, 'true') }}:
+  - template: ./download-extract.yml
+    parameters:
+      name: 'LibShogun'
+      artifactName: $(libshogunArtifactName)
+      downloadPath: $(build.binariesDirectory)
+      destinationFolder: $(targetPrefix)
+      specificBuildWithTriggering: true
+
+- task: docker@0
+  displayName: Setup
+  inputs:
+    action: 'Run an image'
+    imageName: $(imageName)
+    volumes: |
+      $(build.sourcesDirectory):/src
+      $(build.binariesDirectory):/build
+    envVars: |
+      CCACHE_DIR=/build/ccache
+      CC=$(CC)
+      CXX=$(CXX)
+    workDir: '/build'
+    containerCommand: 'cmake -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=/build/opt $(cmakeOptions) /src'
+    detached: false
+
+- ${{ if ne(parameters.swig, 'true') }}:
+  # some of the cpps are just requiring way too much memory
+  - task: docker@0
+    displayName: Build
+    inputs:
+      action: 'Run an image'
+      imageName: $(imageName)
+      volumes: |
+        $(build.sourcesDirectory):/src
+        $(build.binariesDirectory):/build
+      envVars: |
+        CCACHE_DIR=/build/ccache
+      workDir: '/build'
+      containerCommand: 'make -s shogun'
+      detached: false
+
+- task: docker@0
+  displayName: Build
+  inputs:
+    action: 'Run an image'
+    imageName: $(imageName)
+    volumes: |
+      $(build.sourcesDirectory):/src
+      $(build.binariesDirectory):/build
+    envVars: |
+      CCACHE_DIR=/build/ccache
+    workDir: '/build'
+    containerCommand: 'make -j3 -s all'
+    detached: false
+
+- task: docker@0
+  displayName: Install
+  inputs:
+    action: 'Run an image'
+    imageName: $(imageName)
+    volumes: |
+      $(build.sourcesDirectory):/src
+      $(build.binariesDirectory):/build
+    workDir: '/build'
+    containerCommand: 'make install'
+    detached: false
+
+- task: docker@0
+  displayName: Test
+  inputs:
+    action: 'Run an image'
+    imageName: $(imageName)
+    volumes: |
+      $(build.sourcesDirectory):/src
+      $(build.binariesDirectory):/build
+    workDir: '/build'
+    containerCommand: 'ctest --output-on-failure -j 2'
+    detached: false
+
+- ${{ if ne(parameters.swig, 'true') }}:
+  - template: ./archive-deploy.yml
+    parameters:
+      name: 'LibShogun'
+      dir: $(targetPrefix)
+      archive: $(libshogunArchive)
+      artifactName: $(libshogunArtifactName)
+
+- template: ./archive-deploy.yml
+  parameters:
+    name: 'CCache'
+    dir: $(ccacheDir)
+    archive: $(ccacheArchive)
+    artifactName: $(ccacheArtifactName)

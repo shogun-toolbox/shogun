@@ -13,8 +13,7 @@ Cite Shogun:
 
 Develop branch build status:
 
-[![Build Status](https://travis-ci.org/shogun-toolbox/shogun.svg?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
-[![Build status](https://ci.appveyor.com/api/projects/status/jx095rnr9qhg8dcv/branch/develop?svg=true)](https://ci.appveyor.com/project/vigsterkr/shogun/branch/develop)
+[![Build status](https://dev.azure.com/shogunml/shogun/_apis/build/status/shogun-CI)](https://dev.azure.com/shogunml/shogun/_build/latest?definitionId=-1)
 [![codecov](https://codecov.io/gh/shogun-toolbox/shogun/branch/develop/graph/badge.svg)](https://codecov.io/gh/shogun-toolbox/shogun)
 
 Donate to Shogun via NumFocus:
