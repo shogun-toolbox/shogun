@@ -121,7 +121,7 @@ def get_includes(classes, headers_absolute_fnames):
                 while tail != shogun_dir and len(head)>0:
                     tails += [tail]
                     head, tail = os.path.split(head)
-                
+
                 # construct include path from collected tails
                 tails.reverse()
                 include = os.path.join(*([shogun_dir] + tails))
@@ -302,10 +302,13 @@ def write_templated_file(fname, substitutes):
 def read_config():
     config = dict()
     for line in open('lib/config.h').readlines():
-        if line == '\n':
+        if line == '\n' or \
+           line.lstrip().startswith("/*") or \
+           line.lstrip().startswith("//"):
             continue
         l = [l.strip() for l in line.split()]
-        config[l[1]] = 1
+        if len(l) > 1:
+            config[l[1]] = 1
 
     return config
 
