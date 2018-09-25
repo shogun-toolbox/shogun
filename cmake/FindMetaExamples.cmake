@@ -35,8 +35,6 @@ function(get_excluded_meta_examples)
       statistical_testing/quadratic_time_maximum_mean_discrepancy.sg
       gaussian_process/classifier.sg
       gaussian_process/regression.sg
-      binary/svmlin.sg
-      binary/svmsgd.sg
       )
 	ENDIF()
 
