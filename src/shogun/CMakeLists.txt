@@ -591,29 +591,6 @@ IF (BUILD_BENCHMARKS)
 ENDIF()
 
 #############################################
-FIND_PACKAGE(Ctags)
-IF (CTAGS_FOUND)
-    SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
-    ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
-        COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
-        # classes, enums, functions
-        --c++-kinds=cfgp
-        --fields=+im
-        --exclude=*.cpp
-        --exclude=third_party
-        --exclude=GoogleMock
-        --exclude=rxcpp
-        --exclude=StanMath
-        --exclude=interfaces
-        --exclude=Eigen3
-        --exclude=external
-        --languages=c++
-        -R ${CMAKE_SOURCE_DIR})
-
-    ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
-    SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
-ENDIF()
-
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h @ONLY)
 
 LIST(APPEND INCLUDE_HEADERS_DIR_LIST ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
