@@ -11,6 +11,27 @@ IF(NOT CTAGS_FOUND)
 	message(FATAL_ERROR "Ctags required for meta examples. Install or set BUILD_META_EXAMPLES=OFF.")
 ENDIF()
 
+SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
+# TODO: the arg for -R should rather be the where libshogun's headers are residing
+ADD_CUSTOM_COMMAND(OUTPUT ${CTAGS_FILE}
+    COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
+    # classes, enums, functions
+    --c++-kinds=cfgp
+    --fields=+im
+    --exclude=*.cpp
+    --exclude=third_party
+    --exclude=GoogleMock
+    --exclude=rxcpp
+    --exclude=StanMath
+    --exclude=interfaces
+    --exclude=Eigen3
+    --exclude=external
+    --languages=c++
+    -R ${CMAKE_SOURCE_DIR})
+
+ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
+SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
+
 # get list of meta examples that can be built
 INCLUDE(FindMetaExamples)
 find_meta_examples()
