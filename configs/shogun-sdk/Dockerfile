@@ -32,7 +32,7 @@ RUN dpkg -i /tmp/sbt.deb
 
 ADD https://github.com/ReactiveX/RxCpp/archive/4.1.0.tar.gz /tmp/
 RUN cd /tmp;\
-    tar -xvf v4.1.0.tar.gz;\
+    tar -xvf 4.1.0.tar.gz;\
     cd RxCpp-4.1.0/projects/;\
     mkdir build;\
     cd build;\
