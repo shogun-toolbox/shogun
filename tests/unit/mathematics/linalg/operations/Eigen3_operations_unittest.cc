@@ -1633,29 +1633,29 @@ void check_SGMatrix_softmax()
         EXPECT_NEAR(ref[i], A[i], 1e-7);
 }
 
-template <typename ST>
-void check_SGMatrix_squared_error()
-{
-    SGMatrix<ST> A(4, 3);
-    SGMatrix<ST> B(4, 3);
-
-    ST size = A.num_rows * A.num_cols;
-    for (ST i = 0; i < size; i+=2)
-    {
-        A[i] = i / size;
-        B[i] = (i / size) * 2;
-    }
-
-    ST ref = 0;
-    for (index_t i = 0; i < size; i++)
-        ref += CMath::pow(A[i] - B[i], 2);
-    ref *= 0.5;
-
-    printf("%d", ref);
-
-    auto result = linalg::squared_error(A, B);
-        EXPECT_NEAR(ref, result, 1e-15);
-}
+//template <typename ST>
+//void check_SGMatrix_squared_error()
+//{
+//    SGMatrix<ST> A(4, 3);
+//    SGMatrix<ST> B(4, 3);
+//
+//    ST size = A.num_rows * A.num_cols;
+//    for (ST i = 0; i < size; i+=2)
+//    {
+//        A[i] = i / size;
+//        B[i] = (i / size) * 2;
+//    }
+//
+//    ST ref = 0;
+//    for (index_t i = 0; i < size; i++)
+//        ref += CMath::pow(A[i] - B[i], 2);
+//    ref *= 0.5;
+//
+//    printf("%d", ref);
+//
+//    auto result = linalg::squared_error(A, B);
+//        EXPECT_NEAR(ref, result, 1e-15);
+//}
 
 
 template <typename ST>
@@ -2747,4 +2747,26 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_zero)
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_rank_update)
 {
     check_SGMatrix_rank_update<TypeParam>();
+}
+
+// TODO: implement typed testing for SE
+TEST(LinalgBackendEigen, SGMatrix_squared_error)
+{
+    SGMatrix<float64_t> A(4, 3);
+    SGMatrix<float64_t> B(4, 3);
+
+    int32_t size = A.num_rows * A.num_cols;
+    for (float64_t i = 0; i < size; ++i)
+    {
+        A[i] = i / size;
+        B[i] = (i / size) * 0.5;
+    }
+
+    float64_t ref = 0;
+    for (index_t i = 0; i < size; i++)
+        ref += CMath::pow(A[i] - B[i], 2);
+            ref *= 0.5;
+
+    auto result = linalg::squared_error(A, B);
+    EXPECT_NEAR(ref, result, 1e-15);
 }
