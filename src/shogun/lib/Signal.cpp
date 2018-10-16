@@ -31,31 +31,30 @@ CSignal::~CSignal()
 {
 }
 
-
 int CSignal::interactive_signal()
 {
-	int what_action=-1;
+	int what_action = -1;
 	SG_SPRINT(
-			"\n[ShogunSignalHandler] "
-					"Immediately return to prompt / "
-					"Prematurely finish computations / "
-					"Pause current computation / "
-					"Do nothing (I/C/P/D)? ")
+	    "\n[ShogunSignalHandler] "
+	    "Immediately return to prompt / "
+	    "Prematurely finish computations / "
+	    "Pause current computation / "
+	    "Do nothing (I/C/P/D)? ")
 	char answer = getchar();
 	getchar();
 	switch (answer)
 	{
-		case 'I':
-			what_action=SIGINT;
-			break;
-		case 'C':
-			what_action=SIGQUIT;
-			break;
-		case 'P':
-			what_action=SIGTSTP;
-			break;
-		default:
-			break;
+	case 'I':
+		what_action = SIGINT;
+		break;
+	case 'C':
+		what_action = SIGQUIT;
+		break;
+	case 'P':
+		what_action = SIGTSTP;
+		break;
+	default:
+		break;
 	}
 	return what_action;
 }
@@ -71,28 +70,28 @@ void CSignal::handler(int signal)
 		signal = interactive_signal();
 
 	/* Check which signal we have received */
-	switch(signal)
+	switch (signal)
 	{
-		case -1:
-			SG_SPRINT("[ShogunSignalHandler] Continuing...\n");
-		case SIGINT:
-			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
-			m_subscriber->on_completed();
-			exit(0);
-			break;
-		case SIGQUIT:
-			SG_SPRINT(
-				"[ShogunSignalHandler] Terminating"
-						" prematurely current algorithm...\n");
-			m_subscriber->on_next(SG_BLOCK_COMP);
-			break;
-		case SIGTSTP:
-			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...\n")
-			m_subscriber->on_next(SG_PAUSE_COMP);
-			break;
-		default:
-			SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
-			break;
+	case -1:
+		SG_SPRINT("[ShogunSignalHandler] Continuing...\n");
+	case SIGINT:
+		SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
+		m_subscriber->on_completed();
+		exit(0);
+		break;
+	case SIGQUIT:
+		SG_SPRINT(
+		    "[ShogunSignalHandler] Terminating"
+		    " prematurely current algorithm...\n");
+		m_subscriber->on_next(SG_BLOCK_COMP);
+		break;
+	case SIGTSTP:
+		SG_SPRINT("[ShogunSignalHandler] Pausing current computation...\n")
+		m_subscriber->on_next(SG_PAUSE_COMP);
+		break;
+	default:
+		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
+		break;
 	}
 }
 

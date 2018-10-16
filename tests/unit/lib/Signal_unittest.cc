@@ -12,9 +12,11 @@
 using namespace shogun;
 using namespace rxcpp;
 
-class SignalFixture : public ::testing::Test {
+class SignalFixture : public ::testing::Test
+{
 protected:
-	virtual void SetUp() {
+	virtual void SetUp()
+	{
 
 		CSignal::reset_handler();
 		on_next_v = 0;
@@ -24,13 +26,16 @@ protected:
 		std::signal(SIGTSTP, tmp.handler);
 		tmp.interactive(false);
 		auto sub = rxcpp::make_subscriber<int>(
-				[&](int v) {
-					if (v == SG_PAUSE_COMP)
-						on_next_v += 2;
-					else
-						on_next_v++;
-				},
-				[&]() { on_complete_v++; fprintf(stderr,"Application Killed");});
+		    [&](int v) {
+			    if (v == SG_PAUSE_COMP)
+				    on_next_v += 2;
+			    else
+				    on_next_v++;
+			},
+		    [&]() {
+			    on_complete_v++;
+			    fprintf(stderr, "Application Killed");
+			});
 
 		tmp.get_observable()->subscribe(sub);
 	}
@@ -42,7 +47,9 @@ protected:
 
 TEST_F(SignalFixture, return_to_prompt_test)
 {
-	EXPECT_EXIT({std::raise(SIGINT);}, ::testing::ExitedWithCode(0), "Application Killed");
+	EXPECT_EXIT(
+	    { std::raise(SIGINT); }, ::testing::ExitedWithCode(0),
+	    "Application Killed");
 }
 
 TEST_F(SignalFixture, prematurely_stop_computation_test)

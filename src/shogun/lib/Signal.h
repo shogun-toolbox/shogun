@@ -96,7 +96,6 @@ namespace shogun
 		virtual const char* get_name() const { return "Signal"; }
 
 	private:
-
 		/**
 		 * Static function which is used to transtate the user's input
 		 * to a signal type ("Pause Computation" --> SIGTSTP)
