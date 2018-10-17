@@ -126,6 +126,9 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	set_w(w);
+	if (get_use_bias()) {
+	    set_bias(w.vector[prob.n]);
+	}
 
 	return true;
 }
