@@ -93,7 +93,10 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-	prob.y=SG_MALLOC(float64_t, prob.l);
+    prob.y=SG_MALLOC(float64_t, prob.l);
+	auto labels = regression_labels(m_labels);
+    prob.y = labels->get_labels();
+	prob.use_bias = get_use_bias();
 
 	switch (m_liblinear_regression_type)
 	{
