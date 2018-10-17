@@ -163,7 +163,11 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	int l = prob->l;
 	double C = get_C();
 	double p = get_tube_epsilon();
-	int w_size = prob->n;
+    // number of features, excluding bias
+    int w_size;
+    if (prob->use_bias)
+        w_size = prob->n - 1;
+    else w_size = prob->n;
 	double eps = get_epsilon();
 	int i, s, iter = 0;
 	int max_iter = 1000;
@@ -202,7 +206,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		prob->x->add_to_dense_vec(beta[i], i, w.vector, w_size);
 
 		if (prob->use_bias)
-			w.vector[w_size]+=beta[i];
+            w.vector[w_size+1]+=beta[i];
 
 		index[i] = i;
 	}
@@ -227,7 +231,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 			G += prob->x->dense_dot(i, w.vector, w_size);
 			if (prob->use_bias)
-				G+=w.vector[w_size];
+				G+=w.vector[w_size+1];
 
 			double Gp = G+p;
 			double Gn = G-p;
@@ -297,8 +301,9 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			{
 				prob->x->add_to_dense_vec(d, i, w.vector, w_size);
 
-				if (prob->use_bias)
-					w.vector[w_size]+=d;
+				if (prob->use_bias) {
+                    w.vector[w_size+1]+=d;
+				}
 			}
 		}
 
