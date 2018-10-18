@@ -93,9 +93,9 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-    prob.y=SG_MALLOC(float64_t, prob.l);
+	prob.y=SG_MALLOC(float64_t, prob.l);
 	auto labels = regression_labels(m_labels);
-    prob.y = labels->get_labels();
+	prob.y = labels->get_labels();
 	prob.use_bias = get_use_bias();
 
 	switch (m_liblinear_regression_type)
@@ -166,11 +166,11 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	int l = prob->l;
 	double C = get_C();
 	double p = get_tube_epsilon();
-    // number of features, excluding bias
-    int w_size;
-    if (prob->use_bias)
-        w_size = prob->n - 1;
-    else w_size = prob->n;
+	// number of features, excluding bias
+	int w_size;
+	if (prob->use_bias)
+		w_size = prob->n - 1;
+	else w_size = prob->n;
 	double eps = get_epsilon();
 	int i, s, iter = 0;
 	int max_iter = 1000;
@@ -315,8 +315,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		iter++;
 
 		pb.print_absolute(
-		    Gnorm1_new, -CMath::log10(Gnorm1_new),
-		    -CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
+			Gnorm1_new, -CMath::log10(Gnorm1_new),
+			-CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
