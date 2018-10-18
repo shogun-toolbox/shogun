@@ -18,29 +18,26 @@ TEST(LibLinearRegression, lr_with_bias)
     double epsilon = 1E-6;
 
     /* create some easy regression data: y = 3x + 2 */
-    index_t n=5;
+    index_t n=201;
+    float64_t m = 3;
+	float64_t b = 2;
+	double initial_value = -100;
 
     SGMatrix<float64_t> feat_train(1, n);
     SGMatrix<float64_t> feat_test(1, n);
     SGVector<float64_t> lab_train(n);
 
-    feat_train[0]=-2;
-    feat_train[1]=-1;
-    feat_train[2]=0;
-    feat_train[3]=0.5;
-    feat_train[4]=1.5;
+	for (index_t i = 0; i<n; ++i)
+		feat_train[i] = initial_value + i * 0.5;
 
-    lab_train[0]=-4;
-    lab_train[1]=-1;
-    lab_train[2]=2;
-    lab_train[3]=3.5;
-    lab_train[4]=6.5;
+    for (index_t i = 0; i<n; ++i)
+    	lab_train[i] = m * feat_train[i] + b;
 
-    feat_test[0]=-3;
-    feat_test[1]=-2.5;
-    feat_test[2]=-1.5;
-    feat_test[3]=3;
-    feat_test[4]=5;
+    feat_test[0]=-3.2;
+    feat_test[1]=-2.1;
+    feat_test[2]=-1.4;
+    feat_test[3]=3.05;
+    feat_test[4]=5.7;
 
     /* shogun representation */
     CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
@@ -50,7 +47,7 @@ TEST(LibLinearRegression, lr_with_bias)
             feat_test);
 
 
-    CLibLinearRegression* lr=new CLibLinearRegression(1.5, features_train, labels_train);
+    CLibLinearRegression* lr=new CLibLinearRegression(1., features_train, labels_train);
     lr->set_use_bias(use_bias);
     lr->set_epsilon(epsilon);
     lr->train();
@@ -58,14 +55,14 @@ TEST(LibLinearRegression, lr_with_bias)
     CRegressionLabels* predicted_labels =
             lr->apply(features_test)->as<CRegressionLabels>();
 
-    EXPECT_NEAR(lr->get_w()[0], 3.0, 1E-5);
-    EXPECT_NEAR(lr->get_bias(), 2.0, 1E-5);
+    EXPECT_NEAR(lr->get_w()[0], m, 1E-5);
+    EXPECT_NEAR(lr->get_bias(), b, 1E-5);
 
-    EXPECT_NEAR(predicted_labels->get_labels()[0], -7.0, 1E-5);
-    EXPECT_NEAR(predicted_labels->get_labels()[1], -5.5, 1E-5);
-    EXPECT_NEAR(predicted_labels->get_labels()[2], -2.5, 1E-5);
-    EXPECT_NEAR(predicted_labels->get_labels()[3], 11.0, 1E-5);
-    EXPECT_NEAR(predicted_labels->get_labels()[4], 17.0, 1E-5);
+    EXPECT_NEAR(predicted_labels->get_labels()[0], -7.6, 1E-5);
+    EXPECT_NEAR(predicted_labels->get_labels()[1], -4.3, 1E-5);
+    EXPECT_NEAR(predicted_labels->get_labels()[2], -2.2, 1E-5);
+    EXPECT_NEAR(predicted_labels->get_labels()[3], 11.15, 1E-5);
+    EXPECT_NEAR(predicted_labels->get_labels()[4], 19.1, 1E-5);
 
     /* clean up */
     SG_UNREF(predicted_labels);
