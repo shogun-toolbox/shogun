@@ -126,8 +126,9 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	set_w(w);
-	if (get_use_bias()) {
-		set_bias(w.vector[prob.n-1]);
+	if (get_use_bias())
+	{
+		set_bias(w.vector[prob.n - 1]);
 	}
 
 	return true;
@@ -170,7 +171,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	int w_size;
 	if (prob->use_bias)
 		w_size = prob->n - 1;
-	else w_size = prob->n;
+	else
+		w_size = prob->n;
 	double eps = get_epsilon();
 	int i, s, iter = 0;
 	int max_iter = 1000;
@@ -304,7 +306,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			{
 				prob->x->add_to_dense_vec(d, i, w.vector, w_size);
 
-				if (prob->use_bias) {
+				if (prob->use_bias)
+				{
 					w.vector[w_size]+=d;
 				}
 			}
@@ -315,8 +318,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		iter++;
 
 		pb.print_absolute(
-			Gnorm1_new, -CMath::log10(Gnorm1_new),
-			-CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
+		    Gnorm1_new, -CMath::log10(Gnorm1_new),
+		    -CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
