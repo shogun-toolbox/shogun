@@ -127,7 +127,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 
 	set_w(w);
 	if (get_use_bias()) {
-	    set_bias(w.vector[prob.n]);
+		set_bias(w.vector[prob.n-1]);
 	}
 
 	return true;
@@ -209,7 +209,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		prob->x->add_to_dense_vec(beta[i], i, w.vector, w_size);
 
 		if (prob->use_bias)
-            w.vector[w_size+1]+=beta[i];
+			w.vector[w_size]+=beta[i];
 
 		index[i] = i;
 	}
@@ -234,7 +234,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 			G += prob->x->dense_dot(i, w.vector, w_size);
 			if (prob->use_bias)
-				G+=w.vector[w_size+1];
+				G+=w.vector[w_size];
 
 			double Gp = G+p;
 			double Gn = G-p;
@@ -305,7 +305,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				prob->x->add_to_dense_vec(d, i, w.vector, w_size);
 
 				if (prob->use_bias) {
-                    w.vector[w_size+1]+=d;
+					w.vector[w_size]+=d;
 				}
 			}
 		}
