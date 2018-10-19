@@ -11,6 +11,17 @@ using namespace shogun;
 using namespace linalg;
 using namespace Eigen;
 
+// Tolerance values for tests
+template<typename T>
+// default tolerance
+T get_epsilon() {return 0;}
+template<>
+float32_t get_epsilon() {return 1e-5;}
+template<>
+float64_t get_epsilon() {return 1e-9;}
+template<>
+floatmax_t get_epsilon() {return 1e-12;}
+
 template <typename T>
 class LinalgBackendEigenAllTypesTest: public ::testing::Test { };
 template <typename T>
