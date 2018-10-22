@@ -484,6 +484,19 @@ OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travi
 OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
+	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
+		message(STATUS "Tests require (disabled) examples, enabling.")
+	ENDIF()
+	IF(ENABLE_TESTING OR BUILD_EXAMPLES)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	ENDIF()
+
+	IF(BUILD_META_EXAMPLES)
+		# allow meta examples without adding examples dir itself
+		add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
+	ENDIF()
+ENDIF()
 
 IF(ENABLE_TESTING)
 	IF (NOT LIBSHOGUN)
@@ -503,20 +516,6 @@ IF(ENABLE_TESTING)
             add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
         ENDIF()
 	ENDIF()
-ENDIF()
-
-IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
-	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
-	    message(STATUS "Tests require (disabled) examples, enabling.")
-	ENDIF()
-    IF(ENABLE_TESTING OR BUILD_EXAMPLES)
-	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
-	ENDIF()
-
-	IF(BUILD_META_EXAMPLES)
-        # allow meta examples without adding examples dir itself
-        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
-    ENDIF()
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
