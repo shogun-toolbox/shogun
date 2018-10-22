@@ -75,13 +75,15 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	SGVector<float64_t> w;
-	if (get_use_bias())
+	liblinear_problem prob;
+	prob.use_bias = get_use_bias();
+
+	if (prob.use_bias)
 		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
 		w=SGVector<float64_t>(num_feat);
 
-	liblinear_problem prob;
-	if (get_use_bias())
+	if (prob.use_bias)
 	{
 		prob.n=w.vlen+1;
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
@@ -96,7 +98,6 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	prob.y=SG_MALLOC(float64_t, prob.l);
 	auto labels = regression_labels(m_labels);
 	prob.y = labels->get_labels();
-	prob.use_bias = get_use_bias();
 
 	switch (m_liblinear_regression_type)
 	{
@@ -126,10 +127,8 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	set_w(w);
-	if (get_use_bias())
-	{
+	if (prob.use_bias)
 		set_bias(w.vector[prob.n - 1]);
-	}
 
 	return true;
 }
@@ -307,9 +306,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 				prob->x->add_to_dense_vec(d, i, w.vector, w_size);
 
 				if (prob->use_bias)
-				{
 					w.vector[w_size]+=d;
-				}
 			}
 		}
 
@@ -318,8 +315,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		iter++;
 
 		pb.print_absolute(
-		    Gnorm1_new, -CMath::log10(Gnorm1_new),
-		    -CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
+			Gnorm1_new, -CMath::log10(Gnorm1_new),
+			-CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
