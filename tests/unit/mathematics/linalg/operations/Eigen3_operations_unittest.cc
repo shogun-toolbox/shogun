@@ -12,30 +12,57 @@ using namespace linalg;
 using namespace Eigen;
 
 // Tolerance values for tests
-template<typename T>
+template <typename T>
 // default tolerance
-T get_epsilon() {return 0;}
-template<>
-float32_t get_epsilon() {return 1e-5;}
-template<>
-float64_t get_epsilon() {return 1e-9;}
-template<>
-floatmax_t get_epsilon() {return 1e-12;}
+T get_epsilon()
+{
+	return 0;
+}
+template <>
+float32_t get_epsilon()
+{
+	return 1e-5;
+}
+template <>
+float64_t get_epsilon()
+{
+	return 1e-9;
+}
+template <>
+floatmax_t get_epsilon()
+{
+	return 1e-12;
+}
 
 template <typename T>
-class LinalgBackendEigenAllTypesTest: public ::testing::Test { };
+class LinalgBackendEigenAllTypesTest : public ::testing::Test
+{
+};
 template <typename T>
-class LinalgBackendEigenNonComplexTypesTest: public ::testing::Test { };
+class LinalgBackendEigenNonComplexTypesTest : public ::testing::Test
+{
+};
 template <typename T>
-class LinalgBackendEigenRealTypesTest: public ::testing::Test { };
+class LinalgBackendEigenRealTypesTest : public ::testing::Test
+{
+};
 template <typename T>
-class LinalgBackendEigenNonIntegerTypesTest: public ::testing::Test { };
+class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
+{
+};
 
 // TODO: make global definitions
-// Definition of the 4 groups of Shogun types (shogun/mathematics/linalg/LinalgBackendBase.h)
+// Definition of the 4 groups of Shogun types
+// (shogun/mathematics/linalg/LinalgBackendBase.h)
 // TODO: add bool, chars and complex128_t types
-typedef ::testing::Types<int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t, float64_t, floatmax_t> AllTypes;
-typedef ::testing::Types<int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t, float64_t, floatmax_t> NonComplexTypes;
+typedef ::testing::Types<
+    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t,
+    float64_t, floatmax_t>
+    AllTypes;
+typedef ::testing::Types<
+    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t,
+    float64_t, floatmax_t>
+    NonComplexTypes;
 typedef ::testing::Types<float32_t, float64_t, floatmax_t> RealTypes;
 // TODO: add complex128_t type
 typedef ::testing::Types<float32_t, float64_t, floatmax_t> NonIntegerTypes;
@@ -45,9 +72,9 @@ TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, NonComplexTypes);
 TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, RealTypes);
 TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, NonIntegerTypes);
 
-
 template <typename ST>
-void check_SGVector_add() {
+void check_SGVector_add()
+{
 
 	const ST alpha = 1;
 	const ST beta = 2;
@@ -58,17 +85,18 @@ void check_SGVector_add() {
 	for (index_t i = 0; i < 9; ++i)
 	{
 		A[i] = i;
-		B[i] = 2*i;
+		B[i] = 2 * i;
 	}
 
 	auto result = add(A, B, alpha, beta);
 
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * A[i] + beta * B[i], result[i], get_epsilon<ST>());
 }
 
 template <typename ST>
-void check_SGMatrix_add() {
+void check_SGMatrix_add()
+{
 
 	const ST alpha = 1;
 	const ST beta = 2;
@@ -80,17 +108,18 @@ void check_SGMatrix_add() {
 	for (index_t i = 0; i < nrows*ncols; ++i)
 	{
 		A[i] = i;
-		B[i] = 2*i;
+		B[i] = 2 * i;
 	}
 
 	auto result = add(A, B, alpha, beta);
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * A[i] + beta * B[i], result[i], get_epsilon<ST>());
 }
 
 template <typename ST>
-void check_SGVector_add_in_place() {
+void check_SGVector_add_in_place()
+{
 	const ST alpha = 1;
 	const ST beta = 2;
 
@@ -98,19 +127,20 @@ void check_SGVector_add_in_place() {
 
 	for (index_t i = 0; i < 9; ++i)
 	{
-	A[i] = i;
-	B[i] = 2*i;
-	C[i] = i;
+		A[i] = i;
+		B[i] = 2 * i;
+		C[i] = i;
 	}
 
 	add(A, B, A, alpha, beta);
 
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * C[i] + beta * B[i], A[i], get_epsilon<ST>());
 }
 
 template <typename ST>
-void check_SGMatrix_add_in_place() {
+void check_SGMatrix_add_in_place()
+{
 
 	const ST alpha = 1;
 	const ST beta = 2;
@@ -123,18 +153,19 @@ void check_SGMatrix_add_in_place() {
 	for (index_t i = 0; i < nrows*ncols; ++i)
 	{
 		A[i] = i;
-		B[i] = 3*i;
+		B[i] = 3 * i;
 		C[i] = i;
 	}
 
 	add(A, B, A, alpha, beta);
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * C[i] + beta * B[i], A[i], get_epsilon<ST>());
 }
 
 template <typename ST>
-void check_SGVector_add_col_vec_allocated() {
+void check_SGVector_add_col_vec_allocated()
+{
 
 	const ST alpha = 1;
 	const ST beta = 2;
@@ -153,7 +184,9 @@ void check_SGVector_add_col_vec_allocated() {
 	add_col_vec(A, col, b, result, alpha, beta);
 
 	for (index_t i = 0; i < nrows; ++i)
-		EXPECT_NEAR(result[i], alpha * A.get_element(i, col) + beta * b[i], get_epsilon<ST>());
+		EXPECT_NEAR(
+		    result[i], alpha * A.get_element(i, col) + beta * b[i],
+		    get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -170,12 +203,14 @@ void check_SGVector_add_col_vec_in_place()
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		A[i] = i;
 	for (index_t i = 0; i < nrows; ++i)
-		b[i] = 2*i;
+		b[i] = 2 * i;
 
 	add_col_vec(A, col, b, b, alpha, beta);
 
 	for (index_t i = 0; i < nrows; ++i)
-		EXPECT_NEAR(b[i], alpha*A.get_element(i, col)+beta*2*i, get_epsilon<ST>());
+		EXPECT_NEAR(
+		    b[i], alpha * A.get_element(i, col) + beta * 2 * i,
+		    get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -193,14 +228,14 @@ void check_SGMatrix_add_col_vec_allocated()
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		A[i] = i;
 	for (index_t i = 0; i < nrows; ++i)
-		b[i] = 3*i;
+		b[i] = 3 * i;
 
 	add_col_vec(A, col, b, result, alpha, beta);
 
 	for (index_t i = 0; i < nrows; ++i)
 		EXPECT_NEAR(
-			result.get_element(i, col),
-			alpha * A.get_element(i, col) + beta * b[i], get_epsilon<ST>());
+		    result.get_element(i, col),
+		    alpha * A.get_element(i, col) + beta * b[i], get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -217,16 +252,18 @@ void check_SGMatrix_add_col_vec_in_place()
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		A[i] = i;
 	for (index_t i = 0; i < nrows; ++i)
-		b[i] = 3*i;
+		b[i] = 3 * i;
 
 	add_col_vec(A, col, b, A, alpha, beta);
 
 	for (index_t i = 0; i < nrows; ++i)
 		for (index_t j = 0; j < ncols; ++j)
 		{
-			ST a = i+j*nrows;
+			ST a = i + j * nrows;
 			if (j == col)
-				EXPECT_NEAR(A.get_element(i, j), alpha*a+beta*b[i], get_epsilon<ST>());
+				EXPECT_NEAR(
+				    A.get_element(i, j), alpha * a + beta * b[i],
+				    get_epsilon<ST>());
 			else
 				EXPECT_EQ(A.get_element(i,j), a);
 		}
@@ -363,12 +400,8 @@ template <typename ST>
 void check_SGMatrix_center_matrix()
 {
 	const index_t n = 3;
-	ST data[] = {0.5, 0.3, 0.4,
-				 0.4, 0.5, 0.3,
-				 0.3, 0.4, 0.5};
-	ST result[] = {0.1, -0.1, 0.0,
-				   0.0, 0.1, -0.1,
-				   -0.1, 0.0, 0.1};
+	ST data[] = {0.5, 0.3, 0.4, 0.4, 0.5, 0.3, 0.3, 0.4, 0.5};
+	ST result[] = {0.1, -0.1, 0.0, 0.0, 0.1, -0.1, -0.1, 0.0, 0.1};
 
 	SGMatrix<ST> m(data, n, n, false);
 
@@ -394,11 +427,9 @@ void check_SGMatrix_cholesky_llt_lower()
 	//lower triangular cholesky decomposition
 	SGMatrix<ST> L = cholesky_factor(m);
 
-
-	Map<Mxx> map_A(m.matrix,m.num_rows,m.num_cols);
-	Map<Mxx> map_L(L.matrix,L.num_rows,L.num_cols);
-	EXPECT_NEAR((map_A-map_L*map_L.transpose()).norm(),
-		0.0, 1E-6);
+	Map<Mxx> map_A(m.matrix, m.num_rows, m.num_cols);
+	Map<Mxx> map_L(L.matrix, L.num_rows, L.num_cols);
+	EXPECT_NEAR((map_A - map_L * map_L.transpose()).norm(), 0.0, 1E-6);
 	EXPECT_EQ(m.num_rows, L.num_rows);
 	EXPECT_EQ(m.num_cols, L.num_cols);
 }
@@ -417,12 +448,11 @@ void check_SGMatrix_cholesky_llt_upper()
 	m(1,1)=2.5;
 
 	//upper triangular cholesky decomposition
-	SGMatrix<ST> U = cholesky_factor(m,false);
+	SGMatrix<ST> U = cholesky_factor(m, false);
 
-	Map<Mxx> map_A(m.matrix,m.num_rows,m.num_cols);
-	Map<Mxx> map_U(U.matrix,U.num_rows,U.num_cols);
-	EXPECT_NEAR((map_A-map_U.transpose()*map_U).norm(),
-	0.0, 1E-6);
+	Map<Mxx> map_A(m.matrix, m.num_rows, m.num_cols);
+	Map<Mxx> map_U(U.matrix, U.num_rows, U.num_cols);
+	EXPECT_NEAR((map_A - map_U.transpose() * map_U).norm(), 0.0, 1E-6);
 	EXPECT_EQ(m.num_rows, U.num_rows);
 	EXPECT_EQ(m.num_cols, U.num_cols);
 }
@@ -457,10 +487,12 @@ void check_SGMatrix_cholesky_rank_update_upper()
 	A2(1, 1) += b[1] * b[1];
 
 	cholesky_rank_update(U, b, alpha, false);
-	EXPECT_NEAR((A2_eig - U_eig.transpose() * U_eig).norm(), 0.0, get_epsilon<ST>());
+	EXPECT_NEAR(
+	    (A2_eig - U_eig.transpose() * U_eig).norm(), 0.0, get_epsilon<ST>());
 
 	cholesky_rank_update(U, b, -alpha, false);
-	EXPECT_NEAR((A_eig - U_eig.transpose() * U_eig).norm(), 0.0, get_epsilon<ST>());
+	EXPECT_NEAR(
+	    (A_eig - U_eig.transpose() * U_eig).norm(), 0.0, get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -493,10 +525,12 @@ void check_SGMatrix_cholesky_rank_update_lower()
 	A2(1, 1) += b[1] * b[1];
 
 	cholesky_rank_update(L, b, alpha);
-	EXPECT_NEAR((A2_eig - L_eig * L_eig.transpose()).norm(), 0.0, get_epsilon<ST>());
+	EXPECT_NEAR(
+	    (A2_eig - L_eig * L_eig.transpose()).norm(), 0.0, get_epsilon<ST>());
 
 	cholesky_rank_update(L, b, -alpha);
-	EXPECT_NEAR((A_eig - L_eig * L_eig.transpose()).norm(), 0.0, get_epsilon<ST>());
+	EXPECT_NEAR(
+	    (A_eig - L_eig * L_eig.transpose()).norm(), 0.0, get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -632,8 +666,7 @@ void check_SGMatrix_pinv_psd()
 {
 	ST A_data[] = {2.0, -1.0, 0.0, -1.0, 2.0, -1.0, 0.0, -1.0, 2.0};
 	// inverse generated by scipy pinv
-	ST scipy_result_data[] = {0.75, 0.5,  0.25, 0.5, 1.0,
-									 0.5,  0.25, 0.5,  0.75};
+	ST scipy_result_data[] = {0.75, 0.5, 0.25, 0.5, 1.0, 0.5, 0.25, 0.5, 0.75};
 
 	SGMatrix<ST> A(A_data, 3, 3, false);
 	SGMatrix<ST> result(scipy_result_data, 3, 3, false);
@@ -651,7 +684,8 @@ void check_SGMatrix_pinv_psd()
 	{
 		for (auto j : range(3))
 		{
-			EXPECT_NEAR(identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
+			EXPECT_NEAR(
+			    identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
 			EXPECT_NEAR(result(i, j), A_pinvh(i, j), get_epsilon<ST>());
 			EXPECT_NEAR(result(i, j), A_pinv(i, j), get_epsilon<ST>());
 		}
@@ -682,7 +716,8 @@ void check_SGMatrix_pinv_2x4()
 	{
 		for (auto j : range(2))
 		{
-			EXPECT_NEAR(identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
+			EXPECT_NEAR(
+			    identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
 		}
 	}
 
@@ -725,7 +760,8 @@ void check_SGMatrix_pinv_4x2()
 	{
 		for (auto j : range(2))
 		{
-		EXPECT_NEAR(identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
+			EXPECT_NEAR(
+			    identity_matrix(i, j), I_check(i, j), get_epsilon<ST>());
 		}
 	}
 	// compare with results from scipy
@@ -758,16 +794,15 @@ void check_eigensolver()
 {
 	const index_t n = 4;
 	ST data[] = {0.09987322, 0.80575314, 0.79068641, 0.69989667,
-				 0.62323516, 0.16837367, 0.85027625, 0.60165948,
-				 0.04898732, 0.96701123, 0.51683275, 0.51116495,
-				 0.18277926, 0.6179262,  0.43745891, 0.63685464};
+	             0.62323516, 0.16837367, 0.85027625, 0.60165948,
+	             0.04898732, 0.96701123, 0.51683275, 0.51116495,
+	             0.18277926, 0.6179262,  0.43745891, 0.63685464};
 	ST result_eigenvectors[] = {
-			-0.63494074, 0.75831593,  -0.1401403109, 0.04656076,
-			 0.82257205,  -0.286718557, -0.44196422, -0.214091861,
-			-0.005932,   -0.20233723, -0.52285555, 0.82803776,
-			-0.23930111, -0.56199714, -0.57298901, -0.54642272};
-	ST result_eigenvalues[] = {-0.6470538, -0.19125664, 0.16205101,
-							   2.0981937};
+	    -0.63494074, 0.75831593,   -0.1401403109, 0.04656076,
+	    0.82257205,  -0.286718557, -0.44196422,   -0.214091861,
+	    -0.005932,   -0.20233723,  -0.52285555,   0.82803776,
+	    -0.23930111, -0.56199714,  -0.57298901,   -0.54642272};
+	ST result_eigenvalues[] = {-0.6470538, -0.19125664, 0.16205101, 2.0981937};
 
 	SGMatrix<ST> m(data, n, n, false);
 	SGMatrix<ST> eigenvectors(n, n);
@@ -782,11 +817,11 @@ void check_eigensolver()
 		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-6);
 
 		auto s =
-				CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
 		for (index_t j = 0; j < n; ++j)
 			EXPECT_NEAR(
-					eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
-					1e-6);
+			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
+			    1e-6);
 	}
 }
 
@@ -795,16 +830,16 @@ void check_eigensolver_symmetric()
 {
 	const index_t n = 4;
 	ST data[] = {0.09987322, 0.80575314, 0.04898732, 0.69989667,
-						0.80575314, 0.16837367, 0.96701123, 0.6179262,
-						0.04898732, 0.96701123, 0.51683275, 0.43745891,
-						0.69989667, 0.6179262,  0.43745891, 0.63685464};
+	             0.80575314, 0.16837367, 0.96701123, 0.6179262,
+	             0.04898732, 0.96701123, 0.51683275, 0.43745891,
+	             0.69989667, 0.6179262,  0.43745891, 0.63685464};
 	ST result_eigenvectors[] = {
-			-0.54618542, 0.69935447,  -0.45219663, 0.09001671,
-			-0.56171388, -0.41397154, 0.17642953,  0.69424612,
-			-0.46818396, 0.16780603,  0.73247599,  -0.46489119,
-			0.40861077,  0.55800718,  0.47735703,  0.542029037};
+	    -0.54618542, 0.69935447,  -0.45219663, 0.09001671,
+	    -0.56171388, -0.41397154, 0.17642953,  0.69424612,
+	    -0.46818396, 0.16780603,  0.73247599,  -0.46489119,
+	    0.40861077,  0.55800718,  0.47735703,  0.542029037};
 	ST result_eigenvalues[] = {-1.00663298, -0.18672196, 0.42940933,
-							   2.18587989};
+	                           2.18587989};
 
 	SGMatrix<ST> m(data, n, n, false);
 	SGMatrix<ST> eigenvectors(n, n);
@@ -819,11 +854,11 @@ void check_eigensolver_symmetric()
 		EXPECT_NEAR(eigenvalues[idx], result_eigenvalues[i], 1e-6);
 
 		auto s =
-				CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
+		    CMath::sign(eigenvectors[idx * n] * result_eigenvectors[i * n]);
 		for (index_t j = 0; j < n; ++j)
 			EXPECT_NEAR(
-					eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
-					1e-6);
+			    eigenvectors[idx * n + j], s * result_eigenvectors[i * n + j],
+			    1e-6);
 	}
 }
 
@@ -837,7 +872,7 @@ void check_SGMatrix_elementwise_product()
 	for (auto i : range(m * m))
 	{
 		A[i] = i;
-		B[i] = 2*i;
+		B[i] = 2 * i;
 	}
 
 	auto result = element_prod(A, B);
@@ -876,7 +911,7 @@ void check_SGMatrix_elementwise_product_in_place()
 	for (auto i : range(m * m))
 	{
 		A[i] = i;
-		B[i] = 2*i;
+		B[i] = 2 * i;
 	}
 
 	element_prod(A, B, result);
@@ -906,8 +941,8 @@ void check_SGMatrix_block_elementwise_product()
 	const index_t nrows = 2;
 	const index_t ncols = 3;
 
-	SGMatrix<ST> A(nrows,ncols);
-	SGMatrix<ST> B(ncols,nrows);
+	SGMatrix<ST> A(nrows, ncols);
+	SGMatrix<ST> B(ncols, nrows);
 
 	for (auto i : range(nrows))
 		for (auto j : range(ncols))
@@ -1045,8 +1080,8 @@ void check_SGMatrix_identity()
 template <typename ST>
 void check_logistic()
 {
-	SGMatrix<ST> A(3,3);
-	SGMatrix<ST> B(3,3);
+	SGMatrix<ST> A(3, 3);
+	SGMatrix<ST> B(3, 3);
 
 	for (index_t i = 0; i < 9; ++i)
 		A[i] = i;
@@ -1071,7 +1106,7 @@ void check_SGMatrix_SGVector_matrix_prod()
 	{
 		for (index_t j = 0; j < rows; ++j)
 			A(j, i) = i * rows + j;
-		b[i]= 2 * i;
+		b[i] = 2 * i;
 	}
 
 	auto x = matrix_prod(A, b);
@@ -1288,13 +1323,11 @@ void check_SGMatrix_matrix_product_in_place_transpose_A()
 
 	ST ref[] = {5, 14, 14, 50, 23, 86};
 
-
 	EXPECT_EQ(dim1, cal.num_rows);
 	EXPECT_EQ(dim3, cal.num_cols);
 	for (index_t i = 0; i < dim1*dim3; ++i)
 		EXPECT_EQ(ref[i], cal[i]);
 }
-
 
 template <typename ST>
 void check_SGMatrix_matrix_product_in_place_transpose_B()
@@ -1329,9 +1362,9 @@ void check_SGMatrix_matrix_product_in_place_transpose_A_B()
 	SGMatrix<ST> cal(dim1, dim3);
 
 	for (index_t i = 0; i < dim1*dim2; ++i)
-	A[i] = i;
+		A[i] = i;
 	for (index_t i = 0; i < dim2*dim3; ++i)
-	B[i] = i;
+		B[i] = i;
 	cal.zero();
 
 	linalg::matrix_prod(A, B, cal, true, true);
@@ -1402,7 +1435,7 @@ void check_SGMatrix_multiply_by_logistic_derivative()
 	SGMatrix<ST> A(3, 3);
 	SGMatrix<ST> B(3, 3);
 
-	for (ST i = 9; i < 9; i+=9)
+	for (ST i = 9; i < 9; i += 9)
 	{
 		A[i] = i / 9;
 		B[i] = i;
@@ -1455,9 +1488,8 @@ template <typename ST>
 void check_SGVector_qr_solver()
 {
 	const index_t n = 3;
-	ST data_A[] = {0.02800922, 0.99326012, 0.15204902,
-				   0.30492837, 0.39708534, 0.40466969,
-				   0.36415317, 0.04407589, 0.9095746};
+	ST data_A[] = {0.02800922, 0.99326012, 0.15204902, 0.30492837, 0.39708534,
+	               0.40466969, 0.36415317, 0.04407589, 0.9095746};
 	ST data_b[] = {0.39461571, 0.6816856, 0.43323709};
 	ST result[] = {0.07135206, 1.56393127, -0.23141312};
 
@@ -1474,13 +1506,12 @@ template <typename ST>
 void check_SGMatrix_qr_solver()
 {
 	const index_t n = 3, m = 2;
-	ST data_A[] = {0.02800922, 0.99326012, 0.15204902,
-				   0.30492837, 0.39708534, 0.40466969,
-				   0.36415317, 0.04407589, 0.9095746};
+	ST data_A[] = {0.02800922, 0.99326012, 0.15204902, 0.30492837, 0.39708534,
+	               0.40466969, 0.36415317, 0.04407589, 0.9095746};
 	ST data_B[] = {0.76775073, 0.88471312, 0.34795225,
-				   0.94311546, 0.59630347, 0.65820143};
+	               0.94311546, 0.59630347, 0.65820143};
 	ST result[] = {-0.73834587, 4.22750496, -1.37484721,
-				   -1.14718091, 4.49142548, -1.08282992};
+	               -1.14718091, 4.49142548, -1.08282992};
 
 	SGMatrix<ST> A(data_A, n, n, false);
 	SGMatrix<ST> B(data_B, n, m, false);
@@ -1526,7 +1557,8 @@ void check_SGMatrix_rectified_linear()
 	linalg::rectified_linear(A, B);
 
 	for (index_t i = 0; i < 9; ++i)
-		EXPECT_NEAR(CMath::max(static_cast<ST>(0.0), A[i]), B[i], get_epsilon<ST>());
+		EXPECT_NEAR(
+		    CMath::max(static_cast<ST>(0.0), A[i]), B[i], get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -1556,7 +1588,7 @@ void check_SGMatrix_scale()
 	auto result = scale(A, alpha);
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(alpha*A[i], result[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * A[i], result[i], get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -1587,7 +1619,7 @@ void check_SGMatrix_scale_in_place()
 	scale(A, A, alpha);
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
-		EXPECT_NEAR(alpha*i, A[i], get_epsilon<ST>());
+		EXPECT_NEAR(alpha * i, A[i], get_epsilon<ST>());
 }
 
 template <typename ST>
@@ -1615,7 +1647,6 @@ void check_SGMatrix_set_const()
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(a[i], value, get_epsilon<ST>());
 }
-
 
 template <typename ST>
 void check_SGMatrix_softmax()
@@ -1645,8 +1676,8 @@ void check_SGMatrix_softmax()
 		EXPECT_NEAR(ref[i], A[i], get_epsilon<ST>());
 }
 
-//template <typename ST>
-//void check_SGMatrix_squared_error()
+// template <typename ST>
+// void check_SGMatrix_squared_error()
 //{
 //    SGMatrix<ST> A(4, 3);
 //    SGMatrix<ST> B(4, 3);
@@ -1668,7 +1699,6 @@ void check_SGMatrix_softmax()
 //    auto result = linalg::squared_error(A, B);
 //        EXPECT_NEAR(ref, result, 1e-15);
 //}
-
 
 template <typename ST>
 void check_SGVector_sum()
@@ -1789,7 +1819,7 @@ void check_SGMatrix_symmetric_block_with_diag()
 			mat(j, i) = mat(i, j);
 		}
 
-	ST sum = sum_symmetric(linalg::block(mat,1,1,2,2));
+	ST sum = sum_symmetric(linalg::block(mat, 1, 1, 2, 2));
 	EXPECT_NEAR(sum, 28, get_epsilon<ST>());
 }
 
@@ -1807,7 +1837,7 @@ void check_SGMatrix_symmetric_block_no_diag()
 			mat(j, i) = mat(i, j);
 		}
 
-	ST sum = sum_symmetric(linalg::block(mat,1,1,2,2), true);
+	ST sum = sum_symmetric(linalg::block(mat, 1, 1, 2, 2), true);
 	EXPECT_NEAR(sum, 26, get_epsilon<ST>());
 }
 
@@ -1885,7 +1915,6 @@ void check_SGMatrix_block_colwise_sum()
 	}
 }
 
-
 template <typename ST>
 void check_SGMatrix_rowwise_sum()
 {
@@ -1946,15 +1975,14 @@ template <typename ST>
 void check_SGMatrix_svd_jacobi_thinU()
 {
 	const index_t m = 5, n = 3;
-	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
-				 0.30786772, 0.25503552, 0.34367041, 0.66491478,
-				 0.20488809, 0.5734351,  0.87179189, 0.07139643,
-				 0.28540373, 0.06264684, 0.56204061};
+	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194, 0.30786772,
+	             0.25503552, 0.34367041, 0.66491478, 0.20488809, 0.5734351,
+	             0.87179189, 0.07139643, 0.28540373, 0.06264684, 0.56204061};
 	ST result_s[] = {1.75382524, 0.56351367, 0.41124883};
 	ST result_U[] = {-0.60700926, -0.16647013, -0.56501385, -0.26696629,
-					 -0.46186125, -0.69145782, 0.29548428,  0.5718984,
-					 0.31771648,  -0.08101592, -0.27461424, 0.37170223,
-					 -0.12681555, -0.53830325, 0.69323293};
+	                 -0.46186125, -0.69145782, 0.29548428,  0.5718984,
+	                 0.31771648,  -0.08101592, -0.27461424, 0.37170223,
+	                 -0.12681555, -0.53830325, 0.69323293};
 
 	SGMatrix<ST> A(data, m, n, false);
 	SGMatrix<ST> U(m, n);
@@ -1976,17 +2004,16 @@ template <typename ST>
 void check_SGMatrix_svd_jacobi_fullU()
 {
 	const index_t m = 5, n = 3;
-	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
-				 0.30786772, 0.25503552, 0.34367041, 0.66491478,
-				 0.20488809, 0.5734351,  0.87179189, 0.07139643,
-				 0.28540373, 0.06264684, 0.56204061};
+	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194, 0.30786772,
+	             0.25503552, 0.34367041, 0.66491478, 0.20488809, 0.5734351,
+	             0.87179189, 0.07139643, 0.28540373, 0.06264684, 0.56204061};
 	ST result_s[] = {1.75382524, 0.56351367, 0.41124883};
 	ST result_U[] = {
-			-0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
-			-0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
-			-0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
-			-0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
-			0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
+	    -0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
+	    -0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
+	    -0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
+	    -0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
+	    0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
 
 	SGMatrix<ST> A(data, m, n, false);
 	SGMatrix<ST> U(m, m);
@@ -2009,15 +2036,14 @@ template <typename ST>
 void check_SGMatrix_svd_bdc_thinU()
 {
 	const index_t m = 5, n = 3;
-	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
-				 0.30786772, 0.25503552, 0.34367041, 0.66491478,
-				 0.20488809, 0.5734351,  0.87179189, 0.07139643,
-				 0.28540373, 0.06264684, 0.56204061};
+	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194, 0.30786772,
+	             0.25503552, 0.34367041, 0.66491478, 0.20488809, 0.5734351,
+	             0.87179189, 0.07139643, 0.28540373, 0.06264684, 0.56204061};
 	ST result_s[] = {1.75382524, 0.56351367, 0.41124883};
 	ST result_U[] = {-0.60700926, -0.16647013, -0.56501385, -0.26696629,
-					 -0.46186125, -0.69145782, 0.29548428,  0.5718984,
-					 0.31771648,  -0.08101592, -0.27461424, 0.37170223,
-					 -0.12681555, -0.53830325, 0.69323293};
+	                 -0.46186125, -0.69145782, 0.29548428,  0.5718984,
+	                 0.31771648,  -0.08101592, -0.27461424, 0.37170223,
+	                 -0.12681555, -0.53830325, 0.69323293};
 
 	SGMatrix<ST> A(data, m, n, false);
 	SGMatrix<ST> U(m, n);
@@ -2039,17 +2065,16 @@ template <typename ST>
 void check_SGMatrix_svd_bdc_fullU()
 {
 	const index_t m = 5, n = 3;
-	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194,
-				 0.30786772, 0.25503552, 0.34367041, 0.66491478,
-				 0.20488809, 0.5734351,  0.87179189, 0.07139643,
-				 0.28540373, 0.06264684, 0.56204061};
+	ST data[] = {0.68764958, 0.11456779, 0.75164207, 0.50436194, 0.30786772,
+	             0.25503552, 0.34367041, 0.66491478, 0.20488809, 0.5734351,
+	             0.87179189, 0.07139643, 0.28540373, 0.06264684, 0.56204061};
 	ST result_s[] = {1.75382524, 0.56351367, 0.41124883};
 	ST result_U[] = {
-			-0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
-			-0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
-			-0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
-			-0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
-			0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
+	    -0.60700926, -0.16647013, -0.56501385, -0.26696629, -0.46186125,
+	    -0.69145782, 0.29548428,  0.5718984,   0.31771648,  -0.08101592,
+	    -0.27461424, 0.37170223,  -0.12681555, -0.53830325, 0.69323293,
+	    -0.27809756, -0.68975171, -0.11662812, 0.38274703,  0.53554354,
+	    0.025973184, 0.520631112, -0.56921636, 0.62571522,  0.11287970};
 
 	SGMatrix<ST> A(data, m, n, false);
 	SGMatrix<ST> U(m, m);
@@ -2089,7 +2114,8 @@ void check_SGMatrix_trace_dot()
 {
 	const index_t n = 2;
 	SGMatrix<ST> A(n, n), B(n, n);
-	for (index_t i = 0; i < n*n; ++i) {
+	for (index_t i = 0; i < n * n; ++i)
+	{
 		A[i] = i;
 		B[i] = i * 2;
 	}
@@ -2113,16 +2139,16 @@ void check_SGMatrix_transpose_matrix()
 
 	for (index_t i = 0; i < m; ++i)
 		for (index_t j = 0; j < n; ++j)
-			EXPECT_NEAR(A.get_element(i, j), T.get_element(j, i), get_epsilon<ST>());
+			EXPECT_NEAR(
+			    A.get_element(i, j), T.get_element(j, i), get_epsilon<ST>());
 }
 
 template <typename ST>
 void check_SGVector_triangular_solver_lower()
 {
 	const index_t n = 3;
-	ST data_L[] = {-0.92947874, -1.1432887,  -0.87119086,
-				   0.,          -0.27048649, -0.05919915,
-				   0.,          0.,          0.11869106};
+	ST data_L[] = {-0.92947874, -1.1432887, -0.87119086, 0.,        -0.27048649,
+	               -0.05919915, 0.,         0.,          0.11869106};
 	ST data_b[] = {0.39461571, 0.6816856, 0.43323709};
 	ST result[] = {-0.42455592, -0.72571316, 0.17192745};
 
@@ -2140,8 +2166,8 @@ void check_SGVector_triangular_solver_upper()
 {
 	const index_t n = 3;
 	ST data_U[] = {-0.92947874, 0.,          0.,
-				   -1.1432887,  -0.27048649, 0.,
-				   -0.87119086, -0.05919915, 0.11869106};
+	               -1.1432887,  -0.27048649, 0.,
+	               -0.87119086, -0.05919915, 0.11869106};
 	ST data_b[] = {0.39461571, 0.6816856, 0.43323709};
 	ST result[] = {0.23681135, -3.31909306, 3.65012412};
 
@@ -2158,13 +2184,12 @@ template <typename ST>
 void check_SGMatrix_triangular_solver_lower()
 {
 	const index_t n = 3, m = 2;
-	ST data_L[] = {-0.92947874, -1.1432887,  -0.87119086,
-				   0.,          -0.27048649, -0.05919915,
-				   0.,          0.,          0.11869106};
+	ST data_L[] = {-0.92947874, -1.1432887, -0.87119086, 0.,        -0.27048649,
+	               -0.05919915, 0.,         0.,          0.11869106};
 	ST data_B[] = {0.76775073, 0.88471312, 0.34795225,
-				   0.94311546, 0.59630347, 0.65820143};
+	               0.94311546, 0.59630347, 0.65820143};
 	ST result[] = {-0.82600139, 0.22050986, -3.02127745,
-				   -1.01467136, 2.08424024, -0.86262387};
+	               -1.01467136, 2.08424024, -0.86262387};
 
 	SGMatrix<ST> L(data_L, n, n, false);
 	SGMatrix<ST> B(data_B, n, m, false);
@@ -2172,7 +2197,7 @@ void check_SGMatrix_triangular_solver_lower()
 	auto X = triangular_solver(L, B, true);
 
 	for (index_t i = 0; i < (index_t)X.size(); ++i)
-	EXPECT_NEAR(X[i], result[i], 1e-6	);
+		EXPECT_NEAR(X[i], result[i], 1e-6);
 }
 
 template <typename ST>
@@ -2180,12 +2205,12 @@ void check_SGMatrix_triangular_solver_upper()
 {
 	const index_t n = 3, m = 2;
 	ST data_U[] = {-0.92947874, 0.,          0.,
-				   -1.1432887,  -0.27048649, 0.,
-				   -0.87119086, -0.05919915, 0.11869106};
+	               -1.1432887,  -0.27048649, 0.,
+	               -0.87119086, -0.05919915, 0.11869106};
 	ST data_B[] = {0.76775073, 0.88471312, 0.34795225,
-				   0.94311546, 0.59630347, 0.65820143};
+	               0.94311546, 0.59630347, 0.65820143};
 	ST result[] = {1.238677,    -3.91243241, 2.9315793,
-				   -2.00784647, -3.41825732, 5.54550138};
+	               -2.00784647, -3.41825732, 5.54550138};
 
 	SGMatrix<ST> L(data_U, n, n, false);
 	SGMatrix<ST> B(data_B, n, m, false);
@@ -2193,9 +2218,8 @@ void check_SGMatrix_triangular_solver_upper()
 	auto X = triangular_solver(L, B, false);
 
 	for (index_t i = 0; i < (index_t)X.size(); ++i)
-	EXPECT_NEAR(X[i], result[i], 1e-6);
+		EXPECT_NEAR(X[i], result[i], 1e-6);
 }
-
 
 template <typename ST>
 void check_SGVector_zero()
@@ -2251,7 +2275,6 @@ void check_SGMatrix_rank_update()
 	rank_update(A, b, static_cast<ST>(-1));
 	EXPECT_NEAR((A_eig - A_eig).norm(), 0, get_epsilon<ST>());
 }
-
 
 // test types based on shogun/mathematics/linalg/LinalgBackendBase.h
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
@@ -2399,7 +2422,8 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_product)
 	check_SGMatrix_elementwise_product<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_product_in_place)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_elementwise_product_in_place)
 {
 	check_SGMatrix_elementwise_product_in_place<TypeParam>();
 }
@@ -2414,7 +2438,8 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_product)
 	check_SGVector_elementwise_product<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_elementwise_product_in_place)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGVector_elementwise_product_in_place)
 {
 	check_SGVector_elementwise_product_in_place<TypeParam>();
 }
@@ -2452,12 +2477,15 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_matrix_prod_transpose)
 	check_SGVector_matrix_prod_transpose<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_SGVector_matrix_prod_in_place)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_SGVector_matrix_prod_in_place)
 {
 	check_SGMatrix_SGVector_matrix_prod_in_place<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_SGVector_matrix_prod_in_place_transpose)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest,
+    SGMatrix_SGVector_matrix_prod_in_place_transpose)
 {
 	check_SGMatrix_SGVector_matrix_prod_in_place_transpose<TypeParam>();
 }
@@ -2477,8 +2505,8 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_transpose_B)
 	check_SGMatrix_matrix_product_transpose_B<TypeParam>();
 }
 
-
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_transpose_A_B)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_transpose_A_B)
 {
 	check_SGMatrix_matrix_product_transpose_A_B<TypeParam>();
 }
@@ -2488,17 +2516,23 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_in_place)
 	check_SGMatrix_matrix_product_in_place<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_in_place_transpose_A)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest,
+    SGMatrix_matrix_product_in_place_transpose_A)
 {
 	check_SGMatrix_matrix_product_in_place_transpose_A<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_in_place_transpose_B)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest,
+    SGMatrix_matrix_product_in_place_transpose_B)
 {
 	check_SGMatrix_matrix_product_in_place_transpose_B<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_matrix_product_in_place_transpose_A_B)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest,
+    SGMatrix_matrix_product_in_place_transpose_A_B)
 {
 	check_SGMatrix_matrix_product_in_place_transpose_A_B<TypeParam>();
 }
@@ -2523,13 +2557,16 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_mean)
 	check_SGMatrix_mean<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_multiply_by_logistic_derivative)
+TYPED_TEST(
+    LinalgBackendEigenAllTypesTest, SGMatrix_multiply_by_logistic_derivative)
 {
 	check_SGMatrix_multiply_by_logistic_derivative<TypeParam>();
 }
 
 // TODO: write test for int types
-TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_multiply_by_rectified_linear_derivative)
+TYPED_TEST(
+    LinalgBackendEigenNonIntegerTypesTest,
+    SGMatrix_multiply_by_rectified_linear_derivative)
 {
 	check_SGMatrix_multiply_by_rectified_linear_derivative<TypeParam>();
 }
@@ -2579,7 +2616,6 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_scale_in_place)
 	check_SGVector_scale_in_place<TypeParam>();
 }
 
-
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_scale_in_place)
 {
 	check_SGMatrix_scale_in_place<TypeParam>();
@@ -2602,7 +2638,7 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_softmax)
 }
 
 // FIXME: CMath::Pow only accepts float or complex types
-//TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_squared_error)
+// TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_squared_error)
 //{
 //    check_SGMatrix_squared_error<TypeParam>();
 //}
@@ -2697,7 +2733,6 @@ TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_jacobi_fullU)
 	check_SGMatrix_svd_jacobi_fullU<TypeParam>();
 }
 
-
 #if EIGEN_VERSION_AT_LEAST(3, 3, 0)
 TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_svd_bdc_thinU)
 {
@@ -2725,22 +2760,26 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_transpose_matrix)
 	check_SGMatrix_transpose_matrix<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_triangular_solver_lower)
+TYPED_TEST(
+    LinalgBackendEigenNonIntegerTypesTest, SGVector_triangular_solver_lower)
 {
 	check_SGVector_triangular_solver_lower<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_triangular_solver_upper)
+TYPED_TEST(
+    LinalgBackendEigenNonIntegerTypesTest, SGVector_triangular_solver_upper)
 {
 	check_SGVector_triangular_solver_upper<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_triangular_solver_lower)
+TYPED_TEST(
+    LinalgBackendEigenNonIntegerTypesTest, SGMatrix_triangular_solver_lower)
 {
 	check_SGMatrix_triangular_solver_lower<TypeParam>();
 }
 
-TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGMatrix_triangular_solver_upper)
+TYPED_TEST(
+    LinalgBackendEigenNonIntegerTypesTest, SGMatrix_triangular_solver_upper)
 {
 	check_SGMatrix_triangular_solver_upper<TypeParam>();
 }
@@ -2777,7 +2816,7 @@ TEST(LinalgBackendEigen, SGMatrix_squared_error)
 	float64_t ref = 0;
 	for (index_t i = 0; i < size; i++)
 		ref += CMath::pow(A[i] - B[i], 2);
-			ref *= 0.5;
+	ref *= 0.5;
 
 	auto result = linalg::squared_error(A, B);
 	EXPECT_NEAR(ref, result, 1e-15);
