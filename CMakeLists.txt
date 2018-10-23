@@ -484,20 +484,12 @@ OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travi
 OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
-IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
-	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
-		message(STATUS "Tests require (disabled) examples, enabling.")
-	ENDIF()
-	IF(ENABLE_TESTING OR BUILD_EXAMPLES)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
-	ENDIF()
-
-	IF(BUILD_META_EXAMPLES)
-		# allow meta examples without adding examples dir itself
-		add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
-	ENDIF()
+IF((ENABLE_TESTING AND NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
+	OR (EXISTS ${CMAKE_SOURCE_DIR}/examples AND BUILD_META_EXAMPLES))
+	# set CTAGS_FILE when tests/unit or examples/meta are added to the project
+	# according to the logic below
+	SET(CTAGS_FILE ${CMAKE_CURRENT_BINARY_DIR}/tags CACHE INTERNAL "" FORCE)
 ENDIF()
-
 IF(ENABLE_TESTING)
 	IF (NOT LIBSHOGUN)
 		MESSAGE(FATAL_ERROR "Cannot compile tests without libshogun!")
@@ -513,8 +505,22 @@ IF(ENABLE_TESTING)
 		ENDIF()
 
 		IF(BUILD_META_EXAMPLES AND NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
-            add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
-        ENDIF()
+			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
+		ENDIF()
+	ENDIF()
+ENDIF()
+
+IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
+	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
+		message(STATUS "Tests require (disabled) examples, enabling.")
+	ENDIF()
+	IF(ENABLE_TESTING OR BUILD_EXAMPLES)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	ENDIF()
+
+	IF(BUILD_META_EXAMPLES)
+		# allow meta examples without adding examples dir itself
+		add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
 	ENDIF()
 ENDIF()
 
