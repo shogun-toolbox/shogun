@@ -34,6 +34,7 @@
 #define LINEARTESTENVIRONMENT_HPP
 
 #include "GaussianCheckerboard.h"
+#include "LinearRegressionDataGenerator.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -46,8 +47,17 @@ public:
 	virtual void SetUp()
 	{
 		sg_rand->set_seed(17);
+		SGVector<float64_t> coefficients(1);
+		float64_t bias = 2.0;
+		coefficients[0] = 3.0;
+
 		mBinaryLabelData = std::shared_ptr<GaussianCheckerboard>(
 		    new GaussianCheckerboard(100, 2, 2));
+		// generate linear regression data y = 3x + 2
+		mOneDimensionalRegressionWithBiasData = std::shared_ptr<LinearRegressionDataGenerator>(
+				new LinearRegressionDataGenerator(100, coefficients, bias, 0.95));
+		mOneDimensionalRegressionData = std::shared_ptr<LinearRegressionDataGenerator>(
+				new LinearRegressionDataGenerator(100, coefficients, 0.0, 0.95));
 	}
 
 	std::shared_ptr<GaussianCheckerboard> getBinaryLabelData() const
@@ -55,7 +65,19 @@ public:
 		return mBinaryLabelData;
 	}
 
+	std::shared_ptr<LinearRegressionDataGenerator> getOneDimensionalRegressionData(bool withBias) const
+	{
+		std::shared_ptr<LinearRegressionDataGenerator> data;
+		if (withBias)
+			data = mOneDimensionalRegressionWithBiasData;
+		else
+			data = mOneDimensionalRegressionData;
+		return data;
+	}
+
 protected:
 	std::shared_ptr<GaussianCheckerboard> mBinaryLabelData;
+	std::shared_ptr<LinearRegressionDataGenerator> mOneDimensionalRegressionData;
+	std::shared_ptr<LinearRegressionDataGenerator> mOneDimensionalRegressionWithBiasData;
 };
 #endif

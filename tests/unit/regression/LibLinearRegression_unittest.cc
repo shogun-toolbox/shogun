@@ -8,7 +8,12 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
+#include "environments/LinearTestEnvironment.h"
+
 using namespace shogun;
+
+// get the test environment
+extern LinearTestEnvironment* linear_test_env;
 
 TEST(LibLinearRegression, lr_with_bias)
 {
@@ -17,52 +22,35 @@ TEST(LibLinearRegression, lr_with_bias)
 	// set epsilon to an order of magnitude lower than test tolerance
 	double epsilon = 1E-6;
 
-	/* create some easy regression data: y = 3x + 2 */
-	index_t n = 201;
-	float64_t m = 3;
-	float64_t b = 2;
-	double initial_value = -100;
+	// create some easy regression data: y = 3x + 2 (defined in LinearTestEnvironment.h)
+	std::shared_ptr<LinearRegressionDataGenerator> mockData =
+			linear_test_env->getOneDimensionalRegressionData(use_bias);
 
-	SGMatrix<float64_t> feat_train(1, n);
-	SGMatrix<float64_t> feat_test(1, n);
-	SGVector<float64_t> lab_train(n);
+	// fetch data from test environment
+	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
+	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
 
-	for (index_t i = 0; i < n; ++i)
-		feat_train[i] = initial_value + i * 0.5;
+	CRegressionLabels* labels_test = mockData->get_labels_test();
+	CRegressionLabels* labels_train = mockData->get_labels_train();
 
-	for (index_t i = 0; i < n; ++i)
-		lab_train[i] = m * feat_train[i] + b;
-
-	feat_test[0] = -3.2;
-	feat_test[1] = -2.1;
-	feat_test[2] = -1.4;
-	feat_test[3] = 3.05;
-	feat_test[4] = 5.7;
-
-	/* shogun representation */
-	CRegressionLabels* labels_train = new CRegressionLabels(lab_train);
-	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* features_test =
-	    new CDenseFeatures<float64_t>(feat_test);
-
+	// train model
 	CLibLinearRegression* lr =
-	    new CLibLinearRegression(1., features_train, labels_train);
+	    new CLibLinearRegression(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->train();
 
+	// run predictions
 	CRegressionLabels* predicted_labels =
-	    lr->apply(features_test)->as<CRegressionLabels>();
+	    lr->apply(test_feats)->as<CRegressionLabels>();
 
-	EXPECT_NEAR(lr->get_w()[0], m, 1E-5);
-	EXPECT_NEAR(lr->get_bias(), b, 1E-5);
+	// test coefficients and bias
+	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
+	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);
 
-	EXPECT_NEAR(predicted_labels->get_labels()[0], -7.6, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[1], -4.3, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[2], -2.2, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[3], 11.15, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[4], 19.1, 1E-5);
+	// test predictions
+	for (index_t i = 0; i < mockData->get_test_size(); ++i)
+		EXPECT_NEAR(predicted_labels->get_label(i), labels_test->get_label(i), 1E-5);
 
 	/* clean up */
 	SG_UNREF(predicted_labels);
@@ -76,51 +64,35 @@ TEST(LibLinearRegression, lr_without_bias)
 	// set epsilon to an order of magnitude lower than test tolerance
 	double epsilon = 1E-6;
 
-	/* create some easy regression data: y = 3x*/
-	index_t n = 201;
-	float64_t m = 3;
-	float64_t b = 0;
-	double initial_value = -100;
+	// create some easy regression data: y = 3x + 2 (defined in LinearTestEnvironment.h)
+	std::shared_ptr<LinearRegressionDataGenerator> mockData =
+			linear_test_env->getOneDimensionalRegressionData(use_bias);
 
-	SGMatrix<float64_t> feat_train(1, n);
-	SGMatrix<float64_t> feat_test(1, n);
-	SGVector<float64_t> lab_train(n);
+	// fetch data from test environment
+	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
+	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
 
-	for (index_t i = 0; i < n; ++i)
-		feat_train[i] = initial_value + i * 0.5;
+	CRegressionLabels* labels_test = mockData->get_labels_test();
+	CRegressionLabels* labels_train = mockData->get_labels_train();
 
-	for (index_t i = 0; i < n; ++i)
-		lab_train[i] = m * feat_train[i] + b;
-
-	feat_test[0] = -3.2;
-	feat_test[1] = -2.1;
-	feat_test[2] = -1.4;
-	feat_test[3] = 3.05;
-	feat_test[4] = 5.7;
-
-	/* shogun representation */
-	CRegressionLabels* labels_train = new CRegressionLabels(lab_train);
-	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* features_test =
-	    new CDenseFeatures<float64_t>(feat_test);
-
+	// train model
 	CLibLinearRegression* lr =
-	    new CLibLinearRegression(1., features_train, labels_train);
+			new CLibLinearRegression(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->train();
 
+	// run predictions
 	CRegressionLabels* predicted_labels =
-	    lr->apply(features_test)->as<CRegressionLabels>();
+			lr->apply(test_feats)->as<CRegressionLabels>();
 
-	EXPECT_NEAR(lr->get_w()[0], 3, 1E-5);
+	// test coefficients and bias
+	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
+	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);
 
-	EXPECT_NEAR(predicted_labels->get_labels()[0], -9.6, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[1], -6.3, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[2], -4.2, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[3], 9.15, 1E-5);
-	EXPECT_NEAR(predicted_labels->get_labels()[4], 17.1, 1E-5);
+	// test predictions
+	for (index_t i = 0; i < mockData->get_test_size(); ++i)
+	EXPECT_NEAR(predicted_labels->get_label(i), labels_test->get_label(i), 1E-5);
 
 	/* clean up */
 	SG_UNREF(predicted_labels);
