@@ -22,9 +22,27 @@
 
 using namespace shogun;
 
+/** @brief This class generates linear regression data
+ * to be used in a testing environment:
+ *
+ *  {y} =X{\boldsymbol {\beta }}
+ *
+ * A bias value can be optionally set.
+ * */
+
 class LinearRegressionDataGenerator
 {
 public:
+	/** constructor
+	 * @param num_sample: nmber of random samples to be
+	 *  generated
+	 *  @param coefficient_values: SGVector with m coefficients
+	 *  @param bias_value: bias value, should be set to 0
+	 *  if it is not required
+	 *  @param train_split: a float from 0. to 1. to set
+	 *  the train size relative to the size of the generated
+	 *  dataset
+	 * */
 	LinearRegressionDataGenerator(
 			const int32_t num_samples,
 			const SGVector<float64_t>& coefficient_values,
@@ -65,6 +83,7 @@ public:
 		SG_REF(labels_test)
 	}
 
+	/** destructor */
 	~LinearRegressionDataGenerator()
 	{
 		SG_UNREF(features_train)
@@ -74,52 +93,57 @@ public:
 		SG_UNREF(labels_test)
 	}
 
-	/* get the traning features */
+	/** gets the traning features */
 	CDenseFeatures<float64_t>* get_features_train() const
 	{
 		return features_train;
 	}
 
-	/* get the test features */
+	/** gets the test features */
 	CDenseFeatures<float64_t>* get_features_test() const
 	{
 		return features_test;
 	}
 
-	/* get the test labels */
+	/** get the test labels */
 	CRegressionLabels* get_labels_train() const
 	{
 		return labels_train;
 	}
 
-	/* get the traning labels */
+	/** gets the traning labels */
 	CRegressionLabels* get_labels_test() const
 	{
 		return labels_test;
 	}
 
-	/* return the size of train set */
+	/** returns the size of train set */
 	int32_t get_train_size() const
 	{
 		return train_size;
 	}
 
-	/* return the size of the test set */
+	/** returns the size of the test set */
 	int32_t get_test_size() const
 	{
 		return test_size;
 	}
 
+	/** returns the bias value */
 	float64_t get_bias() const
 	{
 		return bias;
 	}
 
+	/** returns all coefficients */
 	SGVector<float64_t> get_coefficients() const
 	{
 		return coefficients;
 	}
 
+	/** returns the coefficient at index i
+	 * @param i: coefficient index
+	 * */
 	float64_t get_coefficient(index_t i) const
 	{
 		return coefficients[i];

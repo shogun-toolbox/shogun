@@ -18,7 +18,6 @@ extern LinearTestEnvironment* linear_test_env;
 
 TEST(LibLinearRegression, lr_with_bias)
 {
-	// using bias
 	bool use_bias = true;
 	double epsilon = 1E-6;
 
