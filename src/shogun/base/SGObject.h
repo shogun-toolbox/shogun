@@ -679,7 +679,7 @@ protected:
 			"Unknown parameter",
 			AnyParameterProperties::HYPERPARAMETER |
 			AnyParameterProperties::GRADIENT_PARAM |
-			AnyParameterProperties::MODELSELECTION_PARAM))
+			AnyParameterProperties::MODEL_PARAM))
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
@@ -700,7 +700,7 @@ protected:
 			"Unknown parameter",
 			AnyParameterProperties::HYPERPARAMETER |
 			AnyParameterProperties::GRADIENT_PARAM |
-			AnyParameterProperties::MODELSELECTION_PARAM))
+			AnyParameterProperties::MODEL_PARAM))
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -724,7 +724,7 @@ protected:
 			"Unknown parameter",
             AnyParameterProperties::HYPERPARAMETER |
             AnyParameterProperties::GRADIENT_PARAM |
-            AnyParameterProperties::MODELSELECTION_PARAM))
+            AnyParameterProperties::MODEL_PARAM))
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -745,7 +745,7 @@ protected:
 			"Dynamic parameter",
             AnyParameterProperties::HYPERPARAMETER |
             AnyParameterProperties::GRADIENT_PARAM |
-            AnyParameterProperties::MODELSELECTION_PARAM);
+            AnyParameterProperties::MODEL_PARAM);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));

@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann, Gil Hoben
+ */
+
 #ifndef __ANYPARAMETER_H__
 #define __ANYPARAMETER_H__
 
@@ -27,7 +33,7 @@ namespace shogun
 	 * -# HYPERPARAMETER: the parameter determines how the training is
 	 * performed, e.g. regularisation
 	 * -# GRADIENT_PARAM: the parameter is used in gradient updates
-	 * -# MODELSELECTION_PARAM: model parameter that is trained, e.g. weight
+	 * -# MODEL_PARAM: model parameter that is trained, e.g. weight and bias
 	 * vectors and bias
 	 */
 	class AnyParameterProperties
@@ -35,7 +41,7 @@ namespace shogun
 	public:
 		static const int32_t HYPERPARAMETER = 0x00000001;
 		static const int32_t GRADIENT_PARAM = 0x00000010;
-		static const int32_t MODELSELECTION_PARAM = 0x00000100;
+		static const int32_t MODEL_PARAM = 0x00000100;
 
 		/** default constructor where all parameter types are switched to false
 		 */
@@ -53,7 +59,7 @@ namespace shogun
 		{
 			m_mask_attribute = 0x00000000;
 			if (model_selection)
-				m_mask_attribute |= MODELSELECTION_PARAM;
+				m_mask_attribute |= MODEL_PARAM;
 			if (gradient)
 				m_mask_attribute |= GRADIENT_PARAM;
 			if (hyperparameter)
@@ -82,7 +88,7 @@ namespace shogun
 		EModelSelectionAvailability get_model_selection() const
 		{
 			EModelSelectionAvailability return_val;
-			if (m_mask_attribute & MODELSELECTION_PARAM)
+			if (m_mask_attribute & HYPERPARAMETER)
 				return_val = EModelSelectionAvailability::MS_AVAILABLE;
 			else
 				return_val = EModelSelectionAvailability::MS_NOT_AVAILABLE;
@@ -169,6 +175,6 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 	};
-}
+} // namespace shogun
 
 #endif
