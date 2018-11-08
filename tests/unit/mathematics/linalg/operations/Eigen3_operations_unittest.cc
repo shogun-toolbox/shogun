@@ -13,25 +13,14 @@ using namespace Eigen;
 
 // Tolerance values for tests
 template <typename T>
-// default tolerance
 T get_epsilon()
 {
-	return 0;
-}
-template <>
-float32_t get_epsilon()
-{
-	return 1e-5;
-}
-template <>
-float64_t get_epsilon()
-{
-	return 1e-9;
+	return std::numeric_limits<T>::epsilon() * 100;
 }
 template <>
 floatmax_t get_epsilon()
 {
-	return 1e-12;
+	return 1e-13;
 }
 
 template <typename T>
