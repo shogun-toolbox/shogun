@@ -28,13 +28,9 @@ namespace shogun
 		GRADIENT_AVAILABLE = 1
 	};
 	/** @brief Class AnyParameterProperties keeps track of parameter properties.
-	 *
-	 * Currently there are three types of parameters:
-	 * -# HYPERPARAMETER: the parameter determines how the training is
-	 * performed, e.g. regularisation
-	 * -# GRADIENT_PARAM: the parameter is used in gradient updates
-	 * -# MODEL_PARAM: model parameter that is trained, e.g. weight and bias
-	 * vectors and bias
+	 * The parameter properties can be either true or false.
+	 * These properties describe if a parameter is for example a hyperparameter
+	 * or if it has a gradient.
 	 */
 	class AnyParameterProperties
 	{
@@ -43,12 +39,20 @@ namespace shogun
 		static const int32_t GRADIENT_PARAM = 0x00000010;
 		static const int32_t MODEL_PARAM = 0x00000100;
 
-		/** default constructor where all parameter types are switched to false
+		/** Default constructor where all parameter properties are false
 		 */
 		AnyParameterProperties() : m_description(), m_mask_attribute(0x00000000)
 		{
 		}
-		/** legacy constructor */
+		/** Constructor
+		 * @param description parameter description
+		 * @param hyperparameter set to true for parameters that determine
+		 * how training is performed, e.g. regularisation parameters
+		 * @param gradient set to true for parameters required for gradient
+		 * updates
+		 * @param model set to true for parameters used in inference, e.g.
+		 * weights and bias
+		 * */
 		AnyParameterProperties(
 		    std::string description,
 		    EModelSelectionAvailability model_selection = MS_NOT_AVAILABLE,
@@ -65,13 +69,15 @@ namespace shogun
 			if (hyperparameter)
 				m_mask_attribute |= HYPERPARAMETER;
 		}
-		/** mask constructor */
-		AnyParameterProperties(std::string description, int32_t mask_attribute)
+		/** Mask constructor
+		 * @param description parameter description
+		 * @param attribute_mask mask encoding parameter properties
+		 * */
 		    : m_description(description)
 		{
 			m_mask_attribute = mask_attribute;
 		}
-		/** copy contructor */
+		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
 		    : m_description(other.m_description),
 		      m_model_selection(other.m_model_selection),
@@ -79,12 +85,11 @@ namespace shogun
 		      m_mask_attribute(other.m_mask_attribute)
 		{
 		}
-		/** description getter */
+		const std::string& get_description() const
 		std::string get_description() const
 		{
 			return m_description;
 		}
-		/** model selection flag getter */
 		EModelSelectionAvailability get_model_selection() const
 		{
 			EModelSelectionAvailability return_val;
@@ -95,7 +100,6 @@ namespace shogun
 			return return_val;
 		}
 
-		/** gradient flag getter */
 		EGradientAvailability get_gradient() const
 		{
 			EGradientAvailability return_val;
@@ -106,7 +110,6 @@ namespace shogun
 			return return_val;
 		}
 
-		/** hyperparameter flag getter */
 		bool get_hyperparameter() const
 		{
 			bool return_val;
@@ -121,7 +124,7 @@ namespace shogun
 		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;
-		/** mask to store all param flags*/
+		int32_t m_attribute_mask;
 		int32_t m_mask_attribute;
 	};
 
