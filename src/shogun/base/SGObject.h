@@ -677,9 +677,9 @@ protected:
 		const std::string& name, T* value,
 		AnyParameterProperties properties = AnyParameterProperties(
 			"Unknown parameter",
-			AnyParameterProperties::HYPERPARAMETER |
-			AnyParameterProperties::GRADIENT_PARAM |
-			AnyParameterProperties::MODEL_PARAM))
+			AnyParameterProperties::HYPER |
+			AnyParameterProperties::GRADIENT |
+			AnyParameterProperties::MODEL))
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
@@ -696,11 +696,7 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* len,
-		AnyParameterProperties properties = AnyParameterProperties(
-			"Unknown parameter",
-			AnyParameterProperties::HYPERPARAMETER |
-			AnyParameterProperties::GRADIENT_PARAM |
-			AnyParameterProperties::MODEL_PARAM))
+		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -720,11 +716,7 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* rows, S* cols,
-		AnyParameterProperties properties = AnyParameterProperties(
-			"Unknown parameter",
-            AnyParameterProperties::HYPERPARAMETER |
-            AnyParameterProperties::GRADIENT_PARAM |
-            AnyParameterProperties::MODEL_PARAM))
+		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -743,9 +735,9 @@ protected:
 		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-            AnyParameterProperties::HYPERPARAMETER |
-            AnyParameterProperties::GRADIENT_PARAM |
-            AnyParameterProperties::MODEL_PARAM);
+			!AnyParameterProperties::HYPER |
+			!AnyParameterProperties::GRADIENT |
+			!AnyParameterProperties::MODEL);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));

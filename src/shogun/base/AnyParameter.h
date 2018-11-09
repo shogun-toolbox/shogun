@@ -35,13 +35,14 @@ namespace shogun
 	class AnyParameterProperties
 	{
 	public:
-		static const int32_t HYPERPARAMETER = 0x00000001;
-		static const int32_t GRADIENT_PARAM = 0x00000010;
-		static const int32_t MODEL_PARAM = 0x00000100;
+		static const int32_t HYPER = 1u << 0;
+		static const int32_t GRADIENT = 1u << 1;
+		static const int32_t MODEL = 1u << 2;
 
 		/** Default constructor where all parameter properties are false
 		 */
-		AnyParameterProperties() : m_description(), m_mask_attribute(0x00000000)
+		AnyParameterProperties()
+		    : m_description("No description given"), m_attribute_mask(0)
 		{
 		}
 		/** Constructor
@@ -55,69 +56,50 @@ namespace shogun
 		 * */
 		AnyParameterProperties(
 		    std::string description,
-		    EModelSelectionAvailability model_selection = MS_NOT_AVAILABLE,
+		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
 		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
-		    bool hyperparameter = false)
-		    : m_description(description), m_model_selection(model_selection),
+		    bool model = false)
+		    : m_description(description), m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
-			m_mask_attribute = 0x00000000;
-			if (model_selection)
-				m_mask_attribute |= MODEL_PARAM;
-			if (gradient)
-				m_mask_attribute |= GRADIENT_PARAM;
-			if (hyperparameter)
-				m_mask_attribute |= HYPERPARAMETER;
+			m_attribute_mask = (hyperparameter << 0 & HYPER) |
+			                   (gradient << 1 & GRADIENT) |
+			                   (model << 2 & MODEL);
 		}
 		/** Mask constructor
 		 * @param description parameter description
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
+		AnyParameterProperties(std::string description, int32_t attribute_mask)
 		    : m_description(description)
 		{
-			m_mask_attribute = mask_attribute;
+			m_attribute_mask = attribute_mask;
 		}
 		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
 		    : m_description(other.m_description),
 		      m_model_selection(other.m_model_selection),
 		      m_gradient(other.m_gradient),
-		      m_mask_attribute(other.m_mask_attribute)
+		      m_attribute_mask(other.m_attribute_mask)
 		{
 		}
 		const std::string& get_description() const
-		std::string get_description() const
 		{
 			return m_description;
 		}
 		EModelSelectionAvailability get_model_selection() const
 		{
-			EModelSelectionAvailability return_val;
-			if (m_mask_attribute & HYPERPARAMETER)
-				return_val = EModelSelectionAvailability::MS_AVAILABLE;
-			else
-				return_val = EModelSelectionAvailability::MS_NOT_AVAILABLE;
-			return return_val;
+			return static_cast<EModelSelectionAvailability>(
+			    (m_attribute_mask & HYPER) > 0);
 		}
-
 		EGradientAvailability get_gradient() const
 		{
-			EGradientAvailability return_val;
-			if (m_mask_attribute & GRADIENT_PARAM)
-				return_val = EGradientAvailability::GRADIENT_AVAILABLE;
-			else
-				return_val = EGradientAvailability::GRADIENT_NOT_AVAILABLE;
-			return return_val;
+			return static_cast<EGradientAvailability>(
+			    (m_attribute_mask & GRADIENT) > 0);
 		}
-
-		bool get_hyperparameter() const
+		bool get_model() const
 		{
-			bool return_val;
-			if (m_mask_attribute & HYPERPARAMETER)
-				return_val = true;
-			else
-				return_val = false;
-			return return_val;
+			return static_cast<bool>(m_attribute_mask & MODEL);
 		}
 
 	private:
@@ -125,7 +107,6 @@ namespace shogun
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;
 		int32_t m_attribute_mask;
-		int32_t m_mask_attribute;
 	};
 
 	class AnyParameter
