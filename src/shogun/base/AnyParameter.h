@@ -47,14 +47,11 @@ namespace shogun
 	class AnyParameterProperties
 	{
 	public:
-		static const int32_t HYPER = 1u << 0;
-		static const int32_t GRADIENT = 1u << 1;
-		static const int32_t MODEL = 1u << 2;
-
 		/** Default constructor where all parameter properties are false
 		 */
 		AnyParameterProperties()
-		    : m_description("No description given"), m_attribute_mask(0)
+		    : m_description("No description given"),
+		      m_attribute_mask(ParameterProperties())
 		{
 		}
 		/** Constructor
@@ -74,15 +71,20 @@ namespace shogun
 		    : m_description(description), m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
-			m_attribute_mask = (hyperparameter << 0 & HYPER) |
-			                   (gradient << 1 & GRADIENT) |
-			                   (model << 2 & MODEL);
+			m_attribute_mask = ParameterProperties();
+			if (hyperparameter)
+				m_attribute_mask |= ParameterProperties::HYPER;
+			if (gradient)
+				m_attribute_mask |= ParameterProperties::GRADIENT;
+			if (model)
+				m_attribute_mask |= ParameterProperties::MODEL;
 		}
 		/** Mask constructor
 		 * @param description parameter description
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
-		AnyParameterProperties(std::string description, int32_t attribute_mask)
+		AnyParameterProperties(
+		    std::string description, ParameterProperties attribute_mask)
 		    : m_description(description)
 		{
 			m_attribute_mask = attribute_mask;
@@ -102,23 +104,26 @@ namespace shogun
 		EModelSelectionAvailability get_model_selection() const
 		{
 			return static_cast<EModelSelectionAvailability>(
-			    (m_attribute_mask & HYPER) > 0);
+			    static_cast<int32_t>(
+			        m_attribute_mask & ParameterProperties::HYPER) > 0);
 		}
 		EGradientAvailability get_gradient() const
 		{
 			return static_cast<EGradientAvailability>(
-			    (m_attribute_mask & GRADIENT) > 0);
+			    static_cast<int32_t>(
+			        m_attribute_mask & ParameterProperties::GRADIENT) > 0);
 		}
 		bool get_model() const
 		{
-			return static_cast<bool>(m_attribute_mask & MODEL);
+			return static_cast<bool>(
+			    m_attribute_mask & ParameterProperties::MODEL);
 		}
 
 	private:
 		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;
-		int32_t m_attribute_mask;
+		ParameterProperties m_attribute_mask;
 	};
 
 	class AnyParameter
