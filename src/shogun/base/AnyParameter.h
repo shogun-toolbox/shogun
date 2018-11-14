@@ -8,6 +8,7 @@
 #define __ANYPARAMETER_H__
 
 #include <shogun/lib/any.h>
+#include <shogun/lib/bitmask_operators.h>
 
 #include <string>
 
@@ -27,10 +28,21 @@ namespace shogun
 		GRADIENT_NOT_AVAILABLE = 0,
 		GRADIENT_AVAILABLE = 1
 	};
-	/** @brief Class AnyParameterProperties keeps track of parameter properties.
-	 * The parameter properties can be either true or false.
-	 * These properties describe if a parameter is for example a hyperparameter
-	 * or if it has a gradient.
+
+	/** parameter properties */
+	enum class ParameterProperties
+	{
+		HYPER = 1u << 0,
+		GRADIENT = 1u << 1,
+		MODEL = 1u << 2
+	};
+
+	enableEnumClassBitmask(ParameterProperties);
+
+	/** @brief Class AnyParameterProperties keeps track of of parameter meta
+	 * information, such as properties and descriptions The parameter properties
+	 * can be either true or false. These properties describe if a parameter is
+	 * for example a hyperparameter or if it has a gradient.
 	 */
 	class AnyParameterProperties
 	{
