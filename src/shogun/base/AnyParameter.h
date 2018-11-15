@@ -118,6 +118,9 @@ namespace shogun
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
 		}
+		bool is_property(ParameterProperties mask) const {
+		    return static_cast<bool>(m_attribute_mask & mask);
+		}
 
 	private:
 		std::string m_description;
