@@ -1,7 +1,14 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Heiko Strathmann, Gil Hoben
+ */
+
 #ifndef __ANYPARAMETER_H__
 #define __ANYPARAMETER_H__
 
 #include <shogun/lib/any.h>
+#include <shogun/lib/bitmask_operators.h>
 
 #include <string>
 
@@ -22,48 +29,101 @@ namespace shogun
 		GRADIENT_AVAILABLE = 1
 	};
 
+	/** parameter properties */
+	enum class ParameterProperties
+	{
+		HYPER = 1u << 0,
+		GRADIENT = 1u << 1,
+		MODEL = 1u << 2
+	};
+
+	enableEnumClassBitmask(ParameterProperties);
+
+	/** @brief Class AnyParameterProperties keeps track of of parameter meta
+	 * information, such as properties and descriptions The parameter properties
+	 * can be either true or false. These properties describe if a parameter is
+	 * for example a hyperparameter or if it has a gradient.
+	 */
 	class AnyParameterProperties
 	{
 	public:
+		/** Default constructor where all parameter properties are false
+		 */
 		AnyParameterProperties()
-		    : m_description(), m_model_selection(MS_NOT_AVAILABLE),
-		      m_gradient(GRADIENT_NOT_AVAILABLE)
+		    : m_description("No description given"),
+		      m_attribute_mask(ParameterProperties())
 		{
 		}
+		/** Constructor
+		 * @param description parameter description
+		 * @param hyperparameter set to true for parameters that determine
+		 * how training is performed, e.g. regularisation parameters
+		 * @param gradient set to true for parameters required for gradient
+		 * updates
+		 * @param model set to true for parameters used in inference, e.g.
+		 * weights and bias
+		 * */
 		AnyParameterProperties(
 		    std::string description,
-		    EModelSelectionAvailability model_selection = MS_NOT_AVAILABLE,
-		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE)
-		    : m_description(description), m_model_selection(model_selection),
+		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
+		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
+		    bool model = false)
+		    : m_description(description), m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
+			m_attribute_mask = ParameterProperties();
+			if (hyperparameter)
+				m_attribute_mask |= ParameterProperties::HYPER;
+			if (gradient)
+				m_attribute_mask |= ParameterProperties::GRADIENT;
+			if (model)
+				m_attribute_mask |= ParameterProperties::MODEL;
 		}
+		/** Mask constructor
+		 * @param description parameter description
+		 * @param attribute_mask mask encoding parameter properties
+		 * */
+		AnyParameterProperties(
+		    std::string description, ParameterProperties attribute_mask)
+		    : m_description(description)
+		{
+			m_attribute_mask = attribute_mask;
+		}
+		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
 		    : m_description(other.m_description),
 		      m_model_selection(other.m_model_selection),
-		      m_gradient(other.m_gradient)
+		      m_gradient(other.m_gradient),
+		      m_attribute_mask(other.m_attribute_mask)
 		{
 		}
-
-		std::string get_description() const
+		const std::string& get_description() const
 		{
 			return m_description;
 		}
-
 		EModelSelectionAvailability get_model_selection() const
 		{
-			return m_model_selection;
+			return static_cast<EModelSelectionAvailability>(
+			    static_cast<int32_t>(
+			        m_attribute_mask & ParameterProperties::HYPER) > 0);
 		}
-
 		EGradientAvailability get_gradient() const
 		{
-			return m_gradient;
+			return static_cast<EGradientAvailability>(
+			    static_cast<int32_t>(
+			        m_attribute_mask & ParameterProperties::GRADIENT) > 0);
+		}
+		bool get_model() const
+		{
+			return static_cast<bool>(
+			    m_attribute_mask & ParameterProperties::MODEL);
 		}
 
 	private:
 		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;
+		ParameterProperties m_attribute_mask;
 	};
 
 	class AnyParameter
@@ -116,6 +176,6 @@ namespace shogun
 		Any m_value;
 		AnyParameterProperties m_properties;
 	};
-}
+} // namespace shogun
 
 #endif

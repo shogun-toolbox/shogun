@@ -675,8 +675,7 @@ protected:
 	template <typename T>
 	void watch_param(
 		const std::string& name, T* value,
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
@@ -693,8 +692,7 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* len,
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -714,8 +712,7 @@ protected:
 	template <typename T, typename S>
 	void watch_param(
 		const std::string& name, T** value, S* rows, S* cols,
-		AnyParameterProperties properties = AnyParameterProperties(
-		    "Unknown parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE))
+		AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
 		create_parameter(
@@ -733,7 +730,10 @@ protected:
 	{
 		BaseTag tag(name);
 		AnyParameterProperties properties(
-			"Dynamic parameter", MS_NOT_AVAILABLE, GRADIENT_NOT_AVAILABLE);
+			"Dynamic parameter",
+			ParameterProperties::HYPER |
+			ParameterProperties::GRADIENT |
+            ParameterProperties::MODEL);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
