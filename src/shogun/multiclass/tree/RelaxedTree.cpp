@@ -22,11 +22,11 @@ CRelaxedTree::CRelaxedTree()
 	:m_max_num_iter(3), m_A(0.5), m_B(5), m_svm_C(1), m_svm_epsilon(0.001),
 	m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
-	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
-	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
-	SG_ADD(&m_A, "m_A", "parameter A", MS_AVAILABLE);
-	SG_ADD(&m_B, "m_B", "parameter B", MS_AVAILABLE);
-	SG_ADD(&m_svm_epsilon, "m_svm_epsilon", "epsilon for svm", MS_AVAILABLE);
+	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", ParameterProperties());
+	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", ParameterProperties::HYPER);
+	SG_ADD(&m_A, "m_A", "parameter A", ParameterProperties::HYPER);
+	SG_ADD(&m_B, "m_B", "parameter B", ParameterProperties::HYPER);
+	SG_ADD(&m_svm_epsilon, "m_svm_epsilon", "epsilon for svm", ParameterProperties::HYPER);
 }
 
 CRelaxedTree::~CRelaxedTree()

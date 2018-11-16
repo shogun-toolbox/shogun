@@ -29,13 +29,13 @@ CSOSVMHelper::~CSOSVMHelper()
 
 void CSOSVMHelper::init()
 {
-	SG_ADD(&m_primal, "primal", "History of primal values", MS_NOT_AVAILABLE);
-	SG_ADD(&m_dual, "dual", "History of dual values", MS_NOT_AVAILABLE);
-	SG_ADD(&m_duality_gap, "duality_gap", "History of duality gaps", MS_NOT_AVAILABLE);
-	SG_ADD(&m_eff_pass, "eff_pass", "Effective passes", MS_NOT_AVAILABLE);
-	SG_ADD(&m_train_error, "train_error", "History of training errors", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tracker, "tracker", "Tracker of training progress", MS_NOT_AVAILABLE);
-	SG_ADD(&m_bufsize, "bufsize", "Buffer size", MS_NOT_AVAILABLE);
+	SG_ADD(&m_primal, "primal", "History of primal values", ParameterProperties());
+	SG_ADD(&m_dual, "dual", "History of dual values", ParameterProperties());
+	SG_ADD(&m_duality_gap, "duality_gap", "History of duality gaps", ParameterProperties());
+	SG_ADD(&m_eff_pass, "eff_pass", "Effective passes", ParameterProperties());
+	SG_ADD(&m_train_error, "train_error", "History of training errors", ParameterProperties());
+	SG_ADD(&m_tracker, "tracker", "Tracker of training progress", ParameterProperties());
+	SG_ADD(&m_bufsize, "bufsize", "Buffer size", ParameterProperties());
 
 	m_tracker = 0;
 	m_bufsize = 1000;

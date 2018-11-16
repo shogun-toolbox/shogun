@@ -71,5 +71,5 @@ void CProbabilityDistribution::init()
 	m_dimension=0;
 
 	SG_ADD(&m_dimension, "dimension", "Dimension of distribution.",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 }

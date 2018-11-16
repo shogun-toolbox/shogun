@@ -82,5 +82,5 @@ void CIndexFeatures::init()
 {
 	num_vectors = 0;
 	SG_ADD(&m_feature_index, "m_feature_index",
-				"Vector of feature index.", MS_NOT_AVAILABLE);
+				"Vector of feature index.", ParameterProperties());
 }

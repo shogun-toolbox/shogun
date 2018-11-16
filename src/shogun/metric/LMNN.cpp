@@ -258,28 +258,28 @@ CLMNNStatistics* CLMNN::get_statistics() const
 void CLMNN::init()
 {
 	SG_ADD(&m_linear_transform, "linear_transform",
-			"Linear transform in matrix form", MS_NOT_AVAILABLE)
+			"Linear transform in matrix form", ParameterProperties());
 	SG_ADD((CSGObject**) &m_features, "features", "Training features",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD(&m_k, "k", "Number of target neighbours per example",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD(&m_regularization, "regularization", "Regularization",
-			MS_AVAILABLE)
+			ParameterProperties::HYPER);
 	SG_ADD(&m_stepsize, "stepsize", "Step size in gradient descent",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD(&m_stepsize_threshold, "stepsize_threshold", "Step size threshold",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD(&m_maxiter, "maxiter", "Maximum number of iterations",
-			MS_NOT_AVAILABLE)
+			ParameterProperties());
 	SG_ADD(&m_correction, "correction",
-			"Iterations between exact impostors search", MS_NOT_AVAILABLE)
+			"Iterations between exact impostors search", ParameterProperties());
 	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold",
-			MS_NOT_AVAILABLE)
-	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", MS_NOT_AVAILABLE);
+			ParameterProperties());
+	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", ParameterProperties());
 	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 	m_features = NULL;
 	m_labels = NULL;
@@ -331,9 +331,9 @@ void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_i
 
 void CLMNNStatistics::init()
 {
-	SG_ADD(&obj, "obj", "Objective at each iteration", MS_NOT_AVAILABLE);
-	SG_ADD(&stepsize, "stepsize", "Step size at each iteration", MS_NOT_AVAILABLE);
+	SG_ADD(&obj, "obj", "Objective at each iteration", ParameterProperties());
+	SG_ADD(&stepsize, "stepsize", "Step size at each iteration", ParameterProperties());
 	SG_ADD(&num_impostors, "num_impostors", "Number of impostors at each iteration",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 }
 

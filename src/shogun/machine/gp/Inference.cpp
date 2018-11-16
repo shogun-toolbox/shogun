@@ -88,13 +88,13 @@ CInference::~CInference()
 
 void CInference::init()
 {
-	SG_ADD(&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
-	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_model, "likelihood_model", "Likelihood model", MS_AVAILABLE);
-	SG_ADD(&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
-	SG_ADD(&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
-	SG_ADD(&m_features, "features", "Features", MS_NOT_AVAILABLE);
-	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", MS_NOT_AVAILABLE);
+	SG_ADD(&m_kernel, "kernel", "Kernel", ParameterProperties::HYPER);
+	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(&m_model, "likelihood_model", "Likelihood model", ParameterProperties::HYPER);
+	SG_ADD(&m_mean, "mean_function", "Mean function", ParameterProperties::HYPER);
+	SG_ADD(&m_labels, "labels", "Labels", ParameterProperties());
+	SG_ADD(&m_features, "features", "Features", ParameterProperties());
+	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", ParameterProperties());
 	
 
 	m_kernel=NULL;
@@ -106,10 +106,10 @@ void CInference::init()
 	m_gradient_update=false;
 	m_minimizer=NULL;
 
-	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference", MS_NOT_AVAILABLE);
-	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
-	SG_ADD(&m_E, "E", "the matrix used for multi classification", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference", ParameterProperties());
+	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", ParameterProperties());
+	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", ParameterProperties());
+	SG_ADD(&m_E, "E", "the matrix used for multi classification", ParameterProperties());
 }
 
 void CInference::register_minimizer(Minimizer* minimizer)

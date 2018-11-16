@@ -73,7 +73,7 @@ CFactorGraph* CFactorGraphFeatures::get_sample(index_t idx)
 void CFactorGraphFeatures::init()
 {
 	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 }
 
 CFactorGraphFeatures* CFactorGraphFeatures::obtain_from_generic(CFeatures* base_feats)

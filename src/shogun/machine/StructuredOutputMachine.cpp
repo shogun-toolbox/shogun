@@ -52,10 +52,10 @@ CStructuredModel* CStructuredOutputMachine::get_model() const
 
 void CStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss", MS_NOT_AVAILABLE);
-	SG_ADD(&m_verbose, "verbose", "Verbosity flag", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_helper, "helper", "Training helper", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", ParameterProperties());
+	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss", ParameterProperties());
+	SG_ADD(&m_verbose, "verbose", "Verbosity flag", ParameterProperties());
+	SG_ADD((CSGObject**)&m_helper, "helper", "Training helper", ParameterProperties());
 
 	m_verbose = false;
 	m_helper = NULL;

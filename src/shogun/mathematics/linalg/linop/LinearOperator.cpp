@@ -42,7 +42,7 @@ void CLinearOperator<T>::init()
 
 	SG_ADD(&m_dimension, "dimension",
 		"Dimension of the vector on which linear operator can apply",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 }
 
 template class CLinearOperator<bool>;

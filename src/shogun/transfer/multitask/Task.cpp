@@ -44,9 +44,9 @@ void CTask::init()
 	m_subtasks = new CList(true);
 	SG_REF(m_subtasks);
 
-	SG_ADD((CSGObject**)&m_subtasks,"subtasks","subtasks of given task", MS_NOT_AVAILABLE);
-	SG_ADD(&m_indices,"indices","indices of task", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weight,"weight","weight of task", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_subtasks,"subtasks","subtasks of given task", ParameterProperties());
+	SG_ADD(&m_indices,"indices","indices of task", ParameterProperties());
+	SG_ADD(&m_weight,"weight","weight of task", ParameterProperties());
 }
 
 CTask::~CTask()

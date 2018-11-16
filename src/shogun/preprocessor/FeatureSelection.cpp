@@ -49,17 +49,17 @@ template <class ST>
 void CFeatureSelection<ST>::initialize_parameters()
 {
 	SG_ADD(&m_target_dim, "target_dim", "target dimension",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((machine_int_t*)&m_algorithm, "algorithm",
-			"the feature selectiona algorithm", MS_NOT_AVAILABLE);
+			"the feature selectiona algorithm", ParameterProperties());
 	SG_ADD((machine_int_t*)&m_policy, "policy", "feature removal policy",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(&m_num_remove, "num_remove", "number or percentage of features to "
-			"be removed", MS_NOT_AVAILABLE);
+			"be removed", ParameterProperties());
 	SG_ADD((CSGObject**)&m_labels, "labels",
-			"the class labels for the features", MS_NOT_AVAILABLE);
+			"the class labels for the features", ParameterProperties());
 	SG_ADD((CSGObject**)&m_subset, "subset",
-			"indices of selected features", MS_NOT_AVAILABLE);
+			"indices of selected features", ParameterProperties());
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;

@@ -12,7 +12,7 @@ using namespace shogun;
 CDistribution::CDistribution()
 : CSGObject(), features(NULL), pseudo_count(1e-10)
 {
-	SG_ADD(&features, "features", "features to be used", MS_NOT_AVAILABLE);
+	SG_ADD(&features, "features", "features to be used", ParameterProperties());
 }
 
 CDistribution::~CDistribution()

@@ -51,10 +51,10 @@ void CPiecewiseQuadraticObject2::init()
 	m_truth_x=SGVector<float64_t>();
 
 	SG_ADD(&m_init_x, "init_x", "init_x",
-		MS_AVAILABLE, GRADIENT_AVAILABLE);
+		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 
 	SG_ADD(&m_truth_x, "truth_x", "truth_x",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 }
 
 void CPiecewiseQuadraticObject2::set_init_x(SGVector<float64_t> init_x)

@@ -24,8 +24,8 @@ void CGaussianARDKernel::init()
 {
 	m_sq_lhs=SGVector<float64_t>();
 	m_sq_rhs=SGVector<float64_t>();
-	SG_ADD(&m_sq_lhs, "sq_lhs", "squared left-hand side", MS_NOT_AVAILABLE);
-	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sq_lhs, "sq_lhs", "squared left-hand side", ParameterProperties());
+	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side", ParameterProperties());
 }
 
 float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)

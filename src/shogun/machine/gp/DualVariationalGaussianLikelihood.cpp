@@ -218,15 +218,15 @@ void CDualVariationalGaussianLikelihood::init()
 {
 	SG_ADD(&m_lambda, "lambda",
 		"Dual parameter for variational s2",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_is_valid, "is_valid",
 		"Is the Dual parameter valid",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_strict_scale, "strict_scale",
 		"The strict variable used in adjust_step_wrt_dual_parameter",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	m_is_valid=false;
 	m_strict_scale=1e-5;

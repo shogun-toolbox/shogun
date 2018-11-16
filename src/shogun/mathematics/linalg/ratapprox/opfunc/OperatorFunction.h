@@ -100,7 +100,7 @@ private:
 	  m_linear_operator=NULL;
 
 		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
-			"Linear operator of this operator function", MS_NOT_AVAILABLE);
+			"Linear operator of this operator function", ParameterProperties());
 	}
 };
 }

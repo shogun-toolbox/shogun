@@ -50,18 +50,18 @@ void CLibLinear::init()
 	set_max_iterations();
 	set_epsilon(1e-5);
 
-	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
-	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&C1, "C1", "C Cost constant 1.", ParameterProperties::HYPER);
+	SG_ADD(&C2, "C2", "C Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
-	SG_ADD(&epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
+	    &use_bias, "use_bias", "Indicates if bias is used.", ParameterProperties());
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.", ParameterProperties());
 	SG_ADD(
 	    &max_iterations, "max_iterations", "Max number of iterations.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_linear_term, "linear_term", "Linear Term", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&m_linear_term, "linear_term", "Linear Term", ParameterProperties());
 	SG_ADD(
 	    (machine_int_t*)&liblinear_solver_type, "liblinear_solver_type",
-	    "Type of LibLinear solver.", MS_NOT_AVAILABLE);
+	    "Type of LibLinear solver.", ParameterProperties());
 }
 
 CLibLinear::~CLibLinear()

@@ -114,7 +114,7 @@ private:
 		//The existing implementation in CSGObject::get_parameter_incremental_hash()
 		//can NOT deal with circular reference when parameter_hash_changed() is called
 		//SG_ADD((CSGObject **)&m_obj, "CSigleSparseInference__m_obj",
-			//"m_obj in SingleSparseInferenceCostFunction", MS_NOT_AVAILABLE);
+			//"m_obj in SingleSparseInferenceCostFunction", ParameterProperties());
 	}
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
@@ -137,22 +137,22 @@ void CSingleSparseInference::init()
 	m_fully_sparse=false;
 	m_inducing_minimizer=NULL;
 	SG_ADD(&m_fully_sparse, "fully_Sparse",
-		"whether the kernel support sparse inference", MS_NOT_AVAILABLE);
+		"whether the kernel support sparse inference", ParameterProperties());
 	m_lock=new CLock();
 
 	SG_ADD(&m_upper_bound, "upper_bound",
-		"upper bound of inducing features", MS_NOT_AVAILABLE);
+		"upper bound of inducing features", ParameterProperties());
 	SG_ADD(&m_lower_bound, "lower_bound",
-		"lower bound of inducing features", MS_NOT_AVAILABLE);
+		"lower bound of inducing features", ParameterProperties());
 	SG_ADD(&m_max_ind_iterations, "max_ind_iterations",
-		"max number of iterations used in inducing features optimization", MS_NOT_AVAILABLE);
+		"max number of iterations used in inducing features optimization", ParameterProperties());
 	SG_ADD(&m_ind_tolerance, "ind_tolerance",
-		"tolearance used in inducing features optimization", MS_NOT_AVAILABLE);
+		"tolearance used in inducing features optimization", ParameterProperties());
 	SG_ADD(&m_opt_inducing_features,
-		"opt_inducing_features", "whether optimize inducing features", MS_NOT_AVAILABLE);
+		"opt_inducing_features", "whether optimize inducing features", ParameterProperties());
 
 	SG_ADD((CSGObject **)&m_inducing_minimizer,
-		"inducing_minimizer", "Minimizer used in optimize inducing features", MS_NOT_AVAILABLE);
+		"inducing_minimizer", "Minimizer used in optimize inducing features", ParameterProperties());
 
 	m_max_ind_iterations=50;
 	m_ind_tolerance=1e-3;

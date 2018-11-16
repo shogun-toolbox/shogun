@@ -270,31 +270,31 @@ void CDeepAutoencoder::init()
 	pt_gd_error_damping_coeff.set_const(-1);
 
 	SG_ADD(&pt_noise_type, "pt_noise_type",
-		"Pre-training Noise Type", MS_NOT_AVAILABLE);
+		"Pre-training Noise Type", ParameterProperties());
 	SG_ADD(&pt_noise_parameter, "pt_noise_parameter",
-		"Pre-training Noise Parameter", MS_NOT_AVAILABLE);
+		"Pre-training Noise Parameter", ParameterProperties());
 	SG_ADD(&pt_contraction_coefficient, "pt_contraction_coefficient",
-	    "Pre-training Contraction Coefficient", MS_NOT_AVAILABLE);
+	    "Pre-training Contraction Coefficient", ParameterProperties());
 	SG_ADD(&pt_optimization_method, "pt_optimization_method",
-	    "Pre-training Optimization Method", MS_NOT_AVAILABLE);
+	    "Pre-training Optimization Method", ParameterProperties());
 	SG_ADD(&pt_gd_mini_batch_size, "pt_gd_mini_batch_size",
-	    "Pre-training Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient Descent Mini-batch size", ParameterProperties());
 	SG_ADD(&pt_max_num_epochs, "pt_max_num_epochs",
-	    "Pre-training Max number of Epochs", MS_NOT_AVAILABLE);
+	    "Pre-training Max number of Epochs", ParameterProperties());
 	SG_ADD(&pt_gd_learning_rate, "pt_gd_learning_rate",
-	    "Pre-training Gradient descent learning rate", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient descent learning rate", ParameterProperties());
 	SG_ADD(&pt_gd_learning_rate_decay, "pt_gd_learning_rate_decay",
-	    "Pre-training Gradient descent learning rate decay", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient descent learning rate decay", ParameterProperties());
 	SG_ADD(&pt_gd_momentum, "pt_gd_momentum",
-	    "Pre-training Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient Descent Momentum", ParameterProperties());
 	SG_ADD(&pt_gd_error_damping_coeff, "pt_gd_error_damping_coeff",
-	    "Pre-training Gradient Descent Error Damping Coeff", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient Descent Error Damping Coeff", ParameterProperties());
 	SG_ADD(&pt_epsilon, "pt_epsilon",
-	    "Pre-training Epsilon", MS_NOT_AVAILABLE);
+	    "Pre-training Epsilon", ParameterProperties());
 	SG_ADD(&pt_l2_coefficient, "pt_l2_coefficient",
-	    "Pre-training L2 regularization coeff", MS_NOT_AVAILABLE);
+	    "Pre-training L2 regularization coeff", ParameterProperties());
 	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
-	    "Pre-training L1 regularization coeff", MS_NOT_AVAILABLE);
+	    "Pre-training L1 regularization coeff", ParameterProperties());
 
-	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", ParameterProperties());
 }

@@ -67,7 +67,7 @@ void CKLDiagonalInferenceMethod::init()
 {
 	SG_ADD(&m_InvK, "invK",
 		"The K^{-1} matrix",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 }
 
 CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(

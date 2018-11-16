@@ -51,17 +51,17 @@ void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
 		((CDelimiterTokenizer* )tokenizer)->init_for_whitespace();
 	}
 
-	SG_ADD(&num_bits, "num_bits", "Number of bits of hash", MS_NOT_AVAILABLE);
+	SG_ADD(&num_bits, "num_bits", "Number of bits of hash", ParameterProperties());
 	SG_ADD(&ngrams, "ngrams", "Number of tokens to combine for quadratic feature support",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip when combining features",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**) &doc_collection, "doc_collection", "Document collection",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**) &tokenizer, "tokenizer", "Document tokenizer",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(&should_normalize, "should_normalize", "Normalize or not the dot products",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 	SG_REF(doc_collection);
 	SG_REF(tokenizer);

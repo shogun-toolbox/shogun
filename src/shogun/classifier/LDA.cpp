@@ -49,9 +49,9 @@ void CLDA::init()
 
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",
-	    "Method used for LDA calculation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", MS_AVAILABLE);
-	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm", MS_NOT_AVAILABLE);
+	    "Method used for LDA calculation", ParameterProperties());
+	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", ParameterProperties::HYPER);
+	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm", ParameterProperties());
 }
 
 CLDA::~CLDA()

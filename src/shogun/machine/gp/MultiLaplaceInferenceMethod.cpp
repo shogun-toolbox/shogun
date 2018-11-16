@@ -122,13 +122,13 @@ void CMultiLaplaceInferenceMethod::init()
 	m_opt_max=10;
 
 	m_nlz=0;
-	SG_ADD(&m_nlz, "nlz", "negative log marginal likelihood ", MS_NOT_AVAILABLE);
-	SG_ADD(&m_U, "U", "the matrix used to compute gradient wrt hyperparameters", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nlz, "nlz", "negative log marginal likelihood ", ParameterProperties());
+	SG_ADD(&m_U, "U", "the matrix used to compute gradient wrt hyperparameters", ParameterProperties());
 
-	SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_iter, "iter", "max Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", ParameterProperties());
+	SG_ADD(&m_iter, "iter", "max Newton's iterations", ParameterProperties());
+	SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", ParameterProperties());
+	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", ParameterProperties());
 }
 
 CMultiLaplaceInferenceMethod::~CMultiLaplaceInferenceMethod()

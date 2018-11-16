@@ -176,9 +176,9 @@ void CAutoencoder::init()
 	m_contraction_coefficient = 0.0;
 
 	SG_ADD((machine_int_t*)&m_noise_type, "noise_type",
-		"Noise Type", MS_NOT_AVAILABLE);
+		"Noise Type", ParameterProperties());
 	SG_ADD(&m_noise_parameter, "noise_parameter",
-		"Noise Parameter", MS_NOT_AVAILABLE);
+		"Noise Parameter", ParameterProperties());
 	SG_ADD(&m_contraction_coefficient, "contraction_coefficient",
-	       "Contraction Coefficient", MS_NOT_AVAILABLE);
+	       "Contraction Coefficient", ParameterProperties());
 }

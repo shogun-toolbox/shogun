@@ -32,15 +32,15 @@ void CExponentialARDKernel::init()
 	m_weights_cols=1.0;
 
 
-	SG_ADD(&m_log_weights, "log_weights", "Feature weights in log domain", MS_AVAILABLE,
-			GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_weights, "log_weights", "Feature weights in log domain", ParameterProperties::HYPER |
+	ParameterProperties::GRADIENT);
 
-	SG_ADD(&m_weights_rows, "weights_rows", "Row of feature weights", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights_cols, "weights_cols", "Column of feature weights", MS_NOT_AVAILABLE);
-	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights_rows, "weights_rows", "Row of feature weights", ParameterProperties());
+	SG_ADD(&m_weights_cols, "weights_cols", "Column of feature weights", ParameterProperties());
+	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", ParameterProperties());
 
 	m_weights_raw=SGMatrix<float64_t>();
-	SG_ADD(&m_weights_raw, "weights_raw", "Features weights in standard domain", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights_raw, "weights_raw", "Features weights in standard domain", ParameterProperties());
 
 }
 

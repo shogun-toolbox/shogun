@@ -55,16 +55,16 @@ void CProbingSampler::init()
 	m_is_precomputed=false;
 
 	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
-		" from coloring", MS_NOT_AVAILABLE);
+		" from coloring", ParameterProperties());
 
 	SG_ADD(&m_power, "matrix_power", "power of the sparse-matrix for coloring",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_is_precomputed, "is_precomputed",
-		"flag that is true if already precomputed", MS_NOT_AVAILABLE);
+		"flag that is true if already precomputed", ParameterProperties());
 
 	SG_ADD((CSGObject**)&m_matrix_operator, "matrix_operator",
-		"the sparse-matrix linear opeator for coloring", MS_NOT_AVAILABLE);
+		"the sparse-matrix linear opeator for coloring", ParameterProperties());
 }
 
 CProbingSampler::~CProbingSampler()

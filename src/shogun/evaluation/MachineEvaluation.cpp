@@ -83,21 +83,21 @@ void CMachineEvaluation::init()
 	m_pause_computation_flag = false;
 
 	SG_ADD((CSGObject**)&m_machine, "machine", "Used learning machine",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**)&m_features, "features", "Used features",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**)&m_labels, "labels", "Used labels",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**)&m_splitting_strategy, "splitting_strategy",
-			"Used splitting strategy", MS_NOT_AVAILABLE);
+			"Used splitting strategy", ParameterProperties());
 	SG_ADD((CSGObject**)&m_evaluation_criterion, "evaluation_criterion",
-			"Used evaluation criterion", MS_NOT_AVAILABLE);
+			"Used evaluation criterion", ParameterProperties());
 	SG_ADD(&m_do_unlock, "do_unlock",
 			"Whether machine should be unlocked after evaluation",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(&m_autolock, "m_autolock",
 			"Whether machine should automatically try to be locked before ",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 }
 

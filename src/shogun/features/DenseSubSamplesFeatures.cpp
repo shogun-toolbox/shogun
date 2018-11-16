@@ -68,8 +68,8 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::init()
 	set_generic<ST>();
 	m_fea=NULL;
 	m_idx=SGVector<int32_t>();
-	SG_ADD(&m_idx, "idx", "idx",  MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject **)&m_fea, "fea", "fea",  MS_NOT_AVAILABLE);
+	SG_ADD(&m_idx, "idx", "idx",  ParameterProperties());
+	SG_ADD((CSGObject **)&m_fea, "fea", "fea",  ParameterProperties());
 }
 
 template<class ST> CFeatures* CDenseSubSamplesFeatures<ST>::duplicate() const

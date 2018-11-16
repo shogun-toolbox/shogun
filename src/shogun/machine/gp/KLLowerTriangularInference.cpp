@@ -66,20 +66,20 @@ void CKLLowerTriangularInference::init()
 {
 	SG_ADD(&m_InvK_Sigma, "invk_Sigma",
 		"K^{-1}Sigma'",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	SG_ADD(&m_mean_vec, "mean_vec",
 		"The mean vector generated from mean function",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	SG_ADD(&m_log_det_Kernel, "log_det_kernel",
 		"The Log-determinant of Kernel",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_Kernel_LsD, "L_sqrt_D",
 		"The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale)",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	SG_ADD(&m_Kernel_P, "Permutation_P",
 		"The permutation sequence of P, where P are defined in LDLT factorization on Kernel*sq(m_scale)",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	m_log_det_Kernel=0;
 }
 

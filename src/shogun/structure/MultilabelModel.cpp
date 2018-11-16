@@ -37,11 +37,11 @@ CStructuredLabels * CMultilabelModel::structured_labels_factory(int32_t num_labe
 void CMultilabelModel::init()
 {
 	SG_ADD(&m_false_positive, "false_positive", "Misclassification cost for false positive",
-	       MS_NOT_AVAILABLE);
+	       ParameterProperties());
 	SG_ADD(&m_false_negative, "false_negative", "Misclassification cost for false negative",
-	       MS_NOT_AVAILABLE);
+	       ParameterProperties());
 	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
-	       MS_NOT_AVAILABLE);
+	       ParameterProperties());
 	m_false_positive = 1;
 	m_false_negative = 1;
 	m_num_classes = 0;

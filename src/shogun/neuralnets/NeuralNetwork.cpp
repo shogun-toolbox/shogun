@@ -790,52 +790,52 @@ void CNeuralNetwork::init()
 	SG_REF(m_layers);
 	
 	SG_ADD((machine_int_t*)&m_optimization_method, "optimization_method",
-	       "Optimization Method", MS_NOT_AVAILABLE);
+	       "Optimization Method", ParameterProperties());
 	SG_ADD(&m_gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	       "Gradient Descent Mini-batch size", ParameterProperties());
 	SG_ADD(&m_max_num_epochs, "max_num_epochs",
-	       "Max number of Epochs", MS_NOT_AVAILABLE);
+	       "Max number of Epochs", ParameterProperties());
 	SG_ADD(&m_gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate", ParameterProperties());
 	SG_ADD(&m_gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate decay", ParameterProperties());
 	SG_ADD(&m_gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	       "Gradient Descent Momentum", ParameterProperties());
 	SG_ADD(&m_gd_error_damping_coeff, "gd_error_damping_coeff",
-	       "Gradient Descent Error Damping Coeff", MS_NOT_AVAILABLE);
+	       "Gradient Descent Error Damping Coeff", ParameterProperties());
 	SG_ADD(&m_epsilon, "epsilon",
-	       "Epsilon", MS_NOT_AVAILABLE);
+	       "Epsilon", ParameterProperties());
 	SG_ADD(&m_num_inputs, "num_inputs",
-	       "Number of Inputs", MS_NOT_AVAILABLE);
+	       "Number of Inputs", ParameterProperties());
 	SG_ADD(&m_num_layers, "num_layers",
-	       "Number of Layers", MS_NOT_AVAILABLE);
+	       "Number of Layers", ParameterProperties());
 	SG_ADD(&m_adj_matrix, "adj_matrix",
-	       "Adjacency Matrix", MS_NOT_AVAILABLE);
+	       "Adjacency Matrix", ParameterProperties());
 	SG_ADD(&m_l2_coefficient, "l2_coefficient",
-	       "L2 regularization coeff", MS_NOT_AVAILABLE);
+	       "L2 regularization coeff", ParameterProperties());
 	SG_ADD(&m_l1_coefficient, "l1_coefficient",
-	       "L1 regularization coeff", MS_NOT_AVAILABLE);
+	       "L1 regularization coeff", ParameterProperties());
 	SG_ADD(&m_dropout_hidden, "dropout_hidden",
-	       "Hidden neuron dropout probability", MS_NOT_AVAILABLE);
+	       "Hidden neuron dropout probability", ParameterProperties());
 	SG_ADD(&m_dropout_input, "dropout_input",
-	       "Input neuron dropout probability", MS_NOT_AVAILABLE);
+	       "Input neuron dropout probability", ParameterProperties());
 	SG_ADD(&m_max_norm, "max_norm",
-	       "Max Norm", MS_NOT_AVAILABLE);
+	       "Max Norm", ParameterProperties());
 	SG_ADD(&m_total_num_parameters, "total_num_parameters",
-	       "Total number of parameters", MS_NOT_AVAILABLE);
+	       "Total number of parameters", ParameterProperties());
 	SG_ADD(&m_index_offsets, "index_offsets",
-		"Index Offsets", MS_NOT_AVAILABLE);
+		"Index Offsets", ParameterProperties());
 	SG_ADD(&m_params, "params",
-		"Parameters", MS_NOT_AVAILABLE);
+		"Parameters", ParameterProperties());
 	SG_ADD(&m_param_regularizable, "param_regularizable",
-		"Parameter Regularizable", MS_NOT_AVAILABLE);
+		"Parameter Regularizable", ParameterProperties());
 	SG_ADD(
 	    &m_layers, "layers", "DynamicObjectArray of NeuralNetwork objects",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_auto_quick_initialize, "auto_quick_initialize", "auto_quick_initialize", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&m_auto_quick_initialize, "auto_quick_initialize", "auto_quick_initialize", ParameterProperties());
 	SG_ADD(&m_is_training, "is_training",
-		"is_training", MS_NOT_AVAILABLE);
+		"is_training", ParameterProperties());
 	SG_ADD(
 	    &m_sigma, "sigma", "sigma",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }

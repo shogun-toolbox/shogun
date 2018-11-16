@@ -69,6 +69,6 @@ void CKernelDistance::init()
 	kernel = NULL;
 	width = 0.0;
 
-	SG_ADD(&width, "width", "Width of RBF Kernel", MS_AVAILABLE);
-	SG_ADD(&kernel, "kernel", "Kernel.", MS_NOT_AVAILABLE);
+	SG_ADD(&width, "width", "Width of RBF Kernel", ParameterProperties::HYPER);
+	SG_ADD(&kernel, "kernel", "Kernel.", ParameterProperties());
 }

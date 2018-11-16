@@ -584,60 +584,60 @@ void CDeepBeliefNetwork::init()
 	m_sigma = 0.01;
 
 	SG_ADD((machine_int_t*)&m_visible_units_type, "visible_units_type",
-		"Type of the visible units", MS_NOT_AVAILABLE);
+		"Type of the visible units", ParameterProperties());
 	SG_ADD(&m_num_layers, "num_layers",
-		"Number of layers", MS_NOT_AVAILABLE);
+		"Number of layers", ParameterProperties());
 	SG_ADD((CSGObject**)&m_layer_sizes, "layer_sizes",
-		"Size of each hidden layer", MS_NOT_AVAILABLE);
+		"Size of each hidden layer", ParameterProperties());
 
 	SG_ADD(&m_params, "params",
-		"Parameters of the network", MS_NOT_AVAILABLE);
+		"Parameters of the network", ParameterProperties());
 	SG_ADD(&m_num_params, "num_params",
-		"Number of parameters", MS_NOT_AVAILABLE);
+		"Number of parameters", ParameterProperties());
 	SG_ADD(&m_bias_index_offsets, "bias_index_offsets",
-		"Index offsets of the biases", MS_NOT_AVAILABLE);
+		"Index offsets of the biases", ParameterProperties());
 	SG_ADD(&m_weights_index_offsets, "weights_index_offsets",
-		"Index offsets of the weights", MS_NOT_AVAILABLE);
+		"Index offsets of the weights", ParameterProperties());
 
 	SG_ADD(&pt_cd_num_steps, "pt_cd_num_steps",
-	    "Pre-training Number of CD Steps", MS_NOT_AVAILABLE);
+	    "Pre-training Number of CD Steps", ParameterProperties());
 	SG_ADD(&pt_cd_persistent, "pt_cd_persistent",
-	    "Pre-training Persistent CD", MS_NOT_AVAILABLE);
+	    "Pre-training Persistent CD", ParameterProperties());
 	SG_ADD(&pt_cd_sample_visible, "pt_cd_sample_visible",
-	    "Pre-training Number of CD Sample Visible", MS_NOT_AVAILABLE);
+	    "Pre-training Number of CD Sample Visible", ParameterProperties());
 	SG_ADD(&pt_l2_coefficient, "pt_l2_coefficient",
-	    "Pre-training L2 regularization coeff", MS_NOT_AVAILABLE);
+	    "Pre-training L2 regularization coeff", ParameterProperties());
 	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
-	    "Pre-training L1 regularization coeff", MS_NOT_AVAILABLE);
+	    "Pre-training L1 regularization coeff", ParameterProperties());
 	SG_ADD(&pt_monitoring_interval, "pt_monitoring_interval",
-	    "Pre-training Monitoring Interval", MS_NOT_AVAILABLE);
+	    "Pre-training Monitoring Interval", ParameterProperties());
 	SG_ADD(&pt_monitoring_method, "pt_monitoring_method",
-	    "Pre-training Monitoring Method", MS_NOT_AVAILABLE);
+	    "Pre-training Monitoring Method", ParameterProperties());
 	SG_ADD(&pt_cd_num_steps, "pt_gd_mini_batch_size",
-	    "Pre-training Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient Descent Mini-batch size", ParameterProperties());
 	SG_ADD(&pt_max_num_epochs, "pt_max_num_epochs",
-	    "Pre-training Max number of Epochs", MS_NOT_AVAILABLE);
+	    "Pre-training Max number of Epochs", ParameterProperties());
 	SG_ADD(&pt_gd_learning_rate, "pt_gd_learning_rate",
-	    "Pre-training Gradient descent learning rate", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient descent learning rate", ParameterProperties());
 	SG_ADD(&pt_gd_learning_rate_decay, "pt_gd_learning_rate_decay",
-	    "Pre-training Gradient descent learning rate decay", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient descent learning rate decay", ParameterProperties());
 	SG_ADD(&pt_gd_momentum, "pt_gd_momentum",
-	    "Pre-training Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	    "Pre-training Gradient Descent Momentum", ParameterProperties());
 
-	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", MS_NOT_AVAILABLE);
+	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", ParameterProperties());
 	SG_ADD(&monitoring_interval, "monitoring_interval",
-		"Monitoring Interval", MS_NOT_AVAILABLE);
+		"Monitoring Interval", ParameterProperties());
 
 	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	       "Gradient Descent Mini-batch size", ParameterProperties());
 	SG_ADD(&max_num_epochs, "max_num_epochs",
-	       "Max number of Epochs", MS_NOT_AVAILABLE);
+	       "Max number of Epochs", ParameterProperties());
 	SG_ADD(&gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate", ParameterProperties());
 	SG_ADD(&gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate decay", ParameterProperties());
 	SG_ADD(&gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	       "Gradient Descent Momentum", ParameterProperties());
 
-	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", ParameterProperties());
 }

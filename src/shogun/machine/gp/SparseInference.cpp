@@ -98,12 +98,12 @@ CSparseInference::CSparseInference(CKernel* kern, CFeatures* feat,
 void CSparseInference::init()
 {
 	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
-			MS_AVAILABLE, GRADIENT_AVAILABLE);
+			ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
-		MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
-	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
-	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", MS_NOT_AVAILABLE);
+		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", ParameterProperties());
+	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", ParameterProperties());
+	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", ParameterProperties());
 
 	m_log_ind_noise = std::log(1e-10);
 	m_inducing_features=SGMatrix<float64_t>();

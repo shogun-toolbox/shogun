@@ -45,5 +45,5 @@ CKernel* CKernelStructuredOutputMachine::get_kernel() const
 
 void CKernelStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_kernel, "m_kernel", "The kernel", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
 }

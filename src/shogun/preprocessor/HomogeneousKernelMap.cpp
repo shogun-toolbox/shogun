@@ -346,14 +346,14 @@ SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float6
 void CHomogeneousKernelMap::register_params()
 {
 	/* register variables */
-	SG_ADD((machine_int_t*) &m_kernel, "kernel", "Kernel type to use.",MS_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_window, "window", "Window type to use.",MS_AVAILABLE);
-	SG_ADD(&m_gamma, "gamma", "Homogeneity order.",MS_AVAILABLE);
-	SG_ADD(&m_period, "period", "Approximation order",MS_NOT_AVAILABLE);
-	SG_ADD(&m_numSubdivisions, "num_subdivisions", "The number of sublevels",MS_NOT_AVAILABLE);
-	SG_ADD(&m_subdivision, "subdivision", "subdivision.",MS_NOT_AVAILABLE);
-	SG_ADD(&m_order, "order", "The order",MS_AVAILABLE);
-	SG_ADD(&m_minExponent, "min_exponent", "Minimum exponent",MS_NOT_AVAILABLE);
-	SG_ADD(&m_maxExponent, "max_exponent", "Maximum exponent",MS_NOT_AVAILABLE);
-	SG_ADD(&m_table, "table", "Lookup-table",MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_kernel, "kernel", "Kernel type to use.",ParameterProperties::HYPER);
+	SG_ADD((machine_int_t*) &m_window, "window", "Window type to use.",ParameterProperties::HYPER);
+	SG_ADD(&m_gamma, "gamma", "Homogeneity order.",ParameterProperties::HYPER);
+	SG_ADD(&m_period, "period", "Approximation order",ParameterProperties());
+	SG_ADD(&m_numSubdivisions, "num_subdivisions", "The number of sublevels",ParameterProperties());
+	SG_ADD(&m_subdivision, "subdivision", "subdivision.",ParameterProperties());
+	SG_ADD(&m_order, "order", "The order",ParameterProperties::HYPER);
+	SG_ADD(&m_minExponent, "min_exponent", "Minimum exponent",ParameterProperties());
+	SG_ADD(&m_maxExponent, "max_exponent", "Maximum exponent",ParameterProperties());
+	SG_ADD(&m_table, "table", "Lookup-table",ParameterProperties());
 }

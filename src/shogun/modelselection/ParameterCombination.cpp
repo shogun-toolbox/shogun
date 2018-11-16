@@ -122,7 +122,7 @@ void CParameterCombination::init()
 	SG_REF(m_child_nodes);
 
 	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes", "Children of this node",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 }
 
 CParameterCombination::~CParameterCombination()

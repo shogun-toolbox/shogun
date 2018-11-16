@@ -34,10 +34,10 @@ void CLBPPyrDotFeatures::init(CDenseFeatures<uint32_t>* image_set, int32_t image
 	image_width = image_w;
 	image_height = image_h;
 
-	SG_ADD((CSGObject**) &images, "images", "Set of images", MS_NOT_AVAILABLE);
-	SG_ADD(&image_width, "image_width", "The image width", MS_NOT_AVAILABLE);
-	SG_ADD(&image_height, "image_height", "The image height", MS_NOT_AVAILABLE);
-	SG_ADD(&vec_nDim, "vec_nDim", "The dimension of the pyr", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &images, "images", "Set of images", ParameterProperties());
+	SG_ADD(&image_width, "image_width", "The image width", ParameterProperties());
+	SG_ADD(&image_height, "image_height", "The image height", ParameterProperties());
+	SG_ADD(&vec_nDim, "vec_nDim", "The dimension of the pyr", ParameterProperties());
 }
 
 CLBPPyrDotFeatures::~CLBPPyrDotFeatures()

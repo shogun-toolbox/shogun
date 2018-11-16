@@ -41,11 +41,11 @@ void CMeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
 
 void CMeanShiftDataGenerator::init()
 {
-	SG_ADD(&m_dimension, "dimension", "Dimension of data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_dimension, "dimension", "Dimension of data", ParameterProperties());
 	SG_ADD(&m_mean_shift, "mean_shift", "Mean shift in one dimension",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(&m_dimension_shift, "m_dimension_shift", "Dimension of mean shift",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 	m_dimension=0;
 	m_mean_shift=0;

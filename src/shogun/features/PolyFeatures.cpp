@@ -378,17 +378,17 @@ void CPolyFeatures::register_parameters()
 {
 	SG_ADD(
 	    (CSGObject**)&m_feat, "features", "Features in original space.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 	SG_ADD(
-	    &m_degree, "degree", "Degree of the polynomial kernel.", MS_AVAILABLE);
-	SG_ADD(&m_normalize, "normalize", "Normalize?", MS_NOT_AVAILABLE);
+	    &m_degree, "degree", "Degree of the polynomial kernel.", ParameterProperties::HYPER);
+	SG_ADD(&m_normalize, "normalize", "Normalize?", ParameterProperties());
 	SG_ADD(
 	    &m_input_dimensions, "input_dimensions",
-	    "Dimensions of the input space.", MS_NOT_AVAILABLE);
+	    "Dimensions of the input space.", ParameterProperties());
 	SG_ADD(
 	    &m_output_dimensions, "output_dimensions",
 	    "Dimensions of the feature space of the polynomial kernel.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 
 	multi_index_length=m_output_dimensions*m_degree;
 	m_parameters->add_vector(

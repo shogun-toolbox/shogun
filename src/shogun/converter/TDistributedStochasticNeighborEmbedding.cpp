@@ -21,8 +21,8 @@ CTDistributedStochasticNeighborEmbedding::CTDistributedStochasticNeighborEmbeddi
 
 void CTDistributedStochasticNeighborEmbedding::init()
 {
-	SG_ADD(&m_perplexity, "perplexity", "perplexity", MS_NOT_AVAILABLE);
-	SG_ADD(&m_theta, "theta", "learning rate", MS_NOT_AVAILABLE);
+	SG_ADD(&m_perplexity, "perplexity", "perplexity", ParameterProperties());
+	SG_ADD(&m_theta, "theta", "learning rate", ParameterProperties());
 }
 
 CTDistributedStochasticNeighborEmbedding::~CTDistributedStochasticNeighborEmbedding()

@@ -37,7 +37,7 @@ void CECOCDiscriminantEncoder::init()
 
     // parameters
 
-    SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS", MS_NOT_AVAILABLE);
+    SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS", ParameterProperties());
 }
 
 void CECOCDiscriminantEncoder::set_features(CDenseFeatures<float64_t> *features)

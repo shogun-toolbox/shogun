@@ -67,12 +67,12 @@ void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d, bool u
 	keep_linear_terms = keep_lin_terms;
 
 	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&dim, "dim", "Dimension of new feature space", MS_NOT_AVAILABLE);
+		ParameterProperties());
+	SG_ADD(&dim, "dim", "Dimension of new feature space", ParameterProperties());
 	SG_ADD((CSGObject** ) &dense_feats, "dense_feats", "Dense features to work on",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	set_generic<ST>();
 }

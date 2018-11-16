@@ -90,7 +90,7 @@ void CPolyMatchWordStringKernel::init()
 	inhomogene=false;
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
-	SG_ADD(&degree, "degree", "Degree of poly-kernel.", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "Degree of poly-kernel.", ParameterProperties::HYPER);
 	SG_ADD(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }

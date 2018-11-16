@@ -79,8 +79,8 @@ void CStudentsTVGLikelihood::init_likelihood()
 void CStudentsTVGLikelihood::init()
 {
 	init_likelihood();
-	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
 } /* namespace shogun */

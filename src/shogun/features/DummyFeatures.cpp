@@ -48,5 +48,5 @@ void CDummyFeatures::init()
 {
 	SG_ADD(
 	    &num_vectors, "num_vectors", "Number of feature vectors.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }

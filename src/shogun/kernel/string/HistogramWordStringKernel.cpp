@@ -409,7 +409,7 @@ void CHistogramWordStringKernel::init()
 	initialized=false;
 
 	SG_ADD(&initialized, "initialized", "If kernel is initalized.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 
 	m_parameters->add_vector(&plo_lhs, &num_lhs, "plo_lhs");
 	watch_param("plo_lhs", &plo_lhs, &num_lhs);
@@ -436,7 +436,7 @@ void CHistogramWordStringKernel::init()
 	watch_param("variance", &variance, &num_params2);
 
 	SG_ADD((CSGObject**) &estimate, "estimate", "Plugin Estimate.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION

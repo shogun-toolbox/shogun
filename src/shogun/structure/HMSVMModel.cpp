@@ -484,14 +484,14 @@ bool CHMSVMModel::check_training_setup() const
 
 void CHMSVMModel::init()
 {
-	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model", ParameterProperties());
 	SG_ADD(&m_transmission_weights, "m_transmission_weights",
-			"Transmission weights used in Viterbi", MS_NOT_AVAILABLE);
+			"Transmission weights used in Viterbi", ParameterProperties());
 	SG_ADD(&m_emission_weights, "m_emission_weights",
-			"Emission weights used in Viterbi", MS_NOT_AVAILABLE);
+			"Emission weights used in Viterbi", ParameterProperties());
 	SG_ADD(&m_num_plif_nodes, "m_num_plif_nodes", "The number of points per PLiF",
-			MS_NOT_AVAILABLE); // FIXME It would actually make sense to do MS for this parameter
-	SG_ADD(&m_use_plifs, "m_use_plifs", "Whether to use plifs", MS_NOT_AVAILABLE);
+			ParameterProperties()); // FIXME It would actually make sense to do MS for this parameter
+	SG_ADD(&m_use_plifs, "m_use_plifs", "Whether to use plifs", ParameterProperties());
 
 	m_num_obs = 0;
 	m_num_aux = 0;

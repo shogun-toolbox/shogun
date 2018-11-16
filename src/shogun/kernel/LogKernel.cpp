@@ -47,8 +47,8 @@ bool CLogKernel::init(CFeatures* l, CFeatures* r)
 
 void CLogKernel::init()
 {
-	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", MS_AVAILABLE);
-	SG_ADD(&m_distance, "distance", "Distance to be used.", MS_AVAILABLE);
+	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", ParameterProperties::HYPER);
+	SG_ADD(&m_distance, "distance", "Distance to be used.", ParameterProperties::HYPER);
 }
 
 float64_t CLogKernel::compute(int32_t idx_a, int32_t idx_b)

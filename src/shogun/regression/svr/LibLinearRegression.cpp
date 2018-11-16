@@ -43,11 +43,11 @@ void CLibLinearRegression::init_defaults()
 
 void CLibLinearRegression::register_parameters()
 {
-	SG_ADD(&m_C, "m_C", "regularization constant",MS_AVAILABLE);
-	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon",MS_NOT_AVAILABLE);
-	SG_ADD(&m_epsilon, "m_tube_epsilon", "svr tube epsilon",MS_AVAILABLE);
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations",MS_NOT_AVAILABLE);
-	SG_ADD(&m_use_bias, "m_use_bias", "indicates whether bias should be used",MS_NOT_AVAILABLE);
+	SG_ADD(&m_C, "m_C", "regularization constant",ParameterProperties::HYPER);
+	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon",ParameterProperties());
+	SG_ADD(&m_epsilon, "m_tube_epsilon", "svr tube epsilon",ParameterProperties::HYPER);
+	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations",ParameterProperties());
+	SG_ADD(&m_use_bias, "m_use_bias", "indicates whether bias should be used",ParameterProperties());
 }
 
 CLibLinearRegression::~CLibLinearRegression()

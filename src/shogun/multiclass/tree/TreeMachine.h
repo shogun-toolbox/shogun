@@ -58,7 +58,7 @@ public:
 	CTreeMachine() : CBaseMulticlassMachine()
 	{
 		m_root=NULL;
-		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", ParameterProperties());
 	}
 
 	/** destructor */

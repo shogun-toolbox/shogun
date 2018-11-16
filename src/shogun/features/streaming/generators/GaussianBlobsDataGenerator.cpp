@@ -55,15 +55,15 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 void CGaussianBlobsDataGenerator::init()
 {
 	SG_ADD(&m_sqrt_num_blobs, "sqrt_num_blobs", "Number of Blobs per row",
-				MS_NOT_AVAILABLE);
+				ParameterProperties());
 	SG_ADD(&m_distance, "distance", "Distance between blobs",
-				MS_NOT_AVAILABLE);
+				ParameterProperties());
 	SG_ADD(&m_stretch, "stretch", "Stretch of blobs",
-				MS_NOT_AVAILABLE);
+				ParameterProperties());
 	SG_ADD(&m_angle, "angle", "Angle of Blobs",
-				MS_NOT_AVAILABLE);
+				ParameterProperties());
 	SG_ADD(&m_cholesky, "cholesky", "Cholesky factor of covariance matrix",
-				MS_NOT_AVAILABLE);
+				ParameterProperties());
 
 	m_sqrt_num_blobs=1;
 	m_distance=0;

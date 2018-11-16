@@ -121,32 +121,32 @@ void CNeuralLayer::init()
 	autoencoder_position = NLAP_NONE;
 
 	SG_ADD(&m_num_neurons, "num_neurons",
-	       "Number of Neurons", MS_NOT_AVAILABLE);
+	       "Number of Neurons", ParameterProperties());
 	SG_ADD(&m_width, "width",
-	       "Width", MS_NOT_AVAILABLE);
+	       "Width", ParameterProperties());
 	SG_ADD(&m_height, "height",
-	       "Height", MS_NOT_AVAILABLE);
+	       "Height", ParameterProperties());
 	SG_ADD(&m_input_indices, "input_indices",
-	       "Input Indices", MS_NOT_AVAILABLE);
+	       "Input Indices", ParameterProperties());
 	SG_ADD(&m_input_sizes, "input_sizes",
-	       "Input Sizes", MS_NOT_AVAILABLE);
+	       "Input Sizes", ParameterProperties());
 	SG_ADD(&dropout_prop, "dropout_prop",
-	       "Dropout Probabilty", MS_NOT_AVAILABLE);
+	       "Dropout Probabilty", ParameterProperties());
 	SG_ADD(&contraction_coefficient, "contraction_coefficient",
-	       "Contraction Coefficient", MS_NOT_AVAILABLE);
+	       "Contraction Coefficient", ParameterProperties());
 	SG_ADD(&is_training, "is_training",
-	       "is_training", MS_NOT_AVAILABLE);
+	       "is_training", ParameterProperties());
 	SG_ADD(&m_batch_size, "batch_size",
-	       "Batch Size", MS_NOT_AVAILABLE);
+	       "Batch Size", ParameterProperties());
 	SG_ADD(&m_activations, "activations",
-	       "Activations", MS_NOT_AVAILABLE);
+	       "Activations", ParameterProperties());
 	SG_ADD(&m_activation_gradients, "activation_gradients",
-	       "Activation Gradients", MS_NOT_AVAILABLE);
+	       "Activation Gradients", ParameterProperties());
 	SG_ADD(&m_local_gradients, "local_gradients",
-	       "Local Gradients", MS_NOT_AVAILABLE);
+	       "Local Gradients", ParameterProperties());
 	SG_ADD(&m_dropout_mask, "dropout_mask",
-	       "Dropout mask", MS_NOT_AVAILABLE);
+	       "Dropout mask", ParameterProperties());
 
 	SG_ADD((machine_int_t*)&autoencoder_position, "autoencoder_position",
-	       "Autoencoder Position", MS_NOT_AVAILABLE);
+	       "Autoencoder Position", ParameterProperties());
 }

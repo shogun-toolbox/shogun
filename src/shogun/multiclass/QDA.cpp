@@ -83,15 +83,15 @@ void CQDA::init()
 {
 	m_tolerance = 1e-4;
 	m_store_covs = false;
-	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", MS_AVAILABLE);
-	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_means, "m_means", "Mean vectors list", MS_NOT_AVAILABLE);
-	SG_ADD(&m_slog, "m_slog", "Vector used in classification", MS_NOT_AVAILABLE);
-	SG_ADD(&m_dim, "m_dim", "dimension of feature space", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
+	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member", ParameterProperties());
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", ParameterProperties());
+	SG_ADD(&m_means, "m_means", "Mean vectors list", ParameterProperties());
+	SG_ADD(&m_slog, "m_slog", "Vector used in classification", ParameterProperties());
+	SG_ADD(&m_dim, "m_dim", "dimension of feature space", ParameterProperties());
 	SG_ADD(
-	    &m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
-	SG_ADD(&m_M, "m_M", "Matrices used in classification", MS_NOT_AVAILABLE);
+	    &m_num_classes, "m_num_classes", "number of classes", ParameterProperties());
+	SG_ADD(&m_M, "m_M", "Matrices used in classification", ParameterProperties());
 
 	m_features  = NULL;
 }

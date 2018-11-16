@@ -19,10 +19,10 @@ using namespace shogun;
 COnlineLinearMachine::COnlineLinearMachine()
 : CMachine(), bias(0), features(NULL)
 {
-	SG_ADD(&m_w, "m_w", "Parameter vector w.", MS_NOT_AVAILABLE);
-	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "m_w", "Parameter vector w.", ParameterProperties());
+	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties());
 	SG_ADD((CSGObject**) &features, "features",
-	    "Feature object.", MS_NOT_AVAILABLE);
+	    "Feature object.", ParameterProperties());
 }
 
 COnlineLinearMachine::~COnlineLinearMachine()

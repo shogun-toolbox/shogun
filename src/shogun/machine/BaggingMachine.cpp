@@ -256,18 +256,18 @@ void CBaggingMachine::register_parameters()
 {
 	SG_ADD(
 	    &m_features, "features", "Train features for bagging",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_bags, "num_bags", "Number of bags", MS_AVAILABLE);
-	SG_ADD(&m_bag_size, "bag_size", "Number of vectors per bag", MS_AVAILABLE);
-	SG_ADD(&m_bags, "bags", "Bags array", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&m_num_bags, "num_bags", "Number of bags", ParameterProperties::HYPER);
+	SG_ADD(&m_bag_size, "bag_size", "Number of vectors per bag", ParameterProperties::HYPER);
+	SG_ADD(&m_bags, "bags", "Bags array", ParameterProperties());
 	SG_ADD(
 	    &m_combination_rule, "combination_rule",
-	    "Combination rule to use for aggregating", MS_AVAILABLE);
+	    "Combination rule to use for aggregating", ParameterProperties::HYPER);
 	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD(
 	    &m_oob_indices, "oob_indices", "OOB indices for each machine",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }
 
 void CBaggingMachine::set_num_bags(int32_t num_bags)

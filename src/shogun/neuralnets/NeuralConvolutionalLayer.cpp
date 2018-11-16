@@ -283,27 +283,27 @@ void CNeuralConvolutionalLayer::init()
 	m_initialization_mode = NORMAL;
 	m_activation_function = CMAF_IDENTITY;
 
-	SG_ADD(&m_num_maps, "num_maps", "Number of maps", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_width, "input_width", "Input Width", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_height, "input_height", "Input Height", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_maps, "num_maps", "Number of maps", ParameterProperties());
+	SG_ADD(&m_input_width, "input_width", "Input Width", ParameterProperties());
+	SG_ADD(&m_input_height, "input_height", "Input Height", ParameterProperties());
 	SG_ADD(&m_input_num_channels, "input_num_channels", "Input's number of channels",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_radius_x, "radius_x", "X Radius", MS_NOT_AVAILABLE);
-	SG_ADD(&m_radius_y, "radius_y", "Y Radius", MS_NOT_AVAILABLE);
-	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width", MS_NOT_AVAILABLE);
-	SG_ADD(&m_pooling_height, "pooling_height", "Pooling Height", MS_NOT_AVAILABLE);
-	SG_ADD(&m_stride_x, "stride_x", "X Stride", MS_NOT_AVAILABLE);
-	SG_ADD(&m_stride_y, "stride_y", "Y Stride", MS_NOT_AVAILABLE);
+		ParameterProperties());
+	SG_ADD(&m_radius_x, "radius_x", "X Radius", ParameterProperties());
+	SG_ADD(&m_radius_y, "radius_y", "Y Radius", ParameterProperties());
+	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width", ParameterProperties());
+	SG_ADD(&m_pooling_height, "pooling_height", "Pooling Height", ParameterProperties());
+	SG_ADD(&m_stride_x, "stride_x", "X Stride", ParameterProperties());
+	SG_ADD(&m_stride_y, "stride_y", "Y Stride", ParameterProperties());
 
 	SG_ADD((machine_int_t*) &m_initialization_mode, "initialization_mode", "Initialization Mode",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	
 	SG_ADD((machine_int_t*) &m_activation_function, "activation_function", 
-		"Activation Function", MS_NOT_AVAILABLE);
+		"Activation Function", ParameterProperties());
 
 	SG_ADD(&m_convolution_output, "convolution_output",
-		"Convolution Output", MS_NOT_AVAILABLE);
+		"Convolution Output", ParameterProperties());
 
 	SG_ADD(&m_convolution_output_gradients, "convolution_output_gradients",
-		"Convolution Output Gradients", MS_NOT_AVAILABLE);
+		"Convolution Output Gradients", ParameterProperties());
 }

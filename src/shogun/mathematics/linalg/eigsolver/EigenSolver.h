@@ -113,23 +113,23 @@ private:
 
 		SG_ADD(&m_min_eigenvalue, "min_eigenvalue",
 			"Minimum eigenvalue of a real valued self-adjoint linear operator",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 		SG_ADD(&m_max_eigenvalue, "max_eigenvalue",
 			"Maximum eigenvalue of a real valued self-adjoint linear operator",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
 			"Self-adjoint linear operator",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 		SG_ADD(&m_is_computed_min, "is_computed_min",
 			"Flag denoting that the minimum eigenvalue has already been computed",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 		SG_ADD(&m_max_eigenvalue, "is_computed_max",
 			"Flag denoting that the maximum eigenvalue has already been computed",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 	}
 };

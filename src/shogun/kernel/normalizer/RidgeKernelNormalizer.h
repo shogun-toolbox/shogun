@@ -55,8 +55,8 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 			: CKernelNormalizer()
 		{
 			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    MS_AVAILABLE);
-			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", MS_AVAILABLE);
+			    ParameterProperties::HYPER);
+			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER);
 
 			scale=c;
 			ridge=r;

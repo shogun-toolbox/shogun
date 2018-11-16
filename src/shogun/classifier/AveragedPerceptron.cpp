@@ -37,8 +37,8 @@ void CAveragedPerceptron::init()
 {
 	max_iter = 1000;
 	learn_rate = 0.1;
-	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", MS_AVAILABLE);
-	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
+	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations.", ParameterProperties::HYPER);
+	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", ParameterProperties::HYPER);
 }
 
 bool CAveragedPerceptron::train_machine(CFeatures* data)

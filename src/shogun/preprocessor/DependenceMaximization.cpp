@@ -46,9 +46,9 @@ CDependenceMaximization::CDependenceMaximization()
 void CDependenceMaximization::init()
 {
 	SG_ADD((CSGObject**)&m_estimator, "estimator",
-			"the estimator for computing measures", MS_NOT_AVAILABLE);
+			"the estimator for computing measures", ParameterProperties());
 	SG_ADD((CSGObject**)&m_labels_feats, "labels_feats",
-			"the features based on labels", MS_NOT_AVAILABLE);
+			"the features based on labels", ParameterProperties());
 
 	m_estimator=NULL;
 	m_labels_feats=NULL;

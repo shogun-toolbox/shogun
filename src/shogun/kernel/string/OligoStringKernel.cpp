@@ -302,7 +302,7 @@ void COligoStringKernel::init()
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
-	SG_ADD(&k, "k", "K-mer length.", MS_AVAILABLE);
-	SG_ADD(&width, "width", "Width of Gaussian.", MS_AVAILABLE);
-	SG_ADD(&gauss_table, "gauss_table", "Gauss Cache Table.", MS_NOT_AVAILABLE);
+	SG_ADD(&k, "k", "K-mer length.", ParameterProperties::HYPER);
+	SG_ADD(&width, "width", "Width of Gaussian.", ParameterProperties::HYPER);
+	SG_ADD(&gauss_table, "gauss_table", "Gauss Cache Table.", ParameterProperties());
 }

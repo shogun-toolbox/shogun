@@ -97,10 +97,10 @@ private:
 		m_dimension=0;
 
 		SG_ADD(&m_num_samples, "num_samples",
-			"Number of samples this sampler can generate", MS_NOT_AVAILABLE);
+			"Number of samples this sampler can generate", ParameterProperties());
 
 		SG_ADD(&m_dimension, "sample_dimension",
-			"Dimension of samples this sampler can generate", MS_NOT_AVAILABLE);
+			"Dimension of samples this sampler can generate", ParameterProperties());
 	}
 };
 

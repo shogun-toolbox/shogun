@@ -163,9 +163,9 @@ float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 void CStructuredModel::init()
 {
 	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors",
-			MS_NOT_AVAILABLE);
+			ParameterProperties());
 
 	m_features = NULL;
 	m_labels   = NULL;

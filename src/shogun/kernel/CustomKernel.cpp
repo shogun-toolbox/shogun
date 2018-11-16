@@ -27,15 +27,15 @@ void CCustomKernel::init()
 	m_free_km=true;
 
 	SG_ADD((CSGObject**)&m_row_subset_stack, "row_subset_stack",
-			"Subset stack of rows", MS_NOT_AVAILABLE);
+			"Subset stack of rows", ParameterProperties());
 	SG_ADD((CSGObject**)&m_col_subset_stack, "col_subset_stack",
-			"Subset stack of columns", MS_NOT_AVAILABLE);
+			"Subset stack of columns", ParameterProperties());
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
-			"destructor", MS_NOT_AVAILABLE);
+			"destructor", ParameterProperties());
 	SG_ADD(&m_is_symmetric, "is_symmetric", "Whether kernel matrix is symmetric",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", MS_NOT_AVAILABLE);
-	SG_ADD(&upper_diagonal, "upper_diagonal", "Upper diagonal", MS_NOT_AVAILABLE);
+			ParameterProperties());
+	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", ParameterProperties());
+	SG_ADD(&upper_diagonal, "upper_diagonal", "Upper diagonal", ParameterProperties());
 }
 
 CCustomKernel::CCustomKernel()

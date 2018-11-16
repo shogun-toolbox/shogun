@@ -29,9 +29,9 @@ CNGramTokenizer::CNGramTokenizer(const CNGramTokenizer& orig)
 void CNGramTokenizer::init()
 {
 	SG_ADD(&n, "n", "Size of n-grams",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	SG_ADD(&last_idx, "last_idx", "Index of last token",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 }
 
 void CNGramTokenizer::set_text(SGVector<char> txt)

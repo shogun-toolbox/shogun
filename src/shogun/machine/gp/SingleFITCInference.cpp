@@ -53,12 +53,12 @@ CSingleFITCInference::CSingleFITCInference(CKernel* kern, CFeatures* feat,
 
 void CSingleFITCInference::init()
 {
-	SG_ADD(&m_al, "al", "alpha", MS_NOT_AVAILABLE);
-	SG_ADD(&m_t, "t", "noise", MS_NOT_AVAILABLE);
-	SG_ADD(&m_B, "B", "B", MS_NOT_AVAILABLE);
-	SG_ADD(&m_w, "w", "B*al", MS_NOT_AVAILABLE);
-	SG_ADD(&m_Rvdd, "Rvdd", "Rvdd", MS_NOT_AVAILABLE);
-	SG_ADD(&m_V, "V", "V", MS_NOT_AVAILABLE);
+	SG_ADD(&m_al, "al", "alpha", ParameterProperties());
+	SG_ADD(&m_t, "t", "noise", ParameterProperties());
+	SG_ADD(&m_B, "B", "B", ParameterProperties());
+	SG_ADD(&m_w, "w", "B*al", ParameterProperties());
+	SG_ADD(&m_Rvdd, "Rvdd", "Rvdd", ParameterProperties());
+	SG_ADD(&m_V, "V", "V", ParameterProperties());
 }
 
 CSingleFITCInference::~CSingleFITCInference()

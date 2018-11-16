@@ -67,23 +67,23 @@ void CNumericalVGLikelihood::init()
 {
 	SG_ADD(&m_log_lam, "log_lam",
 		"The result of used for computing variational expection\n",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_xgh, "xgh",
 		"Gaussian-Hermite quadrature base points (abscissas)\n",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_wgh, "wgh",
 		"Gaussian-Hermite quadrature weight factors\n",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_GHQ_N, "GHQ_N",
 		"The number of Gaussian-Hermite quadrature point\n",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 
 	SG_ADD(&m_is_init_GHQ, "is_init_GHQ",
 		"Whether Gaussian-Hermite quadrature points are initialized or not\n",
-		MS_NOT_AVAILABLE);
+		ParameterProperties());
 	m_GHQ_N=20;
 	m_is_init_GHQ=false;
 

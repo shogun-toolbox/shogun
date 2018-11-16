@@ -68,5 +68,5 @@ void CAttenuatedEuclideanDistance::init()
 
 	SG_ADD(
 	    &disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }

@@ -39,11 +39,11 @@ CStochasticSOSVM::CStochasticSOSVM(
 
 void CStochasticSOSVM::init()
 {
-	SG_ADD(&m_lambda, "lambda", "Regularization constant", MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_iter, "num_iter", "Number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging", MS_NOT_AVAILABLE);
-	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier", MS_NOT_AVAILABLE);
-	SG_ADD(&m_rand_seed, "rand_seed", "Random seed", MS_NOT_AVAILABLE);
+	SG_ADD(&m_lambda, "lambda", "Regularization constant", ParameterProperties());
+	SG_ADD(&m_num_iter, "num_iter", "Number of iterations", ParameterProperties());
+	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging", ParameterProperties());
+	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier", ParameterProperties());
+	SG_ADD(&m_rand_seed, "rand_seed", "Random seed", ParameterProperties());
 
 	m_lambda = 1.0;
 	m_num_iter = 50;

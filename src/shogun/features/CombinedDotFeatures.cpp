@@ -343,10 +343,10 @@ void CCombinedDotFeatures::init()
 {
 	SG_ADD(
 	    &num_dimensions, "num_dimensions", "Total number of dimensions.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 	SG_ADD(
 	    &num_vectors, "num_vectors", "Total number of vectors.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&feature_array, "feature_array", "Feature array.", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&feature_array, "feature_array", "Feature array.", ParameterProperties());
 }
 

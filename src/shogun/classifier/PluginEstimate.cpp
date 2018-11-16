@@ -22,17 +22,17 @@ CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 {
 	SG_ADD(
 	    &m_pos_pseudo, "pos_pseudo", "pseudo count for positive class",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 	SG_ADD(
 	    &m_neg_pseudo, "neg_pseudo", "pseudo count for negative class",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 	SG_ADD(
 	    &pos_model, "pos_model", "LinearHMM modelling positive class.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 	SG_ADD(
 	    &neg_model, "neg_model", "LinearHMM modelling negative class.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&features, "features", "String Features.", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&features, "features", "String Features.", ParameterProperties());
 }
 
 CPluginEstimate::~CPluginEstimate()

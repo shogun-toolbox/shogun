@@ -50,11 +50,11 @@ CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLab
 
 void CMulticlassOCAS::register_parameters()
 {
-	SG_ADD(&m_C, "m_C", "regularization constant", MS_AVAILABLE);
-	SG_ADD(&m_epsilon, "m_epsilon", "solver relative tolerance", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_method, "m_method", "used solver method", MS_NOT_AVAILABLE);
-	SG_ADD(&m_buf_size, "m_buf_size", "buffer size", MS_NOT_AVAILABLE);
+	SG_ADD(&m_C, "m_C", "regularization constant", ParameterProperties::HYPER);
+	SG_ADD(&m_epsilon, "m_epsilon", "solver relative tolerance", ParameterProperties());
+	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations", ParameterProperties());
+	SG_ADD(&m_method, "m_method", "used solver method", ParameterProperties());
+	SG_ADD(&m_buf_size, "m_buf_size", "buffer size", ParameterProperties());
 }
 
 CMulticlassOCAS::~CMulticlassOCAS()

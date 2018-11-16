@@ -92,7 +92,7 @@ void SMIDASMinimizer::init()
 {
 	m_dual_variable=SGVector<float64_t>();
 	SG_ADD(&m_dual_variable, "SMIDASMinimizer__m_dual_variable",
-		"dual_variable in SMIDASMinimizer", MS_NOT_AVAILABLE);
+		"dual_variable in SMIDASMinimizer", ParameterProperties());
 }
 
 void SMIDASMinimizer::init_minimization()

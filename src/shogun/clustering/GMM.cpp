@@ -827,5 +827,5 @@ void CGMM::register_params()
 	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
 	SG_ADD(
 	    &m_coefficients, "m_coefficients", "Mixture coefficients.",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }

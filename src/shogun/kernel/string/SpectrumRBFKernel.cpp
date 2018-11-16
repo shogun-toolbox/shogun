@@ -378,23 +378,23 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 
 void CSpectrumRBFKernel::register_param()
 {
-	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
-	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix", MS_NOT_AVAILABLE);
-	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "degree of the kernel", ParameterProperties::HYPER);
+	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix", ParameterProperties());
+	SG_ADD(&width, "width", "width of Gaussian", ParameterProperties::HYPER);
 	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 
 	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
 	watch_param("sequences", &sequences, &nof_sequences);
 
 	SG_ADD(&max_sequence_length,
-	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
+	    "max_sequence_length", "max length of the sequence", ParameterProperties());
 }
 
 void CSpectrumRBFKernel::register_alphabet()
 {
 	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties());
 }
 
 void CSpectrumRBFKernel::init()

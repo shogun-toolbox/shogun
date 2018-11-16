@@ -623,45 +623,45 @@ void CRBM::init()
 	m_num_params = 0;
 	m_batch_size = 0;
 
-	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", MS_NOT_AVAILABLE);
-	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", MS_NOT_AVAILABLE);
+	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", ParameterProperties());
+	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", ParameterProperties());
 	SG_ADD(&cd_sample_visible, "sample_visible",
-		"Whether to sample the visible units during (P)CD", MS_NOT_AVAILABLE);
+		"Whether to sample the visible units during (P)CD", ParameterProperties());
 	SG_ADD(&l2_coefficient, "l2_coefficient",
-	       "L2 regularization coeff", MS_NOT_AVAILABLE);
+	       "L2 regularization coeff", ParameterProperties());
 	SG_ADD(&l1_coefficient, "l1_coefficient",
-	       "L1 regularization coeff", MS_NOT_AVAILABLE);
+	       "L1 regularization coeff", ParameterProperties());
 	SG_ADD((machine_int_t*)&monitoring_method, "monitoring_method",
-		"Monitoring Method", MS_NOT_AVAILABLE);
+		"Monitoring Method", ParameterProperties());
 	SG_ADD(&monitoring_interval, "monitoring_interval",
-		"Monitoring Interval", MS_NOT_AVAILABLE);
+		"Monitoring Interval", ParameterProperties());
 
 	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	       "Gradient Descent Mini-batch size", ParameterProperties());
 	SG_ADD(&max_num_epochs, "max_num_epochs",
-	       "Max number of Epochs", MS_NOT_AVAILABLE);
+	       "Max number of Epochs", ParameterProperties());
 	SG_ADD(&gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate", ParameterProperties());
 	SG_ADD(&gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", MS_NOT_AVAILABLE);
+	       "Gradient descent learning rate decay", ParameterProperties());
 	SG_ADD(&gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	       "Gradient Descent Momentum", ParameterProperties());
 
 	SG_ADD(&m_num_hidden, "num_hidden",
-	       "Number of Hidden Units", MS_NOT_AVAILABLE);
+	       "Number of Hidden Units", ParameterProperties());
 	SG_ADD(&m_num_visible, "num_visible",
-	       "Number of Visible Units", MS_NOT_AVAILABLE);
+	       "Number of Visible Units", ParameterProperties());
 
 	SG_ADD(&m_num_visible_groups, "num_visible_groups",
-	       "Number of Visible Unit Groups", MS_NOT_AVAILABLE);
+	       "Number of Visible Unit Groups", ParameterProperties());
 	SG_ADD((CSGObject**)&m_visible_group_sizes, "visible_group_sizes",
-	       "Sizes of Visible Unit Groups", MS_NOT_AVAILABLE);
+	       "Sizes of Visible Unit Groups", ParameterProperties());
 	SG_ADD((CSGObject**)&m_visible_group_types, "visible_group_types",
-	       "Types of Visible Unit Groups", MS_NOT_AVAILABLE);
+	       "Types of Visible Unit Groups", ParameterProperties());
 	SG_ADD((CSGObject**)&m_visible_state_offsets, "visible_group_index_offsets",
-	       "State Index offsets of Visible Unit Groups", MS_NOT_AVAILABLE);
+	       "State Index offsets of Visible Unit Groups", ParameterProperties());
 
 	SG_ADD(&m_num_params, "num_params",
-	       "Number of Parameters", MS_NOT_AVAILABLE);
-	SG_ADD(&m_params, "params", "Parameters", MS_NOT_AVAILABLE);
+	       "Number of Parameters", ParameterProperties());
+	SG_ADD(&m_params, "params", "Parameters", ParameterProperties());
 }

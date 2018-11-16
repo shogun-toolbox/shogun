@@ -728,9 +728,9 @@ void CAlphabet::init()
 
 	SG_ADD(
 	    (machine_int_t*)&alphabet, "alphabet", "Alphabet enum.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&num_symbols, "num_symbols", "Number of symbols.", MS_NOT_AVAILABLE);
-	SG_ADD(&num_bits, "num_bits", "Number of bits.", MS_NOT_AVAILABLE);
+	    ParameterProperties());
+	SG_ADD(&num_symbols, "num_symbols", "Number of symbols.", ParameterProperties());
+	SG_ADD(&num_bits, "num_bits", "Number of bits.", ParameterProperties());
 
 	/* We don't need to serialize the mapping tables / they can be computed
 	 * after de-serializing. Lets not serialize the histogram for now. Doesn't
