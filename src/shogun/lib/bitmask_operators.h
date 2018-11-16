@@ -108,5 +108,11 @@ namespace shogun {
                 static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
         return lhs;
     }
+    template<typename E>
+    typename std::enable_if<enable_bitmask_operators<E>::enable, bool>::type
+    operator==(E lhs, E rhs) {
+        typedef typename std::underlying_type<E>::type underlying;
+        return static_cast<underlying>(lhs) == static_cast<underlying>(rhs);
+    }
 }
 #endif

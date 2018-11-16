@@ -123,10 +123,9 @@ namespace shogun
 			return static_cast<bool>(m_attribute_mask & other_params);
 		}
 
-		bool equals(ParameterProperties other_params)
+		bool equals(ParameterProperties other_params) const
 		{
-			return static_cast<int32_t>(m_attribute_mask) ==
-			       static_cast<int32_t>(other_params);
+			return m_attribute_mask == other_params;
 		}
 
 	private:
