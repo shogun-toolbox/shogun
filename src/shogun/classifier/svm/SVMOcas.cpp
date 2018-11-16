@@ -348,14 +348,12 @@ void CSVMOcas::init()
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", ParameterProperties());
-	SG_ADD(&epsilon, "epsilon", "Convergence precision.", ParameterProperties());
+	    &use_bias, "use_bias", "Indicates if bias is used.");
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 	SG_ADD(
-	    &bufsize, "bufsize", "Maximum number of cutting planes.",
-	    ParameterProperties());
+	    &bufsize, "bufsize", "Maximum number of cutting planes.");
 	SG_ADD(
-	    (machine_int_t*)&method, "method", "SVMOcas solver type.",
-	    ParameterProperties());
+	    (machine_int_t*)&method, "method", "SVMOcas solver type.");
 }
 
 float64_t CSVMOcas::compute_primal_objective() const

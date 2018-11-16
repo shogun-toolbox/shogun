@@ -29,10 +29,9 @@ CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
 
 void CMultidimensionalScaling::init()
 {
-	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding",
-	    ParameterProperties());
+	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
 	SG_ADD(&m_landmark, "landmark",
-	    "indicates if landmark approximation should be used", ParameterProperties());
+	    "indicates if landmark approximation should be used");
 	SG_ADD(&m_landmark_number, "landmark_number",
 	    "the number of landmarks for approximation", ParameterProperties::HYPER);
 }

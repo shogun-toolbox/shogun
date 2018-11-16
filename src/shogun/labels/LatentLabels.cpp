@@ -45,8 +45,8 @@ CLatentLabels::~CLatentLabels()
 
 void CLatentLabels::init()
 {
-	SG_ADD((CSGObject**) &m_latent_labels, "m_latent_labels", "The latent labels", ParameterProperties());
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", ParameterProperties());
+	SG_ADD((CSGObject**) &m_latent_labels, "m_latent_labels", "The latent labels");
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
 	m_latent_labels = NULL;
 	m_labels = NULL;
 }

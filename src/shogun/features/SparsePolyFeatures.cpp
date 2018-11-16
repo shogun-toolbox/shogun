@@ -250,17 +250,16 @@ CFeatures* CSparsePolyFeatures::duplicate() const
 void CSparsePolyFeatures::init()
 {
 	SG_ADD(
-	    &m_feat, "features", "Features in original space.", ParameterProperties());
+	    &m_feat, "features", "Features in original space.");
 	SG_ADD(
 	    &m_degree, "degree", "Degree of the polynomial kernel.", ParameterProperties::HYPER);
-	SG_ADD(&m_normalize, "normalize", "Normalize", ParameterProperties());
+	SG_ADD(&m_normalize, "normalize", "Normalize");
 	SG_ADD(
 	    &m_input_dimensions, "input_dimensions",
-	    "Dimensions of the input space.", ParameterProperties());
+	    "Dimensions of the input space.");
 	SG_ADD(
 	    &m_output_dimensions, "output_dimensions",
-	    "Dimensions of the feature space of the polynomial kernel.",
-	    ParameterProperties());
+	    "Dimensions of the feature space of the polynomial kernel.");
 
 	m_normalization_values_len = get_num_vectors();
 	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
@@ -269,8 +268,7 @@ void CSparsePolyFeatures::init()
 	    "m_normalization_values", &m_normalization_values,
 	    &m_normalization_values_len);
 
-	SG_ADD(&mask, "mask", "Mask.", ParameterProperties());
+	SG_ADD(&mask, "mask", "Mask.");
 	SG_ADD(
-	    &m_hash_bits, "m_hash_bits", "Number of bits in hash",
-	    ParameterProperties());
+	    &m_hash_bits, "m_hash_bits", "Number of bits in hash");
 }

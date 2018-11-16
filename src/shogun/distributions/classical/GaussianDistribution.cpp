@@ -164,7 +164,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 
 void CGaussianDistribution::init()
 {
-	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", ParameterProperties());
+	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.");
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "
-			"depending on the factorization type.", ParameterProperties());
+			"depending on the factorization type.");
 }

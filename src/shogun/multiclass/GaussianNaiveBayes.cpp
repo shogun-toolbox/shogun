@@ -223,19 +223,18 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 
 void CGaussianNaiveBayes::init()
 {
-	SG_ADD(&m_min_label, "m_min_label", "minimal label", ParameterProperties());
+	SG_ADD(&m_min_label, "m_min_label", "minimal label");
 	SG_ADD(&m_num_classes, "m_num_classes",
-		"number of different classes (labels)", ParameterProperties());
+		"number of different classes (labels)");
 	SG_ADD(&m_dim, "m_dim",
-		"dimensionality of feature space", ParameterProperties());
+		"dimensionality of feature space");
 	SG_ADD(&m_means, "m_means",
-		"means for normal distributions of features", ParameterProperties());
+		"means for normal distributions of features");
 	SG_ADD(&m_variances, "m_variances",
-		"variances for normal distributions of features", ParameterProperties());
+		"variances for normal distributions of features");
 	SG_ADD(&m_label_prob, "m_label_prob",
-		"a priori probabilities of labels", ParameterProperties());
-	SG_ADD(&m_rates, "m_rates", "label rates", ParameterProperties());
+		"a priori probabilities of labels");
+	SG_ADD(&m_rates, "m_rates", "label rates");
 	SG_ADD(
-	    (CFeatures**)&m_features, "features", "Training features",
-	    ParameterProperties());
+	    (CFeatures**)&m_features, "features", "Training features");
 }

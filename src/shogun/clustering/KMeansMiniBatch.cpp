@@ -140,8 +140,7 @@ void CKMeansMiniBatch::init_mb_params()
 	batch_size=-1;
 
 	SG_ADD(
-		&batch_size, "batch_size", "batch size for mini-batch KMeans",
-		ParameterProperties());
+		&batch_size, "batch_size", "batch size for mini-batch KMeans");
 }
 
 bool CKMeansMiniBatch::train_machine(CFeatures* data)

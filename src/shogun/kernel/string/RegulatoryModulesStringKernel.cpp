@@ -56,11 +56,11 @@ void CRegulatoryModulesStringKernel::init()
 	    "the shift of weighted degree with shifts kernel part", ParameterProperties::HYPER);
 	SG_ADD(&window, "window", "the size of window around motifs", ParameterProperties::HYPER);
 	SG_ADD((CSGObject**)&motif_positions_lhs, "motif_positions_lhs",
-			"the matrix of motif positions from sequences left-hand side", ParameterProperties());
+			"the matrix of motif positions from sequences left-hand side");
 	SG_ADD((CSGObject**)&motif_positions_rhs, "motif_positions_rhs",
-			"the matrix of motif positions from sequences right-hand side", ParameterProperties());
-	SG_ADD(&position_weights, "position_weights", "scaling weights in window", ParameterProperties());
-	SG_ADD(&weights, "weights", "weights of WD kernel", ParameterProperties());
+			"the matrix of motif positions from sequences right-hand side");
+	SG_ADD(&position_weights, "position_weights", "scaling weights in window");
+	SG_ADD(&weights, "weights", "weights of WD kernel");
 }
 
 bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)

@@ -51,7 +51,7 @@ void CCrossValidation::init()
 {
 	m_num_runs = 1;
 
-	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions", ParameterProperties());
+	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
 }
 
 CEvaluationResult* CCrossValidation::evaluate_impl()

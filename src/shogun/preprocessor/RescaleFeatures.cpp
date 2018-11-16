@@ -104,6 +104,6 @@ SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t
 
 void CRescaleFeatures::register_parameters()
 {
-	SG_ADD(&m_min, "min", "minimum values of each feature", ParameterProperties());
-	SG_ADD(&m_range, "range", "Reciprocal of the range of each feature", ParameterProperties());
+	SG_ADD(&m_min, "min", "minimum values of each feature");
+	SG_ADD(&m_range, "range", "Reciprocal of the range of each feature");
 }

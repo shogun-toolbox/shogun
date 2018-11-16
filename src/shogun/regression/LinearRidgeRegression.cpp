@@ -37,8 +37,7 @@ void CLinearRidgeRegression::init()
 
 	SG_ADD(&m_tau, "tau", "Regularization parameter", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_use_bias, "use_bias", "Whether or not to fit an offset term",
-	    ParameterProperties());
+	    &m_use_bias, "use_bias", "Whether or not to fit an offset term");
 }
 
 template <typename T>

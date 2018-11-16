@@ -69,22 +69,18 @@ void CFisherLDA::initialize_parameters()
 	m_gamma = 0;
 	m_bdc_svd = true;
 	SG_ADD(
-	    &m_method, "FLDA_method", "method for performing FLDA",
-	    ParameterProperties());
+	    &m_method, "FLDA_method", "method for performing FLDA");
 	SG_ADD(
-	    &m_num_dim, "final_dimensions", "dimensions to be retained",
-	    ParameterProperties());
-	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", ParameterProperties());
-	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm", ParameterProperties());
+	    &m_num_dim, "final_dimensions", "dimensions to be retained");
+	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter");
+	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm");
 	SG_ADD(
 	    &m_transformation_matrix, "transformation_matrix",
 	    "Transformation"
-	    " matrix (Eigenvectors of covariance matrix).",
-	    ParameterProperties());
-	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", ParameterProperties());
+	    " matrix (Eigenvectors of covariance matrix).");
+	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.");
 	SG_ADD(
-	    &m_eigenvalues_vector, "eigenvalues_vector", "Vector with Eigenvalues.",
-	    ParameterProperties());
+	    &m_eigenvalues_vector, "eigenvalues_vector", "Vector with Eigenvalues.");
 }
 
 CFisherLDA::~CFisherLDA()

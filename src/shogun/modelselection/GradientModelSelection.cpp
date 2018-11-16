@@ -83,16 +83,16 @@ private:
 	{
 		m_obj=NULL;
 		SG_ADD((CSGObject **)&m_obj, "GradientModelSelectionCostFunction__m_obj",
-			"obj in GradientModelSelectionCostFunction", ParameterProperties());
+			"obj in GradientModelSelectionCostFunction");
 		m_func_data = NULL;
 		m_val = SGVector<float64_t>();
 		SG_ADD(
 			&m_val, "GradientModelSelectionCostFunction__m_val",
-			"val in GradientModelSelectionCostFunction", ParameterProperties());
+			"val in GradientModelSelectionCostFunction");
 		m_grad = SGVector<float64_t>();
 		SG_ADD(
 			&m_grad, "GradientModelSelectionCostFunction__m_grad",
-			"grad in GradientModelSelectionCostFunction", ParameterProperties());
+			"grad in GradientModelSelectionCostFunction");
 	}
 
 	CGradientModelSelection *m_obj;
@@ -278,7 +278,7 @@ void CGradientModelSelection::init()
 	SG_REF(m_mode_minimizer);
 
 	SG_ADD((CSGObject **)&m_mode_minimizer,
-		"mode_minimizer", "Minimizer used in mode selection", ParameterProperties());
+		"mode_minimizer", "Minimizer used in mode selection");
 
 }
 

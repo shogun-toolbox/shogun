@@ -106,9 +106,9 @@ private:
 		m_obj=NULL;
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "KLDualInferenceMethodCostFunction__m_derivatives",
-			"derivatives in KLDualInferenceMethodCostFunction", ParameterProperties());
+			"derivatives in KLDualInferenceMethodCostFunction");
 		SG_ADD((CSGObject **)&m_obj, "KLDualInferenceMethodCostFunction__m_obj",
-			"obj in KLDualInferenceMethodCostFunction", ParameterProperties());
+			"obj in KLDualInferenceMethodCostFunction");
 	}
 	CKLDualInferenceMethod *m_obj;
 	CDualVariationalGaussianLikelihood* get_dual_variational_likelihood() const
@@ -278,20 +278,15 @@ void CKLDualInferenceMethod::register_minimizer(Minimizer* minimizer)
 void CKLDualInferenceMethod::init()
 {
 	SG_ADD(&m_W, "W",
-		"noise matrix W",
-		ParameterProperties());
+		"noise matrix W");
 	SG_ADD(&m_sW, "sW",
-		"Square root of noise matrix W",
-		ParameterProperties());
+		"Square root of noise matrix W");
 	SG_ADD(&m_dv, "dv",
-		"the gradient of the variational expection wrt sigma2",
-		ParameterProperties());
+		"the gradient of the variational expection wrt sigma2");
 	SG_ADD(&m_df, "df",
-		"the gradient of the variational expection wrt mu",
-		ParameterProperties());
+		"the gradient of the variational expection wrt mu");
 	SG_ADD(&m_is_dual_valid, "is_dual_valid",
-		"whether the lambda (m_W) is valid or not",
-		ParameterProperties());
+		"whether the lambda (m_W) is valid or not");
 
 	m_is_dual_valid=false;
 	register_minimizer(new CKLDualInferenceMethodMinimizer());

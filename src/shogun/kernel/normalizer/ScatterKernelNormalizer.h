@@ -154,13 +154,13 @@ private:
 		m_testing_class = -1;
 
 		SG_ADD(&m_testing_class, "m_testing_class",
-				"Testing Class.", ParameterProperties());
+				"Testing Class.");
 		SG_ADD(&m_const_diag, "m_const_diag",
 				"Factor to multiply to diagonal elements.", ParameterProperties::HYPER);
 		SG_ADD(&m_const_offdiag, "m_const_offdiag",
 				"Factor to multiply to off-diagonal elements.", ParameterProperties::HYPER);
 
-		SG_ADD((CSGObject**) &m_labels, "m_labels", "Labels", ParameterProperties());
+		SG_ADD((CSGObject**) &m_labels, "m_labels", "Labels");
 		SG_ADD((CSGObject**) &m_normalizer, "m_normalizer", "Kernel normalizer.",
 		    ParameterProperties::HYPER);
 	}

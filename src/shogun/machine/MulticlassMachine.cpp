@@ -50,8 +50,8 @@ void CMulticlassMachine::set_labels(CLabels* lab)
 
 void CMulticlassMachine::register_parameters()
 {
-	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy", ParameterProperties());
-	SG_ADD(&m_machine, "machine", "The base machine", ParameterProperties());
+	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy");
+	SG_ADD(&m_machine, "machine", "The base machine");
 }
 
 void CMulticlassMachine::init_strategy()

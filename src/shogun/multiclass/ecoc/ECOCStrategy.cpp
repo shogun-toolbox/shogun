@@ -30,8 +30,8 @@ void CECOCStrategy::init()
     m_encoder=NULL;
     m_decoder=NULL;
 
-    SG_ADD(&m_encoder, "encoder", "ECOC Encoder", ParameterProperties());
-    SG_ADD(&m_decoder, "decoder", "ECOC Decoder", ParameterProperties());
+    SG_ADD(&m_encoder, "encoder", "ECOC Encoder");
+    SG_ADD(&m_decoder, "decoder", "ECOC Decoder");
 }
 
 CECOCStrategy::~CECOCStrategy()

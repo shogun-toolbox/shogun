@@ -238,13 +238,13 @@ void CFactor::compute_gradients(
 
 void CFactor::init()
 {
-	SG_ADD((CSGObject**)&m_factor_type, "type_name", "Factor type name", ParameterProperties());
-	SG_ADD(&m_var_index, "var_index", "Factor variable index", ParameterProperties());
-	SG_ADD(&m_energies, "energies", "Factor energies", ParameterProperties());
-	SG_ADD((CSGObject**)&m_data_source, "data_source", "Factor data source", ParameterProperties());
-	SG_ADD(&m_data, "data", "Factor data", ParameterProperties());
-	SG_ADD(&m_data_sparse, "data_sparse", "Sparse factor data", ParameterProperties());
-	SG_ADD(&m_is_data_dep, "is_data_dep", "Factor is data dependent or not", ParameterProperties());
+	SG_ADD((CSGObject**)&m_factor_type, "type_name", "Factor type name");
+	SG_ADD(&m_var_index, "var_index", "Factor variable index");
+	SG_ADD(&m_energies, "energies", "Factor energies");
+	SG_ADD((CSGObject**)&m_data_source, "data_source", "Factor data source");
+	SG_ADD(&m_data, "data", "Factor data");
+	SG_ADD(&m_data_sparse, "data_sparse", "Sparse factor data");
+	SG_ADD(&m_is_data_dep, "is_data_dep", "Factor is data dependent or not");
 
 	m_factor_type=NULL;
 	m_data_source=NULL;
@@ -302,7 +302,7 @@ void CFactorDataSource::set_data_sparse(SGSparseVectorEntry<float64_t>* sparse,
 
 void CFactorDataSource::init()
 {
-	SG_ADD(&m_dense, "dense", "Shared data", ParameterProperties());
-	SG_ADD(&m_sparse, "sparse", "Shared sparse data", ParameterProperties());
+	SG_ADD(&m_dense, "dense", "Shared data");
+	SG_ADD(&m_sparse, "sparse", "Shared sparse data");
 }
 

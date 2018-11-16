@@ -62,39 +62,39 @@ void CLBFGSMinimizer::init()
 	m_min_step=1e-6;
 	m_xtol=1e-6;
 	SG_ADD(&m_linesearch_id, "CLBFGSMinimizer__m_linesearch_id",
-		"linesearch_id in CLBFGSMinimizer", ParameterProperties());
+		"linesearch_id in CLBFGSMinimizer");
 	SG_ADD(&m_m, "CLBFGSMinimizer__m_m",
-		"m in CLBFGSMinimizer", ParameterProperties());
+		"m in CLBFGSMinimizer");
 	SG_ADD(&m_max_linesearch, "CLBFGSMinimizer__m_max_linesearch",
-		"max_linesearch in CLBFGSMinimizer", ParameterProperties());
+		"max_linesearch in CLBFGSMinimizer");
 	SG_ADD(&m_max_iterations, "CLBFGSMinimizer__m_max_iterations",
-		"max_iterations in CLBFGSMinimizer", ParameterProperties());
+		"max_iterations in CLBFGSMinimizer");
 	SG_ADD(&m_delta, "CLBFGSMinimizer__m_delta",
-		"delta in CLBFGSMinimizer", ParameterProperties());
+		"delta in CLBFGSMinimizer");
 	SG_ADD(&m_past, "CLBFGSMinimizer__m_past",
-		"past in CLBFGSMinimizer", ParameterProperties());
+		"past in CLBFGSMinimizer");
 	SG_ADD(&m_epsilon, "CLBFGSMinimizer__m_epsilon",
-		"epsilon in CLBFGSMinimizer", ParameterProperties());
+		"epsilon in CLBFGSMinimizer");
 	SG_ADD(&m_min_step, "CLBFGSMinimizer__m_min_step",
-		"min_step in CLBFGSMinimizer", ParameterProperties());
+		"min_step in CLBFGSMinimizer");
 	SG_ADD(&m_max_step, "CLBFGSMinimizer__m_max_step",
-		"max_step in CLBFGSMinimizer", ParameterProperties());
+		"max_step in CLBFGSMinimizer");
 	SG_ADD(&m_ftol, "CLBFGSMinimizer__m_ftol",
-		"ftol in CLBFGSMinimizer", ParameterProperties());
+		"ftol in CLBFGSMinimizer");
 	SG_ADD(&m_wolfe, "CLBFGSMinimizer__m_wolfe",
-		"wolfe in CLBFGSMinimizer", ParameterProperties());
+		"wolfe in CLBFGSMinimizer");
 	SG_ADD(&m_gtol, "CLBFGSMinimizer__m_gtol",
-		"gtol in CLBFGSMinimizer", ParameterProperties());
+		"gtol in CLBFGSMinimizer");
 	SG_ADD(&m_xtol, "CLBFGSMinimizer__m_xtol",
-		"xtol in CLBFGSMinimizer", ParameterProperties());
+		"xtol in CLBFGSMinimizer");
 	SG_ADD(&m_orthantwise_c, "CLBFGSMinimizer__m_orthantwise_c",
-		"orthantwise_c in CLBFGSMinimizer", ParameterProperties());
+		"orthantwise_c in CLBFGSMinimizer");
 	SG_ADD(&m_orthantwise_start, "CLBFGSMinimizer__m_orthantwise_start",
-		"orthantwise_start in CLBFGSMinimizer", ParameterProperties());
+		"orthantwise_start in CLBFGSMinimizer");
 	SG_ADD(&m_orthantwise_end, "CLBFGSMinimizer__m_orthantwise_end",
-		"orthantwise_end in CLBFGSMinimizer", ParameterProperties());
+		"orthantwise_end in CLBFGSMinimizer");
 	SG_ADD(&m_target_variable, "CLBFGSMinimizer__m_target_variable",
-		"m_target_variable in CLBFGSMinimizer", ParameterProperties());
+		"m_target_variable in CLBFGSMinimizer");
 }
 
 void CLBFGSMinimizer::set_lbfgs_parameters(

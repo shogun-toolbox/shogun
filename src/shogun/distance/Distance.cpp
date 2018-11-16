@@ -259,8 +259,8 @@ void CDistance::init()
 	num_lhs=0;
 	num_rhs=0;
 
-	SG_ADD(&lhs, "lhs", "Left hand side features.", ParameterProperties());
-	SG_ADD(&rhs, "rhs", "Right hand side features.", ParameterProperties());
+	SG_ADD(&lhs, "lhs", "Left hand side features.");
+	SG_ADD(&rhs, "rhs", "Right hand side features.");
 }
 
 template <class T>

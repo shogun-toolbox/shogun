@@ -304,5 +304,5 @@ void COligoStringKernel::init()
 
 	SG_ADD(&k, "k", "K-mer length.", ParameterProperties::HYPER);
 	SG_ADD(&width, "width", "Width of Gaussian.", ParameterProperties::HYPER);
-	SG_ADD(&gauss_table, "gauss_table", "Gauss Cache Table.", ParameterProperties());
+	SG_ADD(&gauss_table, "gauss_table", "Gauss Cache Table.");
 }

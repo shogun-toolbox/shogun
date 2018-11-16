@@ -73,11 +73,9 @@ void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
 
 	num_samples = K;
 
-	SG_ADD((CSGObject** ) &feats, "feats", "Features to work on",
-			ParameterProperties());
+	SG_ADD((CSGObject** ) &feats, "feats", "Features to work on");
 	SG_ADD(
-		&random_coeff, "random_coeff", "Random function parameters",
-		ParameterProperties());
+		&random_coeff, "random_coeff", "Random function parameters");
 }
 
 int32_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const

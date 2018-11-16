@@ -99,9 +99,9 @@ private:
                 m_obj=NULL;
                 m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "KLInferenceCostFunction__m_derivatives",
-			"derivatives in KLInferenceCostFunction", ParameterProperties());
+			"derivatives in KLInferenceCostFunction");
 		SG_ADD((CSGObject **)&m_obj, "KLInferenceCostFunction__m_obj",
-			"obj in KLInferenceCostFunction", ParameterProperties());
+			"obj in KLInferenceCostFunction");
         }
         CKLInference *m_obj;
 };
@@ -143,26 +143,19 @@ void CKLInference::init()
 	m_exp_factor=2;
 	m_min_coeff_kernel=1e-5;
 	SG_ADD(&m_noise_factor, "noise_factor",
-		"The noise factor used for correcting Kernel matrix",
-		ParameterProperties());
+		"The noise factor used for correcting Kernel matrix");
 	SG_ADD(&m_exp_factor, "exp_factor",
-		"The exponential factor used for increasing noise_factor",
-		ParameterProperties());
+		"The exponential factor used for increasing noise_factor");
 	SG_ADD(&m_max_attempt, "max_attempt",
-		"The max number of attempt to correct Kernel matrix",
-		ParameterProperties());
+		"The max number of attempt to correct Kernel matrix");
 	SG_ADD(&m_min_coeff_kernel, "min_coeff_kernel",
-		"The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not",
-		ParameterProperties());
+		"The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not");
 	SG_ADD(&m_s2, "s2",
-		"Variational parameter sigma2",
-		ParameterProperties());
+		"Variational parameter sigma2");
 	SG_ADD(&m_mu, "mu",
-		"Variational parameter mu and posterior mean",
-		ParameterProperties());
+		"Variational parameter mu and posterior mean");
 	SG_ADD(&m_Sigma, "Sigma",
-		"Posterior covariance matrix Sigma",
-		ParameterProperties());
+		"Posterior covariance matrix Sigma");
 	register_minimizer(new CLBFGSMinimizer());
 }
 

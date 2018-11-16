@@ -229,6 +229,6 @@ void CSGDQN::init()
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(&epochs, "epochs", "epochs", ParameterProperties::HYPER);
-	SG_ADD(&skip, "skip", "skip", ParameterProperties());
-	SG_ADD(&count, "count", "count", ParameterProperties());
+	SG_ADD(&skip, "skip", "skip");
+	SG_ADD(&count, "count", "count");
 }

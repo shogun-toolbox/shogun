@@ -49,7 +49,7 @@ CFastICA::CFastICA() : CICAConverter()
 void CFastICA::init()
 {
 	whiten = true;
-	SG_ADD(&whiten, "whiten", "flag indicating whether to whiten the data", ParameterProperties());
+	SG_ADD(&whiten, "whiten", "flag indicating whether to whiten the data");
 }
 
 CFastICA::~CFastICA()

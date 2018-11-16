@@ -623,45 +623,45 @@ void CRBM::init()
 	m_num_params = 0;
 	m_batch_size = 0;
 
-	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", ParameterProperties());
-	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", ParameterProperties());
+	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps");
+	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD");
 	SG_ADD(&cd_sample_visible, "sample_visible",
-		"Whether to sample the visible units during (P)CD", ParameterProperties());
+		"Whether to sample the visible units during (P)CD");
 	SG_ADD(&l2_coefficient, "l2_coefficient",
-	       "L2 regularization coeff", ParameterProperties());
+	       "L2 regularization coeff");
 	SG_ADD(&l1_coefficient, "l1_coefficient",
-	       "L1 regularization coeff", ParameterProperties());
+	       "L1 regularization coeff");
 	SG_ADD((machine_int_t*)&monitoring_method, "monitoring_method",
-		"Monitoring Method", ParameterProperties());
+		"Monitoring Method");
 	SG_ADD(&monitoring_interval, "monitoring_interval",
-		"Monitoring Interval", ParameterProperties());
+		"Monitoring Interval");
 
 	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", ParameterProperties());
+	       "Gradient Descent Mini-batch size");
 	SG_ADD(&max_num_epochs, "max_num_epochs",
-	       "Max number of Epochs", ParameterProperties());
+	       "Max number of Epochs");
 	SG_ADD(&gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", ParameterProperties());
+	       "Gradient descent learning rate");
 	SG_ADD(&gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", ParameterProperties());
+	       "Gradient descent learning rate decay");
 	SG_ADD(&gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", ParameterProperties());
+	       "Gradient Descent Momentum");
 
 	SG_ADD(&m_num_hidden, "num_hidden",
-	       "Number of Hidden Units", ParameterProperties());
+	       "Number of Hidden Units");
 	SG_ADD(&m_num_visible, "num_visible",
-	       "Number of Visible Units", ParameterProperties());
+	       "Number of Visible Units");
 
 	SG_ADD(&m_num_visible_groups, "num_visible_groups",
-	       "Number of Visible Unit Groups", ParameterProperties());
+	       "Number of Visible Unit Groups");
 	SG_ADD((CSGObject**)&m_visible_group_sizes, "visible_group_sizes",
-	       "Sizes of Visible Unit Groups", ParameterProperties());
+	       "Sizes of Visible Unit Groups");
 	SG_ADD((CSGObject**)&m_visible_group_types, "visible_group_types",
-	       "Types of Visible Unit Groups", ParameterProperties());
+	       "Types of Visible Unit Groups");
 	SG_ADD((CSGObject**)&m_visible_state_offsets, "visible_group_index_offsets",
-	       "State Index offsets of Visible Unit Groups", ParameterProperties());
+	       "State Index offsets of Visible Unit Groups");
 
 	SG_ADD(&m_num_params, "num_params",
-	       "Number of Parameters", ParameterProperties());
-	SG_ADD(&m_params, "params", "Parameters", ParameterProperties());
+	       "Number of Parameters");
+	SG_ADD(&m_params, "params", "Parameters");
 }

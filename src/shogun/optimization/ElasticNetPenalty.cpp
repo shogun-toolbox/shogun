@@ -85,9 +85,9 @@ void ElasticNetPenalty::init()
 	m_l1_penalty=new L1Penalty();
 	m_l2_penalty=new L2Penalty();
 	SG_ADD(&m_l1_ratio, "ElasticNetPenalty__m_l1_ratio",
-		"l1_ratio in ElasticNetPenalty", ParameterProperties());
+		"l1_ratio in ElasticNetPenalty");
 	SG_ADD((CSGObject **) &m_l1_penalty, "ElasticNetPenalty__m_l1_penalty",
-		"l1_penalty in ElasticNetPenalty", ParameterProperties());
+		"l1_penalty in ElasticNetPenalty");
 	SG_ADD((CSGObject **) &m_l2_penalty, "ElasticNetPenalty__m_l2_penalty",
-		"l2_penalty in ElasticNetPenalty", ParameterProperties());
+		"l2_penalty in ElasticNetPenalty");
 }

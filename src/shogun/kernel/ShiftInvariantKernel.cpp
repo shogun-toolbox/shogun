@@ -102,8 +102,8 @@ float64_t CShiftInvariantKernel::distance(int32_t a, int32_t b) const
 
 void CShiftInvariantKernel::register_params()
 {
-	SG_ADD((CSGObject**) &m_distance, "m_distance", "Distance to be used.", ParameterProperties());
-	SG_ADD((CSGObject**) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.", ParameterProperties());
+	SG_ADD((CSGObject**) &m_distance, "m_distance", "Distance to be used.");
+	SG_ADD((CSGObject**) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.");
 
 	m_distance=NULL;
 	m_precomputed_distance=NULL;

@@ -35,10 +35,10 @@ void CModelSelection::init()
 	m_machine_eval=NULL;
 
 	SG_ADD((CSGObject**)&m_model_parameters, "model_parameters",
-			"Parameter tree for model selection", ParameterProperties());
+			"Parameter tree for model selection");
 
 	SG_ADD((CSGObject**)&m_machine_eval, "machine_evaluation",
-			"Machine evaluation strategy", ParameterProperties());
+			"Machine evaluation strategy");
 }
 
 CModelSelection::~CModelSelection()

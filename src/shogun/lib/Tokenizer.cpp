@@ -21,6 +21,6 @@ void CTokenizer::set_text(SGVector<char> txt)
 
 void CTokenizer::init()
 {
-	SG_ADD(&text, "text", "The text", ParameterProperties());
+	SG_ADD(&text, "text", "The text");
 }
 }

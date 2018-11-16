@@ -258,28 +258,20 @@ CLMNNStatistics* CLMNN::get_statistics() const
 void CLMNN::init()
 {
 	SG_ADD(&m_linear_transform, "linear_transform",
-			"Linear transform in matrix form", ParameterProperties());
-	SG_ADD((CSGObject**) &m_features, "features", "Training features",
-			ParameterProperties());
-	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels",
-			ParameterProperties());
-	SG_ADD(&m_k, "k", "Number of target neighbours per example",
-			ParameterProperties());
+			"Linear transform in matrix form");
+	SG_ADD((CSGObject**) &m_features, "features", "Training features");
+	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels");
+	SG_ADD(&m_k, "k", "Number of target neighbours per example");
 	SG_ADD(&m_regularization, "regularization", "Regularization",
 			ParameterProperties::HYPER);
-	SG_ADD(&m_stepsize, "stepsize", "Step size in gradient descent",
-			ParameterProperties());
-	SG_ADD(&m_stepsize_threshold, "stepsize_threshold", "Step size threshold",
-			ParameterProperties());
-	SG_ADD(&m_maxiter, "maxiter", "Maximum number of iterations",
-			ParameterProperties());
+	SG_ADD(&m_stepsize, "stepsize", "Step size in gradient descent");
+	SG_ADD(&m_stepsize_threshold, "stepsize_threshold", "Step size threshold");
+	SG_ADD(&m_maxiter, "maxiter", "Maximum number of iterations");
 	SG_ADD(&m_correction, "correction",
-			"Iterations between exact impostors search", ParameterProperties());
-	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold",
-			ParameterProperties());
-	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", ParameterProperties());
-	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics",
-			ParameterProperties());
+			"Iterations between exact impostors search");
+	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold");
+	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation");
+	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics");
 
 	m_features = NULL;
 	m_labels = NULL;
@@ -331,9 +323,8 @@ void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_i
 
 void CLMNNStatistics::init()
 {
-	SG_ADD(&obj, "obj", "Objective at each iteration", ParameterProperties());
-	SG_ADD(&stepsize, "stepsize", "Step size at each iteration", ParameterProperties());
-	SG_ADD(&num_impostors, "num_impostors", "Number of impostors at each iteration",
-			ParameterProperties());
+	SG_ADD(&obj, "obj", "Objective at each iteration");
+	SG_ADD(&stepsize, "stepsize", "Step size at each iteration");
+	SG_ADD(&num_impostors, "num_impostors", "Number of impostors at each iteration");
 }
 

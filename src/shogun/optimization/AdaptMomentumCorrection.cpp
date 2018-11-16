@@ -128,15 +128,15 @@ void AdaptMomentumCorrection::init()
 	m_init_descend_rate=1.0;
 
 	SG_ADD(&m_adapt_rate, "AdaptMomentumCorrection__m_adapt_rate",
-		"m_adapt_rate in AdaptMomentumCorrection", ParameterProperties());
+		"m_adapt_rate in AdaptMomentumCorrection");
 	SG_ADD(&m_rate_min, "AdaptMomentumCorrection__m_rate_min",
-		"m_rate_min in AdaptMomentumCorrection", ParameterProperties());
+		"m_rate_min in AdaptMomentumCorrection");
 	SG_ADD(&m_rate_max, "AdaptMomentumCorrection__m_rate_max",
-		"m_rate_max in AdaptMomentumCorrection", ParameterProperties());
+		"m_rate_max in AdaptMomentumCorrection");
 	SG_ADD(&m_init_descend_rate, "AdaptMomentumCorrection__m_init_descend_rate",
-		"m_init_descend_rate in AdaptMomentumCorrection", ParameterProperties());
+		"m_init_descend_rate in AdaptMomentumCorrection");
 	SG_ADD(&m_descend_rate, "AdaptMomentumCorrection__m_descend_rate",
-		"m_descend_rate in AdaptMomentumCorrection", ParameterProperties());
+		"m_descend_rate in AdaptMomentumCorrection");
 	SG_ADD((CSGObject **)&m_momentum_correction, "AdaptMomentumCorrection__m_momentum_correction",
-		"m_momentum_correction in AdaptMomentumCorrection", ParameterProperties());
+		"m_momentum_correction in AdaptMomentumCorrection");
 }

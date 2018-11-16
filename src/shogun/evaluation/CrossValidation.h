@@ -29,11 +29,10 @@ namespace shogun
 	public:
 		CCrossValidationResult()
 		{
-			SG_ADD(&mean, "mean", "Mean of results", ParameterProperties());
+			SG_ADD(&mean, "mean", "Mean of results");
 			SG_ADD(
 			    &std_dev, "std_dev",
-			    "Standard deviation of cross-validation folds",
-			    ParameterProperties());
+			    "Standard deviation of cross-validation folds");
 
 			mean = 0;
 			std_dev = 0;

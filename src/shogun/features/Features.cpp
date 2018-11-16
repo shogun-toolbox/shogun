@@ -52,14 +52,12 @@ CFeatures::~CFeatures()
 
 void CFeatures::init()
 {
-	SG_ADD(&properties, "properties", "Feature properties", ParameterProperties());
-	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", ParameterProperties());
+	SG_ADD(&properties, "properties", "Feature properties");
+	SG_ADD(&cache_size, "cache_size", "Size of cache in MB");
 
-	SG_ADD((CSGObject**) &preproc, "preproc", "Array of preprocessors.",
-	       ParameterProperties());
+	SG_ADD((CSGObject**) &preproc, "preproc", "Array of preprocessors.");
 
-	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets",
-	       ParameterProperties());
+	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets");
 
 	m_subset_stack=new CSubsetStack();
 	SG_REF(m_subset_stack);

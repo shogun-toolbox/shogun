@@ -68,7 +68,7 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 
 void CLinearStructuredOutputMachine::register_parameters()
 {
-	SG_ADD(&m_w, "m_w", "Weight vector", ParameterProperties());
+	SG_ADD(&m_w, "m_w", "Weight vector");
 }
 
 void CLinearStructuredOutputMachine::store_model_features()

@@ -38,11 +38,11 @@ CFWSOSVM::CFWSOSVM(
 
 void CFWSOSVM::init()
 {
-	SG_ADD(&m_lambda, "lambda", "Regularization constant", ParameterProperties());
-	SG_ADD(&m_num_iter, "num_iter", "Number of iterations", ParameterProperties());
-	SG_ADD(&m_do_line_search, "do_line_search", "Do line search", ParameterProperties());
-	SG_ADD(&m_gap_threshold, "gap_threshold", "Gap threshold", ParameterProperties());
-	SG_ADD(&m_ell, "ell", "Average loss", ParameterProperties());
+	SG_ADD(&m_lambda, "lambda", "Regularization constant");
+	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
+	SG_ADD(&m_do_line_search, "do_line_search", "Do line search");
+	SG_ADD(&m_gap_threshold, "gap_threshold", "Gap threshold");
+	SG_ADD(&m_ell, "ell", "Average loss");
 
 	m_lambda = 1.0;
 	m_num_iter = 50;

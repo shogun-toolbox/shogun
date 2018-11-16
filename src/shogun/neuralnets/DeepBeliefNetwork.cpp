@@ -584,60 +584,60 @@ void CDeepBeliefNetwork::init()
 	m_sigma = 0.01;
 
 	SG_ADD((machine_int_t*)&m_visible_units_type, "visible_units_type",
-		"Type of the visible units", ParameterProperties());
+		"Type of the visible units");
 	SG_ADD(&m_num_layers, "num_layers",
-		"Number of layers", ParameterProperties());
+		"Number of layers");
 	SG_ADD((CSGObject**)&m_layer_sizes, "layer_sizes",
-		"Size of each hidden layer", ParameterProperties());
+		"Size of each hidden layer");
 
 	SG_ADD(&m_params, "params",
-		"Parameters of the network", ParameterProperties());
+		"Parameters of the network");
 	SG_ADD(&m_num_params, "num_params",
-		"Number of parameters", ParameterProperties());
+		"Number of parameters");
 	SG_ADD(&m_bias_index_offsets, "bias_index_offsets",
-		"Index offsets of the biases", ParameterProperties());
+		"Index offsets of the biases");
 	SG_ADD(&m_weights_index_offsets, "weights_index_offsets",
-		"Index offsets of the weights", ParameterProperties());
+		"Index offsets of the weights");
 
 	SG_ADD(&pt_cd_num_steps, "pt_cd_num_steps",
-	    "Pre-training Number of CD Steps", ParameterProperties());
+	    "Pre-training Number of CD Steps");
 	SG_ADD(&pt_cd_persistent, "pt_cd_persistent",
-	    "Pre-training Persistent CD", ParameterProperties());
+	    "Pre-training Persistent CD");
 	SG_ADD(&pt_cd_sample_visible, "pt_cd_sample_visible",
-	    "Pre-training Number of CD Sample Visible", ParameterProperties());
+	    "Pre-training Number of CD Sample Visible");
 	SG_ADD(&pt_l2_coefficient, "pt_l2_coefficient",
-	    "Pre-training L2 regularization coeff", ParameterProperties());
+	    "Pre-training L2 regularization coeff");
 	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
-	    "Pre-training L1 regularization coeff", ParameterProperties());
+	    "Pre-training L1 regularization coeff");
 	SG_ADD(&pt_monitoring_interval, "pt_monitoring_interval",
-	    "Pre-training Monitoring Interval", ParameterProperties());
+	    "Pre-training Monitoring Interval");
 	SG_ADD(&pt_monitoring_method, "pt_monitoring_method",
-	    "Pre-training Monitoring Method", ParameterProperties());
+	    "Pre-training Monitoring Method");
 	SG_ADD(&pt_cd_num_steps, "pt_gd_mini_batch_size",
-	    "Pre-training Gradient Descent Mini-batch size", ParameterProperties());
+	    "Pre-training Gradient Descent Mini-batch size");
 	SG_ADD(&pt_max_num_epochs, "pt_max_num_epochs",
-	    "Pre-training Max number of Epochs", ParameterProperties());
+	    "Pre-training Max number of Epochs");
 	SG_ADD(&pt_gd_learning_rate, "pt_gd_learning_rate",
-	    "Pre-training Gradient descent learning rate", ParameterProperties());
+	    "Pre-training Gradient descent learning rate");
 	SG_ADD(&pt_gd_learning_rate_decay, "pt_gd_learning_rate_decay",
-	    "Pre-training Gradient descent learning rate decay", ParameterProperties());
+	    "Pre-training Gradient descent learning rate decay");
 	SG_ADD(&pt_gd_momentum, "pt_gd_momentum",
-	    "Pre-training Gradient Descent Momentum", ParameterProperties());
+	    "Pre-training Gradient Descent Momentum");
 
-	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", ParameterProperties());
+	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps");
 	SG_ADD(&monitoring_interval, "monitoring_interval",
-		"Monitoring Interval", ParameterProperties());
+		"Monitoring Interval");
 
 	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", ParameterProperties());
+	       "Gradient Descent Mini-batch size");
 	SG_ADD(&max_num_epochs, "max_num_epochs",
-	       "Max number of Epochs", ParameterProperties());
+	       "Max number of Epochs");
 	SG_ADD(&gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", ParameterProperties());
+	       "Gradient descent learning rate");
 	SG_ADD(&gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", ParameterProperties());
+	       "Gradient descent learning rate decay");
 	SG_ADD(&gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", ParameterProperties());
+	       "Gradient Descent Momentum");
 
-	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", ParameterProperties());
+	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma");
 }

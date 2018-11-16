@@ -41,10 +41,9 @@ CLabels::~CLabels()
 void CLabels::init()
 {
 	SG_ADD((CSGObject **)&m_subset_stack, "subset_stack",
-	       "Current subset stack", ParameterProperties());
+	       "Current subset stack");
 	SG_ADD(
-	    &m_current_values, "current_values", "current active value vector",
-	    ParameterProperties());
+	    &m_current_values, "current_values", "current active value vector");
 	m_subset_stack = new CSubsetStack();
 	SG_REF(m_subset_stack);
 }

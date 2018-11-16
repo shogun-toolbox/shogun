@@ -1489,17 +1489,17 @@ void CCARTree::init()
 	m_sorted_features=SGMatrix<float64_t>();
 	m_sorted_indices=SGMatrix<index_t>();
 
-	SG_ADD(&m_pre_sort, "pre_sort", "presort", ParameterProperties());
-	SG_ADD(&m_sorted_features, "sorted_features", "sorted feats", ParameterProperties());
-	SG_ADD(&m_sorted_indices, "sorted_indices", "sorted indices", ParameterProperties());
-	SG_ADD(&m_nominal, "nominal", "feature types", ParameterProperties());
-	SG_ADD(&m_weights, "weights", "weights", ParameterProperties());
-	SG_ADD(&m_weights_set, "weights_set", "weights set", ParameterProperties());
-	SG_ADD(&m_types_set, "types_set", "feature types set", ParameterProperties());
-	SG_ADD(&m_apply_cv_pruning, "apply_cv_pruning", "apply cross validation pruning", ParameterProperties());
-	SG_ADD(&m_folds, "folds", "number of subsets for cross validation", ParameterProperties());
-	SG_ADD(&m_max_depth, "max_depth", "max allowed tree depth", ParameterProperties());
-	SG_ADD(&m_min_node_size, "min_node_size", "min allowed node size", ParameterProperties());
-	SG_ADD(&m_label_epsilon, "label_epsilon", "epsilon for labels", ParameterProperties());
-	SG_ADD((machine_int_t*)&m_mode, "mode", "problem type (multiclass or regression)", ParameterProperties());
+	SG_ADD(&m_pre_sort, "pre_sort", "presort");
+	SG_ADD(&m_sorted_features, "sorted_features", "sorted feats");
+	SG_ADD(&m_sorted_indices, "sorted_indices", "sorted indices");
+	SG_ADD(&m_nominal, "nominal", "feature types");
+	SG_ADD(&m_weights, "weights", "weights");
+	SG_ADD(&m_weights_set, "weights_set", "weights set");
+	SG_ADD(&m_types_set, "types_set", "feature types set");
+	SG_ADD(&m_apply_cv_pruning, "apply_cv_pruning", "apply cross validation pruning");
+	SG_ADD(&m_folds, "folds", "number of subsets for cross validation");
+	SG_ADD(&m_max_depth, "max_depth", "max allowed tree depth");
+	SG_ADD(&m_min_node_size, "min_node_size", "min allowed node size");
+	SG_ADD(&m_label_epsilon, "label_epsilon", "epsilon for labels");
+	SG_ADD((machine_int_t*)&m_mode, "mode", "problem type (multiclass or regression)");
 }

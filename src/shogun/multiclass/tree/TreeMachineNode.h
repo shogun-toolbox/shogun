@@ -185,8 +185,8 @@ private:
 		m_machine=-1;
 		m_children=new CDynamicObjectArray();
 		SG_REF(m_children);
-		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node", ParameterProperties());
-		SG_ADD(&m_machine,"m_machine", "Index of associated machine", ParameterProperties());
+		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node");
+		SG_ADD(&m_machine,"m_machine", "Index of associated machine");
 	}
 
 public:

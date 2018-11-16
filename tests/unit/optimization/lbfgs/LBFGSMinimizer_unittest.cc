@@ -125,8 +125,7 @@ void CPiecewiseQuadraticObject::init()
 	SG_ADD(&m_init_x, "init_x", "init_x",
 		ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 
-	SG_ADD(&m_truth_x, "truth_x", "truth_x",
-		ParameterProperties());
+	SG_ADD(&m_truth_x, "truth_x", "truth_x");
 }
 
 void CPiecewiseQuadraticObject::set_init_x(SGVector<float64_t> init_x)

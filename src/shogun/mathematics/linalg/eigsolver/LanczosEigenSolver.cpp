@@ -43,13 +43,13 @@ void CLanczosEigenSolver::init()
 	m_absolute_tolerence=1E-6;
 
 	SG_ADD(&m_max_iteration_limit, "max_iteration_limit",
-		"Maximum number of iteration for the solver", ParameterProperties());
+		"Maximum number of iteration for the solver");
 
 	SG_ADD(&m_relative_tolerence, "relative_tolerence",
-		"Relative tolerence of solver", ParameterProperties());
+		"Relative tolerence of solver");
 
 	SG_ADD(&m_absolute_tolerence, "absolute_tolerence",
-		"Absolute tolerence of solver", ParameterProperties());
+		"Absolute tolerence of solver");
 }
 
 CLanczosEigenSolver::~CLanczosEigenSolver()

@@ -1955,12 +1955,12 @@ void CWeightedDegreePositionStringKernel::init()
 	SG_ADD(&max_mismatch, "max_mismatch",
 			"Number of allowed mismatches.", ParameterProperties::HYPER);
 	SG_ADD(&block_computation, "block_computation",
-			"If block computation shall be used.", ParameterProperties());
+			"If block computation shall be used.");
 	SG_ADD((machine_int_t*) &type, "type",
 			"WeightedDegree kernel type.", ParameterProperties::HYPER);
 	SG_ADD(&which_degree, "which_degree",
 			"The selected degree. All degrees are used by default (for value -1).",
 			ParameterProperties::HYPER);
 	SG_ADD((CSGObject**) &alphabet, "alphabet",
-			"Alphabet of Features.", ParameterProperties());
+			"Alphabet of Features.");
 }

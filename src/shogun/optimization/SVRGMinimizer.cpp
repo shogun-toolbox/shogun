@@ -57,13 +57,13 @@ void SVRGMinimizer::init()
 	m_previous_variable=SGVector<float64_t>();
 
 	SG_ADD(&m_num_sgd_passes, "SVRGMinimizer__m_num_sgd_passes",
-		"num_sgd_passes in SVRGMinimizer", ParameterProperties());
+		"num_sgd_passes in SVRGMinimizer");
 	SG_ADD(&m_svrg_interval, "SVRGMinimizer__m_svrg_interval",
-		"svrg_interval in SVRGMinimizer", ParameterProperties());
+		"svrg_interval in SVRGMinimizer");
 	SG_ADD(&m_average_gradient, "SVRGMinimizer__m_average_gradient",
-		"average_gradient in SVRGMinimizer", ParameterProperties());
+		"average_gradient in SVRGMinimizer");
 	SG_ADD(&m_previous_variable, "SVRGMinimizer__m_previous_variable",
-		"previous_variable in SVRGMinimizer", ParameterProperties());
+		"previous_variable in SVRGMinimizer");
 }
 
 void SVRGMinimizer::init_minimization()

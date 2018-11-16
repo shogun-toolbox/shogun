@@ -69,15 +69,15 @@ void CVarDTCInferenceMethod::init()
 	m_inv_La=SGMatrix<float64_t>();
 	m_Knm_inv_Lm=SGMatrix<float64_t>();
 
-	SG_ADD(&m_yy, "yy", "yy", ParameterProperties());
-	SG_ADD(&m_f3, "f3", "f3", ParameterProperties());
-	SG_ADD(&m_sigma2, "sigma2", "sigma2", ParameterProperties());
-	SG_ADD(&m_trk, "trk", "trk", ParameterProperties());
-	SG_ADD(&m_Tmm, "Tmm", "Tmm", ParameterProperties());
-	SG_ADD(&m_Tnm, "Tnm", "Tnm", ParameterProperties());
-	SG_ADD(&m_inv_Lm, "inv_Lm", "inv_Lm", ParameterProperties());
-	SG_ADD(&m_inv_La, "inv_La", "inv_La", ParameterProperties());
-	SG_ADD(&m_Knm_inv_Lm, "Knm_Inv_Lm", "Knm_Inv_Lm", ParameterProperties());
+	SG_ADD(&m_yy, "yy", "yy");
+	SG_ADD(&m_f3, "f3", "f3");
+	SG_ADD(&m_sigma2, "sigma2", "sigma2");
+	SG_ADD(&m_trk, "trk", "trk");
+	SG_ADD(&m_Tmm, "Tmm", "Tmm");
+	SG_ADD(&m_Tnm, "Tnm", "Tnm");
+	SG_ADD(&m_inv_Lm, "inv_Lm", "inv_Lm");
+	SG_ADD(&m_inv_La, "inv_La", "inv_La");
+	SG_ADD(&m_Knm_inv_Lm, "Knm_Inv_Lm", "Knm_Inv_Lm");
 }
 
 CVarDTCInferenceMethod::~CVarDTCInferenceMethod()

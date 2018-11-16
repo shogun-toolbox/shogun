@@ -57,12 +57,12 @@ CFactorGraph::~CFactorGraph()
 
 void CFactorGraph::register_parameters()
 {
-	SG_ADD(&m_cardinalities, "cardinalities", "Cardinalities", ParameterProperties());
-	SG_ADD((CSGObject**)&m_factors, "factors", "Factors", ParameterProperties());
-	SG_ADD((CSGObject**)&m_datasources, "datasources", "Factor data sources", ParameterProperties());
-	SG_ADD((CSGObject**)&m_dset, "dset", "Disjoint set", ParameterProperties());
-	SG_ADD(&m_has_cycle, "has_cycle", "Whether has circle in graph", ParameterProperties());
-	SG_ADD(&m_num_edges, "num_edges", "Number of edges", ParameterProperties());
+	SG_ADD(&m_cardinalities, "cardinalities", "Cardinalities");
+	SG_ADD((CSGObject**)&m_factors, "factors", "Factors");
+	SG_ADD((CSGObject**)&m_datasources, "datasources", "Factor data sources");
+	SG_ADD((CSGObject**)&m_dset, "dset", "Disjoint set");
+	SG_ADD(&m_has_cycle, "has_cycle", "Whether has circle in graph");
+	SG_ADD(&m_num_edges, "num_edges", "Number of edges");
 }
 
 void CFactorGraph::init()

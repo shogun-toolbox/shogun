@@ -21,15 +21,15 @@ CMachine::CMachine()
 	m_store_model_features=false;
 
 	SG_ADD(&m_max_train_time, "max_train_time",
-	       "Maximum training time.", ParameterProperties());
+	       "Maximum training time.");
 	SG_ADD((machine_int_t*) &m_solver_type, "solver_type",
-	       "Type of solver.", ParameterProperties());
+	       "Type of solver.");
 
-	SG_ADD(&m_labels, "labels", "Labels to be used.", ParameterProperties());
+	SG_ADD(&m_labels, "labels", "Labels to be used.");
 	SG_ADD(&m_store_model_features, "store_model_features",
-	       "Should feature data of model be stored after training?", ParameterProperties());
+	       "Should feature data of model be stored after training?");
 	SG_ADD(&m_data_locked, "data_locked",
-			"Indicates whether data is locked", ParameterProperties());
+			"Indicates whether data is locked");
 }
 
 CMachine::~CMachine()

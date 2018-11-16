@@ -53,8 +53,8 @@ class CListElement :public CSGObject
 	private:
 		void init()
 		{
-			SG_ADD(&data, "data", "Data of this element.", ParameterProperties());
-			SG_ADD(&next, "next", "Next element in list.", ParameterProperties());
+			SG_ADD(&data, "data", "Data of this element.");
+			SG_ADD(&next, "next", "Next element in list.");
 		}
 
 	public:

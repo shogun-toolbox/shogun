@@ -752,8 +752,7 @@ void CCombinedKernel::init()
 
 	SG_ADD(&append_subkernel_weights, "append_subkernel_weights",
 	    "If subkernel weights are appended.", ParameterProperties::HYPER);
-	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
-	    ParameterProperties());
+	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.");
 
 	enable_subkernel_weight_opt=false;
 	subkernel_log_weights = SGVector<float64_t>(1);
@@ -761,11 +760,11 @@ void CCombinedKernel::init()
 	SG_ADD(&subkernel_log_weights, "subkernel_log_weights",
 	    "subkernel weights", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&enable_subkernel_weight_opt, "enable_subkernel_weight_opt",
-	    "enable subkernel weight opt", ParameterProperties());
+	    "enable subkernel weight opt");
 
 	weight_update = false;
 	SG_ADD(&weight_update, "weight_update",
-	    "weight update", ParameterProperties());
+	    "weight update");
 }
 
 void CCombinedKernel::enable_subkernel_weight_learning()

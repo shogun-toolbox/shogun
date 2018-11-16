@@ -86,15 +86,15 @@ void AdaDeltaUpdater::init()
 	m_gradient_delta_accuracy=SGVector<float64_t>();
 
 	SG_ADD(&m_gradient_accuracy, "AdaDeltaUpdater__m_gradient_accuracy",
-		"gradient_accuracy in AdaDeltaUpdater", ParameterProperties());
+		"gradient_accuracy in AdaDeltaUpdater");
 	SG_ADD(&m_gradient_delta_accuracy, "AdaDeltaUpdater__m_gradient_delta_accuracy",
-		"gradient_delta_accuracy in AdaDeltaUpdater", ParameterProperties());
+		"gradient_delta_accuracy in AdaDeltaUpdater");
 	SG_ADD(&m_epsilon, "AdaDeltaUpdater__m_epsilon",
-		"epsilon in AdaDeltaUpdater", ParameterProperties());
+		"epsilon in AdaDeltaUpdater");
 	SG_ADD(&m_decay_factor, "AdaDeltaUpdater__m_decay_factor",
-		"decay_factor in AdaDeltaUpdater", ParameterProperties());
+		"decay_factor in AdaDeltaUpdater");
 	SG_ADD(&m_build_in_learning_rate, "AdaDeltaUpdater__m_build_in_learning_rate",
-		"m_build_in_learning_rate in AdaDeltaUpdater", ParameterProperties());
+		"m_build_in_learning_rate in AdaDeltaUpdater");
 }
 
 float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,

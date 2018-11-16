@@ -44,7 +44,7 @@ void CLogRationalApproximationIndividual::init()
 	m_linear_solver=NULL;
 
 	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
-		"Linear solver for complex systems", ParameterProperties());
+		"Linear solver for complex systems");
 }
 
 CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()

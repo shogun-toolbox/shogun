@@ -593,10 +593,10 @@ void CCommWordStringKernel::init()
 	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 
 	SG_ADD(&dictionary_weights,  "dictionary_weights",
-			"Dictionary for applying kernel.", ParameterProperties());
+			"Dictionary for applying kernel.");
 	SG_ADD(&use_sign, "use_sign",
 	    "If signum(counts) is used instead of counts.", ParameterProperties::HYPER);
 	SG_ADD(&use_dict_diagonal_optimization,
 	    "use_dict_diagonal_optimization", "If K(x,x) is computed potentially "
-	    "more efficiently.", ParameterProperties());
+	    "more efficiently.");
 }

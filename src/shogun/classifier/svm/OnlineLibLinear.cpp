@@ -66,7 +66,7 @@ void COnlineLibLinear::init()
 	SG_ADD(&C1, "C1", "C Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "C Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", ParameterProperties());
+	    &use_bias, "use_bias", "Indicates if bias is used.");
 
 	PG = 0;
 	PGmax_old = CMath::INFTY;

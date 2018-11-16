@@ -51,5 +51,5 @@ void MomentumCorrection::init()
 {
 	m_previous_descend_direction=SGVector<float64_t>();
 	SG_ADD(&m_previous_descend_direction, "MomentumCorrection__m_previous_descend_direction",
-		"previous_descend_direction in MomentumCorrection", ParameterProperties());
+		"previous_descend_direction in MomentumCorrection");
 }

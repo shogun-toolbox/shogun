@@ -72,11 +72,11 @@ void InverseScalingLearningRate::init()
 	m_intercept=0.0;
 	m_slope=1.0;
 	SG_ADD(&m_slope, "InverseScalingLearningRate__m_slope",
-		"slope in InverseScalingLearningRate", ParameterProperties());
+		"slope in InverseScalingLearningRate");
 	SG_ADD(&m_exponent, "InverseScalingLearningRate__m_exponent",
-		"exponent in InverseScalingLearningRate", ParameterProperties());
+		"exponent in InverseScalingLearningRate");
 	SG_ADD(&m_intercept, "InverseScalingLearningRate__m_intercept",
-		"intercept in InverseScalingLearningRate", ParameterProperties());
+		"intercept in InverseScalingLearningRate");
 	SG_ADD(&m_initial_learning_rate, "InverseScalingLearningRate__m_initial_learning_rate",
-		"initial_learning_rate in InverseScalingLearningRate", ParameterProperties());
+		"initial_learning_rate in InverseScalingLearningRate");
 }

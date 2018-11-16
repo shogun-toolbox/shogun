@@ -43,5 +43,5 @@ void DescendCorrection::init()
 {
 	m_weight=0.0;
 	SG_ADD(&m_weight, "DescendCorrection__m_weight",
-		"weight used in descend correction", ParameterProperties());
+		"weight used in descend correction");
 }

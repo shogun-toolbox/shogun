@@ -11,7 +11,7 @@ using namespace shogun;
 CBalancedConditionalProbabilityTree::CBalancedConditionalProbabilityTree()
 	:m_alpha(0.4)
 {
-	SG_ADD(&m_alpha, "m_alpha", "Trade-off parameter of tree balance", ParameterProperties());
+	SG_ADD(&m_alpha, "m_alpha", "Trade-off parameter of tree balance");
 }
 
 void CBalancedConditionalProbabilityTree::set_alpha(float64_t alpha)

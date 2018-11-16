@@ -121,8 +121,7 @@ void CParameterCombination::init()
 	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
-	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes", "Children of this node",
-			ParameterProperties());
+	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes", "Children of this node");
 }
 
 CParameterCombination::~CParameterCombination()

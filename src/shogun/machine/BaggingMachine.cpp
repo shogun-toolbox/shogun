@@ -255,19 +255,16 @@ void CBaggingMachine::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 void CBaggingMachine::register_parameters()
 {
 	SG_ADD(
-	    &m_features, "features", "Train features for bagging",
-	    ParameterProperties());
+	    &m_features, "features", "Train features for bagging");
 	SG_ADD(&m_num_bags, "num_bags", "Number of bags", ParameterProperties::HYPER);
 	SG_ADD(&m_bag_size, "bag_size", "Number of vectors per bag", ParameterProperties::HYPER);
-	SG_ADD(&m_bags, "bags", "Bags array", ParameterProperties());
+	SG_ADD(&m_bags, "bags", "Bags array");
 	SG_ADD(
 	    &m_combination_rule, "combination_rule",
 	    "Combination rule to use for aggregating", ParameterProperties::HYPER);
-	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors",
-			ParameterProperties());
+	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors");
 	SG_ADD(
-	    &m_oob_indices, "oob_indices", "OOB indices for each machine",
-	    ParameterProperties());
+	    &m_oob_indices, "oob_indices", "OOB indices for each machine");
 }
 
 void CBaggingMachine::set_num_bags(int32_t num_bags)

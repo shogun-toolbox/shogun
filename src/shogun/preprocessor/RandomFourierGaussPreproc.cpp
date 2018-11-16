@@ -76,13 +76,13 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 	if(m_parameters)
 	{
 		SG_ADD(&dim_input_space, "dim_input_space",
-		    "Dimensionality of the input space.", ParameterProperties());
+		    "Dimensionality of the input space.");
 		SG_ADD(&cur_dim_input_space, "cur_dim_input_space",
-		    "Dimensionality of the input space.", ParameterProperties());
+		    "Dimensionality of the input space.");
 		SG_ADD(&dim_feature_space, "dim_feature_space",
-		    "Dimensionality of the feature space.", ParameterProperties());
+		    "Dimensionality of the feature space.");
 		SG_ADD(&cur_dim_feature_space, "cur_dim_feature_space",
-		    "Dimensionality of the feature space.", ParameterProperties());
+		    "Dimensionality of the feature space.");
 
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);
@@ -112,13 +112,13 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 	if(m_parameters)
 	{
 		SG_ADD(&dim_input_space, "dim_input_space",
-		    "Dimensionality of the input space.", ParameterProperties());
+		    "Dimensionality of the input space.");
 		SG_ADD(&cur_dim_input_space, "cur_dim_input_space",
-		    "Dimensionality of the input space.", ParameterProperties());
+		    "Dimensionality of the input space.");
 		SG_ADD(&dim_feature_space, "dim_feature_space",
-		    "Dimensionality of the feature space.", ParameterProperties());
+		    "Dimensionality of the feature space.");
 		SG_ADD(&cur_dim_feature_space, "cur_dim_feature_space",
-		    "Dimensionality of the feature space.", ParameterProperties());
+		    "Dimensionality of the feature space.");
 
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);

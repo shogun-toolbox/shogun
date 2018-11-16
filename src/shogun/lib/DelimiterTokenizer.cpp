@@ -31,10 +31,9 @@ CDelimiterTokenizer::CDelimiterTokenizer(const CDelimiterTokenizer& orig)
 
 void CDelimiterTokenizer::init()
 {
-	SG_ADD(&last_idx, "last_idx", "Index of last token",
-		ParameterProperties());
+	SG_ADD(&last_idx, "last_idx", "Index of last token");
 	SG_ADD(&skip_consecutive_delimiters, "skip_consecutive_delimiters",
-		"Whether to skip consecutive delimiters or not", ParameterProperties());
+		"Whether to skip consecutive delimiters or not");
 	SGVector<bool>::fill_vector(delimiters, 256, 0);
 }
 

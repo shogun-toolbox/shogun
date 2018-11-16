@@ -49,7 +49,7 @@ CDenseLabels::~CDenseLabels()
 
 void CDenseLabels::init()
 {
-	SG_ADD(&m_labels, "labels", "The labels.", ParameterProperties());
+	SG_ADD(&m_labels, "labels", "The labels.");
 }
 
 void CDenseLabels::set_to_one()

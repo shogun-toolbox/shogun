@@ -29,21 +29,18 @@ void CSigmoidCalibration::init()
 
 	SG_ADD(
 	    &m_sigmoid_as, "m_sigmoid_as",
-	    "Vector of paramter A of sigmoid for each class.", ParameterProperties());
+	    "Vector of paramter A of sigmoid for each class.");
 	SG_ADD(
 	    &m_sigmoid_bs, "m_sigmoid_bs",
-	    "Vector of paramter B of sigmoid for each class.", ParameterProperties());
+	    "Vector of paramter B of sigmoid for each class.");
 	SG_ADD(
-	    &m_maxiter, "m_maxiter", "Maximum number of iteration for search.",
-	    ParameterProperties());
+	    &m_maxiter, "m_maxiter", "Maximum number of iteration for search.");
 	SG_ADD(
-	    &m_minstep, "m_minstep", "Minimum step taken in line search.",
-	    ParameterProperties());
+	    &m_minstep, "m_minstep", "Minimum step taken in line search.");
 	SG_ADD(
 	    &m_sigma, "m_sigma",
-	    "Positive parameter to ensure positive semi-definite Hessian.",
-	    ParameterProperties());
-	SG_ADD(&m_epsilon, "m_epsilon", "Stopping criteria.", ParameterProperties());
+	    "Positive parameter to ensure positive semi-definite Hessian.");
+	SG_ADD(&m_epsilon, "m_epsilon", "Stopping criteria.");
 }
 
 void CSigmoidCalibration::set_maxiter(index_t maxiter)

@@ -48,12 +48,12 @@ CFactorType::~CFactorType()
 
 void CFactorType::init()
 {
-	SG_ADD(&m_type_id, "type_id", "Factor type name", ParameterProperties());
-	SG_ADD(&m_cards, "cards", "Cardinalities", ParameterProperties());
-	SG_ADD(&m_cumprod_cards, "cumprod_cards", "Cumulative product of cardinalities", ParameterProperties());
-	SG_ADD(&m_num_assignments, "num_assignments", "Number of variable configurations", ParameterProperties());
-	SG_ADD(&m_w, "w", "Factor parameters", ParameterProperties());
-	SG_ADD(&m_data_size, "data_size", "Size of data vector", ParameterProperties());
+	SG_ADD(&m_type_id, "type_id", "Factor type name");
+	SG_ADD(&m_cards, "cards", "Cardinalities");
+	SG_ADD(&m_cumprod_cards, "cumprod_cards", "Cumulative product of cardinalities");
+	SG_ADD(&m_num_assignments, "num_assignments", "Number of variable configurations");
+	SG_ADD(&m_w, "w", "Factor parameters");
+	SG_ADD(&m_data_size, "data_size", "Size of data vector");
 
 	m_type_id = 0;
 	m_data_size = 0;

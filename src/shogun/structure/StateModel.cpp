@@ -29,13 +29,12 @@ int32_t CStateModel::get_num_transmission_params() const
 
 void CStateModel::init()
 {
-	SG_ADD(&m_num_states, "m_num_states", "The number of states", ParameterProperties());
+	SG_ADD(&m_num_states, "m_num_states", "The number of states");
 	SG_ADD(&m_num_transmission_params, "m_num_tranmission_params",
-			"The number of tranmission parameters", ParameterProperties());
-	SG_ADD(&m_state_loss_mat, "m_state_loss_mat", "The state loss matrix",
-			ParameterProperties());
-	SG_ADD(&m_p, "m_p", "The distribution of start states", ParameterProperties());
-	SG_ADD(&m_q, "m_q", "The distribution of stop states", ParameterProperties());
+			"The number of tranmission parameters");
+	SG_ADD(&m_state_loss_mat, "m_state_loss_mat", "The state loss matrix");
+	SG_ADD(&m_p, "m_p", "The distribution of start states");
+	SG_ADD(&m_q, "m_q", "The distribution of stop states");
 
 	m_num_states = 0;
 	m_num_transmission_params = 0;

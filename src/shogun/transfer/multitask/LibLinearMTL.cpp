@@ -53,11 +53,9 @@ void CLibLinearMTL::init()
 
 	SG_ADD(&C1, "C1", "C Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "C Cost constant 2.", ParameterProperties::HYPER);
-	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.",
-			ParameterProperties());
-	SG_ADD(&epsilon, "epsilon", "Convergence precision.", ParameterProperties());
-	SG_ADD(&max_iterations, "max_iterations", "Max number of iterations.",
-			ParameterProperties());
+	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.");
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
+	SG_ADD(&max_iterations, "max_iterations", "Max number of iterations.");
 
 }
 

@@ -39,15 +39,11 @@ CStructuredLabels * CHashedMultilabelModel::structured_labels_factory(
 
 void CHashedMultilabelModel::init(int32_t dim)
 {
-	SG_ADD(&m_false_positive, "false_positive", "Misclassification cost for false positive",
-	       ParameterProperties());
-	SG_ADD(&m_false_negative, "false_negative", "Misclassification cost for false negative",
-	       ParameterProperties());
-	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
-	       ParameterProperties());
-	SG_ADD(&m_dim, "dim", "New joint feature space dimension", ParameterProperties());
-	SG_ADD(&m_seeds, "seeds", "Vector of seeds used for hashing",
-	       ParameterProperties());
+	SG_ADD(&m_false_positive, "false_positive", "Misclassification cost for false positive");
+	SG_ADD(&m_false_negative, "false_negative", "Misclassification cost for false negative");
+	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label");
+	SG_ADD(&m_dim, "dim", "New joint feature space dimension");
+	SG_ADD(&m_seeds, "seeds", "Vector of seeds used for hashing");
 
 	m_false_positive = 1;
 	m_false_negative = 1;

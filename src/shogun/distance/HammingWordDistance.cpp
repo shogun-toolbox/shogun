@@ -170,6 +170,5 @@ void CHammingWordDistance::init()
 {
 	use_sign = false;
 	SG_ADD(
-	    &use_sign, "use_sign", "If signum(counts) is used instead of counts.",
-	    ParameterProperties());
+	    &use_sign, "use_sign", "If signum(counts) is used instead of counts.");
 }

@@ -82,15 +82,13 @@ void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 
 void CLatentModel::register_parameters()
 {
-	SG_ADD(&m_features, "features", "Latent features", ParameterProperties());
-	SG_ADD(&m_labels, "labels", "Latent labels", ParameterProperties());
+	SG_ADD(&m_features, "features", "Latent features");
+	SG_ADD(&m_labels, "labels", "Latent labels");
 	SG_ADD(
-	    &m_cached_psi, "cached_psi", "Cached PSI features after argmax_h",
-	    ParameterProperties());
+	    &m_cached_psi, "cached_psi", "Cached PSI features after argmax_h");
 	SG_ADD(
 	    &m_do_caching, "do_caching",
-	    "Indicate whether or not do PSI vector caching after argmax_h",
-	    ParameterProperties());
+	    "Indicate whether or not do PSI vector caching after argmax_h");
 }
 
 

@@ -34,9 +34,9 @@ void CMulticlassStrategy::init()
 	m_prob_heuris=PROB_HEURIS_NONE;
 	m_num_classes=0;
 
-	SG_ADD((CSGObject**)&m_rejection_strategy, "rejection_strategy", "Strategy of rejection", ParameterProperties());
-	SG_ADD(&m_num_classes, "num_classes", "Number of classes", ParameterProperties());
-	SG_ADD((machine_int_t*)&m_prob_heuris, "prob_heuris", "Probability estimation heuristics", ParameterProperties());
+	SG_ADD((CSGObject**)&m_rejection_strategy, "rejection_strategy", "Strategy of rejection");
+	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
+	SG_ADD((machine_int_t*)&m_prob_heuris, "prob_heuris", "Probability estimation heuristics");
 }
 
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)

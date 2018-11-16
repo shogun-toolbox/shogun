@@ -180,7 +180,7 @@ void CSNPStringKernel::register_params()
 	SG_ADD(&m_degree, "m_degree", "the order of the kernel", ParameterProperties::HYPER);
 	SG_ADD(&m_win_len, "m_win_len", "the window length", ParameterProperties::HYPER);
 	SG_ADD(&m_inhomogene, "m_inhomogene",
-	  "the mark of whether it's an inhomogeneous poly kernel", ParameterProperties());
+	  "the mark of whether it's an inhomogeneous poly kernel");
 
 	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
 	watch_param("m_str_min", &m_str_min, &m_str_len);

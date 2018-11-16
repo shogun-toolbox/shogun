@@ -50,10 +50,9 @@ void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled
 	else
 		converter=NULL;
 
-	SG_ADD(&num_bits, "num_bits", "Number of bits for hash", ParameterProperties());
-	SG_ADD((CSGObject** ) &tokenizer, "tokenizer", "The tokenizer used on the documents",
-		ParameterProperties());
-	SG_ADD((CSGObject** ) &converter, "converter", "Converter", ParameterProperties());
+	SG_ADD(&num_bits, "num_bits", "Number of bits for hash");
+	SG_ADD((CSGObject** ) &tokenizer, "tokenizer", "The tokenizer used on the documents");
+	SG_ADD((CSGObject** ) &converter, "converter", "Converter");
 
 	has_labels = is_labelled;
 	if (file)

@@ -166,8 +166,8 @@ int32_t CCombinedFeatures::get_num_feature_obj() const
 
 void CCombinedFeatures::init()
 {
-	SG_ADD(&num_vec, "num_vec", "Number of vectors.", ParameterProperties());
-	SG_ADD(&feature_array, "array", "Feature array.", ParameterProperties());
+	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
+	SG_ADD(&feature_array, "array", "Feature array.");
 }
 
 CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const

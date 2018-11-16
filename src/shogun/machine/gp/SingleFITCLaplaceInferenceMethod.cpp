@@ -146,9 +146,9 @@ private:
 		m_obj=NULL;
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "SingleFITCLaplaceInferenceMethodCostFunction__m_derivatives",
-			"derivatives in SingleFITCLaplaceInferenceMethodCostFunction", ParameterProperties());
+			"derivatives in SingleFITCLaplaceInferenceMethodCostFunction");
 		SG_ADD((CSGObject **)&m_obj, "SingleFITCLaplaceInferenceMethodCostFunction__m_obj",
-			"obj in SingleFITCLaplaceInferenceMethodCostFunction", ParameterProperties());
+			"obj in SingleFITCLaplaceInferenceMethodCostFunction");
 	}
 
 	SGVector<float64_t> m_derivatives;
@@ -187,15 +187,15 @@ void CSingleFITCLaplaceNewtonOptimizer::init()
 	m_opt_max=10;
 
 	SG_ADD((CSGObject **)&m_obj, "CSingleFITCLaplaceNewtonOptimizer__m_obj",
-		"obj in CSingleFITCLaplaceNewtonOptimizer", ParameterProperties());
+		"obj in CSingleFITCLaplaceNewtonOptimizer");
 	SG_ADD(&m_iter, "CSingleFITCLaplaceNewtonOptimizer__m_iter",
-		"iter in CSingleFITCLaplaceNewtonOptimizer", ParameterProperties());
+		"iter in CSingleFITCLaplaceNewtonOptimizer");
 	SG_ADD(&m_tolerance, "CSingleFITCLaplaceNewtonOptimizer__m_tolerance",
-		"tolerance in CSingleFITCLaplaceNewtonOptimizer", ParameterProperties());
+		"tolerance in CSingleFITCLaplaceNewtonOptimizer");
 	SG_ADD(&m_opt_tolerance, "CSingleFITCLaplaceNewtonOptimizer__m_opt_tolerance",
-		"opt_tolerance in CSingleFITCLaplaceNewtonOptimizer", ParameterProperties());
+		"opt_tolerance in CSingleFITCLaplaceNewtonOptimizer");
 	SG_ADD(&m_opt_max, "CSingleFITCLaplaceNewtonOptimizer__m_opt_max",
-		"opt_max in CSingleFITCLaplaceNewtonOptimizer", ParameterProperties());
+		"opt_max in CSingleFITCLaplaceNewtonOptimizer");
 }
 
 float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
@@ -320,18 +320,18 @@ void CSingleFITCLaplaceInferenceMethod::init()
 	m_Psi=0;
 	m_Wneg=false;
 
-	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location", ParameterProperties());
-	SG_ADD(&m_W, "W", "the noise matrix", ParameterProperties());
+	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location");
+	SG_ADD(&m_W, "W", "the noise matrix");
 
-	SG_ADD(&m_sW, "sW", "square root of W", ParameterProperties());
-	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", ParameterProperties());
-	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", ParameterProperties());
-	SG_ADD(&m_chol_R0, "chol_R0", "Cholesky of inverse covariance of inducing features", ParameterProperties());
-	SG_ADD(&m_dfhat, "dfhat", "derivative of negative log (approximated) marginal likelihood wrt f", ParameterProperties());
-	SG_ADD(&m_g, "g", "variable g defined in infFITC_Laplace.m", ParameterProperties());
-	SG_ADD(&m_dg, "dg", "variable d0 defined in infFITC_Laplace.m", ParameterProperties());
-	SG_ADD(&m_Psi, "Psi", "the negative log likelihood without constant terms used in Newton's method", ParameterProperties());
-	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements", ParameterProperties());
+	SG_ADD(&m_sW, "sW", "square root of W");
+	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location");
+	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location");
+	SG_ADD(&m_chol_R0, "chol_R0", "Cholesky of inverse covariance of inducing features");
+	SG_ADD(&m_dfhat, "dfhat", "derivative of negative log (approximated) marginal likelihood wrt f");
+	SG_ADD(&m_g, "g", "variable g defined in infFITC_Laplace.m");
+	SG_ADD(&m_dg, "dg", "variable d0 defined in infFITC_Laplace.m");
+	SG_ADD(&m_Psi, "Psi", "the negative log likelihood without constant terms used in Newton's method");
+	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements");
 
 	register_minimizer(new CSingleFITCLaplaceNewtonOptimizer());
 }

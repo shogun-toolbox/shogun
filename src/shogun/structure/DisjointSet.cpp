@@ -28,10 +28,10 @@ CDisjointSet::CDisjointSet(int32_t num_elements)
 
 void CDisjointSet::init()
 {
-	SG_ADD(&m_num_elements, "num_elements", "Number of elements", ParameterProperties());
-	SG_ADD(&m_parent, "parent", "Parent pointers", ParameterProperties());
-	SG_ADD(&m_rank, "rank", "Rank of each element", ParameterProperties());
-	SG_ADD(&m_is_connected, "is_connected", "Whether disjoint sets have been linked", ParameterProperties());
+	SG_ADD(&m_num_elements, "num_elements", "Number of elements");
+	SG_ADD(&m_parent, "parent", "Parent pointers");
+	SG_ADD(&m_rank, "rank", "Rank of each element");
+	SG_ADD(&m_is_connected, "is_connected", "Whether disjoint sets have been linked");
 
 	m_is_connected = false;
 	m_num_elements = -1;

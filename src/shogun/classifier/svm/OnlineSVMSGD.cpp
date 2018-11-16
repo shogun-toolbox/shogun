@@ -209,14 +209,14 @@ void COnlineSVMSGD::init()
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(&lambda, "lambda", "Regularization parameter.", ParameterProperties::HYPER);
-	SG_ADD(&wscale, "wscale", "W scale", ParameterProperties());
-	SG_ADD(&bscale, "bscale", "b scale", ParameterProperties());
-	SG_ADD(&epochs, "epochs", "epochs", ParameterProperties());
-	SG_ADD(&skip, "skip", "skip", ParameterProperties());
-	SG_ADD(&count, "count", "count", ParameterProperties());
+	SG_ADD(&wscale, "wscale", "W scale");
+	SG_ADD(&bscale, "bscale", "b scale");
+	SG_ADD(&epochs, "epochs", "epochs");
+	SG_ADD(&skip, "skip", "skip");
+	SG_ADD(&count, "count", "count");
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", ParameterProperties());
+	    &use_bias, "use_bias", "Indicates if bias is used.");
 	SG_ADD(
 	    &use_regularized_bias, "use_regularized_bias",
-	    "Indicates if bias is regularized.", ParameterProperties());
+	    "Indicates if bias is regularized.");
 }

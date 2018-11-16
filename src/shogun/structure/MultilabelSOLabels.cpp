@@ -41,10 +41,8 @@ CMultilabelSOLabels::CMultilabelSOLabels(CMultilabelLabels * multilabel_labels)
 
 void CMultilabelSOLabels::init()
 {
-	SG_ADD((CSGObject **)&m_multilabel_labels, "multilabel_labels", "multilabel labels object",
-	       ParameterProperties());
-	SG_ADD(&m_last_set_label, "last_set_label", "index of the last label added using add_label() method",
-	       ParameterProperties());
+	SG_ADD((CSGObject **)&m_multilabel_labels, "multilabel_labels", "multilabel labels object");
+	SG_ADD(&m_last_set_label, "last_set_label", "index of the last label added using add_label() method");
 
 	m_last_set_label = 0;
 }

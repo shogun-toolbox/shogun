@@ -30,7 +30,7 @@ void CLocallyLinearEmbedding::init()
 	SG_ADD(&m_nullspace_shift, "nullspace_shift",
       "nullspace finding regularization shift",ParameterProperties());
 	SG_ADD(&m_reconstruction_shift, "reconstruction_shift",
-      "shift used to regularize reconstruction step", ParameterProperties());
+      "shift used to regularize reconstruction step");
 }
 
 

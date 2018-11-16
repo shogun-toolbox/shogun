@@ -42,9 +42,9 @@ void CKernelPCA::init()
 	m_kernel = NULL;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
-		"matrix used to transform data", ParameterProperties());
+		"matrix used to transform data");
 	SG_ADD(&m_bias_vector, "bias_vector",
-		"bias vector used to transform data", ParameterProperties());
+		"bias vector used to transform data");
 	SG_ADD(
 	    &m_target_dim, "target_dim", "target dimensionality of preprocessor",
 	    ParameterProperties::HYPER);

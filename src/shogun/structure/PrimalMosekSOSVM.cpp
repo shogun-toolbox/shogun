@@ -34,12 +34,12 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 
 void CPrimalMosekSOSVM::init()
 {
-	SG_ADD(&m_slacks, "slacks", "Slacks vector", ParameterProperties());
+	SG_ADD(&m_slacks, "slacks", "Slacks vector");
 	//FIXME model selection available for SO machines
-	SG_ADD(&m_regularization, "regularization", "Regularization constant", ParameterProperties());
-	SG_ADD(&m_epsilon, "epsilon", "Violation tolerance", ParameterProperties());
-	SG_ADD(&m_lb, "lb", "Lower bounds", ParameterProperties());
-	SG_ADD(&m_ub, "ub", "Upper bounds", ParameterProperties());
+	SG_ADD(&m_regularization, "regularization", "Regularization constant");
+	SG_ADD(&m_epsilon, "epsilon", "Violation tolerance");
+	SG_ADD(&m_lb, "lb", "Lower bounds");
+	SG_ADD(&m_ub, "ub", "Upper bounds");
 
 	m_regularization = 1.0;
 	m_epsilon = 0.0;

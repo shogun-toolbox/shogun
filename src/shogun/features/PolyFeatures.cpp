@@ -377,18 +377,16 @@ CFeatures* CPolyFeatures::duplicate() const
 void CPolyFeatures::register_parameters()
 {
 	SG_ADD(
-	    (CSGObject**)&m_feat, "features", "Features in original space.",
-	    ParameterProperties());
+	    (CSGObject**)&m_feat, "features", "Features in original space.");
 	SG_ADD(
 	    &m_degree, "degree", "Degree of the polynomial kernel.", ParameterProperties::HYPER);
-	SG_ADD(&m_normalize, "normalize", "Normalize?", ParameterProperties());
+	SG_ADD(&m_normalize, "normalize", "Normalize?");
 	SG_ADD(
 	    &m_input_dimensions, "input_dimensions",
-	    "Dimensions of the input space.", ParameterProperties());
+	    "Dimensions of the input space.");
 	SG_ADD(
 	    &m_output_dimensions, "output_dimensions",
-	    "Dimensions of the feature space of the polynomial kernel.",
-	    ParameterProperties());
+	    "Dimensions of the feature space of the polynomial kernel.");
 
 	multi_index_length=m_output_dimensions*m_degree;
 	m_parameters->add_vector(

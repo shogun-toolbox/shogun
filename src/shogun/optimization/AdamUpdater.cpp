@@ -97,21 +97,21 @@ void AdamUpdater::init()
 	m_gradient_second_moment=SGVector<float64_t>();
 
 	SG_ADD(&m_decay_factor_first_moment, "AdamUpdater__m_decay_factor_first_moment",
-		"decay_factor_first_moment in AdamUpdater", ParameterProperties());
+		"decay_factor_first_moment in AdamUpdater");
 	SG_ADD(&m_decay_factor_second_moment, "AdamUpdater__m_decay_factor_second_moment",
-		"decay_factor_second_moment in AdamUpdater", ParameterProperties());
+		"decay_factor_second_moment in AdamUpdater");
 	SG_ADD(&m_gradient_first_moment, "AdamUpdater__m_gradient_first_moment",
-		"m_gradient_first_moment in AdamUpdater", ParameterProperties());
+		"m_gradient_first_moment in AdamUpdater");
 	SG_ADD(&m_gradient_second_moment, "AdamUpdater__m_gradient_second_moment",
-		"m_gradient_second_moment in AdamUpdater", ParameterProperties());
+		"m_gradient_second_moment in AdamUpdater");
 	SG_ADD(&m_epsilon, "AdamUpdater__m_epsilon",
-		"epsilon in AdamUpdater", ParameterProperties());
+		"epsilon in AdamUpdater");
 	SG_ADD(&m_log_scale_pre_iteration, "AdamUpdater__m_log_scale_pre_iteration",
-		"log_scale_pre_iteration in AdamUpdater", ParameterProperties());
+		"log_scale_pre_iteration in AdamUpdater");
 	SG_ADD(&m_log_learning_rate, "AdamUpdater__m_log_learning_rate",
-		"m_log_learning_rate in AdamUpdater", ParameterProperties());
+		"m_log_learning_rate in AdamUpdater");
 	SG_ADD(&m_iteration_counter, "AdamUpdater__m_iteration_counter",
-		"m_iteration_counter in AdamUpdater", ParameterProperties());
+		"m_iteration_counter in AdamUpdater");
 }
 
 float64_t AdamUpdater::get_negative_descend_direction(float64_t variable,

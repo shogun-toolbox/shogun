@@ -54,11 +54,9 @@ void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_label
 	use_quadratic = use_quadr;
 	keep_linear_terms = keep_lin_terms;
 
-	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
-		ParameterProperties());
-	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
-		ParameterProperties());
-	SG_ADD(&dim, "dim", "Size of target dimension", ParameterProperties());
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
+	SG_ADD(&dim, "dim", "Size of target dimension");
 
 	has_labels = is_labelled;
 	if (file)

@@ -72,5 +72,5 @@ void CRandomCARTree::init()
 {
 	m_randsubset_size=0;
 
-	SG_ADD(&m_randsubset_size,"m_randsubset_size", "random features subset size", ParameterProperties());
+	SG_ADD(&m_randsubset_size,"m_randsubset_size", "random features subset size");
 }

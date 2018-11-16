@@ -56,10 +56,10 @@ CLaplaceInference::CLaplaceInference(CKernel* kern,
 
 void CLaplaceInference::init()
 {
-	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location", ParameterProperties());
-	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", ParameterProperties());
-	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", ParameterProperties());
-	SG_ADD(&m_W, "W", "the noise matrix", ParameterProperties());
+	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location");
+	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");
+	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior");
+	SG_ADD(&m_W, "W", "the noise matrix");
 }
 
 CLaplaceInference::~CLaplaceInference()

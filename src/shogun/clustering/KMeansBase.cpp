@@ -361,8 +361,8 @@ void CKMeansBase::init()
 	use_kmeanspp=false;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", ParameterProperties::HYPER);
 	SG_ADD(&k, "k", "k, the number of clusters", ParameterProperties::HYPER);
-	SG_ADD(&dimensions, "dimensions", "Dimensions of data", ParameterProperties());
-	SG_ADD(&R, "radiuses", "Cluster radiuses", ParameterProperties());
+	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
+	SG_ADD(&R, "radiuses", "Cluster radiuses");
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }

@@ -69,10 +69,10 @@ CMAPInference::~CMAPInference()
 
 void CMAPInference::init()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph", ParameterProperties());
-	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs", ParameterProperties());
-	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation", ParameterProperties());
-	SG_ADD(&m_energy, "energy", "Minimized energy", ParameterProperties());
+	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph");
+	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs");
+	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation");
+	SG_ADD(&m_energy, "energy", "Minimized energy");
 
 	m_outputs = NULL;
 	m_infer_impl = NULL;
@@ -126,7 +126,7 @@ CMAPInferImpl::~CMAPInferImpl()
 void CMAPInferImpl::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_fg, "fg",
-		"Factor graph pointer", ParameterProperties());
+		"Factor graph pointer");
 
 	m_fg = NULL;
 }

@@ -52,21 +52,21 @@ CUAIFile::~CUAIFile()
 
 void CUAIFile::init()
 {
-    SG_ADD((CSGObject**)&m_line_reader, "line_reader", "line reader used to read lines from file", ParameterProperties());
-    SG_ADD((CSGObject**)&m_parser, "parser", "parser used to parse file", ParameterProperties());
-    SG_ADD((CSGObject**)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file", ParameterProperties());
-    SG_ADD((CSGObject**)&m_tokenizer, "tokenizer", "tokenizer used to parse file", ParameterProperties());
-    SG_ADD(&m_delimiter, "delimiter", "delimiter used in get_vector function", ParameterProperties());
+    SG_ADD((CSGObject**)&m_line_reader, "line_reader", "line reader used to read lines from file");
+    SG_ADD((CSGObject**)&m_parser, "parser", "parser used to parse file");
+    SG_ADD((CSGObject**)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file");
+    SG_ADD((CSGObject**)&m_tokenizer, "tokenizer", "tokenizer used to parse file");
+    SG_ADD(&m_delimiter, "delimiter", "delimiter used in get_vector function");
 
-    SG_ADD(&m_num_vars, "num_vars", "number of variables", ParameterProperties());
-    SG_ADD(&m_num_factors, "num_factors", "number of factors", ParameterProperties());
-    SG_ADD(&m_net_type, "net_type", "network type (either BAYES or MARKOV)", ParameterProperties());
-    SG_ADD(&m_vars_card, "vars_card", "cardinality of all the variables", ParameterProperties());
+    SG_ADD(&m_num_vars, "num_vars", "number of variables");
+    SG_ADD(&m_num_factors, "num_factors", "number of factors");
+    SG_ADD(&m_net_type, "net_type", "network type (either BAYES or MARKOV)");
+    SG_ADD(&m_vars_card, "vars_card", "cardinality of all the variables");
 
     /** Can only be enable after this issue is https://github.com/shogun-toolbox/shogun/issues/1972
      * resolved
-     * SG_ADD(m_factors_table, "m_factors_table", "table of factors", ParameterProperties());
-     * SG_ADD(m_factors_scope, "m_factors_scope", "scope of factors", ParameterProperties());
+     * SG_ADD(m_factors_table, "m_factors_table", "table of factors");
+     * SG_ADD(m_factors_scope, "m_factors_scope", "scope of factors");
      */
 
     m_delimiter = ' ';

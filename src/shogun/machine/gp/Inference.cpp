@@ -92,9 +92,9 @@ void CInference::init()
 	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_model, "likelihood_model", "Likelihood model", ParameterProperties::HYPER);
 	SG_ADD(&m_mean, "mean_function", "Mean function", ParameterProperties::HYPER);
-	SG_ADD(&m_labels, "labels", "Labels", ParameterProperties());
-	SG_ADD(&m_features, "features", "Features", ParameterProperties());
-	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", ParameterProperties());
+	SG_ADD(&m_labels, "labels", "Labels");
+	SG_ADD(&m_features, "features", "Features");
+	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated");
 	
 
 	m_kernel=NULL;
@@ -106,10 +106,10 @@ void CInference::init()
 	m_gradient_update=false;
 	m_minimizer=NULL;
 
-	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference", ParameterProperties());
-	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", ParameterProperties());
-	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", ParameterProperties());
-	SG_ADD(&m_E, "E", "the matrix used for multi classification", ParameterProperties());
+	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference");
+	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation");
+	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition");
+	SG_ADD(&m_E, "E", "the matrix used for multi classification");
 }
 
 void CInference::register_minimizer(Minimizer* minimizer)

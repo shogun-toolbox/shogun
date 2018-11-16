@@ -38,8 +38,7 @@ CMultilabelCLRModel::~CMultilabelCLRModel()
 
 void CMultilabelCLRModel::init()
 {
-	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
-	       ParameterProperties());
+	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label");
 	m_num_classes = 0;
 }
 

@@ -473,18 +473,16 @@ class CDynamicObjectArray : public CSGObject
 
 			SG_ADD(&m_array.resize_granularity,
 							  "resize_granularity",
-							  "shrink/grow step size.", ParameterProperties());
+							  "shrink/grow step size.");
 			SG_ADD(&m_array.use_sg_mallocs,
 							  "use_sg_malloc",
-							  "whether SG_MALLOC or malloc should be used",
-							  ParameterProperties());
+							  "whether SG_MALLOC or malloc should be used");
 			SG_ADD(&m_array.free_array,
 							  "free_array",
-							  "whether array must be freed",
-							  ParameterProperties());
-			SG_ADD(&dim1_size, "dim1_size", "Dimension 1", ParameterProperties());
-			SG_ADD(&dim2_size, "dim2_size", "Dimension 2", ParameterProperties());
-			SG_ADD(&dim3_size, "dim3_size", "Dimension 3", ParameterProperties());
+							  "whether array must be freed");
+			SG_ADD(&dim1_size, "dim1_size", "Dimension 1");
+			SG_ADD(&dim2_size, "dim2_size", "Dimension 2");
+			SG_ADD(&dim3_size, "dim3_size", "Dimension 3");
 		}
 
 		/** de-reference all elements of this array once */

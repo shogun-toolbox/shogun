@@ -110,9 +110,9 @@ private:
 		m_obj=NULL;
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "SingleLaplaceInferenceMethodCostFunction__m_derivatives",
-			"derivatives in SingleLaplaceInferenceMethodCostFunction", ParameterProperties());
+			"derivatives in SingleLaplaceInferenceMethodCostFunction");
 		SG_ADD((CSGObject **)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
-			"obj in SingleLaplaceInferenceMethodCostFunction", ParameterProperties());
+			"obj in SingleLaplaceInferenceMethodCostFunction");
 
 	}
 
@@ -152,15 +152,15 @@ void CSingleLaplaceNewtonOptimizer::init()
 	m_opt_max=10;
 
 	SG_ADD((CSGObject **)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
-		"obj in CSingleLaplaceNewtonOptimizer", ParameterProperties());
+		"obj in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_iter, "CSingleLaplaceNewtonOptimizer__m_iter",
-		"iter in CSingleLaplaceNewtonOptimizer", ParameterProperties());
+		"iter in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_tolerance, "CSingleLaplaceNewtonOptimizer__m_tolerance",
-		"tolerance in CSingleLaplaceNewtonOptimizer", ParameterProperties());
+		"tolerance in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_opt_tolerance, "CSingleLaplaceNewtonOptimizer__m_opt_tolerance",
-		"opt_tolerance in CSingleLaplaceNewtonOptimizer", ParameterProperties());
+		"opt_tolerance in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_opt_max, "CSingleLaplaceNewtonOptimizer__m_opt_max",
-		"opt_max in CSingleLaplaceNewtonOptimizer", ParameterProperties());
+		"opt_max in CSingleLaplaceNewtonOptimizer");
 }
 
 float64_t CSingleLaplaceNewtonOptimizer::minimize()
@@ -283,10 +283,10 @@ CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod(CKernel* kern,
 void CSingleLaplaceInferenceMethod::init()
 {
 	m_Psi=0;
-	SG_ADD(&m_Psi, "Psi", "posterior log likelihood without constant terms", ParameterProperties());
-	SG_ADD(&m_sW, "sW", "square root of W", ParameterProperties());
-	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", ParameterProperties());
-	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", ParameterProperties());
+	SG_ADD(&m_Psi, "Psi", "posterior log likelihood without constant terms");
+	SG_ADD(&m_sW, "sW", "square root of W");
+	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location");
+	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location");
 	register_minimizer(new CSingleLaplaceNewtonOptimizer());
 }
 

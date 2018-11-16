@@ -71,7 +71,6 @@ void CPolyKernel::init()
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(&degree, "degree", "Degree of polynomial kernel", ParameterProperties::HYPER);
-	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.",
-			ParameterProperties());
+	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.");
 }
 

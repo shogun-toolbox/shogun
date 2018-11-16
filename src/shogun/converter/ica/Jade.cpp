@@ -28,7 +28,7 @@ CJade::CJade() : CICAConverter()
 void CJade::init()
 {
 	m_cumulant_matrix = SGMatrix<float64_t>();
-	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix", ParameterProperties());
+	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix");
 }
 
 CJade::~CJade()

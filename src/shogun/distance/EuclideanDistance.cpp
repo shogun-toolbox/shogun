@@ -133,9 +133,9 @@ void CEuclideanDistance::register_params()
 {
 	disable_sqrt=false;
 	reset_precompute();
-	SG_ADD(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.", ParameterProperties());
-	SG_ADD(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side", ParameterProperties());
-	SG_ADD(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side", ParameterProperties());
+	SG_ADD(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
+	SG_ADD(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side");
+	SG_ADD(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side");
 }
 
 float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)

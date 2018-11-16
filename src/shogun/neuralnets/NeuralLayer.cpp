@@ -121,32 +121,32 @@ void CNeuralLayer::init()
 	autoencoder_position = NLAP_NONE;
 
 	SG_ADD(&m_num_neurons, "num_neurons",
-	       "Number of Neurons", ParameterProperties());
+	       "Number of Neurons");
 	SG_ADD(&m_width, "width",
-	       "Width", ParameterProperties());
+	       "Width");
 	SG_ADD(&m_height, "height",
-	       "Height", ParameterProperties());
+	       "Height");
 	SG_ADD(&m_input_indices, "input_indices",
-	       "Input Indices", ParameterProperties());
+	       "Input Indices");
 	SG_ADD(&m_input_sizes, "input_sizes",
-	       "Input Sizes", ParameterProperties());
+	       "Input Sizes");
 	SG_ADD(&dropout_prop, "dropout_prop",
-	       "Dropout Probabilty", ParameterProperties());
+	       "Dropout Probabilty");
 	SG_ADD(&contraction_coefficient, "contraction_coefficient",
-	       "Contraction Coefficient", ParameterProperties());
+	       "Contraction Coefficient");
 	SG_ADD(&is_training, "is_training",
-	       "is_training", ParameterProperties());
+	       "is_training");
 	SG_ADD(&m_batch_size, "batch_size",
-	       "Batch Size", ParameterProperties());
+	       "Batch Size");
 	SG_ADD(&m_activations, "activations",
-	       "Activations", ParameterProperties());
+	       "Activations");
 	SG_ADD(&m_activation_gradients, "activation_gradients",
-	       "Activation Gradients", ParameterProperties());
+	       "Activation Gradients");
 	SG_ADD(&m_local_gradients, "local_gradients",
-	       "Local Gradients", ParameterProperties());
+	       "Local Gradients");
 	SG_ADD(&m_dropout_mask, "dropout_mask",
-	       "Dropout mask", ParameterProperties());
+	       "Dropout mask");
 
 	SG_ADD((machine_int_t*)&autoencoder_position, "autoencoder_position",
-	       "Autoencoder Position", ParameterProperties());
+	       "Autoencoder Position");
 }
