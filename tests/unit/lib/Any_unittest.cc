@@ -696,7 +696,6 @@ TEST(AnyParameterProperties, old_api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
 
-	EXPECT_EQ(params.get_description(), "No description given");
 	EXPECT_EQ(
 	    params.get_model_selection(),
 	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
@@ -709,10 +708,9 @@ TEST(AnyParameterProperties, new_api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
 
-	EXPECT_EQ(params.get_description(), "No description given");
-	EXPECT_FALSE(params.is_property(
-	    ParameterProperties::MODEL | ParameterProperties::GRADIENT |
-	    ParameterProperties::HYPER));
+	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
+	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
+	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 }
 
 TEST(AnyParameterProperties, old_custom_ctor)
@@ -728,13 +726,13 @@ TEST(AnyParameterProperties, old_custom_ctor)
 	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
 	EXPECT_TRUE(params.get_model());
 
-	EXPECT_TRUE(params.is_property(
+	EXPECT_TRUE(params.has_property(
 	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.is_property(
+	EXPECT_FALSE(params.has_property(
 	    ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.is_property(
+	EXPECT_TRUE(params.has_property(
 	    ~ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.is_property(ParameterProperties::HYPER));
+	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 }
 
 TEST(AnyParameterProperties, new_custom_ctor)
@@ -749,11 +747,11 @@ TEST(AnyParameterProperties, new_custom_ctor)
 	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
 	EXPECT_TRUE(params.get_model());
 
-	EXPECT_TRUE(params.is_property(
+	EXPECT_TRUE(params.has_property(
 	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.is_property(
+	EXPECT_FALSE(params.has_property(
 	    ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.is_property(
+	EXPECT_TRUE(params.has_property(
 	    ~ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.is_property(ParameterProperties::HYPER));
+	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 }
