@@ -708,6 +708,7 @@ TEST(AnyParameterProperties, new_api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
 
+	EXPECT_TRUE(params.equals(ParameterProperties()));
 	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
 	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
@@ -726,12 +727,11 @@ TEST(AnyParameterProperties, old_custom_ctor)
 	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
 	EXPECT_TRUE(params.get_model());
 
-	EXPECT_TRUE(params.has_property(
+	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
+	EXPECT_TRUE(params.has_property(ParameterProperties::GRADIENT));
+	EXPECT_TRUE(params.equals(
 	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.has_property(
-	    ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.has_property(
-	    ~ParameterProperties::HYPER & ParameterProperties::GRADIENT));
+    EXPECT_FALSE(params.equals(ParameterProperties::MODEL));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 }
 
@@ -747,11 +747,9 @@ TEST(AnyParameterProperties, new_custom_ctor)
 	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
 	EXPECT_TRUE(params.get_model());
 
-	EXPECT_TRUE(params.has_property(
+	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
+	EXPECT_TRUE(params.has_property(ParameterProperties::GRADIENT));
+	EXPECT_TRUE(params.equals(
 	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.has_property(
-	    ParameterProperties::HYPER & ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.has_property(
-	    ~ParameterProperties::HYPER & ParameterProperties::GRADIENT));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 }

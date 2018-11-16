@@ -118,8 +118,15 @@ namespace shogun
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
 		}
-		bool has_property(ParameterProperties mask) const {
-		    return static_cast<bool>(m_attribute_mask & mask);
+		bool has_property(ParameterProperties other_params) const
+		{
+			return static_cast<bool>(m_attribute_mask & other_params);
+		}
+
+		bool equals(ParameterProperties other_params)
+		{
+			return static_cast<int32_t>(m_attribute_mask) ==
+			       static_cast<int32_t>(other_params);
 		}
 
 	private:
