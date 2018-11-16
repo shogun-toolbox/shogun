@@ -584,10 +584,10 @@ void CNbodyTree::init()
 	m_knn_dists=SGMatrix<float64_t>();
 	m_knn_indices=SGMatrix<index_t>();
 
-	SG_ADD(&m_data,"m_data","data matrix",ParameterProperties());
-	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size",ParameterProperties());
-	SG_ADD(&m_vec_id,"m_vec_id","id of vectors",ParameterProperties());
-	SG_ADD(&m_knn_done,"knn_done","knn done or not",ParameterProperties());
-	SG_ADD(&m_knn_dists,"m_knn_dists","knn distances",ParameterProperties());
-	SG_ADD(&m_knn_indices,"knn_indices","knn indices",ParameterProperties());
+	SG_ADD(&m_data,"m_data","data matrix");
+	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size");
+	SG_ADD(&m_vec_id,"m_vec_id","id of vectors");
+	SG_ADD(&m_knn_done,"knn_done","knn done or not");
+	SG_ADD(&m_knn_dists,"m_knn_dists","knn distances");
+	SG_ADD(&m_knn_indices,"knn_indices","knn indices");
 }

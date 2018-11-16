@@ -69,8 +69,8 @@ void CRegressionExample::init()
 	m_y=SGVector<float64_t>();
 	m_x=SGMatrix<float64_t>();
 	SG_ADD(&m_w, "r_w", "r_w",ParameterProperties::HYPER | ParameterProperties::GRADIENT);
-	SG_ADD(&m_x, "r_x", "r_x",ParameterProperties());
-	SG_ADD(&m_y, "r_y", "r_y",ParameterProperties());
+	SG_ADD(&m_x, "r_x", "r_x");
+	SG_ADD(&m_y, "r_y", "r_y");
 }
 
 float64_t CRegressionExample::get_cost()

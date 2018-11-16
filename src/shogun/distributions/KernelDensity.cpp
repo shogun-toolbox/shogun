@@ -159,9 +159,9 @@ void CKernelDensity::init()
 	m_rtol=0;
 	tree=NULL;
 
-	SG_ADD(&m_bandwidth,"m_bandwidth","bandwidth",ParameterProperties());
-	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size",ParameterProperties());
-	SG_ADD(&m_atol,"m_atol","absolute tolerance",ParameterProperties());
-	SG_ADD(&m_rtol,"m_rtol","relative tolerance",ParameterProperties());
-	SG_ADD((CSGObject**) &tree,"tree","tree",ParameterProperties());
+	SG_ADD(&m_bandwidth,"m_bandwidth","bandwidth");
+	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size");
+	SG_ADD(&m_atol,"m_atol","absolute tolerance");
+	SG_ADD(&m_rtol,"m_rtol","relative tolerance");
+	SG_ADD((CSGObject**) &tree,"tree","tree");
 }

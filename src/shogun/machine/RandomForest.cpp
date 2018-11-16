@@ -185,5 +185,5 @@ void CRandomForest::init()
 	m_machine=new CRandomCARTree();
 	m_weights=SGVector<float64_t>();
 
-	SG_ADD(&m_weights,"m_weights","weights",ParameterProperties());
+	SG_ADD(&m_weights,"m_weights","weights");
 }

@@ -95,5 +95,5 @@ void CHuberLoss::init()
 {
 	m_delta=0;
 
-	SG_ADD(&m_delta,"m_delta","delta",ParameterProperties());
+	SG_ADD(&m_delta,"m_delta","delta");
 }
