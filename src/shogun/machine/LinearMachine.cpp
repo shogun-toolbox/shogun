@@ -35,8 +35,8 @@ void CLinearMachine::init()
 	bias = 0;
 	features = NULL;
 
-	SG_ADD(&m_w, "w", "Parameter vector w.");
-	SG_ADD(&bias, "bias", "Bias b.");
+	SG_ADD(&m_w, "w", "Parameter vector w.", ParameterProperties::MODEL);
+	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
 	SG_ADD(
 	    (CFeatures**)&features, "features", "Feature object.");
 }

@@ -272,10 +272,12 @@ void CMKL::register_params()
 	lp_initialized = false;
 
 	SG_ADD((CMachine**)&svm, "svm", "wrapper svm");
-	SG_ADD(&C_mkl, "C_mkl", "C mkl");
+	SG_ADD(&C_mkl, "C_mkl", "C mkl", ParameterProperties::HYPER);
 	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl");
-	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter");
-	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter");
+	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter",
+			ParameterProperties::HYPER);
+	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter",
+			ParameterProperties::HYPER);
 
 	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
 	watch_param("beta_local", &beta_local, &beta_local_size);

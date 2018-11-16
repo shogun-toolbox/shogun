@@ -19,8 +19,8 @@ using namespace shogun;
 COnlineLinearMachine::COnlineLinearMachine()
 : CMachine(), bias(0), features(NULL)
 {
-	SG_ADD(&m_w, "m_w", "Parameter vector w.");
-	SG_ADD(&bias, "bias", "Bias b.");
+	SG_ADD(&m_w, "m_w", "Parameter vector w.", ParameterProperties::MODEL);
+	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
 	SG_ADD((CSGObject**) &features, "features",
 	    "Feature object.");
 }
