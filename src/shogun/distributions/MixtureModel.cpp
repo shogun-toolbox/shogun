@@ -212,8 +212,8 @@ void CMixtureModel::init()
 	m_conv_tol=1e-8;
 	m_max_iters=1000;
 
-	SG_ADD((CSGObject**)&m_components,"m_components","components of mixture",ParameterProperties());
-	SG_ADD(&m_weights,"m_weights","weights of components",ParameterProperties());
-	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance",ParameterProperties());
-	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations",ParameterProperties());
+	SG_ADD((CSGObject**)&m_components,"m_components","components of mixture");
+	SG_ADD(&m_weights,"m_weights","weights of components");
+	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance");
+	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations");
 }
