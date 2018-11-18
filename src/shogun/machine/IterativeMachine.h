@@ -32,7 +32,8 @@ namespace shogun
 		{
 			m_current_iteration = 0;
 			m_complete = false;
-
+			m_continue_features = NULL;
+			
 			SG_ADD(
 			    &m_current_iteration, "current_iteration",
 			    "Current Iteration of training");
@@ -45,6 +46,7 @@ namespace shogun
 
 		virtual ~CIterativeMachine()
 		{
+			SG_UNREF(m_continue_features);
 		}
 
 		/** Returns convergence status */
@@ -56,7 +58,8 @@ namespace shogun
 		virtual bool continue_train()
 		{
 			this->reset_computation_variables();
-
+			this->set_features(m_continue_features);
+			
 			auto pb = SG_PROGRESS(range(m_max_iterations));
 			while (m_current_iteration < m_max_iterations && !m_complete)
 			{
@@ -111,7 +114,9 @@ namespace shogun
 		virtual void end_training()
 		{
 		}
-
+		
+		/** Stores features to continue training */
+		CDotFeatures* m_continue_features;
 		/** Maximum Iterations */
 		int32_t m_max_iterations;
 		/** Current iteration of training loop */

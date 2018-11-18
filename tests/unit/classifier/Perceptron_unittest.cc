@@ -101,7 +101,7 @@ TEST(Perceptron, continue_training_consistency)
 	perceptron->set_labels(labels);
 	perceptron->train(features);
 
-	auto results = perceptron->apply_binary(test_features);
+	auto results = perceptron->apply(test_features);
 
 	index_t iter = 0;
 
@@ -123,13 +123,24 @@ TEST(Perceptron, continue_training_consistency)
 
 	ASSERT(!perceptron_stop->is_complete());
 
+	auto perceptron_one = some<CPerceptron>();
+	perceptron_one->set_labels(labels);
+	perceptron_one->put<int32_t>("max_iterations", 1);
+	perceptron_one->train(features);
+
+	auto results_one = perceptron_one->apply(test_features);
+	auto results_stop = perceptron_stop->apply(test_features);
+	EXPECT_TRUE(results_one->equals(results_stop));
+
 	perceptron_stop->set_callback(nullptr);
 	perceptron_stop->continue_train();
 
-	auto results_complete = perceptron_stop->apply_binary(test_features);
+	auto results_complete = perceptron_stop->apply(test_features);
 
-	EXPECT_TRUE(results_complete->get_labels().equals(results->get_labels()));
+	EXPECT_TRUE(results_complete->equals(results));
 
+	SG_UNREF(results_one);
+	SG_UNREF(results_stop);
 	SG_UNREF(results);
 	SG_UNREF(results_complete);
 }
