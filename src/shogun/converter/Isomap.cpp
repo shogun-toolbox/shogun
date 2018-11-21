@@ -21,7 +21,7 @@ CIsomap::CIsomap() : CMultidimensionalScaling()
 
 void CIsomap::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", MS_AVAILABLE);
+	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 }
 
 CIsomap::~CIsomap()

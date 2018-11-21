@@ -50,19 +50,19 @@ CMCLDA::~CMCLDA()
 
 void CMCLDA::init()
 {
-	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", MS_AVAILABLE);
-	SG_ADD(&m_store_cov, "m_store_cov", "Store covariance member", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_means, "m_means", "Mean vectors list", MS_NOT_AVAILABLE);
-	SG_ADD(&m_cov, "m_cov", "covariance matrix", MS_NOT_AVAILABLE);
-	SG_ADD(&m_xbar, "m_xbar", "total mean", MS_NOT_AVAILABLE);
-	SG_ADD(&m_scalings, "m_scalings", "scalings", MS_NOT_AVAILABLE);
-	SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
-	SG_ADD(&m_dim, "m_dim", "dimension of feature space", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
+	SG_ADD(&m_store_cov, "m_store_cov", "Store covariance member");
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.");
+	SG_ADD(&m_means, "m_means", "Mean vectors list");
+	SG_ADD(&m_cov, "m_cov", "covariance matrix");
+	SG_ADD(&m_xbar, "m_xbar", "total mean");
+	SG_ADD(&m_scalings, "m_scalings", "scalings");
+	SG_ADD(&m_rank, "m_rank", "rank");
+	SG_ADD(&m_dim, "m_dim", "dimension of feature space");
 	SG_ADD(
-	    &m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
-	SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
-	SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
+	    &m_num_classes, "m_num_classes", "number of classes");
+	SG_ADD(&m_coef, "m_coef", "weight vector");
+	SG_ADD(&m_intercept, "m_intercept", "intercept");
 
 	m_features  = NULL;
 	m_num_classes=0;

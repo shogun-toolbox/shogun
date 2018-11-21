@@ -387,26 +387,19 @@ void CLogitVGPiecewiseBoundLikelihood::init_likelihood()
 void CLogitVGPiecewiseBoundLikelihood::init()
 {
 	SG_ADD(&m_bound, "bound",
-		"Variational piecewise bound for logit likelihood",
-		MS_NOT_AVAILABLE);
+		"Variational piecewise bound for logit likelihood");
 	SG_ADD(&m_pl, "pdf_l",
-		"The pdf given the lower range and parameters(mu and variance)",
-		MS_NOT_AVAILABLE);
+		"The pdf given the lower range and parameters(mu and variance)");
 	SG_ADD(&m_ph, "pdf_h",
-		"The pdf given the higher range and parameters(mu and variance)",
-		MS_NOT_AVAILABLE);
+		"The pdf given the higher range and parameters(mu and variance)");
 	SG_ADD(&m_cdf_diff, "cdf_h_minus_cdf_l",
-		"The CDF difference between the lower and higher range given the parameters(mu and variance)",
-		MS_NOT_AVAILABLE);
+		"The CDF difference between the lower and higher range given the parameters(mu and variance)");
 	SG_ADD(&m_l2_plus_s2, "l2_plus_sigma2",
-		"The result of l^2 + sigma^2",
-		MS_NOT_AVAILABLE);
+		"The result of l^2 + sigma^2");
 	SG_ADD(&m_h2_plus_s2, "h2_plus_sigma2",
-		"The result of h^2 + sigma^2",
-		MS_NOT_AVAILABLE);
+		"The result of h^2 + sigma^2");
 	SG_ADD(&m_weighted_pdf_diff, "weighted_pdf_diff",
-		"The result of l*pdf(l_norm)-h*pdf(h_norm)",
-		MS_NOT_AVAILABLE);
+		"The result of l*pdf(l_norm)-h*pdf(h_norm)");
 
 	init_likelihood();
 }

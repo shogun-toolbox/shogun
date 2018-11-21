@@ -63,7 +63,7 @@ float64_t CDistanceKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CDistanceKernel::register_params()
 {
-	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
+	SG_ADD(&width, "width", "Kernel width.", ParameterProperties::HYPER);
 	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }

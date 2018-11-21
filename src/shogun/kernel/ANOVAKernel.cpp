@@ -90,7 +90,7 @@ float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 
 void CANOVAKernel::register_params()
 {
-	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", MS_AVAILABLE);
+	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", ParameterProperties::HYPER);
 }
 
 

@@ -49,5 +49,5 @@ void CConstKernel::init()
 {
 	const_value=1.0;
 	SG_ADD(&const_value, "const_value", "Value for kernel elements.",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }

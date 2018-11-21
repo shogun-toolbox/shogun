@@ -17,7 +17,7 @@ void
 CAUCKernel::init()
 {
 	SG_ADD((CSGObject**) &subkernel, "subkernel", "The subkernel.",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 CAUCKernel::CAUCKernel()

@@ -43,10 +43,10 @@ void CLeastAngleRegression::init()
 	m_max_nonz = 0;
 	m_max_l1_norm = 0;
 	m_epsilon = CMath::MACHINE_EPSILON;
-	SG_ADD(&m_epsilon, "epsilon", "Epsilon for early stopping", MS_AVAILABLE);
-	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
-	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
-	SG_ADD(&m_lasso, "lasso", "Max l1-norm of estimator", MS_AVAILABLE);
+	SG_ADD(&m_epsilon, "epsilon", "Epsilon for early stopping", ParameterProperties::HYPER);
+	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", ParameterProperties::HYPER);
+	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", ParameterProperties::HYPER);
+	SG_ADD(&m_lasso, "lasso", "Max l1-norm of estimator", ParameterProperties::HYPER);
 }
 
 CLeastAngleRegression::~CLeastAngleRegression()

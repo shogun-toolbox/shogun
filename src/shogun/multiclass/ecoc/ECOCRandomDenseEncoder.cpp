@@ -34,9 +34,9 @@ void CECOCRandomDenseEncoder::init()
 	m_maxiter = 10000;
 	m_codelen = 0;
 	m_pposone = 0.5;
-    SG_ADD(&m_maxiter, "maxiter", "max number of iterations", MS_NOT_AVAILABLE);
-    SG_ADD(&m_codelen, "codelen", "code length", MS_NOT_AVAILABLE);
-    SG_ADD(&m_pposone, "pposone", "probability of +1", MS_NOT_AVAILABLE);
+    SG_ADD(&m_maxiter, "maxiter", "max number of iterations");
+    SG_ADD(&m_codelen, "codelen", "code length");
+    SG_ADD(&m_pposone, "pposone", "probability of +1");
 }
 
 void CECOCRandomDenseEncoder::set_probability(float64_t pposone)

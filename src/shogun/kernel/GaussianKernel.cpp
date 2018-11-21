@@ -149,5 +149,5 @@ void CGaussianKernel::register_params()
 	m_distance=dist;
 	SG_REF(m_distance);
 
-	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }

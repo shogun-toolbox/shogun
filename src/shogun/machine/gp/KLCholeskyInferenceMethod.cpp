@@ -66,11 +66,9 @@ CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(CKernel* kern,
 void CKLCholeskyInferenceMethod::init()
 {
 	SG_ADD(&m_C, "C",
-		"The Cholesky represention of the variational co-variance matrix",
-		MS_NOT_AVAILABLE);
+		"The Cholesky represention of the variational co-variance matrix");
 	SG_ADD(&m_InvK_C, "invK_C",
-		" The K^{-1}C matrix",
-		MS_NOT_AVAILABLE);
+		" The K^{-1}C matrix");
 }
 
 CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(

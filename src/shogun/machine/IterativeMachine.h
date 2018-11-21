@@ -35,13 +35,12 @@ namespace shogun
 
 			SG_ADD(
 			    &m_current_iteration, "current_iteration",
-			    "Current Iteration of training", MS_NOT_AVAILABLE);
+			    "Current Iteration of training");
 			SG_ADD(
 			    &m_max_iterations, "max_iterations",
-			    "Maximum number of Iterations", MS_AVAILABLE);
+			    "Maximum number of Iterations", ParameterProperties::HYPER);
 			SG_ADD(
-			    &m_complete, "complete", "Convergence status",
-			    MS_NOT_AVAILABLE);
+			    &m_complete, "complete", "Convergence status");
 		}
 
 		virtual ~CIterativeMachine()

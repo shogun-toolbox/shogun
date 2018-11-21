@@ -30,7 +30,7 @@ void CJediSep::init()
 
 	m_covs = SGNDArray<float64_t>();
 
-	SG_ADD(&m_tau, "tau", "tau vector", MS_AVAILABLE);
+	SG_ADD(&m_tau, "tau", "tau vector", ParameterProperties::HYPER);
 }
 
 CJediSep::~CJediSep()

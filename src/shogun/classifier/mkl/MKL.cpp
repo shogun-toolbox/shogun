@@ -271,21 +271,23 @@ void CMKL::register_params()
 	rho = 0;
 	lp_initialized = false;
 
-	SG_ADD((CMachine**)&svm, "svm", "wrapper svm", MS_NOT_AVAILABLE);
-	SG_ADD(&C_mkl, "C_mkl", "C mkl", MS_NOT_AVAILABLE);
-	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", MS_NOT_AVAILABLE);
-	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter", MS_NOT_AVAILABLE);
-	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter", MS_NOT_AVAILABLE);
+	SG_ADD((CMachine**)&svm, "svm", "wrapper svm");
+	SG_ADD(&C_mkl, "C_mkl", "C mkl", ParameterProperties::HYPER);
+	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl");
+	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter",
+			ParameterProperties::HYPER);
+	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter",
+			ParameterProperties::HYPER);
 
 	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
 	watch_param("beta_local", &beta_local, &beta_local_size);
 
-	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", MS_NOT_AVAILABLE);
-	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", MS_NOT_AVAILABLE);
-	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.", MS_NOT_AVAILABLE);
-	SG_ADD(&w_gap, "w_gap", "gap between interactions", MS_NOT_AVAILABLE);
-	SG_ADD(&rho, "rho", "objective after mkl iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized", MS_NOT_AVAILABLE);
+	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps");
+	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon");
+	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.");
+	SG_ADD(&w_gap, "w_gap", "gap between interactions");
+	SG_ADD(&rho, "rho", "objective after mkl iterations");
+	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized");
 	// Missing: self (3rd party specific, handled in clone())
 }
 

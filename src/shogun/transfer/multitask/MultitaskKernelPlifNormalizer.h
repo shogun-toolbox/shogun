@@ -326,8 +326,8 @@ protected:
 	 */
 	virtual void register_params()
 	{
-		SG_ADD(&num_tasks, "num_tasks", "the number of tasks", MS_NOT_AVAILABLE);
-		SG_ADD(&num_betas, "num_betas", "the number of weights", MS_NOT_AVAILABLE);
+		SG_ADD(&num_tasks, "num_tasks", "the number of tasks");
+		SG_ADD(&num_betas, "num_betas", "the number of weights");
 
 		m_parameters->add_vector((SGString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");
 		m_parameters->add_vector((SGString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");

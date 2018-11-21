@@ -11,7 +11,7 @@ using namespace shogun;
 CECOCForestEncoder::CECOCForestEncoder()
 {
     m_num_trees = 3;
-    SG_ADD(&m_num_trees, "num_trees", "number of trees", MS_NOT_AVAILABLE);
+    SG_ADD(&m_num_trees, "num_trees", "number of trees");
 }
 
 void CECOCForestEncoder::set_num_trees(int32_t num_trees)

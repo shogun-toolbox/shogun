@@ -4,7 +4,8 @@
  * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Giovanni De Toni, Jacob Walker, Thoralf Klein, Chiyuan Zhang,
  *          Fernando Iglesias, Sanuj Sharma, Roman Votyakov, Yuyu Zhang,
- *          Viktor Gal, Bjoern Esser, Evangelos Anagnostopoulos, Pan Deng
+ *          Viktor Gal, Bjoern Esser, Evangelos Anagnostopoulos, Pan Deng,
+ *          Gil Hoben
  */
 
 #ifndef __SGOBJECT_H__
@@ -56,7 +57,7 @@ template <class T> class SGStringList;
 #define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
 
 /*******************************************************************************
- * Macros for registering parameters/model selection parameters
+ * Macros for registering parameter properties
  ******************************************************************************/
 
 #ifdef _MSC_VER
@@ -64,13 +65,13 @@ template <class T> class SGStringList;
 #define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
 #define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
 #define INTERNAL_EXPAND(x) x
-#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 5, 4, 3, 2, 1, 0))
-#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, _5_, count, ...) count
+#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 4, 3, 2, 1, 0))
+#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, count, ...) count
 
 #else
 
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
+#define VA_NARGS_IMPL(_1, _2, _3, _4, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 4, 3, 2, 1)
 
 #endif
 
@@ -78,33 +79,29 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD4(param, name, description, ms_available)                        \
+#define SG_ADD3(param, name, description)    \
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(                                                     \
-		    name, param,                                                       \
-		    AnyParameterProperties(                                            \
-		        description, ms_available, GRADIENT_NOT_AVAILABLE));           \
-		if (ms_available)                                                      \
-			this->m_model_selection_parameters->add(param, name, description); \
+		    name, param, AnyParameterProperties()); 						   \
 	}
 
-#define SG_ADD5(param, name, description, ms_available, gradient_available)    \
+#define SG_ADD4(param, name, description, param_properties)                     \
 	{                                                                          \
+		AnyParameterProperties pprop =                                         \
+		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(                                                     \
-		    name, param, AnyParameterProperties(                               \
-		                     description, ms_available, gradient_available));  \
-		if (ms_available)                                                      \
+		this->watch_param(name, param, pprop);                                 \
+		if (pprop.get_model_selection())                                       \
 			this->m_model_selection_parameters->add(param, name, description); \
-		if (gradient_available)                                                \
+		if (pprop.get_gradient())                                              \
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
 
 /*******************************************************************************
- * End of macros for registering parameters/model selection parameters
+ * End of macros for registering parameter properties
  ******************************************************************************/
 
 /** @brief Class SGObject is the base class of all shogun objects.

@@ -61,12 +61,10 @@ void CVariationalLikelihood::init()
 	SG_REF(m_likelihood);
 
 	SG_ADD(&m_lab, "labels",
-		"The label of the data\n",
-		MS_NOT_AVAILABLE);
+		"The label of the data\n");
 
 	SG_ADD((CSGObject**)&m_likelihood, "likelihood",
-		"The distribution used to model the data\n",
-		MS_NOT_AVAILABLE);
+		"The distribution used to model the data\n");
 }
 
 SGVector<float64_t> CVariationalLikelihood::get_predictive_means(

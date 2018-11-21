@@ -25,11 +25,11 @@ CECOCRandomSparseEncoder::CECOCRandomSparseEncoder(int32_t maxiter, int32_t code
 
 void CECOCRandomSparseEncoder::init()
 {
-    SG_ADD(&m_maxiter, "maxiter", "max number of iterations", MS_NOT_AVAILABLE);
-    SG_ADD(&m_codelen, "codelen", "code length", MS_NOT_AVAILABLE);
-    SG_ADD(&m_pzero, "pzero", "probability of 0", MS_NOT_AVAILABLE);
-    SG_ADD(&m_pposone, "pposone", "probability of +1", MS_NOT_AVAILABLE);
-    SG_ADD(&m_pnegone, "pnegone", "probability of -1", MS_NOT_AVAILABLE);
+    SG_ADD(&m_maxiter, "maxiter", "max number of iterations");
+    SG_ADD(&m_codelen, "codelen", "code length");
+    SG_ADD(&m_pzero, "pzero", "probability of 0");
+    SG_ADD(&m_pposone, "pposone", "probability of +1");
+    SG_ADD(&m_pnegone, "pnegone", "probability of -1");
 }
 
 void CECOCRandomSparseEncoder::set_probability(float64_t pzero, float64_t pposone, float64_t pnegone)

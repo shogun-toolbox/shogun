@@ -37,7 +37,7 @@ CMulticlassSVM::~CMulticlassSVM()
 
 void CMulticlassSVM::init()
 {
-	SG_ADD(&m_C, "C", "C regularization constant",MS_AVAILABLE);
+	SG_ADD(&m_C, "C", "C regularization constant",ParameterProperties::HYPER);
 	m_C=0;
 }
 

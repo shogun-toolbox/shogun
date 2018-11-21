@@ -81,7 +81,7 @@ void CKernelMulticlassMachine::store_model_features()
 
 CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
 {
-	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
 }
 
 /** standard constructor
@@ -94,7 +94,7 @@ CKernelMulticlassMachine::CKernelMulticlassMachine(CMulticlassStrategy *strategy
 	CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
 {
 	set_kernel(kernel);
-	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
 }
 
 /** destructor */

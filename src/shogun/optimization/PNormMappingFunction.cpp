@@ -80,5 +80,5 @@ void PNormMappingFunction::init()
 {
 	m_p=2.0;
 	SG_ADD(&m_p, "PNormMappingFunction__m_p",
-		"p in PNormMappingFunction", MS_NOT_AVAILABLE);
+		"p in PNormMappingFunction");
 }

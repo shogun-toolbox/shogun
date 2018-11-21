@@ -23,11 +23,11 @@ CManifoldSculpting::CManifoldSculpting() :
 
 void CManifoldSculpting::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", MS_NOT_AVAILABLE);
+	SG_ADD(&m_k, "k", "number of neighbors");
 	SG_ADD(&m_squishing_rate, "quishing_rate",
-      "squishing rate",MS_NOT_AVAILABLE);
+      "squishing rate");
 	SG_ADD(&m_max_iteration, "max_iteration",
-      "maximum number of algorithm's iterations", MS_NOT_AVAILABLE);
+      "maximum number of algorithm's iterations");
 }
 
 CManifoldSculpting::~CManifoldSculpting()

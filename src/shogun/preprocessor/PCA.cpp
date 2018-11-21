@@ -53,24 +53,23 @@ void CPCA::init()
 	m_target_dim = 1;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
-	    "Transformation matrix (Eigenvectors of covariance matrix).",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", MS_NOT_AVAILABLE);
+	    "Transformation matrix (Eigenvectors of covariance matrix).");
+	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.");
 	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
-	    "Vector with Eigenvalues.", MS_NOT_AVAILABLE);
+	    "Vector with Eigenvalues.");
 	SG_ADD(&m_whitening, "whitening", "Whether data shall be whitened.",
-	    MS_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
-	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", MS_AVAILABLE);
+	    ParameterProperties::HYPER);
+	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", ParameterProperties::HYPER);
+	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", ParameterProperties::HYPER);
 	SG_ADD((machine_int_t*) &m_mem_mode, "m_mem_mode",
-		"Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
+		"Memory mode (in-place or reallocation).");
 	SG_ADD((machine_int_t*) &m_method, "m_method",
-		"Method used for PCA calculation", MS_NOT_AVAILABLE);
+		"Method used for PCA calculation");
 	SG_ADD(&m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance", "zero tolerance"
-	" for determining zero eigenvalues during whitening to avoid numerical issues", MS_NOT_AVAILABLE);
+	" for determining zero eigenvalues during whitening to avoid numerical issues");
 	SG_ADD(
 	    &m_target_dim, "target_dim", "target dimensionality of preprocessor",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 CPCA::~CPCA()

@@ -337,11 +337,11 @@ SGMatrix<float64_t> CGaussian::get_cov()
 
 void CGaussian::register_params()
 {
-	SG_ADD(&m_u, "m_u", "Unitary matrix.",MS_NOT_AVAILABLE);
-	SG_ADD(&m_d, "m_d", "Diagonal.",MS_NOT_AVAILABLE);
-	SG_ADD(&m_mean, "m_mean", "Mean.",MS_NOT_AVAILABLE);
-	SG_ADD(&m_constant, "m_constant", "Constant part.",MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.",MS_NOT_AVAILABLE);
+	SG_ADD(&m_u, "m_u", "Unitary matrix.");
+	SG_ADD(&m_d, "m_d", "Diagonal.");
+	SG_ADD(&m_mean, "m_mean", "Mean.");
+	SG_ADD(&m_constant, "m_constant", "Constant part.");
+	SG_ADD((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.");
 }
 
 void CGaussian::decompose_cov(SGMatrix<float64_t> cov)

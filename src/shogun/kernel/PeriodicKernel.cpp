@@ -157,13 +157,13 @@ void CPeriodicKernel::init()
 	set_period(1.0);
 
 	SG_ADD(&m_length_scale, "length_scale",
-		"Kernel length scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
+		"Kernel length scale", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_period, "period",
-		"Kernel period", MS_AVAILABLE, GRADIENT_AVAILABLE);
+		"Kernel period", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&m_sq_lhs, "sq_lhs",
-		"Vector of dot products of each left-hand-side vector with itself.", MS_NOT_AVAILABLE);
+		"Vector of dot products of each left-hand-side vector with itself.");
 	SG_ADD(&m_sq_rhs, "sq_rhs",
-		"Vector of dot products of each right-hand-side vector with itself.", MS_NOT_AVAILABLE);
+		"Vector of dot products of each right-hand-side vector with itself.");
 }
 
 float64_t CPeriodicKernel::distance(int32_t idx_a, int32_t idx_b)

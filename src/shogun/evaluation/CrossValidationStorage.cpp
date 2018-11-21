@@ -51,19 +51,19 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CSGObject()
 
 	SG_ADD(
 	    &m_current_run_index, "m_current_run_index",
-	    "The current run index of this fold", MS_AVAILABLE)
+	    "The current run index of this fold", ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_current_fold_index, "m_current_fold_index", "The current fold index",
-	    MS_AVAILABLE)
+	    ParameterProperties::HYPER);
 	SG_ADD(
 	    (CSGObject**)&m_trained_machine, "m_trained_machine",
-	    "The machine trained by this fold", MS_AVAILABLE)
+	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
 	    (CSGObject**)&m_test_result, "m_test_result",
-	    "The test result of this fold", MS_AVAILABLE)
+	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
 	    (CSGObject**)&m_test_true_result, "m_test_true_result",
-	    "The true test result for this fold", MS_AVAILABLE)
+	    "The true test result for this fold", ParameterProperties::HYPER);
 }
 
 CrossValidationFoldStorage::~CrossValidationFoldStorage()
@@ -197,13 +197,13 @@ CrossValidationStorage::CrossValidationStorage() : CSGObject()
 
 	SG_ADD(
 	    &m_num_runs, "m_num_runs", "The total number of cross-validation runs",
-	    MS_AVAILABLE)
+	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_num_folds, "m_num_folds",
-	    "The total number of cross-validation folds", MS_AVAILABLE)
+	    "The total number of cross-validation folds", ParameterProperties::HYPER);
 	SG_ADD(
 	    (CSGObject**)&m_expose_labels, "m_expose_labels",
-	    "The labels used for this cross-validation", MS_AVAILABLE)
+	    "The labels used for this cross-validation", ParameterProperties::HYPER);
 }
 
 CrossValidationStorage::~CrossValidationStorage()

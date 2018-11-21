@@ -82,7 +82,7 @@ void CNeuralInputLayer::init()
 	m_start_index = 0;
 	gaussian_noise = 0;
 	SG_ADD(&m_start_index, "start_index",
-	       "Start Index", MS_NOT_AVAILABLE);
+	       "Start Index");
 	SG_ADD(&gaussian_noise, "gaussian_noise",
-	       "Gaussian Noise Standard Deviation", MS_NOT_AVAILABLE);
+	       "Gaussian Noise Standard Deviation");
 }

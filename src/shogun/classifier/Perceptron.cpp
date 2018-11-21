@@ -24,8 +24,8 @@ CPerceptron::CPerceptron() : CIterativeMachine<CLinearMachine>()
 	m_initialize_hyperplane = true;
 	SG_ADD(
 	    &m_initialize_hyperplane, "initialize_hyperplane",
-	    "Whether to initialize hyperplane.", MS_AVAILABLE);
-	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", MS_AVAILABLE);
+	    "Whether to initialize hyperplane.", ParameterProperties::HYPER);
+	SG_ADD(&learn_rate, "learn_rate", "Learning rate.", ParameterProperties::HYPER);
 }
 
 CPerceptron::~CPerceptron()

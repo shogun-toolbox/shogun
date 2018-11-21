@@ -282,8 +282,8 @@ void CStudentsTLikelihood::init()
 {
 	m_log_sigma=0.0;
 	m_log_df = std::log(2.0);
-	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
+	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()

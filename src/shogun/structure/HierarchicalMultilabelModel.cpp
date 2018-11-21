@@ -42,13 +42,11 @@ CHierarchicalMultilabelModel::~CHierarchicalMultilabelModel()
 void CHierarchicalMultilabelModel::init(SGVector<int32_t> taxonomy,
                                         bool leaf_nodes_mandatory)
 {
-	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
-	       MS_NOT_AVAILABLE);
-	SG_ADD(&m_taxonomy, "taxonomy", "Taxonomy of the hierarchy of the labels",
-	       MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label");
+	SG_ADD(&m_taxonomy, "taxonomy", "Taxonomy of the hierarchy of the labels");
 	SG_ADD(&m_leaf_nodes_mandatory, "leaf_nodes_mandatory", "Whether internal nodes belong"
-	       "to output class or not", MS_NOT_AVAILABLE);
-	SG_ADD(&m_root, "root", "Node-id of the ROOT element", MS_NOT_AVAILABLE);
+	       "to output class or not");
+	SG_ADD(&m_root, "root", "Node-id of the ROOT element");
 
 	m_leaf_nodes_mandatory = leaf_nodes_mandatory;
 	m_num_classes = 0;

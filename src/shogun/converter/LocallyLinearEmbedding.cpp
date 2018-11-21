@@ -26,11 +26,11 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 
 void CLocallyLinearEmbedding::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", MS_AVAILABLE);
+	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 	SG_ADD(&m_nullspace_shift, "nullspace_shift",
-      "nullspace finding regularization shift",MS_NOT_AVAILABLE);
+      "nullspace finding regularization shift");
 	SG_ADD(&m_reconstruction_shift, "reconstruction_shift",
-      "shift used to regularize reconstruction step", MS_NOT_AVAILABLE);
+      "shift used to regularize reconstruction step");
 }
 
 

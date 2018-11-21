@@ -49,9 +49,9 @@ void CInverseMultiQuadricKernel::load_serializable_post() throw (ShogunException
 
 void CInverseMultiQuadricKernel::init()
 {
-	SG_ADD(&coef, "coef", "Kernel Coefficient.", MS_AVAILABLE);
+	SG_ADD(&coef, "coef", "Kernel Coefficient.", ParameterProperties::HYPER);
 	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 float64_t CInverseMultiQuadricKernel::compute(int32_t idx_a, int32_t idx_b)

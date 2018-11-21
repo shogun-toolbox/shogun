@@ -46,8 +46,8 @@ bool CWaveletKernel::init(CFeatures* l, CFeatures* r)
 
 void CWaveletKernel::init()
 {
-	SG_ADD(&Wdilation, "Wdilation", "Dilation coefficient", MS_AVAILABLE);
-	SG_ADD(&Wtranslation, "Wtranslaton", "Translation coefficient", MS_AVAILABLE);
+	SG_ADD(&Wdilation, "Wdilation", "Dilation coefficient", ParameterProperties::HYPER);
+	SG_ADD(&Wtranslation, "Wtranslaton", "Translation coefficient", ParameterProperties::HYPER);
 }
 
 float64_t CWaveletKernel::compute(int32_t idx_a, int32_t idx_b)

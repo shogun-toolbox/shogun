@@ -297,24 +297,19 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 
 void CSpectrumMismatchRBFKernel::register_params()
 {
-	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
-	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
-	SG_ADD(&target_letter_0, "target_letter_0", "target letter 0",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&initialized, "initialized", "the mark of initialization status",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&degree, "degree", "degree of the kernel", ParameterProperties::HYPER);
+	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix");
+	SG_ADD(&width, "width", "width of Gaussian", ParameterProperties::HYPER);
+	SG_ADD(&target_letter_0, "target_letter_0", "target letter 0");
+	SG_ADD(&initialized, "initialized", "the mark of initialization status");
 	SG_ADD((CSGObject** )&kernel_matrix, "kernel_matrix",
 			"the kernel matrix with its length "
-					"defined by the number of vectors of the string features",
-			MS_NOT_AVAILABLE);
+					"defined by the number of vectors of the string features");
 }
 
 void CSpectrumMismatchRBFKernel::register_alphabet()
 {
-	SG_ADD((CSGObject** )&alphabet, "alphabet", "the alphabet used by kernel",
-			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject** )&alphabet, "alphabet", "the alphabet used by kernel");
 }
 
 void CSpectrumMismatchRBFKernel::init()

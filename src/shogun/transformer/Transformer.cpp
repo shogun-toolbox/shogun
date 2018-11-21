@@ -10,8 +10,7 @@ namespace shogun
 		m_fitted = false;
 
 		SG_ADD(
-		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.",
-		    MS_NOT_AVAILABLE);
+		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.");
 	}
 
 	void CTransformer::assert_fitted() const

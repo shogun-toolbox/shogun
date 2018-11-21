@@ -25,8 +25,8 @@ CDiffusionMaps::CDiffusionMaps() :
 
 void CDiffusionMaps::init()
 {
-	SG_ADD(&m_t, "t", "number of steps", MS_AVAILABLE);
-	SG_ADD(&m_width, "width", "gaussian kernel width", MS_AVAILABLE);
+	SG_ADD(&m_t, "t", "number of steps", ParameterProperties::HYPER);
+	SG_ADD(&m_width, "width", "gaussian kernel width", ParameterProperties::HYPER);
 }
 
 CDiffusionMaps::~CDiffusionMaps()

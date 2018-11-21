@@ -16,7 +16,7 @@ using namespace shogun;
 void
 CFixedDegreeStringKernel::init()
 {
-	SG_ADD(&degree, "degree", "The degree.", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "The degree.", ParameterProperties::HYPER);
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

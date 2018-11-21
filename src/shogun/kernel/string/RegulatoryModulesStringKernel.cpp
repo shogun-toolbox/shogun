@@ -49,18 +49,18 @@ void CRegulatoryModulesStringKernel::init()
 	motif_positions_lhs=NULL;
 	motif_positions_rhs=NULL;
 
-	SG_ADD(&width, "width", "the width of Gaussian kernel part", MS_AVAILABLE);
+	SG_ADD(&width, "width", "the width of Gaussian kernel part", ParameterProperties::HYPER);
 	SG_ADD(&degree, "degree", "the degree of weighted degree kernel part",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 	SG_ADD(&shift, "shift",
-	    "the shift of weighted degree with shifts kernel part", MS_AVAILABLE);
-	SG_ADD(&window, "window", "the size of window around motifs", MS_AVAILABLE);
+	    "the shift of weighted degree with shifts kernel part", ParameterProperties::HYPER);
+	SG_ADD(&window, "window", "the size of window around motifs", ParameterProperties::HYPER);
 	SG_ADD((CSGObject**)&motif_positions_lhs, "motif_positions_lhs",
-			"the matrix of motif positions from sequences left-hand side", MS_NOT_AVAILABLE);
+			"the matrix of motif positions from sequences left-hand side");
 	SG_ADD((CSGObject**)&motif_positions_rhs, "motif_positions_rhs",
-			"the matrix of motif positions from sequences right-hand side", MS_NOT_AVAILABLE);
-	SG_ADD(&position_weights, "position_weights", "scaling weights in window", MS_NOT_AVAILABLE);
-	SG_ADD(&weights, "weights", "weights of WD kernel", MS_NOT_AVAILABLE);
+			"the matrix of motif positions from sequences right-hand side");
+	SG_ADD(&position_weights, "position_weights", "scaling weights in window");
+	SG_ADD(&weights, "weights", "weights of WD kernel");
 }
 
 bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)

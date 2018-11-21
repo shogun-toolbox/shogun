@@ -54,7 +54,7 @@ CConstMean::CConstMean(float64_t mean)
 void CConstMean::init()
 {
 	m_mean=0.0;
-	SG_ADD(&m_mean, "mean", "const value of mean function", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_mean, "mean", "const value of mean function", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
 SGVector<float64_t> CConstMean::get_mean_vector(const CFeatures* features) const

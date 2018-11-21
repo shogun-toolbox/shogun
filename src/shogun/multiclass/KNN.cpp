@@ -59,11 +59,11 @@ void CKNN::init()
 
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
-	SG_ADD(&m_k, "k", "Parameter k", MS_NOT_AVAILABLE);
-	SG_ADD(&m_q, "q", "Parameter q", MS_AVAILABLE);
-	SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
-	SG_ADD(&m_leaf_size, "leaf_size", "Leaf size for KDTree", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_knn_solver, "knn_solver", "Algorithm to solve knn", MS_NOT_AVAILABLE);
+	SG_ADD(&m_k, "k", "Parameter k");
+	SG_ADD(&m_q, "q", "Parameter q", ParameterProperties::HYPER);
+	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
+	SG_ADD(&m_leaf_size, "leaf_size", "Leaf size for KDTree");
+	SG_ADD((machine_int_t*) &m_knn_solver, "knn_solver", "Algorithm to solve knn");
 }
 
 CKNN::~CKNN()

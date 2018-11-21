@@ -143,12 +143,11 @@ template< class ST > void CMatrixFeatures< ST >::set_features(
 
 template< class ST > void CMatrixFeatures< ST >::init()
 {
-	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors");
 	SG_ADD(&m_num_features, "m_num_features",
-			"Number of features per vector (optional)", MS_NOT_AVAILABLE);
+			"Number of features per vector (optional)");
 	//TODO add SG_ADD for SGMatrixList
-	//SG_ADD(&m_features, "m_features", "Matrix features", MS_NOT_AVAILABLE);
+	//SG_ADD(&m_features, "m_features", "Matrix features");
 
 	m_num_vectors  = 0;
 	m_num_features = 0;

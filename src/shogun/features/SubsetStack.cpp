@@ -72,9 +72,9 @@ void CSubsetStack::remove_all_subsets()
 void CSubsetStack::init()
 {
 	SG_ADD((CSGObject**)&m_active_subset, "active_subset",
-			"Currently active subset", MS_NOT_AVAILABLE);
+			"Currently active subset");
 	SG_ADD((CSGObject**)&m_active_subsets_stack, "active_subsets_stack",
-			"Stack of active subsets", MS_NOT_AVAILABLE);
+			"Stack of active subsets");
 
 	m_active_subset=NULL;
 	m_active_subsets_stack=new CDynamicObjectArray();

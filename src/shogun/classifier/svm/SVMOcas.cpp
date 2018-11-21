@@ -345,17 +345,15 @@ void CSVMOcas::init()
 
 	primal_objective = 0.0;
 
-	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
-	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
+	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
-	SG_ADD(&epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
+	    &use_bias, "use_bias", "Indicates if bias is used.");
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 	SG_ADD(
-	    &bufsize, "bufsize", "Maximum number of cutting planes.",
-	    MS_NOT_AVAILABLE);
+	    &bufsize, "bufsize", "Maximum number of cutting planes.");
 	SG_ADD(
-	    (machine_int_t*)&method, "method", "SVMOcas solver type.",
-	    MS_NOT_AVAILABLE);
+	    (machine_int_t*)&method, "method", "SVMOcas solver type.");
 }
 
 float64_t CSVMOcas::compute_primal_objective() const

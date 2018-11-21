@@ -44,16 +44,13 @@ CVariationalGaussianLikelihood::CVariationalGaussianLikelihood()
 void CVariationalGaussianLikelihood::init()
 {
 	SG_ADD(&m_mu, "mu",
-		"The mean of variational normal distribution\n",
-		MS_NOT_AVAILABLE);
+		"The mean of variational normal distribution\n");
 
 	SG_ADD(&m_s2, "sigma2",
-		"The variance of variational normal distribution\n",
-		MS_NOT_AVAILABLE);
+		"The variance of variational normal distribution\n");
 
 	SG_ADD(&m_noise_factor, "noise_factor",
-		"Correct the variance if variance is close to zero or negative\n",
-		MS_NOT_AVAILABLE);
+		"Correct the variance if variance is close to zero or negative\n");
 	m_noise_factor=1e-6;
 }
 

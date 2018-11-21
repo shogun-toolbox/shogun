@@ -69,11 +69,11 @@ CKernel* CEmbeddingConverter::get_kernel() const
 void CEmbeddingConverter::init()
 {
 	SG_ADD(&m_target_dim, "target_dim",
-      "target dimensionality of preprocessor", MS_AVAILABLE);
+      "target dimensionality of preprocessor", ParameterProperties::HYPER);
 	SG_ADD(
 		&m_distance, "distance", "distance to be used for embedding",
-		MS_AVAILABLE);
+		ParameterProperties::HYPER);
 	SG_ADD(
-		&m_kernel, "kernel", "kernel to be used for embedding", MS_AVAILABLE);
+		&m_kernel, "kernel", "kernel to be used for embedding", ParameterProperties::HYPER);
 }
 }

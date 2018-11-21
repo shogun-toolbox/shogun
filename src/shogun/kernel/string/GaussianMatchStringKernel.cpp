@@ -77,5 +77,5 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CGaussianMatchStringKernel::register_params()
 {
-	SG_ADD(&width, "width", "kernel width", MS_AVAILABLE);
+	SG_ADD(&width, "width", "kernel width", ParameterProperties::HYPER);
 }

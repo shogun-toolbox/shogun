@@ -27,13 +27,10 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 
 void CStochasticProximityEmbedding::init()
 {
-	SG_ADD(&m_k, "m_k", "Number of neighbors", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&m_k, "m_k", "Number of neighbors");
+	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy");
+	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter");
+	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
 }
 
 CStochasticProximityEmbedding::~CStochasticProximityEmbedding()

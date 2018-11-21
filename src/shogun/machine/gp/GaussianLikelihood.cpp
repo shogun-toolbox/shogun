@@ -52,7 +52,7 @@ CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 void CGaussianLikelihood::init()
 {
 	m_log_sigma=0.0;
-	SG_ADD(&m_log_sigma, "log_sigma", "Observation noise in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_sigma, "log_sigma", "Observation noise in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood()

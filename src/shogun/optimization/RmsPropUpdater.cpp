@@ -81,13 +81,13 @@ void RmsPropUpdater::init()
 	m_gradient_accuracy=SGVector<float64_t>();
 
 	SG_ADD(&m_decay_factor, "RmsPropUpdater__m_decay_factor",
-		"decay_factor in RmsPropUpdater", MS_NOT_AVAILABLE);
+		"decay_factor in RmsPropUpdater");
 	SG_ADD(&m_epsilon, "RmsPropUpdater__m_epsilon",
-		"epsilon in RmsPropUpdater", MS_NOT_AVAILABLE);
+		"epsilon in RmsPropUpdater");
 	SG_ADD(&m_build_in_learning_rate, "RmsPropUpdater__m_build_in_learning_rate",
-		"build_in_learning_rate in RmsPropUpdater", MS_NOT_AVAILABLE);
+		"build_in_learning_rate in RmsPropUpdater");
 	SG_ADD(&m_gradient_accuracy, "RmsPropUpdater__m_gradient_accuracy",
-		"gradient_accuracy in RmsPropUpdater", MS_NOT_AVAILABLE);
+		"gradient_accuracy in RmsPropUpdater");
 }
 
 float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,

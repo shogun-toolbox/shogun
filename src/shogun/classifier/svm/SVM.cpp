@@ -40,21 +40,18 @@ CSVM::~CSVM()
 
 void CSVM::set_defaults(int32_t num_sv)
 {
-	SG_ADD(&C1, "C1", "", MS_AVAILABLE);
-	SG_ADD(&C2, "C2", "", MS_AVAILABLE);
-	SG_ADD(&svm_loaded, "svm_loaded", "SVM is loaded.", MS_NOT_AVAILABLE);
-	SG_ADD(&epsilon, "epsilon", "", MS_AVAILABLE);
+	SG_ADD(&C1, "C1", "", ParameterProperties::HYPER);
+	SG_ADD(&C2, "C2", "", ParameterProperties::HYPER);
+	SG_ADD(&svm_loaded, "svm_loaded", "SVM is loaded.");
+	SG_ADD(&epsilon, "epsilon", "", ParameterProperties::HYPER);
 	SG_ADD(&tube_epsilon, "tube_epsilon",
-			"Tube epsilon for support vector regression.", MS_AVAILABLE);
-	SG_ADD(&nu, "nu", "", MS_AVAILABLE);
-	SG_ADD(&objective, "objective", "", MS_NOT_AVAILABLE);
-	SG_ADD(&qpsize, "qpsize", "", MS_NOT_AVAILABLE);
-	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.",
-			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.",
-			MS_NOT_AVAILABLE);
+			"Tube epsilon for support vector regression.", ParameterProperties::HYPER);
+	SG_ADD(&nu, "nu", "", ParameterProperties::HYPER);
+	SG_ADD(&objective, "objective", "");
+	SG_ADD(&qpsize, "qpsize", "");
+	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.");
+	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.");
+	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.");
 
 	callback=NULL;
 	mkl=NULL;

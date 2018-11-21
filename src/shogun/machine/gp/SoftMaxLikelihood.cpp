@@ -60,8 +60,7 @@ void CSoftMaxLikelihood::init()
 {
 	m_num_samples=10000;
 	SG_ADD(&m_num_samples, "num_samples",
-		"Number of samples to be generated",
-		MS_NOT_AVAILABLE);
+		"Number of samples to be generated");
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab,

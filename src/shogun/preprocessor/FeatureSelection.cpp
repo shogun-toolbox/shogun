@@ -48,18 +48,16 @@ CFeatureSelection<ST>::CFeatureSelection() : CPreprocessor()
 template <class ST>
 void CFeatureSelection<ST>::initialize_parameters()
 {
-	SG_ADD(&m_target_dim, "target_dim", "target dimension",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&m_target_dim, "target_dim", "target dimension");
 	SG_ADD((machine_int_t*)&m_algorithm, "algorithm",
-			"the feature selectiona algorithm", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_policy, "policy", "feature removal policy",
-			MS_NOT_AVAILABLE);
+			"the feature selectiona algorithm");
+	SG_ADD((machine_int_t*)&m_policy, "policy", "feature removal policy");
 	SG_ADD(&m_num_remove, "num_remove", "number or percentage of features to "
-			"be removed", MS_NOT_AVAILABLE);
+			"be removed");
 	SG_ADD((CSGObject**)&m_labels, "labels",
-			"the class labels for the features", MS_NOT_AVAILABLE);
+			"the class labels for the features");
 	SG_ADD((CSGObject**)&m_subset, "subset",
-			"indices of selected features", MS_NOT_AVAILABLE);
+			"indices of selected features");
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;

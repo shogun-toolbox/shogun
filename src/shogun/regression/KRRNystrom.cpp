@@ -56,7 +56,7 @@ void CKRRNystrom::init()
 	m_num_rkhs_basis=0;
 	SG_ADD(
 	    &m_num_rkhs_basis, "num_rkhs_basis", "Number of rows/columns to sample",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 SGVector<int32_t> CKRRNystrom::subsample_indices()

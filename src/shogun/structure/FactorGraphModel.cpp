@@ -37,9 +37,9 @@ CFactorGraphModel::~CFactorGraphModel()
 
 void CFactorGraphModel::init()
 {
-	SG_ADD((CSGObject**)&m_factor_types, "factor_types", "Array of factor types", MS_NOT_AVAILABLE);
-	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters", MS_NOT_AVAILABLE);
-	SG_ADD(&m_w_map, "w_map", "Parameter mapping", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_factor_types, "factor_types", "Array of factor types");
+	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters");
+	SG_ADD(&m_w_map, "w_map", "Parameter mapping");
 
 	m_inf_type = TREE_MAX_PROD;
 	m_factor_types = new CDynamicObjectArray();
