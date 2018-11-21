@@ -71,11 +71,11 @@ void AdaGradUpdater::init()
 	m_gradient_accuracy=SGVector<float64_t>();
 
 	SG_ADD(&m_epsilon, "AdaGradUpdater__m_epsilon",
-		"epsilon in AdaGradUpdater", MS_NOT_AVAILABLE);
+		"epsilon in AdaGradUpdater");
 	SG_ADD(&m_build_in_learning_rate, "AdaGradUpdater__m_build_in_learning_rate",
-		"m_build_in_learning_rate in AdaGradUpdater", MS_NOT_AVAILABLE);
+		"m_build_in_learning_rate in AdaGradUpdater");
 	SG_ADD(&m_gradient_accuracy, "AdaGradUpdater__m_gradient_accuracy",
-		"gradient_accuracy in AdaGradUpdater", MS_NOT_AVAILABLE);
+		"gradient_accuracy in AdaGradUpdater");
 }
 
 float64_t AdaGradUpdater::get_negative_descend_direction(float64_t variable,

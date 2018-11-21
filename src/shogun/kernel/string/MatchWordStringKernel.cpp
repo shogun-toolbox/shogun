@@ -69,5 +69,5 @@ void CMatchWordStringKernel::init()
 {
 	degree=0;
 	set_normalizer(new CAvgDiagKernelNormalizer());
-	SG_ADD(&degree, "degree", "Degree of poly kernel", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "Degree of poly kernel", ParameterProperties::HYPER);
 }

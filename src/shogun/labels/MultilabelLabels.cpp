@@ -69,9 +69,9 @@ CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 
 	// This one does consider the contained labels, so its simply BROKEN
 	// Can be disabled as
-	SG_ADD(&m_num_labels, "m_num_labels", "number of labels", MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
-	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_labels, "m_num_labels", "number of labels");
+	SG_ADD(&m_num_classes, "m_num_classes", "number of classes");
+	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
 
 
 	// Can only be enabled after this issue has been solved:

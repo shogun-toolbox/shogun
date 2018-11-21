@@ -62,7 +62,7 @@ void CGaussianProcessMachine::init()
 	m_method=NULL;
 
 	SG_ADD((CSGObject**) &m_method, "inference_method", "Inference method",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 CGaussianProcessMachine::~CGaussianProcessMachine()

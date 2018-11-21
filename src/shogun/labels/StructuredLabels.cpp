@@ -84,7 +84,7 @@ int32_t CStructuredLabels::get_num_labels() const
 
 void CStructuredLabels::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
 
 	m_labels = NULL;
 	m_sdt = SDT_UNKNOWN;

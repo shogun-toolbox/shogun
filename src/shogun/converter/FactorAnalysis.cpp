@@ -21,8 +21,8 @@ CFactorAnalysis::CFactorAnalysis() :
 
 void CFactorAnalysis::init()
 {
-	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_epsilon, "epsilon", "convergence parameter", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
+	SG_ADD(&m_epsilon, "epsilon", "convergence parameter");
 }
 
 CFactorAnalysis::~CFactorAnalysis()

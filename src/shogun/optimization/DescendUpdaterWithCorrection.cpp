@@ -90,5 +90,5 @@ void DescendUpdaterWithCorrection::init()
 {
 	m_correction=NULL;
 	SG_ADD((CSGObject **)&m_correction, "DescendUpdaterWithCorrection__m_correction",
-		"correction in DescendUpdaterWithCorrection", MS_NOT_AVAILABLE);
+		"correction in DescendUpdaterWithCorrection");
 }

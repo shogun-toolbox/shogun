@@ -80,7 +80,7 @@ void SMDMinimizer::init()
 {
 	m_mapping_fun=NULL;
 	SG_ADD((CSGObject **)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
-		"m_mapping_fun in SMDMinimizer", MS_NOT_AVAILABLE);
+		"m_mapping_fun in SMDMinimizer");
 }
 
 void SMDMinimizer::set_mapping_function(MappingFunction* mapping_fun)

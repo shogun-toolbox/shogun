@@ -97,13 +97,10 @@ int32_t CMulticlassSOLabels::get_num_labels() const
 
 void CMulticlassSOLabels::init()
 {
-	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_labels_set, "m_num_labels_set", "The number of assigned labels",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes");
+	SG_ADD(&m_num_labels_set, "m_num_labels_set", "The number of assigned labels");
 	SG_ADD(
-	    &m_labels_vector, "labels_vector", "The labels vector",
-	    MS_NOT_AVAILABLE);
+	    &m_labels_vector, "labels_vector", "The labels vector");
 
 	m_num_classes = 0;
 	m_num_labels_set = 0;

@@ -26,7 +26,7 @@ CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy(EProbHeuristicType prob
 
 void CMulticlassOneVsOneStrategy::register_parameters()
 {
-	//SG_ADD(&m_num_samples, "num_samples", "Number of samples in each training machine", MS_NOT_AVAILABLE);
+	//SG_ADD(&m_num_samples, "num_samples", "Number of samples in each training machine");
 	SG_WARNING("%s::CMulticlassOneVsOneStrategy(): register parameters!\n", get_name());
 }
 

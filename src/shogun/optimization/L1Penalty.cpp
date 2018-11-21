@@ -74,5 +74,5 @@ void L1Penalty::init()
 {
 	m_rounding_epsilon=1e-8;
 	SG_ADD(&m_rounding_epsilon, "L1Penalty__m_rounding_epsilon",
-		"rounding_epsilon in L1Penalty", MS_NOT_AVAILABLE);
+		"rounding_epsilon in L1Penalty");
 }

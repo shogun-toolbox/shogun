@@ -342,5 +342,5 @@ void CDotFeatures::init()
 	set_property(FP_DOT);
 	SG_ADD(
 	    &combined_weight, "combined_weight",
-	    "Feature weighting in combined dot features.", MS_NOT_AVAILABLE);
+	    "Feature weighting in combined dot features.");
 }

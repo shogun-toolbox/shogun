@@ -76,8 +76,7 @@ CData* CLatentFeatures::get_sample(index_t idx)
 
 void CLatentFeatures::init()
 {
-	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples",
-			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples");
 }
 
 CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)

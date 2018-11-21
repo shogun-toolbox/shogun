@@ -740,7 +740,7 @@ void CCombinedKernel::init()
 	kernel_array=new CDynamicObjectArray();
 	SG_REF(kernel_array);
 
-	SG_ADD(&kernel_array, "kernel_array", "Array of kernels.", MS_AVAILABLE);
+	SG_ADD(&kernel_array, "kernel_array", "Array of kernels.", ParameterProperties::HYPER);
 
 	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
 		 "Support vector index.");
@@ -751,21 +751,20 @@ void CCombinedKernel::init()
 	watch_param("sv_weight", &sv_weight, &sv_count);
 
 	SG_ADD(&append_subkernel_weights, "append_subkernel_weights",
-	    "If subkernel weights are appended.", MS_AVAILABLE);
-	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
-	    MS_NOT_AVAILABLE);
+	    "If subkernel weights are appended.", ParameterProperties::HYPER);
+	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.");
 
 	enable_subkernel_weight_opt=false;
 	subkernel_log_weights = SGVector<float64_t>(1);
 	subkernel_log_weights[0] = 0;
 	SG_ADD(&subkernel_log_weights, "subkernel_log_weights",
-	    "subkernel weights", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	    "subkernel weights", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 	SG_ADD(&enable_subkernel_weight_opt, "enable_subkernel_weight_opt",
-	    "enable subkernel weight opt", MS_NOT_AVAILABLE);
+	    "enable subkernel weight opt");
 
 	weight_update = false;
 	SG_ADD(&weight_update, "weight_update",
-	    "weight update", MS_NOT_AVAILABLE);
+	    "weight update");
 }
 
 void CCombinedKernel::enable_subkernel_weight_learning()

@@ -283,27 +283,25 @@ void CNeuralConvolutionalLayer::init()
 	m_initialization_mode = NORMAL;
 	m_activation_function = CMAF_IDENTITY;
 
-	SG_ADD(&m_num_maps, "num_maps", "Number of maps", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_width, "input_width", "Input Width", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_height, "input_height", "Input Height", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_num_channels, "input_num_channels", "Input's number of channels",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_radius_x, "radius_x", "X Radius", MS_NOT_AVAILABLE);
-	SG_ADD(&m_radius_y, "radius_y", "Y Radius", MS_NOT_AVAILABLE);
-	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width", MS_NOT_AVAILABLE);
-	SG_ADD(&m_pooling_height, "pooling_height", "Pooling Height", MS_NOT_AVAILABLE);
-	SG_ADD(&m_stride_x, "stride_x", "X Stride", MS_NOT_AVAILABLE);
-	SG_ADD(&m_stride_y, "stride_y", "Y Stride", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_maps, "num_maps", "Number of maps");
+	SG_ADD(&m_input_width, "input_width", "Input Width");
+	SG_ADD(&m_input_height, "input_height", "Input Height");
+	SG_ADD(&m_input_num_channels, "input_num_channels", "Input's number of channels");
+	SG_ADD(&m_radius_x, "radius_x", "X Radius");
+	SG_ADD(&m_radius_y, "radius_y", "Y Radius");
+	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width");
+	SG_ADD(&m_pooling_height, "pooling_height", "Pooling Height");
+	SG_ADD(&m_stride_x, "stride_x", "X Stride");
+	SG_ADD(&m_stride_y, "stride_y", "Y Stride");
 
-	SG_ADD((machine_int_t*) &m_initialization_mode, "initialization_mode", "Initialization Mode",
-		MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_initialization_mode, "initialization_mode", "Initialization Mode");
 	
 	SG_ADD((machine_int_t*) &m_activation_function, "activation_function", 
-		"Activation Function", MS_NOT_AVAILABLE);
+		"Activation Function");
 
 	SG_ADD(&m_convolution_output, "convolution_output",
-		"Convolution Output", MS_NOT_AVAILABLE);
+		"Convolution Output");
 
 	SG_ADD(&m_convolution_output_gradients, "convolution_output_gradients",
-		"Convolution Output Gradients", MS_NOT_AVAILABLE);
+		"Convolution Output Gradients");
 }

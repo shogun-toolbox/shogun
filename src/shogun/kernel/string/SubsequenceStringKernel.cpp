@@ -131,6 +131,6 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CSubsequenceStringKernel::register_params()
 {
-	SG_ADD(&m_maxlen, "m_maxlen", "maximum length of common subsequences", MS_AVAILABLE);
-	SG_ADD(&m_lambda, "m_lambda", "gap penalty", MS_AVAILABLE);
+	SG_ADD(&m_maxlen, "m_maxlen", "maximum length of common subsequences", ParameterProperties::HYPER);
+	SG_ADD(&m_lambda, "m_lambda", "gap penalty", ParameterProperties::HYPER);
 }

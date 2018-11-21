@@ -103,5 +103,5 @@ void CWeightedMajorityVote::init()
 
 void CWeightedMajorityVote::register_parameters()
 {
-	SG_ADD(&m_weights, "weights", "Weights for the majority vote", MS_AVAILABLE);
+	SG_ADD(&m_weights, "weights", "Weights for the majority vote", ParameterProperties::HYPER);
 }

@@ -197,8 +197,8 @@ void CSimpleLocalityImprovedStringKernel::init()
 	inner_degree = 3;
 	outer_degree = 1;
 
-	SG_ADD(&length, "length", "Window Length.", MS_AVAILABLE);
-	SG_ADD(&inner_degree, "inner_degree", "Inner degree.", MS_AVAILABLE);
-	SG_ADD(&outer_degree, "outer_degree", "Outer degree.", MS_AVAILABLE);
-	SG_ADD(&pyramid_weights,"pyramid_weights", "Pyramid weights.", MS_AVAILABLE);
+	SG_ADD(&length, "length", "Window Length.", ParameterProperties::HYPER);
+	SG_ADD(&inner_degree, "inner_degree", "Inner degree.", ParameterProperties::HYPER);
+	SG_ADD(&outer_degree, "outer_degree", "Outer degree.", ParameterProperties::HYPER);
+	SG_ADD(&pyramid_weights,"pyramid_weights", "Pyramid weights.", ParameterProperties::HYPER);
 }

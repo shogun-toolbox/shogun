@@ -128,7 +128,7 @@ void CCustomDistance::init()
 	    AnyParameterProperties("Distance Matrix"));
 
 	SG_ADD(
-	    &upper_diagonal, "upper_diagonal", "Upper diagonal", MS_NOT_AVAILABLE);
+	    &upper_diagonal, "upper_diagonal", "Upper diagonal");
 }
 
 void CCustomDistance::cleanup()

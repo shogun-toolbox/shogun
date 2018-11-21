@@ -179,11 +179,10 @@ void CDomainAdaptationSVM::init()
 	B = 0;
 	train_factor = 1.0;
 
-	SG_ADD((CSGObject**) &presvm, "presvm", "SVM to regularize against.",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&B, "B", "regularization parameter B.", MS_AVAILABLE);
+	SG_ADD((CSGObject**) &presvm, "presvm", "SVM to regularize against.");
+	SG_ADD(&B, "B", "regularization parameter B.", ParameterProperties::HYPER);
 	SG_ADD(&train_factor, "train_factor",
-			"flag to switch off regularization in training.", MS_AVAILABLE);
+			"flag to switch off regularization in training.", ParameterProperties::HYPER);
 }
 
 #endif //USE_SVMLIGHT

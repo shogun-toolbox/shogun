@@ -705,15 +705,15 @@ void CCCSOSVM::init()
 		SG_ERROR("Error while initializing mosek env: %d\n", r)
 #endif
 
-	SG_ADD(&m_C, "m_C", "C", MS_NOT_AVAILABLE);
-	SG_ADD(&m_eps, "m_eps", "Epsilon", MS_NOT_AVAILABLE);
-	SG_ADD(&m_alpha_thrld, "m_alpha_thrld", "Alpha threshold", MS_NOT_AVAILABLE);
-	SG_ADD(&m_cleanup_check, "m_cleanup_check", "Cleanup after given number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_idle_iter, "m_idle_iter", "Maximum number of idle iteration", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter, "m_max_iter", "Maximum number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_rho, "m_max_rho", "Max rho", MS_NOT_AVAILABLE);
-	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_qp_type, "m_qp_type", "QP Solver Type", MS_NOT_AVAILABLE);
+	SG_ADD(&m_C, "m_C", "C");
+	SG_ADD(&m_eps, "m_eps", "Epsilon");
+	SG_ADD(&m_alpha_thrld, "m_alpha_thrld", "Alpha threshold");
+	SG_ADD(&m_cleanup_check, "m_cleanup_check", "Cleanup after given number of iterations");
+	SG_ADD(&m_idle_iter, "m_idle_iter", "Maximum number of idle iteration");
+	SG_ADD(&m_max_iter, "m_max_iter", "Maximum number of iterations");
+	SG_ADD(&m_max_rho, "m_max_rho", "Max rho");
+	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value");
+	SG_ADD((machine_int_t*) &m_qp_type, "m_qp_type", "QP Solver Type");
 }
 
 EMachineType CCCSOSVM::get_classifier_type()

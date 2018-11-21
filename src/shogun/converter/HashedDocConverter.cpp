@@ -57,15 +57,11 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 		tokenizer = tzer;
 
 	SG_REF(tokenizer);
-	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&ngrams, "ngrams", "Number of consecutive tokens",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&should_normalize, "should_normalize", "Whether to normalize vectors or not",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&tokenizer, "tokenizer", "Tokenizer", MS_NOT_AVAILABLE);
+	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash");
+	SG_ADD(&ngrams, "ngrams", "Number of consecutive tokens");
+	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip");
+	SG_ADD(&should_normalize, "should_normalize", "Whether to normalize vectors or not");
+	SG_ADD(&tokenizer, "tokenizer", "Tokenizer");
 }
 
 const char* CHashedDocConverter::get_name() const

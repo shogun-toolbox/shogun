@@ -98,9 +98,9 @@ void FirstOrderMinimizer::init()
 	m_penalty_type=NULL;
 	m_penalty_weight=0;
 	SG_ADD(&m_penalty_weight, "FirstOrderMinimizer__m_penalty_weight",
-		"penalty_weight in FirstOrderMinimizer", MS_NOT_AVAILABLE);
+		"penalty_weight in FirstOrderMinimizer");
 	SG_ADD((CSGObject **)&m_penalty_type, "FirstOrderMinimizer__m_penalty_type",
-		"penalty_type in FirstOrderMinimizer", MS_NOT_AVAILABLE);
+		"penalty_type in FirstOrderMinimizer");
 	SG_ADD((CSGObject **)&m_fun, "FirstOrderMinimizer__m_fun",
-		"penalty_fun in FirstOrderMinimizer", MS_NOT_AVAILABLE);
+		"penalty_fun in FirstOrderMinimizer");
 }

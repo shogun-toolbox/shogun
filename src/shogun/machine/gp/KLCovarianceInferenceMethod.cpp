@@ -66,23 +66,17 @@ CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
 void CKLCovarianceInferenceMethod::init()
 {
 	SG_ADD(&m_V, "V",
-		"V is L'*V=diag(sW)*K",
-		MS_NOT_AVAILABLE);
+		"V is L'*V=diag(sW)*K");
 	SG_ADD(&m_A, "A",
-		"A is A=I-K*diag(sW)*inv(L)'*inv(L)*diag(sW)",
-		MS_NOT_AVAILABLE);
+		"A is A=I-K*diag(sW)*inv(L)'*inv(L)*diag(sW)");
 	SG_ADD(&m_W, "W",
-		"noise matrix W",
-		MS_NOT_AVAILABLE);
+		"noise matrix W");
 	SG_ADD(&m_sW, "sW",
-		"Square root of noise matrix W",
-		MS_NOT_AVAILABLE);
+		"Square root of noise matrix W");
 	SG_ADD(&m_dv, "dv",
-		"the gradient of the variational expection wrt sigma2",
-		MS_NOT_AVAILABLE);
+		"the gradient of the variational expection wrt sigma2");
 	SG_ADD(&m_df, "df",
-		"the gradient of the variational expection wrt mu",
-		MS_NOT_AVAILABLE);
+		"the gradient of the variational expection wrt mu");
 }
 
 

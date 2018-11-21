@@ -62,7 +62,7 @@ void L1PenaltyForTG::init()
 	m_u=0;
 	m_q=SGVector<float64_t>();
 	SG_ADD(&m_u, "L1PenaltyForTG__m_u",
-		"u in L1PenaltyForTG", MS_NOT_AVAILABLE);
+		"u in L1PenaltyForTG");
 	SG_ADD(&m_q, "L1PenaltyForTG__m_q",
-		"q in L1PenaltyForTG", MS_NOT_AVAILABLE);
+		"q in L1PenaltyForTG");
 }

@@ -93,7 +93,7 @@ private:
 	{
 		set_generic<typename extract_value_type<T>::value_type>();
 		m_value = 0;
-		SG_ADD(&m_value, "value", "Serialized value", MS_NOT_AVAILABLE);
+		SG_ADD(&m_value, "value", "Serialized value");
 	}
 
 protected:

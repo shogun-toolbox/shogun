@@ -42,7 +42,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used", MS_NOT_AVAILABLE);
+					"flat if optimized diagonal computation is used");
 		}
 
 		/** default destructor */

@@ -206,17 +206,17 @@ void COnlineSVMSGD::init()
 	loss=new CHingeLoss();
 	SG_REF(loss);
 
-	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
-	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
-	SG_ADD(&lambda, "lambda", "Regularization parameter.", MS_AVAILABLE);
-	SG_ADD(&wscale, "wscale", "W scale", MS_NOT_AVAILABLE);
-	SG_ADD(&bscale, "bscale", "b scale", MS_NOT_AVAILABLE);
-	SG_ADD(&epochs, "epochs", "epochs", MS_NOT_AVAILABLE);
-	SG_ADD(&skip, "skip", "skip", MS_NOT_AVAILABLE);
-	SG_ADD(&count, "count", "count", MS_NOT_AVAILABLE);
+	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
+	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
+	SG_ADD(&lambda, "lambda", "Regularization parameter.", ParameterProperties::HYPER);
+	SG_ADD(&wscale, "wscale", "W scale");
+	SG_ADD(&bscale, "bscale", "b scale");
+	SG_ADD(&epochs, "epochs", "epochs");
+	SG_ADD(&skip, "skip", "skip");
+	SG_ADD(&count, "count", "count");
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
+	    &use_bias, "use_bias", "Indicates if bias is used.");
 	SG_ADD(
 	    &use_regularized_bias, "use_regularized_bias",
-	    "Indicates if bias is regularized.", MS_NOT_AVAILABLE);
+	    "Indicates if bias is regularized.");
 }
