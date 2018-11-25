@@ -291,6 +291,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# CMake specific
+cmake-build-debug
+cmake-build-release
+
 # -*- mode: gitignore; -*-
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8
