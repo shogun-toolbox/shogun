@@ -6,6 +6,9 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+#include "shogun/mathematics/Math.h"
+#include "shogun/neuralnets/NeuralInputLayer.h"
+#include "shogun/neuralnets/NeuralLinearLayer.h"
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
@@ -55,4 +58,44 @@ SGStringList<T> generateRandomStringData(
 	return strings;
 }
 
+struct NeuralLayerTestUtil
+{
+	template <typename T>
+	static SGMatrix<T> create_rand_sgmat(
+	    int32_t num_rows, int32_t num_cols, T lower_bound, T upper_bound)
+	{
+		auto data_batch = SGMatrix<T>(num_rows, num_cols);
+		for (int32_t i = 0; i < data_batch.num_rows * data_batch.num_cols; i++)
+		{
+			data_batch[i] = CMath::random(lower_bound, upper_bound);
+		}
+		return data_batch;
+	}
+
+	template <typename T>
+	static auto create_rand_input_layer(
+	    int32_t num_features, int32_t num_samples, T lower_bound, T upper_bound)
+	{
+		auto data_batch = create_rand_sgmat(
+		    num_features, num_samples, lower_bound, upper_bound);
+		// Can't use unique_ptr here due to "unref_all"
+		auto input_layer = new CNeuralInputLayer(data_batch.num_rows);
+		input_layer->set_batch_size(data_batch.num_cols);
+		input_layer->compute_activations(data_batch);
+		return std::make_tuple(data_batch, input_layer);
+	}
+
+	static auto init_neural_linear_layer(
+	    CNeuralLinearLayer* layer, CDynamicObjectArray* layers,
+	    SGVector<int32_t> input_indices, int32_t batch_size, double sigma)
+	{
+		layer->initialize_neural_layer(layers, input_indices);
+		SGVector<float64_t> params(layer->get_num_parameters());
+		SGVector<bool> param_regularizable(layer->get_num_parameters());
+		layer->initialize_parameters(params, param_regularizable, sigma);
+		layer->set_batch_size(batch_size);
+		layer->compute_activations(params, layers);
+		return params;
+	}
+};
 #endif //__UTILS_H__

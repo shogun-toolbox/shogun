@@ -31,47 +31,46 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-#include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
+#include "shogun/neuralnets/NeuralSoftmaxLayer.h"
+#include "shogun/lib/SGMatrix.h"
+#include "shogun/lib/SGVector.h"
+#include "shogun/mathematics/Math.h"
+#include "shogun/neuralnets/NeuralInputLayer.h"
+#include "utils/Utils.h"
+#include "gtest/gtest.h"
 
 using namespace shogun;
+
+class NeuralSoftmaxLayerTest : public ::testing::Test
+{
+protected:
+	void SetUp()
+	{
+		CMath::init_random(100);
+		m_layers = std::make_unique<CDynamicObjectArray>();
+	}
+	std::unique_ptr<CDynamicObjectArray> m_layers;
+};
 
 /** Compares the activations computed using the layer against manually computed
  * activations
  */
-TEST(NeuralSoftmaxLayer, compute_activations)
+TEST_F(NeuralSoftmaxLayerTest, compute_activations)
 {
-	CNeuralSoftmaxLayer layer(9);
-
 	// initialize some random inputs
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
-
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
-	SGVector<int32_t> input_indices(1);
-	input_indices[0] = 0;
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) =
+	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
+	        12, 3, -10.0, 10.0);
+	m_layers->append_element(input);
 
 	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
-
-	// compute the layer's activations
-	input->compute_activations(x);
-	layer.compute_activations(params, layers);
+	CNeuralSoftmaxLayer layer(9);
+	SGVector<int32_t> input_indices(1);
+	input_indices[0] = 0;
+	auto params = NeuralLayerTestUtil::init_neural_linear_layer(
+	    &layer, m_layers.get(), input_indices, x.num_cols, 1.0);
 	SGMatrix<float64_t> A = layer.get_activations();
 
 	// manually compute the layer's activations
@@ -108,41 +107,30 @@ TEST(NeuralSoftmaxLayer, compute_activations)
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
 	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
 		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
-
-	SG_UNREF(layers);
 }
 
 /** Compares the error computed using the layer against a manually computed
  * error
  */
-TEST(NeuralSoftmaxLayer, compute_error)
+TEST_F(NeuralSoftmaxLayerTest, compute_error)
 {
+	// initialize some random inputs
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) =
+	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
+	        12, 3, -10.0, 10.0);
+	m_layers->append_element(input);
+
+	// initialize the softmax layer
 	CNeuralSoftmaxLayer layer(9);
-
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
-
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
+	auto params = NeuralLayerTestUtil::init_neural_linear_layer(
+	    &layer, m_layers.get(), input_indices, x.num_cols, 1.0);
 
-	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
-
-	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
-	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = CMath::random(0.0,1.0);
+	// initialize output
+	auto y = NeuralLayerTestUtil::create_rand_sgmat<float64_t>(9, 3, 0.0, 1.0);
 
 	// make sure y is in the form of a probability distribution
 	for (int32_t j=0; j<y.num_cols; j++)
@@ -156,8 +144,6 @@ TEST(NeuralSoftmaxLayer, compute_error)
 	}
 
 	// compute the layer's activations and error
-	input->compute_activations(x);
-	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	float64_t error = layer.compute_error(y);
 
@@ -169,41 +155,31 @@ TEST(NeuralSoftmaxLayer, compute_error)
 
 	// compare
 	EXPECT_NEAR(error_ref, error, 1e-12);
-
-	SG_UNREF(layers);
 }
 
 /** Compares the local gradients computed using the layer against manually
  * computed gradients
  */
-TEST(NeuralSoftmaxLayer, compute_local_gradients)
+TEST_F(NeuralSoftmaxLayerTest, compute_local_gradients)
 {
-	CNeuralSoftmaxLayer layer(9);
-
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
-
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
-	SGVector<int32_t> input_indices(1);
-	input_indices[0] = 0;
+	// initialize some random inputs
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) =
+	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
+	        12, 3, -10.0, 10.0);
+	m_layers->append_element(input);
 
 	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
+	CNeuralSoftmaxLayer layer(9);
+	SGVector<int32_t> input_indices(1);
+	input_indices[0] = 0;
+	auto params = NeuralLayerTestUtil::init_neural_linear_layer(
+	    &layer, m_layers.get(), input_indices, x.num_cols, 1.0);
 
-	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
-	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = CMath::random(0.0,1.0);
+	// initialize the output
+	auto y = NeuralLayerTestUtil::create_rand_sgmat<float64_t>(
+	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0);
 
 	// make sure y is in the form of a probability distribution
 	for (int32_t j=0; j<y.num_cols; j++)
@@ -217,8 +193,6 @@ TEST(NeuralSoftmaxLayer, compute_local_gradients)
 	}
 
 	// compute the layer's local gradients
-	input->compute_activations(x);
-	layer.compute_activations(params, layers);
 	layer.compute_local_gradients(y);
 	SGMatrix<float64_t> LG = layer.get_local_gradients();
 
@@ -233,6 +207,4 @@ TEST(NeuralSoftmaxLayer, compute_local_gradients)
 	EXPECT_EQ(LG_ref.num_cols, LG.num_cols);
 	for (int32_t i=0; i<LG.num_rows*LG.num_cols; i++)
 		EXPECT_NEAR(LG_ref[i], LG[i], 1e-6);
-
-	SG_UNREF(layers);
 }
