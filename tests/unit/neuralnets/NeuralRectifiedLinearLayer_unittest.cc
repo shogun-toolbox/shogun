@@ -31,29 +31,19 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include "shogun/neuralnets/NeuralRectifiedLinearLayer.h"
-#include "shogun/lib/SGMatrix.h"
-#include "shogun/lib/SGVector.h"
-#include "shogun/mathematics/Math.h"
-#include "shogun/neuralnets/NeuralInputLayer.h"
-#include "utils/Utils.h"
-#include "gtest/gtest.h"
+#include "NeuralLayerTestFixture.h"
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 
-#include <memory>
 #include <tuple>
 
 using namespace shogun;
 
-class NeuralRectifiedLinearLayerTest : public ::testing::Test
-{
-protected:
-	void SetUp()
-	{
-		CMath::init_random(100);
-		m_layers = std::make_unique<CDynamicObjectArray>();
-	}
-	std::unique_ptr<CDynamicObjectArray> m_layers;
-};
+using NeuralRectifiedLinearLayerTest = NeuralLayerTestFixture;
 
 /** Compares the activations computed using the layer against manually computed
  * activations
@@ -63,42 +53,31 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
 	CNeuralInputLayer* input;
-	std::tie(x, input) =
-	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
-	        12, 3, -10.0, 10.0);
-	m_layers->append_element(input);
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize the rectified linear layer
 	CNeuralRectifiedLinearLayer layer(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
-	auto params = NeuralLayerTestUtil::init_neural_linear_layer(
-	    &layer, m_layers.get(), input_indices, x.num_cols, 1.0);
+	auto params =
+	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
 	SGMatrix<float64_t> A = layer.get_activations();
 
-	// manually compute the layer's activations
+	// Manually compute Recitified linear activations
+	auto biases =
+	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	auto weights = SGMatrix<float64_t>(
+	    params.vector, layer.get_num_neurons(), x.num_rows,
+	    layer.get_num_neurons());
 	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
-
-	float64_t* biases = params.vector;
-	float64_t* weights = biases + layer.get_num_neurons();
-
-	for (int32_t i=0; i<A_ref.num_rows; i++)
-	{
-		for (int32_t j=0; j<A_ref.num_cols; j++)
-		{
-			A_ref(i,j) = biases[i];
-
-			for (int32_t k=0; k<x.num_rows; k++)
-				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
-
-			A_ref(i,j) = CMath::max<float64_t>(0, A_ref(i,j));
-		}
-	}
+	shogun::linalg::add_vector(
+	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
+	shogun::linalg::rectified_linear(A_ref, A_ref);
 
 	// compare
 	EXPECT_EQ(A_ref.num_rows, A.num_rows);
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
-	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
+	for (int32_t i = 0; i < A.num_rows * A.num_cols; i++)
 		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
 }
 
@@ -108,35 +87,27 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
  */
 TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 {
-
 	// initialize some random inputs
 	SGMatrix<float64_t> x1, x2;
 	CNeuralInputLayer *input1, *input2;
-	std::tie(x1, input1) =
-	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
-	        12, 3, -10.0, 10.0);
-	std::tie(x2, input2) =
-	    NeuralLayerTestUtil::create_rand_input_layer<float64_t>(
-	        7, 3, -10.0, 10.0);
-	m_layers->append_element(input1);
-	m_layers->append_element(input2);
+	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
+	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the hidden rectified linear layer
 	CNeuralLinearLayer* layer_hid = new CNeuralRectifiedLinearLayer(5);
-	m_layers->append_element(layer_hid);
 	SGVector<int32_t> input_indices_hid(2);
 	input_indices_hid[0] = 0;
 	input_indices_hid[1] = 1;
-	auto param_hid = NeuralLayerTestUtil::init_neural_linear_layer(
-	    layer_hid, m_layers.get(), input_indices_hid, x1.num_cols, 0.01);
+	auto param_hid = init_linear_layer(
+	    layer_hid, input_indices_hid, x1.num_cols, 0.01, true);
 
 	// initialize the output layer
-	auto y = NeuralLayerTestUtil::create_rand_sgmat<float64_t>(9, 3, 0.0, 1.0);
+	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0);
 	CNeuralLinearLayer layer_out(y.num_rows);
 	SGVector<int32_t> input_indices_out(1);
 	input_indices_out[0] = 2;
-	auto param_out = NeuralLayerTestUtil::init_neural_linear_layer(
-	    &layer_out, m_layers.get(), input_indices_out, x1.num_cols, 0.01);
+	auto param_out = init_linear_layer(
+	    &layer_out, input_indices_out, x1.num_cols, 0.01, false);
 
 	// compute gradients
 	layer_hid->get_activation_gradients().zero();
@@ -148,9 +119,10 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 	    param_hid, SGMatrix<float64_t>(), m_layers.get(), gradients_hid);
 
 	// manually compute parameter gradients
-	SGVector<float64_t> gradients_hid_numerical(layer_hid->get_num_parameters());
+	SGVector<float64_t> gradients_hid_numerical(
+	    layer_hid->get_num_parameters());
 	float64_t epsilon = 1e-9;
-	for (int32_t i=0; i<layer_hid->get_num_parameters(); i++)
+	for (int32_t i = 0; i < layer_hid->get_num_parameters(); i++)
 	{
 		param_hid[i] += epsilon;
 		input1->compute_activations(x1);
@@ -159,7 +131,7 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 		layer_out.compute_activations(param_out, m_layers.get());
 		float64_t error_plus = layer_out.compute_error(y);
 
-		param_hid[i] -= 2*epsilon;
+		param_hid[i] -= 2 * epsilon;
 		input1->compute_activations(x1);
 		input2->compute_activations(x2);
 		layer_hid->compute_activations(param_hid, m_layers.get());
@@ -167,10 +139,10 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 		float64_t error_minus = layer_out.compute_error(y);
 		param_hid[i] += epsilon;
 
-		gradients_hid_numerical[i] = (error_plus-error_minus)/(2*epsilon);
+		gradients_hid_numerical[i] = (error_plus - error_minus) / (2 * epsilon);
 	}
 
 	// compare
-	for (int32_t i=0; i<gradients_hid_numerical.vlen; i++)
+	for (int32_t i = 0; i < gradients_hid_numerical.vlen; i++)
 		EXPECT_NEAR(gradients_hid_numerical[i], gradients_hid[i], 1e-6);
 }
