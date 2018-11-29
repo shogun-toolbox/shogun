@@ -8,6 +8,7 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/type_case.h>
 
 #include <shogun/base/Parallel.h>
 #include <shogun/base/SGObject.h>
@@ -97,6 +98,8 @@ namespace shogun
 		std::signal(SIGINT, sg_signal->handler);
 
 		init_from_env();
+
+		init_types();
 	}
 
 	void sg_global_print_default(FILE* target, const char* str)
