@@ -39,6 +39,7 @@
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/tfhistogram/histogram.h>
+#include <shogun/lib/type_case.h>
 #include <vector>
 
 using namespace shogun;
@@ -105,6 +106,13 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 		SG_ERROR(
 		    "Unsupported type %s", value.first.get_value().type_info().name());
 	}
+
+	auto write_summary = [&](auto type) {
+		summaryValue->set_simple_value(\
+			any_cast<decltype(type)>(value.first.get_value()));
+	};
+
+	type_finder(value.first.get_value(), all_types, write_summary);
 
 	return e;
 }
