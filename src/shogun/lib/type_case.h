@@ -18,13 +18,14 @@ using namespace shogun;
 // here we define a list of all types that are implemented in shogun
 // the head of the list returns the type
 typedef Types<
-		bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
-		uint64_t, float32_t, float64_t, floatmax_t>::type
-		AllTypes;
+    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
+    uint64_t, float32_t, float64_t, floatmax_t>::type AllTypes;
 
-namespace shogun {
-    // here we make types switchable
-	enum class TYPE {
+namespace shogun
+{
+	// here we make types switchable
+	enum class TYPE
+	{
 		PT_BOOL = 1,
 		PT_CHAR = 2,
 		PT_INT8 = 3,
@@ -42,7 +43,7 @@ namespace shogun {
 		PT_COMPLEX128 = 15,
 		PT_UNDEFINED = 16
 	};
-}
+} // namespace shogun
 
 template <typename T>
 struct sg_primitive_type
@@ -55,7 +56,6 @@ struct sg_primitive_type
 	{                                                                          \
 		static constexpr TYPE value = ptype;                                   \
 	};
-
 
 typedef std::unordered_map<std::type_index, TYPE> typemap;
 
@@ -74,10 +74,11 @@ SG_PRIMITIVE_TYPE(float64_t, TYPE::PT_FLOAT64)
 SG_PRIMITIVE_TYPE(floatmax_t, TYPE::PT_FLOATMAX)
 SG_PRIMITIVE_TYPE(complex128_t, TYPE::PT_COMPLEX128)
 
-namespace shogun {
-    extern typemap all_types;
+namespace shogun
+{
+	extern typemap all_types;
 
-    template <typename T>
+	template <typename T>
 	void map_type(TYPE type, typemap& map);
 
 	template <typename T>
@@ -87,32 +88,37 @@ namespace shogun {
 
 	TYPE get_type(Any any, typemap map);
 
-    template<typename T1, typename T2>
-    typename std::enable_if<(not std::is_same<T1, Types0>::value), int>::type
-    recursive_type_finder(const Any &any, TYPE type, T2 func) {
-        if (type == sg_primitive_type<typename T1::Head>::value) {
-            typename T1::Head i;
-            func(i);
-            return 1;
-        }
-        else {
-            return recursive_type_finder<typename T1::Tail>(any, type, func);
-        }
-    }
+	template <typename T1, typename T2>
+	typename std::enable_if<(not std::is_same<T1, Types0>::value), int>::type
+	recursive_type_finder(const Any& any, TYPE type, T2 func)
+	{
+		if (type == sg_primitive_type<typename T1::Head>::value)
+		{
+			typename T1::Head i;
+			func(i);
+			return 1;
+		}
+		else
+		{
+			return recursive_type_finder<typename T1::Tail>(any, type, func);
+		}
+	}
 
-    template<typename T1, typename T2>
-    typename std::enable_if<std::is_same<T1, Types0>::value, int>::type
-    recursive_type_finder(const Any &any, TYPE type, T2 func) {
-        return 0;
-    }
+	template <typename T1, typename T2>
+	typename std::enable_if<std::is_same<T1, Types0>::value, int>::type
+	recursive_type_finder(const Any& any, TYPE type, T2 func)
+	{
+		return 0;
+	}
 
-    template<typename T>
-    int type_finder(const Any& any, typemap& typesmap, T func) {
-        TYPE type = get_type(any, typesmap);
-        return recursive_type_finder<AllTypes>(any, type, func);
-    }
+	template <typename T>
+	int type_finder(const Any& any, typemap& typesmap, T func)
+	{
+		TYPE type = get_type(any, typesmap);
+		return recursive_type_finder<AllTypes>(any, type, func);
+	}
 
 	void init_types();
-}
+} // namespace shogun
 
 #endif // SHOGUN_TYPE_CASE_H

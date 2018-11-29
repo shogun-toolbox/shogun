@@ -108,8 +108,8 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	}
 
 	auto write_summary = [&](auto type) {
-		summaryValue->set_simple_value(\
-			any_cast<decltype(type)>(value.first.get_value()));
+		summaryValue->set_simple_value(
+		    any_cast<decltype(type)>(value.first.get_value()));
 	};
 
 	type_finder(value.first.get_value(), all_types, write_summary);
