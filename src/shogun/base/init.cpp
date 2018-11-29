@@ -99,7 +99,6 @@ namespace shogun
 
 		init_from_env();
 
-		init_types();
 	}
 
 	void sg_global_print_default(FILE* target, const char* str)
