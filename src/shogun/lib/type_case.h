@@ -15,15 +15,12 @@
 
 using namespace shogun;
 
-// here we define a list of all types that are implemented in shogun
-// the head of the list returns the type
-typedef Types<
-	bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
-	uint64_t, float32_t, float64_t, floatmax_t>::type SG_TYPES;
-
 namespace shogun
 {
-	// here we make types switchable
+	typedef Types<
+	    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
+	    int64_t, uint64_t, float32_t, float64_t, floatmax_t>::type SG_TYPES;
+
 	enum class TYPE
 	{
 		PT_BOOL = 1,
@@ -80,6 +77,7 @@ namespace shogun
 
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
+
 	typemap all_types = {
 			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
 			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
@@ -122,7 +120,6 @@ namespace shogun
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
 	};
-
 #undef ADD_TYPE_TO_MAP
 
 	TYPE get_type(const Any& any, typemap map)
@@ -131,33 +128,41 @@ namespace shogun
 		return map[t];
 	}
 	template <typename TypeList, typename Lambda>
-	typename std::enable_if<(not std::is_same<TypeList, Types0>::value), int>::type
+	typename std::enable_if<
+	    (not std::is_same<TypeList, Types0>::value), void>::type
 	type_finder(const Any& any, TYPE type, Lambda func)
 	{
 		if (type == sg_primitive_type<typename TypeList::Head>::value)
 		{
 			typename TypeList::Head temporary_type_holder;
 			func(temporary_type_holder);
-			return 1;
 		}
 		else
 		{
-			return type_finder<typename TypeList::Tail>(any, type, func);
+			type_finder<typename TypeList::Tail>(any, type, func);
 		}
 	}
 
 	template <typename TypeList, typename Lambda>
-	typename std::enable_if<std::is_same<TypeList, Types0>::value, int>::type
+	typename std::enable_if<std::is_same<TypeList, Types0>::value, void>::type
 	type_finder(const Any& any, TYPE type, Lambda func)
 	{
-		return 0;
+		SG_SERROR("Unsupported type %s", any.type_info().name());
 	}
 
 	template <typename Lambda>
-	int for_each_type(const Any& any, typemap& typesmap, Lambda func)
+	void for_each_type(const Any& any, typemap& typesmap, Lambda func)
 	{
 		TYPE type = get_type(any, typesmap);
-		return type_finder<SG_TYPES>(any, type, func);
+
+		if (type == TYPE())
+		{
+			SG_SERROR(
+			    "Type %s is not part of the given typemap",
+			    any.type_info().name());
+		}
+
+		type_finder<SG_TYPES>(any, type, func);
 	}
 
 } // namespace shogun
