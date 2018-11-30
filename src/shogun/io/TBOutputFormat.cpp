@@ -107,7 +107,7 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 		    "Unsupported type %s", value.first.get_value().type_info().name());
 	}
 
-	auto write_summary = [&](auto type) {
+	auto write_summary = [&summaryValue=summaryValue, &value](auto type) {
 		summaryValue->set_simple_value(
 		    any_cast<decltype(type)>(value.first.get_value()));
 	};
