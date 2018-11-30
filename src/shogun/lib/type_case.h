@@ -57,9 +57,6 @@ struct sg_primitive_type
 		static constexpr TYPE value = ptype;                                   \
 	};																		   \
 
-
-typedef std::unordered_map<std::type_index, TYPE> typemap;
-
 SG_PRIMITIVE_TYPE(bool, TYPE::PT_BOOL)
 SG_PRIMITIVE_TYPE(char, TYPE::PT_CHAR)
 SG_PRIMITIVE_TYPE(int8_t, TYPE::PT_INT8)
@@ -75,10 +72,15 @@ SG_PRIMITIVE_TYPE(float64_t, TYPE::PT_FLOAT64)
 SG_PRIMITIVE_TYPE(floatmax_t, TYPE::PT_FLOATMAX)
 SG_PRIMITIVE_TYPE(complex128_t, TYPE::PT_COMPLEX128)
 
+#undef SG_PRIMITIVE_TYPE
+
+
 namespace shogun
 {
-#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM) {std::type_index(typeid(TYPENAME)), TYPE_ENUM},
-	extern typemap all_types = {
+	typedef std::unordered_map<std::type_index, TYPE> typemap;
+
+	#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM) {std::type_index(typeid(TYPENAME)), TYPE_ENUM},
+	typemap all_types = {
 			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
 			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
 			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
@@ -93,25 +95,9 @@ namespace shogun
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 	};
+#undef ADD_TYPE_TO_MAP
 
-	template <typename T>
-	void map_type(TYPE type, typemap& map)
-	{
-		map[std::type_index(typeid(T))] = type;
-	}
-
-	template <typename T>
-	TYPE get_type(typemap map)
-	{
-		return map[std::type_index(typeid(T))];
-	}
-
-	TYPE get_type(std::type_index type, typemap map)
-	{
-		return map[type];
-	}
-
-	TYPE get_type(Any any, typemap map)
+	TYPE get_type(const Any& any, typemap map)
 	{
 		std::type_index t = std::type_index(any.type_info());
 		return map[t];
@@ -146,7 +132,6 @@ namespace shogun
 		return recursive_type_finder<AllTypes>(any, type, func);
 	}
 
-	void init_types();
 } // namespace shogun
 
 #endif // SHOGUN_TYPE_CASE_H
