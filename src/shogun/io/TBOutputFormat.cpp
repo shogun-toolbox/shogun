@@ -112,7 +112,7 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 		    any_cast<decltype(type)>(value.first.get_value()));
 	};
 
-	type_finder(value.first.get_value(), all_types, write_summary);
+	for_each_type(value.first.get_value(), all_types, write_summary);
 
 	return e;
 }

@@ -18,8 +18,8 @@ using namespace shogun;
 // here we define a list of all types that are implemented in shogun
 // the head of the list returns the type
 typedef Types<
-    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
-    uint64_t, float32_t, float64_t, floatmax_t>::type AllTypes;
+	bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
+	uint64_t, float32_t, float64_t, floatmax_t>::type SG_TYPES;
 
 namespace shogun
 {
@@ -55,7 +55,7 @@ struct sg_primitive_type
 	struct sg_primitive_type<T>                                                \
 	{                                                                          \
 		static constexpr TYPE value = ptype;                                   \
-	};																		   \
+	};
 
 SG_PRIMITIVE_TYPE(bool, TYPE::PT_BOOL)
 SG_PRIMITIVE_TYPE(char, TYPE::PT_CHAR)
@@ -102,34 +102,34 @@ namespace shogun
 		std::type_index t = std::type_index(any.type_info());
 		return map[t];
 	}
-	template <typename T1, typename T2>
-	typename std::enable_if<(not std::is_same<T1, Types0>::value), int>::type
-	recursive_type_finder(const Any& any, TYPE type, T2 func)
+	template <typename TypeList, typename Lambda>
+	typename std::enable_if<(not std::is_same<TypeList, Types0>::value), int>::type
+	type_finder(const Any& any, TYPE type, Lambda func)
 	{
-		if (type == sg_primitive_type<typename T1::Head>::value)
+		if (type == sg_primitive_type<typename TypeList::Head>::value)
 		{
-			typename T1::Head i;
-			func(i);
+			typename TypeList::Head temporary_type_holder;
+			func(temporary_type_holder);
 			return 1;
 		}
 		else
 		{
-			return recursive_type_finder<typename T1::Tail>(any, type, func);
+			return type_finder<typename TypeList::Tail>(any, type, func);
 		}
 	}
 
-	template <typename T1, typename T2>
-	typename std::enable_if<std::is_same<T1, Types0>::value, int>::type
-	recursive_type_finder(const Any& any, TYPE type, T2 func)
+	template <typename TypeList, typename Lambda>
+	typename std::enable_if<std::is_same<TypeList, Types0>::value, int>::type
+	type_finder(const Any& any, TYPE type, Lambda func)
 	{
 		return 0;
 	}
 
-	template <typename T>
-	int type_finder(const Any& any, typemap& typesmap, T func)
+	template <typename Lambda>
+	int for_each_type(const Any& any, typemap& typesmap, Lambda func)
 	{
 		TYPE type = get_type(any, typesmap);
-		return recursive_type_finder<AllTypes>(any, type, func);
+		return type_finder<SG_TYPES>(any, type, func);
 	}
 
 } // namespace shogun
