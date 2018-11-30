@@ -74,12 +74,12 @@ SG_PRIMITIVE_TYPE(complex128_t, TYPE::PT_COMPLEX128)
 
 #undef SG_PRIMITIVE_TYPE
 
-
 namespace shogun
 {
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
 
-	#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM) {std::type_index(typeid(TYPENAME)), TYPE_ENUM},
+#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
+	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 	typemap all_types = {
 			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
 			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
@@ -94,7 +94,35 @@ namespace shogun
 			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
 	};
+	typemap non_complex_types = {
+			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
+			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
+			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
+			ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
+			ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
+			ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
+			ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
+			ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
+			ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
+			ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
+			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+	};
+	typemap real_types = {
+			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+	};
+	typemap non_integer_types = {
+			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
+	};
+
 #undef ADD_TYPE_TO_MAP
 
 	TYPE get_type(const Any& any, typemap map)
