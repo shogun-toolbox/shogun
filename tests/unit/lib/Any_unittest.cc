@@ -708,48 +708,48 @@ TEST(AnyParameterProperties, new_api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
 
-	EXPECT_TRUE(params.equals(ParameterProperties()));
-	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
-	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties()));
 }
 
 TEST(AnyParameterProperties, old_custom_ctor)
 {
 	AnyParameterProperties params = AnyParameterProperties(
 	    "test", EModelSelectionAvailability::MS_NOT_AVAILABLE,
-	    EGradientAvailability::GRADIENT_AVAILABLE, true);
+	    EGradientAvailability::GRADIENT_NOT_AVAILABLE, false);
 
 	EXPECT_EQ(params.get_description(), "test");
 	EXPECT_EQ(
 	    params.get_model_selection(),
 	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
-	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
-	EXPECT_TRUE(params.get_model());
+	EXPECT_EQ(
+	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
+	EXPECT_FALSE(params.get_model());
 
-	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
-	EXPECT_TRUE(params.has_property(ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.equals(
-	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
-    EXPECT_FALSE(params.equals(ParameterProperties::MODEL));
+	EXPECT_FALSE(params.compare_mask(
+	    ParameterProperties::MODEL | ParameterProperties::HYPER |
+	    ParameterProperties::HYPER));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
+	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
+	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
 }
 
 TEST(AnyParameterProperties, new_custom_ctor)
 {
-	AnyParameterProperties params = AnyParameterProperties(
-	    "test", ParameterProperties::MODEL | ParameterProperties::GRADIENT);
+	AnyParameterProperties params =
+	    AnyParameterProperties("test", ParameterProperties());
 
 	EXPECT_EQ(params.get_description(), "test");
 	EXPECT_EQ(
 	    params.get_model_selection(),
 	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
-	EXPECT_EQ(params.get_gradient(), EGradientAvailability::GRADIENT_AVAILABLE);
-	EXPECT_TRUE(params.get_model());
+	EXPECT_EQ(
+	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
+	EXPECT_FALSE(params.get_model());
 
-	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
-	EXPECT_TRUE(params.has_property(ParameterProperties::GRADIENT));
-	EXPECT_TRUE(params.equals(
-	    ParameterProperties::MODEL | ParameterProperties::GRADIENT));
+	EXPECT_FALSE(params.compare_mask(
+	    ParameterProperties::MODEL | ParameterProperties::HYPER |
+	    ParameterProperties::HYPER));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
+	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
+	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
 }
