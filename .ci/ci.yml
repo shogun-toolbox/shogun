@@ -1,4 +1,26 @@
 jobs:
+- job: lint
+  displayName: Check code formatting
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+  pool:
+    vmImage: ubuntu-16.04
+
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 5
+    submodules: true
+
+  - task: docker@0
+    displayName: Lint
+    inputs:
+      action: 'Run an image'
+      imageName: $(imageName)
+      volumes: |
+        $(build.sourcesDirectory):/src
+      workDir: '/src'
+      containerCommand: './scripts/check_format.sh $(System.PullRequest.SourceBranch) $(System.PullRequest.TargetBranch)'
+
 - job: libshogun
   displayName: Linux libshogun CI Tests
 
