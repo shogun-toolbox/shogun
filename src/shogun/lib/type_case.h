@@ -75,6 +75,45 @@ namespace shogun
 {
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
 
+	namespace type_internal
+	{
+		std::string demangled_type(const char* name)
+		{
+#ifdef HAVE_CXA_DEMANGLE
+			size_t length;
+			int status;
+			char* demangled =
+			    abi::__cxa_demangle(name, nullptr, &length, &status);
+			std::string demangled_string(demangled);
+			free(demangled);
+#else
+			std::string demangled_string(name);
+#endif
+			return demangled_string;
+		}
+
+		std::string print_map(const typemap& map)
+		{
+			auto msg = std::string("<");
+			for (auto it : map)
+			{
+				msg += demangled_type(it.first.name());
+				msg += ", ";
+			}
+			msg.resize(msg.size() - 2);
+			msg += ">";
+			return msg;
+		}
+
+		TYPE get_type(const Any& any, typemap& map)
+		{
+			auto type = std::type_index(any.type_info());
+			typemap::const_iterator it = map.find(type);
+
+			return it == map.end() ? TYPE::PT_UNDEFINED : map[type];
+		}
+	} // namespace type_internal
+
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 
@@ -120,13 +159,8 @@ namespace shogun
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
 	};
-#undef ADD_TYPE_TO_MAP
 
-	TYPE get_type(const Any& any, typemap map)
-	{
-		std::type_index t = std::type_index(any.type_info());
-		return map[t];
-	}
+#undef ADD_TYPE_TO_MAP
 	template <typename TypeList, typename Lambda>
 	typename std::enable_if<
 	    (not std::is_same<TypeList, Types0>::value), void>::type
@@ -147,21 +181,21 @@ namespace shogun
 	typename std::enable_if<std::is_same<TypeList, Types0>::value, void>::type
 	sg_type_finder(const Any& any, TYPE type, Lambda func)
 	{
-		SG_SERROR("Unsupported type %s", any.type_info().name());
+		SG_SERROR(
+		    "Unsupported type %s",
+		    type_internal::demangled_type(any.type_info().name()).c_str())
 	}
 
 	template <typename Lambda>
 	void sg_for_each_type(const Any& any, typemap& typesmap, Lambda func)
 	{
-		TYPE type = get_type(any, typesmap);
-
-		if (type == TYPE())
-		{
+		TYPE type = type_internal::get_type(any, typesmap);
+		if (type == TYPE::PT_UNDEFINED)
 			SG_SERROR(
-			    "Type %s is not part of the given typemap",
-			    any.type_info().name());
-		}
-
+			    "Type %s is not part of %s",
+			    type_internal::demangled_type(any.type_info().name()).c_str(),
+			    type_internal::print_map(typesmap).c_str())
+		else
 			sg_type_finder<SG_TYPES>(any, type, func);
 	}
 
