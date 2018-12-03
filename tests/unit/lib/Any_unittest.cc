@@ -726,9 +726,6 @@ TEST(AnyParameterProperties, old_custom_ctor)
 	EXPECT_FALSE(params.get_model());
 
 	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
-	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
-	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
 }
 
 TEST(AnyParameterProperties, new_custom_ctor)
@@ -745,7 +742,4 @@ TEST(AnyParameterProperties, new_custom_ctor)
 	EXPECT_FALSE(params.get_model());
 
 	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
-	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
-	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
-	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
 }
