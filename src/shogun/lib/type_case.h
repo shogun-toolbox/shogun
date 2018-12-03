@@ -78,7 +78,7 @@ namespace shogun
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 
-	typemap all_types = {
+	typemap sg_all_types = {
 			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
 			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
 			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
@@ -94,7 +94,7 @@ namespace shogun
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
 	};
-	typemap non_complex_types = {
+	typemap sg_non_complex_types = {
 			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
 			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
 			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
@@ -109,12 +109,12 @@ namespace shogun
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 	};
-	typemap real_types = {
+	typemap sg_real_types = {
 			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 	};
-	typemap non_integer_types = {
+	typemap sg_non_integer_types = {
 			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
@@ -130,7 +130,7 @@ namespace shogun
 	template <typename TypeList, typename Lambda>
 	typename std::enable_if<
 	    (not std::is_same<TypeList, Types0>::value), void>::type
-	type_finder(const Any& any, TYPE type, Lambda func)
+	sg_type_finder(const Any& any, TYPE type, Lambda func)
 	{
 		if (type == sg_primitive_type<typename TypeList::Head>::value)
 		{
@@ -139,19 +139,19 @@ namespace shogun
 		}
 		else
 		{
-			type_finder<typename TypeList::Tail>(any, type, func);
+			sg_type_finder<typename TypeList::Tail>(any, type, func);
 		}
 	}
 
 	template <typename TypeList, typename Lambda>
 	typename std::enable_if<std::is_same<TypeList, Types0>::value, void>::type
-	type_finder(const Any& any, TYPE type, Lambda func)
+	sg_type_finder(const Any& any, TYPE type, Lambda func)
 	{
 		SG_SERROR("Unsupported type %s", any.type_info().name());
 	}
 
 	template <typename Lambda>
-	void for_each_type(const Any& any, typemap& typesmap, Lambda func)
+	void sg_for_each_type(const Any& any, typemap& typesmap, Lambda func)
 	{
 		TYPE type = get_type(any, typesmap);
 
@@ -162,7 +162,7 @@ namespace shogun
 			    any.type_info().name());
 		}
 
-		type_finder<SG_TYPES>(any, type, func);
+			sg_type_finder<SG_TYPES>(any, type, func);
 	}
 
 } // namespace shogun
