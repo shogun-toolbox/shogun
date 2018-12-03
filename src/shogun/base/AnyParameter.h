@@ -32,6 +32,7 @@ namespace shogun
 	/** parameter properties */
 	enum class ParameterProperties
 	{
+		NONE = 0,
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
 		MODEL = 1u << 2
@@ -51,7 +52,7 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
-		      m_attribute_mask(ParameterProperties())
+		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
 		/** Constructor
@@ -71,7 +72,7 @@ namespace shogun
 		    : m_description(description), m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
-			m_attribute_mask = ParameterProperties();
+			m_attribute_mask = ParameterProperties::NONE;
 			if (hyperparameter)
 				m_attribute_mask |= ParameterProperties::HYPER;
 			if (gradient)

@@ -708,7 +708,7 @@ TEST(AnyParameterProperties, new_api_default)
 {
 	AnyParameterProperties params = AnyParameterProperties();
 
-	EXPECT_TRUE(params.compare_mask(ParameterProperties()));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
 }
 
 TEST(AnyParameterProperties, old_custom_ctor)
@@ -725,9 +725,7 @@ TEST(AnyParameterProperties, old_custom_ctor)
 	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
 	EXPECT_FALSE(params.get_model());
 
-	EXPECT_FALSE(params.compare_mask(
-	    ParameterProperties::MODEL | ParameterProperties::HYPER |
-	    ParameterProperties::HYPER));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
 	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
@@ -746,9 +744,7 @@ TEST(AnyParameterProperties, new_custom_ctor)
 	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
 	EXPECT_FALSE(params.get_model());
 
-	EXPECT_FALSE(params.compare_mask(
-	    ParameterProperties::MODEL | ParameterProperties::HYPER |
-	    ParameterProperties::HYPER));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
 	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
 	EXPECT_FALSE(params.has_property(ParameterProperties::GRADIENT));
 	EXPECT_FALSE(params.has_property(ParameterProperties::MODEL));
