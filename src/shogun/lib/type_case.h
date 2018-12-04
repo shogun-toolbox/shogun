@@ -10,6 +10,7 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/type_list.h>
 
@@ -17,9 +18,12 @@ using namespace shogun;
 
 namespace shogun
 {
+
 	typedef Types<
 	    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
-	    int64_t, uint64_t, float32_t, float64_t, floatmax_t>::type SG_TYPES;
+	    int64_t, uint64_t, float32_t, float64_t, floatmax_t>::type
+	    SG_SCALAR_TYPES;
+	typedef Types<SGVector<float32_t>>::type SG_VECTOR_TYPES;
 
 	enum class TYPE
 	{
@@ -38,8 +42,10 @@ namespace shogun
 		PT_FLOATMAX = 13,
 		PT_SGOBJECT = 14,
 		PT_COMPLEX128 = 15,
-		PT_UNDEFINED = 16
+		PT_SGVECTOR_FLOAT32 = 16,
+		PT_UNDEFINED = 17
 	};
+
 } // namespace shogun
 
 template <typename T>
@@ -68,6 +74,7 @@ SG_PRIMITIVE_TYPE(float32_t, TYPE::PT_FLOAT32)
 SG_PRIMITIVE_TYPE(float64_t, TYPE::PT_FLOAT64)
 SG_PRIMITIVE_TYPE(floatmax_t, TYPE::PT_FLOATMAX)
 SG_PRIMITIVE_TYPE(complex128_t, TYPE::PT_COMPLEX128)
+SG_PRIMITIVE_TYPE(SGVector<float32_t>, TYPE::PT_SGVECTOR_FLOAT32)
 
 #undef SG_PRIMITIVE_TYPE
 
@@ -90,12 +97,12 @@ namespace shogun
 			return msg;
 		}
 
-		TYPE get_type(const Any& any, typemap& map)
+		TYPE get_type(const Any& any, const typemap& map)
 		{
 			auto type = std::type_index(any.type_info());
 			typemap::const_iterator it = map.find(type);
 
-			return it == map.end() ? TYPE::PT_UNDEFINED : map[type];
+			return it == map.end() ? TYPE::PT_UNDEFINED : map.at(type);
 		}
 
 		template <typename TypeList, typename Lambda>
@@ -143,6 +150,7 @@ namespace shogun
             ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
             ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
             ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
+            ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::PT_SGVECTOR_FLOAT32)
     };
     typemap sg_non_complex_types = {
             ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
@@ -172,8 +180,28 @@ namespace shogun
     };
 #undef ADD_TYPE_TO_MAP
 
+    /** Checks if the underlying type of an Any instance is a scalar and
+     * executes the given lambda. The type is checked
+     * against a typemap and if it isn't found there
+     * a ShogunException is thrown.
+     * The lambda function must have a specific signature,
+     * where it has one auto deduced argument. This argument will have
+     * the same underlying type of the Any instance and can then
+     * be used inside the lambda:
+     * @code
+     * auto f = [&any](auto type) {
+     *     std::cout << any_cast<decltype(type)>(any);
+     * };
+     * @endcode
+     *
+     * @see sg_for_each_vector_type
+	 *
+     * @param any Any object
+	 * @param typesmap check the underlying type of Any given this map
+     * @param func lambda to execute if underlying type is found
+	 */
 	template <typename Lambda>
-	void sg_for_each_scalar_type(const Any& any, typemap& typesmap, Lambda func)
+	void sg_for_each_scalar_type(const Any& any, const typemap& typesmap, Lambda func)
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::PT_UNDEFINED)
@@ -185,17 +213,26 @@ namespace shogun
 			type_internal::sg_type_finder<SG_SCALAR_TYPES>(any, type, func);
 	}
 
+    /** Checks if the underlying type of an Any instance is a vector and
+     * executes the given lambda.
+     *
+     * @see sg_for_each_scalar_type
+     *
+     * @param any Any object
+     * @param typesmap check the underlying type of Any given this map
+     * @param func lambda to execute if underlying type is found
+     */
 	template <typename Lambda>
-	void sg_for_each_type(const Any& any, typemap& typesmap, Lambda func)
+	void sg_for_each_vector_type(const Any& any, const typemap& typesmap, Lambda func)
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::PT_UNDEFINED)
 			SG_SERROR(
 			    "Type %s is not part of %s",
-			    type_internal::demangled_type(any.type_info().name()).c_str(),
+			    demangled_type(any.type_info().name()).c_str(),
 			    type_internal::print_map(typesmap).c_str())
 		else
-			sg_type_finder<SG_TYPES>(any, type, func);
+			type_internal::sg_type_finder<SG_VECTOR_TYPES>(any, type, func);
 	}
 
 } // namespace shogun
