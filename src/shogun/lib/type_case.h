@@ -77,21 +77,6 @@ namespace shogun
 
 	namespace type_internal
 	{
-		std::string demangled_type(const char* name)
-		{
-#ifdef HAVE_CXA_DEMANGLE
-			size_t length;
-			int status;
-			char* demangled =
-			    abi::__cxa_demangle(name, nullptr, &length, &status);
-			std::string demangled_string(demangled);
-			free(demangled);
-#else
-			std::string demangled_string(name);
-#endif
-			return demangled_string;
-		}
-
 		std::string print_map(const typemap& map)
 		{
 			auto msg = std::string("<");
@@ -112,78 +97,92 @@ namespace shogun
 
 			return it == map.end() ? TYPE::PT_UNDEFINED : map[type];
 		}
+
+		template <typename TypeList, typename Lambda>
+		typename std::enable_if<
+		    std::is_same<TypeList, Types0>::value, void>::type
+		sg_type_finder(const Any& any, TYPE type, Lambda func)
+		{
+			SG_SERROR(
+			    "Unsupported type %s",
+			    demangled_type(any.type_info().name()).c_str())
+		}
+
+		template <typename TypeList, typename Lambda>
+		typename std::enable_if<
+		    (not std::is_same<TypeList, Types0>::value), void>::type
+		sg_type_finder(const Any& any, TYPE type, Lambda func)
+		{
+			if (type == sg_primitive_type<typename TypeList::Head>::value)
+			{
+				typename TypeList::Head temporary_type_holder;
+				func(temporary_type_holder);
+			}
+			else
+			{
+				sg_type_finder<typename TypeList::Tail>(any, type, func);
+			}
+		}
+
 	} // namespace type_internal
 
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
-
-	typemap sg_all_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
-	};
-	typemap sg_non_complex_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-	};
-	typemap sg_real_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-	};
-	typemap sg_non_integer_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
-	};
-
+    typemap sg_all_types = {
+            ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
+            ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
+            ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
+            ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
+            ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
+            ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
+            ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
+            ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
+            ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
+            ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
+            ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+            ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+            ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+            ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
+    };
+    typemap sg_non_complex_types = {
+            ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
+            ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
+            ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
+            ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
+            ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
+            ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
+            ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
+            ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
+            ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
+            ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
+            ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+            ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+            ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+    };
+    typemap sg_real_types = {
+            ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+            ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+            ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+    };
+    typemap sg_non_integer_types = {
+            ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
+            ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
+            ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+            ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
+    };
 #undef ADD_TYPE_TO_MAP
-	template <typename TypeList, typename Lambda>
-	typename std::enable_if<
-	    (not std::is_same<TypeList, Types0>::value), void>::type
-	sg_type_finder(const Any& any, TYPE type, Lambda func)
-	{
-		if (type == sg_primitive_type<typename TypeList::Head>::value)
-		{
-			typename TypeList::Head temporary_type_holder;
-			func(temporary_type_holder);
-		}
-		else
-		{
-			sg_type_finder<typename TypeList::Tail>(any, type, func);
-		}
-	}
 
-	template <typename TypeList, typename Lambda>
-	typename std::enable_if<std::is_same<TypeList, Types0>::value, void>::type
-	sg_type_finder(const Any& any, TYPE type, Lambda func)
+	template <typename Lambda>
+	void sg_for_each_scalar_type(const Any& any, typemap& typesmap, Lambda func)
 	{
-		SG_SERROR(
-		    "Unsupported type %s",
-		    type_internal::demangled_type(any.type_info().name()).c_str())
+		TYPE type = type_internal::get_type(any, typesmap);
+		if (type == TYPE::PT_UNDEFINED)
+			SG_SERROR(
+			    "Type %s is not part of %s",
+			    demangled_type(any.type_info().name()).c_str(),
+			    type_internal::print_map(typesmap).c_str())
+		else
+			type_internal::sg_type_finder<SG_SCALAR_TYPES>(any, type, func);
 	}
 
 	template <typename Lambda>

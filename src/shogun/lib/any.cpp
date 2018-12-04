@@ -33,9 +33,29 @@
 
 #include <shogun/lib/any.h>
 #include <shogun/mathematics/Math.h>
+#ifdef HAVE_CXA_DEMANGLE
+#include <cxxabi.h>
+#endif
 
 namespace shogun
 {
+	std::string demangled_type_helper(const char* name)
+	{
+#ifdef HAVE_CXA_DEMANGLE
+		size_t length;
+		int status;
+		char* demangled = abi::__cxa_demangle(name, nullptr, &length, &status);
+		std::string demangled_string(demangled);
+		free(demangled);
+#else
+		std::string demangled_string(typeid(T).name());
+#endif
+		return demangled_string;
+	}
+    std::string demangled_type(const char* name)
+    {
+        return demangled_type_helper(name);
+    }
 
 	namespace any_detail
 	{
