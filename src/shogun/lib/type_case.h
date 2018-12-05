@@ -220,7 +220,7 @@ namespace shogun
 			Lambda3 matrix_func)
 		{
 			SG_SERROR(
-				"Unsupported type %s",
+				"Unsupported type %s\n",
 				demangled_type(any.type_info().name()).c_str())
 		}
 
@@ -349,7 +349,7 @@ void sg_for_each_type(
 	TYPE type = type_internal::get_type(any, typesmap);
 	if (type == TYPE::PT_UNDEFINED)
 		SG_SERROR(
-			"Type %s is not part of %s",
+			"Type %s is not part of %s\n",
 			demangled_type(any.type_info().name()).c_str(),
 			type_internal::print_map(typesmap).c_str())
 	else
