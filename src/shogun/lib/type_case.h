@@ -151,57 +151,61 @@ namespace shogun
 		};
 
 		template <
-			typename T, typename Lambda1, typename Lambda2, typename Lambda3>
+			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if_t<
 			std::is_scalar<T>::value and
-				not std::is_same<Lambda1, std::nullptr_t>::value,
+				not std::is_same<ScalarLambdaT, std::nullptr_t>::value,
 			void>
 		execute_function(
-			T value, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func)
 		{
 			scalar_func(value);
 		}
 
 		template <
-			typename T, typename Lambda1, typename Lambda2, typename Lambda3>
+			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if_t<
 			is_vector<T>::value and
-				not std::is_same<Lambda2, std::nullptr_t>::value,
+				not std::is_same<VectorLambdaT, std::nullptr_t>::value,
 			void>
 		execute_function(
-			T value, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func)
 		{
 			vector_func(value);
 		}
 
 		template <
-			typename T, typename Lambda1, typename Lambda2, typename Lambda3>
+			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if_t<
 			is_matrix<T>::value and
-				not std::is_same<Lambda3, std::nullptr_t>::value,
+				not std::is_same<MatrixLambdaT, std::nullptr_t>::value,
 			void>
 		execute_function(
-			T value, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func)
 		{
 			matrix_func(value);
 		}
 
 		template <
-			typename T, typename Lambda1, typename Lambda2, typename Lambda3>
+			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if_t<
-			(std::is_same<Lambda1, std::nullptr_t>::value and
+			(std::is_same<ScalarLambdaT, std::nullptr_t>::value and
 			 std::is_scalar<T>::value) or
-				(std::is_same<Lambda2, std::nullptr_t>::value and
+				(std::is_same<VectorLambdaT, std::nullptr_t>::value and
 				 is_vector<T>::value) or
-				(std::is_same<Lambda3, std::nullptr_t>::value and
+				(std::is_same<MatrixLambdaT, std::nullptr_t>::value and
 				 is_matrix<T>::value),
 			void>
 		execute_function(
-			T value, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func)
 		{
 			SG_SWARNING(
 				"Ignoring Any dispatch call.\n"
@@ -211,13 +215,13 @@ namespace shogun
 		}
 
 		template <
-			typename TypeList, typename Lambda1, typename Lambda2,
-			typename Lambda3>
+			typename TypeList, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if<
 			std::is_same<TypeList, Types0>::value, void>::type
 		sg_type_finder(
-			const Any& any, TYPE type, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			const Any& any, TYPE type, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
 		{
 			SG_SERROR(
 				"Unsupported type %s\n",
@@ -225,13 +229,13 @@ namespace shogun
 		}
 
 		template <
-			typename TypeList, typename Lambda1, typename Lambda2,
-			typename Lambda3>
+			typename TypeList, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT>
 		typename std::enable_if<
 			(not std::is_same<TypeList, Types0>::value), void>::type
 		sg_type_finder(
-			const Any& any, TYPE type, Lambda1 scalar_func, Lambda2 vector_func,
-			Lambda3 matrix_func)
+			const Any& any, TYPE type, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
 		{
 			if (type == sg_primitive_type<typename TypeList::Head>::pvalue)
 			{
@@ -314,48 +318,51 @@ namespace shogun
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
-}; // namespace shogun
+	};
 #undef ADD_TYPE_TO_MAP
 
-/** Checks the underlying type of an Any instance and
- * executes the appropriate lambda. The type is checked
- * against a typemap and if it isn't found there
- * a ShogunException is thrown.
- * The lambda function must have a specific signature,
- * where it has one auto deduced argument. This argument will have
- * the same underlying type of the Any instance and can then
- * be used inside the lambda:
- * @code
- * auto f = [&any](auto type) {
- *     std::cout << any_cast<decltype(type)>(any);
- * };
- * @endcode
- * The function accepts three lambda expressions for the cases where the type
- * is std::scalar, SGVector or SGMatrix.
- *
- * @param any Any object
- * @param typesmap check the underlying type of Any given this map
- * @param scalar_func lambda to execute if underlying type is a std::scalar
- * @param vector_func lambda to execute if underlying type is a SGVector
- * @param matrix_func lambda to execute if underlying type is a SGMatrix
- */
-template <
-	typename Lambda1 = std::nullptr_t, typename Lambda2 = std::nullptr_t,
-	typename Lambda3 = std::nullptr_t>
-void sg_for_each_type(
-	const Any& any, const typemap& typesmap, Lambda1 scalar_func = nullptr,
-	Lambda2 vector_func = nullptr, Lambda3 matrix_func = nullptr)
-{
-	TYPE type = type_internal::get_type(any, typesmap);
-	if (type == TYPE::PT_UNDEFINED)
-		SG_SERROR(
-			"Type %s is not part of %s\n",
-			demangled_type(any.type_info().name()).c_str(),
-			type_internal::print_map(typesmap).c_str())
-	else
-		type_internal::sg_type_finder<SG_TYPES>(
-			any, type, scalar_func, vector_func, matrix_func);
-}
+	/** Checks the underlying type of an Any instance and
+	 * executes the appropriate lambda. The type is checked
+	 * against a typemap and if it isn't found there
+	 * a ShogunException is thrown.
+	 * The lambda function must have a specific signature,
+	 * where it has one auto deduced argument. This argument will have
+	 * the same underlying type of the Any instance and can then
+	 * be used inside the lambda:
+	 * @code
+	 * auto f = [&any](auto type) {
+	 *     std::cout << any_cast<decltype(type)>(any);
+	 * };
+	 * @endcode
+	 * The function accepts three lambda expressions for the cases where the
+	 * type is scalar, SGVector or SGMatrix.
+	 *
+	 * @param any Any object
+	 * @param typesmap check the underlying type of Any given this map
+	 * @param scalar_func lambda to execute if underlying type is a scalar (std::is_scalar)
+	 * @param vector_func lambda to execute if underlying type is a SGVector
+	 * @param matrix_func lambda to execute if underlying type is a SGMatrix
+	 */
+	template <
+		typename ScalarLambdaT = std::nullptr_t,
+		typename VectorLambdaT = std::nullptr_t,
+		typename MatrixLambdaT = std::nullptr_t>
+	void sg_for_each_type(
+		const Any& any, const typemap& typesmap,
+		ScalarLambdaT scalar_func = nullptr,
+		VectorLambdaT vector_func = nullptr,
+		MatrixLambdaT matrix_func = nullptr)
+	{
+		TYPE type = type_internal::get_type(any, typesmap);
+		if (type == TYPE::PT_UNDEFINED)
+			SG_SERROR(
+				"Type %s is not part of %s\n",
+				demangled_type(any.type_info().name()).c_str(),
+				type_internal::print_map(typesmap).c_str())
+		else
+			type_internal::sg_type_finder<SG_TYPES>(
+				any, type, scalar_func, vector_func, matrix_func);
+	}
 
 } // namespace shogun
 
