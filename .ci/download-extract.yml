@@ -28,7 +28,8 @@ steps:
       buildType: 'specific'
       project: $(System.TeamProjectId)
       pipeline: $(System.DefinitionId)
-      buildVersionToDownload: "latest"
+      buildVersionToDownload: "latestFromBranch"
+      branchName: $(System.PullRequest.TargetBranch))
       artifactName: ${{ parameters.artifactName }}
       downloadPath: ${{ parameters.downloadPath }}
 
