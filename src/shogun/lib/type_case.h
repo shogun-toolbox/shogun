@@ -57,13 +57,6 @@ namespace shogun
 		PT_UNDEFINED = 26
 	};
 
-	enum class CONTAINER_TYPE
-	{
-		SCALAR = 1,
-		VECTOR = 2,
-		MATRIX = 3
-	};
-
 } // namespace shogun
 
 template <typename T>
@@ -133,6 +126,26 @@ namespace shogun
 		}
 
 		template <typename T>
+		struct wrong : std::false_type
+		{
+		};
+
+		struct ok
+		{
+		};
+
+		struct assert_return_type_is_valid
+		{
+			template <typename T = void>
+			assert_return_type_is_valid()
+			{
+				static_assert(
+					wrong<T>::value, "All lambda definitions must be void and "
+									 "have the signature 'void f(auto type)'");
+			}
+		};
+
+		template <typename T>
 		struct is_vector : public std::false_type
 		{
 		};
@@ -150,62 +163,151 @@ namespace shogun
 		{
 		};
 
+		template <typename T>
+		struct is_none : public std::false_type
+		{
+		};
+		template <>
+		struct is_none<None> : public std::true_type
+		{
+		};
+
+		template <bool Condition, typename T = void, typename FuncT = void>
+		struct check_void_if
+		{
+		};
+
+		template <typename T, typename FunctorT>
+		struct check_void_if<false, T, FunctorT>
+		{
+			using type = std::true_type;
+			static constexpr bool value = true;
+		};
+
+		template <typename T, typename FunctorT>
+		struct check_void_if<true, T, FunctorT>
+		{
+			using type = typename std::is_void<
+				typename std::result_of_t<FunctorT(T)>>::type;
+			static constexpr bool value =
+				std::is_void<typename std::result_of_t<FunctorT(T)>>::value;
+		};
+
 		template <
 			typename T, typename ScalarLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT>
-		typename std::enable_if_t<
-			std::is_scalar<T>::value and
-				not std::is_same<ScalarLambdaT, std::nullptr_t>::value,
-			void>
-		execute_function(
-			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
-			MatrixLambdaT matrix_func)
+		using check_return_type = std::conditional_t<
+			check_void_if<
+				not is_none<ScalarLambdaT>::value and std::is_scalar<T>::value,
+				T, ScalarLambdaT>::value and
+				check_void_if<
+					not is_none<VectorLambdaT>::value and is_vector<T>::value,
+					T, VectorLambdaT>::value and
+				check_void_if<
+					not is_none<MatrixLambdaT>::value and is_matrix<T>::value,
+					T, MatrixLambdaT>::value,
+			ok, assert_return_type_is_valid>;
+
+		template <
+			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename MatrixLambdaT,
+			typename std::enable_if_t<
+				std::is_scalar<T>::value and
+				not is_none<ScalarLambdaT>::value>* = nullptr>
+		auto execute_function(
+			ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func) -> void
 		{
 			scalar_func(value);
 		}
 
 		template <
+			typename Check, typename T, typename ScalarLambdaT,
+			typename VectorLambdaT, typename MatrixLambdaT,
+			typename std::enable_if_t<
+				std::is_scalar<T>::value and
+				not is_none<ScalarLambdaT>::value>* = nullptr>
+		auto execute_function(
+			Check, T value, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
+		{
+		}
+
+		template <
 			typename T, typename ScalarLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT>
-		typename std::enable_if_t<
-			is_vector<T>::value and
-				not std::is_same<VectorLambdaT, std::nullptr_t>::value,
-			void>
-		execute_function(
-			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
-			MatrixLambdaT matrix_func)
+			typename MatrixLambdaT,
+			typename std::enable_if_t<
+				is_vector<T>::value and not is_none<VectorLambdaT>::value>* =
+				nullptr>
+		auto execute_function(
+			ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func) -> void
 		{
 			vector_func(value);
 		}
 
 		template <
+			typename Check, typename T, typename ScalarLambdaT,
+			typename VectorLambdaT, typename MatrixLambdaT,
+			typename std::enable_if_t<
+				is_vector<T>::value and not is_none<MatrixLambdaT>::value>* =
+				nullptr>
+		auto execute_function(
+			Check, T value, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
+		{
+		}
+
+		template <
 			typename T, typename ScalarLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT>
-		typename std::enable_if_t<
-			is_matrix<T>::value and
-				not std::is_same<MatrixLambdaT, std::nullptr_t>::value,
-			void>
-		execute_function(
-			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
-			MatrixLambdaT matrix_func)
+			typename MatrixLambdaT,
+			typename std::enable_if_t<
+				is_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
+				nullptr>
+		auto execute_function(
+			ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func) -> void
 		{
 			matrix_func(value);
 		}
 
 		template <
+			typename Check, typename T, typename ScalarLambdaT,
+			typename VectorLambdaT, typename MatrixLambdaT,
+			typename std::enable_if_t<
+				is_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
+				nullptr>
+		auto execute_function(
+			Check, T value, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
+		{
+		}
+
+		template <
+			typename Check, typename T, typename ScalarLambdaT,
+			typename VectorLambdaT, typename MatrixLambdaT,
+			typename std::enable_if_t<
+				(is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
+				(is_none<VectorLambdaT>::value and is_vector<T>::value) or
+				(is_none<MatrixLambdaT>::value and is_matrix<T>::value)>* =
+				nullptr>
+		auto execute_function(
+			Check, T value, ScalarLambdaT scalar_func,
+			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
+		{
+		}
+
+		template <
 			typename T, typename ScalarLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT>
-		typename std::enable_if_t<
-			(std::is_same<ScalarLambdaT, std::nullptr_t>::value and
-			 std::is_scalar<T>::value) or
-				(std::is_same<VectorLambdaT, std::nullptr_t>::value and
-				 is_vector<T>::value) or
-				(std::is_same<MatrixLambdaT, std::nullptr_t>::value and
-				 is_matrix<T>::value),
-			void>
-		execute_function(
-			T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
-			MatrixLambdaT matrix_func)
+			typename MatrixLambdaT,
+			typename std::enable_if_t<
+				(is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
+				(is_none<VectorLambdaT>::value and is_vector<T>::value) or
+				(is_none<MatrixLambdaT>::value and is_matrix<T>::value)>* =
+				nullptr>
+		auto execute_function(
+			ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
+			MatrixLambdaT matrix_func) -> void
 		{
 			SG_SWARNING(
 				"Ignoring Any dispatch call.\n"
@@ -230,17 +332,24 @@ namespace shogun
 
 		template <
 			typename TypeList, typename ScalarLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT>
-		typename std::enable_if<
-			(not std::is_same<TypeList, Types0>::value), void>::type
-		sg_type_finder(
+			typename MatrixLambdaT,
+			typename std::enable_if<
+				not std::is_same<TypeList, Types0>::value>::type* = nullptr>
+		auto sg_type_finder(
 			const Any& any, TYPE type, ScalarLambdaT scalar_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
+			-> check_return_type<
+				typename TypeList::Head, ScalarLambdaT, VectorLambdaT,
+				MatrixLambdaT>
 		{
 			if (type == sg_primitive_type<typename TypeList::Head>::pvalue)
 			{
 				typename TypeList::Head temporary_type_holder;
+
 				execute_function(
+					check_return_type<
+						typename TypeList::Head, ScalarLambdaT, VectorLambdaT,
+						MatrixLambdaT>{},
 					temporary_type_holder, scalar_func, vector_func,
 					matrix_func);
 			}
@@ -318,51 +427,52 @@ namespace shogun
 			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
 			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
 			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
-	};
+}; // namespace shogun
 #undef ADD_TYPE_TO_MAP
 
-	/** Checks the underlying type of an Any instance and
-	 * executes the appropriate lambda. The type is checked
-	 * against a typemap and if it isn't found there
-	 * a ShogunException is thrown.
-	 * The lambda function must have a specific signature,
-	 * where it has one auto deduced argument. This argument will have
-	 * the same underlying type of the Any instance and can then
-	 * be used inside the lambda:
-	 * @code
-	 * auto f = [&any](auto type) {
-	 *     std::cout << any_cast<decltype(type)>(any);
-	 * };
-	 * @endcode
-	 * The function accepts three lambda expressions for the cases where the
-	 * type is scalar, SGVector or SGMatrix.
-	 *
-	 * @param any Any object
-	 * @param typesmap check the underlying type of Any given this map
-	 * @param scalar_func lambda to execute if underlying type is a scalar (std::is_scalar)
-	 * @param vector_func lambda to execute if underlying type is a SGVector
-	 * @param matrix_func lambda to execute if underlying type is a SGMatrix
-	 */
-	template <
-		typename ScalarLambdaT = std::nullptr_t,
-		typename VectorLambdaT = std::nullptr_t,
-		typename MatrixLambdaT = std::nullptr_t>
-	void sg_for_each_type(
-		const Any& any, const typemap& typesmap,
-		ScalarLambdaT scalar_func = nullptr,
-		VectorLambdaT vector_func = nullptr,
-		MatrixLambdaT matrix_func = nullptr)
-	{
-		TYPE type = type_internal::get_type(any, typesmap);
-		if (type == TYPE::PT_UNDEFINED)
-			SG_SERROR(
-				"Type %s is not part of %s\n",
-				demangled_type(any.type_info().name()).c_str(),
-				type_internal::print_map(typesmap).c_str())
-		else
-			type_internal::sg_type_finder<SG_TYPES>(
-				any, type, scalar_func, vector_func, matrix_func);
-	}
+/** Checks the underlying type of an Any instance and
+ * executes the appropriate lambda. The type is checked
+ * against a typemap and if it isn't found there
+ * a ShogunException is thrown.
+ * The lambda function must have a specific signature,
+ * where it has one auto deduced argument. This argument will have
+ * the same underlying type of the Any instance and can then
+ * be used inside the lambda:
+ * @code
+ * auto f = [&any](auto type) {
+ *     std::cout << any_cast<decltype(type)>(any);
+ * };
+ * @endcode
+ * The function accepts three lambda expressions for the cases where the
+ * type is scalar, SGVector or SGMatrix.
+ *
+ * @param any Any object
+ * @param typesmap check the underlying type of Any given this map
+ * @param scalar_func lambda to execute if underlying type is a scalar
+ * (std::is_scalar)
+ * @param vector_func lambda to execute if underlying type is a SGVector
+ * @param matrix_func lambda to execute if underlying type is a SGMatrix
+ */
+template <
+	typename ScalarLambdaT = None, typename VectorLambdaT = None,
+	typename MatrixLambdaT = None>
+auto sg_for_each_type(
+	const Any& any, const typemap& typesmap, ScalarLambdaT scalar_func = None{},
+	VectorLambdaT vector_func = None{}, MatrixLambdaT matrix_func = None{})
+	-> decltype(type_internal::sg_type_finder<SG_TYPES>(
+		any, type_internal::get_type(any, typesmap), scalar_func, vector_func,
+		matrix_func))
+{
+	TYPE type = type_internal::get_type(any, typesmap);
+	if (type == TYPE::PT_UNDEFINED)
+		SG_SERROR(
+			"Type %s is not part of %s\n",
+			demangled_type(any.type_info().name()).c_str(),
+			type_internal::print_map(typesmap).c_str())
+	else
+		type_internal::sg_type_finder<SG_TYPES>(
+			any, type, scalar_func, vector_func, matrix_func);
+}
 
 } // namespace shogun
 

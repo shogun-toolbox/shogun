@@ -8,6 +8,7 @@
 #include <shogun/lib/type_case.h>
 
 using namespace shogun;
+using testing::StaticAssertTypeEq;
 
 template <typename T>
 struct Simple
@@ -25,6 +26,16 @@ public:
 
 private:
 	T value;
+};
+
+template <typename T>
+class StaticAssertTypeEqTestHelper
+{
+public:
+	StaticAssertTypeEqTestHelper()
+	{
+		StaticAssertTypeEq<type_internal::assert_return_type_is_valid, T>();
+	}
 };
 
 TEST(Type_case, positional_lambdas)
@@ -45,13 +56,13 @@ TEST(Type_case, positional_lambdas)
 	sg_for_each_type(any_scalar, sg_all_types, f_scalar);
 	EXPECT_EQ(counter, 1);
 
-	sg_for_each_type(any_vector, sg_all_types, nullptr, f_vector);
+	sg_for_each_type(any_vector, sg_all_types, None{}, f_vector);
 	EXPECT_EQ(counter, 2);
 
-	sg_for_each_type(any_matrix, sg_all_types, nullptr, nullptr, f_matrix);
+	sg_for_each_type(any_matrix, sg_all_types, None{}, None{}, f_matrix);
 	EXPECT_EQ(counter, 3);
 
-	sg_for_each_type(any_scalar, sg_all_types, nullptr, f_vector, f_matrix);
+	sg_for_each_type(any_scalar, sg_all_types, None{}, f_vector, f_matrix);
 	EXPECT_EQ(counter, 3);
 }
 
@@ -64,7 +75,7 @@ TEST(Type_case, exception)
 	auto f_scalar = [&counter](auto type) { counter += 1; };
 
 	EXPECT_THROW(
-		sg_for_each_type(any_scalar, sg_real_types, f_scalar), ShogunException);
+	    sg_for_each_type(any_scalar, sg_real_types, f_scalar), ShogunException);
 	EXPECT_EQ(counter, 0);
 }
 
@@ -88,7 +99,7 @@ TEST(Type_case, modify_struct)
 	sg_for_each_type(any_float, sg_real_types, f_float);
 	EXPECT_EQ(a_struct.get_value(), 84);
 	EXPECT_THROW(
-		sg_for_each_type(any_int, sg_real_types, f_int), ShogunException);
+	    sg_for_each_type(any_int, sg_real_types, f_int), ShogunException);
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
@@ -118,4 +129,15 @@ TEST(Type_case, custom_map)
 	sg_for_each_type(any_int, my_int_map, f);
 	EXPECT_THROW(sg_for_each_type(any_float, my_int_map, f), ShogunException);
 	EXPECT_EQ(counter, 1);
+}
+
+TEST(Type_case, static_asserts)
+{
+	float32_t a_float = 42.0;
+	auto any_float = make_any(a_float);
+
+	auto f_fail = [](auto type) { return 1; };
+
+	StaticAssertTypeEqTestHelper<decltype(
+	    sg_for_each_type(any_float, sg_all_types, f_fail))>();
 }
