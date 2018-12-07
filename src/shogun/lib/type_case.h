@@ -29,32 +29,32 @@ namespace shogun
 
 	enum class TYPE
 	{
-		PT_BOOL = 1,
-		PT_CHAR = 2,
-		PT_INT8 = 3,
-		PT_UINT8 = 4,
-		PT_INT16 = 5,
-		PT_UINT16 = 6,
-		PT_INT32 = 7,
-		PT_UINT32 = 8,
-		PT_INT64 = 9,
-		PT_UINT64 = 10,
-		PT_FLOAT32 = 11,
-		PT_FLOAT64 = 12,
-		PT_FLOATMAX = 13,
-		PT_SGOBJECT = 14,
-		PT_COMPLEX128 = 15,
-		PT_SGVECTOR_FLOAT32 = 16,
-		PT_SGVECTOR_FLOAT64 = 17,
-		PT_SGVECTOR_FLOATMAX = 18,
-		PT_SGVECTOR_INT32 = 19,
-		PT_SGVECTOR_INT64 = 20,
-		PT_SGMATRIX_FLOAT32 = 21,
-		PT_SGMATRIX_FLOAT64 = 22,
-		PT_SGMATRIX_FLOATMAX = 23,
-		PT_SGMATRIX_INT32 = 24,
-		PT_SGMATRIX_INT64 = 25,
-		PT_UNDEFINED = 26
+		T_BOOL = 1,
+		T_CHAR = 2,
+		T_INT8 = 3,
+		T_UINT8 = 4,
+		T_INT16 = 5,
+		T_UINT16 = 6,
+		T_INT32 = 7,
+		T_UINT32 = 8,
+		T_INT64 = 9,
+		T_UINT64 = 10,
+		T_FLOAT32 = 11,
+		T_FLOAT64 = 12,
+		T_FLOATMAX = 13,
+		T_SGOBJECT = 14,
+		T_COMPLEX128 = 15,
+		T_SGVECTOR_FLOAT32 = 16,
+		T_SGVECTOR_FLOAT64 = 17,
+		T_SGVECTOR_FLOATMAX = 18,
+		T_SGVECTOR_INT32 = 19,
+		T_SGVECTOR_INT64 = 20,
+		T_SGMATRIX_FLOAT32 = 21,
+		T_SGMATRIX_FLOAT64 = 22,
+		T_SGMATRIX_FLOATMAX = 23,
+		T_SGMATRIX_INT32 = 24,
+		T_SGMATRIX_INT64 = 25,
+		T_UNDEFINED = 26
 	};
 
 } // namespace shogun
@@ -71,30 +71,30 @@ struct sg_primitive_type
 		static constexpr TYPE pvalue = ptype;                                  \
 	};
 
-SG_PRIMITIVE_TYPE(bool, TYPE::PT_BOOL)
-SG_PRIMITIVE_TYPE(char, TYPE::PT_CHAR)
-SG_PRIMITIVE_TYPE(int8_t, TYPE::PT_INT8)
-SG_PRIMITIVE_TYPE(uint8_t, TYPE::PT_UINT8)
-SG_PRIMITIVE_TYPE(int16_t, TYPE::PT_INT16)
-SG_PRIMITIVE_TYPE(uint16_t, TYPE::PT_UINT16)
-SG_PRIMITIVE_TYPE(int32_t, TYPE::PT_INT32)
-SG_PRIMITIVE_TYPE(uint32_t, TYPE::PT_UINT32)
-SG_PRIMITIVE_TYPE(int64_t, TYPE::PT_INT64)
-SG_PRIMITIVE_TYPE(uint64_t, TYPE::PT_UINT64)
-SG_PRIMITIVE_TYPE(float32_t, TYPE::PT_FLOAT32)
-SG_PRIMITIVE_TYPE(float64_t, TYPE::PT_FLOAT64)
-SG_PRIMITIVE_TYPE(floatmax_t, TYPE::PT_FLOATMAX)
-SG_PRIMITIVE_TYPE(complex128_t, TYPE::PT_COMPLEX128)
-SG_PRIMITIVE_TYPE(SGVector<float32_t>, TYPE::PT_SGVECTOR_FLOAT32)
-SG_PRIMITIVE_TYPE(SGVector<float64_t>, TYPE::PT_SGVECTOR_FLOAT64)
-SG_PRIMITIVE_TYPE(SGVector<floatmax_t>, TYPE::PT_SGVECTOR_FLOATMAX)
-SG_PRIMITIVE_TYPE(SGVector<int32_t>, TYPE::PT_SGVECTOR_INT32)
-SG_PRIMITIVE_TYPE(SGVector<int64_t>, TYPE::PT_SGVECTOR_INT64)
-SG_PRIMITIVE_TYPE(SGMatrix<float32_t>, TYPE::PT_SGMATRIX_FLOAT32)
-SG_PRIMITIVE_TYPE(SGMatrix<float64_t>, TYPE::PT_SGMATRIX_FLOAT64)
-SG_PRIMITIVE_TYPE(SGMatrix<floatmax_t>, TYPE::PT_SGMATRIX_FLOATMAX)
-SG_PRIMITIVE_TYPE(SGMatrix<int32_t>, TYPE::PT_SGMATRIX_INT32)
-SG_PRIMITIVE_TYPE(SGMatrix<int64_t>, TYPE::PT_SGMATRIX_INT64)
+SG_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
+SG_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
+SG_PRIMITIVE_TYPE(int8_t, TYPE::T_INT8)
+SG_PRIMITIVE_TYPE(uint8_t, TYPE::T_UINT8)
+SG_PRIMITIVE_TYPE(int16_t, TYPE::T_INT16)
+SG_PRIMITIVE_TYPE(uint16_t, TYPE::T_UINT16)
+SG_PRIMITIVE_TYPE(int32_t, TYPE::T_INT32)
+SG_PRIMITIVE_TYPE(uint32_t, TYPE::T_UINT32)
+SG_PRIMITIVE_TYPE(int64_t, TYPE::T_INT64)
+SG_PRIMITIVE_TYPE(uint64_t, TYPE::T_UINT64)
+SG_PRIMITIVE_TYPE(float32_t, TYPE::T_FLOAT32)
+SG_PRIMITIVE_TYPE(float64_t, TYPE::T_FLOAT64)
+SG_PRIMITIVE_TYPE(floatmax_t, TYPE::T_FLOATMAX)
+SG_PRIMITIVE_TYPE(complex128_t, TYPE::T_COMPLEX128)
+SG_PRIMITIVE_TYPE(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+SG_PRIMITIVE_TYPE(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+SG_PRIMITIVE_TYPE(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+SG_PRIMITIVE_TYPE(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+SG_PRIMITIVE_TYPE(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+SG_PRIMITIVE_TYPE(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+SG_PRIMITIVE_TYPE(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+SG_PRIMITIVE_TYPE(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+SG_PRIMITIVE_TYPE(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+SG_PRIMITIVE_TYPE(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
 
 #undef SG_PRIMITIVE_TYPE
 
@@ -122,7 +122,7 @@ namespace shogun
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
 
-			return it == map.end() ? TYPE::PT_UNDEFINED : map.at(type);
+			return it == map.end() ? TYPE::T_UNDEFINED : map.at(type);
 		}
 
 		template <typename T>
@@ -146,20 +146,20 @@ namespace shogun
 		};
 
 		template <typename T>
-		struct is_vector : public std::false_type
+		struct is_sg_vector : public std::false_type
 		{
 		};
 		template <typename T>
-		struct is_vector<SGVector<T>> : public std::true_type
+		struct is_sg_vector<SGVector<T>> : public std::true_type
 		{
 		};
 
 		template <typename T>
-		struct is_matrix : public std::false_type
+		struct is_sg_matrix : public std::false_type
 		{
 		};
 		template <typename T>
-		struct is_matrix<SGMatrix<T>> : public std::true_type
+		struct is_sg_matrix<SGMatrix<T>> : public std::true_type
 		{
 		};
 
@@ -201,10 +201,12 @@ namespace shogun
 		        not is_none<ScalarLambdaT>::value and std::is_scalar<T>::value,
 		        T, ScalarLambdaT>::value and
 		        check_void_if<
-		            not is_none<VectorLambdaT>::value and is_vector<T>::value,
+		            not is_none<VectorLambdaT>::value and
+		                is_sg_vector<T>::value,
 		            T, VectorLambdaT>::value and
 		        check_void_if<
-		            not is_none<MatrixLambdaT>::value and is_matrix<T>::value,
+		            not is_none<MatrixLambdaT>::value and
+		                is_sg_matrix<T>::value,
 		            T, MatrixLambdaT>::value,
 		    ok, assert_return_type_is_valid>;
 
@@ -237,7 +239,7 @@ namespace shogun
 		    typename T, typename ScalarLambdaT, typename VectorLambdaT,
 		    typename MatrixLambdaT,
 		    typename std::enable_if_t<
-		        is_vector<T>::value and not is_none<VectorLambdaT>::value>* =
+		        is_sg_vector<T>::value and not is_none<VectorLambdaT>::value>* =
 		        nullptr>
 		auto execute_function(
 		    ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
@@ -250,7 +252,7 @@ namespace shogun
 		    typename Check, typename T, typename ScalarLambdaT,
 		    typename VectorLambdaT, typename MatrixLambdaT,
 		    typename std::enable_if_t<
-		        is_vector<T>::value and not is_none<MatrixLambdaT>::value>* =
+		        is_sg_vector<T>::value and not is_none<MatrixLambdaT>::value>* =
 		        nullptr>
 		auto execute_function(
 		    Check, T value, ScalarLambdaT scalar_func,
@@ -262,7 +264,7 @@ namespace shogun
 		    typename T, typename ScalarLambdaT, typename VectorLambdaT,
 		    typename MatrixLambdaT,
 		    typename std::enable_if_t<
-		        is_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
+		        is_sg_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
 		        nullptr>
 		auto execute_function(
 		    ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
@@ -275,21 +277,7 @@ namespace shogun
 		    typename Check, typename T, typename ScalarLambdaT,
 		    typename VectorLambdaT, typename MatrixLambdaT,
 		    typename std::enable_if_t<
-		        is_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
-		        nullptr>
-		auto execute_function(
-		    Check, T value, ScalarLambdaT scalar_func,
-		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
-		{
-		}
-
-		template <
-		    typename Check, typename T, typename ScalarLambdaT,
-		    typename VectorLambdaT, typename MatrixLambdaT,
-		    typename std::enable_if_t<
-		        (is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
-		        (is_none<VectorLambdaT>::value and is_vector<T>::value) or
-		        (is_none<MatrixLambdaT>::value and is_matrix<T>::value)>* =
+		        is_sg_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
 		        nullptr>
 		auto execute_function(
 		    Check, T value, ScalarLambdaT scalar_func,
@@ -302,8 +290,8 @@ namespace shogun
 		    typename MatrixLambdaT,
 		    typename std::enable_if_t<
 		        (is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
-		        (is_none<VectorLambdaT>::value and is_vector<T>::value) or
-		        (is_none<MatrixLambdaT>::value and is_matrix<T>::value)>* =
+		        (is_none<VectorLambdaT>::value and is_sg_vector<T>::value) or
+		        (is_none<MatrixLambdaT>::value and is_sg_matrix<T>::value)>* =
 		        nullptr>
 		auto execute_function(
 		    ok, T value, ScalarLambdaT scalar_func, VectorLambdaT vector_func,
@@ -311,9 +299,23 @@ namespace shogun
 		{
 			SG_SWARNING(
 			    "Ignoring Any dispatch call.\n"
-			    "sg_for_each_type requires a lambda function definition "
+			    "sg_any_dispatch requires a lambda function definition "
 			    "for the expected underlying type of Any (%s).\n",
 			    demangled_type<T>().c_str())
+		}
+
+		template <
+		    typename Check, typename T, typename ScalarLambdaT,
+		    typename VectorLambdaT, typename MatrixLambdaT,
+		    typename std::enable_if_t<
+		        (is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
+		        (is_none<VectorLambdaT>::value and is_sg_vector<T>::value) or
+		        (is_none<MatrixLambdaT>::value and is_sg_matrix<T>::value)>* =
+		        nullptr>
+		auto execute_function(
+		    Check, T value, ScalarLambdaT scalar_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> Check
+		{
 		}
 
 		template <
@@ -363,70 +365,70 @@ namespace shogun
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 	typemap sg_all_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
-			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::PT_SGVECTOR_FLOAT32)
-			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::PT_SGVECTOR_FLOAT64)
-			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::PT_SGVECTOR_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::PT_SGVECTOR_INT32)
-			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::PT_SGVECTOR_INT64)
-			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::PT_SGMATRIX_FLOAT32)
-			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::PT_SGMATRIX_FLOAT64)
-			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::PT_SGMATRIX_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::PT_SGMATRIX_INT32)
-			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::PT_SGMATRIX_INT64)
+			ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
+			ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
+			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+			ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
+			ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
+			ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
+			ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
+			ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
+			ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
+			ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
+			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+			ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
+			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
 	};
 	typemap sg_vector_types = {
-			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::PT_SGVECTOR_FLOAT32)
-			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::PT_SGVECTOR_FLOAT64)
-			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::PT_SGVECTOR_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::PT_SGVECTOR_INT32)
-			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::PT_SGVECTOR_INT64)
+			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
 	};
 	typemap sg_matrix_types = {
-			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::PT_SGMATRIX_FLOAT32)
-			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::PT_SGMATRIX_FLOAT64)
-			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::PT_SGMATRIX_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::PT_SGMATRIX_INT32)
-			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::PT_SGMATRIX_INT64)
+			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
 	};
 	typemap sg_non_complex_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::PT_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::PT_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::PT_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::PT_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::PT_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::PT_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::PT_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::PT_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::PT_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+			ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
+			ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
+			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+			ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
+			ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
+			ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
+			ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
+			ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
+			ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
+			ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
+			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
 	};
 	typemap sg_real_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
+			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
 	};
 	typemap sg_non_integer_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::PT_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::PT_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::PT_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::PT_COMPLEX128)
+			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+			ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
 	};
 #undef ADD_TYPE_TO_MAP
 
@@ -456,7 +458,7 @@ namespace shogun
 	template <
 	    typename ScalarLambdaT = None, typename VectorLambdaT = None,
 	    typename MatrixLambdaT = None>
-	auto sg_for_each_type(
+	auto sg_any_dispatch(
 	    const Any& any, const typemap& typesmap,
 	    ScalarLambdaT scalar_func = None{}, VectorLambdaT vector_func = None{},
 	    MatrixLambdaT matrix_func = None{})
@@ -465,7 +467,7 @@ namespace shogun
 	        vector_func, matrix_func))
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
-		if (type == TYPE::PT_UNDEFINED)
+		if (type == TYPE::T_UNDEFINED)
 			SG_SERROR(
 			    "Type %s is not part of %s\n",
 			    demangled_type(any.type_info().name()).c_str(),

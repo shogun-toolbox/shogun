@@ -41,7 +41,7 @@ public:
 TEST(Type_case, positional_lambdas)
 {
 	float32_t a_scalar = 42.0;
-	auto a_vector = SGVector<float32_t>({a_scalar});
+	SGVector<float32_t> a_vector = {a_scalar};
 	auto a_matrix = SGMatrix<float32_t>(a_vector);
 	int counter = 0;
 
@@ -53,16 +53,16 @@ TEST(Type_case, positional_lambdas)
 	auto f_vector = [&counter](auto type) { counter++; };
 	auto f_matrix = [&counter](auto type) { counter++; };
 
-	sg_for_each_type(any_scalar, sg_all_types, f_scalar);
+	sg_any_dispatch(any_scalar, sg_all_types, f_scalar);
 	EXPECT_EQ(counter, 1);
 
-	sg_for_each_type(any_vector, sg_all_types, None{}, f_vector);
+	sg_any_dispatch(any_vector, sg_all_types, None{}, f_vector);
 	EXPECT_EQ(counter, 2);
 
-	sg_for_each_type(any_matrix, sg_all_types, None{}, None{}, f_matrix);
+	sg_any_dispatch(any_matrix, sg_all_types, None{}, None{}, f_matrix);
 	EXPECT_EQ(counter, 3);
 
-	sg_for_each_type(any_scalar, sg_all_types, None{}, f_vector, f_matrix);
+	sg_any_dispatch(any_scalar, sg_all_types, None{}, f_vector, f_matrix);
 	EXPECT_EQ(counter, 3);
 }
 
@@ -75,7 +75,7 @@ TEST(Type_case, exception)
 	auto f_scalar = [&counter](auto type) { counter += 1; };
 
 	EXPECT_THROW(
-	    sg_for_each_type(any_scalar, sg_real_types, f_scalar), ShogunException);
+	    sg_any_dispatch(any_scalar, sg_real_types, f_scalar), ShogunException);
 	EXPECT_EQ(counter, 0);
 }
 
@@ -96,10 +96,10 @@ TEST(Type_case, modify_struct)
 		a_struct.add_value(any_cast<decltype(type)>(any_float));
 	};
 
-	sg_for_each_type(any_float, sg_real_types, f_float);
+	sg_any_dispatch(any_float, sg_real_types, f_float);
 	EXPECT_EQ(a_struct.get_value(), 84);
 	EXPECT_THROW(
-	    sg_for_each_type(any_int, sg_real_types, f_int), ShogunException);
+	    sg_any_dispatch(any_int, sg_real_types, f_int), ShogunException);
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
@@ -116,18 +116,19 @@ TEST(Type_case, custom_map)
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 
 	typemap my_int_map = {
-			ADD_TYPE_TO_MAP(int8_t, TYPE::PT_INT8)
-			ADD_TYPE_TO_MAP(int16_t, TYPE::PT_INT16)
-			ADD_TYPE_TO_MAP(int32_t, TYPE::PT_INT32)
-			ADD_TYPE_TO_MAP(int64_t, TYPE::PT_INT64)
+			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+			ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
+			ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
+			ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)
 	};
 
 #undef ADD_TYPE_TO_MAP
 
 	auto f = [&counter](auto type) { counter++; };
 
-	sg_for_each_type(any_int, my_int_map, f);
-	EXPECT_THROW(sg_for_each_type(any_float, my_int_map, f), ShogunException);
+	sg_any_dispatch(any_int, my_int_map, f);
+	EXPECT_EQ(counter, 1);
+	EXPECT_THROW(sg_any_dispatch(any_float, my_int_map, f), ShogunException);
 	EXPECT_EQ(counter, 1);
 }
 
@@ -139,5 +140,5 @@ TEST(Type_case, static_asserts)
 	auto f_fail = [](auto type) { return 1; };
 
 	StaticAssertTypeEqTestHelper<decltype(
-	    sg_for_each_type(any_float, sg_all_types, f_fail))>();
+	    sg_any_dispatch(any_float, sg_all_types, f_fail))>();
 }
