@@ -603,10 +603,10 @@ template<class ST> void CDenseFeatures<ST>::init()
 	set_generic<ST>();
 
 	/* not store number of vectors in subset */
-	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.", MS_NOT_AVAILABLE);
-	SG_ADD(&num_features, "num_features", "Number of features.", MS_NOT_AVAILABLE);
+	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.");
+	SG_ADD(&num_features, "num_features", "Number of features.");
 	SG_ADD(&feature_matrix, "feature_matrix",
-			"Matrix of feature vectors / 1 vector per column.", MS_NOT_AVAILABLE);
+			"Matrix of feature vectors / 1 vector per column.");
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\

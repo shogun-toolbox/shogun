@@ -1018,17 +1018,17 @@ void CWeightedDegreeStringKernel::init()
 			"Weights per position.");
 	watch_param("position_weights", &position_weights, &position_weights_len);
 
-	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
-	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
+	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", ParameterProperties::HYPER);
+	SG_ADD(&degree, "degree", "Order of WD kernel.", ParameterProperties::HYPER);
 	SG_ADD(&max_mismatch, "max_mismatch",
-			"Number of allowed mismatches.", MS_AVAILABLE);
+			"Number of allowed mismatches.", ParameterProperties::HYPER);
 	SG_ADD(&block_computation, "block_computation",
-			"If block computation shall be used.", MS_NOT_AVAILABLE);
+			"If block computation shall be used.");
 	SG_ADD((machine_int_t*) &type, "type",
-			"WeightedDegree kernel type.", MS_AVAILABLE);
+			"WeightedDegree kernel type.", ParameterProperties::HYPER);
 	SG_ADD(&which_degree, "which_degree",
 			"The selected degree. All degrees are used by default (for value -1).",
-			MS_AVAILABLE);
+			ParameterProperties::HYPER);
 	SG_ADD((CSGObject**) &alphabet, "alphabet",
-			"Alphabet of Features.", MS_NOT_AVAILABLE);
+			"Alphabet of Features.");
 }

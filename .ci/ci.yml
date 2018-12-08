@@ -1,0 +1,142 @@
+jobs:
+- job: lint
+  displayName: Check code formatting
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+  pool:
+    vmImage: ubuntu-16.04
+
+  variables:
+    testRunTitle: '$(build.sourceBranchName)-debian'
+    testRunPlatform: debian
+    imageName: 'shogun/shogun-dev'
+
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 5
+    submodules: true
+
+  - task: docker@0
+    displayName: Lint
+    inputs:
+      action: 'Run an image'
+      imageName: $(imageName)
+      volumes: |
+        $(build.sourcesDirectory):/src
+      workDir: '/src'
+      containerCommand: './scripts/check_format.sh $(System.PullRequest.SourceBranch) $(System.PullRequest.TargetBranch)'
+
+- job: libshogun
+  displayName: Linux libshogun CI Tests
+
+  pool:
+    vmImage: ubuntu-16.04
+
+  strategy:
+    maxParallel: 2
+    matrix:
+      clang:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: ''
+      gcc:
+        CC: "gcc"
+        CXX: "g++"
+        cmakeOptions: ''
+
+  variables:
+    testRunTitle: '$(build.sourceBranchName)-debian'
+    testRunPlatform: debian
+    imageName: 'shogun/shogun-dev'
+    targetPrefix: '$(build.binariesDirectory)/opt'
+    libshogunArtifactName: 'libshogun-$(CC)'
+    libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
+    ccacheDir: '$(build.binariesDirectory)/ccache'
+    ccacheArtifactName: 'ccache-$(CC)'
+    ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
+
+  steps:
+  - template: ./docker-steps.yml
+
+- job: swig
+  displayName: Linux SWIG Interface CI Tests
+  dependsOn: libshogun
+
+  pool:
+    vmImage: ubuntu-16.04
+
+  strategy:
+    maxParallel: 7
+    matrix:
+      python:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_PYTHON=ON'
+        interfaceName: 'python'
+      java:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_JAVA=ON'
+        interfaceName: 'java'
+      csharp:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
+        interfaceName: 'csharp'
+      r:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
+        interfaceName: 'r'
+      lua:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_LUA=ON'
+        interfaceName: 'lua'
+      octave:
+        CC: "gcc"
+        CXX: "g++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_OCTAVE=ON'
+        interfaceName: 'octave'
+      ruby:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_RUBY=ON'
+        interfaceName: 'ruby'
+
+  variables:
+    testRunTitle: '$(build.sourceBranchName)-debian'
+    testRunPlatform: debian
+    imageName: 'shogun/shogun-dev'
+    targetPrefix: '$(build.binariesDirectory)/opt'
+    libshogunArtifactName: 'libshogun-$(CC)'
+    libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar'
+    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON'
+    ccacheDir: '$(build.binariesDirectory)/ccache'
+    ccacheArtifactName: 'ccache-$(interfaceName)'
+    ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
+
+  steps:
+  - template: ./docker-steps.yml
+    parameters:
+      swig: true
+
+- job: macOS
+  displayName: macOS CI Tests
+
+  variables:
+    testRunTitle: '$(build.sourceBranchName)-macos'
+    testRunPlatform: macos
+    ccacheDir: '$(build.binariesDirectory)/ccache'
+    ccacheArtifactName: 'ccache-macos'
+    ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
+
+  pool:
+    vmImage: xcode9-macos10.13
+
+  steps:
+  - template: ./macos-steps.yml
+
+#- template: ./windows-steps.yml
+#  parameters:
+#    buildConfiguration: Release

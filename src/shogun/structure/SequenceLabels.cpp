@@ -46,5 +46,5 @@ void CSequenceLabels::add_vector_label(SGVector< int32_t > label)
 
 void CSequenceLabels::init()
 {
-	SG_ADD(&m_num_states, "m_num_states", "Number of states", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_states, "m_num_states", "Number of states");
 }

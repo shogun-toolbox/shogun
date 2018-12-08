@@ -226,9 +226,9 @@ void CSGDQN::init()
 	loss=new CHingeLoss();
 	SG_REF(loss);
 
-	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
-	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
-	SG_ADD(&epochs, "epochs", "epochs", MS_AVAILABLE);
-	SG_ADD(&skip, "skip", "skip", MS_NOT_AVAILABLE);
-	SG_ADD(&count, "count", "count", MS_NOT_AVAILABLE);
+	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
+	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
+	SG_ADD(&epochs, "epochs", "epochs", ParameterProperties::HYPER);
+	SG_ADD(&skip, "skip", "skip");
+	SG_ADD(&count, "count", "count");
 }

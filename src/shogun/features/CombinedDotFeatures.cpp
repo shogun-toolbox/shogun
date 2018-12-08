@@ -342,11 +342,9 @@ void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
 void CCombinedDotFeatures::init()
 {
 	SG_ADD(
-	    &num_dimensions, "num_dimensions", "Total number of dimensions.",
-	    MS_NOT_AVAILABLE);
+	    &num_dimensions, "num_dimensions", "Total number of dimensions.");
 	SG_ADD(
-	    &num_vectors, "num_vectors", "Total number of vectors.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD(&feature_array, "feature_array", "Feature array.", MS_NOT_AVAILABLE);
+	    &num_vectors, "num_vectors", "Total number of vectors.");
+	SG_ADD(&feature_array, "feature_array", "Feature array.");
 }
 

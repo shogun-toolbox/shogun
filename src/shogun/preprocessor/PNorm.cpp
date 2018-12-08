@@ -95,7 +95,7 @@ double CPNorm::get_pnorm () const
 
 void CPNorm::register_param ()
 {
-	SG_ADD(&m_p, "norm", "P-norm parameter", MS_AVAILABLE);
+	SG_ADD(&m_p, "norm", "P-norm parameter", ParameterProperties::HYPER);
 }
 
 inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const

@@ -79,10 +79,10 @@ void CLogDetEstimator::init()
 	m_operator_log=NULL;
 
 	SG_ADD((CSGObject**)&m_trace_sampler, "trace_sampler",
-		"Trace sampler for the log operator", MS_NOT_AVAILABLE);
+		"Trace sampler for the log operator");
 
 	SG_ADD((CSGObject**)&m_operator_log, "operator_log",
-		"The log operator function", MS_NOT_AVAILABLE);
+		"The log operator function");
 }
 
 CLogDetEstimator::~CLogDetEstimator()

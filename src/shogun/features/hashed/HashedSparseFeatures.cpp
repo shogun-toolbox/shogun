@@ -58,13 +58,10 @@ void CHashedSparseFeatures<ST>::init(CSparseFeatures<ST>* feats, int32_t d, bool
 	sparse_feats = feats;
 	SG_REF(sparse_feats);
 
-	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&dim, "dim", "Dimension of new feature space", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject** ) &sparse_feats, "sparse_feats", "Sparse features to work on",
-		MS_NOT_AVAILABLE);
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
+	SG_ADD(&dim, "dim", "Dimension of new feature space");
+	SG_ADD((CSGObject** ) &sparse_feats, "sparse_feats", "Sparse features to work on");
 
 	set_generic<ST>();
 }

@@ -110,6 +110,6 @@ float64_t CWeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CWeightedDegreeRBFKernel::register_params()
 {
-	SG_ADD(&width, "width", "Kernel width", MS_AVAILABLE);
-	SG_ADD(&degree, "degree", "Kernel degree", MS_AVAILABLE);
+	SG_ADD(&width, "width", "Kernel width", ParameterProperties::HYPER);
+	SG_ADD(&degree, "degree", "Kernel degree", ParameterProperties::HYPER);
 }

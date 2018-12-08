@@ -795,10 +795,10 @@ void CC45ClassifierTree::init()
 	m_types_set=false;
 	m_weights_set=false;
 
-	SG_ADD(&m_nominal,"m_nominal", "feature types", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights,"m_weights", "weights", MS_NOT_AVAILABLE);
-	SG_ADD(&m_certainty,"m_certainty", "certainty", MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights_set,"m_weights_set", "weights set", MS_NOT_AVAILABLE);
-	SG_ADD(&m_types_set,"m_types_set", "feature types set", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nominal,"m_nominal", "feature types");
+	SG_ADD(&m_weights,"m_weights", "weights");
+	SG_ADD(&m_certainty,"m_certainty", "certainty");
+	SG_ADD(&m_weights_set,"m_weights_set", "weights set");
+	SG_ADD(&m_types_set,"m_types_set", "feature types set");
 }
 

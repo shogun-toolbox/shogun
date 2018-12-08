@@ -50,5 +50,5 @@ void ConstLearningRate::init()
 {
 	m_const_learning_rate=0.0;
 	SG_ADD(&m_const_learning_rate, "ConstLearningRate__m_const_learning_rate",
-		"learning rate in ConstLearningRate", MS_NOT_AVAILABLE);
+		"learning rate in ConstLearningRate");
 }

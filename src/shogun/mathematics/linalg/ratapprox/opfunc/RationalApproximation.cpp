@@ -57,23 +57,20 @@ void CRationalApproximation::init()
 	m_desired_accuracy=0.0;
 
 	SG_ADD((CSGObject**)&m_eigen_solver, "eigen_solver",
-		"Eigen solver for computing extremal eigenvalues", MS_NOT_AVAILABLE);
+		"Eigen solver for computing extremal eigenvalues");
 
-	SG_ADD(&m_shifts, "complex_shifts", "Complex shifts in the linear system",
-		MS_NOT_AVAILABLE);
+	SG_ADD(&m_shifts, "complex_shifts", "Complex shifts in the linear system");
 
-	SG_ADD(&m_weights, "complex_weights", "Complex weights of the linear system",
-		MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights, "complex_weights", "Complex weights of the linear system");
 
 	SG_ADD(&m_constant_multiplier, "constant_multiplier",
-		"Constant multiplier in the rational approximation",
-		MS_NOT_AVAILABLE);
+		"Constant multiplier in the rational approximation");
 
 	SG_ADD(&m_num_shifts, "num_shifts",
-		"Number of shifts in the quadrature rule", MS_NOT_AVAILABLE);
+		"Number of shifts in the quadrature rule");
 
 	SG_ADD(&m_desired_accuracy, "desired_accuracy",
-		"Desired accuracy of the rational approximation", MS_NOT_AVAILABLE);
+		"Desired accuracy of the rational approximation");
 }
 
 SGVector<complex128_t> CRationalApproximation::get_shifts() const

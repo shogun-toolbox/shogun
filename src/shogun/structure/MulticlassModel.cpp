@@ -163,8 +163,7 @@ void CMulticlassModel::init_primal_opt(
 
 void CMulticlassModel::init()
 {
-	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes",
-			MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes");
 
 	m_num_classes = 0;
 }

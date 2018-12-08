@@ -368,9 +368,7 @@ void CTOPFeatures::init()
 	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
 	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
 	SG_ADD(
-	    &neglinear, "neglinear", "If negative HMM is a LinearHMM",
-	    MS_NOT_AVAILABLE);
+	    &neglinear, "neglinear", "If negative HMM is a LinearHMM");
 	SG_ADD(
-	    &poslinear, "poslinear", "If positive HMM is a LinearHMM",
-	    MS_NOT_AVAILABLE);
+	    &poslinear, "poslinear", "If positive HMM is a LinearHMM");
 }

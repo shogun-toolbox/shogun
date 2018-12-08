@@ -111,12 +111,10 @@ void CMahalanobisDistance::init()
 	use_mean=false;
 
 	SG_ADD(
-	    &disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.",
-	    MS_NOT_AVAILABLE);
+	    &disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 	SG_ADD(
 	    &use_mean, "use_mean", "If distance shall be computed between mean "
 	                           "vector and vector from rhs or between lhs and "
-	                           "rhs.",
-	    MS_NOT_AVAILABLE);
+	                           "rhs.");
 }
 

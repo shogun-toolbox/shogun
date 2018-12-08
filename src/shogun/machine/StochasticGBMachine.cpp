@@ -401,11 +401,11 @@ void CStochasticGBMachine::init()
 	m_gamma=new CDynamicArray<float64_t>();
 	SG_REF(m_gamma);
 
-	SG_ADD((CSGObject**)&m_machine,"m_machine","machine",MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_loss,"m_loss","loss function",MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_iter,"m_num_iter","number of iterations",MS_NOT_AVAILABLE);
-	SG_ADD(&m_subset_frac,"m_subset_frac","subset fraction",MS_NOT_AVAILABLE);
-	SG_ADD(&m_learning_rate,"m_learning_rate","learning rate",MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_weak_learners,"m_weak_learners","array of weak learners",MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_gamma,"m_gamma","array of learner weights",MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_machine,"m_machine","machine");
+	SG_ADD((CSGObject**)&m_loss,"m_loss","loss function");
+	SG_ADD(&m_num_iter,"m_num_iter","number of iterations");
+	SG_ADD(&m_subset_frac,"m_subset_frac","subset fraction");
+	SG_ADD(&m_learning_rate,"m_learning_rate","learning rate");
+	SG_ADD((CSGObject**)&m_weak_learners,"m_weak_learners","array of weak learners");
+	SG_ADD((CSGObject**)&m_gamma,"m_gamma","array of learner weights");
 }

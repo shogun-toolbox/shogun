@@ -610,19 +610,18 @@ void CKernelMachine::init()
 	use_linadd=true;
 	use_bias=true;
 
-	SG_ADD(&kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD(&kernel, "kernel", "", ParameterProperties::HYPER);
 	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
-			" data lock", MS_NOT_AVAILABLE);
+			" data lock");
 	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
-			"Kernel backup for data lock", MS_NOT_AVAILABLE);
+			"Kernel backup for data lock");
 	SG_ADD(&use_batch_computation, "use_batch_computation",
-			"Batch computation is enabled.", MS_NOT_AVAILABLE);
-	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
-	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_bias, "m_bias", "Bias term.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
+			"Batch computation is enabled.");
+	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.");
+	SG_ADD(&use_bias, "use_bias", "Bias shall be used.");
+	SG_ADD(&m_bias, "m_bias", "Bias term.");
+	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.");
+	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.");
 }
 
 bool CKernelMachine::supports_locking() const

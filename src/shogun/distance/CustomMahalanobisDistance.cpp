@@ -26,7 +26,7 @@ CCustomMahalanobisDistance::CCustomMahalanobisDistance(CFeatures* l, CFeatures* 
 
 void CCustomMahalanobisDistance::register_params()
 {
-	SG_ADD(&m_mahalanobis_matrix, "m_mahalanobis_matrix", "Mahalanobis matrix", MS_NOT_AVAILABLE)
+	SG_ADD(&m_mahalanobis_matrix, "m_mahalanobis_matrix", "Mahalanobis matrix");
 }
 
 CCustomMahalanobisDistance::~CCustomMahalanobisDistance()

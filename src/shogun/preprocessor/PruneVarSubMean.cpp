@@ -158,9 +158,9 @@ void CPruneVarSubMean::init()
 
 void CPruneVarSubMean::register_parameters()
 {
-	SG_ADD(&m_divide_by_std, "divide_by_std", "Divide by standard deviation", MS_AVAILABLE);
-	SG_ADD(&m_num_idx, "num_idx", "Number of elements in idx_vec", MS_NOT_AVAILABLE);
-	SG_ADD(&m_std, "std_vec", "Standard dev vector", MS_NOT_AVAILABLE);
-	SG_ADD(&m_mean, "mean_vec", "Mean vector", MS_NOT_AVAILABLE);
-	SG_ADD(&m_idx, "idx_vec", "Index vector", MS_NOT_AVAILABLE);
+	SG_ADD(&m_divide_by_std, "divide_by_std", "Divide by standard deviation", ParameterProperties::HYPER);
+	SG_ADD(&m_num_idx, "num_idx", "Number of elements in idx_vec");
+	SG_ADD(&m_std, "std_vec", "Standard dev vector");
+	SG_ADD(&m_mean, "mean_vec", "Mean vector");
+	SG_ADD(&m_idx, "idx_vec", "Index vector");
 }

@@ -1,0 +1,61 @@
+# NOTE: downloadPath and destinationFolder should not be the same!
+# as ExtractFiles will create destinationFolder that will result
+# in deleting anything in it, including the archive if downloadPath
+# is the same as destinationFolder
+parameters:
+  artifactName: ''
+  downloadPath: ''
+  name: ''
+  archiveFilePatterns: ''
+  destinationFolder: ''
+  specificBuildWithTriggering: false
+
+steps:
+- ${{ if and(eq(parameters.specificBuildWithTriggering, 'true'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  - task: DownloadBuildArtifacts@0
+    displayName: ${{ format('Download {0} archive', parameters.name) }}
+    continueOnError: true
+    inputs:
+      specificBuildWithTriggering: true
+      artifactName: ${{ parameters.artifactName }}
+      downloadPath: ${{ parameters.downloadPath }}
+
+- ${{ if and(eq(parameters.specificBuildWithTriggering, 'true'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  - task: DownloadBuildArtifacts@0
+    displayName: ${{ format('Download {0} archive', parameters.name) }}
+    continueOnError: true
+    inputs:
+      buildType: 'specific'
+      project: $(System.TeamProjectId)
+      pipeline: $(System.DefinitionId)
+      buildVersionToDownload: "latestFromBranch"
+      branchName: $(System.PullRequest.TargetBranch))
+      artifactName: ${{ parameters.artifactName }}
+      downloadPath: ${{ parameters.downloadPath }}
+
+- ${{ if ne(parameters.specificBuildWithTriggering, 'true') }}:
+  - task: DownloadBuildArtifacts@0
+    displayName: ${{ format('Download {0} archive', parameters.name) }}
+    continueOnError: true
+    inputs:
+      buildType: 'specific'
+      project: $(System.TeamProjectId)
+      pipeline: $(System.DefinitionId)
+      buildVersionToDownload: "latest"
+      artifactName: ${{ parameters.artifactName }}
+      downloadPath: ${{ parameters.downloadPath }}
+
+- task: ExtractFiles@1
+  displayName: ${{ format('Extract {0} archive', parameters.name) }}
+  condition: eq(variables['Agent.JobStatus'], 'Succeeded')
+  inputs:
+    archiveFilePatterns: ${{ format('{0}/{1}/*.tar', parameters.downloadPath, parameters.artifactName) }}
+    destinationFolder: ${{ parameters.destinationFolder }}
+    cleanDestinationFolder: True
+
+# FIXME: remove this hack, as it's only needed because DownloadBuildArtifacts
+# will not download artifact from jobs with SucceededWithIssues
+- script: |
+    echo '##vso[task.setvariable variable=agent.jobstatus]Succeeded'
+  condition: eq(variables['Agent.JobStatus'], 'SucceededWithIssues')
+  displayName: Set JobStatus to Succeeded

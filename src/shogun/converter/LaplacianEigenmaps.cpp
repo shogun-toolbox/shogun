@@ -23,8 +23,8 @@ CLaplacianEigenmaps::CLaplacianEigenmaps() :
 
 void CLaplacianEigenmaps::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", MS_AVAILABLE);
-	SG_ADD(&m_tau, "tau", "heat distribution coefficient", MS_AVAILABLE);
+	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
+	SG_ADD(&m_tau, "tau", "heat distribution coefficient", ParameterProperties::HYPER);
 }
 
 CLaplacianEigenmaps::~CLaplacianEigenmaps()

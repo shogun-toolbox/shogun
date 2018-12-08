@@ -31,8 +31,8 @@ CShareBoost::CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels 
 
 void CShareBoost::init_sb_params()
 {
-	SG_ADD(&m_nonzero_feas, "nonzero_feas", "Number of non-zero features", MS_NOT_AVAILABLE);
-	SG_ADD(&m_activeset, "active_set", "Selected features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nonzero_feas, "nonzero_feas", "Number of non-zero features");
+	SG_ADD(&m_activeset, "active_set", "Selected features");
 }
 
 SGVector<int32_t> CShareBoost::get_activeset()

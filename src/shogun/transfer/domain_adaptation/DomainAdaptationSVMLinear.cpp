@@ -63,9 +63,9 @@ void CDomainAdaptationSVMLinear::init(CLinearMachine* pre_svm, float64_t B_param
 	is_presvm_sane();
 
     // serialization code
-	SG_ADD(&presvm, "presvm", "SVM to regularize against", MS_AVAILABLE);
-	SG_ADD(&B, "B", "Regularization strenth B.", MS_AVAILABLE);
-	SG_ADD(&train_factor, "train_factor", "train_factor", MS_AVAILABLE);
+	SG_ADD(&presvm, "presvm", "SVM to regularize against", ParameterProperties::HYPER);
+	SG_ADD(&B, "B", "Regularization strenth B.", ParameterProperties::HYPER);
+	SG_ADD(&train_factor, "train_factor", "train_factor", ParameterProperties::HYPER);
 }
 
 

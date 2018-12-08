@@ -72,12 +72,11 @@ void CDomainAdaptationMulticlassLibLinear::set_source_machine(
 
 void CDomainAdaptationMulticlassLibLinear::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_source_machine, "source_machine", "source domain machine",
-			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_source_machine, "source_machine", "source domain machine");
 	SG_ADD(&m_train_factor, "train_factor", "factor of target domain regularization",
-			MS_AVAILABLE);
+			ParameterProperties::HYPER);
 	SG_ADD(&m_source_bias, "source_bias", "bias to source domain",
-			MS_AVAILABLE);
+			ParameterProperties::HYPER);
 }
 
 CDomainAdaptationMulticlassLibLinear::~CDomainAdaptationMulticlassLibLinear()

@@ -101,13 +101,13 @@ void FirstOrderStochasticMinimizer::init()
 	m_iter_counter=0;
 
 	SG_ADD((CSGObject **)&m_learning_rate, "FirstOrderMinimizer__m_learning_rate",
-		"learning_rate in FirstOrderStochasticMinimizer", MS_NOT_AVAILABLE);
+		"learning_rate in FirstOrderStochasticMinimizer");
 	SG_ADD((CSGObject **)&m_gradient_updater, "FirstOrderMinimizer__m_gradient_updater",
-		"gradient_updater in FirstOrderStochasticMinimizer", MS_NOT_AVAILABLE);
+		"gradient_updater in FirstOrderStochasticMinimizer");
 	SG_ADD(&m_num_passes, "FirstOrderMinimizer__m_num_passes",
-		"num_passes in FirstOrderStochasticMinimizer", MS_NOT_AVAILABLE);
+		"num_passes in FirstOrderStochasticMinimizer");
 	SG_ADD(&m_cur_passes, "FirstOrderMinimizer__m_cur_passes",
-		"cur_passes in FirstOrderStochasticMinimizer", MS_NOT_AVAILABLE);
+		"cur_passes in FirstOrderStochasticMinimizer");
 	SG_ADD(&m_iter_counter, "FirstOrderMinimizer__m_iter_counter",
-		"m_iter_counter in FirstOrderStochasticMinimizer", MS_NOT_AVAILABLE);
+		"m_iter_counter in FirstOrderStochasticMinimizer");
 }

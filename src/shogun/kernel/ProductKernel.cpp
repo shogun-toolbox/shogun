@@ -229,9 +229,8 @@ void CProductKernel::init()
 	SG_REF(kernel_array);
 
 	SG_ADD((CSGObject**) &kernel_array, "kernel_array", "Array of kernels",
-	    MS_AVAILABLE);
-	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used",
-	    MS_NOT_AVAILABLE);
+	    ParameterProperties::HYPER);
+	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used");
 }
 
 SGMatrix<float64_t> CProductKernel::get_parameter_gradient(

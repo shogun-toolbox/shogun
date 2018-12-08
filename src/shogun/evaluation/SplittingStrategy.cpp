@@ -56,16 +56,13 @@ void CSplittingStrategy::init()
 	m_is_filled=false;
 	m_num_subsets=0;
 
-	SG_ADD(&m_labels, "labels", "Labels for subsets", MS_NOT_AVAILABLE);
+	SG_ADD(&m_labels, "labels", "Labels for subsets");
 	SG_ADD(
-	    &m_subset_indices, "subset_indices", "Set of sets of subset indices",
-	    MS_NOT_AVAILABLE);
+	    &m_subset_indices, "subset_indices", "Set of sets of subset indices");
 	SG_ADD(
-	    &m_is_filled, "is_filled", "Whether ther are index sets",
-	    MS_NOT_AVAILABLE);
+	    &m_is_filled, "is_filled", "Whether ther are index sets");
 	SG_ADD(
-	    &m_num_subsets, "num_subsets", "Number of index sets",
-	    MS_NOT_AVAILABLE);
+	    &m_num_subsets, "num_subsets", "Number of index sets");
 }
 
 CSplittingStrategy::~CSplittingStrategy()

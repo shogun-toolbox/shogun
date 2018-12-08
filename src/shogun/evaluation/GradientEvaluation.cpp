@@ -30,7 +30,7 @@ void CGradientEvaluation::init()
 	SG_ADD(
 	    &m_diff, "differentiable_function", "Differentiable "
 	                                        "function",
-	    MS_AVAILABLE);
+	    ParameterProperties::HYPER);
 }
 
 CGradientEvaluation::~CGradientEvaluation()

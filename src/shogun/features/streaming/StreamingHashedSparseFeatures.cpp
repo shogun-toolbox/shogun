@@ -52,15 +52,13 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
-	SG_ADD(&dim, "dim", "Size of target dimension", MS_NOT_AVAILABLE);
+	SG_ADD(&dim, "dim", "Size of target dimension");
 
 	use_quadratic = use_quadr;
 	keep_linear_terms = keep_lin_terms;
 
-	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
-		MS_NOT_AVAILABLE);
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
 
 	has_labels = is_labelled;
 	if (file)

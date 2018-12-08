@@ -35,7 +35,7 @@ void CKernelRidgeRegression::init()
 {
 	set_tau(1e-6);
 	set_epsilon(0.0001);
-	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
+	SG_ADD(&m_tau, "tau", "Regularization parameter", ParameterProperties::HYPER);
 }
 
 bool CKernelRidgeRegression::solve_krr_system()
