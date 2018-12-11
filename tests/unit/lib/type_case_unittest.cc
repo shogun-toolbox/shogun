@@ -29,12 +29,22 @@ private:
 };
 
 template <typename T>
-class StaticAssertTypeEqTestHelper
+class StaticAssertReturnTypeEqTestHelper
 {
 public:
-	StaticAssertTypeEqTestHelper()
+	StaticAssertReturnTypeEqTestHelper()
 	{
 		StaticAssertTypeEq<type_internal::assert_return_type_is_valid, T>();
+	}
+};
+
+template <typename T>
+class StaticAssertArityEqTestHelper
+{
+public:
+	StaticAssertArityEqTestHelper()
+	{
+		StaticAssertTypeEq<type_internal::assert_arity_is_valid, T>();
 	}
 };
 
@@ -49,9 +59,9 @@ TEST(Type_case, positional_lambdas)
 	auto any_vector = make_any(a_vector);
 	auto any_matrix = make_any(a_matrix);
 
-	auto f_scalar = [&counter](auto type) { counter++; };
-	auto f_vector = [&counter](auto type) { counter++; };
-	auto f_matrix = [&counter](auto type) { counter++; };
+	auto f_scalar = [&counter](auto value) { counter++; };
+	auto f_vector = [&counter](auto value) { counter++; };
+	auto f_matrix = [&counter](auto value) { counter++; };
 
 	sg_any_dispatch(any_scalar, sg_all_types, f_scalar);
 	EXPECT_EQ(counter, 1);
@@ -72,10 +82,10 @@ TEST(Type_case, exception)
 	int counter = 0;
 	auto any_scalar = make_any(a_scalar);
 
-	auto f_scalar = [&counter](auto type) { counter += 1; };
+	auto f_scalar = [&counter](auto value) { counter++; };
 
 	EXPECT_THROW(
-	    sg_any_dispatch(any_scalar, sg_real_types, f_scalar), ShogunException);
+		sg_any_dispatch(any_scalar, sg_real_types, f_scalar), ShogunException);
 	EXPECT_EQ(counter, 0);
 }
 
@@ -88,18 +98,18 @@ TEST(Type_case, modify_struct)
 	auto any_int = make_any(a_int);
 	auto any_float = make_any(a_float);
 
-	auto f_int = [&a_struct, &any_int](auto type) {
-		a_struct.add_value(any_cast<decltype(type)>(any_int));
+	auto f_int = [&a_struct](auto value) {
+		a_struct.add_value(value);
 	};
 
-	auto f_float = [&a_struct, &any_float](auto type) {
-		a_struct.add_value(any_cast<decltype(type)>(any_float));
+	auto f_float = [&a_struct](auto value) {
+		a_struct.add_value(value);
 	};
 
 	sg_any_dispatch(any_float, sg_real_types, f_float);
 	EXPECT_EQ(a_struct.get_value(), 84);
 	EXPECT_THROW(
-	    sg_any_dispatch(any_int, sg_real_types, f_int), ShogunException);
+		sg_any_dispatch(any_int, sg_real_types, f_int), ShogunException);
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
@@ -124,7 +134,7 @@ TEST(Type_case, custom_map)
 
 #undef ADD_TYPE_TO_MAP
 
-	auto f = [&counter](auto type) { counter++; };
+	auto f = [&counter](auto a) { counter++; };
 
 	sg_any_dispatch(any_int, my_int_map, f);
 	EXPECT_EQ(counter, 1);
@@ -137,8 +147,11 @@ TEST(Type_case, static_asserts)
 	float32_t a_float = 42.0;
 	auto any_float = make_any(a_float);
 
-	auto f_fail = [](auto type) { return 1; };
+	auto f_return_fail = [](auto a) { return 1; };
+	auto f_arity_fail = [](auto a, float b) {};
 
-	StaticAssertTypeEqTestHelper<decltype(
-	    sg_any_dispatch(any_float, sg_all_types, f_fail))>();
+	StaticAssertReturnTypeEqTestHelper<decltype(
+		sg_any_dispatch(any_float, sg_all_types, f_return_fail))>();
+	StaticAssertArityEqTestHelper<decltype(
+		sg_any_dispatch(any_float, sg_all_types, f_arity_fail))>();
 }
