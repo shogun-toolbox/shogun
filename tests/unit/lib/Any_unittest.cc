@@ -691,3 +691,55 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_FALSE(any.visitable());
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
 }
+
+TEST(AnyParameterProperties, old_api_default)
+{
+	AnyParameterProperties params = AnyParameterProperties();
+
+	EXPECT_EQ(
+	    params.get_model_selection(),
+	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
+	EXPECT_EQ(
+	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
+	EXPECT_FALSE(params.get_model());
+}
+
+TEST(AnyParameterProperties, new_api_default)
+{
+	AnyParameterProperties params = AnyParameterProperties();
+
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
+}
+
+TEST(AnyParameterProperties, old_custom_ctor)
+{
+	AnyParameterProperties params = AnyParameterProperties(
+	    "test", EModelSelectionAvailability::MS_NOT_AVAILABLE,
+	    EGradientAvailability::GRADIENT_NOT_AVAILABLE, false);
+
+	EXPECT_EQ(params.get_description(), "test");
+	EXPECT_EQ(
+	    params.get_model_selection(),
+	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
+	EXPECT_EQ(
+	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
+	EXPECT_FALSE(params.get_model());
+
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
+}
+
+TEST(AnyParameterProperties, new_custom_ctor)
+{
+	AnyParameterProperties params =
+	    AnyParameterProperties("test", ParameterProperties());
+
+	EXPECT_EQ(params.get_description(), "test");
+	EXPECT_EQ(
+	    params.get_model_selection(),
+	    EModelSelectionAvailability::MS_NOT_AVAILABLE);
+	EXPECT_EQ(
+	    params.get_gradient(), EGradientAvailability::GRADIENT_NOT_AVAILABLE);
+	EXPECT_FALSE(params.get_model());
+
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
+}
