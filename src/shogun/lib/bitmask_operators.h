@@ -32,6 +32,8 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
+// modified by Gil Hoben
 
 #include<type_traits>
 
@@ -105,6 +107,12 @@ namespace shogun {
         lhs = static_cast<E>(
                 static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
         return lhs;
+    }
+    template<typename E>
+    typename std::enable_if<enable_bitmask_operators<E>::enable, bool>::type
+    operator==(E lhs, E rhs) {
+        typedef typename std::underlying_type<E>::type underlying;
+        return static_cast<underlying>(lhs) == static_cast<underlying>(rhs);
     }
 }
 #endif
