@@ -90,6 +90,17 @@ namespace shogun
 			return map.find(tag) != map.end();
 		}
 
+		ParametersMap filter(ParameterProperties pprop) const {
+			ParametersMap result;
+			std::copy_if(map.cbegin(), map.cend(),
+			        std::inserter(result, result.end()),
+			        [&pprop](const std::pair<BaseTag, AnyParameter>& each)
+			        {
+                         return each.second.get_properties().has_property(pprop);
+                     });
+			return result;
+		}
+
 		ParametersMap map;
 	};
 
