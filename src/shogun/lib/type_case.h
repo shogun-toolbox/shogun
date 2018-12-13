@@ -57,53 +57,95 @@ namespace shogun
 		T_UNDEFINED = 26
 	};
 
-} // namespace shogun
-
-template <typename T>
-struct sg_primitive_type
-{
-};
-
-#define SG_PRIMITIVE_TYPE(T, ptype)                                            \
-	template <>                                                                \
-	struct sg_primitive_type<T>                                                \
-	{                                                                          \
-		static constexpr TYPE pvalue = ptype;                                  \
-	};
-
-SG_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
-SG_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
-SG_PRIMITIVE_TYPE(int8_t, TYPE::T_INT8)
-SG_PRIMITIVE_TYPE(uint8_t, TYPE::T_UINT8)
-SG_PRIMITIVE_TYPE(int16_t, TYPE::T_INT16)
-SG_PRIMITIVE_TYPE(uint16_t, TYPE::T_UINT16)
-SG_PRIMITIVE_TYPE(int32_t, TYPE::T_INT32)
-SG_PRIMITIVE_TYPE(uint32_t, TYPE::T_UINT32)
-SG_PRIMITIVE_TYPE(int64_t, TYPE::T_INT64)
-SG_PRIMITIVE_TYPE(uint64_t, TYPE::T_UINT64)
-SG_PRIMITIVE_TYPE(float32_t, TYPE::T_FLOAT32)
-SG_PRIMITIVE_TYPE(float64_t, TYPE::T_FLOAT64)
-SG_PRIMITIVE_TYPE(floatmax_t, TYPE::T_FLOATMAX)
-SG_PRIMITIVE_TYPE(complex128_t, TYPE::T_COMPLEX128)
-SG_PRIMITIVE_TYPE(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
-SG_PRIMITIVE_TYPE(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
-SG_PRIMITIVE_TYPE(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
-SG_PRIMITIVE_TYPE(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
-SG_PRIMITIVE_TYPE(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
-SG_PRIMITIVE_TYPE(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
-SG_PRIMITIVE_TYPE(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
-SG_PRIMITIVE_TYPE(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
-SG_PRIMITIVE_TYPE(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
-SG_PRIMITIVE_TYPE(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
-
-#undef SG_PRIMITIVE_TYPE
-
-namespace shogun
-{
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
 
 	namespace type_internal
 	{
+        template <typename T>
+        struct sg_type
+        {
+        };
+
+        template <typename T>
+        struct is_sg_primitive : public std::false_type
+        {
+        };
+
+        template <typename T>
+        struct is_sg_vector : public std::false_type
+        {
+        };
+
+        template <typename T>
+        struct is_sg_matrix : public std::false_type
+        {
+        };
+
+        template <typename T>
+        struct is_none : public std::false_type
+        {
+        };
+        template <>
+        struct is_none<None> : public std::true_type
+        {
+        };
+
+
+#define SG_ADD_TYPE(T, type_)                                                  \
+	template <>                                                                \
+	struct sg_type<T>                                                          \
+	{                                                                          \
+		static constexpr TYPE ptype = type_;                                   \
+	};
+#define SG_ADD_PRIMITIVE_TYPE(T, type_)                                        \
+	SG_ADD_TYPE(T, type_)                                                      \
+	template <>                                                                \
+	struct is_sg_primitive<T> : public std::true_type                          \
+	{                                                                          \
+	};
+#define SG_ADD_SGVECTOR_TYPE(T, type_)                                         \
+	SG_ADD_TYPE(T, type_)                                                      \
+	template <>                                                                \
+	struct is_sg_vector<T> : public std::true_type                             \
+	{                                                                          \
+	};
+#define SG_ADD_SGMATRIX_TYPE(T, type_)                                         \
+	SG_ADD_TYPE(T, type_)                                                      \
+	template <>                                                                \
+	struct is_sg_matrix<T> : public std::true_type                             \
+	{                                                                          \
+	};
+
+        SG_ADD_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
+        SG_ADD_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
+        SG_ADD_PRIMITIVE_TYPE(int8_t, TYPE::T_INT8)
+        SG_ADD_PRIMITIVE_TYPE(uint8_t, TYPE::T_UINT8)
+        SG_ADD_PRIMITIVE_TYPE(int16_t, TYPE::T_INT16)
+        SG_ADD_PRIMITIVE_TYPE(uint16_t, TYPE::T_UINT16)
+        SG_ADD_PRIMITIVE_TYPE(int32_t, TYPE::T_INT32)
+        SG_ADD_PRIMITIVE_TYPE(uint32_t, TYPE::T_UINT32)
+        SG_ADD_PRIMITIVE_TYPE(int64_t, TYPE::T_INT64)
+        SG_ADD_PRIMITIVE_TYPE(uint64_t, TYPE::T_UINT64)
+        SG_ADD_PRIMITIVE_TYPE(float32_t, TYPE::T_FLOAT32)
+        SG_ADD_PRIMITIVE_TYPE(float64_t, TYPE::T_FLOAT64)
+        SG_ADD_PRIMITIVE_TYPE(floatmax_t, TYPE::T_FLOATMAX)
+        SG_ADD_PRIMITIVE_TYPE(complex128_t, TYPE::T_COMPLEX128)
+        SG_ADD_SGVECTOR_TYPE(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+        SG_ADD_SGVECTOR_TYPE(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+        SG_ADD_SGVECTOR_TYPE(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+        SG_ADD_SGVECTOR_TYPE(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+        SG_ADD_SGVECTOR_TYPE(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+        SG_ADD_SGMATRIX_TYPE(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+        SG_ADD_SGMATRIX_TYPE(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+        SG_ADD_SGMATRIX_TYPE(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+        SG_ADD_SGMATRIX_TYPE(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+        SG_ADD_SGMATRIX_TYPE(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
+
+#undef SG_ADD_TYPE
+#undef SG_ADD_PRIMITIVE_TYPE
+#undef SG_ADD_SGVECTOR_TYPE
+#undef SG_ADD_SGMATRIX_TYPE
+
 		std::string print_map(const typemap& map)
 		{
 			auto msg = std::string("<");
@@ -155,33 +197,6 @@ namespace shogun
 					"All lambda definitions must have a single argument and "
 					"have the signature 'void f(auto value)'");
 			}
-		};
-
-		template <typename T>
-		struct is_sg_vector : public std::false_type
-		{
-		};
-		template <typename T>
-		struct is_sg_vector<SGVector<T>> : public std::true_type
-		{
-		};
-
-		template <typename T>
-		struct is_sg_matrix : public std::false_type
-		{
-		};
-		template <typename T>
-		struct is_sg_matrix<SGMatrix<T>> : public std::true_type
-		{
-		};
-
-		template <typename T>
-		struct is_none : public std::false_type
-		{
-		};
-		template <>
-		struct is_none<None> : public std::true_type
-		{
 		};
 
 		template <typename FunctorTraits>
@@ -265,29 +280,29 @@ namespace shogun
 		}
 
 		template <
-			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
-			typename traits = auto_function_traits<ScalarLambdaT, int>,
+			typename traits = auto_function_traits<PrimitiveLambdaT, int>,
 			typename std::enable_if_t<
-				std::is_scalar<T>::value and
-				not is_none<ScalarLambdaT>::value>* = nullptr>
+				is_sg_primitive<T>::value and
+				not is_none<PrimitiveLambdaT>::value>* = nullptr>
 		auto execute_function(
-			const Any& any, ScalarLambdaT scalar_func,
+			const Any& any, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
-			-> decltype(execute_function_checks<T, traits>(any, scalar_func))
+			-> decltype(execute_function_checks<T, traits>(any, primitive_func))
 		{
-			execute_function_checks<T, traits>(any, scalar_func);
+			execute_function_checks<T, traits>(any, primitive_func);
 		}
 
 		template <
-			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<VectorLambdaT, int>,
 			typename std::enable_if_t<
 				is_sg_vector<T>::value and not is_none<VectorLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
-			const Any& any, ScalarLambdaT scalar_func,
+			const Any& any, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
 			-> decltype(execute_function_checks<T, traits>(any, vector_func))
 		{
@@ -295,14 +310,14 @@ namespace shogun
 		}
 
 		template <
-			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<MatrixLambdaT, int>,
 			typename std::enable_if_t<
 				is_sg_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
-			const Any& any, ScalarLambdaT scalar_func,
+			const Any& any, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
 			-> decltype(execute_function_checks<T, traits>(any, matrix_func))
 		{
@@ -310,15 +325,15 @@ namespace shogun
 		}
 
 		template <
-			typename T, typename ScalarLambdaT, typename VectorLambdaT,
+			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT, typename traits = void,
 			typename std::enable_if_t<
-				(is_none<ScalarLambdaT>::value and std::is_scalar<T>::value) or
+				(is_none<PrimitiveLambdaT>::value and is_sg_primitive<T>::value) or
 				(is_none<VectorLambdaT>::value and is_sg_vector<T>::value) or
 				(is_none<MatrixLambdaT>::value and is_sg_matrix<T>::value)>* =
 				nullptr>
 		auto execute_function(
-			const Any& any, ScalarLambdaT scalar_func,
+			const Any& any, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			SG_SWARNING(
@@ -329,12 +344,12 @@ namespace shogun
 		}
 
 		template <
-			typename TypeList, typename ScalarLambdaT, typename VectorLambdaT,
+			typename TypeList, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename std::enable_if<
 				std::is_same<TypeList, Types0>::value>::type* = nullptr>
 		auto sg_type_finder(
-			const Any& any, TYPE type, ScalarLambdaT scalar_func,
+			const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			SG_SERROR(
@@ -343,24 +358,24 @@ namespace shogun
 		}
 
 		template <
-			typename TypeList, typename ScalarLambdaT, typename VectorLambdaT,
+			typename TypeList, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename std::enable_if<
 				not std::is_same<TypeList, Types0>::value>::type* = nullptr>
 		auto sg_type_finder(
-			const Any& any, TYPE type, ScalarLambdaT scalar_func,
+			const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
 			-> decltype(execute_function<typename TypeList::Head>(
-				any, scalar_func, vector_func, matrix_func))
+				any, primitive_func, vector_func, matrix_func))
 		{
-			if (type == sg_primitive_type<typename TypeList::Head>::pvalue)
+			if (type == sg_type<typename TypeList::Head>::ptype)
 			{
 				execute_function<typename TypeList::Head>(
-					any, scalar_func, vector_func, matrix_func);
+					any, primitive_func, vector_func, matrix_func);
 			}
 			else
 				sg_type_finder<typename TypeList::Tail>(
-					any, type, scalar_func, vector_func, matrix_func);
+					any, type, primitive_func, vector_func, matrix_func);
 		}
 
 	} // namespace type_internal
@@ -452,20 +467,19 @@ namespace shogun
 	 *
 	 * @param any Any instance
 	 * @param typesmap check the underlying type of Any given this map
-	 * @param scalar_func lambda to execute if underlying type is a scalar
-	 * (std::is_scalar)
+	 * @param primitive_func lambda to execute if underlying type is a shogun primitive
 	 * @param vector_func lambda to execute if underlying type is a SGVector
 	 * @param matrix_func lambda to execute if underlying type is a SGMatrix
 	 */
 	template <
-		typename ScalarLambdaT = None, typename VectorLambdaT = None,
+		typename PrimitiveLambdaT = None, typename VectorLambdaT = None,
 		typename MatrixLambdaT = None>
 	auto sg_any_dispatch(
 		const Any& any, const typemap& typesmap,
-		ScalarLambdaT scalar_func = None{}, VectorLambdaT vector_func = None{},
+		PrimitiveLambdaT primitive_func = None{}, VectorLambdaT vector_func = None{},
 		MatrixLambdaT matrix_func = None{})
 		-> decltype(type_internal::sg_type_finder<SG_TYPES>(
-			any, type_internal::get_type(any, typesmap), scalar_func,
+			any, type_internal::get_type(any, typesmap), primitive_func,
 			vector_func, matrix_func))
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
@@ -476,7 +490,7 @@ namespace shogun
 				type_internal::print_map(typesmap).c_str())
 		else
 			type_internal::sg_type_finder<SG_TYPES>(
-				any, type, scalar_func, vector_func, matrix_func);
+				any, type, primitive_func, vector_func, matrix_func);
 	}
 
 } // namespace shogun
