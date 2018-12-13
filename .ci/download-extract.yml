@@ -29,7 +29,7 @@ steps:
       project: $(System.TeamProjectId)
       pipeline: $(System.DefinitionId)
       buildVersionToDownload: "latestFromBranch"
-      branchName: $(System.PullRequest.TargetBranch))
+      branchName: $(System.PullRequest.TargetBranch)
       artifactName: ${{ parameters.artifactName }}
       downloadPath: ${{ parameters.downloadPath }}
 
