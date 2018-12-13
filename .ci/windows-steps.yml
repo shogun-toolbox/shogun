@@ -1,74 +1,54 @@
-parameters:
-  buildConfiguration: Release
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 5
+  submodules: true
 
-jobs:
-- job: Windows
-  displayName: Windows CI Tests
-  pool:
-    vmImage: 'vs2017-win2016'
+- template: ./download-extract.yml
+  parameters:
+    name: 'CLcache'
+    artifactName: $(clcacheArtifactName)
+    destinationFolder: $(clcacheDir)
+    downloadPath: $(build.binariesDirectory)
 
-  strategy:
-    matrix:
-      py36:
-        CONDA_PY: "36"
-        CONDA_ENV: shogun
+- task: CondaEnvironment@1
+  displayName: Install dependencies
+  inputs:
+    createCustomEnvironment: True
+    environmentName: shogun
+    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply mkl-devel jinja2'
+    createOptions: '-c conda-forge'
+    updateConda: false
 
-  variables:
-    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
-    clcacheArtifactName: 'ccache-vs14'
-    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
+- script: |
+    .ci\\setup_clcache.cmd
+  displayName: Setup CLCache
 
-  steps:
-  - checkout: self
-    clean: true
-    fetchDepth: 5
-    submodules: true
+- task: CMake@1
+  displayName: Setup
+  inputs:
+    cmakeArgs: ${{ format('-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE={0} -DCMAKE_INSTALL_PREFIX=$(CONDA_PREFIX)\Library -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..', parameters.buildConfiguration) }}
 
-  - template: ./download-extract.yml
-    parameters:
-      name: 'CLcache'
-      artifactName: $(clcacheArtifactName)
-      destinationFolder: $(clcacheDir)
-      downloadPath: $(build.binariesDirectory)
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    solution: 'build/shogun.sln'
+    vsVersion: '14.0'
+    platform: x64
+    msbuildArgs: '/p:TrackFileAccess=false /p:CLToolExe=clcache.exe'
+    configuration: ${{ parameters.buildConfiguration }}
 
-  - task: CondaEnvironment@1
-    displayName: Install dependencies
-    inputs:
-      createCustomEnvironment: True
-      environmentName: shogun
-      packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply mkl-devel jinja2'
-      createOptions: '-c conda-forge'
-      updateConda: false
+- script: ctest -j%NUMBER_OF_PROCESSORS% -C ${{ parameters.buildConfiguration }}
+  displayName: Test
+  workingDirectory: build
 
-  - script: |
-      .ci\\setup_clcache.cmd
-    displayName: Setup CLCache
+- script: clcache -s
+  displayName: CLCache statistics
 
-  - task: CMake@1
-    displayName: Setup
-    inputs:
-      cmakeArgs: ${{ format('-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE={0} -DCMAKE_INSTALL_PREFIX=$(CONDA_PREFIX)\Library -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..', parameters.buildConfiguration) }}
-
-  - task: VSBuild@1
-    displayName: Build
-    inputs:
-      solution: 'build/shogun.sln'
-      vsVersion: '14.0'
-      platform: x64
-      msbuildArgs: '/p:TrackFileAccess=false /p:CLToolExe=clcache.exe'
-      configuration: ${{ parameters.buildConfiguration }}
-
-  - script: ctest -j%NUMBER_OF_PROCESSORS% -C ${{ parameters.buildConfiguration }}
-    displayName: Test
-    workingDirectory: build
-
-  - script: clcache -s
-    displayName: CLCache statistics
-
-  - template: ./archive-deploy.yml
-    parameters:
-      name: 'CLcache'
-      dir: $(clcacheDir)
-      archive: $(clcacheArchive)
-      artifactName: $(clcacheArtifactName)
+- template: ./archive-deploy.yml
+  parameters:
+    name: 'CLcache'
+    dir: $(clcacheDir)
+    archive: $(clcacheArchive)
+    artifactName: $(clcacheArtifactName)
 

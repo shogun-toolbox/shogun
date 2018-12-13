@@ -27,7 +27,7 @@ jobs:
       containerCommand: './scripts/check_format.sh $(System.PullRequest.SourceBranch) $(System.PullRequest.TargetBranch)'
 
 - job: libshogun
-  displayName: Linux libshogun CI Tests
+  displayName: Linux libshogun
 
   pool:
     vmImage: ubuntu-16.04
@@ -59,7 +59,7 @@ jobs:
   - template: ./docker-steps.yml
 
 - job: swig
-  displayName: Linux SWIG Interface CI Tests
+  displayName: Linux SWIG Interface
   dependsOn: libshogun
 
   pool:
@@ -122,7 +122,7 @@ jobs:
       swig: true
 
 - job: macOS
-  displayName: macOS CI Tests
+  displayName: MacOS
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-macos'
@@ -137,6 +137,23 @@ jobs:
   steps:
   - template: ./macos-steps.yml
 
-#- template: ./windows-steps.yml
-#  parameters:
+#- job: windows
+#  displayName: Windows
+#
+#  pool:
+#    vmImage: 'vs2017-win2016'
+#
+#  strategy:
+#    matrix:
+#      py36:
+#        CONDA_PY: "36"
+#        CONDA_ENV: shogun
+#
+#  variables:
+#    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
+#    clcacheArtifactName: 'ccache-vs17'
+#    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
 #    buildConfiguration: Release
+#
+#  steps:
+#  - template: ./windows-steps.yml
