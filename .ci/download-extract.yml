@@ -11,7 +11,7 @@ parameters:
   specificBuildWithTriggering: false
 
 steps:
-- ${{ if and(eq(parameters.specificBuildWithTriggering, 'true'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+- ${{ if eq(parameters.specificBuildWithTriggering, 'true') }}:
   - task: DownloadBuildArtifacts@0
     displayName: ${{ format('Download {0} archive', parameters.name) }}
     continueOnError: true
@@ -20,20 +20,7 @@ steps:
       artifactName: ${{ parameters.artifactName }}
       downloadPath: ${{ parameters.downloadPath }}
 
-- ${{ if and(eq(parameters.specificBuildWithTriggering, 'true'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-  - task: DownloadBuildArtifacts@0
-    displayName: ${{ format('Download {0} archive', parameters.name) }}
-    continueOnError: true
-    inputs:
-      buildType: 'specific'
-      project: $(System.TeamProjectId)
-      pipeline: $(System.DefinitionId)
-      buildVersionToDownload: "latestFromBranch"
-      branchName: $(System.PullRequest.TargetBranch)
-      artifactName: ${{ parameters.artifactName }}
-      downloadPath: ${{ parameters.downloadPath }}
-
-- ${{ if ne(parameters.specificBuildWithTriggering, 'true') }}:
+- ${{ if and(ne(parameters.specificBuildWithTriggering, 'true'), ne(variables['Build.Reason'], 'PullRequest')) }}:
   - task: DownloadBuildArtifacts@0
     displayName: ${{ format('Download {0} archive', parameters.name) }}
     continueOnError: true
@@ -44,6 +31,19 @@ steps:
       buildVersionToDownload: "latest"
       artifactName: ${{ parameters.artifactName }}
       downloadPath: ${{ parameters.downloadPath }}
+
+# TODO: change back to DownloadBuildArtifacts task when this issue is fixed
+# https://github.com/MicrosoftDocs/vsts-docs/issues/2889
+- ${{ if and(ne(parameters.specificBuildWithTriggering, 'true'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  - task: PythonScript@0
+    displayName: ${{ format('Download {0} archive', parameters.name) }}
+    continueOnError: true
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: '.ci/get_latest_artifact.py'
+      arguments: '$(System.PullRequest.TargetBranch) ${{ parameters.artifactName }}'
+      workingDirectory: ${{ parameters.downloadPath }}
+      failOnStderr: true
 
 - task: ExtractFiles@1
   displayName: ${{ format('Extract {0} archive', parameters.name) }}
