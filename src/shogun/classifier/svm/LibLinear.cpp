@@ -15,6 +15,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/liblinear/tron.h>
 
 using namespace shogun;
@@ -39,7 +40,6 @@ CLibLinear::CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 	set_features(traindat);
 	set_labels(trainlab);
-	init_linear_term();
 }
 
 void CLibLinear::init()
@@ -68,24 +68,23 @@ CLibLinear::~CLibLinear()
 {
 }
 
-bool CLibLinear::train_machine(CFeatures* data)
+bool CLibLinear::train_machine(CFeatures* features)
+{
+	ASSERT(m_labels);
+	train_machine(features, m_labels);
+	return true;
+}
+
+void CLibLinear::train_machine(CFeatures* features, CLabels* labels)
 {
 
-	ASSERT(m_labels)
-	init_linear_term();
+	init_linear_term(labels);
 
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+	auto dot_features = features->as<CDotFeatures>();
 
-		set_features((CDotFeatures*)data);
-	}
-	ASSERT(features)
-
-	int32_t num_train_labels = m_labels->get_num_labels();
-	int32_t num_feat = features->get_dim_feature_space();
-	int32_t num_vec = features->get_num_vectors();
+	auto num_train_labels = labels->get_num_labels();
+	auto num_feat = dot_features->get_dim_feature_space();
+	auto num_vec = dot_features->get_num_vectors();
 
 	LIBLINEAR_SOLVER_TYPE solver_type = get_liblinear_solver_type();
 
@@ -129,20 +128,19 @@ bool CLibLinear::train_machine(CFeatures* data)
 	else
 	{
 		prob.n = w.vlen;
-		memset(w.vector, 0, sizeof(float64_t) * (w.vlen + 0));
 	}
 	prob.l = num_vec;
-	prob.x = features;
+	prob.x = dot_features;
 	prob.y = SG_MALLOC(double, prob.l);
-	float64_t* Cs = SG_MALLOC(double, prob.l);
+	SGVector<float64_t> Cs(prob.l);
 	prob.use_bias = get_bias_enabled();
 	double Cp = get_C1();
 	double Cn = get_C2();
 
-	auto labels = binary_labels(m_labels);
+	auto bin_labels = binary_labels(m_labels);
 	for (int32_t i = 0; i < prob.l; i++)
 	{
-		prob.y[i] = labels->get_int_label(i);
+		prob.y[i] = bin_labels->get_int_label(i);
 		if (prob.y[i] == +1)
 			Cs[i] = get_C1();
 		else if (prob.y[i] == -1)
@@ -167,7 +165,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	{
 	case L2R_LR:
 	{
-		fun_obj = new l2r_lr_fun(&prob, Cs);
+		fun_obj = new l2r_lr_fun(&prob, Cs.vector);
 		CTron tron_obj(
 		    fun_obj, get_epsilon() * CMath::min(pos, neg) / prob.l,
 		    get_max_iterations());
@@ -179,7 +177,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	}
 	case L2R_L2LOSS_SVC:
 	{
-		fun_obj = new l2r_l2_svc_fun(&prob, Cs);
+		fun_obj = new l2r_l2_svc_fun(&prob, Cs.vector);
 		CTron tron_obj(
 		    fun_obj, get_epsilon() * CMath::min(pos, neg) / prob.l,
 		    get_max_iterations());
@@ -227,9 +225,6 @@ bool CLibLinear::train_machine(CFeatures* data)
 		set_bias(0);
 
 	SG_FREE(prob.y);
-	SG_FREE(Cs);
-
-	return true;
 }
 
 // A coordinate descent algorithm for
@@ -284,6 +279,11 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	if (linear_term_inited())
 	{
 		linear_term = get_linear_term();
+
+		REQUIRE(
+		    l == linear_term.vlen, "Number of labels (%d) does not match number"
+		                           " of entries (%d) in linear term \n",
+		    l, linear_term.vlen);
 	}
 
 	// default solver_type: L2R_L2LOSS_SVC_DUAL
@@ -1383,19 +1383,6 @@ void CLibLinear::solve_l2r_lr_dual(
 
 void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 {
-	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n")
-
-	int32_t num_labels = m_labels->get_num_labels();
-
-	if (num_labels != linear_term.vlen)
-	{
-		SG_ERROR(
-		    "Number of labels (%d) does not match number"
-		    " of entries (%d) in linear term \n",
-		    num_labels, linear_term.vlen);
-	}
-
 	m_linear_term = linear_term;
 }
 
@@ -1407,12 +1394,8 @@ SGVector<float64_t> CLibLinear::get_linear_term()
 	return m_linear_term;
 }
 
-void CLibLinear::init_linear_term()
+void CLibLinear::init_linear_term(CLabels* labels)
 {
-	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n")
-
-	m_linear_term = SGVector<float64_t>(m_labels->get_num_labels());
-	SGVector<float64_t>::fill_vector(
-	    m_linear_term.vector, m_linear_term.vlen, -1.0);
+	m_linear_term = SGVector<float64_t>(labels->get_num_labels());
+	linalg::set_const(m_linear_term, -1.0);
 }
