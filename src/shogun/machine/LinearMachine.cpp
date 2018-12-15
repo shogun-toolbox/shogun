@@ -47,6 +47,18 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
+bool CLinearMachine::train(CFeatures* data)
+{
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
+
+		set_features((CDotFeatures*)data);
+	}
+	return CMachine::train(features);
+}
+
 float64_t CLinearMachine::apply_one(int32_t vec_idx)
 {
 	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;

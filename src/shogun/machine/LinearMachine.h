@@ -101,6 +101,8 @@ class CLinearMachine : public CMachine
 		 */
 		virtual void set_features(CDotFeatures* feat);
 
+		virtual bool train(CFeatures* data=NULL);
+
 		/** apply linear machine to data
 		 * for binary classification problem
 		 *
