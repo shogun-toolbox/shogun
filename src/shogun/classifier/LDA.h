@@ -158,19 +158,6 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 			return CT_LDA;
 		}
 
-		/** set features
-		 *
-		 * @param feat features to set
-		 */
-		virtual void set_features(CDotFeatures* feat)
-		{
-			if (feat->get_feature_class() != C_DENSE ||
-				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("LDA requires SIMPLE REAL valued features\n")
-
-			CLinearMachine::set_features(feat);
-		}
-
 		/** @return object name */
 		virtual const char* get_name() const { return "LDA"; }
 
