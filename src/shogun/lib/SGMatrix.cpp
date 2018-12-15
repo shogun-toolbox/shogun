@@ -13,7 +13,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <limits>
 #include <algorithm>
@@ -1193,6 +1192,7 @@ SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 	return diag;
 }
 
+// Explicit Specialization of Templates
 template class SGMatrix<bool>;
 template class SGMatrix<char>;
 template class SGMatrix<int8_t>;

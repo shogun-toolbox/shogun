@@ -13,6 +13,22 @@
 
 using namespace shogun;
 
+TEST(SGMatrixTest, vectorized_rng)
+{
+	auto rng_check_float = [](auto elem) {
+		SGMatrix<decltype(elem)> sg_mat(10, 5);
+		sg_mat.random();
+		for (int i = 0; i < sg_mat.size(); i++)
+		{
+			EXPECT_LE(0.0, sg_mat[i]);
+			EXPECT_GT(1.0, sg_mat[i]);
+		}
+	};
+	rng_check_float(float32_t{0.0});
+	rng_check_float(float64_t{0.0});
+	rng_check_float(floatmax_t{0.0});
+}
+
 TEST(SGMatrixTest,ctor_zero_const)
 {
 	SGMatrix<float64_t> a(10, 5);
