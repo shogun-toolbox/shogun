@@ -257,8 +257,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         else
             PyErr_SetString(PyExc_TypeError, "type is not a Python type");
     }
-}
 %}
+
 
 %typemap(out) PyObject* __reduce_ex__(int proto)
 {
@@ -481,7 +481,7 @@ namespace shogun
 			pass
 		try:
 			return self.get_real_matrix(name)
-		except RuntimeError
+		except RuntimeError:
 			pass
 		try:
 			return self.get_real_vector(name)
@@ -490,7 +490,7 @@ namespace shogun
 		try:
 			return self.get_int_vector(name)
 		except:
-			raise RuntimeError("There is no parameter called "{}" in {}".format(name, self.get_name()))
+			raise RuntimeError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 	_swig_monkey_patch(SGObject, "get_param", _internal_get_param)
 %}
 
