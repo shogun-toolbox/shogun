@@ -237,6 +237,29 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         }
 %}
 
+// taken from https://github.com/swig/swig/issues/723#issuecomment-230178855
+%typemap(out) void _swig_monkey_patch "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
+%inline %{
+    static void _swig_monkey_patch(PyObject *type, PyObject *name, PyObject *object) {
+        if (PyType_Check(type)) {
+#if PY_VERSION_HEX>=0x03000000
+            if (PyUnicode_Check(name))
+#else
+            if (PyString_Check(name))
+#endif
+                {
+                    PyTypeObject *pytype = (PyTypeObject *)type;
+                    PyDict_SetItem(pytype->tp_dict, name, object);
+                }
+            else
+	            PyErr_SetString(PyExc_TypeError, "name is not a string");
+        }
+        else
+            PyErr_SetString(PyExc_TypeError, "type is not a Python type");
+    }
+}
+%}
+
 %typemap(out) PyObject* __reduce_ex__(int proto)
 {
     return PyObject_CallMethod(self, (char*) "__reduce__", (char*) "");
@@ -445,6 +468,31 @@ namespace shogun
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
     }
 }
+
+%pythoncode %{
+	def _internal_get_param(self, name):
+		try:
+			return self.get_real(name)
+		except RuntimeError:
+			pass
+		try:
+			return self.get_int(name)
+		except RuntimeError:
+			pass
+		try:
+			return self.get_real_matrix(name)
+		except RuntimeError
+			pass
+		try:
+			return self.get_real_vector(name)
+		except RuntimeError:
+			pass
+		try:
+			return self.get_int_vector(name)
+		except:
+			raise RuntimeError("There is no parameter called "{}" in {}".format(name, self.get_name()))
+	_swig_monkey_patch(SGObject, "get_param", _internal_get_param)
+%}
 
 %pythoncode %{
 try:
