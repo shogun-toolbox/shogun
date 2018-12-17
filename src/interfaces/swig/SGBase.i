@@ -490,7 +490,7 @@ namespace shogun
 		try:
 			return self.get_int_vector(name)
 		except:
-			raise RuntimeError("There is no parameter called '{}' in {}".format(name, self.get_name()))
+			raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 	_swig_monkey_patch(SGObject, "get_param", _internal_get_param)
 %}
 
