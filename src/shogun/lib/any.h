@@ -45,9 +45,12 @@
 #include <typeinfo>
 #include <type_traits>
 
-namespace shogun
-{
-	std::string demangled_type_helper(const char* name);
+namespace shogun {
+
+	namespace any_detail{
+		std::string demangled_type_helper(const char *name);
+	}
+
 	std::string demangled_type(const char* name);
 
 	/** Converts compiler-dependent name of class to
@@ -59,7 +62,7 @@ namespace shogun
 	{
 		const char* name = typeid(T).name();
 
-		return demangled_type_helper(name);
+		return any_detail::demangled_type_helper(name);
 	}
 
 	enum class PolicyType
