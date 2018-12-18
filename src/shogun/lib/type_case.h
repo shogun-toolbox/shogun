@@ -298,7 +298,7 @@ namespace shogun
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<PrimitiveLambdaT, int>,
-			typename std::enable_if_t<
+			std::enable_if_t<
 				is_sg_primitive<T>::value and
 				not is_none<PrimitiveLambdaT>::value>* = nullptr>
 		auto execute_function(
@@ -313,7 +313,7 @@ namespace shogun
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<VectorLambdaT, int>,
-			typename std::enable_if_t<
+			std::enable_if_t<
 				is_sg_vector<T>::value and not is_none<VectorLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
@@ -328,7 +328,7 @@ namespace shogun
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<MatrixLambdaT, int>,
-			typename std::enable_if_t<
+			std::enable_if_t<
 				is_sg_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
@@ -342,7 +342,7 @@ namespace shogun
 		template <
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT, typename traits = void,
-			typename std::enable_if_t<
+			std::enable_if_t<
 				(is_none<PrimitiveLambdaT>::value and
 				 is_sg_primitive<T>::value) or
 				(is_none<VectorLambdaT>::value and is_sg_vector<T>::value) or
