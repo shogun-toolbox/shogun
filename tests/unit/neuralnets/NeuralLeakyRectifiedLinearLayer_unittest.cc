@@ -30,75 +30,61 @@
  *
  * Written (W) 2015 Sanuj Sharma
  */
-
-#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/Math.h>
+#include "NeuralLayerTestFixture.h"
 #include <gtest/gtest.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
 
 using namespace shogun;
+
+using NeuralLeakyRectifiedLayerTest = NeuralLayerTestFixture;
 
 /** Compares the activations computed using the layer against manually computed
  * activations
  */
-TEST(NeuralLeakyRectifiedLinearLayer, compute_activations)
+TEST_F(NeuralLeakyRectifiedLayerTest, compute_activations)
 {
-	CNeuralLeakyRectifiedLinearLayer layer(9);
-	float64_t alpha = 0.02;
 	// initialize some random inputs
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
+	// initialize leaky rectified linear layer
+	CNeuralLeakyRectifiedLinearLayer layer(9);
+	layer.set_alpha(0.02);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
+	auto params =
+	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
 
-	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
-
-	// compute the layer's activations
-	input->compute_activations(x);
-	layer.set_alpha(alpha);
-	layer.compute_activations(params, layers);
+	// get the layer's activations
 	SGMatrix<float64_t> A = layer.get_activations();
 
 	// manually compute the layer's activations
+	auto biases =
+	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	auto weights = SGMatrix<float64_t>(
+	    params.vector, layer.get_num_neurons(), x.num_rows,
+	    layer.get_num_neurons());
 	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
+	shogun::linalg::add_vector(
+	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
 
-	float64_t* biases = params.vector;
-	float64_t* weights = biases + layer.get_num_neurons();
-
-	for (int32_t i=0; i<A_ref.num_rows; i++)
+	for (int32_t idx = 0; idx < A_ref.num_rows * A_ref.num_cols; idx++)
 	{
-		for (int32_t j=0; j<A_ref.num_cols; j++)
-		{
-			A_ref(i,j) = biases[i];
-
-			for (int32_t k=0; k<x.num_rows; k++)
-				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
-
-			A_ref(i,j) = CMath::max<float64_t>(alpha*A_ref(i,j), A_ref(i,j));
-		}
+		A_ref[idx] =
+		    CMath::max<float64_t>(layer.get_alpha() * A_ref[idx], A_ref[idx]);
 	}
 
 	// compare
 	EXPECT_EQ(A_ref.num_rows, A.num_rows);
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
-	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
+	for (int32_t i = 0; i < A.num_rows * A.num_cols; i++)
+	{
 		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
-
-	SG_UNREF(layers);
+	}
 }

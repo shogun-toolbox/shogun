@@ -30,113 +30,82 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
-
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/Math.h>
+#include "NeuralLayerTestFixture.h"
 #include <gtest/gtest.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/neuralnets/NeuralLogisticLayer.h>
 
 using namespace shogun;
+
+using NeuralLogisticLayerTest = NeuralLayerTestFixture;
 
 /** Compares the activations computed using the layer against manually computed
  * activations
  */
-TEST(NeuralLogisticLayer, compute_activations)
+TEST_F(NeuralLogisticLayerTest, compute_activations)
 {
-	CNeuralLogisticLayer layer(9);
-
 	// initialize some random inputs
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
+	// initialize logistic layer
+	CNeuralLogisticLayer layer(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
-
-	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
+	auto params =
+	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
 
 	// compute the layer's activations
-	input->compute_activations(x);
-	layer.compute_activations(params, layers);
-	SGMatrix<float64_t> A = layer.get_activations();
+	auto A = layer.get_activations();
 
 	// manually compute the layer's activations
+	auto biases =
+	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	auto weights = SGMatrix<float64_t>(
+	    params.vector, layer.get_num_neurons(), x.num_rows,
+	    layer.get_num_neurons());
 	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
-
-	float64_t* biases = params.vector;
-	float64_t* weights = biases + layer.get_num_neurons();
-
-	for (int32_t i=0; i<A_ref.num_rows; i++)
-	{
-		for (int32_t j=0; j<A_ref.num_cols; j++)
-		{
-			A_ref(i,j) = biases[i];
-
-			for (int32_t k=0; k<x.num_rows; k++)
-				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
-
-			A_ref(i, j) = 1 / (1 + std::exp(-1 * A_ref(i, j)));
-		}
-	}
+	shogun::linalg::add_vector(
+	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
+	shogun::linalg::logistic(A_ref, A_ref);
 
 	// compare
 	EXPECT_EQ(A_ref.num_rows, A.num_rows);
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
-	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
+	for (int32_t i = 0; i < A.num_rows * A.num_cols; i++)
+	{
 		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
-
-	SG_UNREF(layers);
+	}
 }
 
 /** Compares the local gradients computed using the layer against gradients
  * computed using numerical approximation
  */
-TEST(NeuralLogisticLayer, compute_local_gradients)
+TEST_F(NeuralLogisticLayerTest, compute_local_gradients)
 {
-	CNeuralLogisticLayer layer(9);
-
-	CMath::init_random(100);
-	SGMatrix<float64_t> x(12,3);
-	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
-
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
-	input->set_batch_size(x.num_cols);
-
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(input);
-
-	SGVector<int32_t> input_indices(1);
-	input_indices[0] = 0;
+	// initialize some random inputs
+	SGMatrix<float64_t> x;
+	CNeuralInputLayer* input;
+	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize the layer
-	layer.initialize_neural_layer(layers, input_indices);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 1.0);
-	layer.set_batch_size(x.num_cols);
+	CNeuralLogisticLayer layer(9);
+	SGVector<int32_t> input_indices(1);
+	input_indices[0] = 0;
+	auto params =
+	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
 
-	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
-	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = CMath::random(0.0,1.0);
+	// initialize output
+	auto y = create_rand_matrix<float64_t>(
+	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0);
 
 	// compute the layer's local gradients
-	input->compute_activations(x);
-	layer.compute_activations(params, layers);
 	layer.compute_local_gradients(y);
 	SGMatrix<float64_t> LG = layer.get_local_gradients();
 
@@ -159,8 +128,8 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 	// compare
 	EXPECT_EQ(LG_numerical.num_rows, LG.num_rows);
 	EXPECT_EQ(LG_numerical.num_cols, LG.num_cols);
-	for (int32_t i=0; i<LG.num_rows*LG.num_cols; i++)
+	for (int32_t i = 0; i < LG.num_rows * LG.num_cols; i++)
+	{
 		EXPECT_NEAR(LG_numerical[i], LG[i], 1e-6);
-
-	SG_UNREF(layers);
+	}
 }
