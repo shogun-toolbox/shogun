@@ -17,9 +17,9 @@
 #include <shogun/mathematics/Random.h>
 #include <shogun/util/iterators.h>
 
+#include "sg_type_traits.h"
 #include <atomic>
 #include <memory>
-#include "sg_type_traits.h"
 
 namespace Eigen
 {
@@ -355,7 +355,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <typename U>
 		using enable_nonsimd_int =
 		    std::enable_if_t<is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
-		                            int32_t, int64_t>>;
+		                                 int32_t, int64_t>>;
 		template <typename U = T>
 		auto random() -> enable_nonsimd_int<U>
 		{

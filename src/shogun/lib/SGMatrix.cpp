@@ -7,16 +7,16 @@
  *          Koen van de Sande, Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
+#include <algorithm>
+#include <limits>
 #include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
-#include <limits>
-#include <algorithm>
 
 namespace shogun
 {

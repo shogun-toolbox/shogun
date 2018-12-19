@@ -27,10 +27,10 @@ struct is_any_of<T, First> : std::is_same<T, First>
 template <typename T, typename First, typename... Rest>
 struct is_any_of<T, First, Rest...>
     : std::integral_constant<bool, std::is_same<T, First>::value ||
-        is_any_of<T, Rest...>::value>
+                                       is_any_of<T, Rest...>::value>
 {
 };
 
 template <typename T, typename First, typename... Rest>
 constexpr bool is_any_of_v = is_any_of<T, First, Rest...>::value;
-#endif //SHOGUN_SG_TYPE_TRAITS_H
+#endif // SHOGUN_SG_TYPE_TRAITS_H
