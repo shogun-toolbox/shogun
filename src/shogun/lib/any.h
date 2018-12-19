@@ -51,8 +51,6 @@ namespace shogun {
 		std::string demangled_type_helper(const char *name);
 	}
 
-	std::string demangled_type(const char* name);
-
 	/** Converts compiler-dependent name of class to
 	 * something human readable.
 	 * @return human readable name of class
@@ -62,6 +60,11 @@ namespace shogun {
 	{
 		const char* name = typeid(T).name();
 
+		return any_detail::demangled_type_helper(name);
+	}
+
+    template <typename T = void>
+	std::string demangled_type(const char* name) {
 		return any_detail::demangled_type_helper(name);
 	}
 

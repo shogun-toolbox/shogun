@@ -48,14 +48,10 @@ namespace shogun
 			std::string demangled_string(demangled);
 			free(demangled);
 #else
-			std::string demangled_string(typeid(T).name());
+			std::string demangled_string(name);
 #endif
 			return demangled_string;
 		}
-	}
-	std::string demangled_type(const char* name)
-	{
-		return any_detail::demangled_type_helper(name);
 	}
 
 	namespace any_detail
