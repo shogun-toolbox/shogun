@@ -14,6 +14,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/Math.h>
 #include <limits>
 #include <algorithm>
 

@@ -14,12 +14,12 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/util/iterators.h>
 
 #include <atomic>
 #include <memory>
-#include <type_traits>
+#include "sg_type_traits.h"
 
 namespace Eigen
 {
@@ -27,28 +27,6 @@ namespace Eigen
 	template<int, int> class Stride;
 	template <class, int, class> class Map;
 }
-
-/**
- * Useful type traits for template overloads
- */
-// Checks if any one of the types matches
-// Ref: https://stackoverflow.com/a/17032517/3656081
-template <typename T, typename... Rest>
-struct is_any : std::false_type
-{
-};
-
-template <typename T, typename First>
-struct is_any<T, First> : std::is_same<T, First>
-{
-};
-
-template <typename T, typename First, typename... Rest>
-struct is_any<T, First, Rest...>
-    : std::integral_constant<bool, std::is_same<T, First>::value ||
-                                       is_any<T, Rest...>::value>
-{
-};
 
 namespace shogun
 {
@@ -330,29 +308,27 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Set matrix to a constant */
 		void set_const(T const_elem);
 
-		/** fill matrix with zeros */
+		/** Fill matrix with zeros */
 		void zero();
 
 		/**
-		 * fill matrix with uniformly distributed randoms
+		 * Fill matrix with uniformly distributed randoms
 		 * Float Types: [0, 1)
 		 * Int Types: std::numeric_limit<T>::(min->max)
-		 * Rest: disabled
 		**/
 		// vectorized available
 		template <typename U>
-		using enable_simd_float = std::enable_if_t<is_any<U, float64_t>::value>;
+		using enable_simd_float = std::enable_if_t<is_any_of_v<U, float64_t>>;
 		template <typename U = T>
 		auto random() -> enable_simd_float<U>
 		{
 			CRandom r{};
-			r.fill_array_co(
-			    static_cast<float64_t*>(matrix), num_rows * num_cols);
+			r.fill_array_co(matrix, num_rows * num_cols);
 		}
 
 		template <typename U>
 		using enable_simd_int =
-		    std::enable_if_t<is_any<U, uint32_t, uint64_t>::value>;
+		    std::enable_if_t<is_any_of_v<U, uint32_t, uint64_t>>;
 		template <typename U = T>
 		auto random() -> enable_simd_int<U>
 		{
@@ -363,7 +339,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		// vectorized not available
 		template <typename U>
 		using enable_nonsimd_float =
-		    std::enable_if_t<is_any<U, float32_t, floatmax_t>::value>;
+		    std::enable_if_t<is_any_of_v<U, float32_t, floatmax_t>>;
 		template <typename U = T>
 		auto random() -> enable_nonsimd_float<U>
 		{
@@ -378,8 +354,8 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		template <typename U>
 		using enable_nonsimd_int =
-		    std::enable_if_t<is_any<U, int8_t, uint8_t, int16_t, uint16_t,
-		                            int32_t, int64_t>::value>;
+		    std::enable_if_t<is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
+		                            int32_t, int64_t>>;
 		template <typename U = T>
 		auto random() -> enable_nonsimd_int<U>
 		{
@@ -391,9 +367,6 @@ template<class T> class SGMatrix : public SGReferencedData
 				    std::numeric_limits<T>::max());
 			}
 		}
-
-		// disabled for the remaining - will throw no matching fn call compile
-		// time error
 
 		/**
 		 * Checks whether the matrix is symmetric or not. The equality check
