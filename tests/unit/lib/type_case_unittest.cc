@@ -142,16 +142,16 @@ TEST(Type_case, custom_map)
 	EXPECT_EQ(counter, 1);
 }
 
-TEST(Type_case, static_asserts)
-{
-	float32_t a_float = 42.0;
-	auto any_float = make_any(a_float);
-
-	auto f_return_fail = [](auto a) { return 1; };
-	auto f_arity_fail = [](auto a, float b) {};
-
-	StaticAssertReturnTypeEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_return_fail))>();
-	StaticAssertArityEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_arity_fail))>();
-}
+//TEST(Type_case, static_asserts)
+//{
+//	float32_t a_float = 42.0;
+//	auto any_float = make_any(a_float);
+//
+//	auto f_return_fail = [](auto a) { return 1; };
+//	auto f_arity_fail = [](auto a, float b) {};
+//
+//	StaticAssertReturnTypeEqTestHelper<decltype(
+//		sg_any_dispatch(any_float, sg_all_types, f_return_fail))>();
+//	StaticAssertArityEqTestHelper<decltype(
+//		sg_any_dispatch(any_float, sg_all_types, f_arity_fail))>();
+//}
