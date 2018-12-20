@@ -113,34 +113,34 @@ TEST(Type_case, modify_struct)
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
-TEST(Type_case, custom_map)
-{
-	int counter = 0;
-	int32_t a_int = 42;
-	float32_t a_float = 42.0;
-
-	auto any_int = make_any(a_int);
-	auto any_float = make_any(a_float);
-
-#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
-	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
-
-	typemap my_int_map = {
-			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
-			ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
-			ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
-			ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)
-	};
-
-#undef ADD_TYPE_TO_MAP
-
-	auto f = [&counter](auto a) { counter++; };
-
-	sg_any_dispatch(any_int, my_int_map, f);
-	EXPECT_EQ(counter, 1);
-	EXPECT_THROW(sg_any_dispatch(any_float, my_int_map, f), ShogunException);
-	EXPECT_EQ(counter, 1);
-}
+//TEST(Type_case, custom_map)
+//{
+//	int counter = 0;
+//	int32_t a_int = 42;
+//	float32_t a_float = 42.0;
+//
+//	auto any_int = make_any(a_int);
+//	auto any_float = make_any(a_float);
+//
+//#define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
+//	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
+//
+//	typemap my_int_map = {
+//			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+//			ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
+//			ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
+//			ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)
+//	};
+//
+//#undef ADD_TYPE_TO_MAP
+//
+//	auto f = [&counter](auto a) { counter++; };
+//
+//	sg_any_dispatch(any_int, my_int_map, f);
+//	EXPECT_EQ(counter, 1);
+//	EXPECT_THROW(sg_any_dispatch(any_float, my_int_map, f), ShogunException);
+//	EXPECT_EQ(counter, 1);
+//}
 
 TEST(Type_case, static_asserts)
 {
