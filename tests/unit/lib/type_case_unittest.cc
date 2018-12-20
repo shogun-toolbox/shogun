@@ -4,11 +4,11 @@
  * Authors: Gil Hoben
  */
 
-#include <gtest/gtest.h>
-#include <shogun/lib/type_case.h>
-
-using namespace shogun;
-using testing::StaticAssertTypeEq;
+//#include <gtest/gtest.h>
+//#include <shogun/lib/type_case.h>
+//
+//using namespace shogun;
+//using testing::StaticAssertTypeEq;
 
 //template <typename T>
 //struct Simple
