@@ -398,72 +398,72 @@ namespace shogun
 
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
-	typemap sg_all_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
-			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
-			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
-			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
-			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
-			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
-			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
-			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
-			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
-	};
-	typemap sg_vector_types = {
-			ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
-			ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
-			ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
-			ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
-	};
-	typemap sg_matrix_types = {
-			ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
-			ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
-			ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
-			ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
-			ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
-	};
-	typemap sg_non_complex_types = {
-			ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
-			ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
-			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
-			ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
-			ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
-			ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
-			ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
-			ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
-			ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
-			ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
-			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
-	};
-	typemap sg_real_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
-	};
-	typemap sg_non_integer_types = {
-			ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
-			ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
-			ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
-			ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
-	};
+static const typemap sg_all_types = {
+		ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
+		ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
+		ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+		ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
+		ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
+		ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
+		ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
+		ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
+		ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
+		ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
+		ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+		ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
+		ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+		ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+		ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+		ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+		ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+		ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+		ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+		ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
+};
+static const typemap sg_vector_types = {
+		ADD_TYPE_TO_MAP(SGVector<float32_t>, TYPE::T_SGVECTOR_FLOAT32)
+		ADD_TYPE_TO_MAP(SGVector<float64_t>, TYPE::T_SGVECTOR_FLOAT64)
+		ADD_TYPE_TO_MAP(SGVector<floatmax_t>, TYPE::T_SGVECTOR_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGVector<int32_t>, TYPE::T_SGVECTOR_INT32)
+		ADD_TYPE_TO_MAP(SGVector<int64_t>, TYPE::T_SGVECTOR_INT64)
+};
+static const typemap sg_matrix_types = {
+		ADD_TYPE_TO_MAP(SGMatrix<float32_t>, TYPE::T_SGMATRIX_FLOAT32)
+		ADD_TYPE_TO_MAP(SGMatrix<float64_t>, TYPE::T_SGMATRIX_FLOAT64)
+		ADD_TYPE_TO_MAP(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
+		ADD_TYPE_TO_MAP(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
+		ADD_TYPE_TO_MAP(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
+};
+static const typemap sg_non_complex_types = {
+		ADD_TYPE_TO_MAP(bool, TYPE::T_BOOL)
+		ADD_TYPE_TO_MAP(char, TYPE::T_CHAR)
+		ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+		ADD_TYPE_TO_MAP(uint8_t, TYPE::T_UINT8)
+		ADD_TYPE_TO_MAP(int16_t , TYPE::T_INT16)
+		ADD_TYPE_TO_MAP(uint16_t , TYPE::T_UINT16)
+		ADD_TYPE_TO_MAP(int32_t , TYPE::T_INT32)
+		ADD_TYPE_TO_MAP(uint32_t , TYPE::T_UINT32)
+		ADD_TYPE_TO_MAP(int64_t , TYPE::T_INT64)
+		ADD_TYPE_TO_MAP(uint64_t , TYPE::T_UINT64)
+		ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+};
+static const typemap sg_real_types = {
+		ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+};
+static const typemap sg_non_integer_types = {
+		ADD_TYPE_TO_MAP(float32_t , TYPE::T_FLOAT32)
+		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
+		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
+		ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
+};
 #undef ADD_TYPE_TO_MAP
 
 	/** Checks the underlying type of an Any instance and
