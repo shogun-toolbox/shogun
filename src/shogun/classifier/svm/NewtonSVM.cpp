@@ -46,15 +46,8 @@ CNewtonSVM::~CNewtonSVM()
 {
 }
 
-void CNewtonSVM::init_model(CFeatures* data)
+void CNewtonSVM::init_model(CFeatures* data, CLabels* labels)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
-
 	ASSERT(features)
 
 	SGVector<float64_t> train_labels = binary_labels(m_labels)->get_labels();

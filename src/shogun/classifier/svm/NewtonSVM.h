@@ -93,7 +93,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(CFeatures* features, CLabels* labels);
 		virtual void iteration();
 
 	private:

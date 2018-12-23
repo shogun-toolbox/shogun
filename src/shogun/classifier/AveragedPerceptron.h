@@ -53,12 +53,15 @@ namespace shogun
 			learn_rate = r;
 		}
 
+<<<<<<< HEAD
 		/// set maximum number of iterations
 		inline void set_max_iter(int32_t i)
 		{
 			m_max_iterations = i;
 		}
 
+=======
+>>>>>>> Fix AveragedPerceptron
 		/** @return object name */
 		virtual const char* get_name() const
 		{
@@ -69,7 +72,8 @@ namespace shogun
 		/** registers and initializes parameters */
 		void init();
 
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(CFeatures* features, CLabels* labels);
+
 		virtual void iteration();
 
 	protected:

@@ -37,20 +37,11 @@ void CAveragedPerceptron::init()
 	    "Cached bias that contribute to the average.");
 }
 
-void CAveragedPerceptron::init_model(CFeatures* data)
+void CAveragedPerceptron::init_model(CFeatures* features, CLabels* labels)
 {
-	ASSERT(m_labels)
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
-	ASSERT(features)
-
 	SGVector<int32_t> train_labels = binary_labels(m_labels)->get_int_labels();
-	int32_t num_feat = features->get_dim_feature_space();
-	int32_t num_vec = features->get_num_vectors();
+	int32_t num_feat = features->as<CDotFeatures>()->get_dim_feature_space();
+	int32_t num_vec = features->as<CDotFeatures>()->get_num_vectors();
 	ASSERT(num_vec == train_labels.vlen)
 
 	SGVector<float64_t> w(num_feat);

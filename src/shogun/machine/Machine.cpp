@@ -112,7 +112,6 @@ void CMachine::fit(CFeatures* features, CLabels* labels)
 {
 	set_labels(labels);
 	REQUIRE(train(features), "Failed to fit machine %s\n", get_name());
-	set_labels(nullptr);
 }
 
 CLabels* CMachine::predict(CFeatures* features)

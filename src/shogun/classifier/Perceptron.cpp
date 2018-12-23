@@ -32,16 +32,9 @@ CPerceptron::~CPerceptron()
 {
 }
 
-void CPerceptron::init_model(CFeatures* data)
+void CPerceptron::init_model(CFeatures* features, CLabels* labels)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
-
-	int32_t num_feat = features->get_dim_feature_space();
+	int32_t num_feat = features->as<CDotFeatures>()->get_dim_feature_space();
 
 	SGVector<float64_t> w;
 	if (m_initialize_hyperplane)

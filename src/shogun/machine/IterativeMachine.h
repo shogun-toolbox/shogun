@@ -94,16 +94,24 @@ namespace shogun
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL)
 		{
-			if (data) 
+			train_machine(data, T::m_labels);
+			return true;
+		}
+
+		virtual void
+		train_machine(CFeatures* features, CLabels* labels)
+		{
+			if (features)
 			{
-				SG_REF(data);
+				SG_REF(features);
 				SG_UNREF(m_continue_features);
-				m_continue_features = data;
+				m_continue_features = features;
 			}
+			T::set_labels(labels);
 			m_current_iteration = 0;
 			m_complete = false;
-			init_model(data);
-			return continue_train();
+			init_model(features, labels);
+			continue_train();
 		}
 
 		/** To be overloaded by sublcasses to implement custom single
@@ -113,7 +121,16 @@ namespace shogun
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(CFeatures* data = NULL) = 0;
+		virtual void init_model(CFeatures* data = NULL)
+		{
+			SG_SNOTIMPLEMENTED
+		}
+
+		// FIXME: this is a temporary implementation during refactor
+		virtual void init_model(CFeatures* features, CLabels* labels)
+		{
+			SG_SNOTIMPLEMENTED
+		}
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states
