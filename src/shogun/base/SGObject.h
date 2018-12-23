@@ -692,6 +692,20 @@ public:
 			demangled_type<T>().c_str());
 		return nullptr;
 	}
+
+	template <class T> const T* as() const
+	{
+		auto c = dynamic_cast<const T*>(this);
+		if (c)
+			return c;
+
+		SG_SERROR(
+			"Object of type %s cannot be converted to type %s.\n",
+			demangled_type<std::remove_pointer_t<decltype(this)>>().c_str(),
+			demangled_type<T>().c_str());
+		return nullptr;
+	}
+
 #ifndef SWIG
 	/**
 	  * Get parameters observable
