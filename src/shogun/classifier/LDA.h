@@ -174,13 +174,18 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		                           std::is_floating_point<ST>::value>>
 		bool train_machine_templated(CDenseFeatures<ST>* data);
 
+		template <
+		    typename ST, typename U = typename std::enable_if_t<
+		                     std::is_floating_point<ST>::value>>
+		void train_machine_templated(CDenseFeatures<ST>* features, CLabels* labels);
+
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
 		 * @param features training data
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd(CDenseFeatures<ST>* data);
+		void solver_svd(CDenseFeatures<ST>* data, CMulticlassLabels* labels);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -189,7 +194,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic(CDenseFeatures<ST>* data);
+		void solver_classic(CDenseFeatures<ST>* data, CMulticlassLabels* labels);
 
 	protected:
 

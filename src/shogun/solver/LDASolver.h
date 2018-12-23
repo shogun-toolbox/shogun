@@ -87,7 +87,7 @@ namespace shogun
 			compute_within_cov();
 		}
 
-		~LDASolver()
+		virtual ~LDASolver()
 		{
 			SG_UNREF(m_features);
 			SG_UNREF(m_labels);
