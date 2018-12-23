@@ -98,9 +98,9 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 	return max_val;
 }
 
-bool CLPBoost::train_machine(CFeatures* data)
+virtual void CLPBoost::train_machine(CFeatures* features, CLabels* labels);
 {
-	ASSERT(m_labels)
+	ASSERT(labels)
 	ASSERT(features)
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
