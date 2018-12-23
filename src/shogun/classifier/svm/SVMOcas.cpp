@@ -49,27 +49,25 @@ CSVMOcas::~CSVMOcas()
 {
 }
 
-bool CSVMOcas::train_machine(CFeatures* data)
+void CSVMOcas::train_machine(CFeatures* features, CLabels* labels)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled())
 
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
+	ASSERT(labels)
+	ASSERT(labels->get_label_type() == LT_BINARY)
 	ASSERT(features)
+	this->set_features(features->as<CDotFeatures>());
 
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);
+	
+	auto bin_labels = binary_labels(labels);
 	for (int32_t i=0; i<num_vec; i++)
-		lab[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		lab[i] = bin_labels->get_label(i);
 
-	current_w = SGVector<float64_t>(features->get_dim_feature_space());
+	current_w = SGVector<float64_t>(
+	    this->features->get_dim_feature_space());
 	current_w.zero();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
@@ -140,8 +138,6 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	old_w=NULL;
 
 	set_w(current_w);
-
-	return true;
 }
 
 /*----------------------------------------------------------------------------------

@@ -198,7 +198,7 @@ namespace shogun
 		SGVector<float64_t> get_linear_term();
 
 		/** set the linear term for qp */
-		void init_linear_term(CLabels* labels);
+		void init_linear_term(const CLabels* labels);
 
 		/** check if linear_term been inited
 		 * @return if linear_term been inited
@@ -217,11 +217,9 @@ namespace shogun
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
+		 * @param labels training labels
 		 *
-		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data = NULL);
-
 		virtual void train_machine(CFeatures* features, CLabels* labels);
 
 	private:

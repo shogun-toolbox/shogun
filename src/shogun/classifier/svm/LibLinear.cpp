@@ -68,16 +68,8 @@ CLibLinear::~CLibLinear()
 {
 }
 
-bool CLibLinear::train_machine(CFeatures* features)
-{
-	ASSERT(m_labels);
-	train_machine(features, m_labels);
-	return true;
-}
-
 void CLibLinear::train_machine(CFeatures* features, CLabels* labels)
 {
-
 	init_linear_term(labels);
 
 	auto dot_features = features->as<CDotFeatures>();
@@ -137,7 +129,7 @@ void CLibLinear::train_machine(CFeatures* features, CLabels* labels)
 	double Cp = get_C1();
 	double Cn = get_C2();
 
-	auto bin_labels = binary_labels(m_labels);
+	auto bin_labels = binary_labels(labels);
 	for (int32_t i = 0; i < prob.l; i++)
 	{
 		prob.y[i] = bin_labels->get_int_label(i);
@@ -1394,7 +1386,7 @@ SGVector<float64_t> CLibLinear::get_linear_term()
 	return m_linear_term;
 }
 
-void CLibLinear::init_linear_term(CLabels* labels)
+void CLibLinear::init_linear_term(const CLabels* labels)
 {
 	m_linear_term = SGVector<float64_t>(labels->get_num_labels());
 	linalg::set_const(m_linear_term, -1.0);
