@@ -34,6 +34,16 @@ CPerceptron::~CPerceptron()
 
 void CPerceptron::init_model(CFeatures* features, CLabels* labels)
 {
+	set_labels(const_cast<CLabels*>(labels));
+
+	const auto data = const_cast<CFeatures*>(features);
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
+		set_features((CDotFeatures*) data);
+	}
+
 	int32_t num_feat = features->as<CDotFeatures>()->get_dim_feature_space();
 
 	SGVector<float64_t> w;
