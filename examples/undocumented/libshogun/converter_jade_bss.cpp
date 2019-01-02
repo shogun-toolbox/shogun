@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Soeren Sonnenburg, Evgeniy Andreev, Viktor Gal, 
+ * Authors: Kevin Hughes, Soeren Sonnenburg, Evgeniy Andreev, Viktor Gal,
  *          Bjoern Esser, Pan Deng
  */
 
@@ -71,7 +71,7 @@ void test()
 	CJade* jade = new CJade();
 	SG_REF(jade);
 
-	CFeatures* signals = jade->apply(mixed_signals);
+	CFeatures* signals = jade->transform(mixed_signals);
 	SG_REF(signals);
 
 	// Close to a permutation matrix (with random scales)

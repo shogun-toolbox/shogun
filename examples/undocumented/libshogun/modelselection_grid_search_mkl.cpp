@@ -65,8 +65,7 @@ void test()
 		matrix.matrix[i]=CMath::randn_double();
 
 	/* create feature object */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(matrix);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (matrix);
 
 	/* create combined features */
 	CCombinedFeatures* comb_features=new CCombinedFeatures();

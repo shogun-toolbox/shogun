@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	dmaps->set_target_dim(2);
 	dmaps->set_t(10);
 	dmaps->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = dmaps->embed(features);
+	auto embedding = dmaps->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(dmaps);
 	SG_UNREF(features);

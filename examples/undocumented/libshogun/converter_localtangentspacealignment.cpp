@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	ltsa->set_target_dim(2);
 	ltsa->set_k(4);
 	ltsa->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = ltsa->embed(features);
+	auto embedding = ltsa->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(ltsa);
 	SG_UNREF(features);

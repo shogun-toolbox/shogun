@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Saurabh Mahindre, Soeren Sonnenburg, Heiko Strathmann,
  *          Evgeniy Andreev, Chiyuan Zhang, Thoralf Klein, Sergey Lisitsyn
  */
 
@@ -62,8 +62,7 @@ int main(int argc, char **argv)
 	}
 
 	/* create features, SG_REF to avoid deletion */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(data);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (data);
 	SG_REF(features);
 
 	/* create labels for cluster centers */

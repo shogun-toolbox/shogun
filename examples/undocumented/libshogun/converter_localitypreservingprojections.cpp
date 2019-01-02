@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	lpp->set_target_dim(2);
 	lpp->set_k(10);
 	lpp->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = lpp->embed(features);
+	auto embedding = lpp->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(lpp);
 	SG_UNREF(features);

@@ -54,9 +54,8 @@ int main(int argc, char** argv)
 	SG_REF(labels);
 
 	// create train features
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(featureMatrix);
 	SG_REF(features);
-	features->set_feature_matrix(featureMatrix);
 
 	// create linear kernel
 	CLinearKernel* kernel = new CLinearKernel();
@@ -77,7 +76,7 @@ int main(int argc, char** argv)
 	See BinaryLabels documentation for details*/
 	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
 	sigmoid_calibration->fit_binary(
-	    out_labels, labels->as<CBinaryLabels>();
+	    out_labels, labels->as<CBinaryLabels>());
 	CBinaryLabels* calibrated_labels =
 	    sigmoid_calibration->calibrate_binary(out_labels);
 

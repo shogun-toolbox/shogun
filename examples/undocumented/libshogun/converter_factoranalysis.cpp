@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CFactorAnalysis* fa = new CFactorAnalysis();
-	CDenseFeatures<double>* embedding = fa->embed(features);
+	auto embedding = fa->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(fa);
 	SG_UNREF(features);

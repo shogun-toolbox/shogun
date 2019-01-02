@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	mds->set_target_dim(2);
 	mds->set_landmark(true);
 	mds->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = mds->embed(features);
+	auto embedding = mds->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(mds);
 	SG_UNREF(features);

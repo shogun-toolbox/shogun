@@ -119,8 +119,7 @@ int main(int argc, char** argv)
 
     // create three 2-dimensional vectors
     // shogun will now own the matrix created
-    CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-    features->set_feature_matrix(matrix);
+    CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
     // create reverse linear kernel
     CReverseLinearKernel* kernel = new CReverseLinearKernel();

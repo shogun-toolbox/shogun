@@ -55,9 +55,8 @@ void test_general()
 	gen_rand_data(feat, lab);
 
 	// Create features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
 	SG_REF(features);
-	features->set_feature_matrix(feat);
 
 	// Create a StreamingDenseFeatures object which uses the above as input;
 	// labels (float64_t*) are optional
@@ -121,9 +120,8 @@ void test_get_streamed_features()
 	gen_rand_data(feat, lab);
 
 	// Create features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
 	SG_REF(features);
-	features->set_feature_matrix(feat);
 
 	// Create a StreamingDenseFeatures object which uses the above as input;
 	// labels (float64_t*) are optional
@@ -160,9 +158,8 @@ void test_get_streamed_features_too_many()
 	gen_rand_data(feat, lab);
 
 	// Create features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
 	SG_REF(features);
-	features->set_feature_matrix(feat);
 
 	// Create a StreamingDenseFeatures object which uses the above as input;
 	// labels (float64_t*) are optional

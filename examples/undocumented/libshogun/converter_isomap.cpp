@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	isomap->set_landmark(false);
 	isomap->set_k(4);
 	isomap->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = isomap->embed(features);
+	auto embedding = isomap->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(isomap);
 	SG_UNREF(features);
