@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	klle->set_k(4);
 	klle->set_kernel(kernel);
 	klle->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = klle->embed(features);
+	auto embedding = klle->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(klle);
 	SG_UNREF(features);

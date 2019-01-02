@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	lem->set_target_dim(2);
 	lem->set_k(10);
 	lem->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = lem->embed(features);
+	auto embedding = lem->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(lem);
 	SG_UNREF(features);

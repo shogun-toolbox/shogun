@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Fernando Iglesias, Bjoern Esser, Pan Deng
  */
 
@@ -37,7 +37,7 @@ int main()
 	SG_REF(spe);
 
 	// Apply embedding with global strategy
-	CDenseFeatures< float64_t >* embedding = spe->embed(features);
+	auto embedding = spe->transform(features);
 	SG_REF(embedding);
 
 	// Set parameters for local strategy
@@ -46,7 +46,7 @@ int main()
 
 	// Apply embedding with local strategy
 	SG_UNREF(embedding);
-	embedding = spe->embed(features);
+	embedding = spe->transform(features);
 	SG_REF(embedding);
 
 	// Free memory

@@ -8,7 +8,7 @@
 #include <shogun/base/init.h>
 #include <iostream>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/exception/ShogunException.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>

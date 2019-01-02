@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	npe->set_target_dim(2);
 	npe->set_k(15);
 	npe->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = npe->embed(features);
+	auto embedding = npe->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(npe);
 	SG_UNREF(features);

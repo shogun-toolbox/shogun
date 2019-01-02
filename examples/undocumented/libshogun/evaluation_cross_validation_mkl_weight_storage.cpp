@@ -94,8 +94,7 @@ void test_mkl_cross_validation()
 	CLabels* labels=new CBinaryLabels(lab);
 
 	/* create train features */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(feat);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
 	SG_REF(features);
 
 	/* create combined features */

@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	hlle->set_target_dim(2);
 	hlle->set_k(8);
 	hlle->parallel->set_num_threads(4);
-	CDenseFeatures<double>* embedding = hlle->embed(features);
+	auto embedding = hlle->transform(features);
 	SG_UNREF(embedding);
 	SG_UNREF(hlle);
 	SG_UNREF(features);

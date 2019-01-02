@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Michele Mazzoni, Roman Votyakov, Heiko Strathmann, Soumyajit De, 
+ * Authors: Michele Mazzoni, Roman Votyakov, Heiko Strathmann, Soumyajit De,
  *          Viktor Gal
  */
 
@@ -70,8 +70,7 @@ void test()
 		matrix.matrix[i]=CMath::randn_double();
 
 	/* create num_feautres 2-dimensional vectors */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	/* create combined features */
 	CCombinedFeatures* comb_features=new CCombinedFeatures();
