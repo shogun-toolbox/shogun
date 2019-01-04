@@ -52,6 +52,8 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
+			  m_model_selection(MS_NOT_AVAILABLE),
+			  m_gradient(GRADIENT_NOT_AVAILABLE),
 		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
