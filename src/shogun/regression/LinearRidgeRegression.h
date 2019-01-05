@@ -63,13 +63,6 @@ namespace shogun
 		/** default constructor */
 		CLinearRidgeRegression();
 
-		/** constructor
-		 *
-		 * @param tau regularization constant tau
-		 * @param data training data
-		 * @param lab labels
-		 */
-		CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab);
 		virtual ~CLinearRidgeRegression() {}
 
 		/** set regularization constant
@@ -107,6 +100,9 @@ namespace shogun
 	protected:
 		template <typename T>
 		bool train_machine_templated(const CDenseFeatures<T>* feats);
+		template <typename T>
+		void train_machine_templated(
+			const CDenseFeatures<T>* features, CLabels* labels);
 
 	private:
 		void init();

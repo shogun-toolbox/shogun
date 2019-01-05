@@ -19,17 +19,6 @@ CLinearRidgeRegression::CLinearRidgeRegression()
 	init();
 }
 
-CLinearRidgeRegression::CLinearRidgeRegression(
-    float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
-    : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
-{
-	init();
-
-	set_tau(tau);
-	set_labels(lab);
-	set_features(data);
-}
-
 void CLinearRidgeRegression::init()
 {
 	set_tau(1e-6);
@@ -41,13 +30,13 @@ void CLinearRidgeRegression::init()
 }
 
 template <typename T>
-bool CLinearRidgeRegression::train_machine_templated(
-    const CDenseFeatures<T>* feats)
+void CLinearRidgeRegression::train_machine_templated(
+    const CDenseFeatures<T>* feats, CLabels* labels)
 {
 	auto N = feats->get_num_vectors();
 	auto D = feats->get_num_features();
 
-	auto y = regression_labels(m_labels)->get_labels().as<T>();
+	auto y = regression_labels(labels)->get_labels().as<T>();
 	T tau = m_tau;
 
 	SGVector<T> x_mean;
@@ -91,8 +80,6 @@ bool CLinearRidgeRegression::train_machine_templated(
 		float64_t intercept = y_mean - linalg::dot(w, x_mean);
 		set_bias(intercept);
 	}
-
-	return true;
 }
 
 bool CLinearRidgeRegression::load(FILE* srcfile)
@@ -108,3 +95,13 @@ bool CLinearRidgeRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
+<<<<<<< HEAD
+=======
+
+template void CLinearRidgeRegression::train_machine_templated<floatmax_t>(
+    const CDenseFeatures<floatmax_t>* features, CLabels* labels);
+template void CLinearRidgeRegression::train_machine_templated<float64_t>(
+    const CDenseFeatures<float64_t>* features, CLabels* labels);
+template void CLinearRidgeRegression::train_machine_templated<float32_t>(
+    const CDenseFeatures<float32_t>* features, CLabels* labels);
+>>>>>>> 30db0180c... LRR f
