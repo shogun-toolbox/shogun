@@ -94,28 +94,17 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 
 bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 {
+	train_machine(train_data, m_labels);
+	return true;
+}
 
-	CDotFeatures* tmp_data;
+void CDomainAdaptationSVMLinear::train_machine(CFeatures* features, CLabels* labels)
+{
+	CDotFeatures* tmp_data = features->as<CDotFeatures>();
 
-	if (m_labels->get_label_type() != LT_BINARY)
+	if (labels->get_label_type() != LT_BINARY)
 		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n")
 
-	if (train_data)
-	{
-		if (!train_data->has_property(FP_DOT))
-			SG_ERROR("DotFeatures expected\n")
-
-		if (((CBinaryLabels*) m_labels)->get_num_labels() != train_data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
-
-		tmp_data = (CDotFeatures*) train_data;
-	}
-	else
-	{
-		tmp_data = features;
-	}
-
-	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
 	int32_t num_training_points = labels->get_num_labels();
 
 	std::vector<float64_t> lin_term = std::vector<float64_t>(num_training_points);
@@ -141,8 +130,6 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 
     }
 
-	SG_UNREF(labels);
-
 	/*
 	// warm-start liblinear
 	//TODO test this code, measure speed-ups
@@ -164,20 +151,10 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
     SG_FREE(tmp_w_copy);
 	*/
 
-	bool success = false;
-
 	//train SVM
-	if (train_data)
-	{
-		success = CLibLinear::train_machine(train_data);
-	} else {
-		success = CLibLinear::train_machine();
-	}
+	CLibLinear::train_machine(features, labels);
 
 	//ASSERT(presvm)
-
-	return success;
-
 }
 
 
