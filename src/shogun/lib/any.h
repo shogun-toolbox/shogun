@@ -44,12 +44,13 @@
 #include <string>
 #include <typeinfo>
 #include <type_traits>
-#ifdef HAVE_CXA_DEMANGLE
-#include <cxxabi.h>
-#endif
 
-namespace shogun
-{
+namespace shogun {
+
+	namespace any_detail{
+		std::string demangled_type_helper(const char *name);
+	}
+
 	/** Converts compiler-dependent name of class to
 	 * something human readable.
 	 * @return human readable name of class
@@ -57,17 +58,14 @@ namespace shogun
 	template <typename T>
 	std::string demangled_type()
 	{
-#ifdef HAVE_CXA_DEMANGLE
-		size_t length;
-		int status;
-		char* demangled =
-		    abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
-		std::string demangled_string(demangled);
-		free(demangled);
-#else
-		std::string demangled_string(typeid(T).name());
-#endif
-		return demangled_string;
+		const char* name = typeid(T).name();
+
+		return any_detail::demangled_type_helper(name);
+	}
+
+    template <typename T = void>
+	std::string demangled_type(const char* name) {
+		return any_detail::demangled_type_helper(name);
 	}
 
 	enum class PolicyType

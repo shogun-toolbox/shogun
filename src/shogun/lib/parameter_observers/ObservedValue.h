@@ -183,7 +183,7 @@ namespace shogun
 	 * @param value time point we want to convert
 	 * @return the time point converted to milliseconds
 	 */
-	SG_FORCED_INLINE double convert_to_millis(const time_point& value)
+	SG_FORCED_INLINE auto convert_to_millis(const time_point& value)
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
 		           value.time_since_epoch())

@@ -32,6 +32,7 @@ namespace shogun
 	/** parameter properties */
 	enum class ParameterProperties
 	{
+		NONE = 0,
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
 		MODEL = 1u << 2
@@ -51,7 +52,9 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
-		      m_attribute_mask(ParameterProperties())
+			  m_model_selection(MS_NOT_AVAILABLE),
+			  m_gradient(GRADIENT_NOT_AVAILABLE),
+		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
 		/** Constructor
@@ -71,7 +74,7 @@ namespace shogun
 		    : m_description(description), m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
-			m_attribute_mask = ParameterProperties();
+			m_attribute_mask = ParameterProperties::NONE;
 			if (hyperparameter)
 				m_attribute_mask |= ParameterProperties::HYPER;
 			if (gradient)
@@ -117,6 +120,14 @@ namespace shogun
 		{
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
+		}
+		bool has_property(ParameterProperties other) const
+		{
+			return static_cast<bool>(m_attribute_mask & other);
+		}
+		bool compare_mask(ParameterProperties other) const
+		{
+			return m_attribute_mask == other;
 		}
 
 	private:

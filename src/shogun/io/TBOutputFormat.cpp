@@ -39,6 +39,7 @@
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/tfhistogram/histogram.h>
+#include <shogun/lib/type_case.h>
 #include <vector>
 
 using namespace shogun;
@@ -83,28 +84,11 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	summaryValue->set_tag(value.first.get_name());
 	summaryValue->set_node_name(node_name);
 
-	if (value.first.get_value().type_info().hash_code() ==
-	    typeid(int8_t).hash_code())
-	{
-		summaryValue->set_simple_value(
-		    any_cast<int8_t>(value.first.get_value()));
-	}
-	CHECK_TYPE(uint8_t)
-	CHECK_TYPE(int16_t)
-	CHECK_TYPE(uint16_t)
-	CHECK_TYPE(int32_t)
-	CHECK_TYPE(uint32_t)
-	CHECK_TYPE(int64_t)
-	CHECK_TYPE(uint64_t)
-	CHECK_TYPE(float32_t)
-	CHECK_TYPE(float64_t)
-	CHECK_TYPE(floatmax_t)
-	CHECK_TYPE(char)
-	else
-	{
-		SG_ERROR(
-		    "Unsupported type %s", value.first.get_value().type_info().name());
-	}
+	auto write_summary = [&summaryValue=summaryValue](auto value) {
+		summaryValue->set_simple_value(value);
+	};
+
+	sg_any_dispatch(value.first.get_value(), sg_all_types, write_summary);
 
 	return e;
 }
