@@ -104,7 +104,7 @@ SGVector<float64_t> CDenseLabels::get_labels_copy() const
 	return result;
 }
 
-SGVector<int32_t> CDenseLabels::get_int_labels()
+SGVector<int32_t> CDenseLabels::get_int_labels() const
 {
 	SGVector<int32_t> intlab(get_num_labels());
 
@@ -194,7 +194,7 @@ float64_t CDenseLabels::get_label(int32_t idx) const
 	return m_labels.vector[real_num];
 }
 
-int32_t CDenseLabels::get_int_label(int32_t idx)
+int32_t CDenseLabels::get_int_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())

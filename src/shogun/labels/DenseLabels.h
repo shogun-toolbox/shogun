@@ -127,7 +127,7 @@ namespace shogun
 		 * @return value of label
 		 */
 		template<typename ST>
-		ST get_label_t(int32_t idx)
+		ST get_label_t(int32_t idx) const
 		{
 			REQUIRE(idx<get_num_labels(), "The provided index (%d) is out of bounds (the last label has index (%d)).  "
 				"Please ensure that you're using a valid index number.", idx, get_num_labels())
@@ -144,7 +144,7 @@ namespace shogun
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		int32_t get_int_label(int32_t idx);
+		int32_t get_int_label(int32_t idx) const;
 
 		/** Gets a copy of the labels.
 		 *
@@ -160,7 +160,7 @@ namespace shogun
 		 * set or if ST is not of type float64_t
 		 */
 		template<typename ST>
-		SGVector<ST> get_labels_t()
+		SGVector<ST> get_labels_t() const
 		{
 			if (m_subset_stack->has_subsets())
 				return get_labels_copy_t<ST>();
@@ -179,7 +179,7 @@ namespace shogun
 		 * @return labels
 		 */
 		template<typename ST>
-		SGVector<ST> get_labels_copy_t()
+		SGVector<ST> get_labels_copy_t() const
 		{
 			if (!m_subset_stack->has_subsets())
 			{
@@ -237,7 +237,7 @@ namespace shogun
 		 *
 		 * @return INT labels
 		 */
-		SGVector<int32_t> get_int_labels();
+		SGVector<int32_t> get_int_labels() const;
 
 		/** set INT labels
 		 *
@@ -283,7 +283,7 @@ namespace shogun
 * is set
 */
 template <>
-inline SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
+inline SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>() const
 {
 	if (m_subset_stack->has_subsets())
 		return get_labels_copy_t<float64_t>();
