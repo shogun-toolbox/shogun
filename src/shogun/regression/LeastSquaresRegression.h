@@ -8,13 +8,7 @@
 #ifndef _LEASTSQUARESREGRESSION_H__
 #define _LEASTSQUARESREGRESSION_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/regression/Regression.h>
 #include <shogun/regression/LinearRidgeRegression.h>
-
-#ifdef HAVE_LAPACK
-
-#include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {
@@ -31,12 +25,6 @@ namespace shogun
 		/** default constructor */
 		CLeastSquaresRegression();
 
-		/** constructor
-		 *
-		 * @param data training data
-		 * @param lab labels
-		 */
-		CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab);
 		virtual ~CLeastSquaresRegression() {}
 
 		/** get classifier type
@@ -55,5 +43,4 @@ namespace shogun
 		void init();
 };
 }
-#endif // HAVE_LAPACK
 #endif // _LEASTSQUARESREGRESSION_H__
