@@ -209,14 +209,10 @@ protected:
 		int32_t &imax, ST& vmax);
 	#endif
 
-	/**
-	* A templated specialization of the train_machine method
-	* @param data training data
-	* @see train_machine
-	*/
 	template <typename ST, typename U = typename std::enable_if_t<
 		                       std::is_floating_point<ST>::value>>
-	bool train_machine_templated(CDenseFeatures<ST>* data);
+	void train_machine_templated(
+		const CDenseFeatures<ST>* features, CLabels* labels);
 
 private:
 	/** Initialize and register parameters */

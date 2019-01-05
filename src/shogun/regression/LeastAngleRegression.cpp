@@ -103,12 +103,24 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 }
 
 template <typename ST, typename U>
-bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
+<<<<<<< HEAD
+bool CLeastAngleRegression::train_machine_templated(
+	const CDenseFeatures<ST>* data)
+{
+	train_machine_templated(data, m_labels);
+	return true;
+}
+
+template <typename ST, typename U>
+=======
+>>>>>>> 47e1ee350... LeastAngleRegression f
+void CLeastAngleRegression::train_machine_templated(
+	const CDenseFeatures<ST>* features, CLabels* labels)
 {
 	std::vector<std::vector<ST>> m_beta_path_t;		
 
-	int32_t n_fea = data->get_num_features();
-	int32_t n_vec = data->get_num_vectors();
+	int32_t n_fea = features->get_num_features();
+	int32_t n_vec = features->get_num_vectors();
 
 	bool lasso_cond = false;
 	bool stop_cond = false;
@@ -121,14 +133,14 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	m_is_active.resize(n_fea);
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
-	SGVector<ST> y = regression_labels(m_labels)->template get_labels_t<ST>();
+	SGVector<ST> y = regression_labels(labels)->template get_labels_t<ST>();
 	typename SGVector<ST>::EigenVectorXtMap map_y(y.vector, y.size());
 
 	// transpose(X) is more convenient to work with since we care
 	// about features here. After transpose, each row will be a data
 	// point while each column corresponds to a feature
 	SGMatrix<ST> X (n_vec, n_fea);
-	typename SGMatrix<ST>::EigenMatrixXtMap map_Xr = data->get_feature_matrix();
+	typename SGMatrix<ST>::EigenMatrixXtMap map_Xr = features->get_feature_matrix();
 	typename SGMatrix<ST>::EigenMatrixXtMap map_X(X.matrix, n_vec, n_fea);
 	map_X = map_Xr.transpose();
 
@@ -354,8 +366,6 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		    "iterations.\n",
 		    max_corr / n_vec, get_epsilon(), nloop);
 	}
-
-	return true;
 }
 
 template <typename ST>
@@ -420,9 +430,18 @@ SGMatrix<ST> CLeastAngleRegression::cholesky_delete(SGMatrix<ST>& R, int32_t i_k
 	return nR;
 }
 
-template bool CLeastAngleRegression::train_machine_templated<floatmax_t>(CDenseFeatures<floatmax_t> * data);
-template bool CLeastAngleRegression::train_machine_templated<float64_t>(CDenseFeatures<float64_t> * data);
-template bool CLeastAngleRegression::train_machine_templated<float32_t>(CDenseFeatures<float32_t> * data);
-template SGMatrix<float32_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
-template SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
-template SGMatrix<floatmax_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active, SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);
+template void CLeastAngleRegression::train_machine_templated<floatmax_t>(
+    const CDenseFeatures<floatmax_t>* features, CLabels* labels);
+template void CLeastAngleRegression::train_machine_templated<float64_t>(
+    const CDenseFeatures<float64_t>* features, CLabels* labels);
+template void CLeastAngleRegression::train_machine_templated<float32_t>(
+    const CDenseFeatures<float32_t>* features, CLabels* labels);
+template SGMatrix<float32_t> CLeastAngleRegression::cholesky_insert(
+    const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active,
+    SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
+template SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(
+    const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active,
+    SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
+template SGMatrix<floatmax_t> CLeastAngleRegression::cholesky_insert(
+    const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active,
+    SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);
