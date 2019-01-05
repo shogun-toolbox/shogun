@@ -24,16 +24,6 @@ CLibLinearRegression::CLibLinearRegression() :
 	init_defaults();
 }
 
-CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLabels* labs) :
-	CLinearMachine()
-{
-	register_parameters();
-	init_defaults();
-	set_C(C);
-	set_features(feats);
-	set_labels(labs);
-}
-
 void CLibLinearRegression::init_defaults()
 {
 	set_C(1.0);
@@ -42,7 +32,6 @@ void CLibLinearRegression::init_defaults()
 	set_max_iter(10000);
 	set_use_bias(false);
 	set_liblinear_regression_type(L2R_L1LOSS_SVR_DUAL);
-	register_parameters();
 }
 
 void CLibLinearRegression::register_parameters()
@@ -75,18 +64,13 @@ CLibLinearRegression::~CLibLinearRegression()
 {
 }
 
-bool CLibLinearRegression::train_machine(CFeatures* data)
+void CLibLinearRegression::train_machine(CFeatures* features, CLabels* labels)
 {
+	ASSERT(labels->get_label_type()==LT_REGRESSION)
 
-	if (data)
-		set_features((CDotFeatures*)data);
-
-	ASSERT(features)
-	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)
-
-	auto num_train_labels=m_labels->get_num_labels();
-	auto num_feat=features->get_dim_feature_space();
-	auto num_vec=features->get_num_vectors();
+	auto num_train_labels = labels->get_num_labels();
+	auto num_feat = features->as<CDotFeatures>()->get_dim_feature_space();
+	auto num_vec = features->get_num_vectors();
 
 	if (num_vec!=num_train_labels)
 	{
@@ -114,10 +98,9 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 		prob.n=w.vlen;
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+0));
 	}
-	prob.l=num_vec;
-	prob.x=features;
-	auto labels = regression_labels(m_labels);
-	prob.y = labels->get_labels();
+	prob.l = num_vec;
+	prob.x = features->as<CDotFeatures>();
+	prob.y = regression_labels(labels)->get_labels();
 
 	switch (m_liblinear_regression_type)
 	{
@@ -149,8 +132,6 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	set_w(w);
 	if (prob.use_bias)
 		set_bias(w.vector[prob.n - 1]);
-
-	return true;
 }
 
 // A coordinate descent algorithm for

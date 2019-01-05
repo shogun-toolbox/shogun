@@ -47,13 +47,6 @@ class CLibLinearRegression : public CLinearMachine
 		/** default constructor  */
 		CLibLinearRegression();
 
-		/** standard constructor
-		 * @param C C regularization constant value
-		 * @param features features
-		 * @param labs labels
-		 */
-		CLibLinearRegression(float64_t C, CDotFeatures* features, CLabels* labs);
-
 		/** destructor */
 		virtual ~CLibLinearRegression();
 
@@ -147,7 +140,7 @@ class CLibLinearRegression : public CLinearMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual void train_machine(CFeatures* features, CLabels* labels);
 
 private:
 		/** solve svr with l1 or l2 loss */
