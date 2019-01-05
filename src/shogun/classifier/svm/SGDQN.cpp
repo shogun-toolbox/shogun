@@ -30,17 +30,6 @@ CSGDQN::CSGDQN(float64_t C)
 	C2=C;
 }
 
-CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
-{
-	init();
-	C1=C;
-	C2=C;
-
-	set_features(traindat);
-	set_labels(trainlab);
-}
-
 CSGDQN::~CSGDQN()
 {
 	SG_UNREF(loss);
@@ -77,28 +66,20 @@ void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c
 	}
 }
 
-bool CSGDQN::train(CFeatures* data)
+void CSGDQN::train_machine(CFeatures* features, CLabels* labels)
 {
 
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	ASSERT(labels->get_label_type() == LT_BINARY)
+	auto dot_features = features->as<CDotFeatures>();
+	auto bin_labels = binary_labels(labels);
 
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
-	}
-
-	ASSERT(features)
-
-	int32_t num_train_labels=m_labels->get_num_labels();
+	int32_t num_train_labels = labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels)
 	ASSERT(num_vec>0)
 
-	SGVector<float64_t> w(features->get_dim_feature_space());
+	SGVector<float64_t> w(dot_features->get_dim_feature_space());
 	w.zero();
 
 	float64_t lambda= 1.0/(C1*num_vec);
@@ -137,11 +118,11 @@ bool CSGDQN::train(CFeatures* data)
 		bool updateB=false;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
+			SGVector<float64_t> v = dot_features->get_computed_dot_feature_vector(i);
 			ASSERT(w.vlen==v.vlen)
 			float64_t eta = 1.0/t;
-			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
-			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
+			float64_t y = bin_labels->get_label(i);
+			float64_t z = y * dot_features->dense_dot(i, w.vector, w.vlen);
 			if(updateB==true)
 			{
 				if (z < 1 || is_log_loss)
@@ -150,7 +131,7 @@ bool CSGDQN::train(CFeatures* data)
 					float64_t loss_1=-loss->first_derivative(z,1);
 					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
 					SGVector<float64_t>::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
-					float64_t z2 = y * features->dense_dot(i, w.vector, w.vlen);
+					float64_t z2 = y * dot_features->dense_dot(i, w.vector, w.vlen);
 					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
 					{
@@ -186,8 +167,6 @@ bool CSGDQN::train(CFeatures* data)
 	SG_FREE(B);
 
 	set_w(w);
-
-	return true;
 }
 
 

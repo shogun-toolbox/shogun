@@ -35,16 +35,6 @@ class CSGDQN : public CLinearMachine
 		 */
 		CSGDQN(float64_t C);
 
-		/** constructor
-		 *
-		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab labels for training features
-		 */
-		CSGDQN(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
-
 		virtual ~CSGDQN();
 
 		/** get classifier type
@@ -55,13 +45,12 @@ class CSGDQN : public CLinearMachine
 
 		/** train classifier
 		 *
-		 * @param data training data (parameter can be avoided if distance or
+		 * @param features training data (parameter can be avoided if distance or 
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
-		 *
-		 * @return whether training was successful
+		 * @param labels training labels
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual void train_machine(CFeatures* features, CLabels* labels);
 
 		/** set C
 		 *
