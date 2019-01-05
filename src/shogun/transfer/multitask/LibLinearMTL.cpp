@@ -65,22 +65,16 @@ CLibLinearMTL::~CLibLinearMTL()
 
 bool CLibLinearMTL::train_machine(CFeatures* data)
 {
+	train_machine(data, m_labels);
+	return true;
+}
 
-	ASSERT(m_labels)
-
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-
-		set_features((CDotFeatures*) data);
-	}
-	ASSERT(features)
+void CLibLinearMTL::train_machine(CFeatures* features, CLabels* labels)
+{
 	m_labels->ensure_valid();
 
-
 	int32_t num_train_labels=m_labels->get_num_labels();
-	int32_t num_feat=features->get_dim_feature_space();
+	int32_t num_feat = features->as<CDotFeatures>()->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	if (num_vec!=num_train_labels)
@@ -109,7 +103,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 		memset(training_w, 0, sizeof(float64_t)*(num_feat+0));
 	}
 	prob.l=num_vec;
-	prob.x=features;
+	prob.x=features->as<CDotFeatures>();
 	prob.y=SG_MALLOC(float64_t, prob.l);
 	prob.use_bias=use_bias;
 
@@ -143,8 +137,6 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat; i++)
 		w[i] = training_w[i];
 	set_w(w);
-
-	return true;
 }
 
 // A coordinate descent algorithm for

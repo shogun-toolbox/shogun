@@ -294,6 +294,7 @@ class CLibLinearMTL : public CLinearMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
+		virtual void train_machine(CFeatures* features, CLabels* labels);
 
 	private:
 		/** set up parameters */
