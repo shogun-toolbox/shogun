@@ -206,61 +206,55 @@ template<class T> class SGVector : public SGReferencedData
 		/** Fill vector with zeros */
 		void zero();
 
-		/**
+	 /**
 	  * Fill matrix with uniformly distributed randoms
 	  * Float Types: [0, 1)
 	  * Int Types: std::numeric_limit<T>::(min->max)
 	  **/
-		// vectorized available
 		template <typename U>
-		using enable_simd_float = std::enable_if_t<is_any_of_v<U, float64_t>>;
+		using enable_simd_float = std::enable_if_t<sg_is_same_v<U, float64_t>>;
 		template <typename U = T>
 		auto random() -> enable_simd_float<U>
 		{
-			CRandom r{};
-			r.fill_array_co(vector, vlen);
+			auto r = std::make_unique<CRandom>();
+			r->fill_array_co(vector, vlen);
 		}
 
 		template <typename U>
 		using enable_simd_int =
-		    std::enable_if_t<is_any_of_v<U, uint32_t, uint64_t>>;
+		    std::enable_if_t<sg_is_any_of_v<U, uint32_t, uint64_t>>;
 		template <typename U = T>
 		auto random() -> enable_simd_int<U>
 		{
-			CRandom r{};
-			r.fill_array(vector, vlen);
+			auto r = std::make_unique<CRandom>();
+			r->fill_array(vector, vlen);
 		}
 
-		// vectorized not available
 		template <typename U>
 		using enable_nonsimd_float =
-		    std::enable_if_t<is_any_of_v<U, float32_t, floatmax_t>>;
+		    std::enable_if_t<sg_is_any_of_v<U, float32_t, floatmax_t>>;
 		template <typename U = T>
 		auto random() -> enable_nonsimd_float<U>
 		{
-			CRandom r{};
+			auto r = std::make_unique<CRandom>();
 			// Casting floats upwards or downwards is safe
 			// Ref: https://stackoverflow.com/a/36840390/3656081
-			for (index_t i = 0; i < vlen; i++)
-			{
-				vector[i] = r.random_half_open();
-			}
+			std::transform(vector, vector + vlen, vector,
+						   [&r](auto){ return r->random_half_open(); });
 		}
 
 		template <typename U>
 		using enable_nonsimd_int =
-		    std::enable_if_t<is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
+		    std::enable_if_t<sg_is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
 		                                 int32_t, int64_t>>;
 		template <typename U = T>
 		auto random() -> enable_nonsimd_int<U>
 		{
-			CRandom r{};
-			for (index_t i = 0; i < vlen; i++)
-			{
-				vector[i] = r.random(
-				    std::numeric_limits<T>::min(),
-				    std::numeric_limits<T>::max());
-			}
+			auto r = std::make_unique<CRandom>();
+			std::transform(vector, vector + vlen, vector,
+						   [&r](auto){ return r->random(
+							   std::numeric_limits<T>::min(),
+							   std::numeric_limits<T>::max()); });
 		}
 
 		/** Range fill a vector with start...start+len-1
