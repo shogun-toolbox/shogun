@@ -255,7 +255,7 @@ If Shogun is executed using a different Python version that the one it was built
 If this is your setup, you need to make sure that Shogun is both **built** and **executed** against the Python environment of **your** choice.
 For that, you need to do something similar to
 
-    cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/dir -DPYTHON_LIBRARY=path/to/python/libpythonVERSION.{so|dynlib} -DPYTHON_EXECUTABLE:/path/to/python/executable -DPYTHON_PACKAGES_PATH=/path/to/python/dist-packages ..
+    cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/dir -DPYTHON_LIBRARY=path/to/python/libpythonVERSION.{so|dynlib} -DPYTHON_EXECUTABLE=/path/to/python/executable -DPYTHON_PACKAGES_PATH=/path/to/python/dist-packages ..
 
 For example, for `brew` installed Python under MacOS, use something like:
 
