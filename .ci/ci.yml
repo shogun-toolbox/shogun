@@ -28,6 +28,7 @@ jobs:
 
 - job: libshogun
   displayName: Linux libshogun
+  timeoutInMinutes: 90
 
   pool:
     vmImage: ubuntu-16.04
@@ -123,6 +124,7 @@ jobs:
 
 - job: macOS
   displayName: MacOS
+  timeoutInMinutes: 90
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-macos'
@@ -137,23 +139,25 @@ jobs:
   steps:
   - template: ./macos-steps.yml
 
-#- job: windows
-#  displayName: Windows
-#
-#  pool:
-#    vmImage: 'vs2017-win2016'
-#
-#  strategy:
-#    matrix:
-#      py36:
-#        CONDA_PY: "36"
-#        CONDA_ENV: shogun
-#
-#  variables:
-#    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
-#    clcacheArtifactName: 'ccache-vs17'
-#    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
-#    buildConfiguration: Release
-#
-#  steps:
-#  - template: ./windows-steps.yml
+- job: windows
+  displayName: Windows
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  strategy:
+    matrix:
+      py36:
+        CONDA_PY: "36"
+        CONDA_ENV: shogun
+
+  variables:
+    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
+    clcacheArtifactName: 'ccache-vs17'
+    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
+    buildConfiguration: Release
+    buildPlatform: x64
+
+  steps:
+  - template: ./windows-steps.yml

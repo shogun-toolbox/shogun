@@ -213,16 +213,29 @@ namespace shogun
 					"have the signature 'void f(auto value)'");
 			}
 		};
-
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename FunctorTraits>
+		using check_lambda_return = ok;
+#else
 		template <typename FunctorTraits>
 		using check_lambda_return = std::conditional_t<
-			std::is_void<typename FunctorTraits::result_type>::value, ok,
-			assert_return_type_is_valid>;
+				std::is_void<typename FunctorTraits::result_type>::value, ok,
+				assert_return_type_is_valid>;
+#endif
 
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename FunctorTraits>
+		using check_lambda_arity = ok;
+#else
 		template <typename FunctorTraits>
 		using check_lambda_arity = std::conditional_t<
 			FunctorTraits::arity == 1, ok, assert_arity_is_valid>;
+#endif
 
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename F, typename... Args>
+		struct auto_function_traits {};
+#else
 		template <typename F>
 		struct function_traits : function_traits<decltype(&F::operator())>
 		{
@@ -231,7 +244,7 @@ namespace shogun
 		template <typename F, typename Ret, typename... Args>
 		struct function_traits<Ret (F::*)(Args...) const>
 		{
-			static const int arity = sizeof...(Args);
+			static constexpr int arity = sizeof...(Args);
 			typedef Ret result_type;
 		};
 
@@ -240,6 +253,7 @@ namespace shogun
 			: function_traits<decltype(&F::template operator()<Args...>)>
 		{
 		};
+#endif
 
 		template <typename T, typename FunctorT>
 		auto final_function_execute(const Any& any, FunctorT func)
@@ -299,8 +313,8 @@ namespace shogun
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<PrimitiveLambdaT, int>,
 			std::enable_if_t<
-				is_sg_primitive<T>::value and
-				not is_none<PrimitiveLambdaT>::value>* = nullptr>
+				is_sg_primitive<T>::value &&
+				!is_none<PrimitiveLambdaT>::value>* = nullptr>
 		auto execute_function(
 			const Any& any, PrimitiveLambdaT primitive_func,
 			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
@@ -314,7 +328,7 @@ namespace shogun
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<VectorLambdaT, int>,
 			std::enable_if_t<
-				is_sg_vector<T>::value and not is_none<VectorLambdaT>::value>* =
+				is_sg_vector<T>::value && !is_none<VectorLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
 			const Any& any, PrimitiveLambdaT primitive_func,
@@ -329,7 +343,7 @@ namespace shogun
 			typename MatrixLambdaT,
 			typename traits = auto_function_traits<MatrixLambdaT, int>,
 			std::enable_if_t<
-				is_sg_matrix<T>::value and not is_none<MatrixLambdaT>::value>* =
+				is_sg_matrix<T>::value && !is_none<MatrixLambdaT>::value>* =
 				nullptr>
 		auto execute_function(
 			const Any& any, PrimitiveLambdaT primitive_func,
@@ -343,10 +357,10 @@ namespace shogun
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT, typename traits = void,
 			std::enable_if_t<
-				(is_none<PrimitiveLambdaT>::value and
-				 is_sg_primitive<T>::value) or
-				(is_none<VectorLambdaT>::value and is_sg_vector<T>::value) or
-				(is_none<MatrixLambdaT>::value and is_sg_matrix<T>::value)>* =
+				(is_none<PrimitiveLambdaT>::value &&
+				 is_sg_primitive<T>::value) ||
+				(is_none<VectorLambdaT>::value && is_sg_vector<T>::value) ||
+				(is_none<MatrixLambdaT>::value && is_sg_matrix<T>::value)>* =
 				nullptr>
 		auto execute_function(
 			const Any& any, PrimitiveLambdaT primitive_func,
@@ -376,7 +390,7 @@ namespace shogun
 		template <
 			typename TypeList, typename PrimitiveLambdaT,
 			typename VectorLambdaT, typename MatrixLambdaT,
-			typename std::enable_if<not std::is_same<
+			typename std::enable_if<!std::is_same<
 				typename TypeList::Head, None>::value>::type* = nullptr>
 		auto sg_type_finder(
 			const Any& any, TYPE type, PrimitiveLambdaT primitive_func,

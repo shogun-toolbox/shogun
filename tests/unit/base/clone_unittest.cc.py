@@ -5,12 +5,14 @@
 # Authors: Viktor Gal, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De,
 #          Bjoern Esser, Heiko Strathmann,  Michele Mazzoni
 
+import sys
+import os.path
+import jinja2
 
 def get_class_list_content(class_list_file):
-    f = open(class_list_file, 'r')
-    content = f.readlines()
-    f.close()
-    return content
+    with open(class_list_file, 'r') as f:
+        content = f.readlines()
+        return content
 
 def get_class_list(class_list_content):
     import re
@@ -41,10 +43,9 @@ def get_class_list(class_list_content):
     return classes, template_classes
 
 def entry(templateFile, class_list_file):
-    templateLoader = jinja2.FileSystemLoader(searchpath="/")
-    templateEnv = jinja2.Environment(loader=templateLoader)
+    templateEnv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(templateFile)))
 
-    template = templateEnv.get_template(templateFile)
+    template = templateEnv.get_template(os.path.basename(templateFile))
 
     # get the content of class_list.cpp
     class_list_content = get_class_list_content(class_list_file)
@@ -61,14 +62,11 @@ def entry(templateFile, class_list_file):
 # execution
 # ./clone_unittest.cc.py <template file> <output file name> <extra args...>
 
-import sys, jinja2
 TEMPLATE_FILE = sys.argv[1]
 output_file = sys.argv[2]
 class_list_file = sys.argv[3]
 
-import jinja2
 outputText = entry(TEMPLATE_FILE, class_list_file)
 
-f = open(output_file, 'w')
-f.writelines(outputText)
-f.close()
+with open(output_file, 'w') as f:
+    f.writelines(outputText)
