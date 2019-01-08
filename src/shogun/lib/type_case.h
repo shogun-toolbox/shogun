@@ -213,16 +213,29 @@ namespace shogun
 					"have the signature 'void f(auto value)'");
 			}
 		};
-
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename FunctorTraits>
+		using check_lambda_return = ok;
+#else
 		template <typename FunctorTraits>
 		using check_lambda_return = std::conditional_t<
-			std::is_void<typename FunctorTraits::result_type>::value, ok,
-			assert_return_type_is_valid>;
+				std::is_void<typename FunctorTraits::result_type>::value, ok,
+				assert_return_type_is_valid>;
+#endif
 
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename FunctorTraits>
+		using check_lambda_arity = ok;
+#else
 		template <typename FunctorTraits>
 		using check_lambda_arity = std::conditional_t<
 			FunctorTraits::arity == 1, ok, assert_arity_is_valid>;
+#endif
 
+#if defined(_MSC_VER) && _MSC_VER < 1920
+		template <typename F, typename... Args>
+		struct auto_function_traits {};
+#else
 		template <typename F>
 		struct function_traits : function_traits<decltype(&F::operator())>
 		{
@@ -231,7 +244,7 @@ namespace shogun
 		template <typename F, typename Ret, typename... Args>
 		struct function_traits<Ret (F::*)(Args...) const>
 		{
-			static const int arity = sizeof...(Args);
+			static constexpr int arity = sizeof...(Args);
 			typedef Ret result_type;
 		};
 
@@ -240,6 +253,7 @@ namespace shogun
 			: function_traits<decltype(&F::template operator()<Args...>)>
 		{
 		};
+#endif
 
 		template <typename T, typename FunctorT>
 		auto final_function_execute(const Any& any, FunctorT func)
