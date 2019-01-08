@@ -48,6 +48,17 @@ public:
 	}
 };
 
+template <typename T1, typename T2>
+class StaticAssertOKEqTestHelper
+{
+public:
+	StaticAssertOKEqTestHelper()
+	{
+		StaticAssertTypeEq<T1, T2>();
+	}
+};
+
+
 TEST(Type_case, positional_lambdas)
 {
 	float32_t a_scalar = 42.0;
@@ -149,9 +160,15 @@ TEST(Type_case, static_asserts)
 
 	auto f_return_fail = [](auto a) { return 1; };
 	auto f_arity_fail = [](auto a, float b) {};
-
+#if defined(_MSC_VER) && _MSC_VER < 1920
+	StaticAssertOKEqTestHelper<decltype(
+		sg_any_dispatch(any_float, sg_all_types, f_return_fail)), int>();
+	StaticAssertOKEqTestHelper<decltype(
+		sg_any_dispatch(any_float, sg_all_types, f_arity_fail)), type_internal::ok>();
+#else
 	StaticAssertReturnTypeEqTestHelper<decltype(
 		sg_any_dispatch(any_float, sg_all_types, f_return_fail))>();
 	StaticAssertArityEqTestHelper<decltype(
 		sg_any_dispatch(any_float, sg_all_types, f_arity_fail))>();
+#endif
 }
