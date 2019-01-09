@@ -48,6 +48,6 @@ steps:
   displayName: ${{ format('Extract {0} archive', parameters.name) }}
   condition: eq(variables['Agent.JobStatus'], 'Succeeded')
   inputs:
-    archiveFilePatterns: ${{ format('{0}/{1}/*.tar', parameters.downloadPath, parameters.artifactName) }}
+    archiveFilePatterns: ${{ format('{0}/{1}/*.tar*', parameters.downloadPath, parameters.artifactName) }}
     destinationFolder: ${{ parameters.destinationFolder }}
     cleanDestinationFolder: True
