@@ -5,7 +5,6 @@ steps:
   submodules: true
 
 - script: mkdir $(ccacheDir) $(targetPrefix)
-  condition:
   displayName: Create artifact directories
 
 - template: ./download-extract.yml
