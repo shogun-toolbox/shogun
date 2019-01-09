@@ -154,8 +154,8 @@ jobs:
 
   variables:
     clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
-    clcacheArtifactName: 'ccache-vs17'
-    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.xz'
+    clcacheArtifactName: 'clcache-vs17'
+    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar'
     buildConfiguration: Release
     buildPlatform: x64
 
