@@ -11,7 +11,7 @@ import zipfile
 
 target_branch = sys.argv[1]
 artifact_name = sys.argv[2]
-url = 'https://dev.azure.com/shogunml/shogun/_apis/build/builds?api-version=4.1&resultFilter=succeeded&branchName=refs/heads/%s' % (target_branch)
+url = 'https://dev.azure.com/shogunml/shogun/_apis/build/builds?api-version=4.1&resultFilter=partiallySucceeded,succeeded&branchName=refs/heads/%s' % (target_branch)
 response = urllib.urlopen(url)
 content = json.loads(response.read())
 if content['count'] > 0:
