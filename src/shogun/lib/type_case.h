@@ -22,6 +22,7 @@ namespace shogun
 	{
 	};
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	template <typename... Args>
 	struct Types
 	{
@@ -34,6 +35,7 @@ namespace shogun
 		typedef Types<Args...> Tail;
 		typedef T1 Head;
 	};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	typedef Types<
 		bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
@@ -213,6 +215,7 @@ namespace shogun
 					"have the signature 'void f(auto value)'");
 			}
 		};
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #if defined(_MSC_VER) && _MSC_VER < 1920
 		template <typename FunctorTraits>
 		using check_lambda_return = ok;
@@ -254,6 +257,7 @@ namespace shogun
 		{
 		};
 #endif
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 		template <typename T, typename FunctorT>
 		auto final_function_execute(const Any& any, FunctorT func)
