@@ -17,12 +17,12 @@ steps:
     .ci\\setup_clcache.cmd
   displayName: Setup CLCache
 
-#- template: ./download-extract.yml
-#  parameters:
-#    name: 'CLcache'
-#    artifactName: $(clcacheArtifactName)
-#    destinationFolder: $(clcacheDir)
-#    downloadPath: $(build.binariesDirectory)
+- template: ./download-extract.yml
+  parameters:
+    name: 'CLcache'
+    artifactName: $(clcacheArtifactName)
+    destinationFolder: $(clcacheDir)
+    downloadPath: $(build.binariesDirectory)
 
 - task: CMake@1
   displayName: Setup

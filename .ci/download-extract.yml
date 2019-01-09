@@ -29,6 +29,7 @@ steps:
       project: $(System.TeamProjectId)
       pipeline: $(System.DefinitionId)
       buildVersionToDownload: "latest"
+      allowPartiallySucceededBuilds: true
       artifactName: ${{ parameters.artifactName }}
       downloadPath: ${{ parameters.downloadPath }}
 
@@ -52,10 +53,3 @@ steps:
     archiveFilePatterns: ${{ format('{0}/{1}/*.tar', parameters.downloadPath, parameters.artifactName) }}
     destinationFolder: ${{ parameters.destinationFolder }}
     cleanDestinationFolder: True
-
-# FIXME: remove this hack, as it's only needed because DownloadBuildArtifacts
-# will not download artifact from jobs with SucceededWithIssues
-- script: |
-    echo '##vso[task.setvariable variable=agent.jobstatus]Succeeded'
-  condition: eq(variables['Agent.JobStatus'], 'SucceededWithIssues')
-  displayName: Set JobStatus to Succeeded
