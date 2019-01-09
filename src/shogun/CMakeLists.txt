@@ -561,21 +561,23 @@ IF (BUILD_BENCHMARKS)
     MESSAGE(WARNING "You are building benchmark against non-Release mode!"
       "The results might not reflect the actual runtimes...")
   ENDIF()
-  find_package(benchmark CONFIG REQUIRED)
 
   enable_testing()
   add_library(shogun_benchmark_main ${CMAKE_CURRENT_SOURCE_DIR}/util/benchmark_main.cc)
   if (APPLE)
+    find_package(benchmark CONFIG REQUIRED)
     target_link_libraries(shogun_benchmark_main benchmark shogun-static)
   elseif(MSVC)
+    find_package(benchmark CONFIG REQUIRED)
     target_link_libraries(shogun_benchmark_main
       benchmark
       Shlwapi.lib
       shogun-static
     )
   else()
+    find_package(benchmark REQUIRED)
     target_link_libraries(shogun_benchmark_main
-      benchmark
+      ${benchmark_LIBRARIES}
       pthread
       shogun-static
     )
