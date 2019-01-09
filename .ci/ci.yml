@@ -165,3 +165,33 @@ jobs:
 
   steps:
   - template: ./windows-steps.yml
+
+- job: windows_swig
+  displayName: Windows SWIG Interface
+  dependsOn: windows_libshogun
+  timeoutInMinutes: 120
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  strategy:
+    matrix:
+      csharp:
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
+        interfaceName: 'csharp'
+
+  variables:
+    targetPrefix: '$(Build.BinariesDirectory)\\opt'
+    libshogunArtifactName: 'libshogun-vs17'
+    libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar.gz'
+    commonSWIGCMakeFlags: '-DLIBSHOGUN=OFF -DDISABLE_UNIT_TESTS=ON -DDISABLE_META_CPP=ON'
+    clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
+    clcacheArtifactName: 'clcache-$(interfaceName)'
+    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clcache-$(Build.BuildId).tar.gz'
+    buildConfiguration: Release
+    buildPlatform: x64
+
+  steps:
+  - template: ./windows-steps.yml
+    parameters:
+      swig: true
