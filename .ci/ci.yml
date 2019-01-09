@@ -139,7 +139,7 @@ jobs:
   steps:
   - template: ./macos-steps.yml
 
-- job: windows
+- job: windows_libshogun
   displayName: Windows
   timeoutInMinutes: 120
 
@@ -151,11 +151,15 @@ jobs:
       py36:
         CONDA_PY: "36"
         CONDA_ENV: shogun
+        cmakeOptions: '-DBUILD_META_EXAMPLES=OFF'
 
   variables:
     clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'
     clcacheArtifactName: 'clcache-vs17'
-    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clache-$(Build.BuildId).tar.gz'
+    clcacheArchive: '$(Build.ArtifactStagingDirectory)/clcache-$(Build.BuildId).tar.gz'
+    libshogunArtifactName: 'libshogun-vs17'
+    libshogunArchive: '$(Build.ArtifactStagingDirectory)/libshogun-$(Build.BuildId).tar.gz'
+    targetPrefix: '$(Build.BinariesDirectory)\\opt'
     buildConfiguration: Release
     buildPlatform: x64
 

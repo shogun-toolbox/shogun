@@ -44,10 +44,31 @@ steps:
       workingDirectory: ${{ parameters.downloadPath }}
       failOnStderr: true
 
+# Windows
+- powershell: |
+    $ARTIFACT_DIR = ${{ format('"{0}\{1}"', parameters.downloadPath, parameters.artifactName) }}
+    if (Test-Path -Path $ARTIFACT_DIR) {
+      Write-Host "##vso[task.setVariable variable=ARTIFACT_EXISTS;]true"
+    } else {
+      Write-Host "##vso[task.setVariable variable=ARTIFACT_EXISTS;]false"
+    }
+  displayName: ${{ format('Checking {0} download task status', parameters.name) }}
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+# Linux and macOS
+- bash: |
+    if [ -d ${{ format('{0}/{1}', parameters.downloadPath, parameters.artifactName) }} ]; then
+      echo "##vso[task.setVariable variable=ARTIFACT_EXISTS]true"
+    else
+      echo "##vso[task.setVariable variable=ARTIFACT_EXISTS]false"
+    fi
+  displayName: ${{ format('Checking {0} download task status', parameters.name) }}
+  condition: ne(variables['Agent.OS'], 'Windows_NT')
+
 - task: ExtractFiles@1
   displayName: ${{ format('Extract {0} archive', parameters.name) }}
-  condition: eq(variables['Agent.JobStatus'], 'Succeeded')
+  condition: eq(variables.ARTIFACT_EXISTS, 'true')
   inputs:
     archiveFilePatterns: ${{ format('{0}/{1}/*.tar*', parameters.downloadPath, parameters.artifactName) }}
     destinationFolder: ${{ parameters.destinationFolder }}
-    cleanDestinationFolder: True
+    cleanDestinationFolder: true

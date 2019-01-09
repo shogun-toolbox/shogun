@@ -9,7 +9,7 @@ steps:
   inputs:
     createCustomEnvironment: True
     environmentName: shogun
-    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply jinja2 gtest mkl-devel'
+    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply jinja2 gtest mkl-devel swig'
     createOptions: '-c conda-forge'
     updateConda: false
 
@@ -17,34 +17,48 @@ steps:
     .ci\\setup_clcache.cmd
   displayName: Setup CLCache
 
+- script: mkdir $(targetPrefix)
+  displayName: Create artifact directory
+
 - template: ./download-extract.yml
   parameters:
     name: 'CLcache'
     artifactName: $(clcacheArtifactName)
     destinationFolder: $(clcacheDir)
-    downloadPath: $(build.binariesDirectory)
+    downloadPath: $(Build.BinariesDirectory)
+
+- ${{ if eq(parameters.swig, 'true') }}:
+  - template: ./download-extract.yml
+    parameters:
+      name: 'LibShogun'
+      artifactName: $(libshogunArtifactName)
+      downloadPath: $(Build.BinariesDirectory)
+      destinationFolder: $(targetPrefix)
+      specificBuildWithTriggering: true
 
 - task: CMake@1
   displayName: Setup
   inputs:
-    cmakeArgs: '-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=$(buildConfiguration) -DCMAKE_INSTALL_PREFIX=$(CONDA_PREFIX)\Library -DBUILD_META_EXAMPLES=OFF -DENABLE_TESTING=ON ..'
+    cmakeArgs: '-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=$(buildConfiguration) -DCMAKE_PREFIX_PATH=$(CONDA_PREFIX)\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=$(targetPrefix) $(cmakeOptions) ..'
 
-- task: VSBuild@1
-  displayName: 'VSBuild ($(buildConfiguration) $(buildPlatform))'
-  inputs:
-    solution: 'build/shogun.sln'
-    vsVersion: 'latest'
-    platform: $(buildPlatform)
-    msbuildArchitecture: $(buildPlatform)
-    msbuildArgs: '/p:TrackFileAccess=false /p:CLToolExe=clcache.exe'
-    configuration: $(buildConfiguration)
+- script: cmake --build . --config $(buildConfiguration) --target INSTALL -- /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /m:2
+  displayName: 'Build ($(buildConfiguration) $(buildPlatform))'
+  workingDirectory: $(Build.SourcesDirectory)\build
 
-- script: ctest -j%NUMBER_OF_PROCESSORS% -C $(buildConfiguration)
+- script: ctest -j 2
   displayName: Test
-  workingDirectory: build
+  workingDirectory: $(Build.SourcesDirectory)\build
 
 - script: clcache -s
   displayName: CLCache statistics
+
+- ${{ if ne(parameters.swig, 'true') }}:
+  - template: ./archive-deploy.yml
+    parameters:
+      name: 'LibShogun'
+      dir: $(targetPrefix)
+      archive: $(libshogunArchive)
+      artifactName: $(libshogunArtifactName)
 
 - template: ./archive-deploy.yml
   parameters:
