@@ -5,8 +5,10 @@
  *          Bjoern Esser, Leon Kuchenbecker
  */
 
+#include <shogun/modelselection/ModelSelectionParameter.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/modelselection/ModelSelectionParameter.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/DynArray.h>
@@ -292,7 +294,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		{
 			Parameter* p=new Parameter();
 			p->add(&m_sgobject, m_node_name);
-		new_root = new CParameterCombination(p);
+			new_root = new CParameterCombination(p);
 		}
 
 		else
@@ -356,15 +358,15 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		for (index_t i=0; i<m_values_length; ++i)
 		{
 			// create tree with only one parameter element //
-			Parameter* p=new Parameter();
+			CModelSelectionParameter* p=new CModelSelectionParameter();
 
 			switch (m_value_type)
 			{
 			case MSPT_FLOAT64:
-				p->add(&((float64_t*)m_values)[i], m_node_name);
+				p->add_param<float64_t>(m_node_name, &((float64_t*)m_values)[i]);
 				break;
 			case MSPT_INT32:
-				p->add(&((int32_t*)m_values)[i], m_node_name);;
+				p->add_param<int32_t>(m_node_name, &((int32_t*)m_values)[i]);
 				break;
 			case MSPT_NONE:
 				SG_ERROR("%sValue node has no type!\n", prefix)

@@ -19,7 +19,7 @@ CParameterCombination::CParameterCombination()
 	init();
 }
 
-CParameterCombination::CParameterCombination(Parameter* param)
+CParameterCombination::CParameterCombination(CModelSelectionParameter* param)
 {
 	init();
 
@@ -42,7 +42,7 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 		{
 			if (type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR)
 			{
-				Parameter* p=new Parameter();
+				CModelSelectionParameter* p=new CModelSelectionParameter();
 				p->add_vector((float64_t**)param->m_parameter, type.m_length_y,
 						param->m_name);
 
@@ -81,7 +81,7 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 		}
 	}
 
-	Parameter* modsel_params=obj->m_model_selection_parameters;
+	//Parameter* modsel_params=obj->m_model_selection_parameters;
 
 	for (index_t i=0; i<modsel_params->get_num_parameters(); i++)
 	{
@@ -373,32 +373,39 @@ void CParameterCombination::print_tree(int prefix_num) const
 	SG_FREE(prefix);
 }
 
-DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
-		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
+DynArray<CModelSelectionParameter*>* CParameterCombination::parameter_set_multiplication(
+		const DynArray<CModelSelectionParameter*>& set_1, const DynArray<CModelSelectionParameter*>& set_2)
 {
 	SG_SDEBUG("entering CParameterCombination::parameter_set_multiplication()\n")
 
 	SG_SDEBUG("set 1:\n")
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
 	{
-		for (index_t j=0; j<set_1.get_element(i)->get_num_parameters(); ++j)
-			SG_SDEBUG("\t%s\n", set_1.get_element(i)->get_parameter(j)->m_name)
+		ParametersMap parameters = set_1.get_element(i)->filter(ParameterProperties::NONE);
+		for (ParametersMap::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+		{
+			SG_SPRINT("\t%s\n", it->first.name());
+		}
 	}
 
 	SG_SDEBUG("set 2:\n")
 	for (index_t i=0; i<set_2.get_num_elements(); ++i)
 	{
-		for (index_t j=0; j<set_2.get_element(i)->get_num_parameters(); ++j)
-			SG_SDEBUG("\t%s\n", set_2.get_element(i)->get_parameter(j)->m_name)
+		ParametersMap parameters = set_2.get_element(i)->filter(ParameterProperties::NONE);
+		for (ParametersMap::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+		{
+			SG_SPRINT("\t%s\n", it->first.name());
+		}
 	}
 
-	DynArray<Parameter*>* result=new DynArray<Parameter*>();
+	DynArray<CModelSelectionParameter*>* result=new DynArray<CModelSelectionParameter*>();
 
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_2.get_num_elements(); ++j)
 		{
-			Parameter* p=new Parameter();
+			//Parameter* p=new Parameter();
+			CModelSelectionParameter* p=new CModelSelectionParameter();
 			p->add_parameters(set_1[i]);
 			p->add_parameters(set_2[j]);
 			result->append_element(p);
@@ -442,13 +449,13 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		/* now the case where at least two sets are given */
 
 		/* first, extract Parameter instances of given sets */
-		DynArray<DynArray<Parameter*>*> param_sets;
+		DynArray<DynArray<CModelSelectionParameter*>*> param_sets;
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
 			CDynamicObjectArray* current_set=(CDynamicObjectArray*)
 					sets.get_element(set_nr);
-			DynArray<Parameter*>* new_param_set=new DynArray<Parameter*> ();
+			DynArray<CModelSelectionParameter*>* new_param_set=new DynArray<CModelSelectionParameter*> ();
 			param_sets.append_element(new_param_set);
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
@@ -462,7 +469,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 							"trees are leafs");
 				}
 
-				Parameter* current_param=current_node->m_param;
+				CModelSelectionParameter* current_param=current_node;
 
 				if (current_param)
 					new_param_set->append_element(current_param);
@@ -479,7 +486,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		}
 
 		/* second, build products of all parameter sets */
-		DynArray<Parameter*>* param_product=parameter_set_multiplication(
+		DynArray<CModelSelectionParameter*>* param_product=parameter_set_multiplication(
 				*param_sets[0], *param_sets[1]);
 
 		delete param_sets[0];
@@ -489,7 +496,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		 * parameter instances of interim products*/
 		for (index_t i=2; i<param_sets.get_num_elements(); ++i)
 		{
-			DynArray<Parameter*>* old_temp_result=param_product;
+			DynArray<CModelSelectionParameter*>* old_temp_result=param_product;
 			param_product=parameter_set_multiplication(*param_product,
 					*param_sets[i]);
 
@@ -700,11 +707,12 @@ CParameterCombination* CParameterCombination::copy_tree() const
 
 void CParameterCombination::apply_to_machine(CMachine* machine) const
 {
-	apply_to_modsel_parameter(machine->m_model_selection_parameters);
+	SG_NOTIMPLEMENTED
+	//apply_to_modsel_parameter(machine->m_model_selection_parameters);
 }
 
 void CParameterCombination::apply_to_modsel_parameter(
-		Parameter* parameter) const
+		CModelSelectionParameter* parameter) const
 {
 	/* case root node */
 	if (!m_param)
@@ -749,8 +757,6 @@ void CParameterCombination::apply_to_modsel_parameter(
 			{
 				CParameterCombination* child=(CParameterCombination*)
 						m_child_nodes->get_element(i);
-				child->apply_to_modsel_parameter(
-						current_sgobject->m_model_selection_parameters);
 				SG_UNREF(child);
 			}
 		}

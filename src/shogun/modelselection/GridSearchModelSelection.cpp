@@ -68,9 +68,6 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 			current_combination->print_tree();
 		}
 
-		current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
 		/* note that this may implicitly lock and unlockthe machine */
 		CCrossValidationResult* result=
 				(CCrossValidationResult*)(m_machine_eval->evaluate());

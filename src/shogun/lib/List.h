@@ -87,8 +87,6 @@ class CList : public CSGObject
 							  "Number of elements.");
 			m_parameters->add((CSGObject**) &first, "first",
 							  "First element in list.");
-			m_model_selection_parameters->add((CSGObject**) &first, "first",
-								  "First element in list.");
 
 			first  = NULL;
 			current = NULL;

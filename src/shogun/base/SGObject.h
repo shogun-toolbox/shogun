@@ -28,6 +28,7 @@
 
 #include <utility>
 #include <vector>
+#include <map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -47,6 +48,7 @@ template <class T, class K> class CMap;
 struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
+typedef std::map<BaseTag, AnyParameter> ParametersMap;
 
 /*******************************************************************************
  * define reference counter macros
@@ -92,8 +94,6 @@ template <class T> class SGStringList;
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
-		if (pprop.get_model_selection())                                       \
-			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.get_gradient())                                              \
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
@@ -271,28 +271,10 @@ public:
 	 */
 	Version* get_global_version();
 
-	/** @return vector of names of all parameters which are registered for model
-	 * selection */
-	SGStringList<char> get_modelsel_names();
-
-	/** prints all parameter registered for model selection and their type */
+	/** prints all parameter registered for model selection and their type 
+	 * @note keep until PR merge for development tests
+	*/
 	void print_modsel_params();
-
-	/** Returns description of a given parameter string, if it exists. SG_ERROR
-	 * otherwise
-	 *
-	 * @param param_name name of the parameter
-	 * @return description of the parameter
-	 */
-	char* get_modsel_param_descr(const char* param_name);
-
-	/** Returns index of model selection parameter with provided index
-	 *
-	 * @param param_name name of model selection parameter
-	 * @return index of model selection parameter with provided name,
-	 * -1 if there is no such
-	 */
-	index_t get_modsel_param_index(const char* param_name);
 
 	/** Builds a dictionary of all parameters in SGObject as well of those
 	 *  of SGObjects that are parameters of this object. Dictionary maps
@@ -763,6 +745,9 @@ public:
 	 */
 	virtual CSGObject* clone();
 
+	// Stolen from shogun/pull/4432
+	ParametersMap filter(ParameterProperties pprop);
+
 protected:
 	/** Returns an empty instance of own type.
 	 *
@@ -877,9 +862,6 @@ public:
 
 	/** parameters */
 	Parameter* m_parameters;
-
-	/** model selection parameters */
-	Parameter* m_model_selection_parameters;
 
 	/** parameters wrt which we can compute gradients */
 	Parameter* m_gradient_parameters;

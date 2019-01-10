@@ -13,6 +13,8 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 
+#include <shogun/modelselection/ModelSelectionParameter.h>
+
 namespace shogun
 {
 class CModelSelectionParameters;
@@ -48,7 +50,7 @@ public:
 	 *
 	 * @param param parameter node
 	 */
-	CParameterCombination(Parameter* param);
+	CParameterCombination(CModelSelectionParameter* param);
 
 	/** constructor for an object. Builds parameter combination of the gradient
 	 * parameters.
@@ -79,7 +81,7 @@ public:
 	 *
 	 * @param parameter Parameter instance to apply parameter tree to
 	 */
-	void apply_to_modsel_parameter(Parameter* parameter) const;
+	void apply_to_modsel_parameter(CModelSelectionParameter* parameter) const;
 
 	/** applies this parameter tree to a learning machine (wrapper for
 	 * apply_to_modesel_parameter() method)
@@ -201,9 +203,9 @@ public:
 	 * @param set_2 array of Parameter instances
 	 * @return result array with all combinations
 	 */
-	static DynArray<Parameter*>* parameter_set_multiplication(
-			const DynArray<Parameter*>& set_1,
-			const DynArray<Parameter*>& set_2);
+	static DynArray<CModelSelectionParameter*>* parameter_set_multiplication(
+			const DynArray<CModelSelectionParameter*>& set_1,
+			const DynArray<CModelSelectionParameter*>& set_2);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const
@@ -320,7 +322,7 @@ private:
 
 protected:
 	/** parameter of combination */
-	Parameter* m_param;
+	CModelSelectionParameter* m_param;
 
 	/** child parameters */
 	CDynamicObjectArray* m_child_nodes;

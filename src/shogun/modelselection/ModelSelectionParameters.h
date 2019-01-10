@@ -13,6 +13,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/base/AnyParameter.h>
+
 
 namespace shogun
 {

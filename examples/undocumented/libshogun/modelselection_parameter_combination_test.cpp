@@ -6,6 +6,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/modelselection/ModelSelectionParameter.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 
@@ -23,37 +24,40 @@ void test_parameter_set_multiplication()
 {
 	SG_SPRINT("\ntest_parameter_set_multiplication()\n");
 
-	DynArray<Parameter*> set1;
-	DynArray<Parameter*> set2;
+	DynArray<CModelSelectionParameter*> set1;
+	DynArray<CModelSelectionParameter*> set2;
 
 	SGVector<float64_t> param_vector(8);
 	SGVector<float64_t>::range_fill_vector(param_vector.vector, param_vector.vlen);
 
-	Parameter parameters[4];
+	CModelSelectionParameter parameters[4];
 
-	parameters[0].add(&param_vector.vector[0], "0");
-	parameters[0].add(&param_vector.vector[1], "1");
+	parameters[0].add_param("0", &param_vector.vector[0]);
+	parameters[0].add_param("1", &param_vector.vector[1]);
 	set1.append_element(&parameters[0]);
 
-	parameters[1].add(&param_vector.vector[2], "2");
-	parameters[1].add(&param_vector.vector[3], "3");
+	parameters[1].add_param("2", &param_vector.vector[2]);
+	parameters[1].add_param("3", &param_vector.vector[3]);
 	set1.append_element(&parameters[1]);
 
-	parameters[2].add(&param_vector.vector[4], "4");
-	parameters[2].add(&param_vector.vector[5], "5");
+	parameters[2].add_param("4", &param_vector.vector[4]);
+	parameters[2].add_param("5", &param_vector.vector[5]);
 	set2.append_element(&parameters[2]);
 
-	parameters[3].add(&param_vector.vector[6], "6");
-	parameters[3].add(&param_vector.vector[7], "7");
+	parameters[3].add_param("6", &param_vector.vector[6]);
+	parameters[3].add_param("7", &param_vector.vector[7]);
 	set2.append_element(&parameters[3]);
 
-	DynArray<Parameter*>* result=new DynArray<Parameter*>();//CParameterCombination::parameter_set_multiplication(set1, set2);
+	DynArray<CModelSelectionParameter*>* result=new DynArray<CModelSelectionParameter*>();//CParameterCombination::parameter_set_multiplication(set1, set2);
 
 	for (index_t i=0; i<result->get_num_elements(); ++i)
 	{
-		Parameter* p=result->get_element(i);
-		for (index_t j=0; j<p->get_num_parameters(); ++j)
-			SG_SPRINT("%s ", p->get_parameter(j)->m_name);
+		CModelSelectionParameter* p=result->get_element(i);
+		ParametersMap parameters = p->filter(ParameterProperties::NONE);
+		for (ParametersMap::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+		{
+			SG_SPRINT("%s ", it->first.name());
+		}
 
 		SG_SPRINT("\n");
 		delete p;
@@ -73,13 +77,13 @@ void test_leaf_sets_multiplication()
 
 	CDynamicObjectArray* current=new CDynamicObjectArray();
 	sets.append_element(current);
-	Parameter* p=new Parameter();
-	p->add(&param_vector.vector[0], "0");
+	CModelSelectionParameter* p=new CModelSelectionParameter();
+	p->add_param("0", &param_vector.vector[0]);
 	CParameterCombination* pc=new CParameterCombination(p);
 	current->append_element(pc);
 
-	p=new Parameter();
-	p->add(&param_vector.vector[1], "1");
+	p=new CModelSelectionParameter();
+	p->add_param("1", &param_vector.vector[1]);
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
@@ -101,25 +105,25 @@ void test_leaf_sets_multiplication()
 
 	current=new CDynamicObjectArray();
 	sets.append_element(current);
-	p=new Parameter();
-	p->add(&param_vector.vector[2], "2");
+	p=new CModelSelectionParameter();
+	p->add_param("2", &param_vector.vector[2]);
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
-	p=new Parameter();
-	p->add(&param_vector.vector[3], "3");
+	p=new CModelSelectionParameter();
+	p->add_param("3", &param_vector.vector[3]);
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
 	current=new CDynamicObjectArray();
 	sets.append_element(current);
-	p=new Parameter();
-	p->add(&param_vector.vector[4], "4");
+	p=new CModelSelectionParameter();
+	p->add_param("4", &param_vector.vector[4]);
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
-	p=new Parameter();
-	p->add(&param_vector.vector[5], "5");
+	p=new CModelSelectionParameter();
+	p->add_param("5", &param_vector.vector[5]);
 	pc=new CParameterCombination(p);
 	current->append_element(pc);
 
