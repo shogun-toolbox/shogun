@@ -14,7 +14,7 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/util/iterators.h>
 
 #include "sg_type_traits.h"
@@ -322,8 +322,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_simd_float<U>
 		{
-			auto r = std::make_unique<CRandom>();
-			r->fill_array_co(matrix, num_rows * num_cols);
+			sg_rand->fill_array_co(matrix, num_rows * num_cols);
 		}
 
 		template <typename U>
@@ -332,8 +331,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_simd_int<U>
 		{
-            auto r = std::make_unique<CRandom>();
-			r->fill_array(matrix, num_rows * num_cols);
+			sg_rand->fill_array(matrix, num_rows * num_cols);
 		}
 
 		template <typename U>
@@ -342,11 +340,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_nonsimd_float<U>
 		{
-			auto r = std::make_unique<CRandom>();
 			// Casting floats upwards or downwards is safe
 			// Ref: https://stackoverflow.com/a/36840390/3656081
 			std::transform(matrix, matrix + (num_rows*num_cols), matrix,
-			    [&r](auto){ return r->random_half_open(); });
+			    [&r=sg_rand](auto){ return r->random_half_open(); });
 		}
 
 		template <typename U>
@@ -356,9 +353,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_nonsimd_int<U>
 		{
-			auto r = std::make_unique<CRandom>();
             std::transform(matrix, matrix + (num_rows*num_cols), matrix,
-                           [&r](auto){ return r->random(
+                           [&r=sg_rand](auto){ return r->random(
                                std::numeric_limits<T>::min(),
                                std::numeric_limits<T>::max()); });
 		}

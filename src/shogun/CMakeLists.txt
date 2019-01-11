@@ -566,16 +566,16 @@ IF (BUILD_BENCHMARKS)
   enable_testing()
   add_library(shogun_benchmark_main ${CMAKE_CURRENT_SOURCE_DIR}/util/benchmark_main.cc)
   if (APPLE)
-    target_link_libraries(shogun_benchmark_main benchmark shogun-static)
+    target_link_libraries(shogun_benchmark_main benchmark::benchmark shogun-static)
   elseif(MSVC)
     target_link_libraries(shogun_benchmark_main
-      benchmark
+      benchmark::benchmark
       Shlwapi.lib
       shogun-static
     )
   else()
     target_link_libraries(shogun_benchmark_main
-      benchmark
+      benchmark::benchmark
       pthread
       shogun-static
     )
@@ -586,6 +586,7 @@ IF (BUILD_BENCHMARKS)
   ADD_SHOGUN_BENCHMARK(features/RandomFourierDotFeatures_benchmark)
   ADD_SHOGUN_BENCHMARK(features/hashed/HashedDocDotFeatures_benchmark)
   ADD_SHOGUN_BENCHMARK(lib/RefCount_benchmark)
+  ADD_SHOGUN_BENCHMARK(lib/VectorizedRNG_benchmark)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/BasicOps_benchmark)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/Misc_benchmark)
 ENDIF()
