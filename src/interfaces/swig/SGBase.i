@@ -474,47 +474,20 @@ namespace shogun
 %pythoncode %{
 def _internal_get_param(self, name):
 
-	try:
-		return self._get(name)
-	except SystemError:
-		pass
-	except Exception:
-		raise
-
-	try:
-		return self._get_real(name)
-	except RuntimeError:
-		pass
-	except Exception:
-		raise
-
-	try:
-		return self._get_int(name)
-	except RuntimeError:
-		pass
-	except Exception:
-		raise
-
-	try:
-		return self._get_real_matrix(name)
-	except RuntimeError:
-		pass
-	except Exception:
-		raise
-
-	try:
-		return self._get_real_vector(name)
-	except RuntimeError:
-		pass
-	except Exception:
-		raise
-
-	try:
-		return self._get_int_vector(name)
-	except RuntimeError:
-		raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
-	except Exception:
-		raise
+	for f in (self._get,
+			self._get_real,
+			self._get_int,
+			self._get_real_matrix,
+			self._get_real_vector,
+			self._get_int_vector
+			):
+		try:
+			return f(name)
+		except (SystemError, RuntimeError):
+			pass
+		except Exception:
+			raise
+	raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 
 _swig_monkey_patch(SGObject, "get", _internal_get_param)
 

@@ -61,7 +61,7 @@
             "get_int_vector": "$object.get($arguments)",
             "get_real": "$object.get($arguments)",
             "get_real_vector": "$object.get($arguments)",
-            "get_real_matrix": "$object.get$arguments)"
+            "get_real_matrix": "$object.get($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments)",
