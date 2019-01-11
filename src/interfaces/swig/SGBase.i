@@ -330,7 +330,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
+#ifdef SWIGPYTHON
 %rename(_get) get(const std::string&);
+#endif // SWIGPYTHON
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
