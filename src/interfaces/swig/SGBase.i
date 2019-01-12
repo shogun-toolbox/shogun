@@ -237,6 +237,29 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         }
 %}
 
+// taken from https://github.com/swig/swig/issues/723#issuecomment-230178855
+%typemap(out) void _swig_monkey_patch "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
+%inline %{
+    static void _swig_monkey_patch(PyObject *type, PyObject *name, PyObject *object) {
+        if (PyType_Check(type)) {
+#if PY_VERSION_HEX>=0x03000000
+            if (PyUnicode_Check(name))
+#else
+            if (PyString_Check(name))
+#endif
+                {
+                    PyTypeObject *pytype = (PyTypeObject *)type;
+                    PyDict_SetItem(pytype->tp_dict, name, object);
+                }
+            else
+	            PyErr_SetString(PyExc_TypeError, "name is not a string");
+        }
+        else
+            PyErr_SetString(PyExc_TypeError, "type is not a Python type");
+    }
+%}
+
+
 %typemap(out) PyObject* __reduce_ex__(int proto)
 {
     return PyObject_CallMethod(self, (char*) "__reduce__", (char*) "");
@@ -307,7 +330,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
-
+#ifdef SWIGPYTHON
+%rename(_get) get(const std::string&);
+#endif // SWIGPYTHON
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
@@ -447,6 +472,25 @@ namespace shogun
 }
 
 %pythoncode %{
+def _internal_get_param(self, name):
+
+	for f in (self._get,
+			self._get_real,
+			self._get_int,
+			self._get_real_matrix,
+			self._get_real_vector,
+			self._get_int_vector
+			):
+		try:
+			return f(name)
+		except (SystemError, RuntimeError):
+			pass
+		except Exception:
+			raise
+	raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
+
+_swig_monkey_patch(SGObject, "get", _internal_get_param)
+
 try:
     import copy_reg
 except ImportError:
