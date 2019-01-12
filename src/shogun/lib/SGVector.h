@@ -37,6 +37,7 @@ namespace shogun
 	template <class T> class SGMatrix;
 	class CFile;
 	class CRandom;
+	extern CRandom* sg_rand;
 
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
@@ -216,8 +217,7 @@ template<class T> class SGVector : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_simd_float<U>
 		{
-			auto r = std::make_unique<CRandom>();
-			r->fill_array_co(vector, vlen);
+			sg_rand->fill_array_co(vector, vlen);
 		}
 
 		template <typename U>
@@ -226,8 +226,7 @@ template<class T> class SGVector : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_simd_int<U>
 		{
-			auto r = std::make_unique<CRandom>();
-			r->fill_array(vector, vlen);
+			sg_rand->fill_array(vector, vlen);
 		}
 
 		template <typename U>
@@ -236,11 +235,10 @@ template<class T> class SGVector : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_nonsimd_float<U>
 		{
-			auto r = std::make_unique<CRandom>();
 			// Casting floats upwards or downwards is safe
 			// Ref: https://stackoverflow.com/a/36840390/3656081
 			std::transform(vector, vector + vlen, vector,
-						   [&r](auto){ return r->random_half_open(); });
+						   [&r=sg_rand](auto){ return r->random_half_open(); });
 		}
 
 		template <typename U>
@@ -250,9 +248,8 @@ template<class T> class SGVector : public SGReferencedData
 		template <typename U = T>
 		auto random() -> enable_nonsimd_int<U>
 		{
-			auto r = std::make_unique<CRandom>();
 			std::transform(vector, vector + vlen, vector,
-						   [&r](auto){ return r->random(
+						   [&r=sg_rand](auto){ return r->random(
 							   std::numeric_limits<T>::min(),
 							   std::numeric_limits<T>::max()); });
 		}
