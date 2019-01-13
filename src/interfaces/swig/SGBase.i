@@ -483,7 +483,7 @@ def _internal_get_param(self, name):
 			):
 		try:
 			return f(name)
-		except (SystemError, RuntimeError):
+		except SystemError:
 			pass
 		except Exception:
 			raise
