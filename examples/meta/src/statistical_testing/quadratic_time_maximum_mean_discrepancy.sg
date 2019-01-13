@@ -28,9 +28,9 @@ real p_value = mmd.compute_p_value(statistic)
 #![perform_test]
 
 #![add_kernels]
-GaussianKernel kernel1(10, 0.1)
-GaussianKernel kernel2(10, 1)
-GaussianKernel kernel3(10, 10)
+Kernel kernel1 = kernel("GaussianKernel", log_width = -1.0)
+Kernel kernel2 = kernel("GaussianKernel", log_width = 0.0)
+Kernel kernel3 = kernel("GaussianKernel", log_width = 1.0)
 mmd.add_kernel(kernel1)
 mmd.add_kernel(kernel2)
 mmd.add_kernel(kernel3)
@@ -56,8 +56,8 @@ int num_runs = 1
 int num_folds = 3
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_CROSS_VALIDATION, num_runs, num_folds, alpha)
 mmd.select_kernel()
-GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
-real width = learnt_kernel_single.get_width()
+Kernel learnt_kernel_single = mmd.get_kernel()
+real width = learnt_kernel_single.get_real("log_width")
 #![select_kernel_single]
 
 #![select_kernel_combined]

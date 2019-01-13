@@ -87,7 +87,7 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	void add_kernel(CShiftInvariantKernel *kernel);
+	void add_kernel(CKernel *kernel);
 
 	/**
 	 * Method that does internal cleanups (essentially releases memory from the

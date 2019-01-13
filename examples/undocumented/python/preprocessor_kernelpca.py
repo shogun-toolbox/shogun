@@ -9,11 +9,13 @@ parameter_list = [[data, 0.01, 1.0], [data, 0.05, 2.0]]
 def preprocessor_kernelpca (data, threshold, width):
 	from shogun import RealFeatures
 	from shogun import KernelPCA
-	from shogun import GaussianKernel
+	import shogun as sg
+	import numpy as np
 
 	features = RealFeatures(data)
 
-	kernel = GaussianKernel(features,features,width)
+	kernel = sg.kernel("GaussianKernel", log_width=np.log(width))
+	kernel.init(features, features)
 
 	preprocessor = KernelPCA(kernel)
 	preprocessor.fit(features)

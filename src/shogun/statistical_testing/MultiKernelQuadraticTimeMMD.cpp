@@ -96,11 +96,11 @@ CMultiKernelQuadraticTimeMMD::~CMultiKernelQuadraticTimeMMD()
 	cleanup();
 }
 
-void CMultiKernelQuadraticTimeMMD::add_kernel(CShiftInvariantKernel *kernel)
+void CMultiKernelQuadraticTimeMMD::add_kernel(CKernel *kernel)
 {
 	ASSERT(self->m_owner);
 	REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
-	self->m_kernel_mgr.push_back(kernel);
+	self->m_kernel_mgr.push_back(kernel->as<CShiftInvariantKernel>());
 }
 
 void CMultiKernelQuadraticTimeMMD::cleanup()

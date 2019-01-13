@@ -5,5 +5,5 @@ Math:init_random(1)
 get_global_io()
 
 # member function call
-GaussianKernel k()
-k.set_width(1)
+Kernel k = kernel("GaussianKernel")
+k.get_name()

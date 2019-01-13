@@ -12,14 +12,14 @@ MulticlassLabels labels_test(f_labels_test)
 
 #![set_parameters]
 MulticlassLibLinear mll()
-GaussianKernel kernel()
+Kernel k = kernel("GaussianKernel")
 #![set_parameters]
 
 #![create_instance]
 RelaxedTree machine()
 machine.set_labels(labels_train)
 machine.set_machine_for_confusion_matrix(mll)
-machine.set_kernel(kernel)
+machine.set_kernel(k)
 #![create_instance]
 
 #![train_and_apply]

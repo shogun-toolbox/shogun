@@ -43,6 +43,8 @@ except ImportError:
 	exit(0)
 
 from shogun import *
+import shogun as sg
+import numpy as np
 parameter_list=[
 	[KLCholeskyInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
 	[KLCovarianceInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
@@ -61,7 +63,7 @@ def variational_classifier(kl_inference,train_fname=traindat,test_fname=testdat,
 	error_eval=ErrorRateMeasure()
 	mean_func=ConstMean()
 	kernel_sigma=2*exp(2*kernel_log_sigma);
-	kernel_func=GaussianKernel(10, kernel_sigma)
+	kernel_func=sg.kernel("GaussianKernel", log_width=np.log(kernel_sigma))
 
 	inf=kl_inference(kernel_func, features_train, mean_func, labels_train, likelihood)
 	try:
