@@ -1292,7 +1292,16 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
     PyErr_SetString(PyExc_SystemError, $1.what());
     SWIG_fail;
 }
+
+%rename(_distance) distance;
+%rename(_evaluation) evaluation;
 %rename(_kernel) kernel;
+%rename(_machine) machine;
+%rename(_multiclass_strategy) multiclass_strategy;
+%rename(_ecoc_encoder) ecoc_encoder;
+%rename(_ecoc_decoder) ecoc_decoder;
+%rename(_transformer) transformer;
+%rename(_layer) layer;
 
 %pythoncode %{
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
@@ -1315,7 +1324,15 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
 
     return _internal_factory
 
+distance = _internal_factory_wrapper("_distance", "distance")
+evaluation = _internal_factory_wrapper("_evaluation", "evaluation")
 kernel = _internal_factory_wrapper("_kernel", "kernel")
+machine = _internal_factory_wrapper("_machine", "machine")
+multiclass_strategy = _internal_factory_wrapper("_multiclass_strategy", "multiclass_strategy")
+ecoc_encoder = _internal_factory_wrapper("_ecoc_encoder", "ecoc_encoder")
+ecoc_decoder = _internal_factory_wrapper("_ecoc_decoder", "ecoc_decoder")
+transformer = _internal_factory_wrapper("_transformer", "transformer")
+layer = _internal_factory_wrapper("_layer", "layer")
 %}
 
 #endif /* HAVE_PYTHON */
