@@ -107,9 +107,9 @@ class FastParser:
         'ComplexMatrix': 'SHOGUNSGTYPE'
     }
 
-    t_INTLITERAL = "[0-9]+"
-    t_REALLITERAL = "[0-9]+\.[0-9]+"
-    t_FLOATLITERAL = "[0-9]+\.[0-9]+f"
+    t_INTLITERAL = "-?[0-9]+"
+    t_REALLITERAL = "-?[0-9]+\.[0-9]+"
+    t_FLOATLITERAL = "-?[0-9]+\.[0-9]+f"
     t_STRINGLITERAL = '"[^"\n]*"'
     t_CHARLITERAL = "'[^']{1}'"
     t_COMMA = ","
@@ -253,12 +253,12 @@ class FastParser:
         "string : STRINGLITERAL"
         # Strip leading and trailing quotes
         p[0] = {"StringLiteral": p[1][1:-1]}
-    
+
     def p_char(self, p):
         "char : CHARLITERAL"
         # Strip leading and trailing quotes
         p[0] = {"CharLiteral": p[1][1:-1]}
-    
+
     def p_bool(self, p):
         "bool : BOOLLITERAL"
         p[0] = {"BoolLiteral": p[1]}
