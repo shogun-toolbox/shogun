@@ -1292,5 +1292,30 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
     PyErr_SetString(PyExc_SystemError, $1.what());
     SWIG_fail;
 }
+%rename(_kernel) kernel;
+
+%pythoncode %{
+def _internal_factory_wrapper(object_name, new_name, docstring=None):
+    """
+    A wrapper that returns a generic factory that
+    accepts kwargs and passes them to shogun.object_name
+    via .put
+    """
+    _obj = getattr(_shogun, object_name)
+    def _internal_factory(name, **kwargs):
+
+        new_obj = _obj(name)
+        for k,v in kwargs.items():
+            new_obj.put(k, v)
+        return new_obj
+    if docstring:
+        _internal_factory.__doc__ = docstring
+    else:
+        _internal_factory.__doc__ = _obj.__doc__.replace(object_name, new_name)
+
+    return _internal_factory
+
+kernel = _internal_factory_wrapper("_kernel", "kernel")
+%}
 
 #endif /* HAVE_PYTHON */
