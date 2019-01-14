@@ -1307,7 +1307,7 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
         new_obj = _obj(name)
         for k,v in kwargs.items():
             new_obj.put(k, v)
-            return new_obj
+        return new_obj
     if docstring:
         _internal_factory.__doc__ = docstring
     else:
