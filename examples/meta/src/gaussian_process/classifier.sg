@@ -12,13 +12,13 @@ MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
-GaussianKernel kernel(2.0)
+Kernel k = kernel("GaussianKernel", log_width=2.0)
 ConstMean mean_function()
 #![create_appropriate_kernel_and_mean_function]
 
 #![create_instance]
 SoftMaxLikelihood gauss_likelihood()
-MultiLaplaceInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood)
+MultiLaplaceInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood)
 GaussianProcessClassification gp_classifier(inference_method)
 #![create_instance]
 

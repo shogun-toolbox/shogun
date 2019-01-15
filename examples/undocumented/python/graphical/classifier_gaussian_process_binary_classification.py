@@ -36,6 +36,8 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     except ImportError:
         print('Eigen3 needed for Gaussian Processes')
         return
+    import shogun as sg
+    import numpy as np
 
     # convert training data into Shogun representation
     train_features = RealFeatures(X_train)
@@ -50,7 +52,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     test_features = RealFeatures(X_test)
 
     # create Gaussian kernel with width = 2.0
-    kernel = GaussianKernel(10, 2.0)
+    kernel = sg.kernel("GaussianKernel", log_width=np.log(2.0))
 
     # create zero mean function
     mean = ZeroMean()

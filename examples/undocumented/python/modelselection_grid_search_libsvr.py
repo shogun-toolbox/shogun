@@ -24,18 +24,19 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
     from shogun import CrossValidationSplitting
     from shogun import RegressionLabels
     from shogun import RealFeatures
-    from shogun import GaussianKernel
     from shogun import LibSVR
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
+    import shogun as sg
 
     # training data
     features_train=RealFeatures(traindat)
     labels=RegressionLabels(label_traindat)
 
     # kernel
-    kernel=GaussianKernel(features_train, features_train, width)
+    kernel=sg.kernel("GaussianKernel", log_width=width)
+    kernel.init(features_train, features_train)
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

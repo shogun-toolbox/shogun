@@ -13,14 +13,15 @@ def evaluation_cross_validation_regression (train_fname=traindat,label_fname=lab
 	from shogun import CrossValidation, CrossValidationResult
 	from shogun import MeanSquaredError, CrossValidationSplitting
 	from shogun import RegressionLabels, RealFeatures
-	from shogun import GaussianKernel, KernelRidgeRegression, CSVFile
+	from shogun import KernelRidgeRegression, CSVFile
+	import shogun as sg
 
 	# training data
 	features=RealFeatures(CSVFile(train_fname))
 	labels=RegressionLabels(CSVFile(label_fname))
 
 	# kernel and predictor
-	kernel=GaussianKernel()
+	kernel=sg.kernel("GaussianKernel")
 	predictor=KernelRidgeRegression(tau, kernel, labels)
 
 	# splitting strategy for 5 fold cross-validation (for classification its better

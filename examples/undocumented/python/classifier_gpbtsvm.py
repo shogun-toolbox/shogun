@@ -7,8 +7,8 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat
 
 def classifier_gpbtsvm (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from shogun import RealFeatures, BinaryLabels
-	from shogun import GaussianKernel
 	from shogun import CSVFile
+	import shogun as sg
 	try:
 		from shogun import GPBTSVM
 	except ImportError:
@@ -18,11 +18,11 @@ def classifier_gpbtsvm (train_fname=traindat,test_fname=testdat,label_fname=labe
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 	labels=BinaryLabels(CSVFile(label_fname))
-	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=sg.kernel("GaussianKernel", log_width=width)
 
 	svm=GPBTSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
-	svm.train()
+	svm.train(feats_train)
 
 	predictions = svm.apply(feats_test)
 	return predictions, svm, predictions.get_labels()

@@ -5,16 +5,17 @@ testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat,2.2,1,1e-7],[traindat,testdat,2.1,1,1e-5]]
 
 def classifier_libsvmoneclass (train_fname=traindat,test_fname=testdat,width=2.1,C=1,epsilon=1e-5):
-	from shogun import RealFeatures, GaussianKernel, LibSVMOneClass, CSVFile
+	from shogun import RealFeatures, LibSVMOneClass, CSVFile
+	import shogun as sg
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 
-	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=sg.kernel("GaussianKernel", log_width=width)
 
 	svm=LibSVMOneClass(C, kernel)
 	svm.set_epsilon(epsilon)
-	svm.train()
+	svm.train(feats_train)
 
 	predictions = svm.apply(feats_test)
 	return predictions, svm, predictions.get_labels()

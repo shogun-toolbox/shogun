@@ -8,13 +8,13 @@ parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
 
 def kernel_sparse_gaussian (fm_train_real=traindat,fm_test_real=testdat,width=1.1 ):
 	from shogun import SparseRealFeatures
-	from shogun import GaussianKernel
+	import shogun as sg
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
 
-
-	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=sg.kernel("GaussianKernel", log_width=width)
+	kernel.init(feats_train, feats_train,)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

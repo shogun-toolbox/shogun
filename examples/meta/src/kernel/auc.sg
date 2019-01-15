@@ -3,8 +3,7 @@ File f_labels_train = csv_file("../../data/classifier_binary_2d_linear_labels_te
 Features feats_train = features(f_feats_train)
 BinaryLabels labels_train(f_labels_train)
 
-GaussianKernel subkernel()
-subkernel.set_width(1.7)
+Kernel subkernel = kernel("GaussianKernel", log_width=1.7)
 subkernel.init(feats_train, feats_train)
 
 AUCKernel auc(0, subkernel)
