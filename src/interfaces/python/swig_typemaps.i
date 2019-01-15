@@ -1293,15 +1293,48 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
     SWIG_fail;
 }
 
-%rename(_distance) distance;
-%rename(_evaluation) evaluation;
-%rename(_kernel) kernel;
-%rename(_machine) machine;
-%rename(_multiclass_strategy) multiclass_strategy;
-%rename(_ecoc_encoder) ecoc_encoder;
-%rename(_ecoc_decoder) ecoc_decoder;
-%rename(_transformer) transformer;
-%rename(_layer) layer;
+%feature("nothread") _rename_python_function;
+
+%typemap(out) void _rename_python_function "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
+%inline %{
+	static void _rename_python_function(PyObject *type, PyObject *old_name, PyObject *new_name) {
+
+#if PY_VERSION_HEX>=0x03000000
+		if (!PyUnicode_Check(old_name) && !PyUnicode_Check(new_name))
+#else
+		if (!PyString_Check(old_name) && !PyString_Check(new_name))
+#endif
+			{
+				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' need to be strings");
+				return;
+			}
+
+		if (PyType_Check(type)) {
+			PyTypeObject *pytype = (PyTypeObject *)type;
+			PyObject* obj = PyDict_GetItem(pytype->tp_dict, old_name);
+			if (obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "object definition does not exist in the given type!");
+				return;
+			}
+			PyDict_SetItem(pytype->tp_dict, new_name, obj);
+			PyDict_DelItem(pytype->tp_dict, old_name);
+		}
+
+	  	else if ( PyModule_Check(type)) {
+		  	PyObject* module = PyModule_GetDict(type);
+		 	PyObject* obj = PyDict_GetItem(module, old_name);
+			if (obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "object definition does not exist in the given module!");
+				return;
+			}
+			PyDict_SetItem(module, new_name, obj);
+			PyDict_DelItem(module, old_name);
+		}
+		else
+			PyErr_SetString(PyExc_ValueError, "'type' is neither a module or a type");
+  }
+%}
+
 
 %pythoncode %{
 import sys
@@ -1339,6 +1372,7 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     return _internal_factory
 
 for factory in _FACTORIES:
+	_rename_python_function(sys.modules[__name__], factory[1], factory[0])
 	_swig_monkey_patch(sys.modules[__name__], factory[1], _internal_factory_wrapper(*factory))
 %}
 
