@@ -1357,7 +1357,7 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     accepts kwargs and passes them to shogun.object_name
     via .put
     """
-    _obj = getattr(_shogun, object_name)
+    _obj = getattr(sys.modules[__name__], object_name)
     def _internal_factory(name, **kwargs):
 
         new_obj = _obj(name)
