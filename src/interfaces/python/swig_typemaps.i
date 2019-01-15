@@ -1300,9 +1300,9 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 	static void _rename_python_function(PyObject *type, PyObject *old_name, PyObject *new_name) {
 
 #if PY_VERSION_HEX>=0x03000000
-		if (!PyUnicode_Check(old_name) && !PyUnicode_Check(new_name))
+		if (!PyUnicode_Check(old_name) || !PyUnicode_Check(new_name))
 #else
-		if (!PyString_Check(old_name) && !PyString_Check(new_name))
+		if (!PyString_Check(old_name) || !PyString_Check(new_name))
 #endif
 			{
 				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' need to be strings");
