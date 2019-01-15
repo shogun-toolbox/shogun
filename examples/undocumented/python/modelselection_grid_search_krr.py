@@ -88,8 +88,9 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
 def create_param_tree():
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun import ParameterCombination
-    from shogun import GaussianKernel, PolyKernel
+    from shogun import PolyKernel
     import math
+    import shogun as sg
     root=ModelSelectionParameters()
 
     tau=ModelSelectionParameters("tau")
@@ -104,7 +105,7 @@ def create_param_tree():
     tau.build_values(min, max, type, step, base)
 
     # gaussian kernel with width
-    gaussian_kernel=GaussianKernel()
+    gaussian_kernel=sg.kernel("GaussianKernel")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

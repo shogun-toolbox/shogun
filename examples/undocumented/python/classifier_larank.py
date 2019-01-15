@@ -4,9 +4,9 @@ parameter_list = [[10,3,15,0.9,1,2000,1],[20,4,15,0.9,1,5000,2]]
 
 def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5,seed=1):
 	from shogun import RealFeatures, MulticlassLabels
-	from shogun import GaussianKernel
 	from shogun import LaRank
 	from shogun import Math_init_random
+	import shogun as sg
 
 	# reproducible results
 	Math_init_random(seed)
@@ -25,7 +25,7 @@ def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5
 	feats_test=RealFeatures(fm_test)
 
 	width=2.1
-	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=sg.kernel("GaussianKernel", log_width=width)
 
 	epsilon=1e-5
 	labels=MulticlassLabels(label_train)
@@ -35,7 +35,7 @@ def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5
 	svm.set_batch_mode(False)
 	#svm.io.enable_progress()
 	svm.set_epsilon(epsilon)
-	svm.train()
+	svm.train(feats_train)
 	out=svm.apply(feats_test).get_labels()
 	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()

@@ -14,13 +14,14 @@ from shogun import ContingencyTableEvaluation, ACCURACY
 from shogun import StratifiedCrossValidationSplitting
 from shogun import BinaryLabels
 from shogun import RealFeatures
-from shogun import GaussianKernel, PowerKernel
+from shogun import PowerKernel
 from shogun import LibSVM
 from shogun import MinkowskiMetric
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
 from shogun import ParameterCombination
 from shogun import Math
+import shogun as sg
 
 def create_param_tree():
 	root=ModelSelectionParameters()
@@ -33,7 +34,7 @@ def create_param_tree():
 	root.append_child(c2)
 	c2.build_values(-1.0, 1.0, R_EXP)
 
-	gaussian_kernel=GaussianKernel()
+	gaussian_kernel=sg.kernel("GaussianKernel")
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list

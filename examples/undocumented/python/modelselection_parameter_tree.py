@@ -10,10 +10,11 @@ def modelselection_parameter_tree (dummy):
     from shogun import ParameterCombination
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun import PowerKernel
-    from shogun import GaussianKernel
     from shogun import DistantSegmentsKernel
     from shogun import MinkowskiMetric
     import math
+    import shogun as sg
+    import numpy as np
 
     root=ModelSelectionParameters()
 
@@ -51,7 +52,7 @@ def modelselection_parameter_tree (dummy):
     param_power_kernel_metric1_k.build_values(1, 12, R_LINEAR)
     param_power_kernel_metric1.append_child(param_power_kernel_metric1_k)
 
-    gaussian_kernel=GaussianKernel()
+    gaussian_kernel=sg.kernel("GaussianKernel")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
