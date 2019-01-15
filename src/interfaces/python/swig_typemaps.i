@@ -1304,6 +1304,20 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %rename(_layer) layer;
 
 %pythoncode %{
+import sys
+
+_FACTORIES = [
+		("_distance", "distance"),
+		("_evaluation", "evaluation"),
+		("_kernel", "kernel"),
+		("_machine", "machine"),
+		("_multiclass_strategy", "multiclass_strategy"),
+		("_ecoc_encoder", "ecoc_encoder"),
+		("_ecoc_decoder", "ecoc_decoder"),
+		("_transformer", "transformer"),
+		("_layer", "layer")
+		]
+
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
     """
     A wrapper that returns a generic factory that
@@ -1324,15 +1338,8 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
 
     return _internal_factory
 
-distance = _internal_factory_wrapper("_distance", "distance")
-evaluation = _internal_factory_wrapper("_evaluation", "evaluation")
-kernel = _internal_factory_wrapper("_kernel", "kernel")
-machine = _internal_factory_wrapper("_machine", "machine")
-multiclass_strategy = _internal_factory_wrapper("_multiclass_strategy", "multiclass_strategy")
-ecoc_encoder = _internal_factory_wrapper("_ecoc_encoder", "ecoc_encoder")
-ecoc_decoder = _internal_factory_wrapper("_ecoc_decoder", "ecoc_decoder")
-transformer = _internal_factory_wrapper("_transformer", "transformer")
-layer = _internal_factory_wrapper("_layer", "layer")
+for factory in _FACTORIES:
+	_swig_monkey_patch(sys.modules[__name__], factory[1], _internal_factory_wrapper(*factory))
 %}
 
 #endif /* HAVE_PYTHON */

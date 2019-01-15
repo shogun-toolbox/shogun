@@ -240,23 +240,38 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 // taken from https://github.com/swig/swig/issues/723#issuecomment-230178855
 %typemap(out) void _swig_monkey_patch "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
 %inline %{
-    static void _swig_monkey_patch(PyObject *type, PyObject *name, PyObject *object) {
-        if (PyType_Check(type)) {
+	static void _swig_monkey_patch(PyObject *type, PyObject *name, PyObject *object) {
+		if (PyType_Check(type)) {
 #if PY_VERSION_HEX>=0x03000000
-            if (PyUnicode_Check(name))
+		  if (PyUnicode_Check(name))
 #else
-            if (PyString_Check(name))
+		  if (PyString_Check(name))
 #endif
-                {
-                    PyTypeObject *pytype = (PyTypeObject *)type;
-                    PyDict_SetItem(pytype->tp_dict, name, object);
-                }
-            else
-	            PyErr_SetString(PyExc_TypeError, "name is not a string");
-        }
-        else
-            PyErr_SetString(PyExc_TypeError, "type is not a Python type");
-    }
+			{
+			  PyTypeObject *pytype = (PyTypeObject *)type;
+			  PyDict_SetItem(pytype->tp_dict, name, object);
+			}
+		  else {
+			PyErr_SetString(PyExc_TypeError, "name is not a string");
+		  }
+		}
+		else if ( PyModule_Check(type)) {
+#if PY_VERSION_HEX>=0x03000000
+		  if (PyUnicode_Check(name))
+#else
+		  if (PyString_Check(name))
+#endif
+			{
+			  PyObject* module = PyModule_GetDict(type);
+			  PyDict_SetItem(module, name, object);
+			}
+		  else
+			PyErr_SetString(PyExc_TypeError, "name is not a string");
+		}
+		else {
+		  PyErr_SetString(PyExc_TypeError, "type is not a Python type");
+		}
+	  }
 %}
 
 
