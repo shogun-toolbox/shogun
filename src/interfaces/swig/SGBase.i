@@ -237,6 +237,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         }
 %}
 
+%feature("nothread") _swig_monkey_patch;
+
 // taken from https://github.com/swig/swig/issues/723#issuecomment-230178855
 %typemap(out) void _swig_monkey_patch "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
 %inline %{
@@ -273,7 +275,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 		}
 	  }
 %}
-
 
 %typemap(out) PyObject* __reduce_ex__(int proto)
 {
