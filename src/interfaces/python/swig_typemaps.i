@@ -1368,6 +1368,7 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
         _internal_factory.__doc__ = docstring
     else:
         _internal_factory.__doc__ = _obj.__doc__.replace(object_name, new_name)
+    _internal_factory.__qualname__ = new_name
 
     return _internal_factory
 
