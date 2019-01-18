@@ -1292,9 +1292,59 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
     PyErr_SetString(PyExc_SystemError, $1.what());
     SWIG_fail;
 }
+
+%include "std_set.i"
+
+%template(stringSet) std::set<std::string>;
+
+%ignore create;
+%ignore delete_object;
+%ignore create_object;
+%include <shogun/base/class_list.h>
 %rename(_kernel) kernel;
 
 %pythoncode %{
+import re
+_internal_shogun_class_name_exception_pattern = re.compile("Class (\w+) with primitive type (\w+) does not exist.")
+
+# taken from https://www.python-course.eu/levenshtein_distance.php
+def _internal_iterative_levenshtein(s, t):
+    rows = len(s)+1
+    cols = len(t)+1
+    dist = [[0 for x in range(cols)] for x in range(rows)]
+    for i in range(1, rows):
+        dist[i][0] = i
+    for i in range(1, cols):
+        dist[0][i] = i
+
+    for col in range(1, cols):
+        for row in range(1, rows):
+            if s[row-1] == t[col-1]:
+                cost = 0
+            else:
+                cost = 1
+            dist[row][col] = min(dist[row-1][col] + 1,
+                                 dist[row][col-1] + 1,
+                                 dist[row-1][col-1] + cost)
+
+    return dist[row][col]
+
+def _internal_autocorrect(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except SystemError as e:
+            match = _internal_shogun_class_name_exception_pattern.search(str(e))
+            if match is None:
+                raise
+            groups = match.groups()
+            wrong_class_name = groups[0]
+            all_objects = _shogun.available_objects()
+            dists = [_internal_iterative_levenshtein(wrong_class_name, x) for x in all_objects]
+            did_you_mean_class_name = all_objects[dists.index(min(dists))]
+            raise SystemError("{} Did you mean {}?".format(match.group(), did_you_mean_class_name))
+    return wrapper
+
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
     """
     A wrapper that returns a generic factory that
@@ -1302,8 +1352,9 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     via .put
     """
     _obj = getattr(_shogun, object_name)
-    def _internal_factory(name, **kwargs):
 
+    @_internal_autocorrect
+    def _internal_factory(name, **kwargs):
         new_obj = _obj(name)
         for k,v in kwargs.items():
             new_obj.put(k, v)
