@@ -62,10 +62,9 @@ CLDA::~CLDA()
 }
 
 template <typename ST, typename U>
-bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
+void CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	train_machine_templated<ST, U>(data, m_labels);
-	return true;
 }
 
 template <typename ST, typename U>

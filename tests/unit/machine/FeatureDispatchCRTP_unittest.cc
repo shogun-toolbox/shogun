@@ -23,11 +23,10 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(CDenseFeatures<T>* data)
+	void train_machine_templated(CDenseFeatures<T>* data)
 	{
-		if (data->get_feature_type() == m_expected_feature_type)
-			return true;
-		return false;
+		if (data->get_feature_type() != m_expected_feature_type)
+			throw ShogunException("Unexpected feature type");
 	}
 	virtual const char* get_name() const
 	{
@@ -83,7 +82,7 @@ TYPED_TEST(DenseDispatchCRTP, train_with_dense)
 	    some<CDenseRealMockMachine>(features->get_feature_type());
 	mock_machine->set_labels(some<CBinaryLabels>(labels));
 
-	EXPECT_TRUE(mock_machine->train(features));
+	EXPECT_NO_THROW(mock_machine->train(features));
 }
 
 typedef ::testing::Types<uint8_t, char, uint16_t> SGCharTypes;

@@ -95,8 +95,6 @@ bool CLinearRidgeRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
-<<<<<<< HEAD
-=======
 
 template void CLinearRidgeRegression::train_machine_templated<floatmax_t>(
     const CDenseFeatures<floatmax_t>* features, CLabels* labels);
@@ -104,4 +102,3 @@ template void CLinearRidgeRegression::train_machine_templated<float64_t>(
     const CDenseFeatures<float64_t>* features, CLabels* labels);
 template void CLinearRidgeRegression::train_machine_templated<float32_t>(
     const CDenseFeatures<float32_t>* features, CLabels* labels);
->>>>>>> 30db0180c... LRR f

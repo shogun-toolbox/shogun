@@ -99,7 +99,7 @@ namespace shogun
 
 	protected:
 		template <typename T>
-		bool train_machine_templated(const CDenseFeatures<T>* feats);
+		void train_machine_templated(const CDenseFeatures<T>* feats);
 		template <typename T>
 		void train_machine_templated(
 			const CDenseFeatures<T>* features, CLabels* labels);

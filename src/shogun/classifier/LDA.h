@@ -172,7 +172,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 */
 		template <typename ST, typename U = typename std::enable_if_t<
 		                           std::is_floating_point<ST>::value>>
-		bool train_machine_templated(CDenseFeatures<ST>* data);
+		void train_machine_templated(CDenseFeatures<ST>* data);
 
 		template <
 		    typename ST, typename U = typename std::enable_if_t<

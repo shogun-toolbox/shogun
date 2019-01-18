@@ -39,15 +39,24 @@ namespace shogun
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:
-				return this_casted->template train_machine_templated<float64_t>(
+			{
+				this_casted->template train_machine_templated<float64_t>(
 				    data->as<CDenseFeatures<float64_t>>());
+				return true;
+			}
 			case F_SHORTREAL:
-				return this_casted->template train_machine_templated<float32_t>(
+			{
+				this_casted->template train_machine_templated<float32_t>(
 				    data->as<CDenseFeatures<float32_t>>());
+				return true;
+			}
 			case F_LONGREAL:
-				return this_casted
+			{
+				this_casted
 				    ->template train_machine_templated<floatmax_t>(
 				        data->as<CDenseFeatures<floatmax_t>>());
+				return true;
+			}
 			default:
 				SG_SERROR(
 				    "Training with %s of provided type %s is not "
