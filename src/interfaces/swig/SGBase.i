@@ -238,6 +238,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %}
 
 %feature("nothread") _swig_monkey_patch;
+%feature("docstring", "Adds a Python object (such as a function) \n"
+					  "to a class (method) or to a module. \n"
+					  "The name of the function should not conflict with \n"
+	   				  "another Python object in the same scope") _swig_monkey_patch;
 
 // taken from https://github.com/swig/swig/issues/723#issuecomment-230178855
 %typemap(out) void _swig_monkey_patch "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
@@ -338,9 +342,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
-#ifdef SWIGPYTHON
-%rename(_get) get(const std::string&);
-#endif // SWIGPYTHON
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
@@ -480,25 +481,6 @@ namespace shogun
 }
 
 %pythoncode %{
-def _internal_get_param(self, name):
-
-	for f in (self._get,
-			self._get_real,
-			self._get_int,
-			self._get_real_matrix,
-			self._get_real_vector,
-			self._get_int_vector
-			):
-		try:
-			return f(name)
-		except SystemError:
-			pass
-		except Exception:
-			raise
-	raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
-
-_swig_monkey_patch(SGObject, "get", _internal_get_param)
-
 try:
     import copy_reg
 except ImportError:

@@ -1294,6 +1294,8 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 }
 
 %feature("nothread") _rename_python_function;
+%feature("docstring", "Renames a Python function in the given module or class. \n"
+					  "Similar functionality to SWIG's %rename.") _rename_python_function;
 
 %typemap(out) void _rename_python_function "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
 %inline %{
@@ -1335,21 +1337,27 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
   }
 %}
 
-
 %pythoncode %{
 import sys
 
-_FACTORIES = [
-		("_distance", "distance"),
-		("_evaluation", "evaluation"),
-		("_kernel", "kernel"),
-		("_machine", "machine"),
-		("_multiclass_strategy", "multiclass_strategy"),
-		("_ecoc_encoder", "ecoc_encoder"),
-		("_ecoc_decoder", "ecoc_decoder"),
-		("_transformer", "transformer"),
-		("_layer", "layer")
-		]
+_GETTERS = ["get",
+			"get_real",
+			"get_int",
+			"get_real_matrix",
+			"get_real_vector",
+			"get_int_vector"
+   ]
+
+_FACTORIES = ["distance",
+			  "evaluation",
+			  "kernel",
+			  "machine",
+			  "multiclass_strategy",
+			  "ecoc_encoder",
+			  "ecoc_decoder",
+			  "transformer",
+			  "layer"
+	 ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
     """
@@ -1373,8 +1381,40 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     return _internal_factory
 
 for factory in _FACTORIES:
-	_rename_python_function(sys.modules[__name__], factory[1], factory[0])
-	_swig_monkey_patch(sys.modules[__name__], factory[1], _internal_factory_wrapper(*factory))
+	# renames function in the current module (shogun) from `factory` to "_" + `factory`
+	# which "hides" it from the user
+	factory_private_name = "_{}".format(factory)
+	_rename_python_function(sys.modules[__name__], factory, factory_private_name)
+	# adds a new function called `factory` to the shogun module which is a wrapper
+	# that passes **kwargs to objects via .put (see _internal_factory_wrapper)
+	_swig_monkey_patch(sys.modules[__name__], factory, _internal_factory_wrapper(factory_private_name, factory))
+
+for getter in _GETTERS:
+	_rename_python_function(_shogun.SGObject, getter, "_{}".format(getter))
+
+def _internal_get_param(self, name):
+	"""
+    Returns the value of the given parameter.
+    The return type depends on the parameter,
+    e.g. could be a builtin scalar or a
+    numpy array representing a vector or matrix
+   	"""
+
+	for f in (self._get,
+			  self._get_real,
+			  self._get_int,
+			  self._get_real_matrix,
+			  self._get_real_vector,
+			  self._get_int_vector):
+		try:
+			return f(name)
+		except SystemError:
+			pass
+		except Exception:
+			raise
+	raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
+
+_swig_monkey_patch(SGObject, "get", _internal_get_param)
 %}
 
 #endif /* HAVE_PYTHON */
