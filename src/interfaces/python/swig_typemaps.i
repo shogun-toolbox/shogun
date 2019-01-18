@@ -1300,6 +1300,7 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %ignore create;
 %ignore delete_object;
 %ignore create_object;
+%rename(_available_objects) available_objects;
 %include <shogun/base/class_list.h>
 %rename(_kernel) kernel;
 
@@ -1339,7 +1340,7 @@ def _internal_autocorrect(func):
                 raise
             groups = match.groups()
             wrong_class_name = groups[0]
-            all_objects = _shogun.available_objects()
+            all_objects = _shogun._available_objects()
             dists = [_internal_iterative_levenshtein(wrong_class_name, x) for x in all_objects]
             did_you_mean_class_name = all_objects[dists.index(min(dists))]
             raise SystemError("{} Did you mean {}?".format(match.group(), did_you_mean_class_name))
