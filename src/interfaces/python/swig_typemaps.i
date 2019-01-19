@@ -1300,40 +1300,45 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %typemap(out) void _rename_python_function "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
 %inline %{
 	static void _rename_python_function(PyObject *type, PyObject *old_name, PyObject *new_name) {
-
+		PyObject *dict = NULL,
+				 *func_obj = NULL;
 #if PY_VERSION_HEX>=0x03000000
 		if (!PyUnicode_Check(old_name) || !PyUnicode_Check(new_name))
 #else
 		if (!PyString_Check(old_name) || !PyString_Check(new_name))
 #endif
 			{
-				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' need to be strings");
+				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' have to be strings");
 				return;
 			}
-
 		if (PyType_Check(type)) {
 			PyTypeObject *pytype = (PyTypeObject *)type;
-			PyObject* obj = PyDict_GetItem(pytype->tp_dict, old_name);
-			if (obj == NULL) {
-				PyErr_SetString(PyExc_ValueError, "object definition does not exist in the given type!");
+			dict = pytype->tp_dict;
+			func_obj = PyDict_GetItem(dict, old_name);
+			if (func_obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "'old_name' name does not exist in the given type");
 				return;
 			}
-			PyDict_SetItem(pytype->tp_dict, new_name, obj);
-			PyDict_DelItem(pytype->tp_dict, old_name);
 		}
-
-	  	else if ( PyModule_Check(type)) {
-		  	PyObject* module = PyModule_GetDict(type);
-		 	PyObject* obj = PyDict_GetItem(module, old_name);
-			if (obj == NULL) {
-				PyErr_SetString(PyExc_ValueError, "object definition does not exist in the given module!");
+		else if ( PyModule_Check(type)) {
+			dict = PyModule_GetDict(type);
+			func_obj = PyDict_GetItem(dict, old_name);
+			if (func_obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "'old_name' does not exist in the given module");
 				return;
 			}
-			PyDict_SetItem(module, new_name, obj);
-			PyDict_DelItem(module, old_name);
 		}
-		else
-			PyErr_SetString(PyExc_ValueError, "'type' is neither a module or a type");
+		else {
+			PyErr_SetString(PyExc_ValueError, "'type' is neither a module or a Python type");
+			return;
+		}
+		if (PyDict_Contains(dict, new_name))
+		{
+			PyErr_SetString(PyExc_ValueError, "new_name already exists in the given scope");
+			return;
+		}
+		PyDict_SetItem(dict, new_name, func_obj);
+		PyDict_DelItem(dict, old_name);
   }
 %}
 
