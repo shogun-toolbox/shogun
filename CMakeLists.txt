@@ -223,6 +223,47 @@ IF(ENABLE_COVERAGE)
 	SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
 ENDIF()
 
+OPTION(ENABLE_CONCEPTS "Enable Concepts TS support" OFF)
+IF(ENABLE_CONCEPTS)
+	# Ref: https://github.com/vector-of-bool/CMakeCM
+	include(CheckCXXSourceCompiles)
+	set(code [[
+
+    template <typename T>
+    concept Animal = requires(T a) {
+        { a.make_sound() } -> void
+    };
+
+    template <Animal T>
+    void make_sound(T animal) {
+        animal.make_sound();
+    }
+
+    struct Cat {
+        void make_sound() {
+            /* Meow */
+        }
+    };
+
+    int main() {
+        Cat c;
+        make_sound(c);
+    }
+
+]])
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		SET(CONCEPTS_COMPILER_FLAGS "-fconcepts -Dconcept='concept\ bool'")
+		SET(CMAKE_CXX_FLAGS "${CONCEPTS_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
+		check_cxx_source_compiles("${code}" CXX_CONCEPTS_ENABLED)
+		IF(NOT CXX_CONCEPTS_ENABLED)
+			MESSAGE(FATAL_ERROR "Concepts TS isnt working")
+		ENDIF()
+
+	ELSE()
+		MESSAGE(FATAL_ERROR "Concepts TS is only supported with GCC")
+	ENDIF()
+ENDIF()
+
 IF(ENABLE_TSAN)
 	IF (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		MESSAGE(WARNING "Thread-sanitizer results with an optimised (non-Debug) build may be misleading")

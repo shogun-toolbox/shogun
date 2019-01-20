@@ -317,31 +317,20 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * Float Types: [0, 1)
 		 * Int Types: std::numeric_limit<T>::(min->max)
 		**/
-		template <typename U>
-		using enable_simd_float = std::enable_if_t<sg_is_same_v<U, float64_t>>;
-		template <typename U = T>
-		auto random() -> enable_simd_float<U>
-		{
+		template <typename U = T> requires Floating<U> && RngVectorizable<U>
+		void random() {
 			auto r = std::make_unique<CRandom>();
 			r->fill_array_co(matrix, num_rows * num_cols);
 		}
 
-		template <typename U>
-		using enable_simd_int =
-		    std::enable_if_t<sg_is_any_of_v<U, uint32_t, uint64_t>>;
-		template <typename U = T>
-		auto random() -> enable_simd_int<U>
-		{
+		template <typename U = T> requires Integral<U> && RngVectorizable<U>
+		void random() {
             auto r = std::make_unique<CRandom>();
 			r->fill_array(matrix, num_rows * num_cols);
 		}
 
-		template <typename U>
-		using enable_nonsimd_float =
-		    std::enable_if_t<sg_is_any_of_v<U, float32_t, floatmax_t>>;
-		template <typename U = T>
-		auto random() -> enable_nonsimd_float<U>
-		{
+		template <typename U = T> requires Floating<U>
+		void random() {
 			auto r = std::make_unique<CRandom>();
 			// Casting floats upwards or downwards is safe
 			// Ref: https://stackoverflow.com/a/36840390/3656081
@@ -349,13 +338,8 @@ template<class T> class SGMatrix : public SGReferencedData
 			    [&r](auto){ return r->random_half_open(); });
 		}
 
-		template <typename U>
-		using enable_nonsimd_int =
-		    std::enable_if_t<sg_is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
-		                                 int32_t, int64_t>>;
-		template <typename U = T>
-		auto random() -> enable_nonsimd_int<U>
-		{
+		template <typename U = T> requires Integral<U>
+		void random() {
 			auto r = std::make_unique<CRandom>();
             std::transform(matrix, matrix + (num_rows*num_cols), matrix,
                            [&r](auto){ return r->random(
