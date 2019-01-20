@@ -15,3 +15,4 @@ Machine hierarchical = machine("Hierarchical", merges=3, distance=d)
 #![train_model]
 hierarchical.train(features_train)
 #![train_model]
+
