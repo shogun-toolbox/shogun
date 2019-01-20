@@ -13,7 +13,7 @@ Transformer pca = transformer("PCA")
 
 #![create_machine]
 Distance d = distance("EuclideanDistance", lhs=feats_train, rhs=feats_train)
-KMeans kmeans(distance=d, k=2)
+Machine kmeans = machine("KMeans", distance=d, k=2)
 #![create_machine]
 
 
@@ -31,6 +31,6 @@ Labels labels_predict = pipeline.apply(feats_train)
 
 # additional integration variables
 #![extract_centers_and_radius]
-RealMatrix c = kmeans.get_cluster_centers()
+RealMatrix c = kmeans.get_real_matrix("cluster_centers")
 RealVector r = kmeans.get_real_vector("radiuses")
 #![extract_centers_and_radius]

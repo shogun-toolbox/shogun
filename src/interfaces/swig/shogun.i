@@ -229,24 +229,13 @@ namespace shogun
 #else // SWIGJAVA
 %template(put) CSGObject::put_vector_or_matrix_from_double_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 #endif // SWIGJAVA
-#ifdef SWIGPYTHON
-%template(_get_real) CSGObject::get<float64_t, void>;
-%template(_get_int) CSGObject::get<int32_t, void>;
-%template(_get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
-#else // SWIGPYTHON
 %template(get_real) CSGObject::get<float64_t, void>;
 %template(get_int) CSGObject::get<int32_t, void>;
 %template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
-#endif // SWIGPYTHON
 
 #ifndef SWIGJAVA
-#ifdef SWIGPYTHON
-%template(_get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
-%template(_get_int_vector) CSGObject::get<SGVector<int32_t>, void>;
-#else // SWIGPYTHON
 %template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
 %template(get_int_vector) CSGObject::get<SGVector<int32_t>, void>;
-#endif // SWIGPYTHON
 #else // SWIGJAVA
 %template(get_real_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<float64_t>, float64_t>;
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
