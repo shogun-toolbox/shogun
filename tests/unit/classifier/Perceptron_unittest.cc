@@ -57,10 +57,9 @@ TEST(Perceptron, train)
 	auto test_labels = wrap(env->get_labels_test());
 
 	auto perceptron = some<CPerceptron>();
-	perceptron->set_labels(labels);
-	EXPECT_TRUE(perceptron->train(features));
+	perceptron->fit(features, labels);
 
-	auto results = wrap(perceptron->apply(test_features));
+	auto results = wrap(perceptron->predict(test_features));
 	auto acc = some<CAccuracyMeasure>();
 	EXPECT_EQ(acc->evaluate(results, test_labels), 1.0);
 }
@@ -74,8 +73,7 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	auto test_labels = wrap(env->get_labels_test());
 
 	auto perceptron = some<CPerceptron>();
-	perceptron->set_labels(labels);
-	perceptron->train(features);
+	perceptron->fit(features, labels);
 
 	auto weights = perceptron->get_w();
 
@@ -83,9 +81,63 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	perceptron_initialized->set_initialize_hyperplane(false);
 	perceptron_initialized->set_w(weights);
 	perceptron_initialized->put<int32_t>("max_iterations", 1);
-	perceptron_initialized->set_labels(labels);
 
-	perceptron_initialized->train(features);
+	perceptron_initialized->fit(features, labels);
 	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
 }
 
+<<<<<<< HEAD
+=======
+TEST(Perceptron, continue_training_consistency)
+{
+	auto env = linear_test_env->getBinaryLabelData();
+	auto features = wrap(env->get_features_train());
+	auto labels = wrap(env->get_labels_train());
+	auto test_features = wrap(env->get_features_test());
+	auto test_labels = wrap(env->get_labels_test());
+
+	auto perceptron = some<CPerceptron>();
+	perceptron->fit(features, labels);
+
+	auto results = perceptron->predict(test_features);
+
+	index_t iter = 0;
+
+	auto perceptron_stop = some<CPerceptron>();
+
+	std::function<bool()> callback = [&iter]() {
+		if (iter >= 1)
+		{
+			get_global_signal()->get_subscriber()->on_next(SG_BLOCK_COMP);
+			return true;
+		}
+		iter++;
+		return false;
+	};
+	perceptron_stop->set_callback(callback);
+
+	perceptron_stop->fit(features, labels);
+
+	ASSERT(!perceptron_stop->is_complete());
+
+	auto perceptron_one = some<CPerceptron>();
+	perceptron_one->put<int32_t>("max_iterations", 1);
+	perceptron_one->fit(features, labels);
+
+	auto results_one = perceptron_one->predict(test_features);
+	auto results_stop = perceptron_stop->predict(test_features);
+	EXPECT_TRUE(results_one->equals(results_stop));
+
+	perceptron_stop->set_callback(nullptr);
+	perceptron_stop->continue_train();
+
+	auto results_complete = perceptron_stop->predict(test_features);
+
+	EXPECT_TRUE(results_complete->equals(results));
+
+	SG_UNREF(results_one);
+	SG_UNREF(results_stop);
+	SG_UNREF(results);
+	SG_UNREF(results_complete);
+}
+>>>>>>> Use new api in unittests

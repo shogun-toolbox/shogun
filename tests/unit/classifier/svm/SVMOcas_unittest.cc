@@ -24,15 +24,17 @@ TEST(SVMOcasTest,train)
 
 	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_test();
 
-	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
+	CSVMOcas* ocas = new CSVMOcas();
+	ocas->put("C1", 1.0);
+	ocas->put("C2", 1.0);
 	ocas->parallel->set_num_threads(1);
 	ocas->set_epsilon(1e-5);
-	ocas->train();
+	ocas->fit(train_feats, ground_truth);
 	float64_t objective = ocas->compute_primal_objective();
 
 	EXPECT_NEAR(objective, 0.024344632618686062, 1e-2);
 
-	CLabels* pred = ocas->apply(test_feats);
+	CLabels* pred = ocas->predict(test_feats);
 	SG_REF(pred);
 	CAccuracyMeasure evaluate = CAccuracyMeasure();
 	evaluate.evaluate(pred, ground_truth);

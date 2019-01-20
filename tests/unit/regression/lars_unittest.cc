@@ -102,8 +102,7 @@ TEST(LeastAngleRegression, lasso_n_greater_than_d)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression();
-	lars->set_labels((CLabels*) labels);
-	lars->train(features);
+	lars->fit(features, labels);
 
 	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
@@ -138,8 +137,7 @@ TEST(LeastAngleRegression, lasso_n_less_than_d)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression();
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->fit(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
@@ -173,8 +171,7 @@ TEST(LeastAngleRegression, lars_n_greater_than_d)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
-	lars->set_labels((CLabels*) labels);
-	lars->train(features);
+	lars->fit(features, labels);
 
 	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
@@ -209,8 +206,7 @@ TEST(LeastAngleRegression, lars_n_less_than_d)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->fit(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
@@ -253,12 +249,10 @@ void lars_n_less_than_d_feature_test_templated()
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
 	SG_REF(lars)
 
-	lars->set_labels(labels);
-
 	//Catch exceptions thrown when training, clean up
 	try
 	{
-		lars->train(features);
+		lars->fit(features, labels);
 	}
 	catch(...)
 	{
@@ -439,8 +433,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 
 	auto labels = some<CRegressionLabels>(lab);
 	auto lars = some<CLeastAngleRegression>(false);
-	lars->set_labels((CLabels*) labels);
-	lars->train(features);
+	lars->fit(features, labels);
 	// Full LAR model
 	SGVector<float64_t> w=lars->get_w();
 	Map<VectorXd> map_w(w.vector, w.size());
@@ -473,10 +466,9 @@ TEST(LeastAngleRegression, early_stop_l1_norm)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
-	lars->set_labels((CLabels*) labels);
 	// set max l1 norm
 	lars->set_max_l1_norm(1);
-	lars->train(features);
+	lars->fit(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));

@@ -97,9 +97,9 @@ TEST(Serialization, liblinear)
 
 	CLibLinear* liblin = new CLibLinear(1.0, train_feats, ground_truth);
 	liblin->set_epsilon(1e-5);
-	liblin->train();
+	liblin->fit(train_feats, ground_truth);;
 
-	CBinaryLabels* pred = liblin->apply(test_feats)->as<CBinaryLabels>();
+	CBinaryLabels* pred = liblin->predict(test_feats)->as<CBinaryLabels>();
 	for (int i = 0; i < num_samples; ++i)
 		EXPECT_EQ(ground_truth->get_int_label(i), pred->get_int_label(i));
 	SG_UNREF(pred);

@@ -30,15 +30,15 @@ TEST(LibLinearRegression, lr_with_bias)
 	CRegressionLabels* labels_test = mockData->get_labels_test();
 	CRegressionLabels* labels_train = mockData->get_labels_train();
 
-	CLibLinearRegression* lr =
-		new CLibLinearRegression(1., train_feats, labels_train);
+	CLibLinearRegression* lr = new CLibLinearRegression();
+	lr->put("C", 1.);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
-	lr->train();
+	lr->fit(train_feats, labels_train);
 
 	CRegressionLabels* predicted_labels =
-		lr->apply(test_feats)->as<CRegressionLabels>();
+		lr->predict(test_feats)->as<CRegressionLabels>();
 
 	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
 	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);
@@ -66,15 +66,15 @@ TEST(LibLinearRegression, lr_without_bias)
 	CRegressionLabels* labels_test = mockData->get_labels_test();
 	CRegressionLabels* labels_train = mockData->get_labels_train();
 
-	CLibLinearRegression* lr =
-			new CLibLinearRegression(1., train_feats, labels_train);
+	CLibLinearRegression* lr = new CLibLinearRegression();
+	lr->put("C", 1.);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
-	lr->train();
+	lr->fit(train_feats, labels_train);
 
 	CRegressionLabels* predicted_labels =
-			lr->apply(test_feats)->as<CRegressionLabels>();
+			lr->predict(test_feats)->as<CRegressionLabels>();
 
 	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
 	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);

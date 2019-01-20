@@ -23,7 +23,7 @@ public:
 	{
 	}
 	template <typename T>
-	void train_machine_templated(CDenseFeatures<T>* data)
+	void train_machine_templated(CDenseFeatures<T>* data, CLabels* labels)
 	{
 		if (data->get_feature_type() != m_expected_feature_type)
 			throw ShogunException("Unexpected feature type");
@@ -80,9 +80,8 @@ TYPED_TEST(DenseDispatchCRTP, train_with_dense)
 
 	auto mock_machine =
 	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
 
-	EXPECT_NO_THROW(mock_machine->train(features));
+	EXPECT_NO_THROW(mock_machine->fit(features, some<CBinaryLabels>(labels)));
 }
 
 typedef ::testing::Types<uint8_t, char, uint16_t> SGCharTypes;
@@ -116,9 +115,9 @@ TEST(TrainDense, train_dense_with_wrong_feature_type)
 
 	auto mock_machine =
 	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
 
-	EXPECT_THROW(mock_machine->train(features), ShogunException);
+	EXPECT_THROW(mock_machine->fit(features, some<CBinaryLabels>(labels)), 
+				 ShogunException);
 }
 
 TEST(TrainDense, train_dense_with_wrong_feature_class)
@@ -130,6 +129,5 @@ TEST(TrainDense, train_dense_with_wrong_feature_class)
 
 	auto mock_machine =
 	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
-	EXPECT_THROW(mock_machine->train(features), ShogunException);
+	EXPECT_THROW(mock_machine->fit(features, some<CBinaryLabels>(labels)), ShogunException);
 }
