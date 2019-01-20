@@ -1292,16 +1292,85 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
     PyErr_SetString(PyExc_SystemError, $1.what());
     SWIG_fail;
 }
-%rename(_kernel) kernel;
+
+%feature("nothread") _rename_python_function;
+%feature("docstring", "Renames a Python function in the given module or class. \n"
+					  "Similar functionality to SWIG's %rename.") _rename_python_function;
+
+%typemap(out) void _rename_python_function "$result = PyErr_Occurred() ? NULL : SWIG_Py_Void();"
+%inline %{
+	static void _rename_python_function(PyObject *type, PyObject *old_name, PyObject *new_name) {
+		PyObject *dict = NULL,
+				 *func_obj = NULL;
+#if PY_VERSION_HEX>=0x03000000
+		if (!PyUnicode_Check(old_name) || !PyUnicode_Check(new_name))
+#else
+		if (!PyString_Check(old_name) || !PyString_Check(new_name))
+#endif
+			{
+				PyErr_SetString(PyExc_TypeError, "'old_name' and 'new_name' have to be strings");
+				return;
+			}
+		if (PyType_Check(type)) {
+			PyTypeObject *pytype = (PyTypeObject *)type;
+			dict = pytype->tp_dict;
+			func_obj = PyDict_GetItem(dict, old_name);
+			if (func_obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "'old_name' name does not exist in the given type");
+				return;
+			}
+		}
+		else if ( PyModule_Check(type)) {
+			dict = PyModule_GetDict(type);
+			func_obj = PyDict_GetItem(dict, old_name);
+			if (func_obj == NULL) {
+				PyErr_SetString(PyExc_ValueError, "'old_name' does not exist in the given module");
+				return;
+			}
+		}
+		else {
+			PyErr_SetString(PyExc_ValueError, "'type' is neither a module or a Python type");
+			return;
+		}
+		if (PyDict_Contains(dict, new_name))
+		{
+			PyErr_SetString(PyExc_ValueError, "new_name already exists in the given scope");
+			return;
+		}
+		PyDict_SetItem(dict, new_name, func_obj);
+		PyDict_DelItem(dict, old_name);
+  }
+%}
 
 %pythoncode %{
+import sys
+
+_GETTERS = ["get",
+            "get_real",
+            "get_int",
+            "get_real_matrix",
+            "get_real_vector",
+            "get_int_vector"
+   ]
+
+_FACTORIES = ["distance",
+              "evaluation",
+              "kernel",
+              "machine",
+              "multiclass_strategy",
+              "ecoc_encoder",
+              "ecoc_decoder",
+              "transformer",
+              "layer"
+     ]
+
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
     """
     A wrapper that returns a generic factory that
     accepts kwargs and passes them to shogun.object_name
     via .put
     """
-    _obj = getattr(_shogun, object_name)
+    _obj = getattr(sys.modules[__name__], object_name)
     def _internal_factory(name, **kwargs):
 
         new_obj = _obj(name)
@@ -1312,10 +1381,47 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
         _internal_factory.__doc__ = docstring
     else:
         _internal_factory.__doc__ = _obj.__doc__.replace(object_name, new_name)
+    _internal_factory.__qualname__ = new_name
 
     return _internal_factory
 
-kernel = _internal_factory_wrapper("_kernel", "kernel")
+for factory in _FACTORIES:
+    # renames function in the current module (shogun) from `factory` to "_" + `factory`
+    # which "hides" it from the user
+    factory_private_name = "_{}".format(factory)
+    _rename_python_function(sys.modules[__name__], factory, factory_private_name)
+    # adds a new function called `factory` to the shogun module which is a wrapper
+    # that passes **kwargs to objects via .put (see _internal_factory_wrapper)
+    _swig_monkey_patch(sys.modules[__name__], factory, _internal_factory_wrapper(factory_private_name, factory))
+
+# makes all the SGObject getters defined in _GETTERS private
+_internal_getter_methods = []
+for getter in _GETTERS:
+    _private_getter = "_{}".format(getter)
+    _rename_python_function(_shogun.SGObject, getter, _private_getter)
+    _internal_getter_methods.append(_shogun.SGObject.__dict__[_private_getter])
+
+def _internal_get_param(self, name):
+    """
+    Returns the value of the given parameter.
+    The return type depends on the parameter,
+    e.g. could be a builtin scalar or a
+    numpy array representing a vector or matrix
+    """
+
+    for getter in _internal_getter_methods:
+        try:
+            return getter(self, name)
+        except SystemError:
+            pass
+        except Exception:
+            raise
+    if name in self.parameter_names():
+        raise ValueError("The current Python API does not have a getter for '{}'".format(name))
+    else:
+        raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
+
+_swig_monkey_patch(SGObject, "get", _internal_get_param)
 %}
 
 #endif /* HAVE_PYTHON */

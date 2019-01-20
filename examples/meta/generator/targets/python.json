@@ -12,13 +12,13 @@
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = $typeName($arguments)$kwargs",
-        "Copy": "$name = $expr$kwargs",
+        "Construct": "$name = $typeName($arguments$kwargs)",
+        "Copy": "$name = $expr",
         "KeywordArguments": {
-            "List": "\n$elements",
-            "Element": "$name.put(\"$keyword\", $expr)",
-            "Separator": "\n",
-            "InitialSeperatorWhenArgs>0": false
+            "List": "$elements",
+            "Element": "$keyword=$expr",
+            "Separator": ", ",
+            "InitialSeperatorWhenArgs>0": true
         },
         "BoolVector": "$name = np.zeros( ($arguments), dtype='bool')",
         "CharVector": "$name = np.zeros( ($arguments), dtype='|S1')",
@@ -64,7 +64,7 @@
             "get_real_matrix": "$object.get($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
-        "GlobalCall": "$method($arguments)",
+        "GlobalCall": "$method($arguments$kwargs)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },
