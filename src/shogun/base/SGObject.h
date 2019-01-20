@@ -13,7 +13,6 @@
 
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
-#include <shogun/base/base_types.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -25,6 +24,7 @@
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
+#include <shogun/lib/sg_type_traits.h>
 
 #include <utility>
 #include <vector>

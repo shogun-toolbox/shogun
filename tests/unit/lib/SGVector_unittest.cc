@@ -9,6 +9,22 @@
 
 using namespace shogun;
 
+TEST(SGVectorTest, vectorized_rng)
+{
+	auto rng_check_float = [](auto elem) {
+		SGVector<decltype(elem)> sg_vec(50);
+		sg_vec.random();
+		for (int i = 0; i < sg_vec.size(); i++)
+		{
+			EXPECT_LE(0.0, sg_vec[i]);
+			EXPECT_GT(1.0, sg_vec[i]);
+		}
+	};
+	rng_check_float(float32_t{0.0});
+	rng_check_float(float64_t{0.0});
+	rng_check_float(floatmax_t{0.0});
+}
+
 TEST(SGVectorTest,ctor)
 {
 	SGVector<float64_t> a(10);

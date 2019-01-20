@@ -11,13 +11,16 @@
 
 #include <shogun/base/macros.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/util/iterators.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/Random.h>
+#include <shogun/util/iterators.h>
 
-#include <memory>
+#include "sg_type_traits.h"
 #include <atomic>
+#include <memory>
+#include <algorithm>
 
 namespace Eigen
 {
@@ -306,8 +309,59 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Set matrix to a constant */
 		void set_const(T const_elem);
 
-		/** fill matrix with zeros */
+		/** Fill matrix with zeros */
 		void zero();
+
+		/**
+		 * Fill matrix with uniformly distributed randoms
+		 * Float Types: [0, 1)
+		 * Int Types: std::numeric_limit<T>::(min->max)
+		**/
+		template <typename U>
+		using enable_simd_float = std::enable_if_t<sg_is_same_v<U, float64_t>>;
+		template <typename U = T>
+		auto random() -> enable_simd_float<U>
+		{
+			auto r = std::make_unique<CRandom>();
+			r->fill_array_co(matrix, num_rows * num_cols);
+		}
+
+		template <typename U>
+		using enable_simd_int =
+		    std::enable_if_t<sg_is_any_of_v<U, uint32_t, uint64_t>>;
+		template <typename U = T>
+		auto random() -> enable_simd_int<U>
+		{
+            auto r = std::make_unique<CRandom>();
+			r->fill_array(matrix, num_rows * num_cols);
+		}
+
+		template <typename U>
+		using enable_nonsimd_float =
+		    std::enable_if_t<sg_is_any_of_v<U, float32_t, floatmax_t>>;
+		template <typename U = T>
+		auto random() -> enable_nonsimd_float<U>
+		{
+			auto r = std::make_unique<CRandom>();
+			// Casting floats upwards or downwards is safe
+			// Ref: https://stackoverflow.com/a/36840390/3656081
+			std::transform(matrix, matrix + (num_rows*num_cols), matrix,
+			    [&r](auto){ return r->random_half_open(); });
+		}
+
+		template <typename U>
+		using enable_nonsimd_int =
+		    std::enable_if_t<sg_is_any_of_v<U, int8_t, uint8_t, int16_t, uint16_t,
+		                                 int32_t, int64_t>>;
+		template <typename U = T>
+		auto random() -> enable_nonsimd_int<U>
+		{
+			auto r = std::make_unique<CRandom>();
+            std::transform(matrix, matrix + (num_rows*num_cols), matrix,
+                           [&r](auto){ return r->random(
+                               std::numeric_limits<T>::min(),
+                               std::numeric_limits<T>::max()); });
+		}
 
 		/**
 		 * Checks whether the matrix is symmetric or not. The equality check
