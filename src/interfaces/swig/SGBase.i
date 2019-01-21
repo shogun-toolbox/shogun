@@ -503,9 +503,13 @@ namespace shogun
 		PyObject* parameter_types() const {
 			PyObject* py_result = PyDict_New();
 			for (auto const& each: self->get_parameters()) {
-				int result = PyDict_SetItem(py_result,
-											PyUnicode_FromString(each.first.c_str()),
-											PyUnicode_FromString(each.second.get().get_value().type().c_str()));
+#ifdef PYTHON3
+				int result = PyDict_SetItem(py_result, PyUnicode_FromString(each.first.c_str()),
+				PyUnicode_FromString(each.second.get().get_value().type().c_str()));
+#else
+				int result = PyDict_SetItem(py_result, PyString_FromString(each.first.c_str()),
+				PyString_FromString(each.second.get().get_value().type().c_str()));
+#endif
 				if (result == -1) {
 					PyErr_SetString(PyExc_TypeError, "Error whilst creating type dictionary");
 					return NULL;
