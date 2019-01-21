@@ -975,12 +975,12 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-std::vector<std::string> CSGObject::parameter_names() const
+std::map<std::string, std::reference_wrapper<const AnyParameter>> CSGObject::get_parameters() const
 {
-	std::vector<std::string> result;
-	std::transform(self->map.cbegin(), self->map.cend(), std::back_inserter(result),
-		// FIXME: const auto& each fails on gcc 4.8.4
-		[](const std::pair<BaseTag, AnyParameter>& each) -> std::string { return each.first.name(); });
+	std::map<std::string, std::reference_wrapper<const AnyParameter>> result;
+	for (auto const& each: self->map) {
+		result.emplace(each.first.name(), std::cref(each.second));
+	}
 	return result;
 }
 

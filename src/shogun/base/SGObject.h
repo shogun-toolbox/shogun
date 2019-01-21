@@ -28,6 +28,7 @@
 
 #include <utility>
 #include <vector>
+#include <map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -533,10 +534,10 @@ public:
 	 */
 	virtual std::string to_string() const;
 
-	/** Returns set of all parameter names of the object.
+	/** Returns map of all parameter names and AnyParameter references of the object.
 	 *
 	 */
-	std::vector<std::string> parameter_names() const;
+	std::map<std::string, std::reference_wrapper<const AnyParameter>> get_parameters() const;
 
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
