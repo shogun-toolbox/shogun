@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben, Heiko Strathmann, Sergey Lisitsyn
+ */
+
 /* base includes required by any module */
 %include "stdint.i"
 %include "std_string.i"
@@ -485,6 +491,29 @@ namespace shogun
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
+
+        std::vector<std::string> parameter_names() const {
+			std::vector<std::string> result;
+			for (auto const& each: self->get_parameters()) {
+				result.emplace_back(each.first);
+			}
+			return result;
+        }
+
+		PyObject* parameter_types() const {
+			PyObject* py_result = PyDict_New();
+			for (auto const& each: self->get_parameters()) {
+				int result = PyDict_SetItem(py_result,
+											PyUnicode_FromString(each.first.c_str()),
+											PyUnicode_FromString(each.second.get().get_value().type().c_str()));
+				if (result == -1) {
+					PyErr_SetString(PyExc_TypeError, "Error whilst creating type dictionary");
+					return NULL;
+				}
+			}
+
+			return py_result;
+		}
     }
 }
 
