@@ -293,7 +293,12 @@ TEST(SGObjectAll, DISABLED_tag_coverage)
 		std::vector<std::string> old_names;
 		for (auto i : range(obj->m_parameters->get_num_parameters()))
 			old_names.push_back(obj->m_parameters->get_parameter(i)->m_name);
-		auto tag_names = obj->parameter_names();
+
+		std::vector<std::string> tag_names;
+		std::transform(obj->get_parameters().cbegin(), obj->get_parameters().cend(), std::back_inserter(tag_names),
+			[](const std::pair<std::string, std::reference_wrapper<const AnyParameter>>& each) -> std::string {
+			return each.first;
+		});
 
 		// hack to increase readability of error messages
 		old_names.push_back("_Shogun class: " + class_name);
