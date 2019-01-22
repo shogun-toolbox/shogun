@@ -149,6 +149,18 @@ class CLinearMachine : public CMachine
 		 * and therefore the model anyway
 		 */
 		virtual void store_model_features();
+		
+		// FIXME: this is a temporary redirection to make the old API work
+		virtual bool train_machine(CFeatures* data)
+		{
+			this->train_machine(data, m_labels);
+			return true;
+		}
+		
+		virtual void train_machine(CFeatures* features, CLabels* labels)
+		{
+			CMachine::train_machine(features, labels);
+		}
 
 	private:
 

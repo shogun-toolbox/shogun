@@ -346,12 +346,27 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
+		virtual void train_machine(CFeatures* features, CLabels* labels)
+		{
+			SG_SNOTIMPLEMENTED
+		}
+
 		virtual void train_dense(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED
 		}
 
 		virtual void train_string(CFeatures* data)
+		{
+			SG_NOTIMPLEMENTED
+		}
+
+		virtual void train_dense(CFeatures* features, CLabels* labels)
+		{
+			SG_NOTIMPLEMENTED
+		}
+
+		virtual void train_string(CFeatures* features, CLabels* labels)
 		{
 			SG_NOTIMPLEMENTED
 		}

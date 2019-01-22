@@ -70,7 +70,6 @@ bool CMachine::train(CFeatures* data)
 
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
 		{
-			train_dense(data);
 			result = true;
 		}
 		else if (
@@ -111,13 +110,96 @@ bool CMachine::train_locked()
 
 void CMachine::fit(CFeatures* features)
 {
-	REQUIRE(train(features), "Failed to fit machine %s\n", get_name());
+	REQUIRE(train_require_labels(), "Labels are not needed.");
+	/* not allowed to train on locked data */
+	REQUIRE(
+	    !m_data_locked,
+	    "(%s)::train data_lock() was called, only "
+	    "train_locked() is possible. Call data_unlock if you "
+	    "want to call train()\n",
+	    get_name());
+
+	auto sub = connect_to_signal_handler();
+
+	if (support_feature_dispatching())
+	{
+		REQUIRE(features != NULL, "Features not provided!");
+
+		if (support_dense_dispatching() &&
+		    features->get_feature_class() == C_DENSE)
+		{
+			train_dense(features);
+		}
+		else if (
+		    support_string_dispatching() &&
+		    features->get_feature_class() == C_STRING)
+		{
+			train_string(features);
+		}
+		else
+			SG_ERROR(
+			    "Training with %s is not implemented!", features->get_name());
+	}
+	else
+		train_machine(features);
+
+	sub.unsubscribe();
+	reset_computation_variables();
+
+	if (m_store_model_features)
+		store_model_features();
 }
 
 void CMachine::fit(CFeatures* features, CLabels* labels)
 {
-	set_labels(labels);
-	REQUIRE(train(features), "Failed to fit machine %s\n", get_name());
+	REQUIRE(train_require_labels(), "Labels are not needed.");
+	labels->ensure_valid(get_name());
+	/* not allowed to train on locked data */
+	REQUIRE(
+	    !m_data_locked,
+	    "(%s)::train data_lock() was called, only "
+	    "train_locked() is possible. Call data_unlock if you "
+	    "want to call train()\n",
+	    get_name());
+
+	auto sub = connect_to_signal_handler();
+
+	if (support_feature_dispatching())
+	{
+		REQUIRE(features != NULL, "Features not provided!");
+		REQUIRE(
+		    features->get_num_vectors() == labels->get_num_labels(),
+		    "Number of training vectors (%d) does not match number of "
+		    "labels (%d)\n",
+		    features->get_num_vectors(), labels->get_num_labels())
+		// TODO: introduce train_dense / train_string that accept labels
+		// argument
+		set_labels(m_labels);
+
+		if (support_dense_dispatching() &&
+		    features->get_feature_class() == C_DENSE)
+		{
+			train_dense(features, labels);
+		}
+		else if (
+		    support_string_dispatching() &&
+		    features->get_feature_class() == C_STRING)
+		{
+			train_string(features, labels);
+		}
+		else
+			SG_ERROR(
+			    "Training with %s is not implemented!", features->get_name());
+	}
+	else
+		train_machine(features, labels);
+
+	sub.unsubscribe();
+	reset_computation_variables();
+
+	if (m_store_model_features)
+		store_model_features();
+	;
 }
 
 CLabels* CMachine::predict(CFeatures* features)
