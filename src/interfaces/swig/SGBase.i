@@ -506,9 +506,11 @@ namespace shogun
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
+#endif //SWIGPYTHON
     }
 }
 
+#ifdef SWIGPYTHON
 %pythoncode %{
 try:
     import copy_reg
