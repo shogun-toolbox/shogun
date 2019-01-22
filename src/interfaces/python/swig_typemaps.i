@@ -1287,6 +1287,24 @@ TYPEMAP_SPARSEFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_OUT
 
+%typemap(out) shogun::CMap<std::string, std::string>* {
+    $result = PyDict_New();
+    for (int i = 0; i<$1->get_array_size(); ++i) {
+#ifdef PYTHON3
+        auto pair = $1->get_node_ptr(i);
+        int py_result = PyDict_SetItem($result, PyUnicode_FromString((pair->key).c_str()),
+        PyUnicode_FromString((pair->data).c_str()));
+#else
+        int py_result = PyDict_SetItem($result, PyString_FromString((pair->key).c_str()),
+        PyString_FromString((pair->data).c_str()));
+#endif
+        if (py_result == -1) {
+            PyErr_SetString(PyExc_TypeError, "Error whilst creating dictionary");
+            SWIG_fail;
+        }
+    }
+}
+
 %typemap(throws) shogun::ShogunException
 {
     PyErr_SetString(PyExc_SystemError, $1.what());
@@ -1417,7 +1435,7 @@ def _internal_get_param(self, name):
         except Exception:
             raise
     if name in self.parameter_names():
-        raise ValueError("The current Python API does not have a getter for '{}' which has type '{}'".format(name, self.parameter_types()[name]))
+        raise ValueError("The current Python API does not have a getter for '{}' of type '{}'".format(name, self.parameter_types()[name]))
     else:
         raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 

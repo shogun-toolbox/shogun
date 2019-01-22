@@ -379,12 +379,27 @@ namespace std {
 %include <shogun/base/Parallel.h>
 %include <shogun/lib/StoppableSGObject.h>
 
-#ifdef SWIGPYTHON
 namespace shogun
 {
-
     %extend CSGObject
     {
+        std::vector<std::string> parameter_names() const {
+			std::vector<std::string> result;
+			for (auto const& each: $self->get_parameters()) {
+				result.emplace_back(each.first);
+			}
+			return result;
+        }
+
+        CMap<std::string, std::string>* parameter_types() const {
+            auto result = new CMap<std::string, std::string>;
+            for (auto const& each: $self->get_parameters()) {
+                result->add(each.first, each.second.get().get_value().type());
+            }
+            return result;
+        }
+
+#ifdef SWIGPYTHON
         std::string __str__() const
         {
             return $self->to_string();
@@ -491,33 +506,6 @@ namespace shogun
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
-
-        std::vector<std::string> parameter_names() const {
-			std::vector<std::string> result;
-			for (auto const& each: self->get_parameters()) {
-				result.emplace_back(each.first);
-			}
-			return result;
-        }
-
-		PyObject* parameter_types() const {
-			PyObject* py_result = PyDict_New();
-			for (auto const& each: self->get_parameters()) {
-#ifdef PYTHON3
-				int result = PyDict_SetItem(py_result, PyUnicode_FromString(each.first.c_str()),
-				PyUnicode_FromString(each.second.get().get_value().type().c_str()));
-#else
-				int result = PyDict_SetItem(py_result, PyString_FromString(each.first.c_str()),
-				PyString_FromString(each.second.get().get_value().type().c_str()));
-#endif
-				if (result == -1) {
-					PyErr_SetString(PyExc_TypeError, "Error whilst creating type dictionary");
-					return NULL;
-				}
-			}
-
-			return py_result;
-		}
     }
 }
 
