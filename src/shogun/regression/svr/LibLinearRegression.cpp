@@ -2,16 +2,16 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Abhinav Rai, 
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, Abhinav Rai,
  *          Bjoern Esser
  */
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 #include <shogun/base/progress.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/regression/svr/LibLinearRegression.h>
 
@@ -63,9 +63,9 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	ASSERT(features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)
 
-	int32_t num_train_labels=m_labels->get_num_labels();
-	int32_t num_feat=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
+	auto num_train_labels=m_labels->get_num_labels();
+	auto num_feat=features->get_dim_feature_space();
+	auto num_vec=features->get_num_vectors();
 
 	if (num_vec!=num_train_labels)
 	{
@@ -182,8 +182,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	double Gmax_old = CMath::INFTY;
 	double Gmax_new, Gnorm1_new;
 	double Gnorm1_init = 0.0;
-	double *beta = new double[l];
-	double *QD = new double[l];
+	SGVector<float64_t> beta(l);
+	SGVector<float64_t> QD(l);
 	double *y = prob->y;
 
 	// L2R_L2LOSS_SVR_DUAL
@@ -199,11 +199,9 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 	// Initial beta can be set here. Note that
 	// -upper_bound <= beta[i] <= upper_bound
-	for(i=0; i<l; i++)
-		beta[i] = 0;
+	linalg::zero(beta);
+	linalg::zero(w);
 
-	for(i=0; i<w_size; i++)
-		w[i] = 0;
 	for(i=0; i<l; i++)
 	{
 		QD[i] = prob->x->dot(i, prob->x,i);
@@ -339,11 +337,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")
 
 	// calculate objective value
-	double v = 0;
 	int nSV = 0;
-	for(i=0; i<w_size; i++)
-		v += w[i]*w[i];
-	v = 0.5*v;
+	auto v = linalg::dot(w,w)*0.5;
 	for(i=0; i<l; i++)
 	{
 		v += p*fabs(beta[i]) - y[i]*beta[i] + 0.5*lambda[GETI(i)]*beta[i]*beta[i];
@@ -354,9 +349,5 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	SG_INFO("Objective value = %lf\n", v)
 	SG_INFO("nSV = %d\n",nSV)
 
-	delete [] beta;
-	delete [] QD;
 	delete [] index;
 }
-
-#endif /* HAVE_LAPACK */
