@@ -7,7 +7,6 @@
 #ifndef _REGRESSIONLIBLINEAR_H___
 #define _REGRESSIONLIBLINEAR_H___
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMachine.h>
@@ -181,5 +180,4 @@ protected:
 		LIBLINEAR_REGRESSION_TYPE m_liblinear_regression_type;
 };
 }
-#endif /* HAVE_LAPACK */
 #endif
