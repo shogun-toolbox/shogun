@@ -33,38 +33,37 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_dense(CFeatures* data)
+		virtual void train_dense(CFeatures* features, CLabels* labels)
 		{
 			auto this_casted = this->template as<P>();
-			switch (data->get_feature_type())
+			switch (features->get_feature_type())
 			{
 			case F_DREAL:
 			{
 				this_casted->template train_machine_templated<float64_t>(
-				    data->as<CDenseFeatures<float64_t>>());
-				return true;
+				    features->as<CDenseFeatures<float64_t>>(), labels);
+				return;
 			}
 			case F_SHORTREAL:
 			{
 				this_casted->template train_machine_templated<float32_t>(
-				    data->as<CDenseFeatures<float32_t>>());
-				return true;
+				    features->as<CDenseFeatures<float32_t>>(), labels);
+				return;
 			}
 			case F_LONGREAL:
 			{
 				this_casted
 				    ->template train_machine_templated<floatmax_t>(
-				        data->as<CDenseFeatures<floatmax_t>>());
-				return true;
+				        features->as<CDenseFeatures<floatmax_t>>(), labels);
+				return;
 			}
 			default:
 				SG_SERROR(
 				    "Training with %s of provided type %s is not "
 				    "possible!",
-				    data->get_name(),
-				    feature_type(data->get_feature_type()).c_str());
+				    features->get_name(),
+				    feature_type(features->get_feature_type()).c_str());
 			}
-			return false;
 		}
 
 		virtual bool support_feature_dispatching()
@@ -92,20 +91,29 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_string(CFeatures* data)
+		virtual void train_string(CFeatures* data)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_BYTE:
-				return this_casted->template train_machine_templated<uint8_t>(
+			{
+				this_casted->template train_machine_templated<uint8_t>(
 				    data->as<CStringFeatures<uint8_t>>());
+				return;
+			}
 			case F_CHAR:
-				return this_casted->template train_machine_templated<char>(
+			{
+				this_casted->template train_machine_templated<char>(
 				    data->as<CStringFeatures<char>>());
+				return;
+			}
 			case F_WORD:
-				return this_casted->template train_machine_templated<uint16_t>(
+			{
+				this_casted->template train_machine_templated<uint16_t>(
 				    data->as<CStringFeatures<uint16_t>>());
+				return;
+			}
 			default:
 				SG_SERROR(
 				    "Training with %s of provided type %s is "
@@ -113,7 +121,6 @@ namespace shogun
 				    data->get_name(),
 				    feature_type(data->get_feature_type()).c_str());
 			}
-			return false;
 		}
 
 		virtual bool support_feature_dispatching()

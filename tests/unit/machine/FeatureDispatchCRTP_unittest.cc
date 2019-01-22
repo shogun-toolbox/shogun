@@ -49,11 +49,10 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(CStringFeatures<T>* data)
+	void train_machine_templated(CStringFeatures<T>* data)
 	{
-		if (data->get_feature_type() == m_expected_feature_type)
-			return true;
-		return false;
+		if (data->get_feature_type() != m_expected_feature_type)
+			throw ShogunException("Unexpected feature type");
 	}
 	virtual const char* get_name() const
 	{

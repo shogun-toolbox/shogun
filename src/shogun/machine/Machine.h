@@ -346,16 +346,14 @@ class CMachine : public CStoppableSGObject
 			return false;
 		}
 
-		virtual bool train_dense(CFeatures* data)
+		virtual void train_dense(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED
-			return false;
 		}
 
-		virtual bool train_string(CFeatures* data)
+		virtual void train_string(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED
-			return false;
 		}
 
 		virtual bool support_feature_dispatching()

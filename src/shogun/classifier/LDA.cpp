@@ -62,12 +62,6 @@ CLDA::~CLDA()
 }
 
 template <typename ST, typename U>
-void CLDA::train_machine_templated(CDenseFeatures<ST>* data)
-{
-	train_machine_templated<ST, U>(data, m_labels);
-}
-
-template <typename ST, typename U>
 void CLDA::train_machine_templated(CDenseFeatures<ST>* features, CLabels* labels)
 {
 	index_t num_feat = features->get_num_features();

@@ -69,11 +69,17 @@ bool CMachine::train(CFeatures* data)
 		    data->get_num_vectors(), m_labels->get_num_labels())
 
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
-			result = train_dense(data);
+		{
+			train_dense(data);
+			result = true;
+		}
 		else if (
 		    support_string_dispatching() &&
 		    data->get_feature_class() == C_STRING)
-			result = train_string(data);
+		{
+			train_string(data);
+			result = true;
+		}
 		else
 			SG_ERROR("Training with %s is not implemented!", data->get_name());
 	}

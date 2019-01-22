@@ -164,16 +164,11 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 	protected:
 		/** train LDA classifier
 		 *
-		 * @param data training data (parameter can be avoided if distance or
+		 * @param features training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
-		 *
-		 * @return whether training was successful
+		 * @param labels training labels
 		 */
-		template <typename ST, typename U = typename std::enable_if_t<
-		                           std::is_floating_point<ST>::value>>
-		void train_machine_templated(CDenseFeatures<ST>* data);
-
 		template <
 		    typename ST, typename U = typename std::enable_if_t<
 		                     std::is_floating_point<ST>::value>>
