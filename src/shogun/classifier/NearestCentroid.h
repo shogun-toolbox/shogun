@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Philippe Tillet, Sergey Lisitsyn, Viktor Gal, Fernando Iglesias, 
+ * Authors: Philippe Tillet, Sergey Lisitsyn, Viktor Gal, Fernando Iglesias,
  *          Bjoern Esser, Soeren Sonnenburg, Saurabh Goyal
  */
 
@@ -109,9 +109,6 @@ protected:
 
 	///	The centroids of the trained features
 	CDenseFeatures<float64_t>* m_centroids;
-
-	///	Tells if the classifier has been trained or not
-	bool m_is_trained;
 };
 
 }

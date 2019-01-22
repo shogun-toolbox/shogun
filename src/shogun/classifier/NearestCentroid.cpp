@@ -34,7 +34,6 @@ namespace shogun{
 	void CNearestCentroid::init()
 	{
 		m_shrinking=0;
-		m_is_trained=false;
 	}
 
 
@@ -94,7 +93,6 @@ namespace shogun{
 
 		auto centroids_feats = some<CDenseFeatures<float64_t>>(centroids);
 
-		m_is_trained=true;
 		distance->init(centroids_feats, distance->get_rhs());
 
 		SG_FREE(num_per_class);

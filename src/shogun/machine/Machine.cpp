@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Giovanni De Toni, 
- *          Soeren Sonnenburg, Chiyuan Zhang, Thoralf Klein, Evgeniy Andreev, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Giovanni De Toni,
+ *          Soeren Sonnenburg, Chiyuan Zhang, Thoralf Klein, Evgeniy Andreev,
  *          Evan Shelhamer, Fernando Iglesias
  */
 
@@ -10,6 +10,7 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/lib/exception/NotFittedException.h>
 
 using namespace shogun;
 
@@ -80,6 +81,7 @@ bool CMachine::train(CFeatures* data)
 	else
 		result = train_machine(data);
 
+	m_is_trained.store(result, std::memory_order_release);
 	sub.unsubscribe();
 	reset_computation_variables();
 
@@ -194,6 +196,9 @@ CLabels* CMachine::apply(CFeatures* data)
 {
 	SG_DEBUG("entering %s::apply(%s at %p)\n",
 			get_name(), data ? data->get_name() : "NULL", data);
+
+	if (!m_is_trained.load(std::memory_order_acquire))
+		throw NotFittedException("The machine has not been trained!");
 
 	CLabels* result=NULL;
 

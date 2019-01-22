@@ -1,10 +1,10 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
- *          Fernando Iglesias, Chiyuan Zhang, Giovanni De Toni, Evgeniy Andreev, 
- *          Viktor Gal, Shell Hu, Tejas Jogi, Roman Votyakov, Evan Shelhamer, 
- *          Yuyu Zhang, Harshit Syal, Khaled Nasr, Thoralf Klein, Jacob Walker, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
+ *          Fernando Iglesias, Chiyuan Zhang, Giovanni De Toni, Evgeniy Andreev,
+ *          Viktor Gal, Shell Hu, Tejas Jogi, Roman Votyakov, Evan Shelhamer,
+ *          Yuyu Zhang, Harshit Syal, Khaled Nasr, Thoralf Klein, Jacob Walker,
  *          Wu Lin
  */
 
@@ -21,6 +21,8 @@
 #include <shogun/lib/StoppableSGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+
+#include <atomic>
 
 namespace shogun
 {
@@ -323,6 +325,15 @@ class CMachine : public CStoppableSGObject
 			return true;
 		}
 
+		/** check whether the machine is trained.
+		 *
+		 * @return True if the machine has been trained.
+		 */
+		bool is_trained() const
+		{
+			return m_is_trained.load(std::memory_order_acquire);
+		}
+
 	protected:
 		/** train machine
 		 *
@@ -373,7 +384,7 @@ class CMachine : public CStoppableSGObject
 		 * This method can be used to continue a prematurely stopped
 		 * call to CMachine::train.
 		 * This is available for Iterative models and throws an error
-		 * if the feature is not supported. 
+		 * if the feature is not supported.
 		 *
 		 * @return whether training was successful
 		 */
@@ -426,6 +437,9 @@ class CMachine : public CStoppableSGObject
 
 		/** whether data is locked */
 		bool m_data_locked;
+
+		/** machine has been trained */
+		std::atomic_bool m_is_trained = { false };
 };
 }
 #endif // _MACHINE_H__
