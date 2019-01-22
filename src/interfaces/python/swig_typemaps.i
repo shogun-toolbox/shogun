@@ -1290,8 +1290,8 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %typemap(out) shogun::CMap<std::string, std::string>* {
     $result = PyDict_New();
     for (int i = 0; i<$1->get_array_size(); ++i) {
-#ifdef PYTHON3
         auto pair = $1->get_node_ptr(i);
+#ifdef PYTHON3
         int py_result = PyDict_SetItem($result, PyUnicode_FromString((pair->key).c_str()),
         PyUnicode_FromString((pair->data).c_str()));
 #else

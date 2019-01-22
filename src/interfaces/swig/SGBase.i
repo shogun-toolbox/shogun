@@ -394,7 +394,7 @@ namespace shogun
         CMap<std::string, std::string>* parameter_types() const {
             auto result = new CMap<std::string, std::string>;
             for (auto const& each: $self->get_parameters()) {
-                result->add(each.first, each.second.get().get_value().type());
+                result->add(each.first, each.second.get()->get_value().type());
             }
             return result;
         }

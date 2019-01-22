@@ -975,11 +975,11 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-std::map<std::string, std::reference_wrapper<const AnyParameter>> CSGObject::get_parameters() const
+std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_parameters() const
 {
-	std::map<std::string, std::reference_wrapper<const AnyParameter>> result;
+	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
 	for (auto const& each: self->map) {
-		result.emplace(each.first.name(), std::cref(each.second));
+		result.emplace(each.first.name(), std::make_shared<const AnyParameter>(each.second));
 	}
 	return result;
 }

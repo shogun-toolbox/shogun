@@ -537,7 +537,7 @@ public:
 	/** Returns map of all parameter names and AnyParameter references of the object.
 	 *
 	 */
-	std::map<std::string, std::reference_wrapper<const AnyParameter>> get_parameters() const;
+	std::map<std::string, std::shared_ptr<const AnyParameter>> get_parameters() const;
 
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.

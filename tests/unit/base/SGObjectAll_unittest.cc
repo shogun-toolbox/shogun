@@ -296,7 +296,7 @@ TEST(SGObjectAll, DISABLED_tag_coverage)
 
 		std::vector<std::string> tag_names;
 		std::transform(obj->get_parameters().cbegin(), obj->get_parameters().cend(), std::back_inserter(tag_names),
-			[](const std::pair<std::string, std::reference_wrapper<const AnyParameter>>& each) -> std::string {
+			[](const std::pair<std::string, std::shared_ptr<const AnyParameter>>& each) -> std::string {
 			return each.first;
 		});
 
