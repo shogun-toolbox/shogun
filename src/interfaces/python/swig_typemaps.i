@@ -1417,7 +1417,7 @@ def _internal_get_param(self, name):
         except Exception:
             raise
     if name in self.parameter_names():
-        raise ValueError("The current Python API does not have a getter for '{}' of type '{}'".format(name, self.parameter_types()[name]))
+        raise ValueError("The current Python API does not have a getter for '{}' of type '{}'".format(name, self.parameter_type(name)))
     else:
         raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 

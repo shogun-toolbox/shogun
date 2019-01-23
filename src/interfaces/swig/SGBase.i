@@ -385,14 +385,14 @@ namespace shogun
     {
         std::vector<std::string> parameter_names() const {
             std::vector<std::string> result;
-            for (auto const& each: $self->get_parameters()) {
+            for (auto const& each: $self->get_params()) {
                 result.emplace_back(each.first);
             }
             return result;
         }
 
         std::string parameter_type(std::string name) const {
-            auto params = $self->get_parameters();
+            auto params = $self->get_params();
             if (params.find(name) != params.end()) {
                 return params[name].get()->get_value().type();
             }
@@ -402,7 +402,7 @@ namespace shogun
         }
 
         std::string parameter_description(std::string name) const {
-            auto params = $self->get_parameters();
+            auto params = $self->get_params();
             if (params.find(name) != params.end()) {
                 return params[name].get()->get_properties().get_description();
             }

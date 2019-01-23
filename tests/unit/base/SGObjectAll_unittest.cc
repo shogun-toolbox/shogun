@@ -295,7 +295,7 @@ TEST(SGObjectAll, DISABLED_tag_coverage)
 			old_names.push_back(obj->m_parameters->get_parameter(i)->m_name);
 
 		std::vector<std::string> tag_names;
-		std::transform(obj->get_parameters().cbegin(), obj->get_parameters().cend(), std::back_inserter(tag_names),
+		std::transform(obj->get_params().cbegin(), obj->get_params().cend(), std::back_inserter(tag_names),
 			[](const std::pair<std::string, std::shared_ptr<const AnyParameter>>& each) -> std::string {
 			return each.first;
 		});

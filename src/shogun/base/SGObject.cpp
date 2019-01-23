@@ -975,7 +975,8 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_parameters() const
+#ifndef SWIG // SWIG should skip this part
+std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_params() const
 {
 	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
 	for (auto const& each: self->map) {
@@ -983,6 +984,7 @@ std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_parame
 	}
 	return result;
 }
+#endif
 
 bool CSGObject::equals(const CSGObject* other) const
 {

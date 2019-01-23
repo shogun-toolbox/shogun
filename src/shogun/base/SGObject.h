@@ -533,11 +533,13 @@ public:
 	 */
 	virtual std::string to_string() const;
 
-	/** Returns map of all parameter names and AnyParameter references of the object.
+	/** Returns map of parameter names and AnyParameter pairs
+	 * of the object.
 	 *
 	 */
-	std::map<std::string, std::shared_ptr<const AnyParameter>> get_parameters() const;
-
+#ifndef SWIG // SWIG should skip this part
+	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+#endif
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
 	 *
