@@ -129,8 +129,8 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 	{
 		MatrixXd wtx = W * WX;
 
-		MatrixXd gwtx = wtx.unaryExpr(std::ptr_fun(&gx));
-		MatrixXd g_wtx = wtx.unaryExpr(std::ptr_fun(&g_x));
+		MatrixXd gwtx = wtx.unaryExpr([](float64_t x) { return gx(x); });
+		MatrixXd g_wtx = wtx.unaryExpr([](float64_t x) { return g_x(x); });
 
 		MatrixXd W1 = (gwtx * WX.transpose()) / (float64_t)p - (g_wtx.rowwise().sum()/(float64_t)p).asDiagonal() * W;
 
