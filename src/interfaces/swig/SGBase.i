@@ -508,6 +508,9 @@ namespace shogun
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
 #endif //SWIGPYTHON
     }
+
+%template(StringToStringCMap) CMap<std::string, std::string>;
+
 }
 
 #ifdef SWIGPYTHON
