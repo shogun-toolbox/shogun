@@ -1068,11 +1068,19 @@ CSGObject* CSGObject::get(const std::string& name)
 	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
 		return result;
 
-
-	SG_ERROR(
-	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
-	    get_name(), name.c_str(),
-	    self->map[BaseTag(name)].get_value().type().c_str());
+	if (self->map.find(BaseTag(name)) != self->map.end())
+	{
+		SG_ERROR(
+		    "Cannot get parameter %s::%s of type %s as object, not object "
+		    "type.\n",
+		    get_name(), name.c_str(),
+		    self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	else
+	{
+		SG_ERROR(
+		    "There is no parameter '%s' in %s.\n", name.c_str(), get_name());
+	}
 	return nullptr;
 }
 
