@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Jacob Walker, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Jacob Walker, Yuyu Zhang,
  *          Evan Shelhamer, Soumyajit De
  */
 
@@ -536,7 +536,7 @@ class CList : public CSGObject
 			return NULL;
 		}
 
-		virtual void load_serializable_post() throw (ShogunException)
+		virtual void load_serializable_post() noexcept(false)
 		{
 			CSGObject::load_serializable_post();
 

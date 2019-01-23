@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Pan Deng, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Pan Deng, Bjoern Esser,
  *          Sergey Lisitsyn
  */
 
@@ -344,7 +344,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_pre() throw (ShogunException)
+		virtual void load_serializable_pre() noexcept(false)
 		{
 			CKernel::load_serializable_pre();
 		}
@@ -357,7 +357,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() throw (ShogunException)
+		virtual void load_serializable_post() noexcept(false)
 		{
 			CKernel::load_serializable_post();
 		}
@@ -370,7 +370,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() throw (ShogunException)
+		virtual void save_serializable_pre() noexcept(false)
 		{
 			CKernel::save_serializable_pre();
 		}
@@ -383,7 +383,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_post() throw (ShogunException)
+		virtual void save_serializable_post() noexcept(false)
 		{
 			CKernel::save_serializable_post();
 		}

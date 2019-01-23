@@ -329,7 +329,7 @@ class CFeatures : public CSGObject
 
 		/** Throws an error, as features are immutable */
 		template <typename T>
-		void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
+		void put(const Tag<T>& _tag, const T& value) noexcept(false)
 		{
 			SG_ERROR(
 				"Cannot put %s::%s, features are immutable.\n", get_name(),

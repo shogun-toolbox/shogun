@@ -885,14 +885,14 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	return ret;
 }
 
-void CKernel::load_serializable_post() throw (ShogunException)
+void CKernel::load_serializable_post() noexcept(false)
 {
 	CSGObject::load_serializable_post();
 	if (lhs_equals_rhs)
 		rhs=lhs;
 }
 
-void CKernel::save_serializable_pre() throw (ShogunException)
+void CKernel::save_serializable_pre() noexcept(false)
 {
 	CSGObject::save_serializable_pre();
 
@@ -900,7 +900,7 @@ void CKernel::save_serializable_pre() throw (ShogunException)
 		rhs=NULL;
 }
 
-void CKernel::save_serializable_post() throw (ShogunException)
+void CKernel::save_serializable_post() noexcept(false)
 {
 	CSGObject::save_serializable_post();
 

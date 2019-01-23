@@ -294,7 +294,7 @@ bool CLinearHMM::set_log_transition_probs(const SGVector<float64_t> probs)
 	return true;
 }
 
-void CLinearHMM::load_serializable_post() throw (ShogunException)
+void CLinearHMM::load_serializable_post() noexcept(false)
 {
 	CSGObject::load_serializable_post();
 
