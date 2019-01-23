@@ -391,20 +391,24 @@ namespace shogun
             return result;
         }
 
-        CMap<std::string, std::string>* parameter_types() const {
-            auto result = new CMap<std::string, std::string>;
-            for (auto const& each: $self->get_parameters()) {
-                result->add(each.first, each.second.get()->get_value().type());
+        std::string parameter_type(std::string name) const {
+            auto params = $self->get_parameters();
+            if (params.find(name) != params.end()) {
+                return params[name].get()->get_value().type();
             }
-            return result;
+            else {
+                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+            }
         }
 
-        CMap<std::string, std::string>* parameter_descriptions() const {
-            auto result = new CMap<std::string, std::string>;
-            for (auto const& each: $self->get_parameters()) {
-                result->add(each.first, each.second.get()->get_properties().get_description());
+        std::string parameter_description(std::string name) const {
+            auto params = $self->get_parameters();
+            if (params.find(name) != params.end()) {
+                return params[name].get()->get_properties().get_description();
             }
-            return result;
+            else {
+                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+            }
         }
 
 #ifdef SWIGPYTHON
