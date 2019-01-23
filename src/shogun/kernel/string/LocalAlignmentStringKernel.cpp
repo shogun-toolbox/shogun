@@ -169,7 +169,7 @@ float32_t CLocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
 void CLocalAlignmentStringKernel::init_static_variables()
      /* Initialize all static variables. This function should be called once before computing the first pair HMM score */
 {
-	register int32_t i;
+	int32_t i;
 
 	/* Initialization of the array which gives the position of each amino-acid in the set of amino-acid */
 	aaIndex = SG_CALLOC(int32_t, NLET);
@@ -200,7 +200,7 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
 	int32_t* aaX, int32_t* aaY, /* the two amino-acid sequences (as sequences of indexes in [0..NAA-1] indicating the position of the amino-acid in the variable 'aaList') */
 	int32_t nX, int32_t nY /* the lengths of both sequences */)
 {
-	register int32_t
+	int32_t
 	i,j,                /* loop indexes */
 	cur, old,           /* to indicate the array to use (0 or 1) */
 	curpos, frompos;    /* position in an array */

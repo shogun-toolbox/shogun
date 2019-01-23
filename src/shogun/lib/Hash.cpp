@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Jacob Walker, Weijie Lin, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Jacob Walker, Weijie Lin,
  *          Evan Shelhamer, Thoralf Klein
  */
 
@@ -188,7 +188,7 @@ void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 
 void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
-    register uint32_t a, b, c, d;
+    uint32_t a, b, c, d;
 
     a = buf[0];
     b = buf[1];

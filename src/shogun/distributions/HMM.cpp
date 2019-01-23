@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Viktor Gal, Bjoern Esser, Heiko Strathmann, 
- *          Evan Shelhamer, Thoralf Klein, Elijah Rippeth, Roman Votyakov, 
+ * Authors: Soeren Sonnenburg, Viktor Gal, Bjoern Esser, Heiko Strathmann,
+ *          Evan Shelhamer, Thoralf Klein, Elijah Rippeth, Roman Votyakov,
  *          Giovanni De Toni
  */
 #include <shogun/distributions/HMM.h>
@@ -713,12 +713,12 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 			alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
 
 		//induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
-		for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
+		for (int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
 		{
 
 			for (int32_t j=0; j<N; j++)
 			{
-				register int32_t i, num = trans_list_forward_cnt[j] ;
+				int32_t i, num = trans_list_forward_cnt[j] ;
 				float64_t sum=-CMath::INFTY;
 				for (i=0; i < num; i++)
 				{
@@ -745,8 +745,8 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 
 		if (time<p_observations->get_vector_length(dimension))
 		{
-			register int32_t i, num=trans_list_forward_cnt[state];
-			register float64_t sum=-CMath::INFTY;
+			int32_t i, num=trans_list_forward_cnt[state];
+			float64_t sum=-CMath::INFTY;
 			for (i=0; i<num; i++)
 			{
 				int32_t ii = trans_list_forward[state][i] ;
@@ -758,7 +758,7 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 		else
 		{
 			// termination
-			register int32_t i ;
+			int32_t i ;
 			float64_t sum ;
 			sum=-CMath::INFTY;
 			for (i=0; i<N; i++)						//sum over all paths
@@ -816,12 +816,12 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			alpha[i] = get_p(i) + get_b(i, p_observations->get_feature(dimension,0)) ;
 
 		//induction		alpha_t+1(j) = (sum_i=1^N alpha_t(i)a_ij) b_j(O_t+1)
-		for (register int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
+		for (int32_t t=1; t<time && t < p_observations->get_vector_length(dimension); t++)
 		{
 
 			for (int32_t j=0; j<N; j++)
 			{
-				register int32_t i ;
+				int32_t i ;
 #ifdef USE_LOGSUMARRAY
 				for (i=0; i<(N>>1); i++)
 					ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,j),
@@ -857,7 +857,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 
 		if (time<p_observations->get_vector_length(dimension))
 		{
-			register int32_t i;
+			int32_t i;
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
 				ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,state),
@@ -869,7 +869,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			else
 				return get_b(state, p_observations->get_feature(dimension,time))+CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			register float64_t sum=-CMath::INFTY;
+			float64_t sum=-CMath::INFTY;
 			for (i=0; i<N; i++)
 				sum= CMath::logarithmic_sum(sum, alpha[i] + get_a(i, state));
 
@@ -879,7 +879,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 		else
 		{
 			// termination
-			register int32_t i ;
+			int32_t i ;
 			float64_t sum ;
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
@@ -946,15 +946,15 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
   else
     {
       //initialization	beta_T(i)=q(i)
-      for (register int32_t i=0; i<N; i++)
+      for (int32_t i=0; i<N; i++)
 	beta[i]=get_q(i);
 
       //induction		beta_t(i) = (sum_j=1^N a_ij*b_j(O_t+1)*beta_t+1(j)
-      for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
+      for (int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
 	{
-	  for (register int32_t i=0; i<N; i++)
+	  for (int32_t i=0; i<N; i++)
 	    {
-	      register int32_t j, num=trans_list_backward_cnt[i] ;
+	      int32_t j, num=trans_list_backward_cnt[i] ;
 	      float64_t sum=-CMath::INFTY;
 	      for (j=0; j<num; j++)
 		{
@@ -979,7 +979,7 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 
       if (time>=0)
 	{
-	  register int32_t j, num=trans_list_backward_cnt[state] ;
+	  int32_t j, num=trans_list_backward_cnt[state] ;
 	  float64_t sum=-CMath::INFTY;
 	  for (j=0; j<num; j++)
 	    {
@@ -993,7 +993,7 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	  if (BETA_CACHE(dimension).table)
 	    {
 	      float64_t sum=-CMath::INFTY;
-	      for (register int32_t j=0; j<N; j++)
+	      for (int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      BETA_CACHE(dimension).sum=sum;
 	      BETA_CACHE(dimension).dimension=dimension;
@@ -1007,7 +1007,7 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	  else
 	    {
 	      float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
-	      for (register int32_t j=0; j<N; j++)
+	      for (int32_t j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      return sum;
 	    }
@@ -1046,15 +1046,15 @@ float64_t CHMM::backward_comp_old(
 	else
 	{
 		//initialization	beta_T(i)=q(i)
-		for (register int32_t i=0; i<N; i++)
+		for (int32_t i=0; i<N; i++)
 			beta[i]=get_q(i);
 
 		//induction		beta_t(i) = (sum_j=1^N a_ij*b_j(O_t+1)*beta_t+1(j)
-		for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
+		for (int32_t t=p_observations->get_vector_length(dimension)-1; t>time+1 && t>0; t--)
 		{
-			for (register int32_t i=0; i<N; i++)
+			for (int32_t i=0; i<N; i++)
 			{
-				register int32_t j ;
+				int32_t j ;
 #ifdef USE_LOGSUMARRAY
 				for (j=0; j<(N>>1); j++)
 					ARRAYS(dimension)[j]=CMath::logarithmic_sum(
@@ -1089,7 +1089,7 @@ float64_t CHMM::backward_comp_old(
 
 		if (time>=0)
 		{
-			register int32_t j ;
+			int32_t j ;
 #ifdef USE_LOGSUMARRAY
 			for (j=0; j<(N>>1); j++)
 				ARRAYS(dimension)[j]=CMath::logarithmic_sum(
@@ -1123,7 +1123,7 @@ float64_t CHMM::backward_comp_old(
 					BETA_CACHE(dimension).sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
 				float64_t sum=-CMath::INFTY;
-				for (register int32_t j=0; j<N; j++)
+				for (int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				BETA_CACHE(dimension).sum=sum;
 #endif //USE_LOGSUMARRAY
@@ -1138,7 +1138,7 @@ float64_t CHMM::backward_comp_old(
 			else
 			{
 				float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
-				for (register int32_t j=0; j<N; j++)
+				for (int32_t j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				return sum;
 			}
@@ -1179,11 +1179,11 @@ float64_t CHMM::best_path(int32_t dimension)
 		return pat_prob;
 	else
 	{
-		register float64_t* delta= ARRAYN2(dimension);
-		register float64_t* delta_new= ARRAYN1(dimension);
+		float64_t* delta= ARRAYN2(dimension);
+		float64_t* delta_new= ARRAYN1(dimension);
 
 		{ //initialization
-			for (register int32_t i=0; i<N; i++)
+			for (int32_t i=0; i<N; i++)
 			{
 				delta[i]=get_p(i)+get_b(i, p_observations->get_feature(dimension,0));
 				set_psi(0, i, 0, dimension);
@@ -1194,19 +1194,19 @@ float64_t CHMM::best_path(int32_t dimension)
 		float64_t worst=-CMath::INFTY/4 ;
 #endif
 		//recursion
-		for (register int32_t t=1; t<p_observations->get_vector_length(dimension); t++)
+		for (int32_t t=1; t<p_observations->get_vector_length(dimension); t++)
 		{
-			register float64_t* dummy;
-			register int32_t NN=N ;
-			for (register int32_t j=0; j<NN; j++)
+			float64_t* dummy;
+			int32_t NN=N ;
+			for (int32_t j=0; j<NN; j++)
 			{
-				register float64_t * matrix_a=&transition_matrix_a[j*N] ; // sorry for that
-				register float64_t maxj=delta[0] + matrix_a[0];
-				register int32_t argmax=0;
+				float64_t * matrix_a=&transition_matrix_a[j*N] ; // sorry for that
+				float64_t maxj=delta[0] + matrix_a[0];
+				int32_t argmax=0;
 
-				for (register int32_t i=1; i<NN; i++)
+				for (int32_t i=1; i<NN; i++)
 				{
-					register float64_t temp = delta[i] + matrix_a[i];
+					float64_t temp = delta[i] + matrix_a[i];
 
 					if (temp>maxj)
 					{
@@ -1245,12 +1245,12 @@ float64_t CHMM::best_path(int32_t dimension)
 
 
 		{ //termination
-			register float64_t maxj=delta[0]+get_q(0);
-			register int32_t argmax=0;
+			float64_t maxj=delta[0]+get_q(0);
+			int32_t argmax=0;
 
-			for (register int32_t i=1; i<N; i++)
+			for (int32_t i=1; i<N; i++)
 			{
-				register float64_t temp=delta[i]+get_q(i);
+				float64_t temp=delta[i]+get_q(i);
 
 				if (temp>maxj)
 				{
@@ -1264,7 +1264,7 @@ float64_t CHMM::best_path(int32_t dimension)
 
 
 		{ //state sequence backtracking
-			for (register int32_t t=p_observations->get_vector_length(dimension)-1; t>0; t--)
+			for (int32_t t=p_observations->get_vector_length(dimension)-1; t>0; t--)
 			{
 				PATH(dimension)[t-1]=get_psi(t, PATH(dimension)[t], dimension);
 			}

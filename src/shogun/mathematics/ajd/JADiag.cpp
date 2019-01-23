@@ -95,7 +95,7 @@ void jadiagw(float64_t c[], float64_t w[], int *ptn, int *ptm, float64_t a[],
 	i, ic, ii, ij, j, jc, jj, k, k0;
 	float64_t  sumweigh, p2, q1, p, q,
 	alpha, beta, gamma, a12, a21, /*tiny,*/ det;
-	register float64_t tmp1, tmp2, tmp, weigh;
+	float64_t tmp1, tmp2, tmp, weigh;
 
 	for (sumweigh = 0, i = 0; i < m; i++)
 		sumweigh += w[i];
