@@ -101,12 +101,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		CStringFeatures(CAlphabet* alpha);
 
-		/** copy constructor
-		 *
-		 * @param orig features to copy
-		 */
-		CStringFeatures(const CStringFeatures& orig);
-
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
