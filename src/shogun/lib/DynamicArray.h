@@ -581,7 +581,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_pre() throw (ShogunException)
+		virtual void load_serializable_pre() noexcept(false)
 		{
 			CSGObject::load_serializable_pre();
 
@@ -596,7 +596,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() throw (ShogunException)
+		virtual void save_serializable_pre() noexcept(false)
 		{
 			CSGObject::save_serializable_pre();
 			m_array.resize_array(m_array.get_num_elements(), true);

@@ -117,7 +117,7 @@ void* operator new(size_t size)
 	return p;
 }
 
-void operator delete(void *p) throw()
+void operator delete(void *p) noexcept
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
@@ -136,7 +136,7 @@ void* operator new[](size_t size)
 	return ::operator new(size);
 }
 
-void operator delete[](void *p) throw()
+void operator delete[](void *p) noexcept
 {
 	::operator delete(p);
 }

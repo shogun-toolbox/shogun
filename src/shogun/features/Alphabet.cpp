@@ -740,7 +740,7 @@ void CAlphabet::init()
 			"Histogram."); */
 }
 
-void CAlphabet::load_serializable_post() throw (ShogunException)
+void CAlphabet::load_serializable_post() noexcept(false)
 {
 	CSGObject::load_serializable_post();
 

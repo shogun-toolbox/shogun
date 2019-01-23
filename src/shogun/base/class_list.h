@@ -41,7 +41,7 @@ namespace shogun {
 	template <class T>
 	T* create_object(
 	    const char* name,
-	    EPrimitiveType pt = PT_NOT_GENERIC) throw(ShogunException)
+	    EPrimitiveType pt = PT_NOT_GENERIC) noexcept(false)
 	{
 		auto* object = create(name, pt);
 		if (!object)

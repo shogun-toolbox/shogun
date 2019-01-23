@@ -120,7 +120,7 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 	return std::exp(-result);
 }
 
-void CGaussianKernel::load_serializable_post() throw (ShogunException)
+void CGaussianKernel::load_serializable_post() noexcept(false)
 {
 	CKernel::load_serializable_post();
 	if (lhs && rhs)

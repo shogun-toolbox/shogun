@@ -101,7 +101,7 @@ class CExponentialKernel: public CDotKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() throw (ShogunException);
+		virtual void load_serializable_post() noexcept(false);
 
 	private:
 		void init();

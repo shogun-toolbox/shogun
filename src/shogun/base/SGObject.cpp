@@ -485,22 +485,22 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	return true;
 }
 
-void CSGObject::load_serializable_pre() throw (ShogunException)
+void CSGObject::load_serializable_pre() noexcept(false)
 {
 	m_load_pre_called = true;
 }
 
-void CSGObject::load_serializable_post() throw (ShogunException)
+void CSGObject::load_serializable_post() noexcept(false)
 {
 	m_load_post_called = true;
 }
 
-void CSGObject::save_serializable_pre() throw (ShogunException)
+void CSGObject::save_serializable_pre() noexcept(false)
 {
 	m_save_pre_called = true;
 }
 
-void CSGObject::save_serializable_post() throw (ShogunException)
+void CSGObject::save_serializable_post() noexcept(false)
 {
 	m_save_post_called = true;
 }

@@ -149,7 +149,7 @@ protected:
 	 *
 	 *  @exception ShogunException Will be thrown if an error occurres.
 	 */
-	virtual void load_serializable_post() throw (ShogunException);
+	virtual void load_serializable_post() noexcept(false);
 
 	/** compute the distance between features a and b
 	 * idx_{a,b} denote the index of the feature vectors

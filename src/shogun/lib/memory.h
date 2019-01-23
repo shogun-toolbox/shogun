@@ -36,11 +36,11 @@ SG_FORCED_INLINE void* sg_memcpy(InputIt dest, OutputIt src, size_t count)
 
 /* overload new() / delete */
 void* operator new(size_t size);
-void operator delete(void *p) throw();
+void operator delete(void *p) noexcept;
 
 /* overload new[] / delete[] */
 void* operator new[](size_t size);
-void operator delete[](void *p) throw();
+void operator delete[](void *p) noexcept;
 
 #ifdef HAVE_ALIGNED_MALLOC
 #ifdef HAVE_ALIGNED_NEW
