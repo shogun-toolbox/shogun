@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal,
  *          Thoralf Klein, Bjoern Esser, Evangelos Anagnostopoulos
  */
 
@@ -402,7 +402,7 @@ void CSVRLight::update_linear_component(
      /* based on the change of the variables */
      /* in the current working set */
 {
-	register int32_t i=0,ii=0,j=0,jj=0;
+	int32_t i=0,ii=0,j=0,jj=0;
 
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
 	{
@@ -676,9 +676,9 @@ void CSVRLight::reactivate_inactive_examples(
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register int32_t i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
+  int32_t i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
   int32_t *changed,*inactive;
-  register float64_t *a_old,dist;
+  float64_t *a_old,dist;
   float64_t ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */

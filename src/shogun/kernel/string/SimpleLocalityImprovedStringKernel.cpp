@@ -121,9 +121,9 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	ASSERT((DEGREE1 & ~0x7) == 0)
 	ASSERT((DEGREE2 & ~0x7) == 0)
 
-	register int32_t conv;
-	register int32_t i;
-	register int32_t j;
+	int32_t conv;
+	int32_t i;
+	int32_t j;
 
 	sum = 0.0;
 	conv = 0;
@@ -132,12 +132,12 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 
 	for (i = 0; i < NOF_NTS-PYRAL+1; i++)
 	{
-		register float64_t pot2;
+		float64_t pot2;
 		if (i>0)
 			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) -
 				((x1[i-1] == x2[i-1]) ? 1 : 0);
 		{ /* potencing of conv -- float64_t is faster*/
-		register float64_t conv2 = conv;
+		float64_t conv2 = conv;
 		pot2 = (DEGREE1_1) ? 1.0 : conv2;
 			if (DEGREE1_1n)
 			{
