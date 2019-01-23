@@ -399,6 +399,14 @@ namespace shogun
             return result;
         }
 
+		CMap<std::string, std::string>* parameter_descriptions() const {
+			auto result = new CMap<std::string, std::string>;
+			for (auto const& each: $self->get_parameters()) {
+				result->add(each.first, each.second.get()->get_properties().get_description());
+			}
+			return result;
+		}
+
 #ifdef SWIGPYTHON
         std::string __str__() const
         {

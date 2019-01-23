@@ -84,13 +84,13 @@ template <class T> class SGStringList;
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(                                                     \
-		    name, param, AnyParameterProperties()); 						   \
+			name, param, AnyParameterProperties(description)); 			       \
 	}
 
-#define SG_ADD4(param, name, description, param_properties)                     \
+#define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
 		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, param_properties);             \
+			AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
 		if (pprop.get_model_selection())                                       \
