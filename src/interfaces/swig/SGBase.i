@@ -384,11 +384,11 @@ namespace shogun
     %extend CSGObject
     {
         std::vector<std::string> parameter_names() const {
-			std::vector<std::string> result;
-			for (auto const& each: $self->get_parameters()) {
-				result.emplace_back(each.first);
-			}
-			return result;
+            std::vector<std::string> result;
+            for (auto const& each: $self->get_parameters()) {
+                result.emplace_back(each.first);
+            }
+            return result;
         }
 
         CMap<std::string, std::string>* parameter_types() const {
@@ -399,13 +399,13 @@ namespace shogun
             return result;
         }
 
-		CMap<std::string, std::string>* parameter_descriptions() const {
-			auto result = new CMap<std::string, std::string>;
-			for (auto const& each: $self->get_parameters()) {
-				result->add(each.first, each.second.get()->get_properties().get_description());
-			}
-			return result;
-		}
+        CMap<std::string, std::string>* parameter_descriptions() const {
+            auto result = new CMap<std::string, std::string>;
+            for (auto const& each: $self->get_parameters()) {
+                result->add(each.first, each.second.get()->get_properties().get_description());
+            }
+            return result;
+        }
 
 #ifdef SWIGPYTHON
         std::string __str__() const

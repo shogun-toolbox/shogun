@@ -80,17 +80,16 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD3(param, name, description)    \
+#define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(                                                     \
-			name, param, AnyParameterProperties(description)); 			       \
+		this->watch_param(name, param, AnyParameterProperties(description));   \
 	}
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
 		AnyParameterProperties pprop =                                         \
-			AnyParameterProperties(description, param_properties);             \
+		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
 		if (pprop.get_model_selection())                                       \
