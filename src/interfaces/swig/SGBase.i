@@ -391,7 +391,7 @@ namespace shogun
             return result;
         }
 
-        std::string parameter_type(std::string name) const {
+        std::string parameter_type(const std::string& name) const {
             auto params = $self->get_params();
             if (params.find(name) != params.end()) {
                 return params[name].get()->get_value().type();
@@ -401,7 +401,7 @@ namespace shogun
             }
         }
 
-        std::string parameter_description(std::string name) const {
+        std::string parameter_description(const std::string& name) const {
             auto params = $self->get_params();
             if (params.find(name) != params.end()) {
                 return params[name].get()->get_properties().get_description();
@@ -520,9 +520,6 @@ namespace shogun
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
 #endif //SWIGPYTHON
     }
-
-%template(StringToStringCMap) CMap<std::string, std::string>;
-
 }
 
 #ifdef SWIGPYTHON
