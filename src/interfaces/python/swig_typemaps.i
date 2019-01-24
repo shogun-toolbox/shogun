@@ -1422,6 +1422,8 @@ def _internal_get_param(self, name):
         raise KeyError("There is no parameter called '{}' in {}".format(name, self.get_name()))
 
 _swig_monkey_patch(SGObject, "get", _internal_get_param)
+
+__version__ = _shogun.Version_get_version_main()
 %}
 
 #endif /* HAVE_PYTHON */
