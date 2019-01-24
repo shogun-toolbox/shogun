@@ -91,7 +91,7 @@ void CMachineEvaluation::init()
 			"Used evaluation criterion");
 	SG_ADD(&m_do_unlock, "do_unlock",
 			"Whether machine should be unlocked after evaluation");
-	SG_ADD(&m_autolock, "m_autolock",
+	SG_ADD(&m_autolock, "autolock",
 			"Whether machine should automatically try to be locked before ");
 
 }
