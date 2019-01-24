@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev,
  *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -131,7 +131,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return tube epsilon
 		 */
-		inline float64_t get_tube_epsilon() { return tube_epsilon; }
+		inline float64_t get_tube_epsilon() const { return tube_epsilon; }
 
 		/** set qpsize
 		 *
@@ -143,31 +143,31 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return epsilon
 		 */
-		inline float64_t get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() const { return epsilon; }
 
 		/** get nu
 		 *
 		 * @return nu
 		 */
-		inline float64_t get_nu() { return nu; }
+		inline float64_t get_nu() const { return nu; }
 
 		/** get C1
 		 *
 		 * @return C1
 		 */
-		inline float64_t get_C1() { return C1; }
+		inline float64_t get_C1() const { return C1; }
 
 		/** get C2
 		 *
 		 * @return C2
 		 */
-		inline float64_t get_C2() { return C2; }
+		inline float64_t get_C2() const { return C2; }
 
 		/** get qpsize
 		 *
 		 * @return qpsize
 		 */
-		inline int32_t get_qpsize() { return qpsize; }
+		inline int32_t get_qpsize() const { return qpsize; }
 
 		/** set state of shrinking
 		 *
@@ -182,7 +182,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return if shrinking is enabled
 		 */
-		inline bool get_shrinking_enabled()
+		inline bool get_shrinking_enabled() const
 		{
 			return use_shrinking;
 		}
@@ -212,7 +212,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return objective
 		 */
-		inline float64_t get_objective()
+		inline float64_t get_objective() const
 		{
 			return objective;
 		}
@@ -221,7 +221,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return if svm_loaded is true
 		 */
-		inline bool get_loaded_status() { return svm_loaded; }
+		inline bool get_loaded_status() const { return svm_loaded; }
 
 		/** set svm loaded status
 		 *
@@ -230,7 +230,7 @@ class CSVM : public CKernelMachine
 		inline void set_loaded_status(bool loaded)
 		{
 			svm_loaded = loaded;
-		}; 
+		};
 
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
