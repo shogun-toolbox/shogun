@@ -104,6 +104,12 @@ jobs:
         CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_RUBY=ON'
         interfaceName: 'ruby'
+      coreml:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_COREML=ON'
+        interfaceName: 'coreml'
+
 
   variables:
     testRunTitle: '$(build.sourceBranchName)-debian'
