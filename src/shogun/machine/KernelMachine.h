@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Tejas Jogi, 
- *          Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, Chiyuan Zhang, 
- *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Thoralf Klein, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Tejas Jogi,
+ *          Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, Chiyuan Zhang,
+ *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Thoralf Klein,
  *          Saurabh Goyal
  */
 
@@ -87,7 +87,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel();
+		CKernel* get_kernel() const;
 
 		/** set batch computation enabled
 		 *
@@ -99,7 +99,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return if batch computation is enabled
 		 */
-		bool get_batch_computation_enabled();
+		bool get_batch_computation_enabled() const;
 
 		/** set linadd enabled
 		 *
@@ -111,7 +111,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return if linadd is enabled
 		 */
-		bool get_linadd_enabled();
+		bool get_linadd_enabled() const;
 
 		/** set state of bias
 		 *
@@ -123,13 +123,13 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return state of bias
 		 */
-		bool get_bias_enabled();
+		bool get_bias_enabled() const;
 
 		/** get bias
 		 *
 		 * @return bias
 		 */
-		float64_t get_bias();
+		float64_t get_bias() const;
 
 		/** set bias to given value
 		 *
@@ -142,14 +142,14 @@ class CKernelMachine : public CMachine
 		 * @param idx index of support vector
 		 * @return support vector
 		 */
-		int32_t get_support_vector(int32_t idx);
+		int32_t get_support_vector(int32_t idx) const;
 
 		/** get alpha at given index
 		 *
 		 * @param idx index of alpha
 		 * @return alpha
 		 */
-		float64_t get_alpha(int32_t idx);
+		float64_t get_alpha(int32_t idx) const;
 
 		/** set support vector at given index to given value
 		 *
@@ -171,7 +171,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return number of support vectors
 		 */
-		int32_t get_num_support_vectors();
+		int32_t get_num_support_vectors() const;
 
 		/** set alphas to given values
 		 *
@@ -186,10 +186,10 @@ class CKernelMachine : public CMachine
 		void set_support_vectors(SGVector<int32_t> svs);
 
 		/** @return all support vectors */
-		SGVector<int32_t> get_support_vectors();
+		SGVector<int32_t> get_support_vectors() const;
 
 		/** @return vector of alphas */
-		SGVector<float64_t> get_alphas();
+		SGVector<float64_t> get_alphas() const;
 
 		/** create new model
 		 *

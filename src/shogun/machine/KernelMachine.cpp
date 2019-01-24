@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin,
  *          Fernando Iglesias, Thoralf Klein
  */
 
@@ -87,7 +87,7 @@ void CKernelMachine::set_kernel(CKernel* k)
 	kernel=k;
 }
 
-CKernel* CKernelMachine::get_kernel()
+CKernel* CKernelMachine::get_kernel() const
 {
     SG_REF(kernel);
     return kernel;
@@ -98,7 +98,7 @@ void CKernelMachine::set_batch_computation_enabled(bool enable)
     use_batch_computation=enable;
 }
 
-bool CKernelMachine::get_batch_computation_enabled()
+bool CKernelMachine::get_batch_computation_enabled() const
 {
     return use_batch_computation;
 }
@@ -108,7 +108,7 @@ void CKernelMachine::set_linadd_enabled(bool enable)
     use_linadd=enable;
 }
 
-bool CKernelMachine::get_linadd_enabled()
+bool CKernelMachine::get_linadd_enabled() const
 {
     return use_linadd;
 }
@@ -118,12 +118,12 @@ void CKernelMachine::set_bias_enabled(bool enable_bias)
     use_bias=enable_bias;
 }
 
-bool CKernelMachine::get_bias_enabled()
+bool CKernelMachine::get_bias_enabled() const
 {
     return use_bias;
 }
 
-float64_t CKernelMachine::get_bias()
+float64_t CKernelMachine::get_bias() const
 {
     return m_bias;
 }
@@ -133,13 +133,13 @@ void CKernelMachine::set_bias(float64_t bias)
     m_bias=bias;
 }
 
-int32_t CKernelMachine::get_support_vector(int32_t idx)
+int32_t CKernelMachine::get_support_vector(int32_t idx) const
 {
     ASSERT(m_svs.vector && idx<m_svs.vlen)
     return m_svs.vector[idx];
 }
 
-float64_t CKernelMachine::get_alpha(int32_t idx)
+float64_t CKernelMachine::get_alpha(int32_t idx) const
 {
     if (!m_alpha.vector)
         SG_ERROR("No alphas set\n")
@@ -168,7 +168,7 @@ bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
     return true;
 }
 
-int32_t CKernelMachine::get_num_support_vectors()
+int32_t CKernelMachine::get_num_support_vectors() const
 {
     return m_svs.vlen;
 }
@@ -183,12 +183,12 @@ void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
     m_svs = svs;
 }
 
-SGVector<int32_t> CKernelMachine::get_support_vectors()
+SGVector<int32_t> CKernelMachine::get_support_vectors() const
 {
 	return m_svs;
 }
 
-SGVector<float64_t> CKernelMachine::get_alphas()
+SGVector<float64_t> CKernelMachine::get_alphas() const
 {
 	return m_alpha;
 }
