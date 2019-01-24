@@ -459,6 +459,18 @@ public:
 		put(name, value.get());
 	}
 
+	/** Typed setter for an object class parameter of a Shogun base class type,
+	 * identified by a Tag.
+	 *
+	 * @param _tag name and type information of parameter
+	 * @param value value of the parameter
+	 */
+	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
+	void put(const Tag<T>& _tag, Some<T> value)
+	{
+		put(_tag, value.get());
+	}
+
 	/** Typed appender for an object class parameter of a Shogun base class
 	* type,
 	* identified by a name.

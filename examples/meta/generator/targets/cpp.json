@@ -14,7 +14,7 @@
         "Copy": "auto $name = wrap($expr)$kwargs",
         "KeywordArguments": {
             "List": ";\n$elements",
-            "Element": "$name->put(\"$keyword\", $expr)",
+            "Element": "$name->put(Tag<decltype($expr)>(\"$keyword\"), $expr)",
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
