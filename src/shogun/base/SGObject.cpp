@@ -1073,8 +1073,8 @@ CSGObject* CSGObject::get(const std::string& name)
 	if (self->map.find(BaseTag(name)) != self->map.end())
 	{
 		SG_ERROR(
-		    "Cannot get parameter %s::%s of type %s as object, not object "
-		    "type.\n",
+		    "Cannot get parameter %s::%s of type %s as object, not a shogun "
+		    "object base type.\n",
 		    get_name(), name.c_str(),
 		    self->map[BaseTag(name)].get_value().type().c_str());
 	}

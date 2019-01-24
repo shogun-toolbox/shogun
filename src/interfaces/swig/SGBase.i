@@ -386,7 +386,7 @@ namespace shogun
         std::vector<std::string> parameter_names() const {
             std::vector<std::string> result;
             for (auto const& each: $self->get_params()) {
-                result.emplace_back(each.first);
+                result.push_back(each.first);
             }
             return result;
         }
