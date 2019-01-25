@@ -19,21 +19,23 @@ CPolyKernel::CPolyKernel() : CDotKernel(0)
 
 }
 
-CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i) : CDotKernel(size)
+CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c) : CDotKernel(size)
 {
+	REQUIRE(c >= 0.0, "c parameter must be positive!");
 	init();
 	degree = d;
-	inhomogene = i;
+	m_c = c;
 }
 
 CPolyKernel::CPolyKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t d, bool i, int32_t size)
+    CDotFeatures* l, CDotFeatures* r, int32_t d, float64_t c, int32_t size)
     : CDotKernel(size)
 {
+	REQUIRE(c >= 0.0, "c parameter must be positive!");
 	init();
 
 	degree = d;
-	inhomogene = i;
+	m_c = c;
 
 	init(l,r);
 }
@@ -58,8 +60,8 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=CDotKernel::compute(idx_a, idx_b);
 
-	if (inhomogene)
-		result+=1;
+	if (m_c > 0.0)
+		result += m_c;
 
 	return CMath::pow(result, degree);
 }
@@ -67,10 +69,10 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 void CPolyKernel::init()
 {
 	degree = 0;
-	inhomogene = false;
+	m_c = 0.0;
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(&degree, "degree", "Degree of polynomial kernel", ParameterProperties::HYPER);
-	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.");
+	SG_ADD(&m_c, "c", "The kernel is inhomogeneous if the value is higher than 0.");
 }
 
