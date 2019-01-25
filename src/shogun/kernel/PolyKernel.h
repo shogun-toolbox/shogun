@@ -22,7 +22,7 @@ namespace shogun
  * Formally, it computes
  *
  * \f[
- * k({\bf x},{\bf x'})= ({\bf x}\cdot {\bf x'}+c)^d
+ * k({\bf x},{\bf x'})= (gamma * {\bf x}\cdot {\bf x'}+c)^d
  * \f]
  *
  * Note that additional normalisation is applied, i.e.
@@ -45,15 +45,16 @@ class CPolyKernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CPolyKernel(CDotFeatures* l, CDotFeatures* r,
-			int32_t d, float64_t c, int32_t size=10);
+			int32_t d, float64_t c, float64_t gamma, int32_t size=10);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param degree degree
-		 * @param c
+		 * @param c trade-off parameter
+		 * @param gamma scaler for the dot product
 		 */
-		CPolyKernel(int32_t size, int32_t degree, float64_t c=1.0);
+		CPolyKernel(int32_t size, int32_t degree, float64_t c=1.0, float64_t gamma=1.0);
 
 		virtual ~CPolyKernel();
 
@@ -102,6 +103,8 @@ class CPolyKernel: public CDotKernel
 		int32_t degree;
 		/** parameter trading off the influence of higher-order versus lower-order terms in the polynomial */
 		float64_t m_c;
+		/** gamma scaler */
+		float64_t m_gamma;
 };
 }
 #endif /* _POLYKERNEL_H__ */
