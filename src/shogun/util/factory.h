@@ -287,7 +287,7 @@ namespace shogun
 	CMachineEvaluation* machine_evaluation(const std::string& name, CMachine* machine)
 	{
 		auto obj = create_object<CMachineEvaluation>(name.c_str());
-        obj->put("machine", machine);
+		obj->put("machine", machine);
 		return obj;
 	}
 
