@@ -4,10 +4,10 @@ lm=LoadMatrix()
 traindat = lm.load_numbers('../data/fm_train_real.dat')
 testdat = lm.load_numbers('../data/fm_test_real.dat')
 
-parameter_list = [[traindat,testdat,10,3,True],[traindat,testdat,10,4,True]]
+parameter_list = [[traindat,testdat,10,3,1.0],[traindat,testdat,10,4,1.0]]
 
 def kernel_sparse_poly (fm_train_real=traindat,fm_test_real=testdat,
-		 size_cache=10,degree=3,inhomogene=True ):
+		 size_cache=10,degree=3,c=1.0):
 
 	from shogun import SparseRealFeatures
 	from shogun import PolyKernel
@@ -18,7 +18,7 @@ def kernel_sparse_poly (fm_train_real=traindat,fm_test_real=testdat,
 
 
 	kernel=PolyKernel(feats_train, feats_train, size_cache,
-		inhomogene, degree)
+		degree, c)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
