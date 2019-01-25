@@ -41,19 +41,19 @@ class CPolyKernel: public CDotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param d degree
-		 * @param inhom is inhomogeneous
+		 * @param c trade-off parameter
 		 * @param size cache size
 		 */
 		CPolyKernel(CDotFeatures* l, CDotFeatures* r,
-			int32_t d, bool inhom, int32_t size=10);
+			int32_t d, float64_t c, int32_t size=10);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param degree degree
-		 * @param inhomogene is inhomogeneous
+		 * @param c
 		 */
-		CPolyKernel(int32_t size, int32_t degree, bool inhomogene=true);
+		CPolyKernel(int32_t size, int32_t degree, float64_t c=1.0);
 
 		virtual ~CPolyKernel();
 
@@ -100,8 +100,8 @@ class CPolyKernel: public CDotKernel
 	protected:
 		/** degree */
 		int32_t degree;
-		/** if kernel is inhomogeneous */
-		bool inhomogene;
+		/** parameter trading off the influence of higher-order versus lower-order terms in the polynomial */
+		float64_t m_c;
 };
 }
 #endif /* _POLYKERNEL_H__ */
