@@ -273,7 +273,7 @@ namespace shogun {
 			return compare(lhs(), rhs());
 		}
 
-		template <class T>
+		template <class T, std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr>
 		inline T clone_impl(general, T& value)
 		{
 			return T(value);
