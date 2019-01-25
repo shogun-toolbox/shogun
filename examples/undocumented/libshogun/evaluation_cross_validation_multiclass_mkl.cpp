@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, Soumyajit De, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, Soumyajit De,
  *          Viktor Gal, Thoralf Klein, Alexander Binder, Sergey Lisitsyn
  */
 
@@ -67,7 +67,7 @@ void test_multiclass_mkl_cv()
 
 	/** 3rd kernel: poly */
 	cfeats->append_feature_obj(features);
-	cker->append_kernel(new CPolyKernel(features, features, 2, true, 10));
+	cker->append_kernel(new CPolyKernel(features, features, 2, 1.0, 1.0, 10));
 
 	cker->init(cfeats, cfeats);
 

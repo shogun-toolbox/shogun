@@ -27,12 +27,12 @@ int main()
 	CHashedSparseFeatures<int32_t>* h_sparse_feats = new CHashedSparseFeatures<int32_t>(sparse_feats, hashing_dim);
 
 	SG_REF(h_dense_feats);
-	CPolyKernel* kernel = new CPolyKernel(h_dense_feats, h_dense_feats, 1, false);
+	CPolyKernel* kernel = new CPolyKernel(h_dense_feats, h_dense_feats, 1);
 	SGMatrix<float64_t> dense_mt = kernel->get_kernel_matrix();
 	SG_UNREF(kernel);
 
 	SG_REF(h_sparse_feats);
-	kernel = new CPolyKernel(h_sparse_feats, h_sparse_feats, 1, false);
+	kernel = new CPolyKernel(h_sparse_feats, h_sparse_feats, 1);
 	SGMatrix<float64_t> sparse_mt = kernel->get_kernel_matrix();
 	SG_UNREF(kernel);
 

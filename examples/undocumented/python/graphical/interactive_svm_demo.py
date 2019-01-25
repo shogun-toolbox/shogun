@@ -116,7 +116,7 @@ class Form(QMainWindow):
             gk = LinearKernel(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "PolynomialKernel":
-            gk = PolyKernel(train, train, degree, True)
+            gk = PolyKernel(train, train, degree, 1.0)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
             gk = GaussianKernel(train, train, width)
