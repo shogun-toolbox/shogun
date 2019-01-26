@@ -975,14 +975,16 @@ std::string CSGObject::to_string() const
 	return ss.str();
 }
 
-std::vector<std::string> CSGObject::parameter_names() const
+#ifndef SWIG // SWIG should skip this part
+std::map<std::string, std::shared_ptr<const AnyParameter>> CSGObject::get_params() const
 {
-	std::vector<std::string> result;
-	std::transform(self->map.cbegin(), self->map.cend(), std::back_inserter(result),
-		// FIXME: const auto& each fails on gcc 4.8.4
-		[](const std::pair<BaseTag, AnyParameter>& each) -> std::string { return each.first.name(); });
+	std::map<std::string, std::shared_ptr<const AnyParameter>> result;
+	for (auto const& each: self->map) {
+		result.emplace(each.first.name(), std::make_shared<const AnyParameter>(each.second));
+	}
 	return result;
 }
+#endif
 
 bool CSGObject::equals(const CSGObject* other) const
 {
@@ -1068,11 +1070,19 @@ CSGObject* CSGObject::get(const std::string& name)
 	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
 		return result;
 
-
-	SG_ERROR(
-	    "Cannot get parameter %s::%s of type %s as object, not object type.\n",
-	    get_name(), name.c_str(),
-	    self->map[BaseTag(name)].get_value().type().c_str());
+	if (self->map.find(BaseTag(name)) != self->map.end())
+	{
+		SG_ERROR(
+		    "Cannot get parameter %s::%s of type %s as object, not a shogun "
+		    "object base type.\n",
+		    get_name(), name.c_str(),
+		    self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	else
+	{
+		SG_ERROR(
+		    "There is no parameter '%s' in %s.\n", name.c_str(), get_name());
+	}
 	return nullptr;
 }
 

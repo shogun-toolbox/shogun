@@ -28,6 +28,7 @@
 
 #include <utility>
 #include <vector>
+#include <map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -79,14 +80,13 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD3(param, name, description)    \
+#define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(                                                     \
-		    name, param, AnyParameterProperties()); 						   \
+		this->watch_param(name, param, AnyParameterProperties(description));   \
 	}
 
-#define SG_ADD4(param, name, description, param_properties)                     \
+#define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
@@ -533,11 +533,13 @@ public:
 	 */
 	virtual std::string to_string() const;
 
-	/** Returns set of all parameter names of the object.
+	/** Returns map of parameter names and AnyParameter pairs
+	 * of the object.
 	 *
 	 */
-	std::vector<std::string> parameter_names() const;
-
+#ifndef SWIG // SWIG should skip this part
+	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+#endif
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
 	 *

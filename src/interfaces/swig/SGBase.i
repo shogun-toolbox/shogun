@@ -1,3 +1,9 @@
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Gil Hoben, Heiko Strathmann, Sergey Lisitsyn
+ */
+
 /* base includes required by any module */
 %include "stdint.i"
 %include "std_string.i"
@@ -373,12 +379,39 @@ namespace std {
 %include <shogun/base/Parallel.h>
 %include <shogun/lib/StoppableSGObject.h>
 
-#ifdef SWIGPYTHON
 namespace shogun
 {
-
     %extend CSGObject
     {
+        std::vector<std::string> parameter_names() const {
+            std::vector<std::string> result;
+            for (auto const& each: $self->get_params()) {
+                result.push_back(each.first);
+            }
+            return result;
+        }
+
+        std::string parameter_type(const std::string& name) const {
+            auto params = $self->get_params();
+            if (params.find(name) != params.end()) {
+                return params[name].get()->get_value().type();
+            }
+            else {
+                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+            }
+        }
+
+        std::string parameter_description(const std::string& name) const {
+            auto params = $self->get_params();
+            if (params.find(name) != params.end()) {
+                return params[name].get()->get_properties().get_description();
+            }
+            else {
+                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+            }
+        }
+
+#ifdef SWIGPYTHON
         std::string __str__() const
         {
             return $self->to_string();
@@ -485,9 +518,11 @@ namespace shogun
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
+#endif //SWIGPYTHON
     }
 }
 
+#ifdef SWIGPYTHON
 %pythoncode %{
 try:
     import copy_reg
