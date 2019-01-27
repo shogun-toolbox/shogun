@@ -8,6 +8,7 @@
 #define _FEATURE_TYPES__H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/sg_types.h>
 
 namespace shogun
 {
@@ -15,20 +16,20 @@ namespace shogun
 	/// shogun feature type
 	enum EFeatureType
 	{
-		F_UNKNOWN = 0,
-		F_BOOL = 5,
-		F_CHAR = 10,
-		F_BYTE = 20,
-		F_SHORT = 30,
-		F_WORD = 40,
-		F_INT = 50,
-		F_UINT = 60,
-		F_LONG = 70,
-		F_ULONG = 80,
-		F_SHORTREAL = 90,
-		F_DREAL = 100,
-		F_LONGREAL = 110,
-		F_ANY = 1000
+		F_UNKNOWN,
+		F_BOOL,
+		F_CHAR,
+		F_BYTE,
+		F_SHORT,
+		F_WORD,
+		F_INT,
+		F_UINT,
+		F_LONG,
+		F_ULONG,
+		F_SHORTREAL,
+		F_DREAL,
+		F_LONGREAL,
+		F_ANY
 	};
 
 	/// shogun feature class

@@ -50,23 +50,10 @@ class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
 
-// TODO: make global definitions
-// Definition of the 4 groups of Shogun types
-// (shogun/mathematics/linalg/LinalgBackendBase.h)
-// TODO: add bool and complex128_t types
-
-typedef ::testing::Types<
-    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t,
-    float64_t, floatmax_t>
-    NonComplexTypes;
-typedef ::testing::Types<float32_t, float64_t, floatmax_t> RealTypes;
-// TODO: add complex128_t type
-typedef ::testing::Types<float32_t, float64_t, floatmax_t> NonIntegerTypes;
-
-TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, TypesGoogleTestWrapper<all_primitive_types>::type);
-TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, NonComplexTypes);
-TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, RealTypes);
-TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, NonIntegerTypes);
+TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, TypesGoogleTestWrapper<sg_all_primitive_types>::type);
+TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, TypesGoogleTestWrapper<sg_non_complex_types>::type);
+TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, TypesGoogleTestWrapper<sg_real_types>::type);
+TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, TypesGoogleTestWrapper<sg_non_integer_types>::type);
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
 {

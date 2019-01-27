@@ -74,16 +74,16 @@ TEST(Type_case, positional_lambdas)
 	auto f_vector = [&counter](auto value) { counter++; };
 	auto f_matrix = [&counter](auto value) { counter++; };
 
-	sg_any_dispatch(any_scalar, sg_all_types, f_scalar);
+	sg_any_dispatch(any_scalar, sg_all_typemap, f_scalar);
 	EXPECT_EQ(counter, 1);
 
-	sg_any_dispatch(any_vector, sg_all_types, None{}, f_vector);
+	sg_any_dispatch(any_vector, sg_all_typemap, None{}, f_vector);
 	EXPECT_EQ(counter, 2);
 
-	sg_any_dispatch(any_matrix, sg_all_types, None{}, None{}, f_matrix);
+	sg_any_dispatch(any_matrix, sg_all_typemap, None{}, None{}, f_matrix);
 	EXPECT_EQ(counter, 3);
 
-	sg_any_dispatch(any_scalar, sg_all_types, None{}, f_vector, f_matrix);
+	sg_any_dispatch(any_scalar, sg_all_typemap, None{}, f_vector, f_matrix);
 	EXPECT_EQ(counter, 3);
 }
 
@@ -96,7 +96,7 @@ TEST(Type_case, exception)
 	auto f_scalar = [&counter](auto value) { counter++; };
 
 	EXPECT_THROW(
-		sg_any_dispatch(any_scalar, sg_real_types, f_scalar), ShogunException);
+		sg_any_dispatch(any_scalar, sg_real_typemap, f_scalar), ShogunException);
 	EXPECT_EQ(counter, 0);
 }
 
@@ -117,10 +117,10 @@ TEST(Type_case, modify_struct)
 		a_struct.add_value(value);
 	};
 
-	sg_any_dispatch(any_float, sg_real_types, f_float);
+	sg_any_dispatch(any_float, sg_real_typemap, f_float);
 	EXPECT_EQ(a_struct.get_value(), 84);
 	EXPECT_THROW(
-		sg_any_dispatch(any_int, sg_real_types, f_int), ShogunException);
+		sg_any_dispatch(any_int, sg_real_typemap, f_int), ShogunException);
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
@@ -162,13 +162,13 @@ TEST(Type_case, static_asserts)
 	auto f_arity_fail = [](auto a, float b) {};
 #if defined(_MSC_VER) && _MSC_VER < 1920
 	StaticAssertOKEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_return_fail)), int>();
+		sg_any_dispatch(any_float, sg_all_typemap, f_return_fail)), int>();
 	StaticAssertOKEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_arity_fail)), type_internal::ok>();
+		sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail)), type_internal::ok>();
 #else
 	StaticAssertReturnTypeEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_return_fail))>();
+		sg_any_dispatch(any_float, sg_all_typemap, f_return_fail))>();
 	StaticAssertArityEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_types, f_arity_fail))>();
+		sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail))>();
 #endif
 }
