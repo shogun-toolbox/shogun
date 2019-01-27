@@ -497,13 +497,13 @@ class CKernel : public CSGObject
 		 *
 		 * @return features of left-hand side
 		 */
-		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; }
+		inline CFeatures* get_lhs() const { SG_REF(lhs); return lhs; }
 
 		/** get right-hand side of features used in kernel
 		 *
 		 * @return features of right-hand side
 		 */
-		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; }
+		inline CFeatures* get_rhs() const { SG_REF(rhs); return rhs; }
 
 		/** get number of vectors of lhs features
 		 *
