@@ -1,12 +1,11 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Harshit Syal, Giovanni De Toni, Michele Mazzoni, 
+ * Authors: Soeren Sonnenburg, Harshit Syal, Giovanni De Toni, Michele Mazzoni,
  *          Viktor Gal, Weijie Lin, Sergey Lisitsyn, Sanuj Sharma
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/base/progress.h>
 #include <shogun/classifier/svm/NewtonSVM.h>
 #include <shogun/features/DotFeatures.h>
@@ -270,4 +269,3 @@ void CNewtonSVM::obj_fun_linear()
 
 	size_sv = sv_len;
 }
-#endif //HAVE_LAPACK

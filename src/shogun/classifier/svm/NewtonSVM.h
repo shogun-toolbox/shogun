@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Harshit Syal, Fernando Iglesias, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Harshit Syal, Fernando Iglesias, Bjoern Esser,
  *          Sergey Lisitsyn
  */
 
@@ -17,7 +17,6 @@
 
 namespace shogun
 {
-#ifdef HAVE_LAPACK
 /** @brief NewtonSVM,
  *  In this Implementation linear SVM is trained in its primal form using Newton-like iterations.
  *  This Implementation is ported from the Olivier Chapelles fast newton based SVM solver, Which could be found here :http://mloss.org/software/view/30/
@@ -113,6 +112,5 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		/** if bias is used */
 		bool use_bias;
 };
-#endif //HAVE_LAPACK
 }
 #endif //_NEWTONSVM_H___
