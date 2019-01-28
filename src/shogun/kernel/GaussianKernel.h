@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Soeren Sonnenburg, Chiyuan Zhang, Wu Lin, 
- *          Sergey Lisitsyn, Roman Votyakov, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Jacob Walker, Soeren Sonnenburg, Chiyuan Zhang, Wu Lin,
+ *          Sergey Lisitsyn, Roman Votyakov, Heiko Strathmann, Yuyu Zhang,
  *          Tonmoy Saikia, Soumyajit De, Sanuj Sharma
  */
 
@@ -112,13 +112,16 @@ public:
 	 *
 	 * @param w kernel width
 	 */
-	virtual void set_width(float64_t w);
+	void set_width(float64_t w);
 
 	/** return the kernel's width
 	 *
 	 * @return kernel width
 	 */
-	virtual float64_t get_width() const;
+	SG_FORCED_INLINE float64_t get_width() const
+	{
+		return std::exp(m_log_width * 2.0) * 2.0;
+	}
 
 	/** return derivative with respect to specified parameter
 	 *
