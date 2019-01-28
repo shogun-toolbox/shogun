@@ -55,7 +55,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		/** get epsilon
 		 *  @return epsilon
 		 */
-		inline float64_t get_epsilon() { return epsilon; }
+		inline float64_t get_epsilon() const { return epsilon; }
 
 		/**
 		 * set epsilon
@@ -66,7 +66,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		/** get C
 		 *  @return C
 		 */
-		inline float64_t get_C() { return C; }
+		inline float64_t get_C() const { return C; }
 
 
 		/** set if bias shall be enabled
@@ -77,12 +77,12 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		/** get if bias is enabled
 		 *  @return if bias is enabled
 		 */
-		inline bool get_bias_enabled() { return use_bias; }
+		inline bool get_bias_enabled() const { return use_bias; }
 
 		/** set num_iter
 		 *  @return num_iter
 		 */
-		inline int32_t get_num_iter() {return num_iter;}
+		inline int32_t get_num_iter() const {return num_iter;}
 
 		/** set iter
 		 *  @param num_iter number of iterations
