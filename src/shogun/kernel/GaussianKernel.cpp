@@ -89,11 +89,6 @@ void CGaussianKernel::set_width(float64_t w)
 	m_log_width = std::log(w / 2.0) / 2.0;
 }
 
-float64_t CGaussianKernel::get_width() const
-{
-	return std::exp(m_log_width * 2.0) * 2.0;
-}
-
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
 	REQUIRE(lhs, "Left hand side features must be set!\n")
@@ -135,8 +130,7 @@ void CGaussianKernel::load_serializable_post() throw (ShogunException)
 
 float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
 {
-	const float64_t inv_width=1.0/get_width();
-	return CShiftInvariantKernel::distance(idx_a, idx_b)*inv_width;
+	return CShiftInvariantKernel::distance(idx_a, idx_b)/get_width();
 }
 
 void CGaussianKernel::register_params()
