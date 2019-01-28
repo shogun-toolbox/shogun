@@ -14,7 +14,7 @@ using testing::StaticAssertTypeEq;
 
 TEST(SGTypes, get_type_from_index)
 {
-    StaticAssertTypeEq<getTypeFromIndex<sg_feature_types, F_UNKNOWN>::type , Unknown>();
+    StaticAssertTypeEq<getTypeFromIndex<sg_feature_types, F_UNKNOWN>::type , shogun::Unknown>();
     StaticAssertTypeEq<getTypeFromIndex<sg_feature_types, F_BOOL>::type , bool>();
-    StaticAssertTypeEq<getTypeFromIndex<sg_feature_types, F_ANY>::type , Any>();
+    StaticAssertTypeEq<getTypeFromIndex<sg_feature_types, F_ANY>::type , shogun::Any>();
 }
