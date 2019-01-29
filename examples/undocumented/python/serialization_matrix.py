@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 from shogun import *
+import shogun as sg
 from numpy import array
 
 parameter_list=[[[[1.0,2,3],[4,5,6]]]]
 
 def serialization_matrix (m):
 	from tempfile import NamedTemporaryFile
-	feats=RealFeatures(array(m))
+	feats=sg.features(array(m))
 	#feats.io.set_loglevel(0)
 	tmp_asc_1 = NamedTemporaryFile(suffix='1.asc')
 	fstream = SerializableAsciiFile(tmp_asc_1.name, "w")

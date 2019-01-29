@@ -33,7 +33,7 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 		return
 
 	labels = MulticlassSOLabels(label_train_multiclass)
-	features = RealFeatures(fm_train_real.T)
+	features = sg.features(fm_train_real.T)
 
 	model = MulticlassModel(features, labels)
 	sosvm = PrimalMosekSOSVM(model, labels)

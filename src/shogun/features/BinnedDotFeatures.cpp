@@ -24,10 +24,10 @@ CBinnedDotFeatures::CBinnedDotFeatures(const CBinnedDotFeatures & orig)
 	init();
 }
 
-CBinnedDotFeatures::CBinnedDotFeatures(CDenseFeatures<float64_t>* sf, SGMatrix<float64_t> bins)
+CBinnedDotFeatures::CBinnedDotFeatures(CFeatures* sf, SGMatrix<float64_t> bins)
 {
 	init();
-	set_simple_features(sf);
+	set_simple_features(sf->as<CDenseFeatures<float64_t>>());
 	set_bins(bins);
 
 }

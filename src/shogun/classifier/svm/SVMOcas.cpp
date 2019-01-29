@@ -33,14 +33,14 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 }
 
 CSVMOcas::CSVMOcas(
-	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+	float64_t C, CFeatures* traindat, CLabels* trainlab)
 : CLinearMachine()
 {
 	init();
 	C1=C;
 	C2=C;
 
-	set_features(traindat);
+	set_features(traindat->as<CDotFeatures>());
 	set_labels(trainlab);
 }
 

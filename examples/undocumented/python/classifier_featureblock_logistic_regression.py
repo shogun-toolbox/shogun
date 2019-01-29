@@ -11,18 +11,18 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat]]
 
 def classifier_featureblock_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
-
-	from shogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup
+	import shogun as sg
+	from shogun import BinaryLabels, IndexBlock, IndexBlockGroup
 	try:
 		from shogun import FeatureBlockLogisticRegression
 	except ImportError:
 		print("FeatureBlockLogisticRegression not available")
 		exit(0)
 
-	features = RealFeatures(hstack((traindat,traindat)))
+	features = sg.features(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
-	n_features = features.get_num_features()
+	n_features = features.get("num_features")
 	block_one = IndexBlock(0,n_features//2)
 	block_two = IndexBlock(n_features//2,n_features)
 	block_group = IndexBlockGroup()

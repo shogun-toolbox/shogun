@@ -15,7 +15,7 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	import shogun
 	from shogun import ECOCStrategy, LinearMulticlassMachine
 	from shogun import MulticlassAccuracy
-	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLabels
 	import shogun as sg
 
 	def nonabstract_class(name):
@@ -30,8 +30,8 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	decoders = [x for x in dir(shogun)
 		    if re.match(r'ECOC.+Decoder', x) and nonabstract_class(x)]
 
-	fea_train = RealFeatures(fm_train_real)
-	fea_test  = RealFeatures(fm_test_real)
+	fea_train = sg.features(fm_train_real)
+	fea_test  = sg.features(fm_test_real)
 	gnd_train = MulticlassLabels(label_train_multiclass)
 	if label_test_multiclass is None:
 		gnd_test = None

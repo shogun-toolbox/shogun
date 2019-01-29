@@ -22,14 +22,13 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
     from shogun import machine_evaluation, splitting_strategy
     from shogun import MeanSquaredError
     from shogun import RegressionLabels
-    from shogun import RealFeatures
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters
     import shogun as sg
 
     # training data
-    features_train=RealFeatures(traindat)
-    features_test=RealFeatures(testdat)
+    features_train=sg.features(traindat)
+    features_test=sg.features(testdat)
     labels=RegressionLabels(label_traindat)
 
     # labels

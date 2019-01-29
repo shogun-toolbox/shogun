@@ -51,7 +51,7 @@ class CSVMOcas : public CLinearMachine
 		 * @param trainlab labels for training features
 		 */
 		CSVMOcas(
-			float64_t C, CDotFeatures* traindat,
+			float64_t C, CFeatures* traindat,
 			CLabels* trainlab);
 		virtual ~CSVMOcas();
 

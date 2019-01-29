@@ -12,13 +12,12 @@ parameter_list = [[traindat,label_traindat,0.8,1e-6],[traindat,label_traindat,0.
 def evaluation_cross_validation_regression (train_fname=traindat,label_fname=label_traindat,width=0.8,tau=1e-6):
 	from shogun import machine_evaluation, splitting_strategy
 	from shogun import MeanSquaredError
-	from shogun import RegressionLabels, RealFeatures
-	from shogun import CSVFile
+	from shogun import RegressionLabels
 	import shogun as sg
 
 	# training data
-	features=RealFeatures(CSVFile(train_fname))
-	labels=RegressionLabels(CSVFile(label_fname))
+	features=sg.features(sg.csv_file(train_fname))
+	labels=RegressionLabels(sg.csv_file(label_fname))
 
 	# kernel and predictor
 	kernel=sg.kernel("GaussianKernel")

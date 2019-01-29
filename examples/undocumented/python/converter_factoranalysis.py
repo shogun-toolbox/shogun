@@ -5,9 +5,9 @@ parameter_list = [[data]]
 def converter_factoranalysis(data_fname):
 	try:
 		import numpy
-		from shogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
+		from shogun import FactorAnalysis, EuclideanDistance, CSVFile
 
-		features = RealFeatures(CSVFile(data_fname))
+		features = sg.features(CSVFile(data_fname))
 
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)

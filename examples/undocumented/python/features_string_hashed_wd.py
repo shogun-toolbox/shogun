@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from shogun import LongIntFeatures
 from numpy import array, int64, all
 
 # create dense matrix A
@@ -7,10 +6,9 @@ matrix=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=int64)
 
 parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 
-# ... of type LongInt
 def features_string_hashed_wd (A=matrix,order=3,start_order=1,hash_bits=2):
-    a=LongIntFeatures(A)
-
+    import shogun as sg
+    a=sg.features(A)
     from numpy import array, uint8
     from shogun import HashedWDFeatures, StringByteFeatures, RAWDNA
     from shogun import MSG_DEBUG

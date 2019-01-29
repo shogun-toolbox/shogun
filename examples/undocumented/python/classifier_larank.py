@@ -3,7 +3,7 @@ from numpy import *
 parameter_list = [[10,3,15,0.9,1,2000,1],[20,4,15,0.9,1,5000,2]]
 
 def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5,seed=1):
-	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLabels
 	from shogun import LaRank
 	from shogun import Math_init_random
 	import shogun as sg
@@ -21,8 +21,8 @@ def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5
 		fm_train[int(label_train[i]),i]+=distance
 		fm_test[int(label_test[i]),i]+=distance
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+	feats_train=sg.features(fm_train)
+	feats_test=sg.features(fm_test)
 
 	width=2.1
 	kernel=sg.kernel("GaussianKernel", log_width=width)

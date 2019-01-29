@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import shogun as sg
-from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures
+from shogun import StringCharFeatures, CombinedFeatures, StringWordFeatures
 from shogun import DNA, PROTEIN, Labels
 from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
+from shogun import BinaryLabels, DNA, Alphabet
 try:
 	from shogun import SVMLight
 except ImportError:

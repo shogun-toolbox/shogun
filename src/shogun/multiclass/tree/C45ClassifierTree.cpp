@@ -60,10 +60,11 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass(CFeatures* data)
 	return ret;
 }
 
-void CC45ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon)
+void CC45ClassifierTree::prune_tree(CFeatures* validation_data, CLabels* validation_labels, float64_t epsilon)
 {
 	node_t* current=get_root();
-	prune_tree_from_current_node(validation_data,validation_labels,current,epsilon);
+	prune_tree_from_current_node(validation_data->as<CDenseFeatures<float64_t>>(),
+			validation_labels->as<CMulticlassLabels>(),current,epsilon);
 
 	SG_UNREF(current);
 }

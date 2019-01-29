@@ -17,7 +17,7 @@ def regression_svrlight (fm_train=traindat,fm_test=testdat,label_train=label_tra
 				    width=1.2,C=1,epsilon=1e-5,tube_epsilon=1e-2,num_threads=3):
 
 
-	from shogun import RegressionLabels, RealFeatures
+	from shogun import RegressionLabels
 	try:
 		from shogun import SVRLight
 	except ImportError:
@@ -25,8 +25,8 @@ def regression_svrlight (fm_train=traindat,fm_test=testdat,label_train=label_tra
 		return
 	import shogun as sg
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+	feats_train=sg.features(fm_train)
+	feats_test=sg.features(fm_test)
 
 	kernel=sg.kernel("GaussianKernel", log_width=width)
 

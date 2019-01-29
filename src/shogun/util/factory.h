@@ -17,6 +17,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
+#include <shogun/io/LibSVMFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
@@ -97,26 +98,27 @@ namespace shogun
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
 
-		if (dynamic_cast<CCSVFile*>(file))
+		switch (primitive_type)
 		{
-			switch (primitive_type)
-			{
-			case PT_FLOAT64:
-				result = new CDenseFeatures<float64_t>();
-				break;
-			case PT_FLOAT32:
-				result = new CDenseFeatures<float32_t>();
-				break;
-			case PT_FLOATMAX:
-				result = new CDenseFeatures<floatmax_t>();
-				break;
-			default:
-				SG_SNOTIMPLEMENTED
-			}
-			result->load(file);
+		case PT_FLOAT64:
+			result = new CDenseFeatures<float64_t>();
+			break;
+		case PT_FLOAT32:
+			result = new CDenseFeatures<float32_t>();
+			break;
+		case PT_FLOATMAX:
+			result = new CDenseFeatures<floatmax_t>();
+			break;
+		case PT_UINT8:
+			result = new CDenseFeatures<uint8_t>();
+			break;
+		case PT_UINT16:
+			result = new CDenseFeatures<uint16_t>();
+			break;
+		default:
+			SG_SNOTIMPLEMENTED
 		}
-		else
-			SG_SERROR("Cannot load features from %s.\n", file->get_name());
+		result->load(file);
 
 		SG_REF(result);
 		return result;
@@ -293,6 +295,13 @@ namespace shogun
 	CFile* csv_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CCSVFile(fname.c_str(), rw);
+		SG_REF(result);
+		return result;
+	}
+
+	CFile* libsvm_file(std::string fname, char rw = 'r')
+	{
+		CFile* result = new CLibSVMFile(fname.c_str(), rw);
 		SG_REF(result);
 		return result;
 	}

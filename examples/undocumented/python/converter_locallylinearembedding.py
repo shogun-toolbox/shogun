@@ -8,9 +8,9 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data, 20], [data, 30]]
 
 def converter_locallylinearembeeding (data, k):
-	from shogun import RealFeatures
+	import shogun as sg
 
-	features = RealFeatures(data)
+	features = sg.features(data)
 
 	converter = sg.transformer('LocallyLinearEmbedding', k=k)
 

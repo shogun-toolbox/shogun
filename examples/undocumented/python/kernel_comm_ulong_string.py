@@ -28,7 +28,8 @@ def kernel_comm_ulong_string (fm_train_dna=traindat,fm_test_dna=testdat, order=3
 
 	use_sign=False
 
-	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
+	kernel=sg.kernel("CommUlongStringKernel", use_sign=use_sign)
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

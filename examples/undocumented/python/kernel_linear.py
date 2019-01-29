@@ -5,11 +5,11 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def kernel_linear (train_fname=traindat,test_fname=testdat,scale=1.2):
+	import shogun as sg
+	from shogun import LinearKernel, AvgDiagKernelNormalizer
 
-	from shogun import RealFeatures, LinearKernel, AvgDiagKernelNormalizer, CSVFile
-
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
+	feats_train=sg.features(sg.csv_file(train_fname))
+	feats_test=sg.features(sg.csv_file(test_fname))
 
 	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))

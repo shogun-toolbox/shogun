@@ -12,14 +12,15 @@ parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
 def multiclass_randomforest(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
-		from shogun import RealFeatures, MulticlassLabels, CSVFile, RandomForest, MajorityVote
+		from shogun import MulticlassLabels, CSVFile, RandomForest, MajorityVote
 	except ImportError:
 		print("Could not import Shogun modules")
 		return
+	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(CSVFile(train))
-	feats_test=RealFeatures(CSVFile(test))
+	feats_train=sg.features(CSVFile(train))
+	feats_test=sg.features(CSVFile(test))
 	train_labels=MulticlassLabels(CSVFile(labels))
 
 	# Random Forest formation

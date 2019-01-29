@@ -12,13 +12,13 @@ parameter_list = [[traindat,label_traindat,feat_types]]
 
 def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 	try:
-		from shogun import RealFeatures, RegressionLabels, CSVFile, CARTree, StochasticGBMachine
+		from shogun import RegressionLabels, CSVFile, CARTree, StochasticGBMachine
 	except ImportError:
 		print("Could not import Shogun modules")
 		return
 
 	# wrap features and labels into Shogun objects
-	feats=RealFeatures(CSVFile(train))
+	feats=sg.features(CSVFile(train))
 	labels=RegressionLabels(CSVFile(train_labels))
 
 	# divide into training (90%) and test dataset (10%)
