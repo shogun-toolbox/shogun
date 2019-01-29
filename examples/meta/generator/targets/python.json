@@ -2,7 +2,7 @@
     "Program": "import numpy as np\n$dependencies\n\n$program",
     "Dependencies": {
         "IncludeAllClasses": false,
-        "IncludeInterfacedClasses": true, 
+        "IncludeInterfacedClasses": true,
         "IncludeEnums": true,
         "IncludeGlobalFunctions": true,
         "DependencyListElement": "from shogun import $typeName",
@@ -61,7 +61,8 @@
             "get_int_vector": "$object.get($arguments)",
             "get_real": "$object.get($arguments)",
             "get_real_vector": "$object.get($arguments)",
-            "get_real_matrix": "$object.get($arguments)"
+            "get_real_matrix": "$object.get($arguments)",
+            "put_machine": "$object.put($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments$kwargs)",

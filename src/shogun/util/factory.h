@@ -61,6 +61,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CTransformer, transformer)
 	BASE_CLASS_FACTORY(CNeuralLayer, layer)
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
+	BASE_CLASS_FACTORY(CSplittingStrategy, machine_evaluation)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -289,11 +290,6 @@ namespace shogun
 		auto obj = create_object<CMachineEvaluation>(name.c_str());
 		obj->put("machine", machine);
 		return obj;
-	}
-
-	CMachineEvaluation* machine_evaluation(CSGObject* obj)
-	{
-		return obj->as<CMachineEvaluation>();
 	}
 }
 #endif // FACTORY_H_
