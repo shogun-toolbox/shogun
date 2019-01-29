@@ -103,7 +103,6 @@ APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
 #ifdef HAVE_LAPACK
 APPLY_REGRESSION(CKernelRidgeRegression);
-APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 #endif
@@ -142,7 +141,6 @@ APPLY_LATENT(CLatentSVM);
 %rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
 #ifdef HAVE_LAPACK
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
-%rename(apply_generic) CLinearRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
 #endif
