@@ -1,3 +1,2 @@
-Machine m = machine("LibLinear")
-m.put("liblinear_solver_type", enum LIBLINEAR_SOLVER_TYPE.L2R_LR)
+Machine m = machine("LibLinear", liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_LR)
 m.put("liblinear_solver_type", enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL)

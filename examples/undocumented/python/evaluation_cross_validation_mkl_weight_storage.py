@@ -24,7 +24,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from shogun import BinaryLabels
     from shogun import RealFeatures, CombinedFeatures
     from shogun import CombinedKernel
-    from shogun import LibSVM, MKLClassification
+    from shogun import MKLClassification
     import shogun as sg
     import numpy as np
 
@@ -43,7 +43,8 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(2)))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
-    svm=MKLClassification(LibSVM());
+    svm=MKLClassification();
+    svm.put("svm", sg.as_svm(sg.machine("LibSVM")))
     svm.set_interleaved_optimization_enabled(False);
     svm.set_kernel(kernel);
 

@@ -11,7 +11,7 @@ MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-MulticlassLibLinear mll()
+Machine mll = machine("MulticlassLibLinear")
 Kernel k = kernel("GaussianKernel")
 #![set_parameters]
 

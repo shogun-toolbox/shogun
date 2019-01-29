@@ -42,11 +42,10 @@ void CMulticlassLibLinear::init_defaults()
 
 void CMulticlassLibLinear::register_parameters()
 {
-	SG_ADD(&m_C, "m_C", "regularization constant",ParameterProperties::HYPER);
-	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon");
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations");
-	SG_ADD(&m_use_bias, "m_use_bias", "indicates whether bias should be used");
-	SG_ADD(&m_save_train_state, "m_save_train_state", "indicates whether bias should be used");
+	SG_ADD(&m_C, "C", "regularization constant",ParameterProperties::HYPER);
+	SG_ADD(&m_epsilon, "epsilon", "tolerance epsilon");
+	SG_ADD(&m_max_iter, "max_iter", "max number of iterations");
+	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
 }
 
 CMulticlassLibLinear::~CMulticlassLibLinear()

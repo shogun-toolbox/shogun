@@ -6,24 +6,22 @@ CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-MulticlassLabels labels_train(f_labels_train)
-MulticlassLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![set_parameters]
 real C = 1.0
-real epsilon = 0.0001
 Kernel gauss_kernel = kernel("GaussianKernel", log_width=0.0)
 #![set_parameters]
 
 #![create_instance]
-MulticlassLibSVM svm(C, gauss_kernel, labels_train)
-svm.set_epsilon(epsilon)
+Machine svm = machine("MulticlassLibSVM", C=C, kernel=gauss_kernel, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
 svm.train(features_train)
-MulticlassLabels labels_predict = svm.apply_multiclass(features_test)
+Labels labels_predict = svm.apply(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
@@ -32,4 +30,4 @@ real accuracy = accu.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
-RealVector output = labels_predict.get_labels()
+RealVector output = labels_predict.get_real_vector("labels")
