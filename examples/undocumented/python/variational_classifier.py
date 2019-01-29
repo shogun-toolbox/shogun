@@ -56,7 +56,7 @@ def variational_classifier(kl_inference,train_fname=traindat,test_fname=testdat,
 	label_fname=label_binary_traindat,kernel_log_sigma=0,kernel_log_scale=0,noise_factor=1e-5,
 	min_coeff_kernel=1e-2,max_attempt=0):
 	from math import exp
-	features_train=RealFeatures(CSVFile(train_fname))
+	features_train=sg.features(CSVFile(train_fname))
 	labels_train=BinaryLabels(CSVFile(label_fname))
 
 	likelihood=LogitDVGLikelihood()

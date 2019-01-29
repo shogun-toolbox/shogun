@@ -5,12 +5,12 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
 
 def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
-	from shogun import RealFeatures, CSVFile
+	from shogun import CSVFile
 	from tempfile import NamedTemporaryFile
 	import shogun as sg
 
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
+	feats_train=sg.features(CSVFile(train_fname))
+	feats_test=sg.features(CSVFile(test_fname))
 
 	kernel=sg.kernel("GaussianKernel", log_width=width)
 	kernel.init(feats_train, feats_train)

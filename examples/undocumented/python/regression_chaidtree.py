@@ -8,7 +8,8 @@ parameter_list = [[500,50,15,0.2,feattypes]]
 
 def regression_chaidtree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
-		from shogun import RealFeatures, RegressionLabels, CSVFile, CHAIDTree, PT_REGRESSION
+		import shogun as sg
+		from shogun import RegressionLabels, CSVFile, CHAIDTree, PT_REGRESSION
 		from numpy import random
 	except ImportError:
 		print("Could not import Shogun and/or numpy modules")
@@ -24,8 +25,8 @@ def regression_chaidtree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=f
 	X_test=array([[float(i)/num_test*x_range for i in range(num_test)]])
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(X_train)
-	feats_test=RealFeatures(X_test)
+	feats_train=sg.features(X_train)
+	feats_test=sg.features(X_test)
 	train_labels=RegressionLabels(Y_train[0])
 
 	# CHAID Tree formation

@@ -22,14 +22,14 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import splitting_strategy
     from shogun import BinaryLabels
-    from shogun import RealFeatures, CombinedFeatures
+    from shogun import CombinedFeatures
     from shogun import CombinedKernel
     from shogun import MKLClassification
     import shogun as sg
     import numpy as np
 
     # training data, combined features all on same data
-    features=RealFeatures(traindat)
+    features=sg.features(traindat)
     comb_features=CombinedFeatures()
     comb_features.append_feature_obj(features)
     comb_features.append_feature_obj(features)

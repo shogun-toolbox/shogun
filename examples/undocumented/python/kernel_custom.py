@@ -7,13 +7,13 @@ parameter_list=[[7],[8]]
 def kernel_custom (dim=7):
 	from numpy.random import rand, seed
 	from numpy import array, float32, int32
-	from shogun import RealFeatures
 	from shogun import CustomKernel
 	from shogun import IndexFeatures
+	import shogun as sg
 
 	seed(17)
 	data=rand(dim, dim)
-	feats=RealFeatures(data)
+	feats=sg.features(data)
 	symdata=data+data.T
 	lowertriangle=array([symdata[(x,y)] for x in range(symdata.shape[1])
 		for y in range(symdata.shape[0]) if y<=x])

@@ -4,14 +4,14 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_laplacianeigenmaps (data_fname,k):
 	try:
-		from shogun import RealFeatures, CSVFile
+		import shogun as sg
 		try:
 			from shogun import LaplacianEigenmaps
 		except ImportError:
 			print("LaplacianEigenmaps not available")
 			exit(0)
 			
-		features = RealFeatures(CSVFile(data_fname))
+		features = sg.features(sg.csv_file(data_fname))
 
 		converter = LaplacianEigenmaps()
 		converter.set_target_dim(1)

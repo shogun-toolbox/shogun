@@ -6,12 +6,12 @@ label_traindat = '../data/label_train_multiclass.dat'
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 
 def classifier_gmnpsvm (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,width=2.1,C=1,epsilon=1e-5):
-	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLabels
 	from shogun import GMNPSVM, CSVFile
 	import shogun as sg
 
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
+	feats_train=sg.features(CSVFile(train_fname))
+	feats_test=sg.features(CSVFile(test_fname))
 	labels=MulticlassLabels(CSVFile(label_fname))
 
 	kernel=sg.kernel("GaussianKernel", log_width=width)

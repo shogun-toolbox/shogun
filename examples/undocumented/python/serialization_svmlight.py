@@ -3,7 +3,7 @@ parameter_list=[[10, 1, 2.1, 2.0]]
 
 def serialization_svmlight (num, dist, width, C):
     from shogun import MSG_DEBUG
-    from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
+    from shogun import BinaryLabels, DNA, Alphabet
     from shogun import WeightedDegreeStringKernel
     try:
         from shogun import SVMLight
@@ -73,8 +73,8 @@ def serialization_svmlight (num, dist, width, C):
     trainlab = concatenate((-ones(num), ones(num)));
     testlab = concatenate((-ones(num), ones(num)));
 
-    feats_train = RealFeatures(traindata_real);
-    feats_test = RealFeatures(testdata_real);
+    feats_train = sg.features(traindata_real);
+    feats_test = sg.features(testdata_real);
     kernel = sg.kernel("GaussianKernel", log_width=width)
     kernel.init(feats_train, feats_train)
     #kernel.io.set_loglevel(MSG_DEBUG)

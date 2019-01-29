@@ -8,8 +8,9 @@ bins=numpy.array([[0.0, 0.0, 0.0],[1.0,1.0,1.0],[2.0,2.0,2.0],[3.0,3.0,3.0],[4.0
 parameter_list = [(matrix,bins)]
 
 def features_binned_dot (matrix, bins):
-	from shogun import RealFeatures, BinnedDotFeatures
-	rf=RealFeatures(matrix)
+	from shogun import BinnedDotFeatures
+	import shogun as sg
+	rf=sg.features(matrix)
 
 	#print(rf.get_feature_matrix())
 

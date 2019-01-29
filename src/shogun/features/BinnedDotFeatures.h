@@ -56,7 +56,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * binned features
 		 * @param bins a matrix with bins to compute binned features from
 		 */
-		CBinnedDotFeatures(CDenseFeatures<float64_t>* sf, SGMatrix<float64_t> bins);
+		CBinnedDotFeatures(CFeatures* sf, SGMatrix<float64_t> bins);
 
 		virtual ~CBinnedDotFeatures();
 

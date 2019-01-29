@@ -40,11 +40,11 @@ void CECOCDiscriminantEncoder::init()
     SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS");
 }
 
-void CECOCDiscriminantEncoder::set_features(CDenseFeatures<float64_t> *features)
+void CECOCDiscriminantEncoder::set_features(CFeatures *features)
 {
     SG_REF(features);
     SG_UNREF(m_features);
-    m_features = features;
+    m_features = features->as<CDenseFeatures<float64_t>>();
 }
 
 void CECOCDiscriminantEncoder::set_labels(CLabels *labels)

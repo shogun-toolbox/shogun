@@ -24,7 +24,6 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
     from shogun import BinaryLabels
-    from shogun import RealFeatures
     import shogun as sg
 
     # build parameter tree to select C1 and C2
@@ -38,7 +37,7 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     c2.build_values(-1.0, 0.0, R_EXP);
 
     # training data
-    features=RealFeatures(traindat)
+    features=sg.features(traindat)
     labels=BinaryLabels(label_traindat)
 
     # classifier

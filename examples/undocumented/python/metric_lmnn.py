@@ -8,14 +8,15 @@ parameter_list = [[traindat,testdat,label_traindat,3]]
 
 def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
 	try:
-		from shogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
+		from shogun import MulticlassLabels,LMNN,KNN
 	except ImportError:
 		return
+	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
-	labels=MulticlassLabels(CSVFile(label_train_fname))
+	feats_train=sg.features(sg.csv_file(train_fname))
+	feats_test=sg.features(sg.csv_file(test_fname))
+	labels=MulticlassLabels(sg.csv_file(label_train_fname))
 
 	# LMNN
 	lmnn=LMNN(feats_train,labels,k)

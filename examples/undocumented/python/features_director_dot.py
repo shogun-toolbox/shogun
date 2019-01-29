@@ -61,13 +61,13 @@ def features_director_dot (fm_train_real, fm_test_real,
 	#		return NumpyFeatures(self.data-other.data)
 
 
-	#from shogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	#from shogun import SparseRealFeatures, BinaryLabels
 	#from shogun import LibLinear, L2R_L2LOSS_SVC_DUAL
 	#from shogun import Math_init_random
 	#Math_init_random(17)
 
-	#feats_train=RealFeatures(fm_train_real)
-	#feats_test=RealFeatures(fm_test_real)
+	#feats_train=sg.features(fm_train_real)
+	#feats_test=sg.features(fm_test_real)
 	#labels=BinaryLabels(label_train_twoclass)
 
 	#dfeats_train=NumpyFeatures(fm_train_real)

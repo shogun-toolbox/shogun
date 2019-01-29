@@ -8,11 +8,12 @@ parameter_list = [[50,5,15,0.2,feattypes]]
 
 def regression_cartree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
-		from shogun import RealFeatures, RegressionLabels, CSVFile, CARTree, PT_REGRESSION
+		from shogun import RegressionLabels, CARTree, PT_REGRESSION
 		from numpy import random
 	except ImportError:
 		print("Could not import Shogun and/or numpy modules")
 		return
+	import shogun as sg
 
 	random.seed(1)
 
@@ -20,12 +21,12 @@ def regression_cartree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=fea
 	X_train=random.rand(1,num_train)*x_range;
 	Y_train=X_train+random.randn(num_train)*noise_var
 
-	# form test dataset
+	# form test datasetf
 	X_test=array([[float(i)/num_test*x_range for i in range(num_test)]])
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(X_train)
-	feats_test=RealFeatures(X_test)
+	feats_train=sg.features(X_train)
+	feats_test=sg.features(X_test)
 	train_labels=RegressionLabels(Y_train[0])
 
 	# CART Tree formation

@@ -11,14 +11,15 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_leastsquares_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
-	from shogun import RegressionLabels, RealFeatures, Task, TaskGroup
+	from shogun import RegressionLabels, Task, TaskGroup
 	try:
 		from shogun import MultitaskLeastSquaresRegression
 	except ImportError:
 		print("MultitaskLeastSquaresRegression not available")
 		exit(0)
+	import shogun as sg
 
-	features = RealFeatures(traindat)
+	features = sg.features(traindat)
 	labels = RegressionLabels(label_train)
 
 	n_vectors = features.get_num_vectors()

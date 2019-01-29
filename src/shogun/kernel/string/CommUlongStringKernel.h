@@ -47,12 +47,14 @@ template <class ST> class CStringFeatures;
 class CCommUlongStringKernel: public CStringKernel<uint64_t>
 {
 	public:
+		CCommUlongStringKernel();
+
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CCommUlongStringKernel(int32_t size=10, bool use_sign=false);
+		CCommUlongStringKernel(bool use_sign, int32_t size=10);
 
 		/** constructor
 		 *
@@ -186,6 +188,8 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 			dict=dictionary.vector;
 			dweights = dictionary_weights.vector;
 		}
+	private:
+		void init_params();
 
 	protected:
 		/** compute kernel function for features a and b

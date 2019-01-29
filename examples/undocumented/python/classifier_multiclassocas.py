@@ -3,13 +3,14 @@ from numpy import *
 parameter_list = [[10,3,15,2.1,1,1e-5,1],[20,4,15,2.2,2,1e-5,2]]
 
 def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,epsilon=1e-5,seed=1):
-	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLabels
 	from shogun import Math_init_random
 	try:
 		from shogun import MulticlassOCAS
 	except ImportError:
 		print("MulticlassOCAS not available")
 		return
+	import shogun as sg
 
 	# reproducible results
 	random.seed(seed)
@@ -24,8 +25,8 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 		fm_train[int(label_train[i]),i]+=distance
 		fm_test[int(label_test[i]),i]+=distance
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+	feats_train=sg.features(fm_train)
+	feats_test=sg.features(fm_test)
 
 	labels=MulticlassLabels(label_train)
 

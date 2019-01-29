@@ -39,11 +39,11 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
-		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CDotFeatures* features, CMachine* machine, CLabels* labs) :
+		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CFeatures* features, CMachine* machine, CLabels* labs) :
 			CMulticlassMachine(strategy, machine,labs), m_features(NULL)
 		{
-			set_features(features);
-			SG_ADD((CSGObject**)&m_features, "m_features", "Feature object.");
+			set_features(features->as<CDotFeatures>());
+			SG_ADD(&m_features, "m_features", "Feature object.");
 		}
 
 		/** destructor */

@@ -4,14 +4,14 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_linearlocaltangentspacealignment (data_fname,k):
 	try:
-		from shogun import RealFeatures, CSVFile
 		try:
 			from shogun import LinearLocalTangentSpaceAlignment
 		except ImportError:
 			print("LinearLocalTangentSpaceAlignment not available")
 			exit(0)
+		import shogun as sg
 			
-		features = RealFeatures(CSVFile(data_fname))
+		features = sg.features(sg.csv_file(data_fname))
 
 		converter = LinearLocalTangentSpaceAlignment()
 		converter.set_target_dim(1)

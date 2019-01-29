@@ -11,14 +11,15 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_clustered_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
-	from shogun import BinaryLabels, RealFeatures, Task, TaskGroup, MSG_DEBUG
+	from shogun import BinaryLabels, Task, TaskGroup, MSG_DEBUG
 	try:
 		from shogun import MultitaskClusteredLogisticRegression
 	except ImportError:
 		print("MultitaskClusteredLogisticRegression not available")
 		exit()
+	import shogun as sg
 
-	features = RealFeatures(hstack((traindat,sin(traindat),cos(traindat))))
+	features = sg.features(hstack((traindat,sin(traindat),cos(traindat))))
 	labels = BinaryLabels(hstack((label_train,label_train,label_train)))
 
 	n_vectors = features.get_num_vectors()

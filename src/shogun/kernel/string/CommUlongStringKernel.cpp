@@ -15,9 +15,18 @@
 
 using namespace shogun;
 
-CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
-: CStringKernel<uint64_t>(size), use_sign(us)
+CCommUlongStringKernel::CCommUlongStringKernel() : CStringKernel<uint64_t>()
 {
+	init_params();
+}
+
+CCommUlongStringKernel::CCommUlongStringKernel(bool us, int32_t size)
+: CStringKernel<uint64_t>(size)
+{
+	init_params();
+
+	use_sign = us;
+
 	properties |= KP_LINADD;
 	clear_normal();
 
@@ -27,12 +36,20 @@ CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
 CCommUlongStringKernel::CCommUlongStringKernel(
 	CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r, bool us,
 	int32_t size)
-: CStringKernel<uint64_t>(size), use_sign(us)
+: CStringKernel<uint64_t>(size)
 {
+	init_params();
+	use_sign=us;
 	properties |= KP_LINADD;
 	clear_normal();
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
+}
+
+void CCommUlongStringKernel::init_params()
+{
+	use_sign = false;
+	SG_ADD(&use_sign, "use_sign", "Whether or not to use sign.")
 }
 
 CCommUlongStringKernel::~CCommUlongStringKernel()

@@ -6,10 +6,10 @@ traindat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat,1.7],[traindat,testdat,1.8]]
 
 def kernel_distance (train_fname=traindat,test_fname=testdat,width=1.7):
-	from shogun import RealFeatures, distance, kernel, CSVFile
+	from shogun import distance, kernel, CSVFile
 
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
+	feats_train=sg.features(CSVFile(train_fname))
+	feats_test=sg.features(CSVFile(test_fname))
 
 	distance = sg.distance('EuclideanDistance')
 	kernel = sg.kernel('DistanceKernel', width=width, distance=distance)
