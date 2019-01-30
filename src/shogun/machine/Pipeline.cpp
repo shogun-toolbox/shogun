@@ -256,9 +256,4 @@ namespace shogun
 	{
 		return get_machine()->get_machine_problem_type();
 	}
-
-	CMachine* machine(CPipeline* pipeline)
-	{
-		return pipeline;
-	}
 }

@@ -48,8 +48,7 @@ TEST_F(PipelineTest, fit_predict)
 	auto pipeline = some<CPipelineBuilder>()
 	                    ->over(transformer1)
 	                    ->over(transformer2)
-	                    ->then(machine)
-	                    ->as<CPipeline>();
+	                    ->then(machine);
 
 	// no labels given
 	EXPECT_THROW(pipeline->train(features), ShogunException);
@@ -88,8 +87,7 @@ TEST_F(PipelineTest, get)
 	auto pipeline = some<CPipelineBuilder>()
 	                    ->over(transformer1)
 	                    ->over(transformer_name, transformer2)
-	                    ->then(machine)
-	                    ->as<CPipeline>();
+	                    ->then(machine);
 
 	EXPECT_THROW(
 	    pipeline->get_transformer("not_exists"), std::invalid_argument);

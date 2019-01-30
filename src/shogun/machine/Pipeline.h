@@ -138,8 +138,6 @@ namespace shogun
 		 */
 		virtual void store_model_features() override;
 	};
-
-	CMachine* machine(CPipeline* pipeline);
 }
 
 #endif

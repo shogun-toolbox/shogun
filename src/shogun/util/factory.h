@@ -284,5 +284,10 @@ namespace shogun
 		SG_REF(result);
 		return result;
 	}
+
+	CMachine* machine(CPipeline* pipeline)
+	{
+		return pipeline;
+	}
 }
 #endif // FACTORY_H_
