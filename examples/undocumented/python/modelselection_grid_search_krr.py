@@ -24,9 +24,9 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
     from shogun import CrossValidationSplitting
     from shogun import RegressionLabels
     from shogun import RealFeatures
-    from shogun import KernelRidgeRegression
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters
+    import shogun as sg
 
     # training data
     features_train=RealFeatures(traindat)
@@ -37,7 +37,7 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
     labels=RegressionLabels(label_train)
 
     # predictor, set tau=0 here, doesnt matter
-    predictor=KernelRidgeRegression()
+    predictor=sg.machine("KernelRidgeRegression")
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard

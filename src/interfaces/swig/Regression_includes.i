@@ -3,8 +3,6 @@
  #include <shogun/machine/Machine.h>
  #include <shogun/machine/KernelMachine.h>
  #include <shogun/regression/GaussianProcessRegression.h>
- #include <shogun/regression/KernelRidgeRegression.h>
- #include <shogun/regression/KRRNystrom.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/regression/svr/LibSVR.h>
