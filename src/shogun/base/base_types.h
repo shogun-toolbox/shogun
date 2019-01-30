@@ -37,7 +37,6 @@ namespace shogun
 	                    std::is_same<CEvaluation, T>::value ||
 	                    std::is_same<CMulticlassStrategy, T>::value ||
 	                    std::is_same<CNeuralLayer, T>::value ||
-	                    std::is_same<CPipeline, T>::value ||
 	                    std::is_same<CSplittingStrategy, T>::value>
 	{
 	};

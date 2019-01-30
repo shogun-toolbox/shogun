@@ -47,8 +47,7 @@
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
         "MethodCall": {
-            "Default": "$object.$method($arguments)",
-            "put_machine": "$object.put($arguments)"
+            "Default": "$object.$method($arguments)"
         },
         "StaticCall": "Shogun::$typeName.$method($arguments)",
         "GlobalCall": "Shogun::$method($arguments)",

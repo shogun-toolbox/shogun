@@ -284,12 +284,5 @@ namespace shogun
 		SG_REF(result);
 		return result;
 	}
-
-	CMachineEvaluation* machine_evaluation(const std::string& name, CMachine* machine)
-	{
-		auto obj = create_object<CMachineEvaluation>(name.c_str());
-		obj->put("machine", machine);
-		return obj;
-	}
 }
 #endif // FACTORY_H_

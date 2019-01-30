@@ -27,8 +27,7 @@
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
         "MethodCall": {
-            "Default": "$object$$$method($arguments)",
-            "put_machine": "$object$$put($arguments)"
+            "Default": "$object$$$method($arguments)"
         },
         "StaticCall": "$typeName$$$method($arguments)",
         "GlobalCall": "$method($arguments)",
