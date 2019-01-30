@@ -6,8 +6,6 @@
 
 /* Remove C Prefix */
 %rename(Regression) CRegression;
-%rename(KernelRidgeRegression) CKernelRidgeRegression;
-%rename(KRRNystrom) CKRRNystrom;
 %rename(LibSVR) CLibSVR;
 %rename(LibLinearRegression) CLibLinearRegression;
 %rename(MKL) CMKL;
@@ -20,8 +18,6 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
-%include <shogun/regression/KernelRidgeRegression.h>
-%include <shogun/regression/KRRNystrom.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/regression/svr/LibLinearRegression.h>
 %include <shogun/classifier/mkl/MKL.h>
