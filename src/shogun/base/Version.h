@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal, 
- *          Thoralf Klein, Evan Shelhamer, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal,
+ *          Thoralf Klein, Evan Shelhamer, Sergey Lisitsyn,
  *          Evangelos Anagnostopoulos
  */
 
@@ -33,6 +33,9 @@ public:
 
 	/** print version */
 	static void print_version();
+
+	/** get main version */
+	static const char* get_version_main();
 
 	/** get version extra */
 	static const char* get_version_extra();
@@ -82,9 +85,10 @@ public:
 protected:
 	/** version release */
 	static const char version_release[128];
+	/** version main */
+	static const char version_main[32];
 	/** version extra */
 	static const char version_extra[128];
-
 	/** version revision */
 	static const int64_t version_revision;
 	/** version year */
