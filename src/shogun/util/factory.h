@@ -61,7 +61,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CTransformer, transformer)
 	BASE_CLASS_FACTORY(CNeuralLayer, layer)
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
-	BASE_CLASS_FACTORY(CSplittingStrategy, machine_evaluation)
+	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
