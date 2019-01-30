@@ -44,6 +44,8 @@
 #include <utility>
 #include <vector>
 
+#include "sg_gtest_utilities.h"
+
 using namespace shogun;
 
 template <class T>
@@ -140,10 +142,7 @@ class TBOutputFormatTest : public ::testing::Test
 {
 };
 
-typedef ::testing::Types<uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
-                         uint64_t, float32_t, float64_t, floatmax_t, char>
-    TBTypes;
-TYPED_TEST_CASE(TBOutputFormatTest, TBTypes);
+SG_TYPED_TEST_CASE(TBOutputFormatTest, sg_all_primitive_types, bool, complex128_t);
 
 TYPED_TEST(TBOutputFormatTest, convert_all_types_scalar)
 {

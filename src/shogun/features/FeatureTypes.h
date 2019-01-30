@@ -8,7 +8,6 @@
 #define _FEATURE_TYPES__H__
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/sg_types.h>
 
 namespace shogun
 {

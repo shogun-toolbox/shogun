@@ -3,7 +3,7 @@
 #include <shogun/base/range.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
-#include <shogun/lib/sg_types.h>
+#include "sg_gtest_utilities.h"
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
@@ -11,15 +11,6 @@
 using namespace shogun;
 using namespace linalg;
 using namespace Eigen;
-
-template <typename Types>
-struct TypesGoogleTestWrapper;
-
-template <template<typename...> class TypesT, typename... Args>
-struct TypesGoogleTestWrapper<TypesT<Args...>>
-{
-    typedef ::testing::Types<Args...> type;
-};
 
 // Tolerance values for tests
 template <typename T>
@@ -50,10 +41,13 @@ class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
 
-TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, TypesGoogleTestWrapper<sg_all_primitive_types>::type);
-TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, TypesGoogleTestWrapper<sg_non_complex_types>::type);
-TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, TypesGoogleTestWrapper<sg_real_types>::type);
-TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, TypesGoogleTestWrapper<sg_non_integer_types>::type);
+//typedef typename  temp_all_test_types;
+//typedef typename PopTypesGoogleTestWrapper<sg_non_integer_types, complex128_t>::type temp_non_int_test_types;
+
+SG_TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
+SG_TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, sg_non_complex_types);
+SG_TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, sg_real_types);
+SG_TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, sg_non_integer_types, complex128_t);
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
 {
