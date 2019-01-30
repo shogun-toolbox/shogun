@@ -140,6 +140,12 @@ namespace shogun
 	};
 
 	CMachine* machine(CPipeline* pipeline);
+
+	template <>
+	inline void CSGObject::put<CPipeline, CPipeline, void>(const std::string& name, CPipeline* value)
+	{
+		put(name, static_cast<CMachine*>(value));
+	}
 }
 
 #endif
