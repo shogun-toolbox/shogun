@@ -1,10 +1,12 @@
+#include "sg_gtest_utilities.h"
+
 #include "utils/Utils.h"
-#include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/machine/FeatureDispatchCRTP.h>
 #include <shogun/machine/LinearMachine.h>
+
 
 using namespace shogun;
 
@@ -62,14 +64,13 @@ public:
 	EFeatureType m_expected_feature_type;
 };
 
-typedef ::testing::Types<float32_t, float64_t, floatmax_t> SGFloatTypes;
 
 template <typename T>
 class DenseDispatchCRTP : public ::testing::Test
 {
 };
 
-TYPED_TEST_CASE(DenseDispatchCRTP, SGFloatTypes);
+SG_TYPED_TEST_CASE(DenseDispatchCRTP, sg_real_types);
 
 TYPED_TEST(DenseDispatchCRTP, train_with_dense)
 {

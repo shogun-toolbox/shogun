@@ -1,9 +1,11 @@
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 
 #include "utils/Utils.h"
+
 
 using namespace shogun;
 
@@ -36,10 +38,7 @@ protected:
 	T* m_array;
 };
 
-typedef ::testing::Types<bool, char, int8_t, uint8_t, int16_t, int32_t, int64_t,
-                         float32_t, float64_t>
-    DynamicArrayTypes;
-TYPED_TEST_CASE(CDynamicArrayFixture, DynamicArrayTypes);
+SG_TYPED_TEST_CASE(CDynamicArrayFixture, sg_all_primitive_types, complex128_t);
 
 TYPED_TEST(CDynamicArrayFixture, array_ctor)
 {

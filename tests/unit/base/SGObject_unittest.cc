@@ -4,7 +4,8 @@
  * Authors: Heiko Strathmann, Thoralf Klein, Wu Lin
  */
 
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include "MockObject.h"
 #include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
@@ -38,14 +39,8 @@ class SGObjectClone : public ::testing::Test
 {
 };
 
-// types that go into SGVector<> and co
-// TODO: SGString doesn't support complex128_t, so omitted here
-typedef ::testing::Types<bool, char, int8_t, int16_t, int32_t, int64_t,
-                         float32_t, float64_t, floatmax_t>
-    SGBasicTypes;
-
-TYPED_TEST_CASE(SGObjectEquals, SGBasicTypes);
-TYPED_TEST_CASE(SGObjectClone, SGBasicTypes);
+SG_TYPED_TEST_CASE(SGObjectEquals, sg_all_primitive_types, complex128_t);
+SG_TYPED_TEST_CASE(SGObjectClone, sg_all_primitive_types, complex128_t);
 
 TYPED_TEST(SGObjectEquals, mock_allocate_delete)
 {

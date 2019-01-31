@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
 
 #include <shogun/base/range.h>
 #include <shogun/lib/config.h>
@@ -13,12 +13,12 @@ using namespace Eigen;
 
 // Tolerance values for tests
 template <typename T>
-T get_epsilon()
+constexpr T get_epsilon()
 {
 	return std::numeric_limits<T>::epsilon() * 100;
 }
 template <>
-floatmax_t get_epsilon()
+constexpr floatmax_t get_epsilon()
 {
 	return 1e-13;
 }
@@ -40,26 +40,10 @@ class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
 
-// TODO: make global definitions
-// Definition of the 4 groups of Shogun types
-// (shogun/mathematics/linalg/LinalgBackendBase.h)
-// TODO: add bool and complex128_t types
-typedef ::testing::Types<
-    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t,
-    float64_t, floatmax_t, char>
-    AllTypes;
-typedef ::testing::Types<
-    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, float32_t,
-    float64_t, floatmax_t>
-    NonComplexTypes;
-typedef ::testing::Types<float32_t, float64_t, floatmax_t> RealTypes;
-// TODO: add complex128_t type
-typedef ::testing::Types<float32_t, float64_t, floatmax_t> NonIntegerTypes;
-
-TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, AllTypes);
-TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, NonComplexTypes);
-TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, RealTypes);
-TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, NonIntegerTypes);
+SG_TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
+SG_TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, sg_non_complex_types);
+SG_TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, sg_real_types);
+SG_TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, sg_non_integer_types, complex128_t);
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
 {

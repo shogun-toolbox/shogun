@@ -84,11 +84,11 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	summaryValue->set_tag(value.first.get_name());
 	summaryValue->set_node_name(node_name);
 
-	auto write_summary = [&summaryValue=summaryValue](auto value) {
-		summaryValue->set_simple_value(value);
+	auto write_summary = [&summaryValue=summaryValue](auto val) {
+		summaryValue->set_simple_value(val);
 	};
 
-	sg_any_dispatch(value.first.get_value(), sg_all_types, write_summary);
+	sg_any_dispatch(value.first.get_value(), sg_all_typemap, write_summary);
 
 	return e;
 }

@@ -5,8 +5,10 @@
  *          Viktor Gal
  */
 
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include <shogun/lib/common.h>
+#include <shogun/lib/sg_types.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 
@@ -513,10 +515,8 @@ public:
 	SGSparseVector<T> v1_;
 	SGSparseVector<T> v2_;
 };
-typedef ::testing::Types<int16_t, int32_t, int64_t, float32_t, float64_t,
-                         floatmax_t, complex128_t>
-    SGSparseVectorEqualsTypes;
-TYPED_TEST_CASE(SGSparseVectorEquals, SGSparseVectorEqualsTypes);
+
+SG_TYPED_TEST_CASE(SGSparseVectorEquals, sg_numeric_types);
 
 TYPED_TEST(SGSparseVectorEquals, equals_same_dim)
 {
