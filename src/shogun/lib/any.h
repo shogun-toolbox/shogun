@@ -654,7 +654,7 @@ namespace shogun {
 
 		virtual bool holds_string() const = 0;
 
-		virtual bool should_assign_from_string(BaseAnyPolicy* other) const = 0;
+		virtual bool can_assign_from_string(BaseAnyPolicy* other) const = 0;
 	};
 
 	template <typename T>
@@ -696,8 +696,7 @@ namespace shogun {
 			return std::is_same<T, std::string>::value;
 		}
 
-		virtual bool
-		should_assign_from_string(BaseAnyPolicy* other) const override
+		virtual bool can_assign_from_string(BaseAnyPolicy* other) const override
 		{
 			return (has_from_string<T>() && other->holds_string());
 		}
@@ -888,15 +887,7 @@ namespace shogun {
 	template <class T>
 	bool NonOwningAnyPolicy<T>::can_compare_with(BaseAnyPolicy* other) const
 	{
-		if (this == other)
-		{
-			return true;
-		}
-		if (other == owning_policy<T>())
-		{
-			return true;
-		}
-		return this->matches_type(other->type_info());
+		return can_assign_from(other);
 	}
 
 	template <class T>
@@ -910,25 +901,13 @@ namespace shogun {
 		{
 			return true;
 		}
-		if (this->should_assign_from_string(other))
-		{
-			return true;
-		}
 		return this->matches_type(other->type_info());
 	}
 
 	template <class T>
 	bool PointerValueAnyPolicy<T>::can_compare_with(BaseAnyPolicy* other) const
 	{
-		if (this == other)
-		{
-			return true;
-		}
-		if (other == non_owning_policy<T>())
-		{
-			return true;
-		}
-		return this->matches_type(other->type_info());
+		return can_assign_from(other);
 	}
 
 	template <class T>
@@ -939,10 +918,6 @@ namespace shogun {
 			return true;
 		}
 		if (other == non_owning_policy<T>())
-		{
-			return true;
-		}
-		if (this->should_assign_from_string(other))
 		{
 			return true;
 		}
@@ -1001,7 +976,8 @@ namespace shogun {
 				set_or_inherit(other);
 				return *(this);
 			}
-			if (!policy->can_assign_from(other.policy))
+			if (!policy->can_assign_from(other.policy) &&
+			    !policy->can_assign_from_string(other.policy))
 			{
 				throw TypeMismatchException(
 				    other.policy->type(), policy->type());
@@ -1014,7 +990,7 @@ namespace shogun {
 			}
 			else
 			{
-				if (policy->should_assign_from_string(other.policy))
+				if (policy->can_assign_from_string(other.policy))
 				{
 					policy->set_from_string(&storage, other.storage);
 				}
