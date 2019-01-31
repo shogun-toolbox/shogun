@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann, Thoralf Klein, Wu Lin
  */
 
-#include <gtest/gtest.h>
 #include "sg_gtest_utilities.h"
 
 #include "MockObject.h"

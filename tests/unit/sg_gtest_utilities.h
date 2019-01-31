@@ -39,8 +39,8 @@ struct PopTypesGoogleTestWrapper<TypesT<Args...>, Args1...>
 };
 
 #define RANDOM_NAME(a, b) RANDOM_NAME_I(a, b)
-#define RANDOM_NAME_I(a, b) RANDOM_NAME_II(~, a##b)
-#define RANDOM_NAME_II(p, res) res
+#define RANDOM_NAME_I(a, b) RANDOM_NAME_II(a##b)
+#define RANDOM_NAME_II(res) res
 
 #define SG_TYPED_TEST_CASE(class_name, types, ...)                             \
 	using RANDOM_NAME(class_name, __LINE__) =                                  \

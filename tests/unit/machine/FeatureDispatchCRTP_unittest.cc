@@ -1,12 +1,12 @@
+#include "sg_gtest_utilities.h"
+
 #include "utils/Utils.h"
-#include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/machine/FeatureDispatchCRTP.h>
 #include <shogun/machine/LinearMachine.h>
 
-#include "sg_gtest_utilities.h"
 
 using namespace shogun;
 

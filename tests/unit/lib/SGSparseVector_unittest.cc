@@ -5,13 +5,12 @@
  *          Viktor Gal
  */
 
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/sg_types.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
-
-#include "sg_gtest_utilities.h"
 
 #include <vector>
 

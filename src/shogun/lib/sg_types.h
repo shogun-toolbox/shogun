@@ -26,81 +26,82 @@ namespace shogun
 	template <typename... Args>
 	struct Types
 	{
-		typedef None Head;
+		using Head = None;
 		static constexpr int size = 0;
 	};
 
 	template <typename T1, typename... Args>
 	struct Types<T1, Args...> : Types<Args...>
 	{
-		typedef Types<Args...> Tail;
-		typedef T1 Head;
+		using Tail = Types<Args...>;
+		using Head = T1;
 		static constexpr int size = sizeof...(Args) + 1;
 	};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-	// Type definitions
-	typedef Types<
-	    Any, floatmax_t, float64_t, float32_t, uint64_t, int64_t, uint32_t,
-	    int32_t, uint16_t, int16_t, uint8_t, char, bool, Unknown>
-	    sg_feature_types;
+	using sg_feature_types = Types<
+	    Unknown, bool, char, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
+	    int64_t, uint64_t, float32_t, float64_t, floatmax_t, Any>;
 
-	typedef Types<
+	using sg_all_primitive_types = Types<
 	    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t,
-	    float32_t, float64_t, floatmax_t, complex128_t, char, bool>
-	    sg_all_primitive_types;
+	    float32_t, float64_t, floatmax_t, complex128_t, char, bool>;
 
-	typedef Types<
+	using sg_non_complex_types = Types<
 	    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t,
-	    float32_t, float64_t, floatmax_t>
-	    sg_non_complex_types;
+	    float32_t, float64_t, floatmax_t>;
 
-	typedef Types<float32_t, float64_t, floatmax_t> sg_real_types;
+	using sg_real_types = Types<float32_t, float64_t, floatmax_t>;
 
-	typedef Types<float32_t, float64_t, floatmax_t, complex128_t> sg_non_integer_types;
+	using sg_non_integer_types =
+	    Types<float32_t, float64_t, floatmax_t, complex128_t>;
 
-    typedef Types<int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t,
-    float32_t, float64_t, floatmax_t, complex128_t> sg_numeric_types;
-
-    typedef Types<uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t,
-            uint64_t, float32_t, float64_t, floatmax_t, char> sg_tb_types;
+	using sg_numeric_types = Types<
+	    int8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t,
+	    float32_t, float64_t, floatmax_t, complex128_t>;
 
 	namespace types_detail
 	{
-        template <typename T1, int index, bool>
-        struct getTypeFromIndex_impl;
+		template <typename T1, int index, bool>
+		struct getTypeFromIndexImpl;
 
-        template <typename T1, int index>
-        struct getTypeFromIndex_impl<T1, index, false>
-        {
-            using type = None;
-        };
+		template <typename T1, int index>
+		struct getTypeFromIndexImpl<T1, index, false>
+		{
+			using type = None;
+		};
 
-        template <typename T1, int index>
-        struct getTypeFromIndex_impl<T1, index, true>
-        {
-            using type = std::conditional_t<
-                    (T1::size == index),
-                    typename T1::Head,
-                    typename getTypeFromIndex_impl<typename T1::Tail, index, (T1::size > 1)>::type>;
-        };
+		template <typename T1, int index>
+		struct getTypeFromIndexImpl<T1, index, true>
+		{
+			using type = std::conditional_t<
+			    (T1::size == index), typename T1::Head,
+			    typename getTypeFromIndexImpl<
+			        typename T1::Tail, index, (T1::size > 1)>::type>;
+		};
 
-		template <typename TypesT, typename T>      
-		struct appendToTypes_impl;
+		template <typename TypesT, typename T>
+		struct appendToTypesImpl;
 
-		template <template<typename...> class TypesT, typename T, typename... Args>              
-		struct appendToTypes_impl <TypesT<Args...>, T >
-		{                                                                               
-		    using type = TypesT<T, Args...>;                                                  
+		template <
+		    template <typename...> class TypesT, typename T, typename... Args>
+		struct appendToTypesImpl<TypesT<Args...>, T>
+		{
+			using type = TypesT<T, Args...>;
 		};
 
 		template <typename TypesT1, typename TypesT2>
-		struct appendTypes_impl;
+		struct appendTypesImpl;
 
-		template <template<typename...> class TypesT1, template<typename...> class TypesT2, typename... Args1, typename... Args2>
-		struct appendTypes_impl<TypesT1<Args1...>, TypesT2<Args2...>>
+		template <
+		    template <typename...> class TypesT1,
+		    template <typename...> class TypesT2, typename... Args1,
+		    typename... Args2>
+		struct appendTypesImpl<TypesT1<Args1...>, TypesT2<Args2...>>
 		{
-			static_assert(std::is_same<TypesT1<>, TypesT2<>>::value, "Expected types to be the same");
+			static_assert(
+			    std::is_same<TypesT1<>, TypesT2<>>::value,
+			    "Expected types to be the same");
 			using type = TypesT1<Args2..., Args1...>;
 		};
 	} // namespace types_detail
@@ -108,121 +109,139 @@ namespace shogun
 	template <typename TypesT, int index>
 	struct getTypeFromIndex
 	{
-		static_assert(index >= 0, "Index must be greater or equal than zero");
+		static_assert(
+		    index >= 0, "Index must be greater than or equal to zero");
 		static_assert(index < TypesT::size, "Index is out of bounds");
-		using type = typename types_detail::getTypeFromIndex_impl<TypesT, TypesT::size-index, true>::type;
+		using type = typename types_detail::getTypeFromIndexImpl<
+		    TypesT, TypesT::size - index, true>::type;
 	};
 
 	template <typename TypesT, typename T1>
 	struct appendToTypes
 	{
-		using type = typename types_detail::appendToTypes_impl<TypesT, T1>::type;
+		using type = typename types_detail::appendToTypesImpl<TypesT, T1>::type;
 	};
 
 	template <typename TypesT1, typename TypesT2>
 	struct appendTypes
 	{
-		using type = typename types_detail::appendTypes_impl<TypesT1, TypesT2>::type;
-	};	
+		using type =
+		    typename types_detail::appendTypesImpl<TypesT1, TypesT2>::type;
+	};
 
-	namespace types_detail {
+	namespace types_detail
+	{
 
 		template <typename TypesT1, typename TypesT2, bool>
-		struct reverseTypes_impl;
+		struct reverseTypesImpl;
 
 		template <typename TypesT1, typename TypesT2>
-		struct reverseTypes_impl<TypesT1, TypesT2, false>
+		struct reverseTypesImpl<TypesT1, TypesT2, false>
 		{
 			using type = None;
 		};
 
 		template <typename TypesT1, typename TypesT2>
-		struct reverseTypes_impl <TypesT1, TypesT2, true>
+		struct reverseTypesImpl<TypesT1, TypesT2, true>
 		{
 			using type = std::conditional_t<
-				(TypesT2::size == 1),
-				typename appendToTypes<TypesT1, typename TypesT2::Head>::type,
-				typename reverseTypes_impl<
-					typename appendToTypes<
-						TypesT1, typename TypesT2::Head>::type, 
-					typename TypesT2::Tail, (TypesT2::size > 1)>::type>;
+			    (TypesT2::size == 1),
+			    typename appendToTypes<TypesT1, typename TypesT2::Head>::type,
+			    typename reverseTypesImpl<
+			        typename appendToTypes<
+			            TypesT1, typename TypesT2::Head>::type,
+			        typename TypesT2::Tail, (TypesT2::size > 1)>::type>;
 		};
 
 	} // namespace types_detail
 
-	template<typename TypesT>
+	template <typename TypesT>
 	struct reverseTypes
 	{
-		using type = typename types_detail::reverseTypes_impl<Types<>, TypesT, true>::type;
+		using type = typename types_detail::reverseTypesImpl<
+		    Types<>, TypesT, true>::type;
 	};
 
-	namespace types_detail {
+	namespace types_detail
+	{
 
 		template <typename TypesTHead, typename TypesTTail, typename, bool>
-		struct popTypes_impl_type_;
+		struct popTypesImplType_;
 
 		template <typename TypesTHead, typename TypesTTail, typename T1>
-		struct popTypes_impl_type_<TypesTHead, TypesTTail, T1, false>
+		struct popTypesImplType_<TypesTHead, TypesTTail, T1, false>
 		{
 			using type = typename TypesTTail::Tail;
 		};
 
 		template <typename TypesTHead, typename TypesTTail, typename T1>
-		struct popTypes_impl_type_<TypesTHead, TypesTTail, T1, true>
+		struct popTypesImplType_<TypesTHead, TypesTTail, T1, true>
 		{
-			using type = typename appendTypes<typename TypesTTail::Tail, typename reverseTypes<TypesTHead>::type>::type;
+			using type = typename appendTypes<
+			    typename TypesTTail::Tail,
+			    typename reverseTypes<TypesTHead>::type>::type;
 		};
 
 		template <typename TypesTHead, typename TypesTTail, typename T, bool>
-		struct popTypes_impl_type;
+		struct popTypesImplType;
 
 		template <typename TypesTHead, typename TypesTTail, typename T>
-		struct popTypes_impl_type<TypesTHead, TypesTTail, T, false>
+		struct popTypesImplType<TypesTHead, TypesTTail, T, false>
 		{
 			using type = None;
 		};
 
 		template <typename TypesTHead, typename TypesTTail, typename T>
-		struct popTypes_impl_type<TypesTHead, TypesTTail, T, true>
+		struct popTypesImplType<TypesTHead, TypesTTail, T, true>
 		{
 			using type = std::conditional_t<
-				std::is_same<typename TypesTTail::Head, T>::value,
-				typename popTypes_impl_type_<TypesTHead, TypesTTail, T, (TypesTHead::size > 0)>::type,
-				typename popTypes_impl_type<typename appendToTypes<TypesTHead, typename TypesTTail::Head>::type, typename TypesTTail::Tail, T, (TypesTTail::size > 1)>::type>;
+			    std::is_same<typename TypesTTail::Head, T>::value,
+			    typename popTypesImplType_<
+			        TypesTHead, TypesTTail, T, (TypesTHead::size > 0)>::type,
+			    typename popTypesImplType<
+			        typename appendToTypes<
+			            TypesTHead, typename TypesTTail::Head>::type,
+			        typename TypesTTail::Tail, T,
+			        (TypesTTail::size > 1)>::type>;
 		};
 	} // namespace types_detail
 
-	template<typename TypesT, typename T1>
+	template <typename TypesT, typename T1>
 	struct popTypesByType
 	{
-		using type = typename types_detail::popTypes_impl_type<Types<>, TypesT, T1, true>::type;
+		using type = typename types_detail::popTypesImplType<
+		    Types<>, TypesT, T1, true>::type;
 	};
 
-	namespace types_detail {
+	namespace types_detail
+	{
 
 		template <typename TypesT, typename T1, bool>
-		struct popTypes_impl_types;
+		struct popTypesImplTypes;
 
 		template <typename TypesT, typename T1>
-		struct popTypes_impl_types<TypesT, T1, false>
+		struct popTypesImplTypes<TypesT, T1, false>
 		{
 			using type = None;
 		};
 
 		template <typename TypesT, typename T1>
-		struct popTypes_impl_types<TypesT, T1, true>
+		struct popTypesImplTypes<TypesT, T1, true>
 		{
 			using type = std::conditional_t<
-				(T1::size == 1), 
-				typename popTypesByType<TypesT, typename T1::Head>::type,
-				typename popTypes_impl_types<typename popTypesByType<TypesT, typename T1::Head>::type, typename T1::Tail, (T1::size > 1)>::type>;
+			    (T1::size == 1),
+			    typename popTypesByType<TypesT, typename T1::Head>::type,
+			    typename popTypesImplTypes<
+			        typename popTypesByType<TypesT, typename T1::Head>::type,
+			        typename T1::Tail, (T1::size > 1)>::type>;
 		};
 	} // namespace types_detail
 
-	template<typename TypesT, typename TypesT1>
+	template <typename TypesT, typename TypesT1>
 	struct popTypesByTypes
 	{
-		using type = typename types_detail::popTypes_impl_types<TypesT, TypesT1, true>::type;
+		using type = typename types_detail::popTypesImplTypes<
+		    TypesT, TypesT1, true>::type;
 	};
 } // namespace shogun
 

@@ -35,7 +35,8 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/tfhistogram/histogram.h>
@@ -44,7 +45,6 @@
 #include <utility>
 #include <vector>
 
-#include "sg_gtest_utilities.h"
 
 using namespace shogun;
 

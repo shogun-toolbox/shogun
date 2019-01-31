@@ -1,11 +1,11 @@
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
+
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 
 #include "utils/Utils.h"
 
-#include "sg_gtest_utilities.h"
 
 using namespace shogun;
 

@@ -1,9 +1,8 @@
-#include <gtest/gtest.h>
+#include "sg_gtest_utilities.h"
 
 #include <shogun/base/range.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
-#include "sg_gtest_utilities.h"
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
@@ -14,12 +13,12 @@ using namespace Eigen;
 
 // Tolerance values for tests
 template <typename T>
-T get_epsilon()
+constexpr T get_epsilon()
 {
 	return std::numeric_limits<T>::epsilon() * 100;
 }
 template <>
-floatmax_t get_epsilon()
+constexpr floatmax_t get_epsilon()
 {
 	return 1e-13;
 }
@@ -40,9 +39,6 @@ template <typename T>
 class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
-
-//typedef typename  temp_all_test_types;
-//typedef typename PopTypesGoogleTestWrapper<sg_non_integer_types, complex128_t>::type temp_non_int_test_types;
 
 SG_TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
 SG_TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, sg_non_complex_types);
