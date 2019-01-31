@@ -8,7 +8,7 @@ Machine svm = machine("LibLinear", liblinear_solver_type=enum LIBLINEAR_SOLVER_T
 
 SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
 Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
-MachineEvaluation cross = machine_evaluation("StratifiedCrossValidationSplitting", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 
 EvaluationResult result = cross.evaluate()
 
