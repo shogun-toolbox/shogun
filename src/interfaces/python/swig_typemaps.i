@@ -1361,7 +1361,9 @@ _FACTORIES = ["distance",
               "ecoc_encoder",
               "ecoc_decoder",
               "transformer",
-              "layer"
+              "layer",
+              "splitting_strategy",
+              "machine_evaluation"
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
