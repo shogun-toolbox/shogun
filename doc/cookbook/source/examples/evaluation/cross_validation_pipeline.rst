@@ -1,6 +1,6 @@
-============================
+==============================
 Cross Validation on a Pipeline
-============================
+==============================
 
 In this example, we illustrate how to use cross-validation with :sgclass:`CPipeline`.
 
