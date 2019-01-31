@@ -40,6 +40,7 @@ namespace shogun
 	CTransformer* transformer(const std::string& name);
 	CNeuralLayer* layer(const std::string& name);
 	CSplittingStrategy* splitting_strategy(const std::string& name);
+	CMachineEvaluation* machine_evaluation(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
