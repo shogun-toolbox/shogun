@@ -6,10 +6,9 @@ Labels labs = labels(f_labels)
 
 Machine svm = machine("LibLinear", liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
 
-StratifiedCrossValidationSplitting splitting_strategy(labs, 5)
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
 Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
-CrossValidation cross(svm, feats, labs, splitting_strategy, evaluation_criterion)
-cross.set_num_runs(2)
+MachineEvaluation cross = machine_evaluation("StratifiedCrossValidationSplitting", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 
 EvaluationResult result = cross.evaluate()
 

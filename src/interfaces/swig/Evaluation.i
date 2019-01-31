@@ -5,8 +5,7 @@
  */
 
 /* These functions return new Objects */
-%newobject CGradientEvaluation::evaluate();
-%newobject CCrossValidation::evaluate();
+%newobject CMachineEvaluation::evaluate();
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorContingencyTableEvaluation;
@@ -36,12 +35,7 @@
 %rename(RecallMeasure) CRecallMeasure;
 %rename(PrecisionMeasure) CPrecisionMeasure;
 %rename(SpecificityMeasure) CSpecificityMeasure;
-%rename(CrossValidation) CCrossValidation;
 %rename(SplittingStrategy) CSplittingStrategy;
-%rename(TimeSeriesSplitting) CTimeSeriesSplitting;
-%rename(StratifiedCrossValidationSplitting) CStratifiedCrossValidationSplitting;
-%rename(CrossValidationSplitting) CCrossValidationSplitting;
-%rename(DifferentiableFunction) CDifferentiableFunction;
 %rename(GradientCriterion) CGradientCriterion;
 %rename(GradientEvaluation) CGradientEvaluation;
 %rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
@@ -64,16 +58,11 @@
 %include <shogun/evaluation/ROCEvaluation.h>
 %include <shogun/evaluation/PRCEvaluation.h>
 %include <shogun/evaluation/MachineEvaluation.h>
-%include <shogun/evaluation/CrossValidation.h>
 %include <shogun/evaluation/CrossValidationStorage.h>
 %include <shogun/evaluation/SplittingStrategy.h>
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/evaluation/GradientCriterion.h>
-%include <shogun/evaluation/GradientEvaluation.h>
 %include <shogun/evaluation/GradientResult.h>
 %include <shogun/evaluation/MulticlassOVREvaluation.h>
-%include <shogun/evaluation/TimeSeriesSplitting.h>
-%include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-%include <shogun/evaluation/CrossValidationSplitting.h>
 %include <shogun/evaluation/StructuredAccuracy.h>
 %include <shogun/evaluation/DirectorContingencyTableEvaluation.h>

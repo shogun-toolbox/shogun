@@ -21,10 +21,9 @@ Machine svm = machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C
 #![create_instance]
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels_train, 2)
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2)
 Evaluation evaluation_criteron = evaluation("AccuracyMeasure")
-CrossValidation cross(svm, features_train, labels_train, splitting_strategy, evaluation_criteron, False)
-cross.set_num_runs(2)
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=features_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criteron, autolock=False, num_runs=2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]

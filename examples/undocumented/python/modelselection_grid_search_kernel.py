@@ -9,9 +9,9 @@ from numpy import array
 from numpy import random
 import math
 
-from shogun import CrossValidation, CrossValidationResult
+from shogun import machine_evaluation
 from shogun import ContingencyTableEvaluation, ACCURACY
-from shogun import StratifiedCrossValidationSplitting
+from shogun import splitting_strategy
 from shogun import BinaryLabels
 from shogun import RealFeatures
 from shogun import PowerKernel
@@ -96,14 +96,18 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	classifier=sg.machine("LibSVM")
 
 	# splitting strategy
-	splitting_strategy=StratifiedCrossValidationSplitting(labels, num_subsets)
+	splitting_strategy = splitting_strategy(
+		"StratifiedCrossValidationSplitting", labels=labels,
+		num_subsets=num_subsets)
 
 	# accuracy evaluation
 	evaluation_criterion=ContingencyTableEvaluation(ACCURACY)
 
 	# cross validation class for evaluation in model selection
-	cross=CrossValidation(classifier, features, labels, splitting_strategy, evaluation_criterion)
-	cross.set_num_runs(1)
+	cross = machine_evaluation(
+            "CrossValidation", machine=classifier, features=features,
+            labels=labels, splitting_strategy=splitting_strategy,
+            evaluation_criterion=evaluation_criterion, num_runs=1)
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
@@ -123,12 +127,11 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	best_combination.apply_to_machine(classifier)
 
 	# larger number of runs to have less variance
-	cross.set_num_runs(10)
+	cross.put("num_runs", 10)
 	result=cross.evaluate()
-	casted=CrossValidationResult.obtain_from_generic(result);
-	#print "result mean:", casted.mean
+	#print "result mean:", result.get_real("mean")
 
-	return classifier,result,casted.get_mean()
+	return classifier,result, result.get_real("mean")
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')

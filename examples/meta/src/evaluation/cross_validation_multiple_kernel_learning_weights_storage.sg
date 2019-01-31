@@ -26,11 +26,9 @@ Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_o
 #![create_classifier]
 
 #![create_cross_validation]
-StratifiedCrossValidationSplitting splitting_strategy(labels_train, 5)
+SplittingStrategy strategy = splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=5)
 Evaluation evaluation_criterium = evaluation("AccuracyMeasure")
-CrossValidation cross(svm, combined_features, labels_train, splitting_strategy, evaluation_criterium)
-cross.set_autolock(False)
-cross.set_num_runs(2)
+MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, features=combined_features, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterium, autolock=False, num_runs=2)
 #![create_cross_validation]
 
 #![create_observer]
