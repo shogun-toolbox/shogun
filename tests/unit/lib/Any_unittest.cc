@@ -96,6 +96,29 @@ public:
 	}
 };
 
+class WithFromString
+{
+public:
+	WithFromString() : value()
+	{
+	}
+	WithFromString(const std::string& v) : value(v)
+	{
+	}
+
+	static WithFromString from_string(const std::string& str)
+	{
+		return WithFromString(str);
+	}
+
+	bool equals(const WithFromString& other) const
+	{
+		return false;
+	}
+
+	std::string value;
+};
+
 TEST(Any, as)
 {
 	int32_t integer = 10;
@@ -690,6 +713,16 @@ TEST(Any, lazy_cloneable_visitable)
 	EXPECT_FALSE(any.cloneable());
 	EXPECT_FALSE(any.visitable());
 	EXPECT_THROW(any.visit(nullptr), std::logic_error);
+}
+
+TEST(Any, create_from_string)
+{
+	Any any;
+	WithFromString value("something");
+	any = make_any_ref(&value);
+	std::string str("whatabout");
+	any = make_any(str);
+	EXPECT_EQ(any.as<WithFromString>().value, str);
 }
 
 TEST(AnyParameterProperties, old_api_default)

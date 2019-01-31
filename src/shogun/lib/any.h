@@ -412,12 +412,100 @@ namespace shogun {
 			});
 		}
 
+		template <typename T>
+		auto has_from_string(general) -> decltype(false)
+		{
+			return false;
+		}
+
+		template <typename T>
+		auto has_from_string(more_important) -> decltype(T::from_string, true)
+		{
+			return true;
+		}
+
+		template <class T>
+		bool has_from_string()
+		{
+			return has_from_string<T>(maybe_most_important());
+		}
+
+		template <typename T>
+		auto maybe_from_string(const std::string& value, general)
+		    -> decltype(T())
+		{
+			return T();
+		}
+
+		template <typename T>
+		auto maybe_from_string(const std::string& value, more_important)
+		    -> decltype(T::from_string, T())
+		{
+			return T::from_string(value);
+		}
+
+		template <class T>
+		T maybe_from_string(const std::string& value)
+		{
+			return maybe_from_string<T>(value, maybe_most_important());
+		}
+
+		template <class T>
+		void
+		maybe_assign_copy_from_string(void** storage, const void* v, general)
+		{
+			throw std::logic_error("Can't assign");
+		}
+
+		template <class T>
+		auto maybe_assign_copy_from_string(
+		    void** storage, const void* v, more_important)
+		    -> decltype(T(), nullptr)
+		{
+			*(storage) = new T(
+			    maybe_from_string<T>(value_of(typed_pointer<std::string>(v))));
+			return nullptr;
+		}
+
+		template <class T>
+		void maybe_assign_copy_from_string(void** storage, const void* v)
+		{
+			maybe_assign_copy_from_string<T>(
+			    storage, v, maybe_most_important());
+		}
+
+		template <class T>
+		void
+		maybe_assign_value_from_string(void** storage, const void* v, general)
+		{
+			throw std::logic_error("Can't assign");
+		}
+
+		template <class T>
+		auto maybe_assign_value_from_string(
+		    void** storage, const void* v, more_important)
+		    -> decltype(T(), nullptr)
+		{
+			mutable_value_of<T>(storage) =
+			    maybe_from_string<T>(value_of(typed_pointer<std::string>(v)));
+			return nullptr;
+		}
+
+		template <class T>
+		void maybe_assign_value_from_string(void** storage, const void* v)
+		{
+			maybe_assign_value_from_string<T>(
+			    storage, v, maybe_most_important());
+		}
 	}
 
+	using any_detail::maybe_assign_copy_from_string;
+	using any_detail::maybe_assign_value_from_string;
 	using any_detail::typed_pointer;
 	using any_detail::value_of;
 	using any_detail::mutable_value_of;
 	using any_detail::compare;
+	using any_detail::has_from_string;
 
 	template <class T, class S>
 	bool ArrayReference<T, S>::equals(const ArrayReference<T, S>& other) const
@@ -497,6 +585,12 @@ namespace shogun {
 		 */
 		virtual void set(void** storage, const void* v) const = 0;
 
+		/** Puts provided value pointed by v (untyped to be generic) to storage.
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value
+		 */
+		virtual void set_from_string(void** storage, const void* v) const = 0;
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -524,11 +618,17 @@ namespace shogun {
 		 */
 		virtual bool matches_type(const std::type_info& ti) const = 0;
 
-		/** Checks if policies are compatible.
+		/** Checks if policies are compatible to compare.
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const = 0;
+		virtual bool can_compare_with(BaseAnyPolicy* other) const = 0;
+
+		/** Checks if policies are compatible to assign.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool can_assign_from(BaseAnyPolicy* other) const = 0;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -551,6 +651,10 @@ namespace shogun {
 		virtual void visit(void* storage, AnyVisitor* visitor) const = 0;
 
 		virtual bool is_functional() const = 0;
+
+		virtual bool holds_string() const = 0;
+
+		virtual bool should_assign_from_string(BaseAnyPolicy* other) const = 0;
 	};
 
 	template <typename T>
@@ -586,6 +690,17 @@ namespace shogun {
 		{
 			return any_detail::has_result_type<T>::value;
 		}
+
+		virtual bool holds_string() const override
+		{
+			return std::is_same<T, std::string>::value;
+		}
+
+		virtual bool
+		should_assign_from_string(BaseAnyPolicy* other) const override
+		{
+			return (has_from_string<T>() && other->holds_string());
+		}
 	};
 
 	/** @brief This is one concrete implementation of policy that
@@ -602,6 +717,16 @@ namespace shogun {
 		virtual void set(void** storage, const void* v) const override
 		{
 			*(storage) = new T(value_of(typed_pointer<T>(v)));
+		}
+
+		/** Puts provided value pointed by v (untyped to be generic) to storage.
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value
+		 */
+		virtual void
+		set_from_string(void** storage, const void* v) const override
+		{
+			maybe_assign_value_from_string<T>(storage, v);
 		}
 
 		/** Clones value provided by from into storage
@@ -621,11 +746,17 @@ namespace shogun {
 			delete typed_pointer<T>(*storage);
 		}
 
-		/** Checks if policies are compatible.
+		/** Checks if policies are compatible to compare.
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool can_compare_with(BaseAnyPolicy* other) const override;
+
+		/** Checks if policies are compatible to assign.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool can_assign_from(BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -670,6 +801,16 @@ namespace shogun {
 			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
+		/** Puts provided value pointed by v (untyped to be generic) to storage.
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value
+		 */
+		virtual void
+		set_from_string(void** storage, const void* v) const override
+		{
+			maybe_assign_value_from_string<T>(storage, v);
+		}
+
 		/** Clones value provided by from into storage
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
@@ -686,11 +827,17 @@ namespace shogun {
 		{
 		}
 
-		/** Checks if policies are compatible.
+		/** Checks if policies are compatible to compare.
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(BaseAnyPolicy* other) const override;
+		virtual bool can_compare_with(BaseAnyPolicy* other) const override;
+
+		/** Checks if policies are compatible to assign.
+		 * @param other other policy
+		 * @return true if policies do match
+		 */
+		virtual bool can_assign_from(BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -739,7 +886,7 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool NonOwningAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool NonOwningAnyPolicy<T>::can_compare_with(BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
@@ -753,13 +900,49 @@ namespace shogun {
 	}
 
 	template <class T>
-	bool PointerValueAnyPolicy<T>::matches_policy(BaseAnyPolicy* other) const
+	bool NonOwningAnyPolicy<T>::can_assign_from(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == owning_policy<T>())
+		{
+			return true;
+		}
+		if (this->should_assign_from_string(other))
+		{
+			return true;
+		}
+		return this->matches_type(other->type_info());
+	}
+
+	template <class T>
+	bool PointerValueAnyPolicy<T>::can_compare_with(BaseAnyPolicy* other) const
 	{
 		if (this == other)
 		{
 			return true;
 		}
 		if (other == non_owning_policy<T>())
+		{
+			return true;
+		}
+		return this->matches_type(other->type_info());
+	}
+
+	template <class T>
+	bool PointerValueAnyPolicy<T>::can_assign_from(BaseAnyPolicy* other) const
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == non_owning_policy<T>())
+		{
+			return true;
+		}
+		if (this->should_assign_from_string(other))
 		{
 			return true;
 		}
@@ -818,7 +1001,7 @@ namespace shogun {
 				set_or_inherit(other);
 				return *(this);
 			}
-			if (!policy->matches_policy(other.policy))
+			if (!policy->can_assign_from(other.policy))
 			{
 				throw TypeMismatchException(
 				    other.policy->type(), policy->type());
@@ -831,7 +1014,14 @@ namespace shogun {
 			}
 			else
 			{
-				policy->set(&storage, other.storage);
+				if (policy->should_assign_from_string(other.policy))
+				{
+					policy->set_from_string(&storage, other.storage);
+				}
+				else
+				{
+					policy->set(&storage, other.storage);
+				}
 			}
 			return *(this);
 		}
@@ -848,7 +1038,7 @@ namespace shogun {
 				set_or_inherit(other);
 				return *(this);
 			}
-			if (!policy->matches_policy(other.policy))
+			if (!policy->can_assign_from(other.policy))
 			{
 				throw TypeMismatchException(
 				    other.policy->type(), policy->type());
@@ -981,7 +1171,7 @@ namespace shogun {
 		{
 			return lhs.empty() && rhs.empty();
 		}
-		if (!lhs.policy->matches_policy(rhs.policy))
+		if (!lhs.policy->can_compare_with(rhs.policy))
 		{
 			return false;
 		}
