@@ -10,6 +10,8 @@
 #include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/evaluation/Evaluation.h>
+#include <shogun/evaluation/MachineEvaluation.h>
+#include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
@@ -18,6 +20,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/Pipeline.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -36,6 +39,8 @@ namespace shogun
 	CECOCDecoder* ecoc_decoder(const std::string& name);
 	CTransformer* transformer(const std::string& name);
 	CNeuralLayer* layer(const std::string& name);
+	CSplittingStrategy* splitting_strategy(const std::string& name);
+	CMachineEvaluation* machine_evaluation(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -56,6 +61,8 @@ namespace shogun
 	BASE_CLASS_FACTORY(CECOCDecoder, ecoc_decoder)
 	BASE_CLASS_FACTORY(CTransformer, transformer)
 	BASE_CLASS_FACTORY(CNeuralLayer, layer)
+	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
+	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -266,6 +273,22 @@ namespace shogun
 		CFile* result = new CCSVFile(fname.c_str(), rw);
 		SG_REF(result);
 		return result;
+	}
+
+	/** Create a pipeline builder.
+	 * See also CPipelineBuilder and CPipeline.
+	 * @return new instance of CPipelineBuilder
+	 */
+	CPipelineBuilder* pipeline()
+	{
+		auto result = new CPipelineBuilder();
+		SG_REF(result);
+		return result;
+	}
+
+	CMachine* machine(CPipeline* pipeline)
+	{
+		return pipeline;
 	}
 }
 #endif // FACTORY_H_

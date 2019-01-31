@@ -125,5 +125,5 @@ SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx
 
 index_t CSplittingStrategy::get_num_subsets() const
 {
-	return m_subset_indices->get_num_elements();
+	return m_num_subsets;
 }

@@ -20,6 +20,7 @@
 %rename(ClusteringAccuracy) CClusteringAccuracy;
 %rename(ClusteringMutualInformation) CClusteringMutualInformation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
+%rename(MachineEvaluation) CMachineEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanAbsoluteError) CMeanAbsoluteError;
 %rename(MeanSquaredError) CMeanSquaredError;

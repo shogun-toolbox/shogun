@@ -22,12 +22,13 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
-	/* check for "stupid" combinations of label numbers and num_subsets.
-	 * if there are of a class less labels than num_subsets, the class will not
-	 * appear in every subset, leading to subsets of only one class in the
-	 * extreme case of a two class labeling. */
 
-	auto dense_labels = labels->as<CDenseLabels>();
+	m_rng = sg_rand;
+}
+
+void CStratifiedCrossValidationSplitting::check_labels() const
+{
+	auto dense_labels = m_labels->as<CDenseLabels>();
 	auto classes = dense_labels->get_labels().unique();
 
 	SGVector<index_t> labels_per_class(classes.size());
@@ -35,7 +36,7 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 	for (auto i : range(classes.size()))
 	{
 		labels_per_class[i] = 0;
-		for (auto j : range(labels->get_num_labels()))
+		for (auto j : range(dense_labels->get_num_labels()))
 		{
 			if (classes[i] == dense_labels->get_label(j))
 				labels_per_class[i]++;
@@ -44,21 +45,21 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 
 	for (index_t i = 0; i < classes.size(); ++i)
 	{
-		if (labels_per_class[i] < num_subsets)
+		if (labels_per_class[i] < m_num_subsets)
 		{
 			SG_WARNING(
 			    "There are only %d labels of class %.18g, but %d "
 			    "subsets. Labels of that class will not appear in every "
 			    "subset!\n",
-			    labels_per_class[i], classes[i], num_subsets);
+			    labels_per_class[i], classes[i], m_num_subsets);
 		}
 	}
-
-	m_rng = sg_rand;
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
 {
+	check_labels();
+
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();
 	m_is_filled=true;
