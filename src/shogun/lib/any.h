@@ -47,8 +47,9 @@
 
 namespace shogun {
 
-	namespace any_detail{
-		std::string demangled_type_helper(const char *name);
+	namespace any_detail
+	{
+		std::string demangled_type_helper(const char* name);
 	}
 
 	/** Converts compiler-dependent name of class to
@@ -59,7 +60,6 @@ namespace shogun {
 	std::string demangled_type()
 	{
 		const char* name = typeid(T).name();
-
 		return any_detail::demangled_type_helper(name);
 	}
 
@@ -454,7 +454,7 @@ namespace shogun {
 		void
 		maybe_assign_copy_from_string(void** storage, const void* v, general)
 		{
-			throw std::logic_error("Can't assign");
+			throw std::logic_error("Can't assign from string");
 		}
 
 		template <class T>
@@ -478,7 +478,7 @@ namespace shogun {
 		void
 		maybe_assign_value_from_string(void** storage, const void* v, general)
 		{
-			throw std::logic_error("Can't assign");
+			throw std::logic_error("Can't assign from string");
 		}
 
 		template <class T>
@@ -1151,9 +1151,7 @@ namespace shogun {
 		{
 			return false;
 		}
-		void* lhs_storage = lhs.storage;
-		void* rhs_storage = rhs.storage;
-		return lhs.policy->equals(lhs_storage, rhs_storage);
+		return lhs.policy->equals(lhs.storage, rhs.storage);
 	}
 
 	inline bool operator!=(const Any& lhs, const Any& rhs)
