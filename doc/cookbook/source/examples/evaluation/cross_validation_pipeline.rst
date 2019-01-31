@@ -23,7 +23,7 @@ Next, we initialize a splitting strategy :sgclass:`CStratifiedCrossValidationSpl
 We also have to decide on an evaluation criterion class (see :sgclass:`CEvaluation`) to evaluate the performance of the trained model.
 In this case, we use :sgclass:`CAccuracyMeasure`.
 We then instantiate :sgclass:`CCrossValidation` and set the number of cross validation's runs.
-We pass the :sgclass:`CPipeline` instance, which implements the :sgclass:`CMachine` API, to :sgclass:`CCrossValidation`.
+We next create a cross-validation instance and pass the generated pipeline.
 
 .. sgexample:: cross_validation_pipeline:create_cross_validation
 
