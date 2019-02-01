@@ -43,6 +43,7 @@ namespace shogun
 	CSplittingStrategy* splitting_strategy(const std::string& name);
 	CMachineEvaluation* machine_evaluation(const std::string& name);
 	CSVM* svm(const std::string& name);
+	CFeatures* features(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -66,6 +67,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
 	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
 	BASE_CLASS_FACTORY(CSVM, svm)
+	BASE_CLASS_FACTORY(CFeatures, features)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
