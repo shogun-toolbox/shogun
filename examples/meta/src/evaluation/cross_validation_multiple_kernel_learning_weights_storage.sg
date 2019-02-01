@@ -3,10 +3,10 @@ File f_labels = csv_file("../../data/label_train_twoclass.dat")
 
 #![create_features]
 Features feats = features(f_feats)
-CombinedFeatures combined_features()
-combined_features.append_feature_obj(feats)
-combined_features.append_feature_obj(feats)
-combined_features.append_feature_obj(feats)
+Features combined_features = features("CombinedFeatures")
+combined_features.add("array", feats)
+combined_features.add("array", feats)
+combined_features.add("array", feats)
 Labels labels_train = labels(f_labels)
 #![create_features]
 
