@@ -21,7 +21,7 @@ combined_kernel.add("kernel_array", k_3)
 #![create_kernels]
 
 #![create_classifier]
-Machine libsvm = machine("LibSVM")
+SVM libsvm = as_svm(machine("LibSVM"))
 Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_optimization=False, svm=libsvm)
 #![create_classifier]
 
@@ -50,11 +50,11 @@ real stddev = result.get_real("std_dev")
 #![get_fold_machine]
 CrossValidationStorage obs = mkl_obs.get_observation(0)
 CrossValidationFoldStorage fold = obs.get_fold(0)
-Machine machine_mkl = machine(fold.get_trained_machine())
+Machine machine_mkl = as_machine(fold.get_trained_machine())
 
 #![get_fold_machine]
 
 #![get_weights]
-Kernel k = kernel(machine_mkl.get("kernel"))
+Kernel k = as_kernel(machine_mkl.get("kernel"))
 RealVector w = k.get_subkernel_weights()
 #![get_weights]

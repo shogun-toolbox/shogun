@@ -18,7 +18,6 @@ namespace shogun
 
 class CFeatures;
 class CKernel;
-class CKernelMachine;
 
 /** @brief generic kernel multiclass */
 class CKernelMulticlassMachine : public CMulticlassMachine
@@ -33,7 +32,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 * @param machine kernel machine
 		 * @param labs labels
 		 */
-		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs);
+		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CMachine* machine, CLabels* labs);
 
 		/** destructor */
 		virtual ~CKernelMulticlassMachine();

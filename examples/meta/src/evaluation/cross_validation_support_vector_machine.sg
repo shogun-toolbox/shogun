@@ -4,8 +4,7 @@ File f_labels = csv_file("../../data/label_train_twoclass.dat")
 Features feats = features(f_feats)
 Labels labs = labels(f_labels)
 
-Machine svm = machine("LibLinear")
-svm.put("liblinear_solver_type", enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+Machine svm = machine("LibLinear", liblinear_solver_type=enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
 
 StratifiedCrossValidationSplitting splitting_strategy(labs, 5)
 Evaluation evaluation_criterion = evaluation("AccuracyMeasure")

@@ -25,7 +25,8 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
     from shogun import ParameterCombination
     from shogun import BinaryLabels
     from shogun import RealFeatures
-    from shogun import LibLinear, L2R_L2LOSS_SVC
+    from shogun import L2R_L2LOSS_SVC
+    import shogun as sg
 
     # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()
@@ -42,7 +43,7 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
     labels=BinaryLabels(label_traindat)
 
     # classifier
-    classifier=LibLinear(L2R_L2LOSS_SVC)
+    classifier=sg.machine("LibLinear", liblinear_solver_type=L2R_L2LOSS_SVC)
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

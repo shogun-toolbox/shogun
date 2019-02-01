@@ -271,7 +271,7 @@ void CMKL::register_params()
 	rho = 0;
 	lp_initialized = false;
 
-	SG_ADD((CMachine**)&svm, "svm", "wrapper svm");
+	SG_ADD(&svm, "svm", "wrapper svm");
 	SG_ADD(&C_mkl, "C_mkl", "C mkl", ParameterProperties::HYPER);
 	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl");
 	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter",

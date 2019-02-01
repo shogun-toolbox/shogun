@@ -39,8 +39,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
-		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CDotFeatures* features, CLinearMachine* machine, CLabels* labs) :
-			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_features(NULL)
+		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CDotFeatures* features, CMachine* machine, CLabels* labs) :
+			CMulticlassMachine(strategy, machine,labs), m_features(NULL)
 		{
 			set_features(features);
 			SG_ADD((CSGObject**)&m_features, "m_features", "Feature object.");
@@ -70,7 +70,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 			for (index_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				CLinearMachine* machine = (CLinearMachine* )m_machines->get_element(i);
+				auto machine = m_machines->get_element(i)->as<CLinearMachine>();
 				machine->set_features(f);
 				SG_UNREF(machine);
 			}
@@ -97,7 +97,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			if (data)
 				set_features((CDotFeatures*)data);
 
-			((CLinearMachine*)m_machine)->set_features(m_features);
+			m_machine->as<CLinearMachine>()->set_features(m_features);
 
 			return true;
 		}
@@ -110,7 +110,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				CLinearMachine* machine = (CLinearMachine*)m_machines->get_element(i);
+				auto machine = m_machines->get_element(i)->as<CLinearMachine>();
 				ASSERT(m_features)
 				ASSERT(machine)
 				machine->set_features(m_features);
@@ -132,7 +132,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** construct linear machine from given linear machine */
 		virtual CMachine* get_machine_from_trained(CMachine* machine)
 		{
-			return new CLinearMachine((CLinearMachine*)machine);
+			return new CLinearMachine(machine->as<CLinearMachine>());
 		}
 
 		/** get number of rhs feature vectors */

@@ -141,7 +141,8 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(m_labels);
 
 	RelaxedTreeUtil util;
-	SGMatrix<float64_t> conf_mat = util.estimate_confusion_matrix(m_machine_for_confusion_matrix,
+	SGMatrix<float64_t> conf_mat = util.estimate_confusion_matrix(
+			m_machine_for_confusion_matrix->as<CBaseMulticlassMachine>(),
 			m_feats, lab, m_num_classes);
 
 	// train root
