@@ -445,19 +445,26 @@ TEST(SGVectorTest, unique_method)
 
 TEST(SGVectorTest, as)
 {
-	SGVector<float64_t> vec{4, 3, 2.1};
+	std::vector<float64_t> data{4, 3, 2, 1};
+	SGVector<float64_t> vec{data.begin(), data.end()};
 
 	SGVector<float32_t> vec_float = vec.as<float32_t>();
 	ASSERT_NE(vec_float.data(), nullptr);
 	EXPECT_NE((void*)vec_float.data(), (void*)vec.data());
 	ASSERT_EQ(vec_float.size(), vec.size());
 	for (auto i : range(vec.size()))
+	{
 		EXPECT_NEAR((float32_t)vec[i], vec_float[i], 1e-7);
+		EXPECT_NEAR((float32_t)data[i], vec_float[i], 1e-7);
+	}
 
 	SGVector<int32_t> vec_int = vec.as<int32_t>();
 	ASSERT_NE(vec_int.data(), nullptr);
 	EXPECT_NE((void*)vec_int.data(), (void*)vec.data());
 	ASSERT_EQ(vec_int.size(), vec.size());
 	for (auto i : range(vec.size()))
+	{
 		EXPECT_EQ((int32_t)vec[i], vec_int[i]);
+		EXPECT_EQ((int32_t)data[i], vec_int[i]);
+	}
 }

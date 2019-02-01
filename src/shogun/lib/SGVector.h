@@ -18,9 +18,10 @@
 #include <shogun/util/iterators.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
-#include <memory>
+#include <algorithm>
 #include <atomic>
 #include <initializer_list>
+#include <memory>
 
 namespace Eigen
 {
@@ -129,7 +130,7 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<X> as() const
 		{
 			SGVector<X> v(vlen);
-			std::copy(v.begin(), v.end(), vector);
+			std::copy_n(vector, vlen, v.begin());
 			return v;
 		}
 #endif // SWIG
