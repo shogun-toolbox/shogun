@@ -1,5 +1,4 @@
 FIND_PACKAGE(Octave 3.6 REQUIRED)
-SET(OCTAVE_APIVERSION ${OCTAVE_MAJOR_VERSION})
 UNSET(TARGET_SWIGFLAGS)
 
 include(ShogunInterfaces)
@@ -8,7 +7,7 @@ include_directories(${OCTAVE_INCLUDE_DIRS})
 GENERATE_INTERFACE_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} "${OCTAVE_LIBRARIES}")
 set_target_properties(interface_octave PROPERTIES PREFIX "")
 set_target_properties(interface_octave PROPERTIES SUFFIX ".oct")
-target_compile_definitions(interface_octave PRIVATE "OCTAVE_APIVERSION=${OCTAVE_API_VERSION}")
+target_compile_definitions(interface_octave PRIVATE "OCTAVE_MAJOR_VERSION=${OCTAVE_MAJOR_VERSION};OCTAVE_MINOR_VERSION=${OCTAVE_MINOR_VERSION}")
 
 SET(INTERFACE_OCTAVE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 install (TARGETS interface_octave

@@ -5,7 +5,11 @@
  */
 
 %{
+#if ((OCTAVE_MAJOR_VERSION == 4) && (OCTAVE_MINOR_VERSION >= 4))
+#include <octave/octave-config.h>
+#else
 #include <octave/config.h>
+#endif
 
 #include <octave/ov.h>
 #include <octave/defun-dld.h>
