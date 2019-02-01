@@ -46,4 +46,4 @@ real marg_ll = inference_method.get_negative_log_marginal_likelihood()
 #![evaluate_error_and_marginal_likelihood]
 
 # integration testing variables
-RealVector output = labels_test.get_labels()
+RealVector output = labels_test.get_real_vector("labels")

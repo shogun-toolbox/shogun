@@ -96,7 +96,6 @@ APPLY_BINARY(CPluginEstimate);
 APPLY_BINARY(CGaussianProcessClassification);
 #endif //USE_GPL_SHOGUN
 
-APPLY_REGRESSION(CLibSVR);
 #if USE_SVMLIGHT
 APPLY_REGRESSION(CSVRLight);
 #endif //USE_SVMLIGHT
@@ -135,7 +134,6 @@ APPLY_LATENT(CLatentSVM);
 #ifdef USE_SVMLIGHT
 %rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
 #endif //USE_SVMLIGHT
-%rename(apply_generic) CLibSVR::apply(CFeatures* data=NULL);
 %rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
 #ifdef HAVE_LAPACK
 %rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);

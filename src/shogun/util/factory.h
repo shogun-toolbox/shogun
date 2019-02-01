@@ -9,6 +9,7 @@
 #include <shogun/base/class_list.h>
 #include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/classifier/svm/SVM.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
@@ -41,13 +42,14 @@ namespace shogun
 	CNeuralLayer* layer(const std::string& name);
 	CSplittingStrategy* splitting_strategy(const std::string& name);
 	CMachineEvaluation* machine_evaluation(const std::string& name);
+	CSVM* svm(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
 	{                                                                          \
 		return create_object<T>(name.c_str());                                 \
 	}                                                                          \
-	T* factory_name(CSGObject* obj)                                            \
+	T* as_## factory_name(CSGObject* obj)                                      \
 	{                                                                          \
 		return obj->as<T>();                                                   \
 	}
@@ -63,6 +65,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CNeuralLayer, layer)
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
 	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
+	BASE_CLASS_FACTORY(CSVM, svm)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -284,11 +287,6 @@ namespace shogun
 		auto result = new CPipelineBuilder();
 		SG_REF(result);
 		return result;
-	}
-
-	CMachine* machine(CPipeline* pipeline)
-	{
-		return pipeline;
 	}
 }
 #endif // FACTORY_H_

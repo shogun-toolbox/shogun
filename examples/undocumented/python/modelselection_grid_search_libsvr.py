@@ -24,7 +24,6 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
     from shogun import CrossValidationSplitting
     from shogun import RegressionLabels
     from shogun import RealFeatures
-    from shogun import LibSVR
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
@@ -45,8 +44,10 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
     labels=RegressionLabels(label_train)
 
     # predictor
-    predictor=LibSVR(C, tube_epsilon, kernel, labels)
-    predictor.set_epsilon(epsilon)
+    predictor=sg.machine("LibSVR", C1=C, C2=C, tube_epsilon=tube_epsilon,
+                         kernel=kernel,
+                         labels=labels,
+                         epsilon=epsilon)
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard

@@ -7,18 +7,18 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[tr
 
 def classifier_multiclassliblinear (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
 	from shogun import RealFeatures, MulticlassLabels
-	from shogun import MulticlassLibLinear
+	import shogun as sg
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
 	labels=MulticlassLabels(label_train_multiclass)
 
-	classifier = MulticlassLibLinear(C,feats_train,labels)
-	classifier.train()
+	classifier = sg.machine("MulticlassLibLinear", C=C, labels=labels)
+	classifier.train(feats_train)
 
 	label_pred = classifier.apply(feats_test)
-	out = label_pred.get_labels()
+	out = label_pred.get("labels")
 
 	if label_test_multiclass is not None:
 		from shogun import MulticlassAccuracy

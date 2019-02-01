@@ -10,7 +10,8 @@ parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_train
 def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,train_label_fname=label_traindat):
     from shogun import CombinedFeatures, RealFeatures, BinaryLabels
     from shogun import CombinedKernel, PolyKernel, CustomKernel
-    from shogun import LibSVM, CSVFile
+    from shogun import CSVFile
+    import shogun as sg
 
     kernel = CombinedKernel()
     feats_train = CombinedFeatures()
@@ -29,7 +30,7 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     kernel.init(feats_train, feats_train)
 
     labels = BinaryLabels(CSVFile(train_label_fname))
-    svm = LibSVM(1.0, kernel, labels)
+    svm = sg.machine("LibSVM", C1=1.0, C2=1.0, kernel=kernel, labels=labels)
     svm.train()
 
     kernel = CombinedKernel()
@@ -47,7 +48,7 @@ def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,tra
     kernel.append_kernel(subkernel)
     kernel.init(feats_train, feats_pred)
 
-    svm.set_kernel(kernel)
+    svm.put("kernel", kernel)
     svm.apply()
     km_train=kernel.get_kernel_matrix()
     return km_train,kernel

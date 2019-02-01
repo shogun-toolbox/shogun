@@ -21,7 +21,7 @@ Machine svm = machine("LibLinear", C1=C, C2=C, labels=labels_train, epsilon=epsi
 
 #![train_and_apply]
 svm.train(features_train)
-BinaryLabels labels_predict = svm.apply_binary(features_test)
+Labels labels_predict = svm.apply(features_test)
 #![train_and_apply]
 
 #![extract_weights_bias]
@@ -35,4 +35,4 @@ real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
-RealVector output = labels_predict.get_labels()
+RealVector output = labels_predict.get_real_vector("labels")

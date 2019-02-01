@@ -1,4 +1,4 @@
-KNN knn()
+Machine knn = machine("KNN")
 knn.put("k", 2)
 
 Kernel k = kernel("GaussianKernel")
@@ -29,9 +29,9 @@ matrix[1,1] = 0.4
 Distance dist = distance("EuclideanDistance")
 knn.put("distance", dist)
 
-LibSVM svm()
+Machine svm = machine("LibSVM")
 svm.put("kernel", k)
-Kernel k2 = kernel(svm.get("kernel"))
+Kernel k2 = as_kernel(svm.get("kernel"))
 svm.put("kernel", k2)
 
 CSVFile f_feats("../../data/regression_1d_sinc_features_train.dat")

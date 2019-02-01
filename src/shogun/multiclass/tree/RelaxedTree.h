@@ -81,7 +81,7 @@ public:
 	/** set machine for confusion matrix
 	 * @param machine the multiclass machine for initializing the confusion matrix
 	 */
-	void set_machine_for_confusion_matrix(CBaseMulticlassMachine *machine)
+	void set_machine_for_confusion_matrix(CMachine* machine)
 	{
 		SG_REF(machine);
 		SG_UNREF(m_machine_for_confusion_matrix);
@@ -233,7 +233,7 @@ protected:
 	/** features */
 	CDenseFeatures<float64_t> *m_feats;
 	/** machine for confusion matrix computation */
-	CBaseMulticlassMachine *m_machine_for_confusion_matrix;
+	CMachine* m_machine_for_confusion_matrix;
 	/** number of classes */
 	int32_t m_num_classes;
 };

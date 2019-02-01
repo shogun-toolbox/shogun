@@ -15,15 +15,16 @@ parameter_list = [[traindat,testdat,label_traindat,1,5,0.9]]
 def classifier_ssk (fm_train_dna=traindat,fm_test_dna=testdat,
 		label_train_dna=label_traindat,C=1,maxlen=1,decay=1):
 	from shogun import StringCharFeatures, BinaryLabels
-	from shogun import LibSVM, SubsequenceStringKernel, DNA
+	from shogun import SubsequenceStringKernel, DNA
 	from shogun import ErrorRateMeasure
+	import shogun as sg
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
 	labels=BinaryLabels(label_train_dna)
 	kernel=SubsequenceStringKernel(feats_train, feats_train, maxlen, decay);
 
-	svm=LibSVM(C, kernel, labels);
+	svm=sg.machine("LibSVM", C1=C, C2=C, kernel=kernel, labels=labels);
 	svm.train();
 
 	out=svm.apply(feats_train);
@@ -32,7 +33,7 @@ def classifier_ssk (fm_train_dna=traindat,fm_test_dna=testdat,
 	# print(trainerr)
 
 	kernel.init(feats_train, feats_test)
-	predicted_labels=svm.apply(feats_test).get_labels()
+	predicted_labels=svm.apply(feats_test).get("labels")
 	# print predicted_labels
 
 	return predicted_labels

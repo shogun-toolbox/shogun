@@ -15,7 +15,6 @@ from shogun import StratifiedCrossValidationSplitting
 from shogun import BinaryLabels
 from shogun import RealFeatures
 from shogun import PowerKernel
-from shogun import LibSVM
 from shogun import MinkowskiMetric
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
@@ -94,7 +93,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 		labels.set_label(i, 1 if i%2==0 else -1)
 
 	# create svm
-	classifier=LibSVM()
+	classifier=sg.machine("LibSVM")
 
 	# splitting strategy
 	splitting_strategy=StratifiedCrossValidationSplitting(labels, num_subsets)

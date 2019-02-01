@@ -23,6 +23,8 @@ namespace shogun
 	class CNeuralLayer;
 	class CSplittingStrategy;
 	class CPipeline;
+	class CSVM;
+
 	// type trait to enable certain methods only for shogun base types
 	template <class T>
 	struct is_sg_base
@@ -37,7 +39,8 @@ namespace shogun
 	                    std::is_same<CEvaluation, T>::value ||
 	                    std::is_same<CMulticlassStrategy, T>::value ||
 	                    std::is_same<CNeuralLayer, T>::value ||
-	                    std::is_same<CSplittingStrategy, T>::value>
+	                    std::is_same<CSplittingStrategy, T>::value ||
+	                    std::is_same<CSVM, T>::value>
 	{
 	};
 }
