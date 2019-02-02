@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
@@ -22,6 +23,8 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
+#include <shogun/machine/gp/MeanFunction.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -44,9 +47,9 @@ namespace shogun
 	CMachineEvaluation* machine_evaluation(const std::string& name);
 	CSVM* svm(const std::string& name);
 	CFeatures* features(const std::string& name);
-	CDifferentiableFunction differentiable_function(const std::string& name);
-	CLikelihoodModel likelihood_model(const std::string& name);
-	CMeanFunction mean_function(const std::string& name);
+	CDifferentiableFunction* differentiable_function(const std::string& name);
+	CLikelihoodModel* likelihood_model(const std::string& name);
+	CMeanFunction* mean_function(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \

@@ -43,9 +43,9 @@ namespace shogun
 	                    std::is_same<CMulticlassStrategy, T>::value ||
 	                    std::is_same<CNeuralLayer, T>::value ||
 	                    std::is_same<CSplittingStrategy, T>::value ||
-	                    std::is_same<CSVM, T>::value> ||
-	                    std::is_same<CDifferentiableFunction, T>::value> ||
-	                    std::is_same<CLikelihoodModel, T>::value> ||
+	                    std::is_same<CSVM, T>::value ||
+	                    std::is_same<CDifferentiableFunction, T>::value ||
+	                    std::is_same<CLikelihoodModel, T>::value ||
 	                    std::is_same<CMeanFunction, T>::value>
 	{
 	};
