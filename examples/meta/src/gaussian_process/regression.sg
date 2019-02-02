@@ -12,13 +12,13 @@ RegressionLabels labels_test(f_labels_test)
 
 #![create_appropriate_kernel_and_mean_function]
 Kernel k = kernel("GaussianKernel", lhs=features_train, rhs=features_train, log_width=0.0)
-ZeroMean mean_function()
+MeanFunction mean("ZeroMean")
 #![create_appropriate_kernel_and_mean_function]
 
 #![create_instance]
-GaussianLikelihood gauss_likelihood()
-ExactInferenceMethod inference_method(k, features_train, mean_function, labels_train, gauss_likelihood)
-GaussianProcessRegression gp_regression(inference_method)
+LikelihoodModel gauss_likelihood = likelihood_model("GaussianLikelihood")
+DifferentiableFunction inference_methnod = differentiable_function("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
+Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method)
 #![create_instance]
 
 #![train_and_apply]
