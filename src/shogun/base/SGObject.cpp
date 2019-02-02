@@ -1059,7 +1059,8 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
-CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const noexcept
+CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
+    noexcept
 {
 	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
 		return result;
@@ -1075,16 +1076,22 @@ CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const noexcep
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
 	auto* result = get(name, std::nothrow);
-	if (result == nullptr) {
-		if (self->map.find(BaseTag(name)) != self->map.end()) {
+	if (result == nullptr)
+	{
+		if (self->map.find(BaseTag(name)) != self->map.end())
+		{
 			SG_ERROR(
-					"Cannot get parameter %s::%s of type %s as object, not a shogun "
-					"object base type.\n",
-					get_name(), name.c_str(),
-					self->map[BaseTag(name)].get_value().type().c_str());
-		} else {
+			    "Cannot get parameter %s::%s of type %s as object, not a "
+			    "shogun "
+			    "object base type.\n",
+			    get_name(), name.c_str(),
+			    self->map[BaseTag(name)].get_value().type().c_str());
+		}
+		else
+		{
 			SG_ERROR(
-					"There is no parameter '%s' in %s.\n", name.c_str(), get_name());
+			    "There is no parameter '%s' in %s.\n", name.c_str(),
+			    get_name());
 		}
 	}
 	return result;
