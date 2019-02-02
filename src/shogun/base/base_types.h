@@ -24,6 +24,9 @@ namespace shogun
 	class CSplittingStrategy;
 	class CPipeline;
 	class CSVM;
+    class CDifferentiableFunction;
+    class CLikelihoodModel;
+    class CMeanFunction;
 
 	// type trait to enable certain methods only for shogun base types
 	template <class T>
@@ -40,7 +43,10 @@ namespace shogun
 	                    std::is_same<CMulticlassStrategy, T>::value ||
 	                    std::is_same<CNeuralLayer, T>::value ||
 	                    std::is_same<CSplittingStrategy, T>::value ||
-	                    std::is_same<CSVM, T>::value>
+	                    std::is_same<CSVM, T>::value> ||
+	                    std::is_same<CDifferentiableFunction, T>::value> ||
+	                    std::is_same<CLikelihoodModel, T>::value> ||
+	                    std::is_same<CMeanFunction, T>::value>
 	{
 	};
 }
