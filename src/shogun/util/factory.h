@@ -23,6 +23,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
+#include <shogun/machine/gp/Inference.h>
 #include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
@@ -50,6 +51,7 @@ namespace shogun
 	CDifferentiableFunction* differentiable_function(const std::string& name);
 	CLikelihoodModel* likelihood_model(const std::string& name);
 	CMeanFunction* mean_function(const std::string& name);
+	CInference* inference(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -77,6 +79,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable_function)
 	BASE_CLASS_FACTORY(CLikelihoodModel, likelihood_model)
 	BASE_CLASS_FACTORY(CMeanFunction, mean_function)
+	BASE_CLASS_FACTORY(CInference, inference)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)

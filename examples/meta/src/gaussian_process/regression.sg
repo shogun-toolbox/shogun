@@ -17,7 +17,7 @@ MeanFunction mean("ZeroMean")
 
 #![create_instance]
 LikelihoodModel gauss_likelihood = likelihood_model("GaussianLikelihood")
-DifferentiableFunction inference_methnod = differentiable_function("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
+DifferentiableFunction inference_method = differentiable_function("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
 Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method)
 #![create_instance]
 
@@ -41,7 +41,8 @@ best_theta.apply_to_machine(gp_regression)
 #![evaluate_error_and_marginal_likelihood]
 MeanSquaredError eval()
 real mse = eval.evaluate(labels_predict, labels_test)
-real marg_ll = inference_method.get_negative_log_marginal_likelihood()
+Inference inf = as_inference(inference_method)
+real marg_ll = inf.get_negative_log_marginal_likelihood()
 #![evaluate_error_and_marginal_likelihood]
 
 # integration testing variables
