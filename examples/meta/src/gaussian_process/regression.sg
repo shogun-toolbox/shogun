@@ -32,8 +32,7 @@ RealVector variances = gp_regression.get_variance_vector(features_test)
 
 #![optimize_marginal_likelihood]
 GradientCriterion grad_criterion()
-GradientEvaluation grad(gp_regression, features_train, labels_train, grad_criterion)
-grad.set_function(inference_method)
+MachineEvaluation grad = machine_evaluation("GradientEvaluation", machine=gp_regression, features=features_train, labels=labels_train, evaluation_criterion=grad_criterion, differentiable_function=inference_method)
 GradientModelSelection grad_selection(grad)
 ParameterCombination best_theta = grad_selection.select_model()
 best_theta.apply_to_machine(gp_regression)

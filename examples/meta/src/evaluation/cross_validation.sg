@@ -27,7 +27,7 @@ MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, fea
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-EvaluationResult result = cross.evaluate() 
+EvaluationResult result = cross.evaluate()
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]
@@ -58,9 +58,8 @@ Machine lrr = machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
 
 #![create_cross_validation_REGRESSION]
 MeanSquaredError MSE_evaluation()
-CrossValidationSplitting split_strategy(reg_labels_train, 2)
-CrossValidation cross_validation(lrr, reg_features_train, reg_labels_train, split_strategy, MSE_evaluation, False)
-cross_validation.set_num_runs(2)
+SplittingStrategy splitting("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2)
+MachineEvaluation cross_validation = machine_evaluation("CrossValidation", machine=lrr, features=reg_features_train, labels=reg_labels_train, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, autolock=False, num_runs=2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]

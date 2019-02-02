@@ -50,7 +50,8 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     #classifier.print_modsel_params()
 
     # splitting strategy for cross-validation
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
+    splitting_strategy = splitting_strategy(
+        "StratifiedCrossValidationSplitting", labels=labels, num_subsets=10)
 
     # evaluation method
     evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
