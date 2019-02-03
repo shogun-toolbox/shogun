@@ -15,7 +15,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-SparseMatrix sparse_matrix_from_triplets(const SparseTriplets& sparse_triplets, IndexType m, IndexType n)
+inline SparseMatrix sparse_matrix_from_triplets(const SparseTriplets& sparse_triplets, IndexType m, IndexType n)
 {
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	Eigen::DynamicSparseMatrix<ScalarType> dynamic_weight_matrix(m, n);

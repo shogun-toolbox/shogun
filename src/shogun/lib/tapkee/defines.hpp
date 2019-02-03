@@ -8,16 +8,16 @@
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/exceptions.hpp>
-#include <shogun/lib/tapkee/parameters/parameters.hpp>
 #include <shogun/lib/tapkee/traits/callbacks_traits.hpp>
 #include <shogun/lib/tapkee/traits/methods_traits.hpp>
 /* End of Tapkee includes */
 
 #include <string>
+#include <iterator>
 
 #define TAPKEE_WORLD_VERSION 1
 #define TAPKEE_MAJOR_VERSION 0
-#define TAPKEE_MINOR_VERSION 0
+#define TAPKEE_MINOR_VERSION 2
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/defines/eigen3.hpp>
@@ -59,6 +59,10 @@ namespace tapkee
 		tapkee::DenseMatrix embedding;
 		tapkee::ProjectingFunction projection;
 	};
+
+	const stichwort::ParametersForwarder kwargs;
+	typedef stichwort::ParametersSet ParametersSet;
+	typedef stichwort::Parameter Parameter;
 }
 
 #endif // TAPKEE_DEFINES_H_
