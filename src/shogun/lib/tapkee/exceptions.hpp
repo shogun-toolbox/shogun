@@ -12,34 +12,14 @@
 namespace tapkee
 {
 
-//! An exception type that is thrown in case if wrong parameter
-//! value is passed.
-class wrong_parameter_error : public std::logic_error
+//! An exception type that is thrown when no data is given
+//!
+class no_data_error : public std::logic_error
 {
 	public:
 		/** @param what_msg message of the exception */
-		explicit wrong_parameter_error(const std::string& what_msg) :
-			std::logic_error(what_msg) {};
-};
-
-//! An exception type that is thrown in case if wrong parameter
-//! value is passed.
-class wrong_parameter_type_error : public std::logic_error
-{
-	public:
-		/** @param what_msg message of the exception */
-		explicit wrong_parameter_type_error(const std::string& what_msg) :
-			std::logic_error(what_msg) {};
-};
-
-//! An exception type that is thrown in case of missed parameter,
-//! i.e. when some required parameter is not set.
-class missed_parameter_error : public std::logic_error
-{
-	public:
-		/** @param what_msg message of the exception */
-		explicit missed_parameter_error(const std::string& what_msg) :
-			std::logic_error(what_msg) {};
+		explicit no_data_error() :
+			std::logic_error("No data to embed") {};
 };
 
 //! An exception type that is thrown when unsupported method
@@ -62,15 +42,6 @@ class not_enough_memory_error : public std::runtime_error
 			std::runtime_error(what_msg) {};
 };
 
-//! An exception type that is thrown when some parameter is passed more than once
-class multiple_parameter_error : public std::runtime_error
-{
-	public:
-		/** @param what_msg message of the exception */
-		explicit multiple_parameter_error(const std::string& what_msg) :
-			std::runtime_error(what_msg) {};
-};
-
 //! An exception type that is thrown when computations were
 //! cancelled.
 class cancelled_exception : public std::exception
@@ -87,6 +58,45 @@ class eigendecomposition_error : public std::runtime_error
 	public:
 		/** @param what_msg message of the exception */
 		explicit eigendecomposition_error(const std::string& what_msg) :
+			std::runtime_error(what_msg) {};
+};
+
+//! An exception type that is thrown in case of missed parameter,
+//! i.e. when some required parameter is not set.
+class missed_parameter_error : public std::logic_error
+{
+	public:
+		/** @param what_msg message of the exception */
+		explicit missed_parameter_error(const std::string& what_msg) :
+			std::logic_error(what_msg) {};
+};
+
+//! An exception type that is thrown in case if wrong parameter
+//! value is passed.
+class wrong_parameter_error : public std::logic_error
+{
+	public:
+		/** @param what_msg message of the exception */
+		explicit wrong_parameter_error(const std::string& what_msg) :
+			std::logic_error(what_msg) {};
+};
+
+//! An exception type that is thrown in case if wrong parameter
+//! value is passed.
+class wrong_parameter_type_error : public std::logic_error
+{
+	public:
+		/** @param what_msg message of the exception */
+		explicit wrong_parameter_type_error(const std::string& what_msg) :
+			std::logic_error(what_msg) {};
+};
+
+//! An exception type that is thrown when some parameter is passed more than once
+class multiple_parameter_error : public std::runtime_error
+{
+	public:
+		/** @param what_msg message of the exception */
+		explicit multiple_parameter_error(const std::string& what_msg) :
 			std::runtime_error(what_msg) {};
 };
 

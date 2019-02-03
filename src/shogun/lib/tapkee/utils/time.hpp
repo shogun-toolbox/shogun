@@ -37,9 +37,9 @@ struct timed_context
 	}
 	~timed_context()
 	{
-		std::stringstream msg_stream;
-		msg_stream << operation_name << " took " << double(CLOCK_GET-start_clock)/CLOCK_DIVISOR << " seconds.";
-		LoggingSingleton::instance().message_benchmark(msg_stream.str());
+		std::string message = formatting::format("{} took {} seconds.", operation_name,
+				double(CLOCK_GET-start_clock)/CLOCK_DIVISOR);
+		LoggingSingleton::instance().message_benchmark(message);
 	}
 };
 }

@@ -3,13 +3,13 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#ifndef TAPKEE_DiffusionMapS_H_
-#define TAPKEE_DiffusionMapS_H_
+#ifndef TAPKEE_DIFFUSIONMAP_H_
+#define TAPKEE_DIFFUSIONMAP_H_
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
-/* End of Tapke includes */
+/* End of Tapkee includes */
 
 namespace tapkee
 {
@@ -21,9 +21,9 @@ namespace tapkee_internal
 //! <ol>
 //! <li> Compute matrix \f$ K \f$ such as \f$ K_{i,j} = \exp\left(-\frac{d(x_i,x_j)^2}{w}\right) \f$.
 //! <li> Compute sum vector \f$ p = \sum_i K_{i,j}\f$.
-//! <li> Modify \f$ K \f$ with \f$ K_{i,j} = K_{i,j} / (p_i  p_j)^t \f$.
+//! <li> Modify \f$ K \f$ with \f$ K_{i,j} = K_{i,j} / (p_i  p_j)^\alpha \f$.
 //! <li> Compute sum vector \f$ p = \sum_i K_{i,j}\f$ again.
-//! <li> Normalize \f$ K \f$ with \f$ K_{i,j} = K_{i,j} / (p_i p_j) \f$.
+//! <li> Normalize \f$ K \f$ with \f$ K_{i,j} = K_{i,j} / \sqrt(p_i p_j) \f$.
 //! </ol>
 //!
 //! @param begin begin data iterator
@@ -34,7 +34,7 @@ namespace tapkee_internal
 //!
 template <class RandomAccessIterator, class DistanceCallback>
 DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, RandomAccessIterator end, DistanceCallback callback,
-                                              const IndexType timesteps, const ScalarType width)
+                                              const ScalarType width)
 {
 	timed_context context("Diffusion map matrix computation");
 
@@ -64,15 +64,16 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 	p = diffusion_matrix.colwise().sum();
 
 	// compute full matrix as we need to compute sum later
+	// TODO add weighting alpha, use linear algebra to compute D^-alpha K D^-alpha
 	for (IndexType i=0; i<n_vectors; i++)
 		for (IndexType j=0; j<n_vectors; j++)
-			diffusion_matrix(i,j) /= pow(p(i)*p(j),timesteps);
+			diffusion_matrix(i,j) /= p(i)*p(j);
 
 	// compute sqrt of column sum vector
 	p = diffusion_matrix.colwise().sum().cwiseSqrt();
 
 	for (IndexType i=0; i<n_vectors; i++)
-		for (IndexType j=i; j<n_vectors; j++)
+		for (IndexType j=0; j<n_vectors; j++)
 			diffusion_matrix(i,j) /= p(i)*p(j);
 
 	UNRESTRICT_ALLOC;
@@ -82,4 +83,5 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 
 } // End of namespace tapkee_internal
 } // End of namespace tapkee
+
 #endif

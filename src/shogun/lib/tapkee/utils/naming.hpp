@@ -10,7 +10,7 @@ namespace tapkee
 {
 
 /** Returns the name of the provided method */
-std::string get_method_name(DimensionReductionMethod m)
+inline std::string get_method_name(DimensionReductionMethod m)
 {
 	switch (m)
 	{
@@ -39,31 +39,15 @@ std::string get_method_name(DimensionReductionMethod m)
 }
 
 /** Returns the name of the provided neighbors method */
-std::string get_neighbors_method_name(NeighborsMethod m)
+inline std::string get_neighbors_method_name(const NeighborsMethod& m)
 {
-	switch (m)
-	{
-		case Brute: return "Brute-force";
-		case VpTree: return "VP-tree";
-#ifdef TAPKEE_USE_LGPL_COVERTREE
-		case CoverTree: return "Cover Tree";
-#endif
-	}
-	return "hello";
+	return m.name();
 }
 
 /** Returns the name of the provided eigen method */
-std::string get_eigen_method_name(EigenMethod m)
+inline std::string get_eigen_method_name(const EigenMethod& m)
 {
-	switch (m)
-	{
-#ifdef TAPKEE_WITH_ARPACK
-		case Arpack: return "Arpack";
-#endif
-		case Dense: return "Dense";
-		case Randomized: return "Randomized";
-	}
-	return "hello";
+	return m.name();
 }
 
 }

@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <formatting/formatting.hpp>
 
 #define LEVEL_ENABLED_FIELD(X) bool X##_enabled
 #define LEVEL_ENABLED_FIELD_INITIALIZER(X,value) X##_enabled(value)
@@ -22,11 +23,11 @@
 		}
 #define LEVEL_HANDLERS_DECLARATION(LEVEL) \
 		virtual void message_##LEVEL(const std::string& msg) = 0
-#define LEVEL_HANDLERS_DEFAULT_IMPL(LEVEL) \
+#define LEVEL_HANDLERS_DEFAULT_IMPL(STREAM, LEVEL) \
 		virtual void message_##LEVEL(const std::string& msg)	\
 		{														\
-			if (os_ && os_->good())								\
-				(*os_) << "["#LEVEL"] " << msg << "\n";			\
+			if (STREAM && STREAM->good())						\
+				(*STREAM) << "["#LEVEL"] " << msg << "\n";		\
 		}
 
 namespace tapkee
@@ -52,18 +53,19 @@ private:
 class DefaultLoggerImplementation : public LoggerImplementation
 {
 public:
-	DefaultLoggerImplementation() : os_(&std::cout) {}
+	DefaultLoggerImplementation() : sout(&std::cout), serr(&std::cerr) {}
 	virtual ~DefaultLoggerImplementation() {}
-	LEVEL_HANDLERS_DEFAULT_IMPL(info);
-	LEVEL_HANDLERS_DEFAULT_IMPL(warning);
-	LEVEL_HANDLERS_DEFAULT_IMPL(debug);
-	LEVEL_HANDLERS_DEFAULT_IMPL(error);
-	LEVEL_HANDLERS_DEFAULT_IMPL(benchmark)
+	LEVEL_HANDLERS_DEFAULT_IMPL(serr,info);
+	LEVEL_HANDLERS_DEFAULT_IMPL(serr,warning);
+	LEVEL_HANDLERS_DEFAULT_IMPL(serr,debug);
+	LEVEL_HANDLERS_DEFAULT_IMPL(serr,error);
+	LEVEL_HANDLERS_DEFAULT_IMPL(serr,benchmark)
 private:
 	DefaultLoggerImplementation& operator=(const DefaultLoggerImplementation&);
 	DefaultLoggerImplementation(const DefaultLoggerImplementation&);
 
-	std::ostream* os_;
+	std::ostream* sout;
+	std::ostream* serr;
 };
 
 //! Main logging singleton used by the library. Can use provided

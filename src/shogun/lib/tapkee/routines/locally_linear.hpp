@@ -14,8 +14,6 @@
 #include <shogun/lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
-#include <iterator>
-
 namespace tapkee
 {
 namespace tapkee_internal
@@ -26,8 +24,7 @@ namespace tapkee_internal
 template <class RandomAccessIterator, class PairwiseCallback>
 SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                          const Neighbors& neighbors, PairwiseCallback callback,
-                                         const IndexType target_dimension, const ScalarType shift,
-                                         const bool partial_eigendecomposer=false)
+                                         const IndexType target_dimension, const ScalarType shift)
 {
 	timed_context context("KLTSA weight matrix computation");
 	const IndexType k = neighbors[0].size();
@@ -64,18 +61,8 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 			centerMatrix(gram_matrix);
 
 			//UNRESTRICT_ALLOC;
-#ifdef TAPKEE_WITH_ARPACK
-			if (partial_eigendecomposer)
-			{
-				G.rightCols(target_dimension).noalias() =
-					eigendecomposition<DenseMatrix,DenseMatrixOperation>(Arpack,gram_matrix,target_dimension,0).first;
-			}
-			else
-#endif
-			{
-				solver.compute(gram_matrix);
-				G.rightCols(target_dimension).noalias() = solver.eigenvectors().rightCols(target_dimension);
-			}
+			solver.compute(gram_matrix);
+			G.rightCols(target_dimension).noalias() = solver.eigenvectors().rightCols(target_dimension);
 			//RESTRICT_ALLOC;
 			gram_matrix.noalias() = G * G.transpose();
 
@@ -261,7 +248,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 
 			#pragma omp critical
 			{
-				copy(local_triplets.begin(),local_triplets.end(),back_inserter(sparse_triplets));
+				copy(local_triplets.begin(),local_triplets.end(),std::back_inserter(sparse_triplets));
 			}
 
 			local_triplets.clear();
