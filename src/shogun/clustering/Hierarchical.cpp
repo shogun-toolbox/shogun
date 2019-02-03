@@ -1,17 +1,22 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
- *          Giovanni De Toni, Viktor Gal, Evan Shelhamer
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
+ *          Giovanni De Toni, Viktor Gal, Evan Shelhamer, Rukmangadh Sai Myana
  */
 
+#include <iostream>
+#include <limits>
 #include <shogun/base/Parallel.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/base/progress.h>
 #include <shogun/clustering/Hierarchical.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -126,7 +131,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 	auto pb = SG_PROGRESS(range(0, num_pairs - 1));
 	int32_t k=-1;
 	int32_t l=0;
-	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)
+	for (; l < num && l < merges && k < num_pairs - 1; l++)
 	{
 		while (k<num_pairs-1)
 		{
@@ -212,8 +217,83 @@ SGMatrix<int32_t> CHierarchical::get_cluster_pairs()
 	return SGMatrix<int32_t>(pairs,2,merges, false);
 }
 
-
 void CHierarchical::store_model_features()
 {
-	/* TODO. Currently does nothing since apply methods are not implemented. */
+	CDenseFeatures<float64_t>* rhs = 
+		(distance->get_rhs())->as<CDenseFeatures<float64_t>>();
+
+	int32_t num_vectors = rhs->get_num_vectors();
+	int32_t num_features = rhs->get_num_features();
+
+	SGVector<int32_t> n_cluster_samples = SGVector<int32_t>(
+		num_vectors + merges);
+	shogun::linalg::set_const(n_cluster_samples, 0);
+
+	SGMatrix<float64_t> null_matrix = SGMatrix<float64_t>(
+		num_features, num_vectors + merges);
+	CDenseFeatures<float64_t>* temp_cluster_centers =
+	    new CDenseFeatures<float64_t>(null_matrix);
+
+	for (int32_t i = 0; i < num_vectors; i++)
+	{
+		bool dofree_c, dofree_rhs;
+		int32_t centerIdx = assignment[i];
+		SG_DEBUG("\n");
+		SG_DEBUG("On %04i point, with assignment=%04i \n", i, centerIdx);
+		float64_t* center = temp_cluster_centers->get_feature_vector(
+		    centerIdx, num_features, dofree_c);
+		float64_t* sample_point =
+		    rhs->get_feature_vector(i, num_features, dofree_rhs);
+		for (int32_t j = 0; j < num_features; j++)
+		{
+			if (n_cluster_samples[centerIdx] > 0)
+			{
+				center[j] = (center[j] * n_cluster_samples[centerIdx] +
+				             sample_point[j]) /
+				            (n_cluster_samples[centerIdx] + 1);
+			}
+			else
+				center[j] = sample_point[j];
+			SG_DEBUG(
+			    "The %04i feature of the updated temp center is "
+			    "%+06.6f \n",
+			    j, center[j]);
+		}
+		n_cluster_samples[centerIdx]++;
+		rhs->free_feature_vector(sample_point, num_features, dofree_rhs);
+		temp_cluster_centers->free_feature_vector(
+		    center, num_features, dofree_c);
+	}
+
+	CDenseFeatures<float64_t>* cluster_centers =
+	    new CDenseFeatures<float64_t>(null_matrix);
+
+	int32_t curr_index = 0;
+	for (int32_t i = 0; i < num_vectors + merges; i++)
+	{
+		if (n_cluster_samples[i] > 0)
+		{
+			bool dofree_temp, dofree;
+			float64_t* temp_center = temp_cluster_centers->get_feature_vector(
+			    i, num_features, dofree_temp);
+			float64_t* center = cluster_centers->get_feature_vector(
+			    curr_index, num_features, dofree);
+			SG_DEBUG("\n");
+			SG_DEBUG("The %04i cluster center:\n", curr_index);
+			for (int32_t j = 0; j < num_features; j++)
+			{
+				center[j] = temp_center[j];
+				SG_DEBUG(
+				    "The %04i feature of the center is %+06.6f \n", j,
+				    center[j]);
+			}
+			curr_index++;
+			temp_cluster_centers->free_feature_vector(
+			    temp_center, num_features, dofree_temp);
+			cluster_centers->free_feature_vector(center, num_features, dofree);
+		}
+	}
+	distance->init(cluster_centers, rhs);
+	SG_UNREF(temp_cluster_centers);
+	SG_UNREF(rhs);
 }

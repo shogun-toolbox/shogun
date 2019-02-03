@@ -19,7 +19,7 @@ function check_shogun_style {
         then
             echo "Branch ${2:-} does not exists locally. Fetching it."
             git fetch origin "${2:-}:${2:-}"
-            
+
         fi
 
         BASE_COMMIT=$(git rev-parse ${2:-})
@@ -31,7 +31,7 @@ function check_shogun_style {
         echo "Running clang-format-3.8 against branch ${2:-}, with hash $BASE_COMMIT"
 
         COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
-		
+
         # Use clang-format only on existent files
         LIST=("")
         for file in $COMMIT_FILES

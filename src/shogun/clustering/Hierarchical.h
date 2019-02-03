@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, 
- *          Bjoern Esser, Saurabh Goyal
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang,
+ *          Bjoern Esser, Saurabh Goyal, Rukmangadh Sai Myana
  */
 
 #ifndef _HIERARCHICAL_H__
@@ -119,9 +119,9 @@ class CHierarchical : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		/** TODO: Ensures cluster centers are in lhs of underlying distance
-		 * Currently: does nothing.
-		 * */
+		/** Ensures cluster centers are in lhs of underlying distance
+		 *
+		 */
 		virtual void store_model_features();
 
 	private:
