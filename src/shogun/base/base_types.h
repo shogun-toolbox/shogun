@@ -24,9 +24,9 @@ namespace shogun
 	class CSplittingStrategy;
 	class CPipeline;
 	class CSVM;
-    class CDifferentiableFunction;
-    class CLikelihoodModel;
-    class CMeanFunction;
+	class CDifferentiableFunction;
+	class CLikelihoodModel;
+	class CMeanFunction;
 
 	// type trait to enable certain methods only for shogun base types
 	template <class T>
