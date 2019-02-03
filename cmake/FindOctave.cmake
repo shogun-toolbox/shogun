@@ -15,7 +15,6 @@
 #  OCTAVE_PATCH_VERSION        - patch version
 #  OCTAVE_OCT_FILE_DIR         - object files that will be dynamically loaded
 #  OCTAVE_OCT_LIB_DIR          - oct libraries
-#  OCTAVE_ROOT_DIR             - octave prefix
 #  OCTAVE_M_SITE_DIR           - .m files site dir
 #  OCTAVE_OCT_SITE_DIR         - .oct files site dir
 #
@@ -26,13 +25,6 @@
 #         [EXTENSION ext]
 #)
 #
-# To install it, you can the use the variable OCTAVE_OCT_FILE_DIR as follow:
-#  file (RELATIVE_PATH PKG_OCTAVE_OCT_SITE_DIR ${OCTAVE_ROOT_DIR} ${OCTAVE_OCT_SITE_DIR})
-#  install (
-#    TARGETS target_name
-#    DESTINATION ${PKG_OCTAVE_OCT_SITE_DIR}
-#)
-
 
 #=============================================================================
 # Copyright 2013, Julien Schueller
@@ -179,7 +171,7 @@ endmacro ()
 
 # handle REQUIRED and QUIET options
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Octave REQUIRED_VARS OCTAVE_EXECUTABLE OCTAVE_ROOT_DIR OCTAVE_INCLUDE_DIRS OCTAVE_LIBRARIES VERSION_VAR OCTAVE_VERSION_STRING)
+find_package_handle_standard_args (Octave REQUIRED_VARS OCTAVE_EXECUTABLE OCTAVE_INCLUDE_DIRS OCTAVE_LIBRARIES VERSION_VAR OCTAVE_VERSION_STRING)
 
 mark_as_advanced (
   OCTAVE_OCT_FILE_DIR
@@ -190,7 +182,6 @@ mark_as_advanced (
   OCTAVE_LIBRARIES
   OCTAVE_INCLUDE_DIR
   OCTAVE_INCLUDE_DIRS
-  OCTAVE_ROOT_DIR
   OCTAVE_VERSION_STRING
   OCTAVE_MAJOR_VERSION
   OCTAVE_MINOR_VERSION
