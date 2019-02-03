@@ -44,51 +44,46 @@ namespace tsne
 
 class DataPoint
 {
-	int _D;
 	int _ind;
-	double* _x;
+	std::vector<ScalarType> _x;
 
 public:
-	DataPoint() : _D(1), _ind(-1), _x(NULL) { }
-	DataPoint(int Dv, int indv, double* xv) : _D(Dv), _ind(indv), _x(NULL)
+	DataPoint() : _ind(-1), _x(0) { }
+	DataPoint(int Dv, int indv, ScalarType* xv) : _ind(indv), _x(Dv)
 	{
-		_x = (double*) malloc(_D * sizeof(double));
-		for(int d = 0; d < _D; d++) _x[d] = xv[d];
+		for(int d = 0; d < dimensionality(); d++) _x[d] = xv[d];
 	}
-	DataPoint(const DataPoint& other) : _D(), _ind(0), _x(NULL) // this makes a deep copy -- should not free anything
+	DataPoint(const DataPoint& other) : _ind(0), _x(0) // this makes a deep copy -- should not free anything
 	{
 		if(this != &other) {
-			_D = other.dimensionality();
 			_ind = other.index();
-			_x = (double*) malloc(_D * sizeof(double));
-			for(int d = 0; d < _D; d++) _x[d] = other.x(d);
+			_x.resize(other.dimensionality());
+			for(int d = 0; d < dimensionality(); d++) _x[d] = other.x(d);
 		}
 	}
-	~DataPoint() { if(_x != NULL) free(_x); }
+	~DataPoint() { }
 	DataPoint& operator= (const DataPoint& other) {         // asignment should free old object
 		if(this != &other) {
-			if(_x != NULL) free(_x);
-			_D = other.dimensionality();
 			_ind = other.index();
-			_x = (double*) malloc(_D * sizeof(double));
-			for(int d = 0; d < _D; d++) _x[d] = other.x(d);
+			_x.resize(other.dimensionality());
+			for(int d = 0; d < dimensionality(); d++) _x[d] = other.x(d);
 		}
 		return *this;
 	}
 	int index() const { return _ind; }
-	int dimensionality() const { return _D; }
-	double x(int d) const { return _x[d]; }
+	int dimensionality() const { return _x.size(); }
+	ScalarType x(int d) const { return _x[d]; }
 };
 
 
-double euclidean_distance(const DataPoint &t1, const DataPoint &t2) {
-	double dd = .0;
+inline ScalarType euclidean_distance(const DataPoint &t1, const DataPoint &t2) {
+	ScalarType dd = .0;
 	for(int d = 0; d < t1.dimensionality(); d++) dd += (t1.x(d) - t2.x(d)) * (t1.x(d) - t2.x(d));
 	return dd;
 }
 
 
-template<typename T, double (*distance)( const T&, const T& )>
+template<typename T, ScalarType (*distance)( const T&, const T& )>
 class VpTree
 {
 public:
@@ -109,7 +104,7 @@ public:
 	}
 
 	// Function that uses the tree to find the k nearest neighbors of target
-	void search(const T& target, int k, std::vector<T>* results, std::vector<double>* distances)
+	void search(const T& target, int k, std::vector<T>* results, std::vector<ScalarType>* distances)
 	{
 
 		// Use a priority queue to store intermediate results on
@@ -140,13 +135,13 @@ private:
 	VpTree& operator=(const VpTree&);
 
 	std::vector<T> _items;
-	double _tau;
+	ScalarType _tau;
 
 	// Single node of a VP tree (has a point and radius; left children are closer to point than the radius)
 	struct Node
 	{
 		int index;              // index of point in node
-		double threshold;       // radius(?)
+		ScalarType threshold;       // radius(?)
 		Node* left;             // points closer by than threshold
 		Node* right;            // points farther away than threshold
 
@@ -166,10 +161,10 @@ private:
 
 	// An item on the intermediate result queue
 	struct HeapItem {
-		HeapItem(int indexv, double distv) :
+		HeapItem(int indexv, ScalarType distv) :
 			index(indexv), dist(distv) {}
 		int index;
-		double dist;
+		ScalarType dist;
 		bool operator<(const HeapItem& o) const {
 			return dist < o.dist;
 		}
@@ -228,7 +223,7 @@ private:
 		if(node == NULL) return;     // indicates that we're done here
 
 		// Compute distance between target and current node
-		double dist = distance(_items[node->index], target);
+		ScalarType dist = distance(_items[node->index], target);
 
 		// If current node within radius tau
 		if(dist < _tau) {
@@ -244,9 +239,7 @@ private:
 
 		// If the target lies within the radius of ball
 		if(dist < node->threshold) {
-			if(dist - _tau <= node->threshold) {         // if there can still be neighbors inside the ball, recursively search left child first
-				search(node->left, target, k, heap);
-			}
+			search(node->left, target, k, heap);
 
 			if(dist + _tau >= node->threshold) {         // if there can still be neighbors outside the ball, recursively search right child
 				search(node->right, target, k, heap);
@@ -254,9 +247,7 @@ private:
 
 			// If the target lies outsize the radius of the ball
 		} else {
-			if(dist + _tau >= node->threshold) {         // if there can still be neighbors outside the ball, recursively search right child first
-				search(node->right, target, k, heap);
-			}
+			search(node->right, target, k, heap);
 
 			if (dist - _tau <= node->threshold) {         // if there can still be neighbors inside the ball, recursively search left child
 				search(node->left, target, k, heap);

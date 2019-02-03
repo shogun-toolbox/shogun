@@ -50,12 +50,14 @@
 namespace tsne
 {
 
-static inline double sign(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
+using tapkee::ScalarType;
+
+static inline ScalarType sign(ScalarType x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
 
 class TSNE
 {
 public:
-	void run(double* X, int N, int D, double* Y, int no_dims, double perplexity, double theta)
+	void run(tapkee::DenseMatrix& X, int N, int D, ScalarType* Y, int no_dims, ScalarType perplexity, ScalarType theta)
 	{
 		// Determine whether we are using an exact algorithm
 		bool exact = (theta == .0) ? true : false;
@@ -65,68 +67,61 @@ public:
 			tapkee::LoggingSingleton::instance().message_info("Using Barnes-Hut-SNE algorithm");
 
 		// Set learning parameters
-		float total_time = .0;
-		clock_t start, end;
 		int max_iter = 1000, stop_lying_iter = 250, mom_switch_iter = 250;
-		double momentum = .5, final_momentum = .8;
-		double eta = 200.0;
+		ScalarType momentum = .5, final_momentum = .8;
+		ScalarType eta = 200.0;
 
-		// Allocate some memory
-		double* dY    = (double*) malloc(N * no_dims * sizeof(double));
-		double* uY    = (double*) malloc(N * no_dims * sizeof(double));
-		double* gains = (double*) malloc(N * no_dims * sizeof(double));
-		if(dY == NULL || uY == NULL || gains == NULL) { printf("Memory allocation failed!\n"); exit(1); }
-		for(int i = 0; i < N * no_dims; i++)    uY[i] =  .0;
-		for(int i = 0; i < N * no_dims; i++) gains[i] = 1.0;
+		tapkee::DenseMatrix dY(N, no_dims);
+		tapkee::DenseMatrix uY(N, no_dims);
+		tapkee::DenseMatrix gains(N, no_dims);
+		tapkee::DenseMatrix P;
+		uY.setZero();
+		gains.setConstant(1.0);
 
 		// Normalize input data (to prevent numerical problems)
-		double* P=NULL; int* row_P; int* col_P; double* val_P;
+		int* row_P=NULL; int* col_P=NULL; ScalarType* val_P=NULL;
 		{
 			tapkee::tapkee_internal::timed_context context("Input similarities computation");
-			start = clock();
-			zeroMean(X, N, D);
-			double max_X = .0;
-			for(int i = 0; i < N * D; i++) {
-				if(X[i] > max_X) max_X = X[i];
-			}
-			for(int i = 0; i < N * D; i++) X[i] /= max_X;
+			zeroMean(X.data(), N, D);
+			X.array() /= X.maxCoeff();
 
 			// Compute input similarities for exact t-SNE
 			if(exact) {
 
 				// Compute similarities
-				P = (double*) malloc(N * N * sizeof(double));
-				if(P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
-				computeGaussianPerplexity(X, N, D, P, perplexity);
+				P = tapkee::DenseMatrix(N,N);
+				computeGaussianPerplexity(X.data(), N, D, P.data(), perplexity);
 
 				// Symmetrize input similarities
 				for(int n = 0; n < N; n++) {
 					for(int m = n + 1; m < N; m++) {
-						P[n * N + m] += P[m * N + n];
-						P[m * N + n]  = P[n * N + m];
+						P.data()[n * N + m] += P.data()[m * N + n];
+						P.data()[m * N + n]  = P.data()[n * N + m];
 					}
 				}
-				double sum_P = .0;
-				for(int i = 0; i < N * N; i++) sum_P += P[i];
-				for(int i = 0; i < N * N; i++) P[i] /= sum_P;
+				P.array() /= P.array().sum();
 			}
 
 			// Compute input similarities for approximate t-SNE
 			else {
 
 				// Compute asymmetric pairwise input similarities
-				computeGaussianPerplexity(X, N, D, &row_P, &col_P, &val_P, perplexity, (int) (3 * perplexity));
+				computeGaussianPerplexity(X.data(), N, D, &row_P, &col_P, &val_P, perplexity, (int) (3 * perplexity));
 
 				// Symmetrize input similarities
 				symmetrizeMatrix(&row_P, &col_P, &val_P, N);
-				double sum_P = .0;
+				ScalarType sum_P = .0;
 				for(int i = 0; i < row_P[N]; i++) sum_P += val_P[i];
 				for(int i = 0; i < row_P[N]; i++) val_P[i] /= sum_P;
 			}
 
 			// Lie about the P-values
-			if(exact) { for(int i = 0; i < N * N; i++)        P[i] *= 12.0; }
-			else {      for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0; }
+			if(exact)
+				P.array() *= 12.0;
+			else
+			{
+				for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0;
+			}
 
 			// Initialize solution (randomly)
 			for(int i = 0; i < N * no_dims; i++) Y[i] = tapkee::gaussian_random() * .0001;
@@ -137,55 +132,43 @@ public:
 			for(int iter = 0; iter < max_iter; iter++) {
 
 				// Compute (approximate) gradient
-				if(exact) computeExactGradient(P, Y, N, no_dims, dY);
-				else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
+				if(exact) computeExactGradient(P.data(), Y, N, no_dims, dY.data());
+				else computeGradient(P.data(), row_P, col_P, val_P, Y, N, no_dims, dY.data(), theta);
 
 				// Update gains
-				for(int i = 0; i < N * no_dims; i++) gains[i] = (sign(dY[i]) != sign(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
-				for(int i = 0; i < N * no_dims; i++) if(gains[i] < .01) gains[i] = .01;
+				for(int i = 0; i < N * no_dims; i++) gains.data()[i] = (sign(dY.data()[i]) != sign(uY.data()[i])) ? (gains.data()[i] + .2) : (gains.data()[i] * .8);
+				for(int i = 0; i < N * no_dims; i++) if(gains.data()[i] < .01) gains.data()[i] = .01;
 
 				// Perform gradient update (with momentum and gains)
-				for(int i = 0; i < N * no_dims; i++) uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
-				for(int i = 0; i < N * no_dims; i++)  Y[i] = Y[i] + uY[i];
+				for(int i = 0; i < N * no_dims; i++) uY.data()[i] = momentum * uY.data()[i] - eta * gains.data()[i] * dY.data()[i];
+				for(int i = 0; i < N * no_dims; i++)  Y[i] = Y[i] + uY.data()[i];
 
 				// Make solution zero-mean
 				zeroMean(Y, N, no_dims);
 
 				// Stop lying about the P-values after a while, and switch momentum
 				if(iter == stop_lying_iter) {
-					if(exact) { for(int i = 0; i < N * N; i++)        P[i] /= 12.0; }
-					else      { for(int i = 0; i < row_P[N]; i++) val_P[i] /= 12.0; }
+					if (exact)
+						P.array() /= 12.0;
+					else
+					{
+						for(int i = 0; i < row_P[N]; i++) val_P[i] /= 12.0;
+					}
 				}
 				if(iter == mom_switch_iter) momentum = final_momentum;
 
 				// Print out progress
-				/*
 				if((iter > 0) && ((iter % 50 == 0) || (iter == max_iter - 1))) {
-					end = clock();
-					double C = .0;
-					if(exact) C = evaluateError(P, Y, N);
+					ScalarType C = .0;
+					if(exact) C = evaluateError(P.data(), Y, N);
 					else      C = evaluateError(row_P, col_P, val_P, Y, N, theta);  // doing approximate computation here!
-					if(iter == 0)
-					{
-						//printf("Iteration %d: error is %f\n", iter + 1, C);
-					}
-					else
-					{
-						total_time += (float) (end - start) / CLOCKS_PER_SEC;
-						//printf("Iteration %d: error is %f (50 iterations in %4.2f seconds)\n", iter, C, (float) (end - start) / CLOCKS_PER_SEC);
-					}
-					start = clock();
+					tapkee::LoggingSingleton::instance().message_info(
+							formatting::format("Iteration {}: error is {}\n", iter, C));
 				}
-				*/
 			}
-			end = clock(); total_time += (float) (end - start) / CLOCKS_PER_SEC;
-
 			// Clean up memory
-			free(dY);
-			free(uY);
-			free(gains);
-			if(exact) free(P);
-			else {
+			if(!exact)
+			{
 				free(row_P); row_P = NULL;
 				free(col_P); col_P = NULL;
 				free(val_P); val_P = NULL;
@@ -193,12 +176,12 @@ public:
 		}
 	}
 
-	void symmetrizeMatrix(int** _row_P, int** _col_P, double** _val_P, int N)
+	void symmetrizeMatrix(int** _row_P, int** _col_P, ScalarType** _val_P, int N)
 	{
 		// Get sparse matrix
 		int* row_P = *_row_P;
 		int* col_P = *_col_P;
-		double* val_P = *_val_P;
+		ScalarType* val_P = *_val_P;
 
 		// Count number of elements and row counts of symmetric matrix
 		int* row_counts = (int*) calloc(N, sizeof(int));
@@ -223,7 +206,7 @@ public:
 		// Allocate memory for symmetrized matrix
 		int*    sym_row_P = (int*)    malloc((N + 1) * sizeof(int));
 		int*    sym_col_P = (int*)    malloc(no_elem * sizeof(int));
-		double* sym_val_P = (double*) malloc(no_elem * sizeof(double));
+		ScalarType* sym_val_P = (ScalarType*) malloc(no_elem * sizeof(ScalarType));
 		if(sym_row_P == NULL || sym_col_P == NULL || sym_val_P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 
 		// Construct new row indices for symmetric matrix
@@ -281,15 +264,15 @@ public:
 
 private:
 
-	void computeGradient(double* /*P*/, int* inp_row_P, int* inp_col_P, double* inp_val_P, double* Y, int N, int D, double* dC, double theta)
+	void computeGradient(ScalarType* /*P*/, int* inp_row_P, int* inp_col_P, ScalarType* inp_val_P, ScalarType* Y, int N, int D, ScalarType* dC, ScalarType theta)
 	{
 		// Construct quadtree on current map
 		QuadTree* tree = new QuadTree(Y, N);
 
 		// Compute all terms required for t-SNE gradient
-		double sum_Q = .0;
-		double* pos_f = (double*) calloc(N * D, sizeof(double));
-		double* neg_f = (double*) calloc(N * D, sizeof(double));
+		ScalarType sum_Q = .0;
+		ScalarType* pos_f = (ScalarType*) calloc(N * D, sizeof(ScalarType));
+		ScalarType* neg_f = (ScalarType*) calloc(N * D, sizeof(ScalarType));
 		if(pos_f == NULL || neg_f == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		tree->computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
 		for(int n = 0; n < N; n++) tree->computeNonEdgeForces(n, theta, neg_f + n * D, &sum_Q);
@@ -303,20 +286,20 @@ private:
 		delete tree;
 	}
 
-	void computeExactGradient(double* P, double* Y, int N, int D, double* dC)
+	void computeExactGradient(ScalarType* P, ScalarType* Y, int N, int D, ScalarType* dC)
 	{
 		// Make sure the current gradient contains zeros
 		for(int i = 0; i < N * D; i++) dC[i] = 0.0;
 
 		// Compute the squared Euclidean distance matrix
-		double* DD = (double*) malloc(N * N * sizeof(double));
+		ScalarType* DD = (ScalarType*) malloc(N * N * sizeof(ScalarType));
 		if(DD == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		computeSquaredEuclideanDistance(Y, N, D, DD);
 
 		// Compute Q-matrix and normalization sum
-		double* Q    = (double*) malloc(N * N * sizeof(double));
+		ScalarType* Q    = (ScalarType*) malloc(N * N * sizeof(ScalarType));
 		if(Q == NULL) { printf("Memory allocation failed!\n"); exit(1); }
-		double sum_Q = .0;
+		ScalarType sum_Q = .0;
 		for(int n = 0; n < N; n++) {
 			for(int m = 0; m < N; m++) {
 				if(n != m) {
@@ -330,7 +313,7 @@ private:
 		for(int n = 0; n < N; n++) {
 			for(int m = 0; m < N; m++) {
 				if(n != m) {
-					double mult = (P[n * N + m] - (Q[n * N + m] / sum_Q)) * Q[n * N + m];
+					ScalarType mult = (P[n * N + m] - (Q[n * N + m] / sum_Q)) * Q[n * N + m];
 					for(int d = 0; d < D; d++) {
 						dC[n * D + d] += (Y[n * D + d] - Y[m * D + d]) * mult;
 					}
@@ -343,16 +326,16 @@ private:
 		free(Q);  Q  = NULL;
 	}
 
-	double evaluateError(double* P, double* Y, int N)
+	ScalarType evaluateError(ScalarType* P, ScalarType* Y, int N)
 	{
 		// Compute the squared Euclidean distance matrix
-		double* DD = (double*) malloc(N * N * sizeof(double));
-		double* Q = (double*) malloc(N * N * sizeof(double));
+		ScalarType* DD = (ScalarType*) malloc(N * N * sizeof(ScalarType));
+		ScalarType* Q = (ScalarType*) malloc(N * N * sizeof(ScalarType));
 		if(DD == NULL || Q == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		computeSquaredEuclideanDistance(Y, N, 2, DD);
 
 		// Compute Q-matrix and normalization sum
-		double sum_Q = DBL_MIN;
+		ScalarType sum_Q = DBL_MIN;
 		for(int n = 0; n < N; n++) {
 			for(int m = 0; m < N; m++) {
 				if(n != m) {
@@ -365,7 +348,7 @@ private:
 		for(int i = 0; i < N * N; i++) Q[i] /= sum_Q;
 
 		// Sum t-SNE error
-		double C = .0;
+		ScalarType C = .0;
 		for(int n = 0; n < N; n++) {
 			for(int m = 0; m < N; m++) {
 				C += P[n * N + m] * log((P[n * N + m] + 1e-9) / (Q[n * N + m] + 1e-9));
@@ -378,18 +361,18 @@ private:
 		return C;
 	}
 
-	double evaluateError(int* row_P, int* col_P, double* val_P, double* Y, int N, double theta)
+	ScalarType evaluateError(int* row_P, int* col_P, ScalarType* val_P, ScalarType* Y, int N, ScalarType theta)
 	{
 		// Get estimate of normalization term
 		const int QT_NO_DIMS = 2;
 		QuadTree* tree = new QuadTree(Y, N);
-		double buff[QT_NO_DIMS] = {.0, .0};
-		double sum_Q = .0;
+		ScalarType buff[QT_NO_DIMS] = {.0, .0};
+		ScalarType sum_Q = .0;
 		for(int n = 0; n < N; n++) tree->computeNonEdgeForces(n, theta, buff, &sum_Q);
 
 		// Loop over all edges to compute t-SNE error
 		int ind1, ind2;
-		double C = .0, Q;
+		ScalarType C = .0, Q;
 		for(int n = 0; n < N; n++) {
 			ind1 = n * QT_NO_DIMS;
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
@@ -405,10 +388,10 @@ private:
 		return C;
 	}
 
-	void zeroMean(double* X, int N, int D)
+	void zeroMean(ScalarType* X, int N, int D)
 	{
 		// Compute data mean
-		double* mean = (double*) calloc(D, sizeof(double));
+		ScalarType* mean = (ScalarType*) calloc(D, sizeof(ScalarType));
 		if(mean == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		for(int n = 0; n < N; n++) {
 			for(int d = 0; d < D; d++) {
@@ -416,7 +399,7 @@ private:
 			}
 		}
 		for(int d = 0; d < D; d++) {
-			mean[d] /= (double) N;
+			mean[d] /= (ScalarType) N;
 		}
 
 		// Subtract data mean
@@ -428,10 +411,10 @@ private:
 		free(mean); mean = NULL;
 	}
 
-	void computeGaussianPerplexity(double* X, int N, int D, double* P, double perplexity)
+	void computeGaussianPerplexity(ScalarType* X, int N, int D, ScalarType* P, ScalarType perplexity)
 	{
 		// Compute the squared Euclidean distance matrix
-		double* DD = (double*) malloc(N * N * sizeof(double));
+		ScalarType* DD = (ScalarType*) malloc(N * N * sizeof(ScalarType));
 		if(DD == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		computeSquaredEuclideanDistance(X, N, D, DD);
 
@@ -440,11 +423,11 @@ private:
 
 			// Initialize some variables
 			bool found = false;
-			double beta = 1.0;
-			double min_beta = -DBL_MAX;
-			double max_beta =  DBL_MAX;
-			double tol = 1e-5;
-			double sum_P;
+			ScalarType beta = 1.0;
+			ScalarType min_beta = -DBL_MAX;
+			ScalarType max_beta =  DBL_MAX;
+			ScalarType tol = 1e-5;
+			ScalarType sum_P;
 
 			// Iterate until we found a good perplexity
 			int iter = 0;
@@ -457,12 +440,12 @@ private:
 				// Compute entropy of current row
 				sum_P = DBL_MIN;
 				for(int m = 0; m < N; m++) sum_P += P[n * N + m];
-				double H = 0.0;
+				ScalarType H = 0.0;
 				for(int m = 0; m < N; m++) H += beta * (DD[n * N + m] * P[n * N + m]);
 				H = (H / sum_P) + log(sum_P);
 
 				// Evaluate whether the entropy is within the tolerance level
-				double Hdiff = H - log(perplexity);
+				ScalarType Hdiff = H - log(perplexity);
 				if(Hdiff < tol && -Hdiff < tol) {
 					found = true;
 				}
@@ -495,19 +478,19 @@ private:
 		free(DD); DD = NULL;
 	}
 
-	void computeGaussianPerplexity(double* X, int N, int D, int** _row_P, int** _col_P, double** _val_P, double perplexity, int K)
+	void computeGaussianPerplexity(ScalarType* X, int N, int D, int** _row_P, int** _col_P, ScalarType** _val_P, ScalarType perplexity, int K)
 	{
 		if(perplexity > K) printf("Perplexity should be lower than K!\n");
 
 		// Allocate the memory we need
 		*_row_P = (int*)    malloc((N + 1) * sizeof(int));
 		*_col_P = (int*)    calloc(N * K, sizeof(int));
-		*_val_P = (double*) calloc(N * K, sizeof(double));
+		*_val_P = (ScalarType*) calloc(N * K, sizeof(ScalarType));
 		if(*_row_P == NULL || *_col_P == NULL || *_val_P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		int* row_P = *_row_P;
 		int* col_P = *_col_P;
-		double* val_P = *_val_P;
-		double* cur_P = (double*) malloc((N - 1) * sizeof(double));
+		ScalarType* val_P = *_val_P;
+		ScalarType* cur_P = (ScalarType*) malloc((N - 1) * sizeof(ScalarType));
 		if(cur_P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		row_P[0] = 0;
 		for(int n = 0; n < N; n++) row_P[n + 1] = row_P[n] + K;
@@ -521,7 +504,7 @@ private:
 		// Loop over all points to find nearest neighbors
 		//printf("Building tree...\n");
 		std::vector<DataPoint> indices;
-		std::vector<double> distances;
+		std::vector<ScalarType> distances;
 		for(int n = 0; n < N; n++) {
 
 			//if(n % 10000 == 0) printf(" - point %d of %d\n", n, N);
@@ -533,13 +516,13 @@ private:
 
 			// Initialize some variables for binary search
 			bool found = false;
-			double beta = 1.0;
-			double min_beta = -DBL_MAX;
-			double max_beta =  DBL_MAX;
-			double tol = 1e-5;
+			ScalarType beta = 1.0;
+			ScalarType min_beta = -DBL_MAX;
+			ScalarType max_beta =  DBL_MAX;
+			ScalarType tol = 1e-5;
 
 			// Iterate until we found a good perplexity
-			int iter = 0; double sum_P;
+			int iter = 0; ScalarType sum_P;
 			while(!found && iter < 200) {
 
 				// Compute Gaussian kernel row
@@ -548,12 +531,12 @@ private:
 				// Compute entropy of current row
 				sum_P = DBL_MIN;
 				for(int m = 0; m < K; m++) sum_P += cur_P[m];
-				double H = .0;
+				ScalarType H = .0;
 				for(int m = 0; m < K; m++) H += beta * (distances[m + 1] * cur_P[m]);
 				H = (H / sum_P) + log(sum_P);
 
 				// Evaluate whether the entropy is within the tolerance level
-				double Hdiff = H - log(perplexity);
+				ScalarType Hdiff = H - log(perplexity);
 				if(Hdiff < tol && -Hdiff < tol) {
 					found = true;
 				}
@@ -592,12 +575,12 @@ private:
 		delete tree;
 	}
 
-	void computeGaussianPerplexity(double* X, int N, int D, int** _row_P, int** _col_P, double** _val_P, double perplexity, double threshold)
+	void computeGaussianPerplexity(ScalarType* X, int N, int D, int** _row_P, int** _col_P, ScalarType** _val_P, ScalarType perplexity, ScalarType threshold)
 	{
 		// Allocate some memory we need for computations
-		double* buff  = (double*) malloc(D * sizeof(double));
-		double* DD    = (double*) malloc(N * sizeof(double));
-		double* cur_P = (double*) malloc(N * sizeof(double));
+		ScalarType* buff  = (ScalarType*) malloc(D * sizeof(ScalarType));
+		ScalarType* DD    = (ScalarType*) malloc(N * sizeof(ScalarType));
+		ScalarType* cur_P = (ScalarType*) malloc(N * sizeof(ScalarType));
 		if(buff == NULL || DD == NULL || cur_P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 
 		// Compute the Gaussian kernel row by row (to find number of elements in sparse P)
@@ -614,13 +597,13 @@ private:
 
 			// Initialize some variables
 			bool found = false;
-			double beta = 1.0;
-			double min_beta = -DBL_MAX;
-			double max_beta =  DBL_MAX;
-			double tol = 1e-5;
+			ScalarType beta = 1.0;
+			ScalarType min_beta = -DBL_MAX;
+			ScalarType max_beta =  DBL_MAX;
+			ScalarType tol = 1e-5;
 
 			// Iterate until we found a good perplexity
-			int iter = 0; double sum_P;
+			int iter = 0; ScalarType sum_P;
 			while(!found && iter < 200) {
 
 				// Compute Gaussian kernel row
@@ -630,12 +613,12 @@ private:
 				// Compute entropy of current row
 				sum_P = DBL_MIN;
 				for(int m = 0; m < N; m++) sum_P += cur_P[m];
-				double H = 0.0;
+				ScalarType H = 0.0;
 				for(int m = 0; m < N; m++) H += beta * (DD[m] * cur_P[m]);
 				H = (H / sum_P) + log(sum_P);
 
 				// Evaluate whether the entropy is within the tolerance level
-				double Hdiff = H - log(perplexity);
+				ScalarType Hdiff = H - log(perplexity);
 				if(Hdiff < tol && -Hdiff < tol) {
 					found = true;
 				}
@@ -663,17 +646,17 @@ private:
 			// Row-normalize and threshold current row of P
 			for(int m = 0; m < N; m++) cur_P[m] /= sum_P;
 			for(int m = 0; m < N; m++) {
-				if(cur_P[m] > threshold / (double) N) total_count++;
+				if(cur_P[m] > threshold / (ScalarType) N) total_count++;
 			}
 		}
 
 		// Allocate the memory we need
 		*_row_P = (int*)    malloc((N + 1)     * sizeof(int));
 		*_col_P = (int*)    malloc(total_count * sizeof(int));
-		*_val_P = (double*) malloc(total_count * sizeof(double));
+		*_val_P = (ScalarType*) malloc(total_count * sizeof(ScalarType));
 		int* row_P = *_row_P;
 		int* col_P = *_col_P;
-		double* val_P = *_val_P;
+		ScalarType* val_P = *_val_P;
 		if(row_P == NULL || col_P == NULL || val_P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		row_P[0] = 0;
 
@@ -691,13 +674,13 @@ private:
 
 			// Initialize some variables
 			bool found = false;
-			double beta = 1.0;
-			double min_beta = -DBL_MAX;
-			double max_beta =  DBL_MAX;
-			double tol = 1e-5;
+			ScalarType beta = 1.0;
+			ScalarType min_beta = -DBL_MAX;
+			ScalarType max_beta =  DBL_MAX;
+			ScalarType tol = 1e-5;
 
 			// Iterate until we found a good perplexity
-			int iter = 0; double sum_P;
+			int iter = 0; ScalarType sum_P;
 			while(!found && iter < 200) {
 
 				// Compute Gaussian kernel row
@@ -707,12 +690,12 @@ private:
 				// Compute entropy of current row
 				sum_P = DBL_MIN;
 				for(int m = 0; m < N; m++) sum_P += cur_P[m];
-				double H = 0.0;
+				ScalarType H = 0.0;
 				for(int m = 0; m < N; m++) H += beta * (DD[m] * cur_P[m]);
 				H = (H / sum_P) + log(sum_P);
 
 				// Evaluate whether the entropy is within the tolerance level
-				double Hdiff = H - log(perplexity);
+				ScalarType Hdiff = H - log(perplexity);
 				if(Hdiff < tol && -Hdiff < tol) {
 					found = true;
 				}
@@ -740,7 +723,7 @@ private:
 			// Row-normalize and threshold current row of P
 			for(int m = 0; m < N; m++) cur_P[m] /= sum_P;
 			for(int m = 0; m < N; m++) {
-				if(cur_P[m] > threshold / (double) N) {
+				if(cur_P[m] > threshold / (ScalarType) N) {
 					col_P[count] = m;
 					val_P[count] = cur_P[m];
 					count++;
@@ -755,9 +738,9 @@ private:
 		free(cur_P); cur_P = NULL;
 	}
 
-	void computeSquaredEuclideanDistance(double* X, int N, int D, double* DD)
+	void computeSquaredEuclideanDistance(ScalarType* X, int N, int D, ScalarType* DD)
 	{
-		double* dataSums = (double*) calloc(N, sizeof(double));
+		ScalarType* dataSums = (ScalarType*) calloc(N, sizeof(ScalarType));
 		if(dataSums == NULL) { printf("Memory allocation failed!\n"); exit(1); }
 		for(int n = 0; n < N; n++) {
 			for(int d = 0; d < D; d++) {
@@ -769,8 +752,8 @@ private:
 				DD[n * N + m] = dataSums[n] + dataSums[m];
 			}
 		}
-		Eigen::Map<Eigen::MatrixXd> DD_map(DD,N,N);
-		Eigen::Map<Eigen::MatrixXd> X_map(X,D,N);
+		Eigen::Map<tapkee::DenseMatrix> DD_map(DD,N,N);
+		Eigen::Map<tapkee::DenseMatrix> X_map(X,D,N);
 		DD_map.noalias() = -2.0*X_map.transpose()*X_map;
 
 		//cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, N, N, D, -2.0, X, D, X, D, 1.0, DD, N);
