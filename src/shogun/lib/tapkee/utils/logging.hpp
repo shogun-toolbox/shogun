@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <string>
-#include <formatting/formatting.hpp>
+#include <shogun/lib/tapkee/formatting/formatting.hpp>
 
 #define LEVEL_ENABLED_FIELD(X) bool X##_enabled
 #define LEVEL_ENABLED_FIELD_INITIALIZER(X,value) X##_enabled(value)
