@@ -19,7 +19,7 @@ function check_shogun_style {
         then
             echo "Branch ${2:-} does not exists locally. Fetching it."
             git fetch origin "${2:-}:${2:-}"
-            
+
         fi
 
         BASE_COMMIT=$(git rev-parse ${2:-})
@@ -28,10 +28,10 @@ function check_shogun_style {
         echo "-----"
         echo "Shogun Style Checker"
         echo "-----"
-        echo "Running clang-format-3.8 against branch ${2:-}, with hash $BASE_COMMIT"
+        echo "Running clang-format-3.9 against branch ${2:-}, with hash $BASE_COMMIT"
 
         COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
-		
+
         # Use clang-format only on existent files
         LIST=("")
         for file in $COMMIT_FILES
@@ -41,12 +41,12 @@ function check_shogun_style {
             fi
         done
 
-        RESULT_OUTPUT="$(git clang-format-3.8 --commit $BASE_COMMIT --diff --binary `which clang-format-3.8` $LIST)"
+        RESULT_OUTPUT="$(git clang-format-3.9 --commit $BASE_COMMIT --diff --binary `which clang-format-3.9` $LIST)"
 
         if [ "$RESULT_OUTPUT" == "no modified files to format" ] \
-            || [ "$RESULT_OUTPUT" == "clang-format-3.8 did not modify any files" ] \
+            || [ "$RESULT_OUTPUT" == "clang-format-3.9 did not modify any files" ] \
             || [ "$RESULT_OUTPUT" == "clang-format did not modify any files" ]; then
-              echo "clang-format-3.8 passed. \o/"
+              echo "clang-format-3.9 passed. \o/"
               echo "-----"
               exit 0
         else
@@ -54,10 +54,10 @@ function check_shogun_style {
             echo "clang-format failed."
             echo "To reproduce it locally please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --diff --binary $(which clang-format-3.8)"
+            echo -e "\t2) git clang-format-3.9 --commit $BASE_COMMIT --diff --binary $(which clang-format-3.9)"
             echo "To fix the errors automatically please run: "
             echo -e "\t1) git checkout ${1:-}"
-            echo -e "\t2) git clang-format-3.8 --commit $BASE_COMMIT --binary $(which clang-format-3.8)"
+            echo -e "\t2) git clang-format-3.9 --commit $BASE_COMMIT --binary $(which clang-format-3.9)"
             echo "-----"
             echo "Style errors found:"
             echo "$RESULT_OUTPUT"
