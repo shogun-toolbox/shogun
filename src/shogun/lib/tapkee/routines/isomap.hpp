@@ -41,8 +41,8 @@ struct HeapElementComparator
 //! @param callback distance callback
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end,
-		const Neighbors& neighbors, DistanceCallback callback)
+DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end,
+		Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
 	const IndexType n_neighbors = neighbors[0].size();
@@ -158,8 +158,8 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterato
 //! @param callback distance callback
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end,
-		const Landmarks& landmarks, const Neighbors& neighbors, DistanceCallback callback)
+DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end,
+		Landmarks& landmarks, Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
 	const IndexType n_neighbors = neighbors[0].size();

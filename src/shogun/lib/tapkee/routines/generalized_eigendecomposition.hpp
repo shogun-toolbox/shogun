@@ -31,9 +31,8 @@ EigendecompositionResult generalized_eigendecomposition_impl_arpack(const LMatri
 
 	if (arpack.info() == Eigen::Success)
 	{
-		std::stringstream ss;
-		ss << "Took " << arpack.getNbrIterations() << " iterations.";
-		LoggingSingleton::instance().message_info(ss.str());
+		std::string message = formatting::format("Took {} iterations.", arpack.getNbrIterations());
+		LoggingSingleton::instance().message_info(message);
 		DenseMatrix selected_eigenvectors = (arpack.eigenvectors()).rightCols(target_dimension);
 		return EigendecompositionResult(selected_eigenvectors,arpack.eigenvalues().tail(target_dimension));
 	}
@@ -77,25 +76,124 @@ EigendecompositionResult generalized_eigendecomposition_impl_dense(const LMatrix
 	return EigendecompositionResult();
 }
 
-template <class LMatrixType, class RMatrixType, class MatrixOperationType>
-EigendecompositionResult generalized_eigendecomposition(EigenMethod method, const LMatrixType& lhs,
-                                                        const RMatrixType& rhs,
-                                                        IndexType target_dimension, unsigned int skip)
+template <typename LMatrixType, typename RMatrixType>
+struct generalized_eigendecomposition_impl
 {
-	LoggingSingleton::instance().message_info("Using the " + get_eigen_method_name(method) + " eigendecomposition method.");
-	switch (method)
-	{
 #ifdef TAPKEE_WITH_ARPACK
-		case Arpack:
-			return generalized_eigendecomposition_impl_arpack<LMatrixType, RMatrixType, MatrixOperationType>(lhs, rhs, target_dimension, skip);
+	EigendecompositionResult arpack(const LMatrixType& lhs, const RMatrixType& rhs,
+                                    const ComputationStrategy& strategy,
+                                    const EigendecompositionStrategy& eigen_strategy,
+                                    IndexType target_dimension);
 #endif
-		case Dense:
-			return generalized_eigendecomposition_impl_dense<LMatrixType, RMatrixType, MatrixOperationType>(lhs, rhs, target_dimension, skip);
-		case Randomized:
-			throw unsupported_method_error("Randomized method is not supported for generalized eigenproblems");
-			return EigendecompositionResult();
-		default: break;
+	EigendecompositionResult dense(const LMatrixType& lhs, const RMatrixType& rhs,
+                                   const ComputationStrategy& strategy,
+                                   const EigendecompositionStrategy& eigen_strategy,
+                                   IndexType target_dimension);
+};
+
+template <>
+struct generalized_eigendecomposition_impl<SparseWeightMatrix, DenseDiagonalMatrix>
+{
+#ifdef TAPKEE_WITH_ARPACK
+	EigendecompositionResult arpack(const SparseWeightMatrix& lhs, const DenseDiagonalMatrix& rhs,
+                                    const ComputationStrategy& strategy,
+                                    const EigendecompositionStrategy& eigen_strategy,
+                                    IndexType target_dimension)
+	{
+		if (strategy.is(HomogeneousCPUStrategy))
+		{
+			if (eigen_strategy.is(SmallestEigenvalues))
+				return generalized_eigendecomposition_impl_arpack
+					<SparseWeightMatrix,DenseDiagonalMatrix,SparseInverseMatrixOperation>
+					(lhs,rhs,target_dimension,eigen_strategy.skip());
+			unsupported();
+		}
+		unsupported();
+		return EigendecompositionResult();
 	}
+#endif
+	EigendecompositionResult dense(const SparseWeightMatrix& lhs, const DenseDiagonalMatrix& rhs,
+                                   const ComputationStrategy& strategy,
+                                   const EigendecompositionStrategy& eigen_strategy,
+                                   IndexType target_dimension)
+	{
+		if (strategy.is(HomogeneousCPUStrategy))
+		{
+			if (eigen_strategy.is(SmallestEigenvalues))
+				return generalized_eigendecomposition_impl_dense
+					<SparseWeightMatrix,DenseDiagonalMatrix,SparseInverseMatrixOperation>
+					(lhs,rhs,target_dimension,eigen_strategy.skip());
+			unsupported();
+		}
+		unsupported();
+		return EigendecompositionResult();
+	}
+	inline void unsupported() const
+	{
+		throw unsupported_method_error("Unsupported method");
+	}
+};
+
+template <>
+struct generalized_eigendecomposition_impl<DenseMatrix, DenseMatrix>
+{
+#ifdef TAPKEE_WITH_ARPACK
+	EigendecompositionResult arpack(const DenseMatrix& lhs, const DenseMatrix& rhs,
+                                    const ComputationStrategy& strategy,
+                                    const EigendecompositionStrategy& eigen_strategy,
+                                    IndexType target_dimension)
+	{
+		if (strategy.is(HomogeneousCPUStrategy))
+		{
+			if (eigen_strategy.is(SmallestEigenvalues))
+				return generalized_eigendecomposition_impl_arpack
+					<DenseMatrix,DenseMatrix,DenseInverseMatrixOperation>
+					(lhs,rhs,target_dimension,0);
+			unsupported();
+		}
+		unsupported();
+		return EigendecompositionResult();
+	}
+#endif
+	EigendecompositionResult dense(const DenseMatrix& lhs, const DenseMatrix& rhs,
+                                   const ComputationStrategy& strategy,
+                                   const EigendecompositionStrategy& eigen_strategy,
+                                   IndexType target_dimension)
+	{
+		if (strategy.is(HomogeneousCPUStrategy))
+		{
+			if (eigen_strategy.is(SmallestEigenvalues))
+				return generalized_eigendecomposition_impl_dense
+					<DenseMatrix,DenseMatrix,DenseInverseMatrixOperation>
+					(lhs,rhs,target_dimension,0);
+			unsupported();
+		}
+		unsupported();
+		return EigendecompositionResult();
+	}
+	inline void unsupported() const
+	{
+		throw unsupported_method_error("Unsupported method");
+	}
+};
+
+template <class LMatrixType, class RMatrixType>
+EigendecompositionResult generalized_eigendecomposition(const EigenMethod& method, const ComputationStrategy& strategy,
+                                                        const EigendecompositionStrategy& eigen_strategy,
+                                                        const LMatrixType& lhs, const RMatrixType& rhs, IndexType target_dimension)
+{
+	LoggingSingleton::instance().message_info(formatting::format("Using the {} eigendecomposition method.",
+		get_eigen_method_name(method)));
+#ifdef TAPKEE_WITH_ARPACK
+	if (method.is(Arpack))
+		return generalized_eigendecomposition_impl<LMatrixType, RMatrixType>()
+			.arpack(lhs, rhs, strategy, eigen_strategy, target_dimension);
+#endif
+	if (method.is(Dense))
+		return generalized_eigendecomposition_impl<LMatrixType, RMatrixType>()
+			.dense(lhs, rhs, strategy, eigen_strategy, target_dimension);
+	if (method.is(Randomized))
+		throw unsupported_method_error("Randomized method is not supported for generalized eigenproblems");
 	return EigendecompositionResult();
 }
 

@@ -85,8 +85,7 @@ public:
 	{
 		for(int i = 0; i < max_num_nodes; i++)
 		{
-			if(nodes[i] != NULL)
-				delete nodes[i];
+			delete nodes[i];
 		}
 		free(nodes);
 		free(A);

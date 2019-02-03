@@ -1,3 +1,8 @@
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
+ */
+
 #ifndef RESERVABLE_PRIORITY_QUEUE_H_
 #define RESERVABLE_PRIORITY_QUEUE_H_
 
