@@ -9,7 +9,7 @@
 /* Tapkee includes */
 #include <shogun/lib/tapkee/defines/types.hpp>
 
-#include <stichwort/keywords.hpp>
+#include <shogun/lib/tapkee/stichwort/keywords.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee
