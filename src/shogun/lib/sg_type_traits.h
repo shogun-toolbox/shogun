@@ -34,19 +34,6 @@ struct sg_is_any_of<T, First, Rest...>
 template<typename T, typename First, typename... Rest>
 constexpr bool sg_is_any_of_v = sg_is_any_of<T, First, Rest...>::value;
 
-template <typename T>
-concept Floating = std::is_floating_point<T>::value;
-template <typename T>
-concept Integral = std::is_integral<T>::value;
-
-// Anything that uses the fill_array* macros
-template<typename T>
-concept RngVectorizable = requires(T* container, index_t len, CRandom* r){
-{ r->fill_array(container, len) };
-} || requires(T* container, index_t len, CRandom* r){
-{ r->fill_array_co(container, len) };
-};
-
 // all shogun base classes for put/add templates
 class CMachine;
 class CKernel;

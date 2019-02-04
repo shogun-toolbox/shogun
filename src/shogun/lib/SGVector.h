@@ -20,6 +20,7 @@
 #include <shogun/util/iterators.h>
 
 #include "sg_type_traits.h"
+#include "sg_concepts.h"
 #include <atomic>
 #include <initializer_list>
 #include <memory>
@@ -37,6 +38,7 @@ namespace shogun
 	template <class T> class SGMatrix;
 	class CFile;
 	class CRandom;
+    extern CRandom* sg_rand;
 
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
@@ -208,30 +210,26 @@ template<class T> class SGVector : public SGReferencedData
 
         template <typename U = T> requires Floating<U> && RngVectorizable<U>
         void random() {
-            auto r = std::make_unique<CRandom>();
-            r->fill_array_co(vector, vlen);
+            sg_rand->fill_array_co(vector, vlen);
         }
 
         template <typename U = T> requires Integral<U> && RngVectorizable<U>
         void random() {
-            auto r = std::make_unique<CRandom>();
-            r->fill_array(vector, vlen);
+            sg_rand->fill_array(vector, vlen);
         }
 
         template <typename U = T> requires Floating<U>
         void random() {
-            auto r = std::make_unique<CRandom>();
             // Casting floats upwards or downwards is safe
             // Ref: https://stackoverflow.com/a/36840390/3656081
             std::transform(vector, vector + vlen, vector,
-                           [&r](auto){ return r->random_half_open(); });
+                           [&sg_rand](auto){ return sg_rand->random_half_open(); });
         }
 
         template <typename U = T> requires Integral<U>
         void random() {
-            auto r = std::make_unique<CRandom>();
             std::transform(vector, vector + vlen, vector,
-                           [&r](auto){ return r->random(
+                           [&sg_rand](auto){ return sg_rand->random(
                                    std::numeric_limits<T>::min(),
                                    std::numeric_limits<T>::max()); });
         }
