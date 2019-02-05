@@ -14,19 +14,17 @@
 %newobject softmax(int32_t size);
 
 /* Remove C Prefix */
-%rename(NeuralNetwork) CNeuralNetwork;
 %rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
+%rename(NeuralLayer) CNeuralLayer;
 %rename(RBM) CRBM;
 %rename(DeepBeliefNetwork) CDeepBeliefNetwork;
 %rename(Autoencoder) CAutoencoder;
 %rename(DeepAutoencoder) CDeepAutoencoder;
-%rename(NeuralLayers) CNeuralLayers;
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/neuralnets/NeuralNetwork.h>
+%include <shogun/neuralnets/NeuralLayer.h>
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 %include <shogun/neuralnets/RBM.h>
 %include <shogun/neuralnets/DeepBeliefNetwork.h>
 %include <shogun/neuralnets/Autoencoder.h>
 %include <shogun/neuralnets/DeepAutoencoder.h>
-%include <shogun/neuralnets/NeuralLayers.h>
