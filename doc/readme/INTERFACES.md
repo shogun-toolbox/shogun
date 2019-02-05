@@ -1,7 +1,7 @@
 Running Shogun from the interfaces
 ==================================
 
-We assume that installation (including the interfaces) was successful and all dependencies are installed. See [INSTALL.md](INSTALL.md) and our website.
+We assume that installation (including the interfaces) was successful and all dependencies are installed. See [our installation page][installation-page].
 
 Note that setting some of the environmental variables should not be necessary in case you installed Shogun to the default folder or installed it from a binary package.
 
@@ -111,7 +111,7 @@ Running it again requires the above class path and some more options
     java -Xmx1024m -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -Djava.library.path=/path/to/shogun.jar java_example
 
 ### Provided Examples
-Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, see [INSTALL.md](INSTALL.md).
+Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, [see our installation page][installation-page].
 As the examples load data files, they requires the `shogun-data` submodule to be checked out.
 
 All examples should be run in the respective folder they are located in, for example (assuming that all described variables are set)
@@ -123,3 +123,5 @@ Or, for a compiled language with a manually compiled, not yet installed Shogun, 
 
     cd /path/to/shogun-source/build/examples/meta/csharp/regression/
     mono linear_ridge_regression.cs
+
+[installation-page]: http://shogun.ml/install
