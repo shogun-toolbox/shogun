@@ -15,14 +15,7 @@
 
 /* Remove C Prefix */
 %rename(NeuralNetwork) CNeuralNetwork;
-%rename(NeuralLayer) CNeuralLayer;
-%rename(NeuralInputLayer) CNeuralInputLayer;
-%rename(NeuralLinearLayer) CNeuralLinearLayer;
-%rename(NeuralLogisticLayer) CNeuralLogisticLayer;
-%rename(NeuralSoftmaxLayer) CNeuralSoftmaxLayer;
-%rename(NeuralRectifiedLinearLayer) CNeuralRectifiedLinearLayer;
 %rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
-%rename(NeuralConvolutionalLayer) CNeuralConvolutionalLayer;
 %rename(RBM) CRBM;
 %rename(DeepBeliefNetwork) CDeepBeliefNetwork;
 %rename(Autoencoder) CAutoencoder;
@@ -31,14 +24,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
-%include <shogun/neuralnets/NeuralLayer.h>
-%include <shogun/neuralnets/NeuralInputLayer.h>
-%include <shogun/neuralnets/NeuralLinearLayer.h>
-%include <shogun/neuralnets/NeuralLogisticLayer.h>
-%include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-%include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
-%include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 %include <shogun/neuralnets/RBM.h>
 %include <shogun/neuralnets/DeepBeliefNetwork.h>
 %include <shogun/neuralnets/Autoencoder.h>
