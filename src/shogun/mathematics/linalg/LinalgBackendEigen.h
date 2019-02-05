@@ -34,6 +34,7 @@
 #define LINALG_BACKEND_EIGEN_H__
 
 #include <numeric>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
@@ -557,8 +558,66 @@ namespace shogun
 		 * matrices */
 		template <typename T>
 		void eigen_solver_symmetric_impl(
-		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
-		    SGMatrix<T>& eigenvectors, index_t k) const;
+			const SGMatrix<T>& A, SGVector<T>& eigenvalues, SGMatrix<T>& eigenvectors,
+			index_t k) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+			typename SGMatrix<T>::EigenMatrixXtMap eigenvectors_eig = eigenvectors;
+			typename SGVector<T>::EigenVectorXtMap eigenvalues_eig = eigenvalues;
+
+			Eigen::SelfAdjointEigenSolver<typename SGMatrix<T>::EigenMatrixXt> solver(
+				A_eig);
+
+			/*
+			* checking for success
+			*
+			* 0: Eigen::Success. Eigenvalues computation was successful
+			* 2: Eigen::NoConvergence. Iterative procedure did not converge.
+			*/
+			REQUIRE(
+				solver.info() != Eigen::NoConvergence,
+				"Iterative procedure did not converge!\n");
+
+			eigenvalues_eig = solver.eigenvalues().tail(k).template cast<T>();
+			eigenvectors_eig = solver.eigenvectors().rightCols(k).template cast<T>();
+		}
+
+		/*
+		* Eigen's symmetric eigensolver uses a slower algorithm in comparison
+		* to LAPACK's dsyevr, so if LAPACK is available we use it for float64 type.
+		* This should be removed if eventually Eigen will provide a faster
+		* symmetric eigensolver (@see
+		* http://eigen.tuxfamily.org/bz/show_bug.cgi?id=522).
+		*/
+		#ifdef HAVE_LAPACK
+		void eigen_solver_symmetric_impl(
+			const SGMatrix<float64_t>& A, SGVector<float64_t>& eigenvalues,
+			SGMatrix<float64_t>& eigenvectors, index_t k) const
+		{
+			int32_t status = 0;
+			int32_t n = A.num_rows;
+
+			// dsyevr requires a vector of length n even if you want just k eigenvalues
+			SGVector<float64_t>::EigenVectorXt ev_eig(n);
+			wrap_dsyevr(
+				'V', 'U', n, A.matrix, n, n - k + 1, n, ev_eig.data(),
+				eigenvectors.matrix, &status);
+
+			typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig =
+				eigenvalues;
+			eigenvalues_eig = ev_eig.head(k);
+
+			/*
+			* checking for success
+			*
+			* status == 0: successful exit
+			* status < 0: the i-th argument had an illegal value
+			* status > 0: internal error
+			*/
+			REQUIRE(!(status < 0), "The %d-th argument han an illegal value.", -status)
+			REQUIRE(!(status > 0), "Internal error.")
+		}
+		#endif
 
 		/** Eigen3 matrix in-place elementwise product method */
 		template <typename T>
@@ -764,20 +823,6 @@ namespace shogun
 		template <typename T>
 		void zero_impl(SGMatrix<T>& a) const;
 	};
-
-/*
- * Eigen's symmetric eigensolver uses a slower algorithm in comparison
- * to LAPACK's dsyevr, so if LAPACK is available we use it for float64 type.
- * This should be removed if eventually Eigen will provide a faster
- * symmetric eigensolver (@see
- * http://eigen.tuxfamily.org/bz/show_bug.cgi?id=522).
- */
-#ifdef HAVE_LAPACK
-	template <>
-	void LinalgBackendEigen::eigen_solver_symmetric_impl<float64_t>(
-	    const SGMatrix<float64_t>& A, SGVector<float64_t>& eigenvalues,
-	    SGMatrix<float64_t>& eigenvectors, index_t k) const;
-#endif
 }
 
 #endif // LINALG_BACKEND_EIGEN_H__
