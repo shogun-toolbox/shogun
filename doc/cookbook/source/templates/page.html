@@ -23,6 +23,17 @@ jQuery(document).ready(function ($) {
 });
 </script>
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      Macros: {
+        argmax: ["\\mathop{\\rm arg\\,max}\\limits"],
+        argmin: ["\\mathop{\\rm arg\\,min}\\limits"]
+      }
+    }
+  });
+</script>
+
 {% else %}
 {{ body }}
 {% endif %}
