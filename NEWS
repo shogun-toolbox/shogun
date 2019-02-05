@@ -1,3 +1,20 @@
+2019-??-?? NAME EMAIL
+
+        * SHOGUN Release version 7.0.0 (libshogun ??.?, data 0.12, parameter ?)
+
+        * --- MAIN FEATURES GO HERE ---
+
+        * Features:
+                - added get method that replaces typed getters in Python API
+                [Gil Hoben]
+
+        * Bugfixes:
+                - Fixed LibLinearRegression bias bug [Gil Hoben]
+                - Fixed a memory copying issue in SGVector that affected the 
+                correctness of a recent refactor of LinearRidgeRegression [Kirill 
+                Kolkir]
+
+
 2018-06-01 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
         * SHOGUN Release version 6.2.0 (libshogun 18.0, data 0.11, parameter 1)
