@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Heiko Strathmann, Sergey Lisitsyn, Thoralf Klein, 
+ * Authors: Chiyuan Zhang, Heiko Strathmann, Sergey Lisitsyn, Thoralf Klein,
  *          Soeren Sonnenburg
  */
 
@@ -115,7 +115,7 @@ void CKernelMulticlassMachine::set_kernel(CKernel* k)
 	m_kernel=k;
 }
 
-CKernel* CKernelMulticlassMachine::get_kernel()
+CKernel* CKernelMulticlassMachine::get_kernel() const
 {
 	SG_REF(m_kernel);
 	return m_kernel;
@@ -160,12 +160,12 @@ bool CKernelMulticlassMachine::is_ready()
 	return false;
 }
 
-CMachine* CKernelMulticlassMachine::get_machine_from_trained(CMachine* machine)
+CMachine* CKernelMulticlassMachine::get_machine_from_trained(CMachine* machine) const
 {
 	return new CKernelMachine(machine->as<CKernelMachine>());
 }
 
-int32_t CKernelMulticlassMachine::get_num_rhs_vectors()
+int32_t CKernelMulticlassMachine::get_num_rhs_vectors() const
 {
 	return m_kernel->get_num_vec_rhs();
 }

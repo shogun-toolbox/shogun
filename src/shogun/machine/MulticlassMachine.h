@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Chiyuan Zhang, Soeren Sonnenburg, 
- *          Fernando Iglesias, Jiaolong Xu, Heiko Strathmann, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Chiyuan Zhang, Soeren Sonnenburg,
+ *          Fernando Iglesias, Jiaolong Xu, Heiko Strathmann, Evan Shelhamer,
  *          Yuyu Zhang, Shell Hu, Thoralf Klein, Bjoern Esser
  */
 
@@ -171,10 +171,10 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		virtual bool is_ready() = 0;
 
 		/** obtain machine from trained one */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) = 0;
+		virtual CMachine* get_machine_from_trained(CMachine* machine) const = 0;
 
 		/** get num rhs vectors */
-		virtual int32_t get_num_rhs_vectors() = 0;
+		virtual int32_t get_num_rhs_vectors() const = 0;
 
 		/** set subset to the features of the machine, deletes old one
 		 *

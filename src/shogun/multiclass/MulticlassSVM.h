@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Chiyuan Zhang, Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Yuyu Zhang, Fernando Iglesias, Bjoern Esser
  */
 
@@ -69,9 +69,9 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param num which SVM to get
 		 * @return SVM at number num
 		 */
-		CSVM* get_svm(int32_t num)
+		CSVM* get_svm(int32_t num) const
 		{
-			return dynamic_cast<CSVM *>(m_machines->get_element_safe(num));
+			return m_machines->get_element_safe(num)->as<CSVM>();
 		}
 
 		/** load a Multiclass SVM from file

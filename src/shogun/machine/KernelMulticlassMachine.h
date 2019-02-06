@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Chiyuan Zhang, Heiko Strathmann, Fernando Iglesias, 
+ * Authors: Sergey Lisitsyn, Chiyuan Zhang, Heiko Strathmann, Fernando Iglesias,
  *          Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Thoralf Klein
  */
 
@@ -53,7 +53,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel();
+		CKernel* get_kernel() const;
 
 		/** Stores feature data of underlying model.
 		 *
@@ -75,10 +75,10 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		virtual bool is_ready();
 
 		/** construct kernel machine from given kernel machine */
-		virtual CMachine* get_machine_from_trained(CMachine* machine);
+		virtual CMachine* get_machine_from_trained(CMachine* machine) const;
 
 		/** return number of rhs feature vectors */
-		virtual int32_t get_num_rhs_vectors();
+		virtual int32_t get_num_rhs_vectors() const;
 
 		/** set subset to the features of the machine, deletes old one
 		 *

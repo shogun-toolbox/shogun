@@ -51,10 +51,10 @@ class CNativeMulticlassMachine : public CMulticlassMachine
 		virtual bool is_ready() { return true; }
 
 		/** obtain machine from trained one */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) { return NULL; }
+		virtual CMachine* get_machine_from_trained(CMachine* machine) const { return NULL; }
 
 		/** get num rhs vectors */
-		virtual int32_t get_num_rhs_vectors() { return 0; }
+		virtual int32_t get_num_rhs_vectors() const { return 0; }
 
 		/** set subset to the features of the machine, deletes old one
 		 *
