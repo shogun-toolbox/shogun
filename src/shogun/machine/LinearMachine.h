@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
- *          Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, Thoralf Klein, 
- *          Evan Shelhamer, Youssef Emad El-Din, Bjoern Esser, Sanuj Sharma, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
+ *          Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, Thoralf Klein,
+ *          Evan Shelhamer, Youssef Emad El-Din, Bjoern Esser, Sanuj Sharma,
  *          Saurabh Goyal
  */
 
@@ -93,7 +93,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return bias
 		 */
-		virtual float64_t get_bias();
+		virtual float64_t get_bias() const;
 
 		/** set features
 		 *
