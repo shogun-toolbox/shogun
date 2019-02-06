@@ -275,6 +275,8 @@ namespace shogun
 	protected:
 		/** the label vector */
 		SGVector<float64_t> m_labels;
+		/** the confidence vector */
+		SGVector<float64_t> m_confidence;
 };
 
 /**
