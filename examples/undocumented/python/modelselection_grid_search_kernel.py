@@ -96,7 +96,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	classifier=sg.machine("LibSVM")
 
 	# splitting strategy
-	splitting_strategy = splitting_strategy(
+	splitting = splitting_strategy(
 		"StratifiedCrossValidationSplitting", labels=labels,
 		num_subsets=num_subsets)
 
@@ -106,7 +106,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# cross validation class for evaluation in model selection
 	cross = machine_evaluation(
             "CrossValidation", machine=classifier, features=features,
-            labels=labels, splitting_strategy=splitting_strategy,
+            labels=labels, splitting_strategy=splitting,
             evaluation_criterion=evaluation_criterion, num_runs=1)
 
 	# print all parameter available for modelselection
@@ -129,9 +129,9 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# larger number of runs to have less variance
 	cross.put("num_runs", 10)
 	result=cross.evaluate()
-	#print "result mean:", result.get_real("mean")
+	#print "result mean:", result.get("mean")
 
-	return classifier,result, result.get_real("mean")
+	return classifier,result, result.get("mean")
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')
