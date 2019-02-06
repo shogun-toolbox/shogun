@@ -152,7 +152,7 @@ bool CKernel::set_normalizer(CKernelNormalizer* n)
 	return (normalizer!=NULL);
 }
 
-CKernelNormalizer* CKernel::get_normalizer()
+CKernelNormalizer* CKernel::get_normalizer() const
 {
 	SG_REF(normalizer)
 	return normalizer;

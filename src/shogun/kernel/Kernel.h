@@ -466,7 +466,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return the kernel normalizer
 		 */
-		virtual CKernelNormalizer* get_normalizer();
+		virtual CKernelNormalizer* get_normalizer() const;
 
 		/** initialize the current kernel normalizer
 		 *  @return if init was successful
