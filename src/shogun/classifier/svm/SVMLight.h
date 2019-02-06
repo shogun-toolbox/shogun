@@ -595,6 +595,9 @@ class CSVMLight : public CSVM
 	float64_t *c, int32_t totdoc,int32_t iteration, int32_t *inconsistent,
 	int32_t *docs,float64_t *aicache, float64_t* maxdiff);
 
+	/** @return object name */
+	virtual const char* get_name() const { return "SVMLight"; }
+
 protected:
 	/** compute kernel
 	*
@@ -630,9 +633,6 @@ protected:
 	 * @param p p
 	 */
 	static void* reactivate_inactive_examples_linadd_helper(void* p);
-
-	/** @return object name */
-	virtual const char* get_name() const { return "SVMLight"; }
 
 	/* interface to QP-solver */
 	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,
