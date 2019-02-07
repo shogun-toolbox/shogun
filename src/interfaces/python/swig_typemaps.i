@@ -1363,7 +1363,12 @@ _FACTORIES = ["distance",
               "transformer",
               "layer",
               "splitting_strategy",
-              "machine_evaluation"
+              "machine_evaluation",
+              "features",
+              "differentiable_function",
+              "inference",
+              "mean_function",
+              "likelihood_model",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
