@@ -82,17 +82,17 @@ Install as
 
 
 ### MacOS <a name="mac"></a>
-Shogun is part of [homebrew-science](https://github.com/Homebrew/homebrew-science).
+Shogun is part of [Homebrew](https://formulae.brew.sh/formula/shogun).
 Install the latest stable version as
 
-    brew install homebrew/science/shogun
+    brew install shogun
 
 ### Windows <a name="windows"></a>
 Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows). We currently only support binary packages via conda.
 If you are interested in packaging, documenting, or contributing otherwise, please contact us.
 
 ## Docker images <a name="docker"></a>
-You can run Shogun in [our own cloud](cloud.shogun.ml) or set up your own using our
+You can set up Shogun using our
 [Docker images](https://hub.docker.com/r/shogun/shogun/) as:
 
     sudo docker pull shogun/shogun:master
@@ -142,7 +142,7 @@ You need at least 1GB free disk space. If you compile any interface, roughly 4 G
 
 ## Basics <a name="manual-basics"></a>
 Shogun uses [CMake](https://cmake.org/) for its build. The general workflow is now explained.
-For further details on testing etc, see [DEVELOPING.md](DEVELOPING.md).
+For further details on testing etc, see [DEVELOPING.md](https://github.com/shogun-toolbox/shogun/blob/develop/doc/readme/DEVELOPING.md).
 
 Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest develop code.
 Potentially update submodules
