@@ -6,8 +6,8 @@ CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
 #![create_features]
 Features features_train = features(f_feats_train)
 Features features_test = features(f_feats_test)
-RegressionLabels labels_train(f_labels_train)
-RegressionLabels labels_test(f_labels_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
@@ -17,13 +17,13 @@ MeanFunction mean = mean_function("ZeroMean")
 
 #![create_instance]
 LikelihoodModel gauss_likelihood = likelihood_model("GaussianLikelihood")
-DifferentiableFunction inference_method = differentiable_function("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
-Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method)
+Inference inference_method = inference("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
+Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method, labels=labels_train)
 #![create_instance]
 
 #![train_and_apply]
 gp_regression.train()
-RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
+Labels labels_predict = gp_regression.apply(features_test)
 #![train_and_apply]
 
 #![compute_variance]
@@ -31,8 +31,8 @@ RealVector variances = labels_predict.get_real_vector("confidence")
 #![compute_variance]
 
 #![optimize_marginal_likelihood]
-GradientCriterion grad_criterion()
-MachineEvaluation grad = machine_evaluation("GradientEvaluation", machine=gp_regression, features=features_train, labels=labels_train, evaluation_criterion=grad_criterion, differentiable_function=inference_method)
+Evaluation grad_criterion = evaluation("GradientCriterion")
+MachineEvaluation grad = machine_evaluation("GradientEvaluation", machine=gp_regression, features=features_train, labels=labels_train, evaluation_criterion=grad_criterion, differentiable_function=as_differentiable_function(inference_method))
 GradientModelSelection grad_selection(grad)
 ParameterCombination best_theta = grad_selection.select_model()
 best_theta.apply_to_machine(gp_regression)
@@ -41,8 +41,7 @@ best_theta.apply_to_machine(gp_regression)
 #![evaluate_error_and_marginal_likelihood]
 MeanSquaredError eval()
 real mse = eval.evaluate(labels_predict, labels_test)
-Inference inf = as_inference(inference_method)
-real marg_ll = inf.get_negative_log_marginal_likelihood()
+real marg_ll = inference_method.get_negative_log_marginal_likelihood()
 #![evaluate_error_and_marginal_likelihood]
 
 # integration testing variables
