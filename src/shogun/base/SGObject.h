@@ -777,6 +777,8 @@ protected:
 	 */
 	virtual CSGObject* create_empty() const;
 
+	void initialise_auto_params();
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
