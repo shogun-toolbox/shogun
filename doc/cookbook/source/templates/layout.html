@@ -1,10 +1,5 @@
 {% extends "!layout.html" %}
 
-{% set bootswatch_css_custom = ['_static/shogun-style.css'] %}
-{#
-    bootswatch_css_custom is removed in sphinx-bootstrap-theme v0.5.0
-    css_files should be used instead
-#}
 {% set css_files = (css_files or []) + ['_static/shogun-style.css'] %}
 
 {% block rootrellink %}
