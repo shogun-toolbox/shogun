@@ -43,10 +43,8 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(2)))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
-    svm=MKLClassification();
-    svm.put("svm", sg.as_svm(sg.machine("LibSVM")))
-    svm.set_interleaved_optimization_enabled(False);
-    svm.set_kernel(kernel);
+    svm = sg.machine("MKLClassification", svm=sg.as_svm(sg.machine("LibSVM")),
+            interleaved_optimization=False, kernel=kernel)
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard

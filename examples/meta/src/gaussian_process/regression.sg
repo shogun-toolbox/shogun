@@ -32,7 +32,8 @@ RealVector variances = labels_predict.get_real_vector("confidence")
 
 #![optimize_marginal_likelihood]
 Evaluation grad_criterion = evaluation("GradientCriterion")
-MachineEvaluation grad = machine_evaluation("GradientEvaluation", machine=gp_regression, features=features_train, labels=labels_train, evaluation_criterion=grad_criterion, differentiable_function=as_differentiable_function(inference_method))
+DifferentiableFunction diff_function = as_differentiable_function(inference_method)
+MachineEvaluation grad = machine_evaluation("GradientEvaluation", machine=gp_regression, features=features_train, labels=labels_train, evaluation_criterion=grad_criterion, differentiable_function=diff_function)
 GradientModelSelection grad_selection(grad)
 ParameterCombination best_theta = grad_selection.select_model()
 best_theta.apply_to_machine(gp_regression)
