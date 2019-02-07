@@ -320,20 +320,20 @@ TEST(SGObject,equals_complex_equal)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train = some<CDenseFeatures<float64_t>>(X);
+	auto feat_test = some<CDenseFeatures<float64_t>>(X_test);
+	auto label_train = some<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel = some<CGaussianKernel>(10, shogun_sigma);
+	auto mean = some<CZeroMean>();
+	auto lik = some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf = some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr = some<CGaussianProcessRegression>(inf);
 
 	/* train machine */
 	gpr->train();
@@ -346,39 +346,28 @@ TEST(SGObject,equals_complex_equal)
 	const char* filename_gpr="gpr_instance.txt";
 	const char* filename_predictions="predictions_instance.txt";
 
-	CSerializableAsciiFile* file;
-	file=new CSerializableAsciiFile(filename_gpr, 'w');
+	auto file = some<CSerializableAsciiFile>(filename_gpr, 'w');
 	gpr->save_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
-	file=new CSerializableAsciiFile(filename_predictions, 'w');
+	file = some<CSerializableAsciiFile>(filename_predictions, 'w');
 	predictions->save_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
-	file=new CSerializableAsciiFile(filename_gpr, 'r');
-	CGaussianProcessRegression* gpr_copy=new CGaussianProcessRegression();
+	file = some<CSerializableAsciiFile>(filename_gpr, 'r');
+	auto gpr_copy = some<CGaussianProcessRegression>();
 	gpr_copy->load_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
-	file=new CSerializableAsciiFile(filename_predictions, 'r');
-	CRegressionLabels* predictions_copy=new CRegressionLabels();
+	file = some<CSerializableAsciiFile>(filename_predictions, 'r');
+	auto predictions_copy = some<CRegressionLabels>();
 	predictions_copy->load_serializable(file);
-	file->close();
-	SG_UNREF(file);
 
 	/* now compare */
 	set_global_fequals_epsilon(1e-10);
 	EXPECT_TRUE(predictions->equals(predictions_copy));
 	EXPECT_TRUE(gpr->equals(gpr_copy));
 	set_global_fequals_epsilon(0);
-
-	SG_UNREF(predictions);
-	SG_UNREF(predictions_copy);
-	SG_UNREF(gpr);
-	SG_UNREF(gpr_copy);
 }
 #endif //USE_GPL_SHOGUN
 
