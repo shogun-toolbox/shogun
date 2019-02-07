@@ -90,6 +90,18 @@ namespace shogun
 			return map.find(tag) != map.end();
 		}
 
+		ParametersMap filter(ParameterProperties pprop) const
+		{
+			ParametersMap result;
+			std::copy_if(map.cbegin(), map.cend(),
+					std::inserter(result, result.end()),
+					[&pprop](const std::pair<BaseTag, AnyParameter>& each)
+					{
+						return each.second.get_properties().has_property(pprop);
+					});
+			return result;
+		}
+
 		ParametersMap map;
 	};
 
@@ -1057,6 +1069,14 @@ CSGObject* CSGObject::create_empty() const
 	CSGObject* object = create(this->get_name(), this->m_generic);
 	SG_REF(object);
 	return object;
+}
+
+void CSGObject::initialise_auto_params()
+{
+	auto params = self->filter(ParameterProperties::AUTO);
+	for (const auto& param: params) {
+		self->update(param.first, param.second.get_init_function()());
+	}
 }
 
 CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const

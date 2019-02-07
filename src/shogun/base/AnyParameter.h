@@ -35,7 +35,8 @@ namespace shogun
 		NONE = 0,
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
-		MODEL = 1u << 2
+		MODEL = 1u << 2,
+		AUTO = 1u << 10
 	};
 
 	enableEnumClassBitmask(ParameterProperties);
@@ -88,9 +89,8 @@ namespace shogun
 		 * */
 		AnyParameterProperties(
 		    std::string description, ParameterProperties attribute_mask)
-		    : m_description(description)
+		    : m_description(description), m_attribute_mask(attribute_mask)
 		{
-			m_attribute_mask = attribute_mask;
 		}
 		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
@@ -149,10 +149,12 @@ namespace shogun
 		AnyParameter(const Any& value, AnyParameterProperties properties)
 		    : m_value(value), m_properties(properties)
 		{
+			m_init_function = [](){return make_any(42.);};
 		}
 		AnyParameter(const AnyParameter& other)
 		    : m_value(other.m_value), m_properties(other.m_properties)
 		{
+			m_init_function = [](){return make_any(42.);};
 		}
 
 		Any get_value() const
@@ -170,6 +172,11 @@ namespace shogun
 			return m_properties;
 		}
 
+		std::function<Any()> get_init_function() const
+		{
+			return m_init_function;
+		}
+
 		/** Equality operator which compares value but not properties.
 		 * @return true if value of other parameter equals own */
 		inline bool operator==(const AnyParameter& other) const
@@ -185,6 +192,7 @@ namespace shogun
 
 	private:
 		Any m_value;
+		std::function<Any()> m_init_function;
 		AnyParameterProperties m_properties;
 	};
 } // namespace shogun

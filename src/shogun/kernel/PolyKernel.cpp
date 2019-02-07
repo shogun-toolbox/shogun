@@ -73,6 +73,8 @@ void CPolyKernel::init()
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(&degree, "degree", "Degree of polynomial kernel", ParameterProperties::HYPER);
 	SG_ADD(&m_c, "c", "The kernel is inhomogeneous if the value is higher than 0", ParameterProperties::HYPER);
-	SG_ADD(&m_gamma, "gamma", "Scaler for the dot product", ParameterProperties::HYPER);
+	SG_ADD(&m_gamma, "gamma", "Scaler for the dot product", ParameterProperties::HYPER | ParameterProperties::AUTO);
+
+	initialise_auto_params();
 }
 
