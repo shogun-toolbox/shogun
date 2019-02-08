@@ -42,6 +42,7 @@
 %rename(CrossValidationResult) CCrossValidationResult;
 %rename(StructuredAccuracy) CStructuredAccuracy;
 %rename(DirectorContingencyTableEvaluation) CDirectorContingencyTableEvaluation;
+%rename(DifferentiableFunction) CDifferentiableFunction;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/EvaluationResult.h>
