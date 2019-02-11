@@ -41,11 +41,9 @@ namespace shogun
 			    &m_max_iterations, "max_iterations",
 			    "Maximum number of Iterations", ParameterProperties::HYPER);
 			SG_ADD(
-			    &m_complete, "complete", "Convergence status",
-			    MS_NOT_AVAILABLE);
+			    &m_complete, "complete", "Convergence status");
 			SG_ADD(
-			    &m_continue_features, "continue_features", "Continue Features",
-			    MS_NOT_AVAILABLE);
+			    &m_continue_features, "continue_features", "Continue Features");
 		}
 		virtual ~CIterativeMachine()
 		{
