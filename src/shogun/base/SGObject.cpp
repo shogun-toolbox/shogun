@@ -738,6 +738,7 @@ void CSGObject::create_parameter(
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
 	self->update(_tag, value);
+	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
 }
 
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
@@ -1075,8 +1076,7 @@ void CSGObject::initialise_auto_params()
 {
 	auto params = self->filter(ParameterProperties::AUTO);
 	for (const auto& param: params) {
-		self->update(param.first, param.second.get_init_function()());
-		param.second.get_properties().remove_property(ParameterProperties::AUTO);
+		update_parameter(param.first, param.second.get_init_function()());
 	}
 }
 
