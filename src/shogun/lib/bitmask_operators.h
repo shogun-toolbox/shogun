@@ -52,7 +52,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
-    operator|(E lhs, E rhs) {
+    constexpr operator|(E lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         return static_cast<E>(
                 static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
@@ -60,7 +60,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
-    operator&(E lhs, E rhs) {
+    constexpr operator&(E lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         return static_cast<E>(
                 static_cast<underlying>(lhs) & static_cast<underlying>(rhs));
@@ -68,7 +68,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
-    operator^(E lhs, E rhs) {
+    constexpr operator^(E lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         return static_cast<E>(
                 static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
@@ -76,7 +76,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
-    operator~(E lhs) {
+    constexpr operator~(E lhs) {
         typedef typename std::underlying_type<E>::type underlying;
         return static_cast<E>(
                 ~static_cast<underlying>(lhs));
@@ -84,7 +84,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E &>::type
-    operator|=(E &lhs, E rhs) {
+    constexpr operator|=(E &lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         lhs = static_cast<E>(
                 static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
@@ -93,7 +93,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E &>::type
-    operator&=(E &lhs, E rhs) {
+    constexpr operator&=(E &lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         lhs = static_cast<E>(
                 static_cast<underlying>(lhs) & static_cast<underlying>(rhs));
@@ -102,7 +102,7 @@ namespace shogun {
 
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, E &>::type
-    operator^=(E &lhs, E rhs) {
+    constexpr operator^=(E &lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         lhs = static_cast<E>(
                 static_cast<underlying>(lhs) ^ static_cast<underlying>(rhs));
@@ -110,7 +110,7 @@ namespace shogun {
     }
     template<typename E>
     typename std::enable_if<enable_bitmask_operators<E>::enable, bool>::type
-    operator==(E lhs, E rhs) {
+    constexpr operator==(E lhs, E rhs) {
         typedef typename std::underlying_type<E>::type underlying;
         return static_cast<underlying>(lhs) == static_cast<underlying>(rhs);
     }

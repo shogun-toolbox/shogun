@@ -66,13 +66,13 @@ template <class T> class SGStringList;
 #define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
 #define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
 #define INTERNAL_EXPAND(x) x
-#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 4, 3, 2, 1, 0))
-#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, count, ...) count
+#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 5, 4, 3, 2, 1, 0))
+#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, _5_, count, ...) count
 
 #else
 
-#define VA_NARGS_IMPL(_1, _2, _3, _4, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 4, 3, 2, 1)
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
 
 #endif
 
@@ -88,10 +88,28 @@ template <class T> class SGStringList;
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
+        static_assert(\
+            !static_cast<bool>((param_properties) & ParameterProperties::AUTO), \
+            "Expected a lambda when passing param with ParameterProperty::AUTO");\
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
+		if (pprop.get_model_selection())                                       \
+			this->m_model_selection_parameters->add(param, name, description); \
+		if (pprop.get_gradient())                                              \
+			this->m_gradient_parameters->add(param, name, description);        \
+	}
+
+#define SG_ADD5(param, name, description, param_properties, lambda_)           \
+	{                                                                          \
+        static_assert(\
+            static_cast<bool>((param_properties) & ParameterProperties::AUTO), \
+            "Expected param to have ParameterProperty::AUTO");\
+		AnyParameterProperties pprop =                                         \
+		    AnyParameterProperties(description, param_properties);             \
+		this->m_parameters->add(param, name, description);                     \
+		this->watch_param(name, param, lambda_, pprop);                                 \
 		if (pprop.get_model_selection())                                       \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.get_gradient())                                              \
@@ -688,6 +706,16 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+	}
+
+	template <typename T>
+	void watch_param(
+			const std::string& name, T* value,
+            std::function<Any()> lambda_,
+			AnyParameterProperties properties = AnyParameterProperties())
+	{
+		BaseTag tag(name);
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(lambda_)));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.
