@@ -53,8 +53,8 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
-			  m_model_selection(MS_NOT_AVAILABLE),
-			  m_gradient(GRADIENT_NOT_AVAILABLE),
+		      m_model_selection(MS_NOT_AVAILABLE),
+		      m_gradient(GRADIENT_NOT_AVAILABLE),
 		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
@@ -129,6 +129,10 @@ namespace shogun
 		{
 			return m_attribute_mask == other;
 		}
+		void remove_property(ParameterProperties other)
+		{
+			m_attribute_mask &= ~other;
+		}
 
 	private:
 		std::string m_description;
@@ -145,16 +149,24 @@ namespace shogun
 		}
 		explicit AnyParameter(const Any& value) : m_value(value), m_properties()
 		{
+			m_init_function = [& m_value = m_value]() { return m_value; };
 		}
 		AnyParameter(const Any& value, AnyParameterProperties properties)
 		    : m_value(value), m_properties(properties)
 		{
-			m_init_function = [](){return make_any(42.);};
+			m_init_function = [& m_value = m_value]() { return m_value; };
+		}
+		AnyParameter(
+		    const Any& value, AnyParameterProperties properties,
+		    std::function<Any()> lambda_)
+		    : m_value(value), m_properties(properties),
+		      m_init_function(std::move(lambda_))
+		{
 		}
 		AnyParameter(const AnyParameter& other)
-		    : m_value(other.m_value), m_properties(other.m_properties)
+		    : m_value(other.m_value), m_properties(other.m_properties),
+		      m_init_function(other.m_init_function)
 		{
-			m_init_function = [](){return make_any(42.);};
 		}
 
 		Any get_value() const
@@ -192,8 +204,8 @@ namespace shogun
 
 	private:
 		Any m_value;
-		std::function<Any()> m_init_function;
 		AnyParameterProperties m_properties;
+		std::function<Any()> m_init_function;
 	};
 } // namespace shogun
 
