@@ -3,14 +3,11 @@ FIND_PACKAGE(Ctags)
 
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
-ExternalProject_Get_Property(GoogleMock source_dir)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 function (add_unit_test_executable EXECUTABLE TARGET SRC)
 	ADD_EXECUTABLE(${EXECUTABLE} ${SRC} utils/Utils.cpp)
 	add_dependencies(${EXECUTABLE} GoogleMock shogun::shogun)
-	target_include_directories(${EXECUTABLE} PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
 	target_link_libraries(${EXECUTABLE} PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
 	IF (SANITIZER_FLAGS)
 		set_target_properties(${EXECUTABLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})

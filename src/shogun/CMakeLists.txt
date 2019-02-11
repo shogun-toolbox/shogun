@@ -211,7 +211,6 @@ IF((NOT CYGWIN) AND (NOT DISABLE_SSE))
   CHECK_INCLUDE_FILE(emmintrin.h HAVE_SSE2)
 ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 
-FIND_PACKAGE(CxaDemangle)
 ############################ std lib functions
 include (CheckCXXSymbolExists)
 CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)

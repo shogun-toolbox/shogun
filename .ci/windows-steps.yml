@@ -4,14 +4,13 @@ steps:
   fetchDepth: 5
   submodules: true
 
-- task: CondaEnvironment@1
+# see: https://github.com/Microsoft/azure-pipelines-tasks/issues/8504
+- script: |
+    echo '##vso[task.setvariable variable=PATH]$(Build.SourcesDirectory)\build\src\shogun\$(buildConfiguration);$(CONDA_PREFIX);$(CONDA_PREFIX)\Library\mingw-w64\bin;$(CONDA_PREFIX)\Library\usr\bin;$(CONDA_PREFIX)\Library\bin;$(CONDA_PREFIX)\Scripts;$(CONDA_PREFIX)\bin;$(CONDA_PREFIX_1);$(CONDA_PREFIX_1)\Library\mingw-w64\bin;$(CONDA_PREFIX_1)\Library\usr\bin;$(CONDA_PREFIX_1)\Library\bin;$(CONDA_PREFIX_1)\Scripts;$(CONDA_PREFIX_1)\bin;$(PATH)'
+  displayName: Add conda and build directory to PATH
+
+- script: 'conda env create -f .ci\shogun.yml --quiet'
   displayName: Install dependencies
-  inputs:
-    createCustomEnvironment: True
-    environmentName: shogun
-    packageSpecs: 'python=3.6.* setuptools numpy scipy eigen rxcpp snappy zlib ctags ply jinja2 gtest mkl-devel swig'
-    createOptions: '-c conda-forge'
-    updateConda: false
 
 - script: |
     .ci\\setup_clcache.cmd
@@ -41,11 +40,12 @@ steps:
   inputs:
     cmakeArgs: '-G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=$(buildConfiguration) -DCMAKE_PREFIX_PATH=$(CONDA_PREFIX)\Library -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX=$(targetPrefix) $(cmakeOptions) -DBLAS_LIBRARIES=$(CONDA_PREFIX)/Library/lib/mkl_core_dll.lib -DLAPACK_LIBRARIES=$(CONDA_PREFIX)/Library/lib/mkl_core_dll.lib -DBLA_VENDOR=Intel ..'
 
-- script: cmake --build . --config $(buildConfiguration) --target INSTALL -- /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /m:2
+- task: CMake@1
   displayName: 'Build ($(buildConfiguration) $(buildPlatform))'
-  workingDirectory: $(Build.SourcesDirectory)\build
+  inputs:
+    cmakeArgs: '--build . --config $(buildConfiguration) --target INSTALL -- /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /m:2'
 
-- script: ctest -j 2
+- script: ctest --output-on-failure -j 2 -C $(buildConfiguration)
   displayName: Test
   workingDirectory: $(Build.SourcesDirectory)\build
 

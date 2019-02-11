@@ -160,9 +160,12 @@ jobs:
   strategy:
     matrix:
       py36:
-        CONDA_PY: "36"
-        CONDA_ENV: shogun
-        cmakeOptions: '-DBUILD_META_EXAMPLES=OFF'
+        CONDA_DEFAULT_ENV: shogun
+        CONDA_EXE: $(CONDA)\Scripts\conda.exe
+        CONDA_PREFIX: $(CONDA)\envs\shogun
+        CONDA_PREFIX_1: $(CONDA)
+        CONDA_PYTHON_EXE: $(CONDA)\python.exe
+        cmakeOptions: ''
 
   variables:
     clcacheDir: 'C:\\Users\\VssAdministrator\\clcache'

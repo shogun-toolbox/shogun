@@ -91,14 +91,14 @@ endfunction ()
 MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
     IF (${CONDITION})
         add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                        COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
-                    set_tests_properties(
-                        integration_meta_${META_TARGET}-${NAME_WITH_DIR}
-	                        PROPERTIES
-	                        LABELS "integration"
-	                        DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
-                    )
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} ${GENERATED_RESULTS_DIR} ${REFERENCE_RESULTS_DIR})
+        set_tests_properties(
+            integration_meta_${META_TARGET}-${NAME_WITH_DIR}
+                PROPERTIES
+                LABELS "integration"
+                DEPENDS generated_${META_TARGET}-${NAME_WITH_DIR}
+        )
     ENDIF()
 ENDMACRO()
 

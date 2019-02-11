@@ -5,6 +5,12 @@
 #include <iostream>
 #include <sstream>
 
+#ifdef _MSC_VER
+#define PATH_DELIMITER "\\"
+#else
+#define PATH_DELIMITER "/"
+#endif
+
 using namespace shogun;
 using namespace std;
 
@@ -19,12 +25,14 @@ int main(int argc, const char *argv[])
     string generated_results_dir = argv[4];
     string reference_results_dir = argv[5];
 
-    stringstream os;
-    os << generated_results_dir << "/" << target << "/" << rel_dir << "/" << name;
-    string fname_full_generated = os.str();
+    ostringstream os;
+    os << generated_results_dir << PATH_DELIMITER
+    << target << PATH_DELIMITER << rel_dir << PATH_DELIMITER << name;
+    string fname_full_generated(os.str());
+    os.clear();
     os.str("");
-    os << reference_results_dir << "/" << rel_dir << "/" << name;
-    string fname_full_reference = os.str();
+    os << reference_results_dir << PATH_DELIMITER << rel_dir << PATH_DELIMITER << name;
+    string fname_full_reference(os.str());
 
     init_shogun_with_defaults();
 
