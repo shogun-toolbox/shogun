@@ -179,12 +179,17 @@ namespace shogun
 			m_value = value;
 		}
 
-		AnyParameterProperties get_properties() const
+		AnyParameterProperties& get_properties()
 		{
 			return m_properties;
 		}
 
-		std::function<Any()> get_init_function() const
+        const AnyParameterProperties& get_properties() const
+        {
+            return m_properties;
+        }
+
+		const std::function<Any()>& get_init_function() const
 		{
 			return m_init_function;
 		}
