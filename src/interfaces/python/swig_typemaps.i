@@ -1366,9 +1366,9 @@ _FACTORIES = ["distance",
               "machine_evaluation",
               "features",
               "differentiable_function",
-              "inference",
-              "mean_function",
-              "likelihood_model",
+              "gp_inference",
+              "gp_mean",
+              "gp_likelihood",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
