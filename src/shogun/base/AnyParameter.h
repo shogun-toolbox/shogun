@@ -184,10 +184,10 @@ namespace shogun
 			return m_properties;
 		}
 
-        const AnyParameterProperties& get_properties() const
-        {
-            return m_properties;
-        }
+		const AnyParameterProperties& get_properties() const
+		{
+			return m_properties;
+		}
 
 		const std::function<Any()>& get_init_function() const
 		{

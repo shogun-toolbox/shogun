@@ -7,9 +7,9 @@
  *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
+#include <shogun/lib/RefCount.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
-#include <shogun/lib/RefCount.h>
 
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
@@ -33,19 +33,18 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <algorithm>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
-#include <shogun/machine/Machine.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/machine/Machine.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {
@@ -93,12 +92,11 @@ namespace shogun
 		ParametersMap filter(ParameterProperties pprop) const
 		{
 			ParametersMap result;
-			std::copy_if(map.cbegin(), map.cend(),
-					std::inserter(result, result.end()),
-					[&pprop](const std::pair<BaseTag, AnyParameter>& each)
-					{
-						return each.second.get_properties().has_property(pprop);
-					});
+			std::copy_if(
+			    map.cbegin(), map.cend(), std::inserter(result, result.end()),
+			    [&pprop](const std::pair<BaseTag, AnyParameter>& each) {
+				    return each.second.get_properties().has_property(pprop);
+			    });
 			return result;
 		}
 
@@ -1075,8 +1073,9 @@ CSGObject* CSGObject::create_empty() const
 void CSGObject::initialise_auto_params()
 {
 	auto params = self->filter(ParameterProperties::AUTO);
-	for (const auto& param: params) {
-        update_parameter(param.first, param.second.get_init_function()());
+	for (const auto& param : params)
+	{
+		update_parameter(param.first, param.second.get_init_function()());
 	}
 }
 
