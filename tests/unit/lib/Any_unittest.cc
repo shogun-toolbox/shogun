@@ -743,3 +743,22 @@ TEST(AnyParameterProperties, new_custom_ctor)
 
 	EXPECT_TRUE(params.compare_mask(ParameterProperties::NONE));
 }
+
+TEST(AnyParameterProperties, has_property)
+{
+	AnyParameterProperties params =
+		AnyParameterProperties("test", ParameterProperties::HYPER | ParameterProperties::MODEL);
+	EXPECT_TRUE(params.has_property(ParameterProperties::HYPER));
+	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::HYPER | ParameterProperties::MODEL));
+}
+
+TEST(AnyParameterProperties, remove_property)
+{
+	AnyParameterProperties params =
+			AnyParameterProperties("test", ParameterProperties::HYPER | ParameterProperties::MODEL);
+	params.remove_property(ParameterProperties::HYPER);
+	EXPECT_FALSE(params.has_property(ParameterProperties::HYPER));
+	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
+	EXPECT_TRUE(params.compare_mask(ParameterProperties::MODEL));
+}
