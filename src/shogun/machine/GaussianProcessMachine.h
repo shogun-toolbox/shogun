@@ -141,6 +141,8 @@ private:
 protected:
 	/** inference method */
 	CInference* m_method;
+	/** Whether variance is computed. If true, the variance is available in the result labels */
+	bool m_compute_variance;
 };
 }
 #endif /* _GAUSSIANPROCESSMACHINE_H_ */
