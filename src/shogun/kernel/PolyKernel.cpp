@@ -50,7 +50,6 @@ CPolyKernel::~CPolyKernel()
 bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
-	initialise_auto_params();
 	return init_normalizer();
 }
 
@@ -80,8 +79,9 @@ void CPolyKernel::init()
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
-	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    [num_lhs = &num_lhs]() {
-		    return make_any(1.0 / static_cast<double>(*num_lhs));
+	    ParameterProperties::HYPER | ParameterProperties::AUTO, [this]() {
+		    return make_any(
+		        1.0 / static_cast<double>(
+		                  ((CDotFeatures*)this->lhs)->get_dim_feature_space()));
 	    });
 }
