@@ -121,15 +121,15 @@ namespace shogun
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
 		}
-		bool has_property(const ParameterProperties& other) const
+		bool has_property(const ParameterProperties other) const
 		{
 			return static_cast<bool>(m_attribute_mask & other);
 		}
-		bool compare_mask(const ParameterProperties& other) const
+		bool compare_mask(const ParameterProperties other) const
 		{
 			return m_attribute_mask == other;
 		}
-		void remove_property(const ParameterProperties& other)
+		void remove_property(const ParameterProperties other)
 		{
 			m_attribute_mask &= ~other;
 		}
