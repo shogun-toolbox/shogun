@@ -68,7 +68,7 @@ namespace shogun
 		 * weights and bias
 		 * */
 		AnyParameterProperties(
-		    std::string description,
+		    const std::string& description,
 		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
 		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
 		    bool model = false)
@@ -88,7 +88,7 @@ namespace shogun
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
 		AnyParameterProperties(
-		    std::string description, ParameterProperties attribute_mask)
+		    const std::string& description, ParameterProperties attribute_mask)
 		    : m_description(description), m_attribute_mask(attribute_mask)
 		{
 		}
@@ -121,15 +121,15 @@ namespace shogun
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
 		}
-		bool has_property(ParameterProperties other) const
+		bool has_property(const ParameterProperties& other) const
 		{
 			return static_cast<bool>(m_attribute_mask & other);
 		}
-		bool compare_mask(ParameterProperties other) const
+		bool compare_mask(const ParameterProperties& other) const
 		{
 			return m_attribute_mask == other;
 		}
-		void remove_property(ParameterProperties other)
+		void remove_property(const ParameterProperties& other)
 		{
 			m_attribute_mask &= ~other;
 		}
