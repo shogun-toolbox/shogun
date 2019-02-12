@@ -142,7 +142,7 @@ You need at least 1GB free disk space. If you compile any interface, roughly 4 G
 
 ## Basics <a name="manual-basics"></a>
 Shogun uses [CMake](https://cmake.org/) for its build. The general workflow is now explained.
-For further details on testing etc, see [DEVELOPING.md](https://github.com/shogun-toolbox/shogun/blob/develop/doc/readme/DEVELOPING.md).
+For further details on testing etc, see [DEVELOPING.md](docs/DEVELOPING.md).
 
 Download the latest [stable release source code](https://github.com/shogun-toolbox/shogun/releases/latest), or (as demonstrated here) clone the latest develop code.
 Potentially update submodules
