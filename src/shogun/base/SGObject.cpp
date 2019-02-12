@@ -703,7 +703,7 @@ CSGObject* CSGObject::clone()
 	          "CSGObject::create_empty() overridden.\n",
 	    get_name());
 
-	for (const auto it : self->map)
+	for (const auto &it : self->map)
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
@@ -1018,7 +1018,7 @@ bool CSGObject::equals(const CSGObject* other) const
 	}
 
 	/* Assumption: objects of same type have same set of tags. */
-	for (const auto it : self->map)
+	for (const auto &it : self->map)
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
