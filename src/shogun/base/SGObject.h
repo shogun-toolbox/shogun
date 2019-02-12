@@ -26,9 +26,9 @@
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
+#include <map>
 #include <utility>
 #include <vector>
-#include <map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -88,9 +88,10 @@ template <class T> class SGStringList;
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
-        static_assert(\
-            !static_cast<bool>((param_properties) & ParameterProperties::AUTO), \
-            "Expected a lambda when passing param with ParameterProperty::AUTO");\
+		static_assert(                                                         \
+		    !static_cast<bool>((param_properties)&ParameterProperties::AUTO),  \
+		    "Expected a lambda when passing param with "                       \
+		    "ParameterProperty::AUTO");                                        \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
@@ -103,13 +104,13 @@ template <class T> class SGStringList;
 
 #define SG_ADD5(param, name, description, param_properties, lambda_)           \
 	{                                                                          \
-        static_assert(\
-            static_cast<bool>((param_properties) & ParameterProperties::AUTO), \
-            "Expected param to have ParameterProperty::AUTO");\
+		static_assert(                                                         \
+		    static_cast<bool>((param_properties)&ParameterProperties::AUTO),   \
+		    "Expected param to have ParameterProperty::AUTO");                 \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, lambda_, pprop);                                 \
+		this->watch_param(name, param, lambda_, pprop);                        \
 		if (pprop.get_model_selection())                                       \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.get_gradient())                                              \
