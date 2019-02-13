@@ -63,6 +63,15 @@ BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
 BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
+#define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
+	float64_t LinalgBackendEigen::std_deviation(const Container<Type>& a)      \
+	    const                                                                  \
+	{                                                                          \
+		return std_deviation_impl(a);                                          \
+	}
+DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
+#undef BACKEND_GENERIC_REAL_STD
+
 #define BACKEND_GENERIC_SUM(Type, Container)                                   \
 	Type LinalgBackendEigen::sum(const Container<Type>& a, bool no_diag) const \
 	{                                                                          \
@@ -172,6 +181,14 @@ complex128_t
 LinalgBackendEigen::mean_impl(const Container<complex128_t>& a) const
 {
 	return sum_impl(a, false) / (complex128_t(a.size()));
+}
+
+template <typename T>
+typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+LinalgBackendEigen::std_deviation_impl(const SGMatrix<T>& mat) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap m = mat;
+	return std::sqrt(((m.array() - m.mean()).pow(2)).mean());
 }
 
 template <typename T>

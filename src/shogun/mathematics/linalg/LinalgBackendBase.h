@@ -537,6 +537,21 @@ namespace shogun
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 /**
+ * Wrapper method that computes mean of SGVectors and SGMatrices
+ * that are composed of real numbers.
+ *
+ * @see linalg::std_deviation
+ */
+#define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
+	virtual float64_t std_deviation(const Container<Type>& a) const            \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
+#undef BACKEND_GENERIC_REAL_STD
+
+/**
  * Wrapper method of multiply_by_logistic_derivative function f(x) =
  * 1/(1+exp(-x))
  *
