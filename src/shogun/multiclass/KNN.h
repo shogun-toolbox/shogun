@@ -66,7 +66,7 @@ class CDistanceMachine;
  * multi-class-classification. And finally, in case of k=1 classification will
  * take less time with an special optimization provided.
  */
-class CKNN : public CDistanceMachine
+class SHOGUN_EXPORT CKNN : public CDistanceMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

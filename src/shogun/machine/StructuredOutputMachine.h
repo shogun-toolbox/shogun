@@ -40,7 +40,7 @@ enum EStructRiskType
 class CStructuredModel;
 
 /** TODO doc */
-class CStructuredOutputMachine : public CMachine
+class SHOGUN_EXPORT CStructuredOutputMachine : public CMachine
 {
 	public:
 		/** problem type */

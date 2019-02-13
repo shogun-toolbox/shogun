@@ -18,7 +18,7 @@ namespace shogun
 	 * An abstract class for storing data in any kind of format for
 	 * LatentLabels, LatentFeatures and for StructuredLabels.
 	 */
-	class CData : public CSGObject
+	class SHOGUN_EXPORT CData : public CSGObject
 	{
 		public:
 			/** default ctor */

@@ -40,7 +40,7 @@ namespace shogun
 /** @brief CAbsoluteDeviationLoss implements the absolute deviation loss function. \n
  * \f$L(y_i,f(x_i)) = \mod{y_i-f(x_i)}\f$
  */
-class CAbsoluteDeviationLoss: public CLossFunction
+class SHOGUN_EXPORT CAbsoluteDeviationLoss: public CLossFunction
 {
 public:
 	/** default constructor */

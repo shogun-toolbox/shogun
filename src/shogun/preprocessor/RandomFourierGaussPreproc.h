@@ -41,7 +41,7 @@ namespace shogun {
  * 2c) set_dim_input_space(const int32_t dim);
  * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
  */
-class CRandomFourierGaussPreproc: public CDensePreprocessor<float64_t> {
+class SHOGUN_EXPORT CRandomFourierGaussPreproc: public CDensePreprocessor<float64_t> {
 public:
 	/** default constructor */
 	CRandomFourierGaussPreproc();

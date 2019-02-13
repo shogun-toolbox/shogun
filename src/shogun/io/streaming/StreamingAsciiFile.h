@@ -23,7 +23,7 @@ template <class T> class DynArray;
  *
  * The object must be initialized like a CCSVFile.
  */
-class CStreamingAsciiFile: public CStreamingFile
+class SHOGUN_EXPORT CStreamingAsciiFile: public CStreamingFile
 {
 
 public:

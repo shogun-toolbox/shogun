@@ -4,6 +4,10 @@ steps:
   fetchDepth: 5
   submodules: true
 
+- script: |
+    type $(Build.SourcesDirectory)\data\testsuite\meta\binary\kernel_support_vector_machine.dat
+  displayName: Test meta testsuite
+
 # see: https://github.com/Microsoft/azure-pipelines-tasks/issues/8504
 - script: |
     echo '##vso[task.setvariable variable=PATH]$(Build.SourcesDirectory)\build\src\shogun\$(buildConfiguration);$(CONDA_PREFIX);$(CONDA_PREFIX)\Library\mingw-w64\bin;$(CONDA_PREFIX)\Library\usr\bin;$(CONDA_PREFIX)\Library\bin;$(CONDA_PREFIX)\Scripts;$(CONDA_PREFIX)\bin;$(CONDA_PREFIX_1);$(CONDA_PREFIX_1)\Library\mingw-w64\bin;$(CONDA_PREFIX_1)\Library\usr\bin;$(CONDA_PREFIX_1)\Library\bin;$(CONDA_PREFIX_1)\Scripts;$(CONDA_PREFIX_1)\bin;$(PATH)'

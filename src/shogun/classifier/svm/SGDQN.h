@@ -19,7 +19,7 @@
 namespace shogun
 {
 /** @brief class SGDQN */
-class CSGDQN : public CLinearMachine
+class SHOGUN_EXPORT CSGDQN : public CLinearMachine
 {
 	public:
 

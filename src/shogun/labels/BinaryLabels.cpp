@@ -61,6 +61,10 @@ CBinaryLabels::CBinaryLabels(CFile * loader) : CDenseLabels(loader)
 {
 }
 
+CBinaryLabels::~CBinaryLabels()
+{
+}
+
 bool CBinaryLabels::is_valid() const
 {
 	if (!CDenseLabels::is_valid())

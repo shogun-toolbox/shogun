@@ -16,7 +16,7 @@ namespace shogun
 	 * thrown whenever a machine or a transformer in Shogun used but haven't be
 	 * fitted.
 	 */
-	class NotFittedException : public ShogunException
+	class SHOGUN_EXPORT NotFittedException : public ShogunException
 	{
 	public:
 		/** constructor

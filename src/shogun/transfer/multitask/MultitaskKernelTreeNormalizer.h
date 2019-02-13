@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Viktor Gal, Soeren Sonnenburg, Heiko Strathmann,
  *          Yuyu Zhang, Bjoern Esser, Sanuj Sharma
  */
 
@@ -373,7 +373,7 @@ protected:
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function based on taxonomy.
  *
  */
-class CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
+class SHOGUN_EXPORT CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 public:

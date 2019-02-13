@@ -44,7 +44,7 @@ class CMMD;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class MaxTestPower : public MaxMeasure
+class SHOGUN_EXPORT MaxTestPower : public MaxMeasure
 {
 public:
 	MaxTestPower(KernelManager&, CMMD*);

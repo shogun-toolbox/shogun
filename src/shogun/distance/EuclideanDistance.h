@@ -51,7 +51,7 @@ template <typename T> class SGVector;
  * @see <a href="http://en.wikipedia.org/wiki/Distance#Distance_in_Euclidean_space">
  * Wikipedia: Distance in Euclidean space</a>
  */
-class CEuclideanDistance: public CDistance
+class SHOGUN_EXPORT CEuclideanDistance: public CDistance
 {
 public:
 	/** default constructor */

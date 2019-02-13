@@ -51,7 +51,7 @@ namespace shogun
  * The hyperparameter of the Gaussian likelihood model is standard deviation:
  * \f$\sigma\f$.
  */
-class CGaussianLikelihood: public CLikelihoodModel
+class SHOGUN_EXPORT CGaussianLikelihood: public CLikelihoodModel
 {
 public:
 	/** default constructor */

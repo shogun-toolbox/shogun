@@ -45,7 +45,7 @@ namespace shogun
 {
 
 	/** @brief Linalg methods with Eigen3 backend */
-	class LinalgBackendEigen : public LinalgBackendBase
+	class SHOGUN_EXPORT LinalgBackendEigen : public LinalgBackendBase
 	{
 	public:
 /** Implementation of @see LinalgBackendBase::add */

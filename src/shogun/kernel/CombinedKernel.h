@@ -43,7 +43,7 @@ class CListElement;
  * \f]
  *
  */
-class CCombinedKernel : public CKernel
+class SHOGUN_EXPORT CCombinedKernel : public CKernel
 {
 	public:
 		/** Default constructor */

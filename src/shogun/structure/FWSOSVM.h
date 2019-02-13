@@ -19,7 +19,7 @@ namespace shogun
  * [1] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CFWSOSVM : public CLinearStructuredOutputMachine
+class SHOGUN_EXPORT CFWSOSVM : public CLinearStructuredOutputMachine
 {
 public:
 	/** default constructor */

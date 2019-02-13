@@ -48,7 +48,7 @@ namespace shogun
  * An example of using descend based correction can be found at StandardMomentumCorrection
  *
  */
-class DescendUpdaterWithCorrection: public DescendUpdater
+class SHOGUN_EXPORT DescendUpdaterWithCorrection: public DescendUpdater
 {
 public:
 	/*  Destructor */

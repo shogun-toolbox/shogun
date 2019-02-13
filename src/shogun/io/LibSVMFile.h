@@ -28,7 +28,7 @@ template <class T> class SGSparseVector;
  *     dim 2    - value 100.2
  *     dim 1000 - value   1.3
  */
-class CLibSVMFile : public CFile
+class SHOGUN_EXPORT CLibSVMFile : public CFile
 {
 public:
 	/** default constructor */

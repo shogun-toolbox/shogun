@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Evgeniy Andreev, Fernando Iglesias, Soumyajit De, Chiyuan Zhang, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Evgeniy Andreev, Fernando Iglesias, Soumyajit De, Chiyuan Zhang,
  *          Thoralf Klein, Evan Shelhamer, Yuyu Zhang
  */
 
@@ -62,7 +62,7 @@ enum EPrimitiveType
  * @param pt primitive type
  * @return string for primitive type
  */
-std::string ptype_name(EPrimitiveType pt);
+SHOGUN_EXPORT std::string ptype_name(EPrimitiveType pt);
 #endif
 
 /** @brief Datatypes that shogun supports. */

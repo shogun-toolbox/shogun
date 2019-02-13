@@ -51,7 +51,7 @@ using namespace Eigen;
 namespace shogun
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 friend class CKLDualInferenceMethodMinimizer;
 public:

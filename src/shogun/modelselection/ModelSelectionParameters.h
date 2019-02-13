@@ -65,7 +65,7 @@ enum EMSParamType
  * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instantiated parameter combinations.
  */
-class CModelSelectionParameters: public CSGObject
+class SHOGUN_EXPORT CModelSelectionParameters: public CSGObject
 {
 public:
 	/** constructor for a root node */

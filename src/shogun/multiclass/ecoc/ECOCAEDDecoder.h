@@ -21,7 +21,7 @@ namespace shogun
  * AED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2 |b_i^j|}
  * \f]
  */
-class CECOCAEDDecoder: public CECOCSimpleDecoder
+class SHOGUN_EXPORT CECOCAEDDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */

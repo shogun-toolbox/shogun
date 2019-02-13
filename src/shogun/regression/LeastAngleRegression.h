@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Christopher Goldsworthy, 
- *          Heiko Strathmann, Saurabh Mahindre, Chiyuan Zhang, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Christopher Goldsworthy,
+ *          Heiko Strathmann, Saurabh Mahindre, Chiyuan Zhang, Viktor Gal,
  *          Fernando Iglesias
  */
 
@@ -68,7 +68,7 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
+class SHOGUN_EXPORT CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
 {
 	friend class CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>;
 public:
@@ -124,7 +124,7 @@ public:
 	 *
 	 * @param num_variable number of non-zero coefficients
 	 */
-	
+
 	void switch_w(int32_t num_variable)
 	{
 		SGVector<float64_t> w = get_w();
@@ -193,7 +193,7 @@ public:
 protected:
 
 	template <typename ST>
-	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
+	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X,
 			const SGMatrix<ST>& X_active, SGMatrix<ST>& R, int32_t i_max_corr, int32_t num_active);
 
 	template <typename ST>
@@ -235,7 +235,7 @@ private:
 		m_is_active[m_active_set[v_idx]] = false;
 		m_active_set.erase(m_active_set.begin() + v_idx);
 	}
-	
+
 	bool m_lasso; //!< enable lasso modification
 
 	int32_t m_max_nonz;  //!< max number of non-zero variables for early stopping

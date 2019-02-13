@@ -52,7 +52,7 @@ namespace shogun
  * Duchi, John, Elad Hazan, and Yoram Singer. "Adaptive subgradient methods for online learning and stochastic optimization."
  * The Journal of Machine Learning Research 12 (2011): 2121-2159.
  */
- class AdaGradUpdater: public DescendUpdaterWithCorrection
+ class SHOGUN_EXPORT AdaGradUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */

@@ -50,7 +50,7 @@ namespace shogun
  * of the kernel.
  */
 
-class CPeriodicKernel: public CDotKernel
+class SHOGUN_EXPORT CPeriodicKernel: public CDotKernel
 {
 	public:
 		/** default constructor */

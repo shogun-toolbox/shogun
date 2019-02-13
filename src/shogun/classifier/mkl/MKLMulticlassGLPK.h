@@ -19,7 +19,7 @@ namespace shogun
  *	it solves the corresponding linear problem arising in SIP formulation for
  *	MKL using glpk
  */
-class MKLMulticlassGLPK: public MKLMulticlassOptimizationBase
+class SHOGUN_EXPORT MKLMulticlassGLPK: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor

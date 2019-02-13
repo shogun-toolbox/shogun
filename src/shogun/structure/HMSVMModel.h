@@ -24,7 +24,7 @@ enum EStateModelType;
  * and contains the application dependent logic to solve Hidden Markov Support
  * Vector Machines (HM-SVM) type of problems within a generic SO framework.
  */
-class CHMSVMModel : public CStructuredModel
+class SHOGUN_EXPORT CHMSVMModel : public CStructuredModel
 {
 	public:
 		/** default constructor */

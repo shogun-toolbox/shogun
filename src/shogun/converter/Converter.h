@@ -20,7 +20,7 @@ namespace shogun
 /** @brief class Converter used to convert data
  *
  */
-class CConverter : public CTransformer
+class SHOGUN_EXPORT CConverter : public CTransformer
 {
 public:
 	/** constructor */

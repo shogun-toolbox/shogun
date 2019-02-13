@@ -196,16 +196,16 @@ void CGPUVector<T>::init()
 template<typename T> struct dummy {};
 template<typename T> class CGPUVector<dummy<T> > {};
 
-template class CGPUVector<char>;
-template class CGPUVector<uint8_t>;
-template class CGPUVector<int16_t>;
-template class CGPUVector<uint16_t>;
-template class CGPUVector<int32_t>;
-template class CGPUVector<uint32_t>;
-template class CGPUVector<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
-template class CGPUVector<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
-template class CGPUVector<float32_t>;
-template class CGPUVector<float64_t>;
+template class SHOGUN_EXPORT CGPUVector<char>;
+template class SHOGUN_EXPORT CGPUVector<uint8_t>;
+template class SHOGUN_EXPORT CGPUVector<int16_t>;
+template class SHOGUN_EXPORT CGPUVector<uint16_t>;
+template class SHOGUN_EXPORT CGPUVector<int32_t>;
+template class SHOGUN_EXPORT CGPUVector<uint32_t>;
+template class SHOGUN_EXPORT CGPUVector<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
+template class SHOGUN_EXPORT CGPUVector<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
+template class SHOGUN_EXPORT CGPUVector<float32_t>;
+template class SHOGUN_EXPORT CGPUVector<float64_t>;
 }
 
 #endif // HAVE_VIENNACL

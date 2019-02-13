@@ -46,7 +46,7 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class CParameterObserverCV : public ParameterObserverInterface,
+	class SHOGUN_EXPORT CParameterObserverCV : public ParameterObserverInterface,
 	                             public CSGObject
 	{
 

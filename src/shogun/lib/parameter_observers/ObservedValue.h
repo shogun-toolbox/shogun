@@ -60,7 +60,7 @@ namespace shogun
 	/**
 	 * Observed value which is emitted by algorithms.
 	 */
-	class ObservedValue
+	class SHOGUN_EXPORT ObservedValue
 	{
 	public:
 		/**

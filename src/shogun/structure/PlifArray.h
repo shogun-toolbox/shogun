@@ -18,7 +18,7 @@ namespace shogun
 {
 
 /** @brief class PlifArray */
-class CPlifArray: public CPlifBase
+class SHOGUN_EXPORT CPlifArray: public CPlifBase
 {
 	public:
 		/** default constructor */

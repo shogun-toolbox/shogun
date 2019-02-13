@@ -47,7 +47,7 @@ template <typename T> class SGMatrix;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class MedianHeuristic : public KernelSelection
+class SHOGUN_EXPORT MedianHeuristic : public KernelSelection
 {
 public:
 	MedianHeuristic(KernelManager&, CMMD*);

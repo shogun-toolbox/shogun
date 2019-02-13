@@ -26,6 +26,10 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 	m_rng = sg_rand;
 }
 
+CStratifiedCrossValidationSplitting::~CStratifiedCrossValidationSplitting()
+{
+}
+
 void CStratifiedCrossValidationSplitting::check_labels() const
 {
 	auto dense_labels = m_labels->as<CDenseLabels>();

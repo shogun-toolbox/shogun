@@ -56,7 +56,7 @@ enum ESPEStrategy
  *
  */
 
-class CStochasticProximityEmbedding : public CEmbeddingConverter
+class SHOGUN_EXPORT CStochasticProximityEmbedding : public CEmbeddingConverter
 {
 
 	public:

@@ -48,7 +48,7 @@ namespace internal
 namespace mmd
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class WithinBlockPermutation
+class SHOGUN_EXPORT WithinBlockPermutation
 {
 	typedef float32_t return_type;
 public:

@@ -20,7 +20,7 @@ namespace shogun
  *	it is a virtual base class for MKLMulticlassGLPK and MKLMulticlassGradient which are instances of optimization
  *
  */
-class MKLMulticlassOptimizationBase: public CSGObject
+class SHOGUN_EXPORT MKLMulticlassOptimizationBase: public CSGObject
 {
 public:
 	/** Class default Constructor

@@ -30,7 +30,7 @@ class CBaseMulticlassMachine;
  *   Hierarchy for Large-scale Visual Recognition. In IEEE International
  *   Conference on Computer Vision (ICCV), 2011. (Oral presentation)
  */
-class CRelaxedTree: public CTreeMachine<RelaxedTreeNodeData>
+class SHOGUN_EXPORT CRelaxedTree: public CTreeMachine<RelaxedTreeNodeData>
 {
 public:
 	/** constructor */

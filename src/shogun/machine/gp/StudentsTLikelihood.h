@@ -54,7 +54,7 @@ namespace shogun
  * The hyperparameters of the Student's t-likelihood model are \f$\sigma\f$ -
  * scale parameter, and \f$\nu\f$ - degrees of freedom.
  */
-class CStudentsTLikelihood: public CLikelihoodModel
+class SHOGUN_EXPORT CStudentsTLikelihood: public CLikelihoodModel
 {
 public:
 	/** default constructor */

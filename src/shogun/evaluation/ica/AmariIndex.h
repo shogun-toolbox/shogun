@@ -14,5 +14,5 @@
  * @param standardize flag indicating whether to standardize or not
  *
  */
-float64_t amari_index(shogun::SGMatrix<float64_t> W, shogun::SGMatrix<float64_t> A, bool standardize);
+SHOGUN_EXPORT float64_t amari_index(shogun::SGMatrix<float64_t> W, shogun::SGMatrix<float64_t> A, bool standardize);
 

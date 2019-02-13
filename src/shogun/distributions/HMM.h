@@ -78,7 +78,7 @@ enum BaumWelchViterbiType
 
 
 /** @brief class Model */
-class Model
+class SHOGUN_EXPORT Model
 {
 	public:
 		/// Constructor - initializes all variables/structures
@@ -362,7 +362,7 @@ class Model
  * Several functions for tasks such as training,reading/writing models, reading observations,
  * calculation of derivatives are supplied.
  */
-class CHMM : public CDistribution
+class SHOGUN_EXPORT CHMM : public CDistribution
 {
 	private:
 

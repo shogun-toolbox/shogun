@@ -39,7 +39,7 @@ struct T_ATTRIBUTE
  * This might be used to represent
  * (attr, value) pairs, simple structures, trees ...
  */
-class CAttributeFeatures : public CFeatures
+class SHOGUN_EXPORT CAttributeFeatures : public CFeatures
 {
 
 public:

@@ -31,7 +31,7 @@ template <class T> class SGVector;
  * A note on Platt's probabilistic outputs for support vector machines.
  * Should only be used in conjunction with SVM.
  */
-class CBinaryLabels : public CDenseLabels
+class SHOGUN_EXPORT CBinaryLabels : public CDenseLabels
 {
 public:
 	/** default constructor */
@@ -79,6 +79,8 @@ public:
 	 * @param dense CDenseLabels containing the binary labels
 	 */
 	CBinaryLabels(const CDenseLabels& dense);
+        
+	virtual ~CBinaryLabels();
 
 	virtual bool is_valid() const override;
 
@@ -130,7 +132,7 @@ public:
 };
 
 #ifndef SWIG
-Some<CBinaryLabels> binary_labels(CLabels* orig);
+SHOGUN_EXPORT Some<CBinaryLabels> binary_labels(CLabels* orig);
 #endif // SWIG
 }
 #endif

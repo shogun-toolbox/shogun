@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Yuyu Zhang, Chiyuan Zhang, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Yuyu Zhang, Chiyuan Zhang,
  *          Evan Shelhamer, Bjoern Esser, Roman Votyakov
  */
 
@@ -30,16 +30,14 @@ class CLabels;
  *
  *
  */
-class CMulticlassAccuracy: public CEvaluation
+class SHOGUN_EXPORT CMulticlassAccuracy: public CEvaluation
 {
 public:
 	/** constructor */
-	CMulticlassAccuracy() :
-		CEvaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
+	CMulticlassAccuracy();
 
 	/** constructor */
-	CMulticlassAccuracy(bool ignore_rejects) :
-		CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
+	CMulticlassAccuracy(bool ignore_rejects);
 
 	/** destructor */
 	virtual ~CMulticlassAccuracy() {};

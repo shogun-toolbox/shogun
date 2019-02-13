@@ -250,11 +250,11 @@ SGVector <D> CMultilabelLabels::to_dense
 
 
 template
-SGVector <int32_t> CMultilabelLabels::to_dense <int32_t, int32_t>
+SHOGUN_EXPORT SGVector <int32_t> CMultilabelLabels::to_dense <int32_t, int32_t>
 (SGVector <int32_t> *, int32_t, int32_t, int32_t);
 
 template
-SGVector <float64_t> CMultilabelLabels::to_dense <int32_t, float64_t>
+SHOGUN_EXPORT SGVector <float64_t> CMultilabelLabels::to_dense <int32_t, float64_t>
 (SGVector <int32_t> *, int32_t, float64_t, float64_t);
 
 void

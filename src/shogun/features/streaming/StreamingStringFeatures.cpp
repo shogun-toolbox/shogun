@@ -251,18 +251,18 @@ EFeatureClass CStreamingStringFeatures<T>::get_feature_class() const
 	return C_STREAMING_STRING;
 }
 
-template class CStreamingStringFeatures<bool>;
-template class CStreamingStringFeatures<char>;
-template class CStreamingStringFeatures<int8_t>;
-template class CStreamingStringFeatures<uint8_t>;
-template class CStreamingStringFeatures<int16_t>;
-template class CStreamingStringFeatures<uint16_t>;
-template class CStreamingStringFeatures<int32_t>;
-template class CStreamingStringFeatures<uint32_t>;
-template class CStreamingStringFeatures<int64_t>;
-template class CStreamingStringFeatures<uint64_t>;
-template class CStreamingStringFeatures<float32_t>;
-template class CStreamingStringFeatures<float64_t>;
-template class CStreamingStringFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<bool>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<char>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<int8_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<uint8_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<int16_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<uint16_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<int32_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<uint32_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<int64_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<uint64_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<float32_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<float64_t>;
+template class SHOGUN_EXPORT CStreamingStringFeatures<floatmax_t>;
 
 }

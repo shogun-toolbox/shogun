@@ -51,7 +51,7 @@ namespace shogun
  * When \f$\Lambda=\lambda I\f$ is, the last case becomes the first case.
  * When \f$\Lambda=\textbf{diag}(\lambda) \f$ is, the last case becomes the second case.
  */
-class CGaussianARDKernel: public CExponentialARDKernel
+class SHOGUN_EXPORT CGaussianARDKernel: public CExponentialARDKernel
 {
 public:
 	/** default constructor */

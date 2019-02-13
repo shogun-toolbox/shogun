@@ -24,7 +24,7 @@ class CList;
  * Currently can be constructed with a few CIndexBlock
  * instances.
  */
-class CIndexBlockGroup : public CIndexBlockRelation
+class SHOGUN_EXPORT CIndexBlockGroup : public CIndexBlockRelation
 {
 public:
 

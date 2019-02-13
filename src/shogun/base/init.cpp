@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev,
  *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Bjoern Esser
  */
 
@@ -40,9 +40,9 @@ namespace shogun
 	Parallel* sg_parallel=NULL;
 	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
-	CRandom* sg_rand=NULL;
+	SHOGUN_EXPORT CRandom* sg_rand=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
-	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
+	SHOGUN_EXPORT std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
 	// Two global variables to over-ride CMath::fequals for certain
 	// serialization

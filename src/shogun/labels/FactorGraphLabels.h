@@ -21,7 +21,7 @@ class CFactorGraphLabels;
 
 /** @brief Class CFactorGraphObservation is used as
  * the structured output */
-class CFactorGraphObservation : public CStructuredData
+class SHOGUN_EXPORT CFactorGraphObservation : public CStructuredData
 {
 public:
 	/** data type */
@@ -82,7 +82,7 @@ protected:
  * (SO) learning with the FactorGraphModel. Each of the labels is represented by a
  * graph. Each label is of type CFactorGraphObservation and all of them are stored in
  * a CDynamicObjectArray. */
-class CFactorGraphLabels : public CStructuredLabels
+class SHOGUN_EXPORT CFactorGraphLabels : public CStructuredLabels
 {
 	public:
 		/** default constructor */

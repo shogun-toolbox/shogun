@@ -28,7 +28,7 @@ namespace shogun
  * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures
  * for Sequential Data. Journal of Machine Learning Research, 9:23--48,2008.
  */
-class CChiSquareDistance: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CChiSquareDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

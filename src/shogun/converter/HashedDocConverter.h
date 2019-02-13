@@ -33,7 +33,7 @@ template<class T> class CSparseFeatures;
  * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
  * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
  */
-class CHashedDocConverter : public CConverter
+class SHOGUN_EXPORT CHashedDocConverter : public CConverter
 {
 public:
 	/** Default constructor */

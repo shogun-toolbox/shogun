@@ -20,7 +20,7 @@ namespace shogun
 /** @brief Container class that returns results from GradientEvaluation. It
  * contains the function value as well as its gradient.
  */
-class CGradientResult : public CEvaluationResult
+class SHOGUN_EXPORT CGradientResult : public CEvaluationResult
 {
 public:
 	/** default constructor */

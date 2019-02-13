@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ * Authors: Vladislav Horbatiuk, Yuyu Zhang, Viktor Gal, Thoralf Klein,
  *          Sergey Lisitsyn, Soeren Sonnenburg, Wu Lin
  */
 #ifndef _STREAMING_STRINGFEATURES__H__

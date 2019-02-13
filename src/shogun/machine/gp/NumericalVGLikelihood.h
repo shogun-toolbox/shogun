@@ -57,7 +57,7 @@ template<class C> class SGMatrix;
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
  * \f]
  */
-class CNumericalVGLikelihood : public CVariationalGaussianLikelihood
+class SHOGUN_EXPORT CNumericalVGLikelihood : public CVariationalGaussianLikelihood
 {
 public:
 	CNumericalVGLikelihood();

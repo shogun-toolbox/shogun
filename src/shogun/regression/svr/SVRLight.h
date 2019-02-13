@@ -56,7 +56,7 @@ namespace shogun
  * string kernels and the linear kernel), which will result in significant
  * speedups.
  */
-class CSVRLight: public CSVMLight
+class SHOGUN_EXPORT CSVRLight: public CSVMLight
 {
 	public:
 		/** problem type */

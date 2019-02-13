@@ -62,7 +62,7 @@ class MaxTestPower;
  * call the CQuadraticTimeMMD::multikernel() method to get an instance of this
  * class.
  */
-class CMultiKernelQuadraticTimeMMD : public CSGObject
+class SHOGUN_EXPORT CMultiKernelQuadraticTimeMMD : public CSGObject
 {
 	friend class CQuadraticTimeMMD;
 	friend class internal::MaxMeasure;

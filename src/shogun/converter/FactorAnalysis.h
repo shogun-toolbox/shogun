@@ -43,7 +43,7 @@ namespace shogun
  *     (http://www.mendeley.com/catalog/general-intelligence-objectively-determined-measured/)
  *
  */
-class CFactorAnalysis : public CEmbeddingConverter
+class SHOGUN_EXPORT CFactorAnalysis : public CEmbeddingConverter
 {
 public:
 

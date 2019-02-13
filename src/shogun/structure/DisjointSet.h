@@ -19,7 +19,7 @@ namespace shogun
  * It's easy to identify connected graph, acyclic graph, roots of forest etc.
  * please refer to http://en.wikipedia.org/wiki/Disjoint-set_data_structure
  */
-class CDisjointSet : public CSGObject
+class SHOGUN_EXPORT CDisjointSet : public CSGObject
 {
 public:
 	/** default constructor */

@@ -29,7 +29,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CGaussianMatchStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CGaussianMatchStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

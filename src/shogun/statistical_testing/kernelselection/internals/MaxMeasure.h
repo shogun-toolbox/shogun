@@ -45,7 +45,7 @@ class CMMD;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class MaxMeasure : public KernelSelection
+class SHOGUN_EXPORT MaxMeasure : public KernelSelection
 {
 public:
 	MaxMeasure(KernelManager&, CMMD*);

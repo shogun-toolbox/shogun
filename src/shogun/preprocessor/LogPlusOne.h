@@ -28,7 +28,7 @@ namespace shogun
  * small counts any difference may matter a lot, while small differences in
  * large counts don't. This is what this log transformation controls for.
  */
-class CLogPlusOne : public CDensePreprocessor<float64_t>
+class SHOGUN_EXPORT CLogPlusOne : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */

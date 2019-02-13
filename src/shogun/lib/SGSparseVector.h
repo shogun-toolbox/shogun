@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soeren Sonnenburg, Christian Widmer, 
- *          Heiko Strathmann, Viktor Gal, Sergey Lisitsyn, Soumyajit De, 
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Christian Widmer,
+ *          Heiko Strathmann, Viktor Gal, Sergey Lisitsyn, Soumyajit De,
  *          Yuyu Zhang, Fernando Iglesias, Bjoern Esser, Abinash Panda
  */
 

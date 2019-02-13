@@ -24,7 +24,7 @@ namespace shogun
  *   classify objects in cluttered scenes. Pattern Recognition Letters, 2007.
  *
  */
-class CECOCForestEncoder: public CECOCDiscriminantEncoder
+class SHOGUN_EXPORT CECOCForestEncoder: public CECOCDiscriminantEncoder
 {
 public:
     /** constructor */

@@ -19,7 +19,7 @@ class CCircularBuffer;
 class CTokenizer;
 
 /** @brief Class for buffered reading from a ascii file */
-class CLineReader : public CSGObject
+class SHOGUN_EXPORT CLineReader : public CSGObject
 {
 public:
 	/** default constructor */

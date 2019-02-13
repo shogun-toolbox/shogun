@@ -30,7 +30,7 @@ template<class T> class CLinearOperator;
 /** @brief Abstract template base class for computing \f$s^{T} f(C) s\f$ for a
  * linear operator C and a vector s.
  */
-template<class T> class COperatorFunction : public CSGObject
+template<class T> class SHOGUN_EXPORT COperatorFunction : public CSGObject
 {
 public:
 	/** default constructor */

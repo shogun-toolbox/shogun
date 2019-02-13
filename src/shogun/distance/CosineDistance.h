@@ -30,7 +30,7 @@ namespace shogun
  * Cosine similarity </a>
  * @see CTanimotoDistance
  */
-class CCosineDistance: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CCosineDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

@@ -33,7 +33,7 @@ namespace shogun
 template <class T> struct SGSparseVectorEntry;
 
 /** @brief serializable ascii file */
-class CSerializableAsciiFile :public CSerializableFile
+class SHOGUN_EXPORT CSerializableAsciiFile :public CSerializableFile
 {
 	friend class SerializableAsciiReader00;
 

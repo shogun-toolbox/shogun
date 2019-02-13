@@ -37,7 +37,7 @@ namespace shogun
 {
 
 /** @brief The class wraps the Shogun's C-style LBFGS minimizer  */
-class CLBFGSMinimizer: public FirstOrderMinimizer
+class SHOGUN_EXPORT CLBFGSMinimizer: public FirstOrderMinimizer
 {
 public:
 	/*  Default constructor */

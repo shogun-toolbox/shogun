@@ -21,7 +21,7 @@ namespace shogun
  * into a multiclass label according to the ECOC
  * codebook.
  */
-class CECOCDecoder: public CSGObject
+class SHOGUN_EXPORT CECOCDecoder: public CSGObject
 {
 public:
     /** constructor */

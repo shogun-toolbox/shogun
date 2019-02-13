@@ -43,7 +43,7 @@ namespace shogun
  *
  * Simple mean function that assumes a mean of zero.
  */
-class CZeroMean : public CMeanFunction
+class SHOGUN_EXPORT CZeroMean : public CMeanFunction
 {
 public:
 	/** constructor */

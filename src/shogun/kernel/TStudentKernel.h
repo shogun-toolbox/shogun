@@ -28,7 +28,7 @@ class CDistance;
  * with degree=1 by default
  */
 
-class CTStudentKernel: public CKernel
+class SHOGUN_EXPORT CTStudentKernel: public CKernel
 {
 public:
 	/** default constructor */

@@ -27,7 +27,7 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \gamma(task({\bf x}),task({\bf x'})) k({\bf x},{\bf x'})
  * \f]
  */
-class CMultitaskKernelNormalizer: public CKernelNormalizer
+class SHOGUN_EXPORT CMultitaskKernelNormalizer: public CKernelNormalizer
 {
 
 public:

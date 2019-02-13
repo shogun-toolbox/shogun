@@ -19,7 +19,7 @@ namespace shogun
  * the binary classification results and the codes to select
  * the class with the smallest distance.
  */
-class CECOCSimpleDecoder: public CECOCDecoder
+class SHOGUN_EXPORT CECOCSimpleDecoder: public CECOCDecoder
 {
 public:
     /** constructor */

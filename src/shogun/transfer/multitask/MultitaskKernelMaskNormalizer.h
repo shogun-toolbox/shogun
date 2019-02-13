@@ -29,7 +29,7 @@ namespace shogun
  * K_S(x,y)=\left\{\begin{array}{cl} K_B(x,y), & \mbox{if } t(x) \in S \wedge t(y) \in S\\ 0, & \mbox{else} \end{array}\right.
  * \f]
  */
-class CMultitaskKernelMaskNormalizer: public CKernelNormalizer
+class SHOGUN_EXPORT CMultitaskKernelMaskNormalizer: public CKernelNormalizer
 {
 
 public:

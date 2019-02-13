@@ -51,7 +51,7 @@ class CDistance;
  * cf. https://en.wikipedia.org/wiki/Isomap
  *
  */
-class CIsomap: public CMultidimensionalScaling
+class SHOGUN_EXPORT CIsomap: public CMultidimensionalScaling
 {
 public:
 

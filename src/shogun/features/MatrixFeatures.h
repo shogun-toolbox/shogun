@@ -24,7 +24,7 @@ namespace shogun
  * to use this restriction. Allow feature vectors with different number of
  * features by setting num_features equal to zero (default behaviour).
  */
-template< class ST > class CMatrixFeatures : public CFeatures
+template< class ST > class SHOGUN_EXPORT CMatrixFeatures : public CFeatures
 {
 	public:
 		/** default constructor */

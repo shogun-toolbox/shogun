@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CLinearTimeMMD : public CStreamingMMD
+class SHOGUN_EXPORT CLinearTimeMMD : public CStreamingMMD
 {
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;

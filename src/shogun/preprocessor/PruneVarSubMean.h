@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Viktor Gal,
  *          Sergey Lisitsyn, Saurabh Goyal
  */
 
@@ -23,7 +23,7 @@ namespace shogun
  * It will optionally normalize standard deviation of
  * features to 1 (by dividing by standard deviation of the feature)
  */
-class CPruneVarSubMean : public CDensePreprocessor<float64_t>
+class SHOGUN_EXPORT CPruneVarSubMean : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** constructor

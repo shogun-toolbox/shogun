@@ -16,7 +16,7 @@ namespace shogun
 /** @brief CSquaredLoss implements the
  * squared loss function.
  */
-class CSquaredLoss: public CLossFunction
+class SHOGUN_EXPORT CSquaredLoss: public CLossFunction
 {
 public:
 	/**

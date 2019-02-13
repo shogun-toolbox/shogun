@@ -22,7 +22,7 @@ template<class T> class SGVector;
  * to implement tokenizers. Sub-classes must implement
  * the methods has_next(), next_token_idx() and get_copy().
  */
-class CTokenizer: public CSGObject
+class SHOGUN_EXPORT CTokenizer: public CSGObject
 {
 public:
 	/** Constructor */

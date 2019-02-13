@@ -78,7 +78,7 @@ enum EInferenceType
  * any implemented approximation. See
  * CInference::get_marginal_likelihood_estimate.
  */
-class CInference : public CDifferentiableFunction
+class SHOGUN_EXPORT CInference : public CDifferentiableFunction
 {
 public:
 	/** default constructor */

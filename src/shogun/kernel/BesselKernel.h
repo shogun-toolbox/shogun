@@ -27,7 +27,7 @@ class CDistance;
  *		\f$\tau\f$ is the kernel width, and
  *		\f$n\f$ is the kernel degree.
  * */
-class CBesselKernel: public CDistanceKernel
+class SHOGUN_EXPORT CBesselKernel: public CDistanceKernel
 {
 	public:
 		/** default constructor */

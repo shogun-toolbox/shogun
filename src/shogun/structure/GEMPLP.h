@@ -35,7 +35,7 @@ namespace shogun
  * http://cs.nyu.edu/~dsontag/code/mplp_ver2.tgz
  * http://cs.nyu.edu/~dsontag/code/mplp_ver1.tgz
  */
-class CGEMPLP: public CMAPInferImpl
+class SHOGUN_EXPORT CGEMPLP: public CMAPInferImpl
 {
 public:
 	/** Parameter for GEMPLP */

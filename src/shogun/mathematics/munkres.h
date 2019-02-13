@@ -20,7 +20,7 @@ namespace shogun
 {
 
 /** @brief Munkres */
-class Munkres
+class SHOGUN_EXPORT Munkres
 {
 public:
 	/** constructor */

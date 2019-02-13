@@ -26,7 +26,7 @@ namespace shogun
 * k'(x,x')= \frac{k(x,x')}{scale}
 * \f]
 */
-class CAvgDiagKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CAvgDiagKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** constructor

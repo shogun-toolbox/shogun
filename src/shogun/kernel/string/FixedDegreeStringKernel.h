@@ -26,7 +26,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CFixedDegreeStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CFixedDegreeStringKernel: public CStringKernel<char>
 {
 	void init();
 

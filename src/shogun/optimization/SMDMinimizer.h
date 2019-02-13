@@ -40,7 +40,7 @@ namespace shogun
  *
  */
 
-class SMDMinimizer: public FirstOrderStochasticMinimizer
+class SHOGUN_EXPORT SMDMinimizer: public FirstOrderStochasticMinimizer
 {
 public:
 	/** Default constructor */

@@ -70,7 +70,7 @@ namespace shogun
  * Note that "Diagonal" means a variational diagonal co-variance matrix
  * is used in inference.
  */
-class CKLDiagonalInferenceMethod: public CKLLowerTriangularInference
+class SHOGUN_EXPORT CKLDiagonalInferenceMethod: public CKLLowerTriangularInference
 {
 public:
 	/** default constructor */

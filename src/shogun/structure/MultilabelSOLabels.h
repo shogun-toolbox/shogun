@@ -25,7 +25,7 @@ class CMultilabelSOLabels;
 
 /** @brief Class CSparseMultilabel to be used in the application of Structured
  * Output (SO) learning to Multilabel classification.*/
-class CSparseMultilabel : public CStructuredData
+class SHOGUN_EXPORT CSparseMultilabel : public CStructuredData
 {
 public:
 	/** data type */
@@ -83,7 +83,7 @@ protected:
  * of {0, 1, ..., num_classes-1}. Each of the label if of type CSparseMultilabel and
  * all of them are stored in a CDynamicObjectArray.
  */
-class CMultilabelSOLabels : public CStructuredLabels
+class SHOGUN_EXPORT CMultilabelSOLabels : public CStructuredLabels
 {
 public:
 	/** default constructor */

@@ -22,7 +22,7 @@ class CLabels;
  * the label ratio of the specified labels. Do not use for regression since it
  * may be impossible to distribute nice in that case
  */
-class CStratifiedCrossValidationSplitting: public CSplittingStrategy
+class SHOGUN_EXPORT CStratifiedCrossValidationSplitting: public CSplittingStrategy
 {
 public:
 	/** constructor */
@@ -34,6 +34,8 @@ public:
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
 	CStratifiedCrossValidationSplitting(CLabels* labels, index_t num_subsets);
+
+	virtual ~CStratifiedCrossValidationSplitting();
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

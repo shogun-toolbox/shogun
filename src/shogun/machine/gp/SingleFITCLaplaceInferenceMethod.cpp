@@ -49,7 +49,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifdef USE_GPL_SHOGUN
 /** Wrapper class used for the Brent minimizer */
-class CFITCPsiLine : public func_base
+class SHOGUN_EXPORT CFITCPsiLine : public func_base
 {
 public:
 	float64_t log_scale;
@@ -93,7 +93,7 @@ public:
 };
 #endif //USE_GPL_SHOGUN
 
-class SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public:
 	SingleFITCLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }

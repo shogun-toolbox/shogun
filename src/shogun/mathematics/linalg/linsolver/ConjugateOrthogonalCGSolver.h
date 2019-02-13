@@ -26,7 +26,7 @@ template<class T> class SGVector;
  * Where A Is Symmetric Complex". IEEE Transactions on Magnetics, Vol. 26,
  * No. 2, March 1990
  */
-class CConjugateOrthogonalCGSolver
+class SHOGUN_EXPORT CConjugateOrthogonalCGSolver
  : public CIterativeLinearSolver<complex128_t, float64_t>
 {
 

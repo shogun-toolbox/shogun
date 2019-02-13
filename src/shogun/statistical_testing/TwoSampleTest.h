@@ -55,7 +55,7 @@ namespace internal
  *
  * Abstract base class.
  */
-class CTwoSampleTest : public CTwoDistributionTest
+class SHOGUN_EXPORT CTwoSampleTest : public CTwoDistributionTest
 {
 public:
 	/** Default constructor */

@@ -24,7 +24,7 @@ enum LIBSVM_SOLVER_TYPE
 };
 #endif
 /** @brief LibSVM */
-class CLibSVM : public CSVM
+class SHOGUN_EXPORT CLibSVM : public CSVM
 {
 	public:
 		/** Default constructor, create a C-SVC svm */

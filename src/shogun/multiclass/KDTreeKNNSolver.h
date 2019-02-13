@@ -21,7 +21,7 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/K-d_tree
  *
  */
-class CKDTREEKNNSolver : public CKNNSolver
+class SHOGUN_EXPORT CKDTREEKNNSolver : public CKNNSolver
 {
 	public:
 		/** default constructor */

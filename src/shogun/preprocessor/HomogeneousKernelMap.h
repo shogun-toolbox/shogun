@@ -49,7 +49,7 @@ namespace shogun
 	 * Implementation is based on the vlfeat library.
 	 *
 	 */
-	class CHomogeneousKernelMap : public CDensePreprocessor<float64_t>
+	class SHOGUN_EXPORT CHomogeneousKernelMap : public CDensePreprocessor<float64_t>
 	{
 		public:
 			/** default constructor */

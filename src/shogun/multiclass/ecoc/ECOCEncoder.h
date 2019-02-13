@@ -31,7 +31,7 @@ namespace shogun
  * - -1: negative class
  * - 0: ignore this class
  */
-class CECOCEncoder: public CSGObject
+class SHOGUN_EXPORT CECOCEncoder: public CSGObject
 {
 public:
     /** constructor */

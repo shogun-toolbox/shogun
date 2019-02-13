@@ -64,7 +64,7 @@ namespace shogun
  *
  */
 
-class CStreamingFeatures : public CFeatures
+class SHOGUN_EXPORT CStreamingFeatures : public CFeatures
 {
 
 public:

@@ -23,7 +23,7 @@ namespace shogun
  * @brief class CStateModel base, abstract class for the internal state
  * representation used in the CHMSVMModel.
  */
-class CStateModel : public CSGObject
+class SHOGUN_EXPORT CStateModel : public CSGObject
 {
 	public:
 		/** default constructor */

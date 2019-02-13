@@ -26,7 +26,7 @@ template <class ST> class CStringFeatures;
  *
  * \sa CWeightedCommWordStringKernel
  */
-class CImplicitWeightedSpecFeatures : public CDotFeatures
+class SHOGUN_EXPORT CImplicitWeightedSpecFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */

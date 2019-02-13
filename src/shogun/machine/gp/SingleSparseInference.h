@@ -45,7 +45,7 @@ class SingleSparseInferenceCostFunction;
 /** @brief The sparse inference base class
  * for classification and regression for 1-D labels (1D regression and binary classification)
  */
-class CSingleSparseInference: public CSparseInference
+class SHOGUN_EXPORT CSingleSparseInference: public CSparseInference
 {
 friend class SingleSparseInferenceCostFunction;
 

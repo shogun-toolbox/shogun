@@ -25,7 +25,7 @@ class CParameterCombination;
  * in the abstract method select_model(), which has to be implemented in
  * concrete sub-classes.
  */
-class CModelSelection: public CSGObject
+class SHOGUN_EXPORT CModelSelection: public CSGObject
 {
 public:
 	/** default constructor */

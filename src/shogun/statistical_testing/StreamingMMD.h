@@ -57,7 +57,7 @@ class WeightedMaxTestPower;
 
 }
 
-class CStreamingMMD : public CMMD
+class SHOGUN_EXPORT CStreamingMMD : public CMMD
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;

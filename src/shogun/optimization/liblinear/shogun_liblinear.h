@@ -292,7 +292,7 @@ struct mcsvm_state
 	}
 };
 
-class Solver_MCSVM_CS
+class SHOGUN_EXPORT Solver_MCSVM_CS
 {
 	public:
 		Solver_MCSVM_CS(const liblinear_problem *prob, int nr_class, double *C,

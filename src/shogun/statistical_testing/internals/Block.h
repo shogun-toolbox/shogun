@@ -49,7 +49,7 @@ namespace internal
  * alive as long as the block is alive) and it decreases the refcount of
  * the original object in destructor.
  */
-class Block
+class SHOGUN_EXPORT Block
 {
 private:
 	/**

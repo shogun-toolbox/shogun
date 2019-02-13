@@ -26,7 +26,7 @@ namespace shogun
  * the maximal number of entries in cache)
  *
  */
-template<class T> class CCache : public CSGObject
+template<class T> class SHOGUN_EXPORT CCache : public CSGObject
 {
 	/** cache entry */
 	struct TEntry

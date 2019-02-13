@@ -40,7 +40,7 @@ namespace shogun
 /** @brief CExponentialLoss implements the exponential loss function. \n
  * \f$L(y_i,f(x_i)) = \exp^{-y_if(x_i)}\f$
  */
-class CExponentialLoss: public CLossFunction
+class SHOGUN_EXPORT CExponentialLoss: public CLossFunction
 {
 public:
 	/** default constructor */

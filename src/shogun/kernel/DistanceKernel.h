@@ -25,7 +25,7 @@ namespace shogun
  *     k({\bf x}, {\bf x'}) = e^{-\frac{dist({\bf x}, {\bf x'})}{width}}
  * \f]
  */
-class CDistanceKernel: public CKernel
+class SHOGUN_EXPORT CDistanceKernel: public CKernel
 {
 	public:
 		/** default constructor  */

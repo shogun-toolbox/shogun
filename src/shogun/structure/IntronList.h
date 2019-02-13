@@ -15,7 +15,7 @@
 namespace shogun
 {
 /** @brief class IntronList */
-class CIntronList : public CSGObject
+class SHOGUN_EXPORT CIntronList : public CSGObject
 {
 	public:
 

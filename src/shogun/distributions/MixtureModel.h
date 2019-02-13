@@ -41,7 +41,7 @@ namespace shogun
  *
  * \f$ f_X(x) = \Sigma_{m=1}^{K} w_m.g_m(x,\lambda_m)\f$
  */
-class CMixtureModel : public CDistribution
+class SHOGUN_EXPORT CMixtureModel : public CDistribution
 {
 	public:
 		/* default constructor */

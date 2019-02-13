@@ -72,7 +72,7 @@ enum EInitializationMode
  *
  * The layer assumes that its input images are in column major format
  */
-class CNeuralConvolutionalLayer : public CNeuralLayer
+class SHOGUN_EXPORT CNeuralConvolutionalLayer : public CNeuralLayer
 {
 public:
 	/** default constructor */

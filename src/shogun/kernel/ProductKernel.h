@@ -34,7 +34,7 @@ class CDynamicObjectArray;
  * k_{product}({\bf x}, {\bf x'}) = \prod_{m=1}^M k_m({\bf x}, {\bf x'})
  * \f]
  */
-class CProductKernel : public CKernel
+class SHOGUN_EXPORT CProductKernel : public CKernel
 {
 	public:
 		/** constructor

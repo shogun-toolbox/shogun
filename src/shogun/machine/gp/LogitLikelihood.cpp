@@ -47,7 +47,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /** Class of the probability density function of the normal distribution */
-class CNormalPDF : public CFunction
+class SHOGUN_EXPORT CNormalPDF : public CFunction
 {
 public:
 	/** default constructor */
@@ -101,7 +101,7 @@ private:
 };
 
 /** Class of the sigmoid function */
-class CSigmoidFunction : public CFunction
+class SHOGUN_EXPORT CSigmoidFunction : public CFunction
 {
 public:
 	/** default constructor */
@@ -142,7 +142,7 @@ private:
 };
 
 /** Class of the function, which is a product of two given functions */
-class CProductFunction : public CFunction
+class SHOGUN_EXPORT CProductFunction : public CFunction
 {
 public:
 	/** constructor
@@ -183,7 +183,7 @@ private:
 };
 
 /** Class of the f(x)=x */
-class CLinearFunction : public CFunction
+class SHOGUN_EXPORT CLinearFunction : public CFunction
 {
 public:
 	/** default constructor */
@@ -204,7 +204,7 @@ public:
 };
 
 /** Class of the f(x)=x^2 */
-class CQuadraticFunction : public CFunction
+class SHOGUN_EXPORT CQuadraticFunction : public CFunction
 {
 public:
 	/** default constructor */

@@ -31,7 +31,7 @@ namespace shogun
 	 * label
 	 * (vectors).
 	 */
-	class CDenseLabels : public CLabels
+	class SHOGUN_EXPORT CDenseLabels : public CLabels
 	{
 	public:
 		/** default constructor */

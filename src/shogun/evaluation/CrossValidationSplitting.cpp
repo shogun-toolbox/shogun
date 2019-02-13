@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Thoralf Klein, Soeren Sonnenburg, 
+ * Authors: Heiko Strathmann, Thoralf Klein, Soeren Sonnenburg,
  *          Fernando Iglesias, Viktor Gal
  */
 
@@ -21,6 +21,10 @@ CCrossValidationSplitting::CCrossValidationSplitting(
 	CSplittingStrategy(labels, num_subsets)
 {
 	m_rng = sg_rand;
+}
+
+CCrossValidationSplitting::~CCrossValidationSplitting()
+{
 }
 
 void CCrossValidationSplitting::build_subsets()

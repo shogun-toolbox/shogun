@@ -35,7 +35,7 @@ class CDistance;
  * sg('create_converter','npe',k);
  *
  */
-class CNeighborhoodPreservingEmbedding: public CLocallyLinearEmbedding
+class SHOGUN_EXPORT CNeighborhoodPreservingEmbedding: public CLocallyLinearEmbedding
 {
 public:
 

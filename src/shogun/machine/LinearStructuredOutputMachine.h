@@ -19,7 +19,7 @@ namespace shogun
 class CFeatures;
 
 /** TODO doc */
-class CLinearStructuredOutputMachine : public CStructuredOutputMachine
+class SHOGUN_EXPORT CLinearStructuredOutputMachine : public CStructuredOutputMachine
 {
 	public:
 		/** default constructor  */

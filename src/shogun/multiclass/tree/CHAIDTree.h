@@ -87,7 +87,7 @@ namespace shogun
  * different categories of X are the same. For more details please see :
  * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_scale.htm
  */
-class CCHAIDTree : public CTreeMachine<CHAIDTreeNodeData>
+class SHOGUN_EXPORT CCHAIDTree : public CTreeMachine<CHAIDTreeNodeData>
 {
 public:
 	/** default constructor */

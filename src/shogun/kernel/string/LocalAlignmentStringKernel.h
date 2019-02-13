@@ -24,7 +24,7 @@ const int32_t LOGSUM_TBL=10000;
  * The implementation is taken from http://www.mloss.org/software/view/40/ and
  * only adjusted to work with shogun.
  */
-class CLocalAlignmentStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CLocalAlignmentStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor

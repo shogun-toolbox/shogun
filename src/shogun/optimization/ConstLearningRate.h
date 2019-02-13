@@ -41,7 +41,7 @@ namespace shogun
  *
  */
 
-class ConstLearningRate: public LearningRate
+class SHOGUN_EXPORT ConstLearningRate: public LearningRate
 {
 public:
 	/**  Constructor */

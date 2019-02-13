@@ -24,7 +24,7 @@ class CCGMShiftedFamilySolver;
  * log times vector expression are solved at once with a shifted linear-family
  * solver.
  */
-class CLogRationalApproximationCGM : public CRationalApproximation
+class SHOGUN_EXPORT CLogRationalApproximationCGM : public CRationalApproximation
 {
 public:
 	/** default constructor */

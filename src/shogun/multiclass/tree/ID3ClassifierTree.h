@@ -71,7 +71,7 @@ namespace shogun
  * end ID3;
  *
  */
-class CID3ClassifierTree : public CTreeMachine<id3TreeNodeData>
+class SHOGUN_EXPORT CID3ClassifierTree : public CTreeMachine<id3TreeNodeData>
 {
 public:
 	/** constructor */

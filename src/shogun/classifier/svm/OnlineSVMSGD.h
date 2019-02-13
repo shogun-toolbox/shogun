@@ -18,7 +18,7 @@
 namespace shogun
 {
 /** @brief class OnlineSVMSGD */
-class COnlineSVMSGD : public COnlineLinearMachine
+class SHOGUN_EXPORT COnlineSVMSGD : public COnlineLinearMachine
 {
 	public:
 		/** returns type of problem machine solves */

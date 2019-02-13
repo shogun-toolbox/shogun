@@ -15,7 +15,7 @@ namespace shogun
 	/** @brief Class InvalidStateException defines an exception which is thrown
 	 * whenever an object in Shogun in invalid state is used.
 	 */
-	class InvalidStateException : public ShogunException
+	class SHOGUN_EXPORT InvalidStateException : public ShogunException
 	{
 	public:
 		/** constructor

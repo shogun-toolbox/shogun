@@ -66,7 +66,7 @@ namespace shogun
  * Note that \f$f_i(w)\f$ is a sample function for the i-th sample, \f$(x_i,y_i)\f$.
  *
  */
-class FirstOrderStochasticMinimizer: public FirstOrderMinimizer
+class SHOGUN_EXPORT FirstOrderStochasticMinimizer: public FirstOrderMinimizer
 {
 public:
 	/** Default constructor */

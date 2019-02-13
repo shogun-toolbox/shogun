@@ -40,7 +40,7 @@ class CStreamingFile;
  *
  */
 
-class CStreamingDotFeatures : public CStreamingFeatures
+class SHOGUN_EXPORT CStreamingDotFeatures : public CStreamingFeatures
 {
 
 public:

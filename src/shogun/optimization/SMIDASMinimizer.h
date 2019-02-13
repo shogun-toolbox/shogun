@@ -44,7 +44,7 @@ namespace shogun
  * pages 929-936, 2009. 
  */
 
-class SMIDASMinimizer: public SMDMinimizer
+class SHOGUN_EXPORT SMIDASMinimizer: public SMDMinimizer
 {
 public:
 	/** Default constructor */

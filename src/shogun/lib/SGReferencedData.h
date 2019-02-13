@@ -16,7 +16,7 @@ namespace shogun
 class RefCount;
 
 /** @brief shogun reference count managed data */
-class SGReferencedData
+class SHOGUN_EXPORT SGReferencedData
 {
 	public:
 		/** default constructor */

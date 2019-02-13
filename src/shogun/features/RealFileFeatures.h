@@ -20,7 +20,7 @@ namespace shogun
  * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CRealFileFeatures: public CDenseFeatures<float64_t>
+class SHOGUN_EXPORT CRealFileFeatures: public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor */

@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief class MPDSVM */
-class CMPDSVM : public CSVM
+class SHOGUN_EXPORT CMPDSVM : public CSVM
 {
 	public:
 		/** default constructor */

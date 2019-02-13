@@ -48,7 +48,7 @@ namespace shogun
  * function.
  *
  */
-class CLaplaceInference: public CInference
+class SHOGUN_EXPORT CLaplaceInference: public CInference
 {
 public:
 	/** default constructor */

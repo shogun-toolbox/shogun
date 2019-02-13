@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Evgeniy Andreev, Vladislav Horbatiuk, Evan Shelhamer, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Evgeniy Andreev, Vladislav Horbatiuk, Evan Shelhamer, Yuyu Zhang,
  *          Thoralf Klein, Fernando Iglesias, Bjoern Esser
  */
 

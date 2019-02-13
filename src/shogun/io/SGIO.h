@@ -28,7 +28,7 @@ namespace shogun
 	class RefCount;
 	class SGIO;
 	/** shogun IO */
-	extern SGIO* sg_io;
+	SHOGUN_EXPORT extern SGIO* sg_io;
 }
 
 
@@ -235,7 +235,7 @@ struct substring
  * this class to be in the end written to the screen. Note that messages don't
  * have to be written to stdout or stderr, but can be redirected to a file.
  */
-class SGIO
+class SHOGUN_EXPORT SGIO
 {
 	public:
 		/** default constructor */

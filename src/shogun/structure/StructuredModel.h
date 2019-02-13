@@ -96,7 +96,7 @@ struct CResultSet : public CSGObject
  * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: MulticlassModel.h and
  * .cpp for an example of these functions implemented.
  */
-class CStructuredModel : public CSGObject
+class SHOGUN_EXPORT CStructuredModel : public CSGObject
 {
 	public:
 		/** default constructor */

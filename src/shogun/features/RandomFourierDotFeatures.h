@@ -41,7 +41,7 @@ enum KernelName
  *  For more detailed information you can take a look at this source:
  *  i) Random Features for Large-Scale Kernel Machines - Ali Rahimi and Ben Recht
  */
-class CRandomFourierDotFeatures : public CRandomKitchenSinksDotFeatures
+class SHOGUN_EXPORT CRandomFourierDotFeatures : public CRandomKitchenSinksDotFeatures
 {
 public:
 

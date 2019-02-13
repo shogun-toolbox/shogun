@@ -11,6 +11,17 @@
 
 using namespace shogun;
 
+
+CMulticlassAccuracy::CMulticlassAccuracy():
+	CEvaluation(), m_ignore_rejects(false), m_rejects_num(0)
+{
+}
+
+CMulticlassAccuracy::CMulticlassAccuracy(bool ignore_rejects):
+	CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0)
+{
+}
+
 float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth)

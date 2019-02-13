@@ -160,8 +160,8 @@ bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 
 #ifndef REAL_EQUALS
 #define REAL_EQUALS(real_t)                                                    \
-	template <>                                                                \
-	bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const         \
+	template <>                                                               \
+	SHOGUN_EXPORT bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const         \
 	{                                                                          \
 		if (*this == other)                                                    \
 			return true;                                                       \
@@ -190,7 +190,7 @@ REAL_EQUALS(floatmax_t)
 #endif // REAL_EQUALS
 
 template <>
-bool SGMatrix<complex128_t>::equals(const SGMatrix<complex128_t>& other) const
+SHOGUN_EXPORT bool SGMatrix<complex128_t>::equals(const SGMatrix<complex128_t>& other) const
 {
 	if (*this==other)
 		return true;
@@ -254,7 +254,7 @@ bool SGMatrix<T>::is_symmetric() const
 #ifndef REAL_IS_SYMMETRIC
 #define REAL_IS_SYMMETRIC(real_t)	\
 template <>	\
-bool SGMatrix<real_t>::is_symmetric() const	\
+SHOGUN_EXPORT bool SGMatrix<real_t>::is_symmetric() const	\
 {	\
 	assert_on_cpu();	\
 	\
@@ -285,7 +285,7 @@ REAL_IS_SYMMETRIC(floatmax_t)
 #endif // REAL_IS_SYMMETRIC
 
 template <>
-bool SGMatrix<complex128_t>::is_symmetric() const
+SHOGUN_EXPORT bool SGMatrix<complex128_t>::is_symmetric() const
 {
 	assert_on_cpu();
 
@@ -324,7 +324,7 @@ T SGMatrix<T>::max_single() const
 }
 
 template <>
-complex128_t SGMatrix<complex128_t>::max_single() const
+SHOGUN_EXPORT complex128_t SGMatrix<complex128_t>::max_single() const
 {
 	SG_SERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
 	return complex128_t(0.0);
@@ -521,7 +521,7 @@ void SGMatrix<T>::display_matrix(
 }
 
 template <>
-void SGMatrix<bool>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<bool>::display_matrix(
 	const bool* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -539,7 +539,7 @@ void SGMatrix<bool>::display_matrix(
 }
 
 template <>
-void SGMatrix<char>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<char>::display_matrix(
 	const char* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -557,7 +557,7 @@ void SGMatrix<char>::display_matrix(
 }
 
 template <>
-void SGMatrix<int8_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<int8_t>::display_matrix(
 	const int8_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -575,7 +575,7 @@ void SGMatrix<int8_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<uint8_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<uint8_t>::display_matrix(
 	const uint8_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -593,7 +593,7 @@ void SGMatrix<uint8_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<int16_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<int16_t>::display_matrix(
 	const int16_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -611,7 +611,7 @@ void SGMatrix<int16_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<uint16_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<uint16_t>::display_matrix(
 	const uint16_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -630,7 +630,7 @@ void SGMatrix<uint16_t>::display_matrix(
 
 
 template <>
-void SGMatrix<int32_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<int32_t>::display_matrix(
 	const int32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -648,7 +648,7 @@ void SGMatrix<int32_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<uint32_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<uint32_t>::display_matrix(
 	const uint32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -665,7 +665,7 @@ void SGMatrix<uint32_t>::display_matrix(
 	SG_SPRINT("%s]\n", prefix)
 }
 template <>
-void SGMatrix<int64_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<int64_t>::display_matrix(
 	const int64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -683,7 +683,7 @@ void SGMatrix<int64_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<uint64_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<uint64_t>::display_matrix(
 	const uint64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -701,7 +701,7 @@ void SGMatrix<uint64_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<float32_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<float32_t>::display_matrix(
 	const float32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -719,7 +719,7 @@ void SGMatrix<float32_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<float64_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<float64_t>::display_matrix(
 	const float64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -737,7 +737,7 @@ void SGMatrix<float64_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<floatmax_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<floatmax_t>::display_matrix(
 	const floatmax_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -755,7 +755,7 @@ void SGMatrix<floatmax_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<complex128_t>::display_matrix(
+SHOGUN_EXPORT void SGMatrix<complex128_t>::display_matrix(
 	const complex128_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
@@ -773,14 +773,14 @@ void SGMatrix<complex128_t>::display_matrix(
 }
 
 template <>
-SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
+SHOGUN_EXPORT SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 {
 	SG_SNOTIMPLEMENTED
 	return SGMatrix<char>();
 }
 
 template <>
-SGMatrix<int8_t> SGMatrix<int8_t>::create_identity_matrix(index_t size, int8_t scale)
+SHOGUN_EXPORT SGMatrix<int8_t> SGMatrix<int8_t>::create_identity_matrix(index_t size, int8_t scale)
 {
 	SGMatrix<int8_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -793,7 +793,7 @@ SGMatrix<int8_t> SGMatrix<int8_t>::create_identity_matrix(index_t size, int8_t s
 }
 
 template <>
-SGMatrix<uint8_t> SGMatrix<uint8_t>::create_identity_matrix(index_t size, uint8_t scale)
+SHOGUN_EXPORT SGMatrix<uint8_t> SGMatrix<uint8_t>::create_identity_matrix(index_t size, uint8_t scale)
 {
 	SGMatrix<uint8_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -806,7 +806,7 @@ SGMatrix<uint8_t> SGMatrix<uint8_t>::create_identity_matrix(index_t size, uint8_
 }
 
 template <>
-SGMatrix<bool> SGMatrix<bool>::create_identity_matrix(index_t size, bool scale)
+SHOGUN_EXPORT SGMatrix<bool> SGMatrix<bool>::create_identity_matrix(index_t size, bool scale)
 {
 	SGMatrix<bool> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -819,7 +819,7 @@ SGMatrix<bool> SGMatrix<bool>::create_identity_matrix(index_t size, bool scale)
 }
 
 template <>
-SGMatrix<int16_t> SGMatrix<int16_t>::create_identity_matrix(index_t size, int16_t scale)
+SHOGUN_EXPORT SGMatrix<int16_t> SGMatrix<int16_t>::create_identity_matrix(index_t size, int16_t scale)
 {
 	SGMatrix<int16_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -832,7 +832,7 @@ SGMatrix<int16_t> SGMatrix<int16_t>::create_identity_matrix(index_t size, int16_
 }
 
 template <>
-SGMatrix<uint16_t> SGMatrix<uint16_t>::create_identity_matrix(index_t size, uint16_t scale)
+SHOGUN_EXPORT SGMatrix<uint16_t> SGMatrix<uint16_t>::create_identity_matrix(index_t size, uint16_t scale)
 {
 	SGMatrix<uint16_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -845,7 +845,7 @@ SGMatrix<uint16_t> SGMatrix<uint16_t>::create_identity_matrix(index_t size, uint
 }
 
 template <>
-SGMatrix<int32_t> SGMatrix<int32_t>::create_identity_matrix(index_t size, int32_t scale)
+SHOGUN_EXPORT SGMatrix<int32_t> SGMatrix<int32_t>::create_identity_matrix(index_t size, int32_t scale)
 {
 	SGMatrix<int32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -858,7 +858,7 @@ SGMatrix<int32_t> SGMatrix<int32_t>::create_identity_matrix(index_t size, int32_
 }
 
 template <>
-SGMatrix<uint32_t> SGMatrix<uint32_t>::create_identity_matrix(index_t size, uint32_t scale)
+SHOGUN_EXPORT SGMatrix<uint32_t> SGMatrix<uint32_t>::create_identity_matrix(index_t size, uint32_t scale)
 {
 	SGMatrix<uint32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -871,7 +871,7 @@ SGMatrix<uint32_t> SGMatrix<uint32_t>::create_identity_matrix(index_t size, uint
 }
 
 template <>
-SGMatrix<int64_t> SGMatrix<int64_t>::create_identity_matrix(index_t size, int64_t scale)
+SHOGUN_EXPORT SGMatrix<int64_t> SGMatrix<int64_t>::create_identity_matrix(index_t size, int64_t scale)
 {
 	SGMatrix<int64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -884,7 +884,7 @@ SGMatrix<int64_t> SGMatrix<int64_t>::create_identity_matrix(index_t size, int64_
 }
 
 template <>
-SGMatrix<uint64_t> SGMatrix<uint64_t>::create_identity_matrix(index_t size, uint64_t scale)
+SHOGUN_EXPORT SGMatrix<uint64_t> SGMatrix<uint64_t>::create_identity_matrix(index_t size, uint64_t scale)
 {
 	SGMatrix<uint64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -897,7 +897,7 @@ SGMatrix<uint64_t> SGMatrix<uint64_t>::create_identity_matrix(index_t size, uint
 }
 
 template <>
-SGMatrix<float32_t> SGMatrix<float32_t>::create_identity_matrix(index_t size, float32_t scale)
+SHOGUN_EXPORT SGMatrix<float32_t> SGMatrix<float32_t>::create_identity_matrix(index_t size, float32_t scale)
 {
 	SGMatrix<float32_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -910,7 +910,7 @@ SGMatrix<float32_t> SGMatrix<float32_t>::create_identity_matrix(index_t size, fl
 }
 
 template <>
-SGMatrix<float64_t> SGMatrix<float64_t>::create_identity_matrix(index_t size, float64_t scale)
+SHOGUN_EXPORT SGMatrix<float64_t> SGMatrix<float64_t>::create_identity_matrix(index_t size, float64_t scale)
 {
 	SGMatrix<float64_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -923,7 +923,7 @@ SGMatrix<float64_t> SGMatrix<float64_t>::create_identity_matrix(index_t size, fl
 }
 
 template <>
-SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, floatmax_t scale)
+SHOGUN_EXPORT SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, floatmax_t scale)
 {
 	SGMatrix<floatmax_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -936,7 +936,7 @@ SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, 
 }
 
 template <>
-SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t size, complex128_t scale)
+SHOGUN_EXPORT SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t size, complex128_t scale)
 {
 	SGMatrix<complex128_t> identity_matrix(size, size);
 	for (index_t i=0; i<size; ++i)
@@ -1193,18 +1193,18 @@ SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 	return diag;
 }
 
-template class SGMatrix<bool>;
-template class SGMatrix<char>;
-template class SGMatrix<int8_t>;
-template class SGMatrix<uint8_t>;
-template class SGMatrix<int16_t>;
-template class SGMatrix<uint16_t>;
-template class SGMatrix<int32_t>;
-template class SGMatrix<uint32_t>;
-template class SGMatrix<int64_t>;
-template class SGMatrix<uint64_t>;
-template class SGMatrix<float32_t>;
-template class SGMatrix<float64_t>;
-template class SGMatrix<floatmax_t>;
-template class SGMatrix<complex128_t>;
+template class SHOGUN_EXPORT SGMatrix<bool>;
+template class SHOGUN_EXPORT SGMatrix<char>;
+template class SHOGUN_EXPORT SGMatrix<int8_t>;
+template class SHOGUN_EXPORT SGMatrix<uint8_t>;
+template class SHOGUN_EXPORT SGMatrix<int16_t>;
+template class SHOGUN_EXPORT SGMatrix<uint16_t>;
+template class SHOGUN_EXPORT SGMatrix<int32_t>;
+template class SHOGUN_EXPORT SGMatrix<uint32_t>;
+template class SHOGUN_EXPORT SGMatrix<int64_t>;
+template class SHOGUN_EXPORT SGMatrix<uint64_t>;
+template class SHOGUN_EXPORT SGMatrix<float32_t>;
+template class SHOGUN_EXPORT SGMatrix<float64_t>;
+template class SHOGUN_EXPORT SGMatrix<floatmax_t>;
+template class SHOGUN_EXPORT SGMatrix<complex128_t>;
 }

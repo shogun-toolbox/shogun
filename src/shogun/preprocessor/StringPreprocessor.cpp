@@ -10,79 +10,79 @@ namespace shogun
 {
 
 	template <>
-	inline EFeatureType CStringPreprocessor<uint64_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<uint64_t>::get_feature_type()
 	{
 		return F_ULONG;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<int64_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<int64_t>::get_feature_type()
 	{
 		return F_LONG;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<uint32_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<uint32_t>::get_feature_type()
 	{
 		return F_UINT;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<int32_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<int32_t>::get_feature_type()
 	{
 		return F_INT;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<uint16_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<uint16_t>::get_feature_type()
 	{
 		return F_WORD;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<int16_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<int16_t>::get_feature_type()
 	{
 		return F_WORD;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<uint8_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<uint8_t>::get_feature_type()
 	{
 		return F_BYTE;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<int8_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<int8_t>::get_feature_type()
 	{
 		return F_BYTE;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<char>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<char>::get_feature_type()
 	{
 		return F_CHAR;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<bool>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<bool>::get_feature_type()
 	{
 		return F_BOOL;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<float32_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<float32_t>::get_feature_type()
 	{
 		return F_SHORTREAL;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<float64_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<float64_t>::get_feature_type()
 	{
 		return F_DREAL;
 	}
 
 	template <>
-	inline EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type()
+	SHOGUN_EXPORT EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type()
 	{
 		return F_LONGREAL;
 	}
@@ -118,17 +118,17 @@ namespace shogun
 		return string_features;
 	}
 
-	template class CStringPreprocessor<bool>;
-	template class CStringPreprocessor<char>;
-	template class CStringPreprocessor<int8_t>;
-	template class CStringPreprocessor<uint8_t>;
-	template class CStringPreprocessor<int16_t>;
-	template class CStringPreprocessor<uint16_t>;
-	template class CStringPreprocessor<int32_t>;
-	template class CStringPreprocessor<uint32_t>;
-	template class CStringPreprocessor<int64_t>;
-	template class CStringPreprocessor<uint64_t>;
-	template class CStringPreprocessor<float32_t>;
-	template class CStringPreprocessor<float64_t>;
-	template class CStringPreprocessor<floatmax_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<bool>;
+	template class SHOGUN_EXPORT CStringPreprocessor<char>;
+	template class SHOGUN_EXPORT CStringPreprocessor<int8_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<uint8_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<int16_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<uint16_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<int32_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<uint32_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<int64_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<uint64_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<float32_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<float64_t>;
+	template class SHOGUN_EXPORT CStringPreprocessor<floatmax_t>;
 }

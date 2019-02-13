@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Weijie Lin, Josh Klontz, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Weijie Lin, Josh Klontz,
  *          Yuyu Zhang
  */
 

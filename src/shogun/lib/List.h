@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief Class ListElement, defines how an element of the the list looks like */
-class CListElement :public CSGObject
+class SHOGUN_EXPORT CListElement :public CSGObject
 {
 	public:
 		/** default constructor */
@@ -72,7 +72,7 @@ class CListElement :public CSGObject
  * For higher level objects pointers should be used. The list supports calling
  * delete() of an object that is to be removed from the list.
  */
-class CList : public CSGObject
+class SHOGUN_EXPORT CList : public CSGObject
 {
 	public:
 		/** constructor

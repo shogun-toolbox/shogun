@@ -24,7 +24,7 @@ class CLinearMachine;
 class CMulticlassStrategy;
 
 /** @brief generic linear multiclass machine */
-class CLinearMulticlassMachine : public CMulticlassMachine
+class SHOGUN_EXPORT CLinearMulticlassMachine : public CMulticlassMachine
 {
 	public:
 		/** default constructor  */

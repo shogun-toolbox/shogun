@@ -72,7 +72,7 @@ namespace shogun
  * "Approximations for Binary Gaussian Process Classification."
  * Journal of Machine Learning Research 9.10 (2008).
  */
-class CKLInference: public CInference
+class SHOGUN_EXPORT CKLInference: public CInference
 {
 friend class KLInferenceCostFunction;
 public:

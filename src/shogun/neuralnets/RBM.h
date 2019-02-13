@@ -119,7 +119,7 @@ enum ERBMVisibleUnitType
  * will be stored in visible_state[15:21,:]. Note that the groups are numbered
  * by the order in which they where added to the RBM using add_visible_group()
  */
-class CRBM : public CSGObject
+class SHOGUN_EXPORT CRBM : public CSGObject
 {
 friend class CDeepBeliefNetwork;
 

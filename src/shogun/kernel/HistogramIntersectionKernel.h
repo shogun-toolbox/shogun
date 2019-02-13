@@ -26,7 +26,7 @@ namespace shogun
  * \f]
  * with \f$\beta=1\f$ by default
  * */
-class CHistogramIntersectionKernel: public CDotKernel
+class SHOGUN_EXPORT CHistogramIntersectionKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

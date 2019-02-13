@@ -24,7 +24,7 @@ namespace shogun
  *
  *
  */
-class CPyramidChi2 : public CDotKernel
+class SHOGUN_EXPORT CPyramidChi2 : public CDotKernel
 {
 public:
 	/** default constructor protected to avoid its usage */

@@ -25,7 +25,7 @@ class CLabels;
 /** @brief Class GaussianProcessRegression implements regression based on
  * Gaussian Processes.
  */
-class CGaussianProcessRegression : public CGaussianProcessMachine
+class SHOGUN_EXPORT CGaussianProcessRegression : public CGaussianProcessMachine
 {
 public:
 	/** problem type */

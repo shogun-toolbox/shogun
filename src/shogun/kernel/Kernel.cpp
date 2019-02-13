@@ -1370,8 +1370,8 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 }
 
 
-template SGMatrix<float64_t> CKernel::get_kernel_matrix<float64_t>();
-template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
+template SHOGUN_EXPORT SGMatrix<float64_t> CKernel::get_kernel_matrix<float64_t>();
+template SHOGUN_EXPORT SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
 
-template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
-template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
+template SHOGUN_EXPORT void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
+template SHOGUN_EXPORT void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);

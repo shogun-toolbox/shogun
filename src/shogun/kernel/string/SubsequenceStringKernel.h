@@ -49,7 +49,7 @@ namespace shogun
  * [1] Text Classification using String Kernels, Lodhi et. al. Journal of Machine
  * Learning Research 2(2002), 419-444.
  */
-class CSubsequenceStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CSubsequenceStringKernel: public CStringKernel<char>
 {
 public:
 	/** default constructor  */

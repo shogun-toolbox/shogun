@@ -19,7 +19,7 @@ namespace shogun
 /** @brief class GNPPLib, a Library of solvers for Generalized Nearest Point
  * Problem (GNPP).
  */
-class CGNPPLib: public CSGObject
+class SHOGUN_EXPORT CGNPPLib: public CSGObject
 {
  public:
   /** default constructor  */

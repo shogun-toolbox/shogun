@@ -38,7 +38,7 @@ namespace shogun
 
 /** @brief This is the base interface class for all discrete distributions.
  */
-class CDiscreteDistribution : public CDistribution
+class SHOGUN_EXPORT CDiscreteDistribution : public CDistribution
 {
 	public:
 		/* constructor */

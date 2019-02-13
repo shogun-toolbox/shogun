@@ -30,7 +30,7 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Manhattan_distance">
  * Wikipedia: Manhattan distance</a>
  */
-class CManhattanMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CManhattanMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

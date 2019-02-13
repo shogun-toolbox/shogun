@@ -36,7 +36,7 @@ class CKernel;
  * Uses the Tapkee library code.
  *
  */
-class CKernelLocallyLinearEmbedding: public CLocallyLinearEmbedding
+class SHOGUN_EXPORT CKernelLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {
 public:
 

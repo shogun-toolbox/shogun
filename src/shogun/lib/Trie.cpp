@@ -12,7 +12,7 @@
 namespace shogun
 {
 template <>
-void CTrie<POIMTrie>::POIMs_extract_W_helper(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_extract_W_helper(
 	const int32_t nodeIdx, const int32_t depth, const int32_t offset,
 	const int32_t y0, float64_t* const* const W, const int32_t K )
 {
@@ -53,7 +53,7 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper(
 }
 
 template <>
-void CTrie<POIMTrie>::POIMs_extract_W(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_extract_W(
 	float64_t* const* const W, const int32_t K)
 {
   ASSERT(degree>=1)
@@ -67,7 +67,7 @@ void CTrie<POIMTrie>::POIMs_extract_W(
 }
 
 template <>
-void CTrie<POIMTrie>::POIMs_calc_SLR_helper1(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_calc_SLR_helper1(
 	const float64_t* const distrib, const int32_t i, const int32_t nodeIdx,
 	int32_t left_tries_idx[4], const int32_t depth, int32_t const lastSym,
 	float64_t* S, float64_t* L, float64_t* R )
@@ -127,7 +127,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1(
 
 
 template <>
-void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 	const float64_t* const distrib, const int32_t i, const int32_t nodeIdx,
 	int32_t left_tries_idx[4], const int32_t depth, float64_t* S, float64_t* L,
 	float64_t* R )
@@ -238,7 +238,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 
 
 template <>
-void CTrie<POIMTrie>::POIMs_precalc_SLR( const float64_t* const distrib )
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_precalc_SLR( const float64_t* const distrib )
 {
 	if( degree == 1 ) {
 		return;
@@ -265,7 +265,7 @@ void CTrie<POIMTrie>::POIMs_precalc_SLR( const float64_t* const distrib )
 }
 
 template <>
-void CTrie<POIMTrie>::POIMs_get_SLR(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_get_SLR(
 	const int32_t parentIdx, const int32_t sym, const int32_t depth,
 	float64_t* S, float64_t* L, float64_t* R )
 {
@@ -287,7 +287,7 @@ void CTrie<POIMTrie>::POIMs_get_SLR(
 }
 
 template <>
-void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 	float64_t* const* const poims, const int32_t K, const int32_t k,
 	const int32_t i, const int32_t y, const float64_t valW,
 	const float64_t valS, const float64_t valL, const float64_t valR,
@@ -348,7 +348,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 }
 
 template <>
-void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
 	const int32_t nodeIdx, const int32_t depth, const int32_t i,
 	const int32_t y0, float64_t* const* const poims, const int32_t K,
 	const int32_t debug)
@@ -405,7 +405,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
 
 
 template <>
-void CTrie<POIMTrie>::POIMs_add_SLR(
+SHOGUN_EXPORT void CTrie<POIMTrie>::POIMs_add_SLR(
 	float64_t* const* const poims, const int32_t K, const int32_t debug)
 {
   ASSERT(degree>=1)

@@ -30,7 +30,7 @@ namespace shogun
  * The SMEM algorithm is described here:
  * http://mlg.eng.cam.ac.uk/zoubin/papers/uedanc.pdf
  */
-class CGMM : public CDistribution
+class SHOGUN_EXPORT CGMM : public CDistribution
 {
 	public:
 		/** default constructor */

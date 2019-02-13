@@ -49,7 +49,7 @@ namespace shogun
  * Journal of the Royal Statistical Society: Series B (Statistical Methodology) 67.2 (2005): 301-320.
  */
 
-class ElasticNetPenalty: public SparsePenalty
+class SHOGUN_EXPORT ElasticNetPenalty: public SparsePenalty
 {
 public:
 	ElasticNetPenalty()

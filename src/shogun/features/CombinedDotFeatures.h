@@ -38,7 +38,7 @@ class CDynamicObjectArray;
  *   \f[{\bf z'} = \alpha {\bf x} + {\bf z}\f]
  *
  */
-class CCombinedDotFeatures : public CDotFeatures
+class SHOGUN_EXPORT CCombinedDotFeatures : public CDotFeatures
 {
 	public:
 		/** constructor */

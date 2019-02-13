@@ -52,7 +52,7 @@ class KernelManager;
 
 }
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class CKernelSelectionStrategy : public CSGObject
+class SHOGUN_EXPORT CKernelSelectionStrategy : public CSGObject
 {
 	friend class CMMD;
 	friend class CStreamingMMD;

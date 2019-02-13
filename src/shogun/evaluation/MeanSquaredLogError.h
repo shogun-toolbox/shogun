@@ -29,7 +29,7 @@ class CLabels;
  * \f]
  *
  */
-class CMeanSquaredLogError: public CEvaluation
+class SHOGUN_EXPORT CMeanSquaredLogError: public CEvaluation
 {
 public:
 	/** constructor */

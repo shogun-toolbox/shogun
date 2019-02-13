@@ -15,7 +15,7 @@
 namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class SerializableXmlReader00
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT SerializableXmlReader00
 	:public CSerializableFile::TSerializableReader {
 	CSerializableXmlFile* m_file;
 

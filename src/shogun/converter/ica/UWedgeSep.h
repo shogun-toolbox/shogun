@@ -28,7 +28,7 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
  *
  */
-class CUWedgeSep: public CICAConverter
+class SHOGUN_EXPORT CUWedgeSep: public CICAConverter
 {
 	public:
 

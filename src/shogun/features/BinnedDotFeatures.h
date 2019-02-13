@@ -38,7 +38,7 @@ namespace shogun
  * representation but only overload the abstract dot/add methods in
  * CDotFeatures making them highly memory and computationally efficient.
  */
-class CBinnedDotFeatures : public CDotFeatures
+class SHOGUN_EXPORT CBinnedDotFeatures : public CDotFeatures
 {
 	public:
 		/** constructor

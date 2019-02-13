@@ -10,11 +10,7 @@ FILE(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/examples/meta" GENERATED_RESULTS_DIR)
 
 # compile tester c++ binary
 ADD_EXECUTABLE(meta_example_integration_tester ${CMAKE_CURRENT_SOURCE_DIR}/tester.cpp)
-if(WIN32)
-	target_link_libraries(meta_example_integration_tester shogun::shogun-static ${SANITIZER_LIBRARY})
-else()
-	target_link_libraries(meta_example_integration_tester shogun::shogun ${SANITIZER_LIBRARY})
-endif()
+target_link_libraries(meta_example_integration_tester shogun::shogun ${SANITIZER_LIBRARY})
 IF(SANITIZER_FLAGS)
     SET_TARGET_PROPERTIES(meta_example_integration_tester PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()

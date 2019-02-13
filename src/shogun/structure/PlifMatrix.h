@@ -25,7 +25,7 @@ template <class T> class SGString;
 
 /** @brief store plif arrays for all transitions in the model
  */
-class CPlifMatrix: public CSGObject
+class SHOGUN_EXPORT CPlifMatrix: public CSGObject
 {
 	public:
 		/** constructor

@@ -24,7 +24,7 @@ class CDistance;
 * \f]
 */
 
-class CInverseMultiQuadricKernel: public CKernel
+class SHOGUN_EXPORT CInverseMultiQuadricKernel: public CKernel
 {
 public:
 	/** default constructor */

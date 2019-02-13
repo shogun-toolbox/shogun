@@ -45,7 +45,7 @@ namespace shogun
 	 * add_subset_in_place().
 	 * The latter does not allow to remove such modifications one-by-one.
 	 */
-	class CLabels : public CSGObject
+	class SHOGUN_EXPORT CLabels : public CSGObject
 	{
 	public:
 		/** default constructor */

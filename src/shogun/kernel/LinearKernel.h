@@ -27,7 +27,7 @@ namespace shogun
  * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearKernel: public CDotKernel
+class SHOGUN_EXPORT CLinearKernel: public CDotKernel
 {
 	public:
 		/** constructor

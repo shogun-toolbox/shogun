@@ -26,7 +26,7 @@ namespace shogun
  *
  * \sa CLinearMachine
  */
-class CAveragedPerceptron : public CLinearMachine
+class SHOGUN_EXPORT CAveragedPerceptron : public CLinearMachine
 {
 	public:
 		/** problem type */

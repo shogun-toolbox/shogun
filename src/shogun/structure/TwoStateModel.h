@@ -19,7 +19,7 @@ namespace shogun
  * @brief class CTwoStateModel class for the internal two-state representation
  * used in the CHMSVMModel.
  */
-class CTwoStateModel : public CStateModel
+class SHOGUN_EXPORT CTwoStateModel : public CStateModel
 {
 	public:
 		/** default constructor */

@@ -18,7 +18,7 @@ namespace shogun
 	 * The CombinationRule defines an interface to how to combine the
 	 * classification or regression outputs of an ensemble of Machines.
 	 */
-	class CCombinationRule : public CSGObject
+	class SHOGUN_EXPORT CCombinationRule : public CSGObject
 	{
 		public:
 			/** default ctor */

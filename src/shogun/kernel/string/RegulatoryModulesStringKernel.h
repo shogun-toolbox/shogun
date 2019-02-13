@@ -20,7 +20,7 @@ namespace shogun
  * on regulatory sequences.
  *
  */
-class CRegulatoryModulesStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CRegulatoryModulesStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

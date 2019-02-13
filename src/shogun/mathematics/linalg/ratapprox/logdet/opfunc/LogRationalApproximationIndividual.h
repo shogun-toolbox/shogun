@@ -24,7 +24,7 @@ template<class T, class ST> class CLinearSolver;
  * log times vector expression are solved individually with a complex linear
  * solver.
  */
-class CLogRationalApproximationIndividual : public CRationalApproximation
+class SHOGUN_EXPORT CLogRationalApproximationIndividual : public CRationalApproximation
 {
 public:
 	/** default constructor */

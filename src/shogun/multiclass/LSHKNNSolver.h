@@ -20,7 +20,7 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/Locality-sensitive_hashing.
  *
  */
-class CLSHKNNSolver : public CKNNSolver
+class SHOGUN_EXPORT CLSHKNNSolver : public CKNNSolver
 {
 	public:
 		/** default constructor */

@@ -69,7 +69,7 @@ namespace shogun
  * Note that "Cholesky" means Cholesky represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLCholeskyInferenceMethod: public CKLLowerTriangularInference
+class SHOGUN_EXPORT CKLCholeskyInferenceMethod: public CKLLowerTriangularInference
 {
 public:
 	/** default constructor */

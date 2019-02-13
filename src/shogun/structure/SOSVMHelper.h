@@ -24,7 +24,7 @@ namespace shogun
  * [1] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CSOSVMHelper : public CSGObject
+class SHOGUN_EXPORT CSOSVMHelper : public CSGObject
 {
 public:
 	/** constructor */

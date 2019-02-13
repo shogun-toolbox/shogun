@@ -32,11 +32,6 @@ set(INCLUDE_INSTALL_DIR include)
 set(THIRD_PARTY_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party)
 set(SHOGUN_CLING_LIBRARY_DIR "\"${CMAKE_INSTALL_PREFIX}/${SHOGUN_LIB_INSTALL}\"")
 
-if (MSVC OR BUILD_BENCHMARKS)
-  SET(LIBSHOGUN_BUILD_STATIC ON
-    CACHE BOOL "Build libshogun static library" FORCE)
-endif()
-
 # Allow to hide non-bsd compatible codes
 OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
 SET(USE_GPL_SHOGUN 0)
@@ -63,13 +58,6 @@ IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
     MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included. Disable by USE_SVMLIGHT=OFF")
 ENDIF()
 
-# add target to compile the libshogun sources
-add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-IF (SANITIZER_FLAGS)
-  set_property(TARGET libshogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
-ENDIF()
-
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
     version
@@ -80,7 +68,75 @@ ADD_CUSTOM_TARGET(
       -P ${CMAKE_SOURCE_DIR}/cmake/version.cmake
     COMMENT "Generating version header"
 )
-add_dependencies(libshogun version)
+
+add_library(shogun SHARED ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+generate_export_header(shogun)
+set_target_properties(shogun PROPERTIES
+  VERSION ${LIBSHOGUNVER}
+  SOVERSION ${LIBSHOGUNSO}
+  POSITION_INDEPENDENT_CODE TRUE
+  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR}
+  COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+target_include_directories(shogun PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+  $<INSTALL_INTERFACE:include/shogun>
+)
+add_dependencies(shogun version)
+IF (SANITIZER_FLAGS)
+  set_property(TARGET shogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
+ENDIF()
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "dir='${dir}'")
+endforeach()
+
+# create shogun_deps meta target to store all the
+# dependencies of shogun itself, this is used in unit test
+add_library(shogun_deps INTERFACE)
+target_link_libraries(shogun_deps INTERFACE shogun)
+target_include_directories(shogun_deps INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+)
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
+
+# add target for static library if enabled
+if (LIBSHOGUN_BUILD_STATIC)
+  add_library(shogun-static STATIC ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+  if (WIN32)
+    set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun_static)
+  else()
+    set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
+  endif()
+  set_target_properties(shogun-static PROPERTIES
+    POSITION_INDEPENDENT_CODE TRUE
+    COMPILE_FLAGS -DSHOGUN_STATIC_DEFINE
+  )
+  target_include_directories(shogun-static PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+    $<INSTALL_INTERFACE:include/shogun>
+  )
+  IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+  ENDIF()
+
+  IF (SANITIZER_FLAGS)
+    set_property(TARGET shogun-static PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
+  ENDIF()
+
+  if(MSVC)
+    target_link_libraries(shogun-static PUBLIC winmm.lib)
+  endif()
+  add_dependencies(shogun-static version)
+ENDIF()
 
 # generate source files from templates
 FOREACH(template ${LIBSHOGUN_SRC_TMP})
@@ -105,67 +161,14 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   )
 
   ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
-  add_dependencies(libshogun ${generated_target})
   set_source_files_properties(${generated_cpp} PROPERTIES GENERATED ON)
-  target_sources(libshogun PRIVATE ${generated_cpp})
-ENDFOREACH()
-
-add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-generate_export_header(shogun)
-set_target_properties(
-  shogun PROPERTIES
-  VERSION ${LIBSHOGUNVER}
-  SOVERSION ${LIBSHOGUNSO}
-  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
-set_property(TARGET shogun APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
-target_include_directories(shogun PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-  $<INSTALL_INTERFACE:include/shogun>
-)
-IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
-ENDIF()
-
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-  message(STATUS "dir='${dir}'")
-endforeach()
-
-# create shogun_deps meta target to store all the
-# dependencies of shogun itself, this is used in unit test
-add_library(shogun_deps INTERFACE)
-target_link_libraries(shogun_deps INTERFACE shogun)
-target_include_directories(shogun_deps INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-)
-IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
-ENDIF()
-
-# add bundled libraries to dependency
-if(SHOGUN_DEPENDS)
-  add_dependencies(libshogun ${SHOGUN_DEPENDS})
-endif()
-
-# add target for static library if enabled
-if (LIBSHOGUN_BUILD_STATIC)
-  add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-  set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
-  target_include_directories(shogun-static PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-    $<INSTALL_INTERFACE:include/shogun>
-  )
-  IF (${USE_GPL_SHOGUN})
-    target_include_directories(shogun-static PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
-  ENDIF()
-
-  if(MSVC)
-    target_link_libraries(shogun-static PUBLIC winmm.lib)
+  add_dependencies(shogun ${generated_target})
+  target_sources(shogun PRIVATE ${generated_cpp})
+  if (LIBSHOGUN_BUILD_STATIC)
+    add_dependencies(shogun-static ${generated_target})
+    target_sources(shogun-static PRIVATE ${generated_cpp})
   endif()
-ENDIF()
+ENDFOREACH()
 
 IF(MSVC)
   IF(MSVC_VERSION VERSION_LESS "1700")
@@ -233,7 +236,6 @@ if (NOT MSVC)
     SET(USE_JEMALLOC 1)
     SET(HAVE_ALIGNED_MALLOC 1)
     SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-    target_include_directories(libshogun PRIVATE ${Jemalloc_INCLUDE_DIR})
     target_include_directories(shogun PRIVATE ${Jemalloc_INCLUDE_DIR})
     target_link_libraries(shogun PRIVATE ${Jemalloc_LIBRARIES})
     if (EXISTS shogun-static)
@@ -245,7 +247,6 @@ if (NOT MSVC)
     SET(USE_TCMALLOC 1)
     SET(HAVE_ALIGNED_MALLOC 1)
     SET(CMAKE_CXX_FLAGS "${EXTERNAL_MALLOC_CFLAGS} ${CMAKE_CXX_FLAGS}")
-    target_include_directories(libshogun PRIVATE ${TCMalloc_INCLUDE_DIR})
     target_include_directories(shogun PRIVATE ${TCMalloc_INCLUDE_DIR})
     target_link_libraries(shogun PRIVATE ${TCMalloc_LIBRARIES})
     if (EXISTS shogun-static)
@@ -387,9 +388,13 @@ IF (PROTOBUF_FOUND AND ENABLE_PROTOBUF)
        COMMENT "Running C++ protocol buffer compiler on ${FIL_WE}.proto"
       )
     ADD_CUSTOM_TARGET("${FIL_WE}Protobuf" DEPENDS "${name}.pb.cc")
-    add_dependencies(libshogun "${FIL_WE}Protobuf")
     set_source_files_properties(${name}.pb.cc PROPERTIES GENERATED ON)
-    target_sources(libshogun PRIVATE ${name}.pb.cc)
+    add_dependencies(shogun "${FIL_WE}Protobuf")
+    target_sources(shogun PRIVATE ${name}.pb.cc)
+    if (LIBSHOGUN_BUILD_STATIC)
+      add_dependencies(shogun-static "${FIL_WE}Protobuf")
+      target_sources(shogun-static PRIVATE ${name}.pb.cc)
+    endif()
   ENDFOREACH()
 ENDIF()
 
@@ -461,7 +466,6 @@ IF (OpenCV)
   FIND_PACKAGE(OpenCV)
   IF (OpenCV_FOUND)
     SET(HAVE_OPENCV 1)
-    target_include_directories(libshogun PUBLIC ${OpenCV_INCLUDE_DIRS})
     target_include_directories(shogun PUBLIC ${OpenCV_INCLUDE_DIRS})
     target_link_libraries(shogun PUBLIC ${OpenCV_LIBRARIES})
     if (EXISTS shogun-static)
@@ -541,13 +545,13 @@ OPTION(ENABLE_LTO "Enable link-time optimisation")
 
 include(LDGOLD)
 if (LDGOLD_FOUND)
-  SET_LDGOLD(shogun shogun-static libshogun shogun_deps)
+  SET_LDGOLD(shogun shogun-static shogun_deps)
 endif()
 
 include(LTO)
 if (ENABLE_LTO AND LTO_FOUND)
   MESSAGE(STATUS "Link-time optimisation enabled")
-  SET_LTO(shogun shogun-static shogun_deps libshogun)
+  SET_LTO(shogun shogun-static shogun_deps)
 endif()
 
 # FIXME: remove all the INCLUDES/SYSTEM_INCLUDES/POSTLINKFLAGS
@@ -565,18 +569,18 @@ IF (BUILD_BENCHMARKS)
   enable_testing()
   add_library(shogun_benchmark_main ${CMAKE_CURRENT_SOURCE_DIR}/util/benchmark_main.cc)
   if (APPLE)
-    target_link_libraries(shogun_benchmark_main benchmark::benchmark shogun-static)
+    target_link_libraries(shogun_benchmark_main benchmark::benchmark shogun)
   elseif(MSVC)
     target_link_libraries(shogun_benchmark_main
       benchmark::benchmark
       Shlwapi.lib
-      shogun-static
+      shogun
     )
   else()
     target_link_libraries(shogun_benchmark_main
       benchmark::benchmark
       pthread
-      shogun-static
+      shogun
     )
   endif()
 

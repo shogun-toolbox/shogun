@@ -29,7 +29,7 @@ class CFeatures;
  * The Journal of Machine Learning Research, 5, 777-800.
  *
  */
-class CFFSep: public CICAConverter
+class SHOGUN_EXPORT CFFSep: public CICAConverter
 {
 	public:
 

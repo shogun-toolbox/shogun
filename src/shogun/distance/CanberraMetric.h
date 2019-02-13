@@ -31,7 +31,7 @@ namespace shogun
  *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$
  *  and \f$d(0,0)=0\f$.
  */
-class CCanberraMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CCanberraMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

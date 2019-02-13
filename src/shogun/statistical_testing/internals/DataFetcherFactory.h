@@ -29,6 +29,7 @@
  */
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
 
 #ifndef DATA_FETCHER_FACTORY_H__
 #define DATA_FETCHER_FACTORY_H__
@@ -50,7 +51,7 @@ struct DataFetcherFactory
 	DataFetcherFactory& operator=(const DataFetcherFactory& other) = delete;
 	~DataFetcherFactory() = delete;
 
-	static DataFetcher* get_instance(CFeatures* feats);
+	SHOGUN_EXPORT static DataFetcher* get_instance(CFeatures* feats);
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

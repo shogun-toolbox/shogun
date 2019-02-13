@@ -52,7 +52,7 @@ namespace shogun
  *
  * where \f$\lambda\f$ is a learning rate.
  */
-class RmsPropUpdater: public DescendUpdaterWithCorrection
+class SHOGUN_EXPORT RmsPropUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */

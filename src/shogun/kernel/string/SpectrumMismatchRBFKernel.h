@@ -35,7 +35,7 @@ struct joint_list_struct
 #endif
 
 /** @brief spectrum mismatch rbf kernel */
-class CSpectrumMismatchRBFKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
 public:
 	/** default constructor  */

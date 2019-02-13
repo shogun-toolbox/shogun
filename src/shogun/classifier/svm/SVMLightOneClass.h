@@ -21,7 +21,7 @@ namespace shogun
  *
  * \sa CSVMLight
  */
-class CSVMLightOneClass: public CSVMLight
+class SHOGUN_EXPORT CSVMLightOneClass: public CSVMLight
 {
 	public:
 		/** default constructor */

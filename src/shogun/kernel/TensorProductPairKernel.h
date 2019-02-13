@@ -32,7 +32,7 @@ namespace shogun
  *
  * It is often used in bioinformatics, e.g., to predict protein-protein interactions.
  */
-class CTensorProductPairKernel: public CDotKernel
+class SHOGUN_EXPORT CTensorProductPairKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

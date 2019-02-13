@@ -40,7 +40,7 @@ enum ECovType
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
  * The actual computations depend on the type of covariance used.
  */
-class CGaussian : public CDistribution
+class SHOGUN_EXPORT CGaussian : public CDistribution
 {
 	public:
 		/** default constructor */
@@ -210,9 +210,7 @@ class CGaussian : public CDistribution
 		 * Note that the object is SG_REF'ed
 		 * @return casted CGaussian object
 		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
+		SHOGUN_DEPRECATED
 		static CGaussian* obtain_from_generic(CDistribution* distribution);
 
 		/** @return object name */

@@ -43,7 +43,7 @@ namespace internal
  * @brief Class that holds block-details for the data-fetchers.
  * There are one instance of this class per fetcher.
  */
-class BlockwiseDetails
+class SHOGUN_EXPORT BlockwiseDetails
 {
 	friend class DataFetcher;
 	friend class StreamingDataFetcher;

@@ -84,7 +84,7 @@ enum EAlphabet
  * BINARY, ALPHANUM, CUBE, RAW, IUPAC_NUCLEIC_ACID and IUPAC_AMINO_ACID.
  *
  */
-class CAlphabet : public CSGObject
+class SHOGUN_EXPORT CAlphabet : public CSGObject
 {
 	public:
 

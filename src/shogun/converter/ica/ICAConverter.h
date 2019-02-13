@@ -21,7 +21,7 @@ namespace shogun
 	/** @brief class ICAConverter
 	 * Base class for ICA algorithms that apply to CDenseFeatures<float64_t>
 	 */
-	class CICAConverter : public CConverter
+	class SHOGUN_EXPORT CICAConverter : public CConverter
 	{
 	public:
 

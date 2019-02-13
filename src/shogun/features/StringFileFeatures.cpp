@@ -120,17 +120,17 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	CStringFeatures<ST>::features=SG_REALLOC(SGString<ST>, CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
 }
 
-template class CStringFileFeatures<bool>;
-template class CStringFileFeatures<char>;
-template class CStringFileFeatures<int8_t>;
-template class CStringFileFeatures<uint8_t>;
-template class CStringFileFeatures<int16_t>;
-template class CStringFileFeatures<uint16_t>;
-template class CStringFileFeatures<int32_t>;
-template class CStringFileFeatures<uint32_t>;
-template class CStringFileFeatures<int64_t>;
-template class CStringFileFeatures<uint64_t>;
-template class CStringFileFeatures<float32_t>;
-template class CStringFileFeatures<float64_t>;
-template class CStringFileFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<bool>;
+template class SHOGUN_EXPORT CStringFileFeatures<char>;
+template class SHOGUN_EXPORT CStringFileFeatures<int8_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<uint8_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<int16_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<uint16_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<int32_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<uint32_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<int64_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<uint64_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<float32_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<float64_t>;
+template class SHOGUN_EXPORT CStringFileFeatures<floatmax_t>;
 }

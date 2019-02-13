@@ -21,7 +21,7 @@ namespace shogun
  * @see CTaskGroup
  * @see CTaskTree
  */
-class CTask : public CSGObject
+class SHOGUN_EXPORT CTask : public CSGObject
 {
 public:
 

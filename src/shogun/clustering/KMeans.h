@@ -40,7 +40,7 @@ class CKMeansBase;
  *
  *
  */
-class CKMeans : public CKMeansBase
+class SHOGUN_EXPORT CKMeans : public CKMeansBase
 {
 	public:
 	

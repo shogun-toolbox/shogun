@@ -39,7 +39,7 @@ namespace shogun
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
  * CFITCInferenceMethod::get_posterior_covariance() is called
  */
-class CFITCInferenceMethod: public CSingleFITCInference
+class SHOGUN_EXPORT CFITCInferenceMethod: public CSingleFITCInference
 {
 public:
 	/** default constructor */

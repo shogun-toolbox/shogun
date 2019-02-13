@@ -321,17 +321,17 @@ SGSparseVector<ST> CHashedDenseFeatures<ST>::hash_vector(SGVector<ST> vec, int32
 	return hashed_vector;
 }
 
-template class CHashedDenseFeatures<bool>;
-template class CHashedDenseFeatures<char>;
-template class CHashedDenseFeatures<int8_t>;
-template class CHashedDenseFeatures<uint8_t>;
-template class CHashedDenseFeatures<int16_t>;
-template class CHashedDenseFeatures<uint16_t>;
-template class CHashedDenseFeatures<int32_t>;
-template class CHashedDenseFeatures<uint32_t>;
-template class CHashedDenseFeatures<int64_t>;
-template class CHashedDenseFeatures<uint64_t>;
-template class CHashedDenseFeatures<float32_t>;
-template class CHashedDenseFeatures<float64_t>;
-template class CHashedDenseFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<bool>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<char>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<int8_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<uint8_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<int16_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<uint16_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<int32_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<uint32_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<int64_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<uint64_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<float32_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<float64_t>;
+template class SHOGUN_EXPORT CHashedDenseFeatures<floatmax_t>;
 }

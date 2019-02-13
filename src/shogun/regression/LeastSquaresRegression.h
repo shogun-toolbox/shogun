@@ -22,7 +22,7 @@ namespace shogun
 	 *
 	 * Same as CLinearRidgeRegression, but without a regularization term.
 	 */
-	class CLeastSquaresRegression : public CLinearRidgeRegression
+	class SHOGUN_EXPORT CLeastSquaresRegression : public CLinearRidgeRegression
 	{
 	public:
 		/** problem type */

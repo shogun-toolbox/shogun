@@ -23,7 +23,7 @@ namespace shogun
 	 * \f]
 	 * where \f$x\f$ is an original value, \f$x'\f$ is the normalized value.
      */
-	class CRescaleFeatures : public CDensePreprocessor<float64_t>
+	class SHOGUN_EXPORT CRescaleFeatures : public CDensePreprocessor<float64_t>
 	{
 	public:
 		/** default ctor */

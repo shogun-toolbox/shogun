@@ -22,7 +22,7 @@ namespace shogun
 	 * @brief: Bagging algorithm
 	 * i.e. bootstrap aggregating
 	 */
-	class CBaggingMachine : public CMachine
+	class SHOGUN_EXPORT CBaggingMachine : public CMachine
 	{
 		public:
 			/** default ctor */

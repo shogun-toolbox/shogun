@@ -46,7 +46,7 @@ namespace shogun
  * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is
  * used
  */
-class CNeuralLogisticLayer : public CNeuralLinearLayer
+class SHOGUN_EXPORT CNeuralLogisticLayer : public CNeuralLinearLayer
 {
 public:
 	/** default constructor */

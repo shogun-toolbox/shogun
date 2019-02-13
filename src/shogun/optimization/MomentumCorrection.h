@@ -41,7 +41,7 @@ namespace shogun
  *
  * An example of descend based correction is NesterovMomentumCorrection 
  */
-class MomentumCorrection: public DescendCorrection
+class SHOGUN_EXPORT MomentumCorrection: public DescendCorrection
 {
 public:
 	/*  Constructor */

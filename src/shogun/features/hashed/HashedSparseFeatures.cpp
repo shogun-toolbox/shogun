@@ -323,17 +323,17 @@ int32_t CHashedSparseFeatures<ST>::get_num_vectors() const
 	return sparse_feats ->get_num_vectors();
 }
 
-template class CHashedSparseFeatures <bool>;
-template class CHashedSparseFeatures <char>;
-template class CHashedSparseFeatures <int8_t>;
-template class CHashedSparseFeatures <uint8_t>;
-template class CHashedSparseFeatures <int16_t>;
-template class CHashedSparseFeatures <uint16_t>;
-template class CHashedSparseFeatures <int32_t>;
-template class CHashedSparseFeatures <uint32_t>;
-template class CHashedSparseFeatures <int64_t>;
-template class CHashedSparseFeatures <uint64_t>;
-template class CHashedSparseFeatures <float32_t>;
-template class CHashedSparseFeatures <float64_t>;
-template class CHashedSparseFeatures <floatmax_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <bool>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <char>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <int8_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <uint8_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <int16_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <uint16_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <int32_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <uint32_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <int64_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <uint64_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <float32_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <float64_t>;
+template class SHOGUN_EXPORT CHashedSparseFeatures <floatmax_t>;
 }

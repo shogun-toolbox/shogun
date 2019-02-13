@@ -23,7 +23,7 @@ namespace shogun
 	/**
 	 * Class that abstracts all premature stopping code
 	 */
-	class CStoppableSGObject : public CSGObject
+	class SHOGUN_EXPORT CStoppableSGObject : public CSGObject
 	{
 	public:
 		/** constructor */

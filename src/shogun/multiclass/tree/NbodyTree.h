@@ -47,7 +47,7 @@ namespace shogun
 /** @brief This class implements genaralized tree for N-body problems like k-NN, kernel density estimation, 2 point
  * correlation.
  */
-class CNbodyTree : public CTreeMachine<NbodyTreeNodeData>
+class SHOGUN_EXPORT CNbodyTree : public CTreeMachine<NbodyTreeNodeData>
 {
 public:
 

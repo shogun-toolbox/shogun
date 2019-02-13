@@ -30,7 +30,7 @@ class CDotFeatures;
  * where \f$\tau\f$ is the kernel width.
  *
  */
-class CGaussianKernel: public CShiftInvariantKernel
+class SHOGUN_EXPORT CGaussianKernel: public CShiftInvariantKernel
 {
 public:
 	/** default constructor */

@@ -43,7 +43,7 @@ namespace shogun
  * combination rule (see class CCombinationRule). The feature for calculating out-of-box error is also provided to help determine the
  * appropriate number of bags. The evaluatin criteria for calculating this out-of-box error is specified by the user (see class CEvaluation).
  */
-class CRandomForest : public CBaggingMachine
+class SHOGUN_EXPORT CRandomForest : public CBaggingMachine
 {
 public:
 	/** constructor */

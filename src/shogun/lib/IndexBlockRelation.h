@@ -27,7 +27,7 @@ enum EIndexBlockRelationType
 /** @brief class IndexBlockRelation
  *
  */
-class CIndexBlockRelation : public CSGObject
+class SHOGUN_EXPORT CIndexBlockRelation : public CSGObject
 {
 public:
 

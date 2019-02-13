@@ -62,7 +62,7 @@ struct T_HMM_INDIZES
  * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CTOPFeatures : public CDenseFeatures<float64_t>
+class SHOGUN_EXPORT CTOPFeatures : public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */

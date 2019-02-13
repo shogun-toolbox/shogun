@@ -48,7 +48,7 @@ namespace shogun
  * www.eecs.berkeley.edu/~elghaoui/Teaching/EE227A/lecture18.pdf
  */
 
-class L1Penalty: public SparsePenalty
+class SHOGUN_EXPORT L1Penalty: public SparsePenalty
 {
 public:
 	L1Penalty()

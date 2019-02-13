@@ -22,7 +22,7 @@ namespace shogun
 	/** @brief abstract implementaion of Linear Machine with latent variable
 	 * This is the base implementation of all linear machines with latent variable.
 	 */
-	class CLinearLatentMachine: public CLinearMachine
+	class SHOGUN_EXPORT CLinearLatentMachine: public CLinearMachine
 	{
 
 		public:

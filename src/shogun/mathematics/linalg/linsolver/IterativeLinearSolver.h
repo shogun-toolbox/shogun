@@ -19,7 +19,7 @@ namespace shogun
  * conjugate gradient (CG) solvers. provides interface for setting the
  * iteration limit, relative/absolute tolerence. solve method is abstract.
  */
-template<class T, class ST=T> class CIterativeLinearSolver : public CLinearSolver<T, ST>
+template<class T, class ST=T> class SHOGUN_EXPORT CIterativeLinearSolver : public CLinearSolver<T, ST>
 {
 
 public:

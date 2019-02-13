@@ -78,7 +78,7 @@ namespace shogun
  * where \f$\ell\f$ is a loss function. Here \f$\lambda\f$ controls the trade-off between the two regularization terms. \f$\lambda=0\f$ corresponds to \f$L_1\f$-MKL, whereas \f$\lambda=1\f$ corresponds to the uniform-weighted combination of kernels (\f$L_\infty\f$-MKL). This approach was studied by Shawe-Taylor (2008) "Kernel Learning for Novelty Detection" (NIPS MKL Workshop 2008) and Tomioka & Suzuki (2009) "Sparsity-accuracy trade-off in MKL" (NIPS MKL Workshop 2009).
  *
  */
-class CMKL : public CSVM
+class SHOGUN_EXPORT CMKL : public CSVM
 {
 	public:
 		/** Constructor

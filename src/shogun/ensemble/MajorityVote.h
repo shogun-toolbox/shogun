@@ -17,7 +17,7 @@ namespace shogun
 	 * @brief CMajorityVote is a CWeightedMajorityVote combiner, where each
 	 * Machine's weight in the ensemble is 1.0
 	 */
-	class CMajorityVote : public CWeightedMajorityVote
+	class SHOGUN_EXPORT CMajorityVote : public CWeightedMajorityVote
 	{
 		public:
 			CMajorityVote();

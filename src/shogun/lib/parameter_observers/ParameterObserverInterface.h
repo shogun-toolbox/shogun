@@ -52,7 +52,7 @@ namespace shogun
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserverInterface
+	class SHOGUN_EXPORT ParameterObserverInterface
 	{
 
 	public:

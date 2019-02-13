@@ -18,7 +18,7 @@ template<class T> class CDenseMatrixOperator;
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * dense matrix linear operator using Eigen3
  */
-class CDirectEigenSolver : public CEigenSolver
+class SHOGUN_EXPORT CDirectEigenSolver : public CEigenSolver
 {
 public:
 	/** default constructor */

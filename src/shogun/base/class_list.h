@@ -25,12 +25,12 @@ namespace shogun {
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
+	SHOGUN_EXPORT CSGObject* create(const char* sgserializable_name, EPrimitiveType generic);
 
 	/** deletes object
 	 * @param object pointer to object to be deleted
 	 */
-	void delete_object(CSGObject* object);
+	SHOGUN_EXPORT void delete_object(CSGObject* object);
 
 	/** Creates new shogun instance, typed.
 	 *
@@ -68,7 +68,7 @@ namespace shogun {
 	/** Returns all available object names
 	 *
 	 */
-	std::set<std::string> available_objects();
+	SHOGUN_EXPORT std::set<std::string> available_objects();
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

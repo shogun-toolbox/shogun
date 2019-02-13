@@ -31,7 +31,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CPolyMatchStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

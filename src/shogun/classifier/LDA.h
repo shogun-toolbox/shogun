@@ -93,7 +93,7 @@ template <class ST> class CDenseFeatures;
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
 
-class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
+class SHOGUN_EXPORT CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 {
 	friend class CDenseRealDispatch<CLDA, CLinearMachine>;
 	public:

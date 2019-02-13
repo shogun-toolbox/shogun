@@ -20,7 +20,7 @@ class CFeatures;
 class CKernel;
 
 /** @brief generic kernel multiclass */
-class CKernelMulticlassMachine : public CMulticlassMachine
+class SHOGUN_EXPORT CKernelMulticlassMachine : public CMulticlassMachine
 {
 	public:
 		/** default constructor  */

@@ -26,7 +26,7 @@ class CKernel;
  * Reduction Toolkit) used to construct embeddings of
  * features, e.g. construct dense numeric embedding of string features
  */
-class CEmbeddingConverter: public CConverter
+class SHOGUN_EXPORT CEmbeddingConverter: public CConverter
 {
 public:
 

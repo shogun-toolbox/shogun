@@ -24,7 +24,7 @@ template <class T> class SGSparseVector;
  * data. The current implementation is capable of storing only a single
  * header/data type. Multiple headers are currently not implemented.
  */
-class CBinaryFile: public CFile
+class SHOGUN_EXPORT CBinaryFile: public CFile
 {
 public:
 	/** default constructor  */

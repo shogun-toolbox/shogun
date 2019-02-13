@@ -21,7 +21,7 @@ namespace shogun
  * Uses implementation from the Tapkee library.
  *
  */
-class CTDistributedStochasticNeighborEmbedding : public CEmbeddingConverter
+class SHOGUN_EXPORT CTDistributedStochasticNeighborEmbedding : public CEmbeddingConverter
 {
 public:
 

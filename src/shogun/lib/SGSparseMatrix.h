@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Soumyajit De, Sergey Lisitsyn, Yingrui Chang, 
- *          Evgeniy Andreev, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Soumyajit De, Sergey Lisitsyn, Yingrui Chang,
+ *          Evgeniy Andreev, Yuyu Zhang, Viktor Gal, Thoralf Klein,
  *          Fernando Iglesias, Bjoern Esser
  */
 

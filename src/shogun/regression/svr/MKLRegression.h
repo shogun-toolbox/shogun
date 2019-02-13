@@ -21,7 +21,7 @@ namespace shogun
  *
  * \sa CMKL
  */
-class CMKLRegression : public CMKL
+class SHOGUN_EXPORT CMKLRegression : public CMKL
 {
 	public:
 		/** problem type */

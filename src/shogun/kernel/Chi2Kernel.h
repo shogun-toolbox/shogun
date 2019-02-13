@@ -27,7 +27,7 @@ namespace shogun
  * \f]
  *
  * */
-class CChi2Kernel: public CDotKernel
+class SHOGUN_EXPORT CChi2Kernel: public CDotKernel
 {
 	void init();
 

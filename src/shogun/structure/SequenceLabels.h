@@ -21,7 +21,7 @@ class CSequenceLabels;
 
 /** @brief Class CSequence to be used in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
-class CSequence : public CStructuredData
+class SHOGUN_EXPORT CSequence : public CStructuredData
 {
 public:
 	/** data type */
@@ -66,7 +66,7 @@ protected:
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). Each of the
  * labels is represented by a sequence of integers. Each label is of type
  * CSequence and all of them are stored in a CDynamicObjectArray. */
-class CSequenceLabels : public CStructuredLabels
+class SHOGUN_EXPORT CSequenceLabels : public CStructuredLabels
 {
 	public:
 		/** default constructor */

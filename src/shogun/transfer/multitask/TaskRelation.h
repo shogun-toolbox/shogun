@@ -25,7 +25,7 @@ IGNORE_IN_CLASSLIST enum ETaskRelationType
 
 /** @brief used to represent tasks in multitask learning
  */
-class CTaskRelation : public CSGObject
+class SHOGUN_EXPORT CTaskRelation : public CSGObject
 {
 public:
 

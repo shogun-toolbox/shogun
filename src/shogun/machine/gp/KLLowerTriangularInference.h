@@ -65,7 +65,7 @@ namespace shogun
  * Note that "lowerTriangular" means lowerTriangular represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLLowerTriangularInference: public CKLInference
+class SHOGUN_EXPORT CKLLowerTriangularInference: public CKLInference
 {
 public:
 	/** default constructor */

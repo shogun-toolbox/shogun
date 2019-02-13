@@ -18,7 +18,7 @@ namespace shogun
  * computing eigenvalues of a real valued, self-adjoint linear operator. It
  * also provides method for getting min and max eigenvalues.
  */
-class CEigenSolver : public CSGObject
+class SHOGUN_EXPORT CEigenSolver : public CSGObject
 {
 public:
 	/** default constructor */

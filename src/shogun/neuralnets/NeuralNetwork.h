@@ -107,7 +107,7 @@ enum ENNOptimizationMethod
  * When implemnting new layer types, the function check_gradients() can be used
  * to make sure the gradient computations are correct.
  */
-class CNeuralNetwork : public CMachine
+class SHOGUN_EXPORT CNeuralNetwork : public CMachine
 {
 friend class CDeepBeliefNetwork;
 

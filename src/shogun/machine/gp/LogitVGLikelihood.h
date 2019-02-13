@@ -54,7 +54,7 @@ template<class C> class SGMatrix;
  * \f]
  *
  */
-class CLogitVGLikelihood : public CNumericalVGLikelihood
+class SHOGUN_EXPORT CLogitVGLikelihood : public CNumericalVGLikelihood
 {
 public:
 	CLogitVGLikelihood();

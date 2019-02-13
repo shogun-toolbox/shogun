@@ -44,7 +44,7 @@ template<class T> struct CSetNode
 /** @brief the class CSet, a set based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
-template<class T> class CSet: public CSGObject
+template<class T> class SHOGUN_EXPORT CSet: public CSGObject
 {
 public:
 	/** Custom constructor */

@@ -33,7 +33,7 @@ namespace shogun
  * and Nucleic Acids, 1998
  *
  * */
-class CLinearHMM : public CDistribution
+class SHOGUN_EXPORT CLinearHMM : public CDistribution
 {
 	public:
 		/** default constructor  */

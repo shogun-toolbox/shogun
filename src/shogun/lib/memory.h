@@ -102,7 +102,7 @@ template <class T> void sg_generic_free(T* ptr)
 }
 #else //TRACE_MEMORY_ALLOCS
 
-void* sg_malloc(size_t size);
+SHOGUN_EXPORT void* sg_malloc(size_t size);
 template <class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_generic_malloc(size_t len)
 {
@@ -115,7 +115,7 @@ T* sg_generic_malloc(size_t len)
 	return new T[len]();
 }
 
-void* sg_realloc(void* ptr, size_t size);
+SHOGUN_EXPORT void* sg_realloc(void* ptr, size_t size);
 template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
 {
@@ -135,7 +135,7 @@ T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
 	return new_ptr;
 }
 
-void* sg_calloc(size_t num, size_t size);
+SHOGUN_EXPORT void* sg_calloc(size_t num, size_t size);
 template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_generic_calloc(size_t len)
 {
@@ -148,7 +148,7 @@ T* sg_generic_calloc(size_t len)
 	return new T[len]();
 }
 
-void sg_free(void* ptr);
+SHOGUN_EXPORT void sg_free(void* ptr);
 template<class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 void sg_generic_free(T* ptr)
 {
@@ -162,7 +162,7 @@ void sg_generic_free(T* ptr)
 }
 
 #ifdef HAVE_ALIGNED_MALLOC
-void* sg_aligned_malloc(size_t size, size_t al);
+SHOGUN_EXPORT void* sg_aligned_malloc(size_t size, size_t al);
 template <class T, std::enable_if_t<!is_sg_referenced<T>::value, T>* = nullptr>
 T* sg_aligned_malloc(size_t len, size_t al)
 {
@@ -214,8 +214,8 @@ class MemoryBlock
 void list_memory_allocs();
 #endif
 
-void* get_copy(void* src, size_t len);
-char* get_strdup(const char* str);
+SHOGUN_EXPORT void* get_copy(void* src, size_t len);
+SHOGUN_EXPORT char* get_strdup(const char* str);
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

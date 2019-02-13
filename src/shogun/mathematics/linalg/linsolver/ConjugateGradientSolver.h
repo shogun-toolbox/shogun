@@ -21,7 +21,7 @@ template<class T> class SGVector;
  * involving a real valued linear operator and vector. Useful for large sparse
  * systems involving sparse symmetric and positive-definite matrices.
  */
-class CConjugateGradientSolver : public CIterativeLinearSolver<float64_t, float64_t>
+class SHOGUN_EXPORT CConjugateGradientSolver : public CIterativeLinearSolver<float64_t, float64_t>
 {
 
 public:

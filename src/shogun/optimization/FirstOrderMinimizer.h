@@ -49,7 +49,7 @@ namespace shogun
  * a penalty object if regularization is enabled (eg, Penalty )
  *
  */
-class FirstOrderMinimizer: public Minimizer
+class SHOGUN_EXPORT FirstOrderMinimizer: public Minimizer
 {
 public: 
 	/** Default constructor */

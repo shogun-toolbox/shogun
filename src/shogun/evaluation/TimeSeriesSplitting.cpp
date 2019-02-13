@@ -47,6 +47,10 @@ CTimeSeriesSplitting::CTimeSeriesSplitting(CLabels* labels, index_t num_subsets)
 	init();
 }
 
+CTimeSeriesSplitting::~CTimeSeriesSplitting()
+{
+}
+
 void CTimeSeriesSplitting::init()
 {
 	m_rng = sg_rand;

@@ -30,7 +30,7 @@ class CDynamicObjectArray;
  * sub-features that are the same instance, the subset action will only be
  * performed once.
  */
-class CCombinedFeatures : public CFeatures
+class SHOGUN_EXPORT CCombinedFeatures : public CFeatures
 {
 	public:
 		/** default constructor */

@@ -33,6 +33,7 @@
 import os
 
 class_str = 'class'
+export_str = 'SHOGUN_EXPORT'
 types = ["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
          "INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
 config_tests = ["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK",
@@ -85,12 +86,15 @@ def extract_class_name(lines, line_nr, line, blacklist):
         if not check_class(line):
             if not check_class(lines[line_nr+1]):
                 return
+
+        if c.lstrip().startswith(export_str):
+            c = c[len(export_str)+1:]
+
         c = c.split()[0]
     except:
         return
 
     c = c.strip(':').strip()
-
     if not c.startswith('C'):
         return
     if c.endswith(';'):

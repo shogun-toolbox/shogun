@@ -21,7 +21,7 @@ namespace shogun
 class CSVM;
 
 /** @brief class MultiClassSVM */
-class CMulticlassSVM : public CKernelMulticlassMachine
+class SHOGUN_EXPORT CMulticlassSVM : public CKernelMulticlassMachine
 {
 	public:
 		/** problem type */

@@ -65,7 +65,7 @@ namespace internal
  * 		}
  * @endcode
  */
-class NextSamples
+class SHOGUN_EXPORT NextSamples
 {
 	friend class DataManager;
 private:

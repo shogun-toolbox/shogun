@@ -17,7 +17,7 @@ namespace shogun
 {
 	template <class T> class CSparseFeatures;
 /** @brief class SparseEucldeanDistance */
-class CSparseEuclideanDistance: public CSparseDistance<float64_t>
+class SHOGUN_EXPORT CSparseEuclideanDistance: public CSparseDistance<float64_t>
 {
 	public:
 		/** default constructor */

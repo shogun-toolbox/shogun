@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Shell Hu, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Fernando Iglesias, Shell Hu, Yuyu Zhang, Thoralf Klein,
  *          Sergey Lisitsyn, Bjoern Esser, Viktor Gal
  */
 
@@ -20,7 +20,7 @@ namespace shogun
  * and contains the application dependent logic to solve multiclass
  * classification within a generic SO framework.
  */
-class CMulticlassModel : public CStructuredModel
+class SHOGUN_EXPORT CMulticlassModel : public CStructuredModel
 {
 
 	public:

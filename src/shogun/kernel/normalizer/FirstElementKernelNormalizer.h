@@ -23,7 +23,7 @@ namespace shogun
  * useful if the kernel returns constant elements along the diagonal anyway and
  * all one wants is to scale the kernel down to 1 on the diagonal.
  */
-class CFirstElementKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CFirstElementKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** constructor

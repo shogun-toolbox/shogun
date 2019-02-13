@@ -44,7 +44,7 @@ namespace shogun
  * Advances in Neural Information Processing Systems. 2013.
  */
 
-class SVRGMinimizer: public FirstOrderStochasticMinimizer
+class SHOGUN_EXPORT SVRGMinimizer: public FirstOrderStochasticMinimizer
 {
 public:
 	/** Default constructor */

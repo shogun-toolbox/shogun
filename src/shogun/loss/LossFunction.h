@@ -45,7 +45,7 @@ namespace shogun
  * Nikos Karampatziakis, John Langford
  * http://arxiv.org/abs/1011.1576
  */
-class CLossFunction: public CSGObject
+class SHOGUN_EXPORT CLossFunction: public CSGObject
 {
 public:
 

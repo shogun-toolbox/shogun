@@ -24,7 +24,7 @@ namespace shogun
  * A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller
  *
  */
-class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
+class SHOGUN_EXPORT CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */

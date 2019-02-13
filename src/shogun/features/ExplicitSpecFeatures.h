@@ -22,7 +22,7 @@ template <class ST> class CStringFeatures;
  *
  * \sa CCommWordStringKernel
  */
-class CExplicitSpecFeatures : public CDotFeatures
+class SHOGUN_EXPORT CExplicitSpecFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor */

@@ -33,7 +33,7 @@ class CDistance;
  * Uses implementation from the Tapkee library.
  *
  */
-class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
+class SHOGUN_EXPORT CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
 {
 public:
 

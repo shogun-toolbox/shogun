@@ -21,7 +21,7 @@ namespace shogun
 /** @brief Class CFactorDataSource Source for factor data.
  * In some cases, the same data can be shared by many factors.
  */
-class CFactorDataSource : public CSGObject
+class SHOGUN_EXPORT CFactorDataSource : public CSGObject
 {
 public:
 	/** default constructor is prohibitted */
@@ -83,7 +83,7 @@ private:
  * Each factor can have its own data, either dense, sparse or shared data.
  * Note that currently this class is table factor oriented.
  */
-class CFactor : public CSGObject
+class SHOGUN_EXPORT CFactor : public CSGObject
 {
 public:
 	/** default constructor */

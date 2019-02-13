@@ -113,17 +113,17 @@ template<class T> void SGString<T>::save(CFile* saver)
 	SG_RESET_LOCALE;
 }
 
-template class SGString<bool>;
-template class SGString<char>;
-template class SGString<int8_t>;
-template class SGString<uint8_t>;
-template class SGString<int16_t>;
-template class SGString<uint16_t>;
-template class SGString<int32_t>;
-template class SGString<uint32_t>;
-template class SGString<int64_t>;
-template class SGString<uint64_t>;
-template class SGString<float32_t>;
-template class SGString<float64_t>;
-template class SGString<floatmax_t>;
+template class SHOGUN_EXPORT SGString<bool>;
+template class SHOGUN_EXPORT SGString<char>;
+template class SHOGUN_EXPORT SGString<int8_t>;
+template class SHOGUN_EXPORT SGString<uint8_t>;
+template class SHOGUN_EXPORT SGString<int16_t>;
+template class SHOGUN_EXPORT SGString<uint16_t>;
+template class SHOGUN_EXPORT SGString<int32_t>;
+template class SHOGUN_EXPORT SGString<uint32_t>;
+template class SHOGUN_EXPORT SGString<int64_t>;
+template class SHOGUN_EXPORT SGString<uint64_t>;
+template class SHOGUN_EXPORT SGString<float32_t>;
+template class SHOGUN_EXPORT SGString<float64_t>;
+template class SHOGUN_EXPORT SGString<floatmax_t>;
 }

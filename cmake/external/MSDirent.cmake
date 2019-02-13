@@ -13,4 +13,4 @@ ExternalProject_Add(
 
 ExternalProject_Get_Property(MSDirent SOURCE_DIR)
 SET(MSDIRENT_INCLUDE_DIR ${SOURCE_DIR}/include)
-add_dependencies(libshogun MSDirent)
+ADD_SHOGUN_DEPENDENCY(MSDirent)

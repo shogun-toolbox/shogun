@@ -30,7 +30,7 @@ namespace shogun
  * \sa CLinearHMM
  * \sa CDistribution
  * */
-class CPluginEstimate: public CMachine
+class SHOGUN_EXPORT CPluginEstimate: public CMachine
 {
 	public:
 

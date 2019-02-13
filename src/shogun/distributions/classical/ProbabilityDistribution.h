@@ -22,7 +22,7 @@ template <class T> class SGVector;
  * over the real numbers (64bit) for which various statistics can be computed
  * and which can be sampled.
  */
-class CProbabilityDistribution: public CSGObject
+class SHOGUN_EXPORT CProbabilityDistribution: public CSGObject
 {
 public:
 	/** Default constructor */

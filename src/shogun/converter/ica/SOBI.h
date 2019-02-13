@@ -30,7 +30,7 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 45(2), 434-444.
  *
  */
-class CSOBI: public CICAConverter
+class SHOGUN_EXPORT CSOBI: public CICAConverter
 {
 	public:
 

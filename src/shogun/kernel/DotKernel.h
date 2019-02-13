@@ -24,7 +24,7 @@ namespace shogun
  *
  * \sa CDotFeatures
  */
-class CDotKernel : public CKernel
+class SHOGUN_EXPORT CDotKernel : public CKernel
 {
 	public:
 		/** default constructor

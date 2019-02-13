@@ -65,7 +65,7 @@ namespace shogun
  * The default time complexity of the kernel method can be O(n^2)
  *
  */
-class CSingleFITCInference: public CSingleSparseInference
+class SHOGUN_EXPORT CSingleFITCInference: public CSingleSparseInference
 {
 public:
 	/** default constructor */

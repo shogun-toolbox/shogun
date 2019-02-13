@@ -25,7 +25,7 @@ namespace shogun
  *
  * TODO: implement functions for SGD
  */
-class CFactorGraphModel : public CStructuredModel
+class SHOGUN_EXPORT CFactorGraphModel : public CStructuredModel
 {
 public:
 	/** constructor */

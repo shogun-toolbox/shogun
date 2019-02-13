@@ -23,7 +23,7 @@ namespace shogun
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-class GradientModelSelectionCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT GradientModelSelectionCostFunction: public FirstOrderCostFunction
 {
 public:
 	GradientModelSelectionCostFunction():FirstOrderCostFunction() {  init(); }

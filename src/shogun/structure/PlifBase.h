@@ -16,7 +16,7 @@
 namespace shogun
 {
 /** @brief class PlifBase */
-class CPlifBase : public CSGObject
+class SHOGUN_EXPORT CPlifBase : public CSGObject
 {
 	public:
 		/** default constructor */

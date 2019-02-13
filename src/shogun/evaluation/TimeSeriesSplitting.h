@@ -53,7 +53,7 @@ namespace shogun
 	 * The two splits are \f$ S1 = [5,6,7,8,9] \f$ and \f$ S2 = [8,9]\f$
 	 */
 
-	class CTimeSeriesSplitting : public CSplittingStrategy
+	class SHOGUN_EXPORT CTimeSeriesSplitting : public CSplittingStrategy
 	{
 	public:
 		/** constructor */
@@ -66,6 +66,8 @@ namespace shogun
 		 * into
 		 */
 		CTimeSeriesSplitting(CLabels* labels, index_t num_subsets);
+
+		virtual ~CTimeSeriesSplitting();
 
 		/** Sets the minimum subset size for subsets. If forecasting h-step
 		 * ahead, set min_size to h.

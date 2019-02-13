@@ -358,6 +358,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %rename(SGObject) CSGObject;
 
+// ignore SHOGUN_EXPORT
+#define SHOGUN_EXPORT
+#define SHOGUN_DEPRECATED
+
 %include <shogun/lib/common.h>
 %include <shogun/lib/exception/ShogunException.h>
 

@@ -76,7 +76,7 @@ enum EMCSamplerType
  * and then using the samplers to estimate the predictive marginal distribution.
  *
  */
-class CSoftMaxLikelihood : public CLikelihoodModel
+class SHOGUN_EXPORT CSoftMaxLikelihood : public CLikelihoodModel
 {
 public:
 	/** default constructor */

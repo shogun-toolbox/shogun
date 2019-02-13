@@ -11,6 +11,5 @@ ExternalProject_Add(
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${RXCPP_SOURCE_DIR}/src/Rx/v2/src/ ${THIRD_PARTY_INCLUDE_DIR}/
         )
 
-add_dependencies(libshogun rxcpp)
-
 set(rxcpp_INCLUDE_DIR ${THIRD_PARTY_INCLUDE_DIR})
+ADD_SHOGUN_DEPENDENCY(rxcpp)

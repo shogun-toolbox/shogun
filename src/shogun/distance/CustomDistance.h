@@ -25,7 +25,7 @@ namespace shogun
  * representation. Also note that values are stored as 32bit floats.
  *
  */
-class CCustomDistance: public CDistance
+class SHOGUN_EXPORT CCustomDistance: public CDistance
 {
 	public:
 		/** default constructor */

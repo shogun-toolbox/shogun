@@ -2,6 +2,7 @@
 #define __SG_UNIQUE_H__
 
 #include <shogun/base/macros.h>
+#include <shogun/shogun_export.h>
 
 namespace shogun
 {

@@ -52,7 +52,7 @@ namespace shogun
 	 * can also be included, which effectively centers the \f$X\f$ before
 	 * computing the solution.
 	 */
-	class CLinearRidgeRegression : public CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>
+	class SHOGUN_EXPORT CLinearRidgeRegression : public CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>
 	{
 		friend class CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>;
 

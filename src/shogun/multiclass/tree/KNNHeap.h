@@ -44,7 +44,7 @@ namespace shogun
  * in case the heap is full already, the max among the stored values is automatically thrown out as the new value finds its
  * proper place in the heap.
  */
-class CKNNHeap
+class SHOGUN_EXPORT CKNNHeap
 {
 public:
 	/** constructor

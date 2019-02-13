@@ -6,5 +6,5 @@
 /*
 Function that tests if a SGMatrix is a permutation matrix
 */
-bool is_permutation_matrix(shogun::SGMatrix<float64_t> m);
+SHOGUN_EXPORT bool is_permutation_matrix(shogun::SGMatrix<float64_t> m);
 

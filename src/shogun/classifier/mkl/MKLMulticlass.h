@@ -31,7 +31,7 @@ namespace shogun
  *	set_max_num_mkliters(int32_t maxnum); It passes the regularization
  *	constants C1 and C2 to GMNPSVM.
  */
-class CMKLMulticlass : public CMulticlassSVM
+class SHOGUN_EXPORT CMKLMulticlass : public CMulticlassSVM
 {
 public:
    /** Class default Constructor */

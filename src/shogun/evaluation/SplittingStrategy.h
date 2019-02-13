@@ -36,7 +36,7 @@ class CLabels;
  *
  * Calling the method agains means that the indices are rebuilt.
  */
-class CSplittingStrategy: public CSGObject
+class SHOGUN_EXPORT CSplittingStrategy: public CSGObject
 {
 public:
 	/** constructor */

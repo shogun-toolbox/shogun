@@ -32,7 +32,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CSNPStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CSNPStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

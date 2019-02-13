@@ -18,7 +18,7 @@
 namespace shogun
 {
 /** @brief class DomainAdaptationSVM */
-class CDomainAdaptationSVM : public CSVMLight
+class SHOGUN_EXPORT CDomainAdaptationSVM : public CSVMLight
 {
 	public:
 

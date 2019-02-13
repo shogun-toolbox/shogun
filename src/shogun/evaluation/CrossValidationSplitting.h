@@ -20,7 +20,7 @@ class CLabels;
  * CSplittingStrategy. Produces subset index sets of equal size (at most one
  * difference)
  */
-class CCrossValidationSplitting: public CSplittingStrategy
+class SHOGUN_EXPORT CCrossValidationSplitting: public CSplittingStrategy
 {
 public:
 	/** constructor */
@@ -32,6 +32,8 @@ public:
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
 	CCrossValidationSplitting(CLabels* labels, index_t num_subsets);
+
+	virtual ~CCrossValidationSplitting();
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

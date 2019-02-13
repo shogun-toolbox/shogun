@@ -20,7 +20,7 @@ namespace shogun
 	template <class T> class CStringFeatures;
 /** @brief The HistogramWordString computes the TOP kernel on inhomogeneous
  * Markov Chains. */
-class CHistogramWordStringKernel: public CStringKernel<uint16_t>
+class SHOGUN_EXPORT CHistogramWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */

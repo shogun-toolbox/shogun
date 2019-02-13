@@ -57,7 +57,7 @@ namespace shogun
 	 *
 	 * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
 	 * */
-	class CLibLinear : public CLinearMachine
+	class SHOGUN_EXPORT CLibLinear : public CLinearMachine
 	{
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)

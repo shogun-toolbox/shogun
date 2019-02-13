@@ -28,7 +28,7 @@ template <class ST> struct SGSparseVectorEntry;
  * \sa CHDF5File
  *
  */
-class CFile : public CSGObject
+class SHOGUN_EXPORT CFile : public CSGObject
 {
 public:
 	/** default constructor */

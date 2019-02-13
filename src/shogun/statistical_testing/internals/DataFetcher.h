@@ -45,7 +45,7 @@ namespace internal
 
 class DataManager;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class DataFetcher
+class SHOGUN_EXPORT DataFetcher
 {
 	friend class DataManager;
 	friend class InitPerFeature;

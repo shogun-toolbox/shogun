@@ -30,7 +30,7 @@ namespace shogun
 {
 /** @brief Class CFactorGraphDataGenerator Create factor graph data for  multiple unit tests
  */
-class CFactorGraphDataGenerator: public CSGObject
+class SHOGUN_EXPORT CFactorGraphDataGenerator: public CSGObject
 {
 public:
 	/** Constructor */

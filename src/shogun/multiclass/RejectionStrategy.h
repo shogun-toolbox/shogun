@@ -11,7 +11,7 @@ namespace shogun
 {
 
 /** @brief base rejection strategy class */
-class CRejectionStrategy : public CSGObject
+class SHOGUN_EXPORT CRejectionStrategy : public CSGObject
 {
 	public:
 		/** default constructor  */
@@ -32,7 +32,7 @@ class CRejectionStrategy : public CSGObject
 };
 
 /** @brief threshold based rejection strategy */
-class CThresholdRejectionStrategy : public CRejectionStrategy
+class SHOGUN_EXPORT CThresholdRejectionStrategy : public CRejectionStrategy
 {
 	public:
 
@@ -90,7 +90,7 @@ static const float64_t Q_test_statistic_values[10][8] =
  * rejection strategy. Statistic values are taken from
  * http://www.vias.org/tmdatanaleng/cc_outlier_tests_dixon.html
  * */
-class CDixonQTestRejectionStrategy : public CRejectionStrategy
+class SHOGUN_EXPORT CDixonQTestRejectionStrategy : public CRejectionStrategy
 {
 	public:
 

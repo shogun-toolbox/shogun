@@ -344,5 +344,5 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	return SGMatrix<T>(result,m,n,true);
 }
 
-template SGMatrix<float64_t> CDistance::get_distance_matrix<float64_t>();
-template SGMatrix<float32_t> CDistance::get_distance_matrix<float32_t>();
+template SHOGUN_EXPORT SGMatrix<float64_t> CDistance::get_distance_matrix<float64_t>();
+template SHOGUN_EXPORT SGMatrix<float32_t> CDistance::get_distance_matrix<float32_t>();

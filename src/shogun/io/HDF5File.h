@@ -29,7 +29,7 @@ struct TSGDataType;
  *
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CHDF5File : public CFile
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT CHDF5File : public CFile
 {
 public:
 	/** default constructor  */

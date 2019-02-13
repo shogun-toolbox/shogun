@@ -27,7 +27,7 @@ namespace shogun
  * are created that ensure that all positive examples get a higher score than
  * all negative examples in training.
  */
-class CAUCKernel: public CDotKernel
+class SHOGUN_EXPORT CAUCKernel: public CDotKernel
 {
 	void init();
 

@@ -32,7 +32,7 @@ class CDistance;
  * sg('create_converter','laplacian_eigenmaps',k,width);
  *
  */
-class CLaplacianEigenmaps: public CEmbeddingConverter
+class SHOGUN_EXPORT CLaplacianEigenmaps: public CEmbeddingConverter
 {
 public:
 

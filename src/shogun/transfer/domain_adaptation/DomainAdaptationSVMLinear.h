@@ -19,7 +19,7 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 /** @brief class DomainAdaptationSVMLinear */
-class CDomainAdaptationSVMLinear : public CLibLinear
+class SHOGUN_EXPORT CDomainAdaptationSVMLinear : public CLibLinear
 {
 
 	public:

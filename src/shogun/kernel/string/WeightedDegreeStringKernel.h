@@ -47,7 +47,7 @@ enum EWDKernType
  *      which evaluates to 1 when its argument is true and to 0
  *      otherwise.
  */
-class CWeightedDegreeStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CWeightedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
 

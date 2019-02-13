@@ -23,7 +23,7 @@ class CDistance;
 *             K(x,x') = \sqrt{\| x - x' \|^2 +c^2}
 * \f]
 */
-class CMultiquadricKernel: public CKernel
+class SHOGUN_EXPORT CMultiquadricKernel: public CKernel
 {
 public:
 	/** default constructor */

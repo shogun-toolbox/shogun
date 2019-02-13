@@ -53,7 +53,7 @@ namespace shogun
  *   Methods. Research report. CTU-CMP-2005-22. CTU FEL Prague. 2005.
  *   ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .
 */
-class CGMNPLib: public CSGObject
+class SHOGUN_EXPORT CGMNPLib: public CSGObject
 {
 	public:
 		/** default constructor  */

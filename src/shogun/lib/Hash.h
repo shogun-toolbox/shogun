@@ -23,7 +23,7 @@ struct substring;
  * crc32, md5 and murmur.
  *
  */
-class CHash : public CSGObject
+class SHOGUN_EXPORT CHash : public CSGObject
 {
 	public:
 		/** default constructor */

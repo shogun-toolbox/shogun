@@ -20,7 +20,7 @@ namespace shogun
  *
  * \sa CMKL
  */
-class CMKLClassification : public CMKL
+class SHOGUN_EXPORT CMKLClassification : public CMKL
 {
 	public:
 		/** Constructor

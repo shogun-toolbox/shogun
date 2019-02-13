@@ -17,7 +17,7 @@ namespace shogun
 {
 
 /** @brief multiclass OCAS wrapper */
-class CMulticlassOCAS : public CLinearMulticlassMachine
+class SHOGUN_EXPORT CMulticlassOCAS : public CLinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

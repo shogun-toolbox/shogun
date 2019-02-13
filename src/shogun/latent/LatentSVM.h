@@ -28,7 +28,7 @@ namespace shogun
 	 *  IEEE Transactions on, vol. 32, no. 9, pp. 1627-1645, 2010.
 	 *
 	 */
-	class CLatentSVM: public CLinearLatentMachine
+	class SHOGUN_EXPORT CLatentSVM: public CLinearLatentMachine
 	{
 		public:
 			/** default contstructor */

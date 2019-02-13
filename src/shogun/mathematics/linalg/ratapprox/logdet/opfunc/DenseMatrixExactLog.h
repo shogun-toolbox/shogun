@@ -20,7 +20,7 @@ template<class T> class CDenseMatrixOperator;
 /** @brief Class that generates jobs for computing logarithm of
  *  a dense matrix linear operator
  */
-class CDenseMatrixExactLog : public COperatorFunction<float64_t>
+class SHOGUN_EXPORT CDenseMatrixExactLog : public COperatorFunction<float64_t>
 {
 public:
 	/** default constructor */

@@ -63,7 +63,7 @@ struct CRealNumber : public CStructuredData
  * represented by a real number and it is required that the values of the labels
  * are in the set {0, 1, ..., num_classes-1}. Each label is of type CRealNumber
  * and all of them are stored in a CDynamicObjectArray. */
-class CMulticlassSOLabels : public CStructuredLabels
+class SHOGUN_EXPORT CMulticlassSOLabels : public CStructuredLabels
 {
 	public:
 		/** default constructor */

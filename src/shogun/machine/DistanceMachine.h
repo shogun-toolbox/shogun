@@ -24,7 +24,7 @@ namespace shogun
  *
  * A distance machine is based on a a-priori choosen distance.
  */
-class CDistanceMachine : public CMachine
+class SHOGUN_EXPORT CDistanceMachine : public CMachine
 {
 	public:
 		/** default constructor */

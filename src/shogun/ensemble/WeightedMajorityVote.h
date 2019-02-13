@@ -27,7 +27,7 @@ namespace shogun
 	 * \f$C\f$ is the number of classes
 	 *
 	 */
-	class CWeightedMajorityVote : public CCombinationRule
+	class SHOGUN_EXPORT CWeightedMajorityVote : public CCombinationRule
 	{
 		public:
 			/**

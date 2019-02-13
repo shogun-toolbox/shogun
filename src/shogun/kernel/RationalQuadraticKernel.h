@@ -28,7 +28,7 @@ class CDistance;
  *
  */
 
-class CRationalQuadraticKernel: public CKernel
+class SHOGUN_EXPORT CRationalQuadraticKernel: public CKernel
 {
 public:
 	/** default constructor */

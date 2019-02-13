@@ -44,7 +44,7 @@ namespace shogun
  * \f],
  * where \f$\lambda\f$ is a learning rate.
  */
-class GradientDescendUpdater: public DescendUpdaterWithCorrection
+class SHOGUN_EXPORT GradientDescendUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */

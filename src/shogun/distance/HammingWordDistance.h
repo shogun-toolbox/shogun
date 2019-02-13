@@ -19,7 +19,7 @@ namespace shogun
 	template <class T> class CStringFeatures;
 
 /** @brief class HammingWordDistance */
-class CHammingWordDistance: public CStringDistance<uint16_t>
+class SHOGUN_EXPORT CHammingWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor  */

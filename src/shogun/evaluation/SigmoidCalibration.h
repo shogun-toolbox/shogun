@@ -24,7 +24,7 @@ namespace shogun
 	* comparisons to regularized likelihood methods.
 	* Advances in large margin classifiers. 1999
 	*/
-	class CSigmoidCalibration : public CCalibration
+	class SHOGUN_EXPORT CSigmoidCalibration : public CCalibration
 	{
 	public:
 		/** Constructor. */

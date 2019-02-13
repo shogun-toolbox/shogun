@@ -39,7 +39,7 @@ class CDistance;
  * sg('create_converter','lle',k);
  *
  */
-class CLocallyLinearEmbedding: public CEmbeddingConverter
+class SHOGUN_EXPORT CLocallyLinearEmbedding: public CEmbeddingConverter
 {
 public:
 

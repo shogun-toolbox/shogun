@@ -21,7 +21,7 @@ namespace shogun
 template <class ST> class CStringFeatures;
 
 /** @brief class WDSVMOcas */
-class CWDSVMOcas : public CMachine
+class SHOGUN_EXPORT CWDSVMOcas : public CMachine
 {
 	public:
 		/** problem type */

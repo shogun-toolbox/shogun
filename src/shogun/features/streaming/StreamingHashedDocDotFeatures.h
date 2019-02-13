@@ -35,7 +35,7 @@ class CHashedDocConverter;
  * and current_label. Call get_next_example() followed by get_current_vector()
  * to iterate through the stream.
  */
-class CStreamingHashedDocDotFeatures : public CStreamingDotFeatures
+class SHOGUN_EXPORT CStreamingHashedDocDotFeatures : public CStreamingDotFeatures
 {
 public:
 	/** Constructor */

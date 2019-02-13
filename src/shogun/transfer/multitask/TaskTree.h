@@ -21,7 +21,7 @@ namespace shogun
  *
  * @see CTask
  */
-class CTaskTree : public CTaskRelation
+class SHOGUN_EXPORT CTaskTree : public CTaskRelation
 {
 public:
 

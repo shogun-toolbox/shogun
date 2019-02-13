@@ -28,7 +28,7 @@ class CDistance;
  *
  */
 
-class CWaveKernel: public CKernel
+class SHOGUN_EXPORT CWaveKernel: public CKernel
 {
 public:
 	/** default constructor */

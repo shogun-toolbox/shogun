@@ -17,7 +17,7 @@ namespace shogun
 
 /** @brief The base class used to evaluate clustering
  */
-class CClusteringEvaluation: public CEvaluation
+class SHOGUN_EXPORT CClusteringEvaluation: public CEvaluation
 {
 public:
 	/** constructor */

@@ -21,7 +21,7 @@
 namespace shogun
 {
 /** @brief Positional PWM */
-class CPositionalPWM : public CDistribution
+class SHOGUN_EXPORT CPositionalPWM : public CDistribution
 {
 	public:
 		/** default constructor */

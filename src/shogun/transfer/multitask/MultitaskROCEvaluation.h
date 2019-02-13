@@ -20,7 +20,7 @@ namespace shogun
  * under ROC curve (auROC) of each task separately.
  *
  */
-class CMultitaskROCEvaluation: public CROCEvaluation
+class SHOGUN_EXPORT CMultitaskROCEvaluation: public CROCEvaluation
 {
 public:
 	/** constructor */

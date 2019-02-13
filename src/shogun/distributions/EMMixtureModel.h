@@ -41,7 +41,7 @@ namespace shogun
 
 /** @brief This is the implementation of EM specialized for Mixture models.
  */
-class CEMMixtureModel : public CEMBase<MixModelData>
+class SHOGUN_EXPORT CEMMixtureModel : public CEMBase<MixModelData>
 {
 	public:
 		/** constructor */

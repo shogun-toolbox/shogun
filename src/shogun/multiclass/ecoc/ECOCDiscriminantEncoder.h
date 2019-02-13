@@ -28,7 +28,7 @@ namespace shogun
  *   Application Dependent Design of Error Correcting Output Codes. TPAMI 2006.
  *
  */
-class CECOCDiscriminantEncoder: public CECOCEncoder
+class SHOGUN_EXPORT CECOCDiscriminantEncoder: public CECOCEncoder
 {
 public:
     /** constructor */

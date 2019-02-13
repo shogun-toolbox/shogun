@@ -26,7 +26,7 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianShortRealKernel: public CDotKernel
+class SHOGUN_EXPORT CGaussianShortRealKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

@@ -17,7 +17,7 @@ class CSerializableAsciiFile;
 template <class T> struct SGSparseVectorEntry;
 
 /** @brief Serializable ascii reader */
-class SerializableAsciiReader00
+class SHOGUN_EXPORT SerializableAsciiReader00
 	: public CSerializableFile::TSerializableReader {
 
 	CSerializableAsciiFile* m_file;

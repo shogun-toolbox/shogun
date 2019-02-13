@@ -20,7 +20,7 @@ namespace shogun
 	 * As latent labels always depends on the given application, this class
 	 * only defines the API that the user has to implement for latent labels.
 	 */
-	class CLatentLabels : public CLabels
+	class SHOGUN_EXPORT CLatentLabels : public CLabels
 	{
 		public:
 			/** default ctor */

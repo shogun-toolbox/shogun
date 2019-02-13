@@ -43,7 +43,7 @@ class CMulticlassSVM;
  * \f}
  * here C is a pre-specified regularization parameter.
  */
-class CSVM : public CKernelMachine
+class SHOGUN_EXPORT CSVM : public CKernelMachine
 {
 	public:
 

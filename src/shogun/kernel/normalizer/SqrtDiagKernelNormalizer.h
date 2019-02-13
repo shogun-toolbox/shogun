@@ -24,7 +24,7 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
  * \f]
  */
-class CSqrtDiagKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CSqrtDiagKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor

@@ -59,7 +59,7 @@ enum ELikelihoodModelType
  * The Likelihood model computes approximately the distribution \f$p(y|f)\f$,
  * where \f$y\f$ are the labels, and \f$f\f$ is the prediction function.
  */
-class CLikelihoodModel : public CSGObject
+class SHOGUN_EXPORT CLikelihoodModel : public CSGObject
 {
 public:
 	/** default constructor */

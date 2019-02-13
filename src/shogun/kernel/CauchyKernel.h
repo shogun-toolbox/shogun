@@ -28,7 +28,7 @@ class CDistance;
  *
  */
 
-class CCauchyKernel: public CKernel
+class SHOGUN_EXPORT CCauchyKernel: public CKernel
 {
 public:
 	/** default constructor */

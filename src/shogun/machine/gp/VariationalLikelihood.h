@@ -51,7 +51,7 @@ template<class T> class SGVector;
  * where \f$y\f$ are the labels, \f$f\f$ is the prediction function,
  * q is a variational distribution and p is a modeling distribution.
  */
-class CVariationalLikelihood : public CLikelihoodModel
+class SHOGUN_EXPORT CVariationalLikelihood : public CLikelihoodModel
 {
 public:
 	/** default constructor */

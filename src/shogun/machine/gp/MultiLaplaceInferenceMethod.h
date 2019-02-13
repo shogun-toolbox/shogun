@@ -66,7 +66,7 @@ namespace shogun
  *
  * The reference pseudo code is the algorithm 3.3 of the GPML textbook
  */
-class CMultiLaplaceInferenceMethod: public CLaplaceInference
+class SHOGUN_EXPORT CMultiLaplaceInferenceMethod: public CLaplaceInference
 {
 public:
 	/** default constructor */

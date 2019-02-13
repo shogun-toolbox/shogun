@@ -58,7 +58,7 @@ namespace shogun
  * If you read the introduction at http://cs231n.github.io/neural-networks-3/#sgd ,
  * you may know that \f$v\f$ is also called velocity.
  */
-class StandardMomentumCorrection: public MomentumCorrection
+class SHOGUN_EXPORT StandardMomentumCorrection: public MomentumCorrection
 {
 public:
 	/*  Constructor */

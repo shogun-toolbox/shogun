@@ -42,7 +42,7 @@ class CKernel;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class InitPerKernel
+class SHOGUN_EXPORT InitPerKernel
 {
 	friend class KernelManager;
 private:

@@ -18,7 +18,7 @@
 namespace shogun
 {
 /** @brief Wrapper class for an index subset which is used by SubsetStack. */
-class CSubset: public CSGObject
+class SHOGUN_EXPORT CSubset: public CSGObject
 {
 	friend class CSubsetStack;
 

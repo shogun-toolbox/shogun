@@ -17,7 +17,7 @@ namespace shogun
  *  e.g. a matrix
  */
 template<class T>
-class CLinearOperator : public CSGObject
+class SHOGUN_EXPORT CLinearOperator : public CSGObject
 {
 public:
 	/** default constructor */

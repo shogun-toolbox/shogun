@@ -30,7 +30,7 @@ namespace shogun
  * \frac{ \mbox{min}(\bf x, \bf x')^3}{3}
  * \f]
  */
-class CSplineKernel: public CDotKernel
+class SHOGUN_EXPORT CSplineKernel: public CDotKernel
 {
 	public:
 		/** constructor

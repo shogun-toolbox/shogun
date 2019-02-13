@@ -37,7 +37,7 @@ namespace shogun
 	 * Note that a new CFeatures is always created even in in-place mode because
 	 * CFeatures is immutable.
 	 */
-	class CTransformer : public CSGObject
+	class SHOGUN_EXPORT CTransformer : public CSGObject
 	{
 	public:
 		/** constructor */

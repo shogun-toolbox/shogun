@@ -92,7 +92,7 @@ struct SparsityStructure
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T> class CSparseMatrixOperator : public CMatrixOperator<T>
+template<class T> class SHOGUN_EXPORT CSparseMatrixOperator : public CMatrixOperator<T>
 {
 /** this class has support for complex128_t */
 typedef bool supports_complex128_t;

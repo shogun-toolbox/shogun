@@ -25,7 +25,7 @@ namespace shogun
  *     Feature Hashing for Large Scale Multitask Learning
  *     http://alex.smola.org/papers/2009/Weinbergeretal09.pdf
  */
-class CHashedMultilabelModel : public CStructuredModel
+class SHOGUN_EXPORT CHashedMultilabelModel : public CStructuredModel
 {
 public:
 	/** default constructor */

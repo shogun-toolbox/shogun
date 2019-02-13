@@ -36,7 +36,7 @@ class Parameter;
  *
  * Again: Leafs of the tree may only be Parameter nodes.
  */
-class CParameterCombination : public CSGObject
+class SHOGUN_EXPORT CParameterCombination : public CSGObject
 {
 friend class CModelSelectionParameters;
 

@@ -47,7 +47,7 @@ namespace shogun
  * which are not hyper-parameters of the kernel.
  *
  * */
-class CGaussianARDSparseKernel: public CGaussianARDKernel
+class SHOGUN_EXPORT CGaussianARDSparseKernel: public CGaussianARDKernel
 {
 public:
 	/** default constructor */

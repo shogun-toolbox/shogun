@@ -22,7 +22,7 @@ namespace shogun
  * \f$k({\bf x}, {\bf x'})= c\f$
  *
  */
-class CConstKernel: public CKernel
+class SHOGUN_EXPORT CConstKernel: public CKernel
 {
 	public:
 		/** default constructor  */

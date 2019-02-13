@@ -48,7 +48,7 @@ namespace shogun
  * Labels are subsets of {0, ..., num_classes-1}
  */
 
-class CMultilabelLabels : public CLabels
+class SHOGUN_EXPORT CMultilabelLabels : public CLabels
 {
 public:
 	/** default constructor */
@@ -68,7 +68,7 @@ public:
 	CMultilabelLabels(int32_t num_labels, int32_t num_classes);
 
 	/** destructor */
-	~CMultilabelLabels();
+	virtual ~CMultilabelLabels();
 
 	virtual bool is_valid() const override;
 

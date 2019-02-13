@@ -43,7 +43,7 @@ namespace shogun
  * ) 
  *
  */
-class SparsePenalty: public ProximalPenalty
+class SHOGUN_EXPORT SparsePenalty: public ProximalPenalty
 {
 public:
 	virtual ~SparsePenalty() {};

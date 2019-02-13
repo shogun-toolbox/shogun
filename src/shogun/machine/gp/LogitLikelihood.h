@@ -46,7 +46,7 @@ namespace shogun
  * p(y|f) = \prod_{i=1}^n \frac{1}{1+exp(-y_i*f_i)}
  * \f]
  */
-class CLogitLikelihood : public CLikelihoodModel
+class SHOGUN_EXPORT CLogitLikelihood : public CLikelihoodModel
 {
 public:
 	/** default constructor */

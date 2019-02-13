@@ -43,7 +43,7 @@ namespace shogun
  * \f]
  */
 
-class L2Penalty: public Penalty
+class SHOGUN_EXPORT L2Penalty: public Penalty
 {
 public:
 	/* Constructor */

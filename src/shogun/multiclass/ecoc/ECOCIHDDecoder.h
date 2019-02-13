@@ -29,7 +29,7 @@ namespace shogun
  * D_i = HD(q, b_i)
  * \f]
  */
-class CECOCIHDDecoder: public CECOCDecoder
+class SHOGUN_EXPORT CECOCIHDDecoder: public CECOCDecoder
 {
 public:
     /** constructor */

@@ -8,6 +8,7 @@
 #define _SHOGUN_EXCEPTION_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
 
 #include <exception>
 #include <string>
@@ -18,7 +19,7 @@ namespace shogun
 	 * whenever an
 	 * error inside of shogun occurs.
 	 */
-	class ShogunException : public std::exception
+	class SHOGUN_EXPORT ShogunException : public std::exception
 	{
 	public:
 		/** constructor

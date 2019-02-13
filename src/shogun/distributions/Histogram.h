@@ -21,7 +21,7 @@ namespace shogun
  *
  * Values in histogram are absolute counts (logarithmic)
  */
-class CHistogram : public CDistribution
+class SHOGUN_EXPORT CHistogram : public CDistribution
 {
 	public:
 		/** default constructor */

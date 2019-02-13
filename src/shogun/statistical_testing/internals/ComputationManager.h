@@ -43,7 +43,7 @@ template <typename T> class SGMatrix;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class ComputationManager
+class SHOGUN_EXPORT ComputationManager
 {
 public:
 	ComputationManager();

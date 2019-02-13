@@ -50,7 +50,7 @@ namespace shogun
 	/** @brief Base interface of generic linalg methods
 	 * and generic memory transfer methods.
 	 */
-	class LinalgBackendBase
+	class SHOGUN_EXPORT LinalgBackendBase
 	{
 	public:
 		virtual ~LinalgBackendBase() = default;

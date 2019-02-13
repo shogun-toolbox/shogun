@@ -34,7 +34,7 @@ enum EEvaluationDirection
  *
  * This class provides only interface for evaluation measures.
  */
-class CEvaluation : public CSGObject
+class SHOGUN_EXPORT CEvaluation : public CSGObject
 {
 public:
 	/** default constructor */

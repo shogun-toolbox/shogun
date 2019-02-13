@@ -16,7 +16,7 @@ namespace shogun
 /** @brief domain adaptation multiclass LibLinear wrapper
  * Source domain is assumed to b
  */
-class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
+class SHOGUN_EXPORT CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 {
 	public:
 		/** default constructor  */

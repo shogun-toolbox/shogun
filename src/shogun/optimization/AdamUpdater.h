@@ -39,7 +39,7 @@ namespace shogun
  * Please see the paper (https://arxiv.org/abs/1412.6980) for technical detail.
  *
  */
-class AdamUpdater: public DescendUpdaterWithCorrection
+class SHOGUN_EXPORT AdamUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */

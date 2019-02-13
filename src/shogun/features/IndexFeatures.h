@@ -50,7 +50,7 @@ namespace shogun
  *  matrix specified by the row_idx and col_idx.
  *
  * This is used in the CCustomKernel.*/
-class CIndexFeatures : public CDummyFeatures
+class SHOGUN_EXPORT CIndexFeatures : public CDummyFeatures
 {
 	public:
 		/** default constructor  */

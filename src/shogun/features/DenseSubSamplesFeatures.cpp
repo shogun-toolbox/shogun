@@ -183,18 +183,18 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::free_feature_iterator(
 	SG_NOTIMPLEMENTED
 }
 
-template class CDenseSubSamplesFeatures<bool>;
-template class CDenseSubSamplesFeatures<char>;
-template class CDenseSubSamplesFeatures<int8_t>;
-template class CDenseSubSamplesFeatures<uint8_t>;
-template class CDenseSubSamplesFeatures<int16_t>;
-template class CDenseSubSamplesFeatures<uint16_t>;
-template class CDenseSubSamplesFeatures<int32_t>;
-template class CDenseSubSamplesFeatures<uint32_t>;
-template class CDenseSubSamplesFeatures<int64_t>;
-template class CDenseSubSamplesFeatures<uint64_t>;
-template class CDenseSubSamplesFeatures<float32_t>;
-template class CDenseSubSamplesFeatures<float64_t>;
-template class CDenseSubSamplesFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<bool>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<char>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<int8_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<uint8_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<int16_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<uint16_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<int32_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<uint32_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<int64_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<uint64_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<float32_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<float64_t>;
+template class SHOGUN_EXPORT CDenseSubSamplesFeatures<floatmax_t>;
 
 }

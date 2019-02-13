@@ -20,7 +20,7 @@ class CModelSelectionParameters;
 /** @brief Model selection class which searches for the best model by a grid-
  * search. See CModelSelection for details.
  */
-class CGridSearchModelSelection : public CModelSelection
+class SHOGUN_EXPORT CGridSearchModelSelection : public CModelSelection
 {
 public:
 	/** constructor */

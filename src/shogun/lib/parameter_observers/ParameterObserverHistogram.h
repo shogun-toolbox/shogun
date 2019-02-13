@@ -47,8 +47,9 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * histograms, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard,
-	                                   public CSGObject
+	class SHOGUN_EXPORT ParameterObserverHistogram :
+		public ParameterObserverTensorBoard,
+		public CSGObject
 	{
 
 	public:

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <shogun/base/macros.h>
+#include <shogun/shogun_export.h>
 
 namespace shogun
 {

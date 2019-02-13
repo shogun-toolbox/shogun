@@ -25,7 +25,7 @@ namespace shogun
  *
  * @see <a href="http://en.wikipedia.org/wiki/Chebyshev_distance">Wikipedia: Chebyshev distance</a>
  */
-class CChebyshewMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CChebyshewMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

@@ -47,8 +47,9 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * scalar values, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverScalar : public ParameterObserverTensorBoard,
-	                                public CSGObject
+	class SHOGUN_EXPORT ParameterObserverScalar :
+		public ParameterObserverTensorBoard,
+	    public CSGObject
 	{
 
 	public:

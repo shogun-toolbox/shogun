@@ -15,7 +15,7 @@
 namespace shogun
 {
 /** @brief class GNPPSVM */
-class CGNPPSVM : public CSVM
+class SHOGUN_EXPORT CGNPPSVM : public CSVM
 {
 	public:
 		/** default constructor */

@@ -481,7 +481,7 @@ In this formula, ||.|| denotes the Euclidean norm.
  *                      minimization process terminates without an error. A
  *                      non-zero value indicates an error.
  */
-int lbfgs(
+SHOGUN_EXPORT int lbfgs(
     int n,
     float64_t *x,
     float64_t *ptr_fx,

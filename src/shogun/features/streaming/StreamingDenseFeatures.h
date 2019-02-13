@@ -23,7 +23,7 @@ namespace shogun
  * and current_label. Call get_next_example() followed by get_current_vector()
  * to iterate through the stream.
  */
-template<class T> class CStreamingDenseFeatures:
+template<class T> class SHOGUN_EXPORT CStreamingDenseFeatures:
 	public CStreamingDotFeatures
 {
 public:

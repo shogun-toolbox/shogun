@@ -49,7 +49,7 @@ namespace shogun
  * Approximate Bayesian Inference. PhD thesis, Massachusetts Institute of
  * Technology
  */
-class CEPInferenceMethod : public CInference
+class SHOGUN_EXPORT CEPInferenceMethod : public CInference
 {
 public:
 	/** default constructor */

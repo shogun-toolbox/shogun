@@ -47,7 +47,7 @@ namespace shogun
 	 * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
 	 * Wikipedia: Mahalanobis Distance</a>
 	 */
-	class CMahalanobisDistance : public CRealDistance
+	class SHOGUN_EXPORT CMahalanobisDistance : public CRealDistance
 	{
 	public:
 		/** default constructor */

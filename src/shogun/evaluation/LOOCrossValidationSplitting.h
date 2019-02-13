@@ -16,7 +16,7 @@ namespace shogun
 /** @brief Implementation of Leave one out cross-validation on the base of
  * CCrossValidationSplitting. Produces subset index sets consisting of one element,for each label.
  */
-class CLOOCrossValidationSplitting: public CCrossValidationSplitting
+class SHOGUN_EXPORT CLOOCrossValidationSplitting: public CCrossValidationSplitting
 {
 public:
 	/** constructor */

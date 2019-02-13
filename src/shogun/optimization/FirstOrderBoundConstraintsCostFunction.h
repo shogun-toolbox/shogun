@@ -42,7 +42,7 @@ namespace shogun
  * a first-order gradient-based bound constrained minimizer
  *
  */
-class FirstOrderBoundConstraintsCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT FirstOrderBoundConstraintsCostFunction: public FirstOrderCostFunction
 {
 public:
 	virtual ~FirstOrderBoundConstraintsCostFunction() {};

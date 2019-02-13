@@ -19,7 +19,7 @@ template<class T> class CLinearOperator;
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * linear operator using Lanczos algorithm
  */
-class CLanczosEigenSolver : public CEigenSolver
+class SHOGUN_EXPORT CLanczosEigenSolver : public CEigenSolver
 {
 public:
 	/** default constructor */

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, 
- *          Saurabh Mahindre, Christopher Goldsworthy, Chiyuan Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni,
+ *          Saurabh Mahindre, Christopher Goldsworthy, Chiyuan Zhang,
  *          Viktor Gal, Abhinav Rai, Bjoern Esser, Weijie Lin, Pan Deng
  */
 
@@ -51,7 +51,7 @@ void CLeastAngleRegression::init()
 
 CLeastAngleRegression::~CLeastAngleRegression()
 {
-	
+
 }
 
 template <typename ST>
@@ -104,7 +104,7 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 template <typename ST, typename U>
 bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 {
-	std::vector<std::vector<ST>> m_beta_path_t;		
+	std::vector<std::vector<ST>> m_beta_path_t;
 
 	int32_t n_fea = data->get_num_features();
 	int32_t n_vec = data->get_num_vectors();
@@ -174,9 +174,9 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		typename SGVector<ST>::EigenVectorXtMap map_corr(&corr[0], n_fea);
 		typename SGVector<ST>::EigenVectorXtMap map_mu(&mu[0], n_vec);
-		
+
 		map_corr = map_Xy - (map_Xr*map_mu);
-		
+
 		// corr_sign = sign(corr)
 		for (size_t i=0; i < corr.size(); ++i)
 			corr_sign[i] = CMath::sign(corr[i]);
@@ -188,7 +188,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		{
 			// update Cholesky factorization matrix
 			if (m_num_active == 0)
-			{ 
+			{
 				// R isn't allocated yet
 				R=SGMatrix<ST>(1,1);
 				ST diag_k = map_X.col(i_max_corr).dot(map_X.col(i_max_corr));
@@ -203,7 +203,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		typename SGMatrix<ST>::EigenMatrixXtMap map_Xa(X_active.matrix, n_vec, m_num_active);
 		if (!lasso_cond)
 			map_Xa.col(m_num_active-1)=map_X.col(i_max_corr);
-		
+
 		SGVector<ST> corr_sign_a(m_num_active);
 		for (index_t i=0; i < m_num_active; ++i)
 			corr_sign_a[i] = corr_sign[m_active_set[i]];
@@ -223,7 +223,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		// equiangular direction (unit vector)
 		vector<ST> u(n_vec);
 		typename SGVector<ST>::EigenVectorXtMap map_u(&u[0], n_vec);
-		
+
 		map_u = map_Xa*wA;
 
 		ST gamma = max_corr / AA;
@@ -249,7 +249,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 				}
 			}
 		}
-		
+
 		int32_t i_kick=-1;
 		int32_t i_change=i_max_corr;
 		if (m_lasso)
@@ -304,7 +304,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
 		{
-			beta[i_change] = 0; 
+			beta[i_change] = 0;
 			R=cholesky_delete(R, i_kick);
 			deactivate_variable(i_kick);
 
@@ -312,8 +312,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 			int32_t numRows = map_Xa.rows();
 			int32_t numCols = map_Xa.cols()-1;
 			if( i_kick < numCols )
-				map_Xa.block(0, i_kick, numRows, numCols-i_kick) = 
-					map_Xa.block(0, i_kick+1, numRows, numCols-i_kick).eval();			
+				map_Xa.block(0, i_kick, numRows, numCols-i_kick) =
+					map_Xa.block(0, i_kick+1, numRows, numCols-i_kick).eval();
 		}
 
 		nloop++;
@@ -337,7 +337,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	{
 		std::vector<float64_t> va;
 		for(size_t p = 0; p < m_beta_path_t[i].size(); ++p){
-			va.push_back((float64_t) m_beta_path_t[i][p]);			
+			va.push_back((float64_t) m_beta_path_t[i][p]);
 		}
 		m_beta_path.push_back(va);
 	}
@@ -358,13 +358,13 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 }
 
 template <typename ST>
-SGMatrix<ST> CLeastAngleRegression::cholesky_insert(const SGMatrix<ST>& X, 
+SGMatrix<ST> CLeastAngleRegression::cholesky_insert(const SGMatrix<ST>& X,
 		const SGMatrix<ST>& X_active, SGMatrix<ST>& R, int32_t i_max_corr, int32_t num_active)
 {
 	typename SGMatrix<ST>::EigenMatrixXtMap map_X(X.matrix, X.num_rows, X.num_cols);
 	typename SGMatrix<ST>::EigenMatrixXtMap map_X_active(X_active.matrix, X.num_rows, num_active);
 	ST diag_k = map_X.col(i_max_corr).dot(map_X.col(i_max_corr));
-	
+
 	// col_k is the k-th column of (X'X)
 	typename SGVector<ST>::EigenVectorXtMap map_i_max(X.get_column_vector(i_max_corr), X.num_rows);
 	typename SGVector<ST>::EigenVectorXt R_k = map_X_active.transpose()*map_i_max;
@@ -419,9 +419,9 @@ SGMatrix<ST> CLeastAngleRegression::cholesky_delete(SGMatrix<ST>& R, int32_t i_k
 	return nR;
 }
 
-template bool CLeastAngleRegression::train_machine_templated<floatmax_t>(CDenseFeatures<floatmax_t> * data);
-template bool CLeastAngleRegression::train_machine_templated<float64_t>(CDenseFeatures<float64_t> * data);
-template bool CLeastAngleRegression::train_machine_templated<float32_t>(CDenseFeatures<float32_t> * data);
-template SGMatrix<float32_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
-template SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
-template SGMatrix<floatmax_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active, SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);
+template SHOGUN_EXPORT bool CLeastAngleRegression::train_machine_templated<floatmax_t>(CDenseFeatures<floatmax_t> * data);
+template SHOGUN_EXPORT bool CLeastAngleRegression::train_machine_templated<float64_t>(CDenseFeatures<float64_t> * data);
+template SHOGUN_EXPORT bool CLeastAngleRegression::train_machine_templated<float32_t>(CDenseFeatures<float32_t> * data);
+template SHOGUN_EXPORT SGMatrix<float32_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
+template SHOGUN_EXPORT SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
+template SHOGUN_EXPORT SGMatrix<floatmax_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active, SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);

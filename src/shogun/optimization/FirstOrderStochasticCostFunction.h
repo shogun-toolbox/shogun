@@ -47,7 +47,7 @@ namespace shogun
  * where \f$(y_i,x_i)\f$ is the i-th sample,
  * \f$y_i\f$ is the label and \f$x_i\f$ is the features 
  */
-class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
 public:
 	virtual ~FirstOrderStochasticCostFunction() {};

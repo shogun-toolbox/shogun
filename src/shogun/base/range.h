@@ -36,6 +36,7 @@
 #ifndef __SG_RANGE_H__
 #define __SG_RANGE_H__
 
+#include <shogun/shogun_export.h>
 #include <iterator>
 
 namespace shogun

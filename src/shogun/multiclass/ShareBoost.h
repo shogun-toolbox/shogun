@@ -25,7 +25,7 @@ namespace shogun
  *     Shai Shalev-Shwartz, Yonatan Wexler, Amnon Shashua. ShareBoost: Efficient
  *     Multiclass Learning with Feature Sharing. NIPS 2011.
  */
-class CShareBoost: public CLinearMulticlassMachine
+class SHOGUN_EXPORT CShareBoost: public CLinearMulticlassMachine
 {
 public:
     /** default constructor */

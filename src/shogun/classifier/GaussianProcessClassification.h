@@ -49,7 +49,7 @@ namespace shogun
 /** @brief Class GaussianProcessClassification implements binary and multiclass
  * classification based on Gaussian Processes.
  */
-class CGaussianProcessClassification : public CGaussianProcessMachine
+class SHOGUN_EXPORT CGaussianProcessClassification : public CGaussianProcessMachine
 {
 public:
 	/** problem type */

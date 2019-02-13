@@ -20,7 +20,7 @@ class CLabels;
 
 /** Base class of all Multiclass Machines.
  */
-class CBaseMulticlassMachine: public CMachine
+class SHOGUN_EXPORT CBaseMulticlassMachine: public CMachine
 {
 public:
     /** constructor */

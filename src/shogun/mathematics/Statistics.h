@@ -22,7 +22,7 @@ template<class T> class SGSparseMatrix;
 /** @brief Class that contains certain functions related to statistics, such as
  * probability/cumulative distribution functions, different statistics, etc.
  */
-class CStatistics: public CSGObject
+class SHOGUN_EXPORT CStatistics: public CSGObject
 {
 
 public:

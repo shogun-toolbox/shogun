@@ -47,7 +47,7 @@ class CCustomKernel;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class KernelManager
+class SHOGUN_EXPORT KernelManager
 {
 public:
 	KernelManager();

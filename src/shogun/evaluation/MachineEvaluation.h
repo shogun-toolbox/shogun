@@ -26,7 +26,7 @@ namespace shogun
 	 * that evaluates a machine according to some criterion.
 	 *
 	 */
-	class CMachineEvaluation : public CStoppableSGObject
+	class SHOGUN_EXPORT CMachineEvaluation : public CStoppableSGObject
 	{
 
 	public:

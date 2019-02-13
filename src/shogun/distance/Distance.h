@@ -82,7 +82,7 @@ enum EDistanceType
  * when features or feature matrix are changed.
  *
  */
-class CDistance : public CSGObject
+class SHOGUN_EXPORT CDistance : public CSGObject
 {
 	public:
 		/** default constructor */

@@ -19,7 +19,7 @@ namespace shogun
 /** @brief An abstract class that describes a differentiable function used for
  * GradientEvaluation.
  */
-class CDifferentiableFunction : public CSGObject
+class SHOGUN_EXPORT CDifferentiableFunction : public CSGObject
 {
 public:
 	/** default constructor */

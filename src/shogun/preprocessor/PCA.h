@@ -104,7 +104,7 @@ enum EPCAMemoryMode
  *
  * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
-class CPCA : public CDensePreprocessor<float64_t>
+class SHOGUN_EXPORT CPCA : public CDensePreprocessor<float64_t>
 {
 	public:
 

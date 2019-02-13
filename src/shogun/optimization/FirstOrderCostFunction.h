@@ -48,7 +48,7 @@ namespace shogun
  * and \f$y_i\f$ is the lable of the i-th sample.
  *
  */
-class FirstOrderCostFunction: public CSGObject
+class SHOGUN_EXPORT FirstOrderCostFunction: public CSGObject
 {
 public:
 	virtual ~FirstOrderCostFunction() {};

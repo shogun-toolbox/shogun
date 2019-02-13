@@ -46,7 +46,7 @@ class CFeatures;
  * a custom kernel. Speeds up cross-validation. Only train_locked and
  * apply_locked are available when locked.
  */
-class CKernelMachine : public CMachine
+class SHOGUN_EXPORT CKernelMachine : public CMachine
 {
 	public:
 		/** default constructor */

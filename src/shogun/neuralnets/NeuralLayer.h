@@ -84,7 +84,7 @@ template <class T> class SGVector;
  * m_activation_gradients: size m_num_neurons*m_batch_size
  * m_local_gradients: size m_num_neurons*m_batch_size
  */
-class CNeuralLayer : public CSGObject
+class SHOGUN_EXPORT CNeuralLayer : public CSGObject
 {
 public:
 	/** default constructor */

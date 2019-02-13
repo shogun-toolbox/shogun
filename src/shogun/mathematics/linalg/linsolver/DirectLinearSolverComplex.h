@@ -27,7 +27,7 @@ enum EDirectSolverType
 /** @brief Class that provides a solve method for complex dense-matrix
  * linear systems
  */
-class CDirectLinearSolverComplex : public CLinearSolver<complex128_t, float64_t>
+class SHOGUN_EXPORT CDirectLinearSolverComplex : public CLinearSolver<complex128_t, float64_t>
 {
 public:
 	/** default constructor */

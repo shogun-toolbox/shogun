@@ -23,7 +23,7 @@ namespace shogun
  *  index of the public field delimiters. Eg. to set as delimiter the
  *  character ':', one should do: tokenizer->delimiters[':'] = 1;
  */
-class CDelimiterTokenizer: public CTokenizer
+class SHOGUN_EXPORT CDelimiterTokenizer: public CTokenizer
 {
 public:
 	/** default constructor

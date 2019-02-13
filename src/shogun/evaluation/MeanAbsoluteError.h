@@ -29,7 +29,7 @@ class CLabels;
  * \f]
  *
  */
-class CMeanAbsoluteError: public CEvaluation
+class SHOGUN_EXPORT CMeanAbsoluteError: public CEvaluation
 {
 public:
 	/** constructor */

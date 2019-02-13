@@ -2047,25 +2047,25 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 	return true;
 }
 
-template class CStringFeatures<bool>;
-template class CStringFeatures<char>;
-template class CStringFeatures<int8_t>;
-template class CStringFeatures<uint8_t>;
-template class CStringFeatures<int16_t>;
-template class CStringFeatures<uint16_t>;
-template class CStringFeatures<int32_t>;
-template class CStringFeatures<uint32_t>;
-template class CStringFeatures<int64_t>;
-template class CStringFeatures<uint64_t>;
-template class CStringFeatures<float32_t>;
-template class CStringFeatures<float64_t>;
-template class CStringFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CStringFeatures<bool>;
+template class SHOGUN_EXPORT CStringFeatures<char>;
+template class SHOGUN_EXPORT CStringFeatures<int8_t>;
+template class SHOGUN_EXPORT CStringFeatures<uint8_t>;
+template class SHOGUN_EXPORT CStringFeatures<int16_t>;
+template class SHOGUN_EXPORT CStringFeatures<uint16_t>;
+template class SHOGUN_EXPORT CStringFeatures<int32_t>;
+template class SHOGUN_EXPORT CStringFeatures<uint32_t>;
+template class SHOGUN_EXPORT CStringFeatures<int64_t>;
+template class SHOGUN_EXPORT CStringFeatures<uint64_t>;
+template class SHOGUN_EXPORT CStringFeatures<float32_t>;
+template class SHOGUN_EXPORT CStringFeatures<float64_t>;
+template class SHOGUN_EXPORT CStringFeatures<floatmax_t>;
 
-template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint16_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint32_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint64_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
 
-template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint16_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint32_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template SHOGUN_EXPORT bool CStringFeatures<uint64_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
 }

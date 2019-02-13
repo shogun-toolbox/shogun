@@ -14,7 +14,7 @@
 namespace shogun
 {
 /** @brief Identity Kernel Normalization, i.e. no normalization is applied. */
-class CIdentityKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CIdentityKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor */

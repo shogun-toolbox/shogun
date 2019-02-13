@@ -100,10 +100,10 @@ static inline complex128_t function(complex128_t a)	\
 namespace shogun
 {
 	/** random number generator */
-	extern CRandom* sg_rand;
+	SHOGUN_EXPORT extern CRandom* sg_rand;
 /** @brief Class which collects generic mathematical functions
  */
-class CMath : public CSGObject
+class SHOGUN_EXPORT CMath : public CSGObject
 {
 	public:
 		/**@name Constructor/Destructor.

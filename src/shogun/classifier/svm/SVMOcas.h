@@ -28,7 +28,7 @@ enum E_SVM_TYPE
 #endif
 
 /** @brief class SVMOcas */
-class CSVMOcas : public CLinearMachine
+class SHOGUN_EXPORT CSVMOcas : public CLinearMachine
 {
 	public:
 

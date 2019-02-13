@@ -15,7 +15,7 @@ namespace shogun
 {
 
 /** A helper class for some ECOC related procedures. */
-class CECOCUtil
+class SHOGUN_EXPORT CECOCUtil
 {
 public:
     /** compute hamming distance.

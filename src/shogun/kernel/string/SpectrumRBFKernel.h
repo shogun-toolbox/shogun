@@ -24,7 +24,7 @@ namespace shogun
 {
 
 /** @brief spectrum rbf kernel */
-class CSpectrumRBFKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CSpectrumRBFKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

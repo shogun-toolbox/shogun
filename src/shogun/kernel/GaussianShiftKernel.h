@@ -34,7 +34,7 @@ namespace shogun
  * (parameter shift_step) of the shifts and \f$S_{\mathrm{max}}\f$ (parameter
  * max_shift) is the maximal shift.
  */
-class CGaussianShiftKernel: public CGaussianKernel
+class SHOGUN_EXPORT CGaussianShiftKernel: public CGaussianKernel
 {
 	public:
 		/** default constructor  */

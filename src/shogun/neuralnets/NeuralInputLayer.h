@@ -43,7 +43,7 @@ namespace shogun
  * connected to all the input features that a network receives (default) or
  * connected to just a small part of those features
  */
-class CNeuralInputLayer : public CNeuralLayer
+class SHOGUN_EXPORT CNeuralInputLayer : public CNeuralLayer
 {
 public:
 	/** default constructor */

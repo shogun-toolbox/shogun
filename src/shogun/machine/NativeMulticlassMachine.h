@@ -15,7 +15,7 @@ namespace shogun
 {
 
 /** @brief experimental abstract native multiclass machine class */
-class CNativeMulticlassMachine : public CMulticlassMachine
+class SHOGUN_EXPORT CNativeMulticlassMachine : public CMulticlassMachine
 {
 	public:
 		/** default constructor  */

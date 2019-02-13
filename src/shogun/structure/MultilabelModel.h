@@ -21,7 +21,7 @@ namespace shogun
  * [1] C. Lampert. Maximum Margin Multi-Label Structured Prediction, NIPS 2011.
  * http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2011_0207.pdf
  */
-class CMultilabelModel : public CStructuredModel
+class SHOGUN_EXPORT CMultilabelModel : public CStructuredModel
 {
 public:
 	/** default constructor */

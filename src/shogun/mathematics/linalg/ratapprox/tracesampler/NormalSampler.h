@@ -16,7 +16,7 @@ template<class T> class SGVector;
 
 /** @brief Class that provides a sample method for Gaussian samples
  */
-class CNormalSampler : public CTraceSampler
+class SHOGUN_EXPORT CNormalSampler : public CTraceSampler
 {
 public:
 	/** default constructor */

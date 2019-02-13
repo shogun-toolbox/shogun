@@ -65,7 +65,7 @@ enum EContingencyTableMeasureType
  * convenient.
  *
  */
-class CContingencyTableEvaluation: public CBinaryClassEvaluation
+class SHOGUN_EXPORT CContingencyTableEvaluation: public CBinaryClassEvaluation
 {
 
 public:
@@ -282,7 +282,7 @@ protected:
  *
  * Note that evaluate() should be called first.
  */
-class CAccuracyMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CAccuracyMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -302,7 +302,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CErrorRateMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CErrorRateMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -322,7 +322,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CBALMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CBALMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -342,7 +342,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CWRACCMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CWRACCMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -362,7 +362,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CF1Measure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CF1Measure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -382,7 +382,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CCrossCorrelationMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CCrossCorrelationMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -402,7 +402,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CRecallMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CRecallMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -422,7 +422,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CPrecisionMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CPrecisionMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
@@ -442,7 +442,7 @@ public:
  *
  * Note that evaluate() should be called first.
  */
-class CSpecificityMeasure: public CContingencyTableEvaluation
+class SHOGUN_EXPORT CSpecificityMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */

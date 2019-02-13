@@ -47,7 +47,7 @@ class CCustomDistance;
  *
  * \sa {CTwoSampleTest}
  */
-class CTwoDistributionTest : public CHypothesisTest
+class SHOGUN_EXPORT CTwoDistributionTest : public CHypothesisTest
 {
 public:
 	/** Default constructor */

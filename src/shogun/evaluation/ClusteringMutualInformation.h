@@ -16,7 +16,7 @@ namespace shogun
 
 /** @brief clustering (normalized) mutual information
  */
-class CClusteringMutualInformation: public CClusteringEvaluation
+class SHOGUN_EXPORT CClusteringMutualInformation: public CClusteringEvaluation
 {
 public:
 	/** constructor */

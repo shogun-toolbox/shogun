@@ -184,7 +184,7 @@ void SGVector<T>::zero()
 }
 
 template <>
-void SGVector<complex128_t>::zero()
+SHOGUN_EXPORT void SGVector<complex128_t>::zero()
 {
 	assert_on_cpu();
 	if (vector && vlen)
@@ -201,14 +201,14 @@ void SGVector<T>::set_const(T const_elem)
 
 #if HAVE_CATLAS
 template<>
-void SGVector<float64_t>::set_const(float64_t const_elem)
+SHOGUN_EXPORT void SGVector<float64_t>::set_const(float64_t const_elem)
 {
 	assert_on_cpu();
 	catlas_dset(vlen, const_elem, vector, 1);
 }
 
 template<>
-void SGVector<float32_t>::set_const(float32_t const_elem)
+SHOGUN_EXPORT void SGVector<float32_t>::set_const(float32_t const_elem)
 {
 	assert_on_cpu();
 	catlas_sset(vlen, const_elem, vector, 1);
@@ -247,7 +247,7 @@ index_t SGVector<T>::find_position_to_insert(T element)
 }
 
 template <>
-index_t SGVector<complex128_t>::find_position_to_insert(complex128_t element)
+SHOGUN_EXPORT index_t SGVector<complex128_t>::find_position_to_insert(complex128_t element)
 {
 	SG_SERROR("SGVector::find_position_to_insert():: \
 		Not supported for complex128_t\n");
@@ -291,7 +291,7 @@ void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
 }
 
 template <>
-void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
+SHOGUN_EXPORT void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 	int32_t len, complex128_t start)
 {
 	SG_SERROR("SGVector::range_fill_vector():: \
@@ -414,7 +414,7 @@ bool SGVector<T>::equals(const SGVector<T>& other) const
 #ifndef REAL_EQUALS
 #define REAL_EQUALS(real_t)                                                    \
 	template <>                                                                \
-	bool SGVector<real_t>::equals(const SGVector<real_t>& other) const         \
+	SHOGUN_EXPORT bool SGVector<real_t>::equals(const SGVector<real_t>& other) const         \
 	{                                                                          \
 		assert_on_cpu();                                                       \
 		if (other.vlen != vlen)                                                \
@@ -453,7 +453,7 @@ void SGVector<T>::display_vector(const SGVector<T> vector, const char* name,
 }
 
 template <>
-void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -464,7 +464,7 @@ void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* n
 }
 
 template <>
-void SGVector<char>::display_vector(const char* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<char>::display_vector(const char* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -475,7 +475,7 @@ void SGVector<char>::display_vector(const char* vector, int32_t n, const char* n
 }
 
 template <>
-void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -486,7 +486,7 @@ void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const c
 }
 
 template <>
-void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -497,7 +497,7 @@ void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const cha
 }
 
 template <>
-void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -508,7 +508,7 @@ void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const
 }
 
 template <>
-void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -519,7 +519,7 @@ void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const c
 }
 
 template <>
-void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -530,7 +530,7 @@ void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const c
 }
 
 template <>
-void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -542,7 +542,7 @@ void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const
 
 
 template <>
-void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -553,7 +553,7 @@ void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const c
 }
 
 template <>
-void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -564,7 +564,7 @@ void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const
 }
 
 template <>
-void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -575,7 +575,7 @@ void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, con
 }
 
 template <>
-void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, const char* name,
+SHOGUN_EXPORT void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -586,7 +586,7 @@ void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, con
 }
 
 template <>
-void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
+SHOGUN_EXPORT void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -600,7 +600,7 @@ void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 }
 
 template <>
-void SGVector<complex128_t>::display_vector(const complex128_t* vector, int32_t n,
+SHOGUN_EXPORT void SGVector<complex128_t>::display_vector(const complex128_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
@@ -622,7 +622,7 @@ void SGVector<T>::vec1_plus_scalar_times_vec2(T* vec1,
 }
 
 template <>
-void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
+SHOGUN_EXPORT void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
 		float64_t scalar, const float64_t* vec2, int32_t n)
 {
 #ifdef HAVE_LAPACK
@@ -635,7 +635,7 @@ void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
 }
 
 template <>
-void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
+SHOGUN_EXPORT void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 		float32_t scalar, const float32_t* vec2, int32_t n)
 {
 #ifdef HAVE_LAPACK
@@ -655,28 +655,28 @@ template <class T>
 	}
 
 template <>
-void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
+SHOGUN_EXPORT void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
 	complex128_t min_value, complex128_t max_value)
 {
 	SG_SNOTIMPLEMENTED
 }
 
 template <>
-bool SGVector<bool>::twonorm(const bool* x, int32_t len)
+SHOGUN_EXPORT bool SGVector<bool>::twonorm(const bool* x, int32_t len)
 {
 	SG_SNOTIMPLEMENTED
 	return false;
 }
 
 template <>
-char SGVector<char>::twonorm(const char* x, int32_t len)
+SHOGUN_EXPORT char SGVector<char>::twonorm(const char* x, int32_t len)
 {
 	SG_SNOTIMPLEMENTED
 	return '\0';
 }
 
 template <>
-int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
+SHOGUN_EXPORT int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -686,7 +686,7 @@ int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
 }
 
 template <>
-uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
+SHOGUN_EXPORT uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -696,7 +696,7 @@ uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
 }
 
 template <>
-int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
+SHOGUN_EXPORT int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -706,7 +706,7 @@ int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
 }
 
 template <>
-uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
+SHOGUN_EXPORT uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -716,7 +716,7 @@ uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
 }
 
 template <>
-int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
+SHOGUN_EXPORT int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -726,7 +726,7 @@ int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
 }
 
 template <>
-uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
+SHOGUN_EXPORT uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -736,7 +736,7 @@ uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
 }
 
 template <>
-int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
+SHOGUN_EXPORT int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -746,7 +746,7 @@ int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
 }
 
 template <>
-uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
+SHOGUN_EXPORT uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -756,7 +756,7 @@ uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
 }
 
 template <>
-float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
+SHOGUN_EXPORT float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -766,7 +766,7 @@ float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
 }
 
 template <>
-float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
+SHOGUN_EXPORT float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 {
 #ifdef HAVE_LAPACK
 	return cblas_dnrm2(n, v, 1);
@@ -777,7 +777,7 @@ float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 }
 
 template <>
-floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
+SHOGUN_EXPORT floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -787,7 +787,7 @@ floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
 }
 
 template <>
-complex128_t SGVector<complex128_t>::twonorm(const complex128_t* x, int32_t len)
+SHOGUN_EXPORT complex128_t SGVector<complex128_t>::twonorm(const complex128_t* x, int32_t len)
 {
 	complex128_t result(0.0);
 	for (int32_t i=0; i<len; i++)
@@ -818,7 +818,7 @@ T SGVector<T>::qsq(T* x, int32_t len, float64_t q)
 }
 
 template <>
-complex128_t SGVector<complex128_t>::qsq(complex128_t* x, int32_t len, float64_t q)
+SHOGUN_EXPORT complex128_t SGVector<complex128_t>::qsq(complex128_t* x, int32_t len, float64_t q)
 {
 	SG_SNOTIMPLEMENTED
 	return complex128_t(0.0);
@@ -833,7 +833,7 @@ T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 }
 
 template <>
-complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64_t q)
+SHOGUN_EXPORT complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64_t q)
 {
 	SG_SNOTIMPLEMENTED
 	return complex128_t(0.0);
@@ -852,7 +852,7 @@ T SGVector<T>::sum_abs(T* vec, int32_t len)
 
 #if HAVE_LAPACK
 template <>
-float64_t SGVector<float64_t>::sum_abs(float64_t* vec, int32_t len)
+SHOGUN_EXPORT float64_t SGVector<float64_t>::sum_abs(float64_t* vec, int32_t len)
 {
 	float64_t result=0;
 	result = cblas_dasum(len, vec, 1);
@@ -860,7 +860,7 @@ float64_t SGVector<float64_t>::sum_abs(float64_t* vec, int32_t len)
 }
 
 template <>
-float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
+SHOGUN_EXPORT float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
 {
 	float32_t result=0;
 	result = cblas_sasum(len, vec, 1);
@@ -877,7 +877,7 @@ int32_t SGVector<T>::unique(T* output, int32_t size)
 }
 
 template <>
-int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
+SHOGUN_EXPORT int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 {
 	int32_t j=0;
 	SG_SERROR("SGVector::unique():: Not supported for complex128_t\n");
@@ -894,7 +894,7 @@ SGVector<T> SGVector<T>::unique()
 }
 
 template <>
-SGVector<complex128_t> SGVector<complex128_t>::unique()
+SHOGUN_EXPORT SGVector<complex128_t> SGVector<complex128_t>::unique()
 {
 	SG_SNOTIMPLEMENTED
 	return SGVector<complex128_t>();
@@ -923,13 +923,13 @@ void SGVector<T>::scale_vector(T alpha, T* vec, int32_t len)
 
 #ifdef HAVE_LAPACK
 template<>
-void SGVector<float64_t>::scale_vector(float64_t alpha, float64_t* vec, int32_t len)
+SHOGUN_EXPORT void SGVector<float64_t>::scale_vector(float64_t alpha, float64_t* vec, int32_t len)
 {
 	cblas_dscal(len, alpha, vec, 1);
 }
 
 template<>
-void SGVector<float32_t>::scale_vector(float32_t alpha, float32_t* vec, int32_t len)
+SHOGUN_EXPORT void SGVector<float32_t>::scale_vector(float32_t alpha, float32_t* vec, int32_t len)
 {
 	cblas_sscal(len, alpha, vec, 1);
 }
@@ -957,7 +957,7 @@ template<class T> void SGVector<T>::load(CFile* loader)
 }
 
 template<>
-void SGVector<complex128_t>::load(CFile* loader)
+SHOGUN_EXPORT void SGVector<complex128_t>::load(CFile* loader)
 {
 	SG_SERROR("SGVector::load():: Not supported for complex128_t\n");
 }
@@ -973,7 +973,7 @@ template<class T> void SGVector<T>::save(CFile* saver)
 }
 
 template<>
-void SGVector<complex128_t>::save(CFile* saver)
+SHOGUN_EXPORT void SGVector<complex128_t>::save(CFile* saver)
 {
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
 }
@@ -1073,20 +1073,20 @@ UNDEFINED(get_imag, float64_t)
 UNDEFINED(get_imag, floatmax_t)
 #undef UNDEFINED
 
-template class SGVector<bool>;
-template class SGVector<char>;
-template class SGVector<int8_t>;
-template class SGVector<uint8_t>;
-template class SGVector<int16_t>;
-template class SGVector<uint16_t>;
-template class SGVector<int32_t>;
-template class SGVector<uint32_t>;
-template class SGVector<int64_t>;
-template class SGVector<uint64_t>;
-template class SGVector<float32_t>;
-template class SGVector<float64_t>;
-template class SGVector<floatmax_t>;
-template class SGVector<complex128_t>;
+template class SHOGUN_EXPORT SGVector<bool>;
+template class SHOGUN_EXPORT SGVector<char>;
+template class SHOGUN_EXPORT SGVector<int8_t>;
+template class SHOGUN_EXPORT SGVector<uint8_t>;
+template class SHOGUN_EXPORT SGVector<int16_t>;
+template class SHOGUN_EXPORT SGVector<uint16_t>;
+template class SHOGUN_EXPORT SGVector<int32_t>;
+template class SHOGUN_EXPORT SGVector<uint32_t>;
+template class SHOGUN_EXPORT SGVector<int64_t>;
+template class SHOGUN_EXPORT SGVector<uint64_t>;
+template class SHOGUN_EXPORT SGVector<float32_t>;
+template class SHOGUN_EXPORT SGVector<float64_t>;
+template class SHOGUN_EXPORT SGVector<floatmax_t>;
+template class SHOGUN_EXPORT SGVector<complex128_t>;
 }
 
 #undef COMPLEX128_ERROR_NOARG

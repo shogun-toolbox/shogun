@@ -60,7 +60,7 @@ class NextSamples;
  * should not be serialzied or copied or moved around. In Shogun, it is helpful
  * when used inside just the implementation inside a PIMPL.
  */
-class DataManager
+class SHOGUN_EXPORT DataManager
 {
 public:
 	/**

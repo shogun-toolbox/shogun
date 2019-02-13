@@ -22,7 +22,7 @@ class CDistanceMachine;
 /**
   Base Class for different KMeans clustering implementations.
   */
-class CKMeansBase : public CDistanceMachine
+class SHOGUN_EXPORT CKMeansBase : public CDistanceMachine
 {
 	public:
 		/** default constructor */

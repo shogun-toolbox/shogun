@@ -40,7 +40,7 @@ namespace shogun
  * @brief Class OneDistributionTest is the base class for the statistical
  * hypothesis testing with samples from one distributions, \f$mathbf{P}\f$.
  */
-class COneDistributionTest : public CHypothesisTest
+class SHOGUN_EXPORT COneDistributionTest : public CHypothesisTest
 {
 public:
 	/** Default constructor */

@@ -40,7 +40,7 @@ namespace shogun
 /** @brief The minimizer base class.
  *
  */
-class Minimizer: public CSGObject
+class SHOGUN_EXPORT Minimizer: public CSGObject
 {
 public: 
 	/** Do minimization and get the optimal value 

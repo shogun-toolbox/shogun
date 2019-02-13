@@ -82,17 +82,17 @@ EPreprocessorType CDecompressString<ST>::get_type() const
 	return P_DECOMPRESSSTRING;
 }
 
-template class CDecompressString<bool>;
-template class CDecompressString<char>;
-template class CDecompressString<int8_t>;
-template class CDecompressString<uint8_t>;
-template class CDecompressString<int16_t>;
-template class CDecompressString<uint16_t>;
-template class CDecompressString<int32_t>;
-template class CDecompressString<uint32_t>;
-template class CDecompressString<int64_t>;
-template class CDecompressString<uint64_t>;
-template class CDecompressString<float32_t>;
-template class CDecompressString<float64_t>;
-template class CDecompressString<floatmax_t>;
+template class SHOGUN_EXPORT CDecompressString<bool>;
+template class SHOGUN_EXPORT CDecompressString<char>;
+template class SHOGUN_EXPORT CDecompressString<int8_t>;
+template class SHOGUN_EXPORT CDecompressString<uint8_t>;
+template class SHOGUN_EXPORT CDecompressString<int16_t>;
+template class SHOGUN_EXPORT CDecompressString<uint16_t>;
+template class SHOGUN_EXPORT CDecompressString<int32_t>;
+template class SHOGUN_EXPORT CDecompressString<uint32_t>;
+template class SHOGUN_EXPORT CDecompressString<int64_t>;
+template class SHOGUN_EXPORT CDecompressString<uint64_t>;
+template class SHOGUN_EXPORT CDecompressString<float32_t>;
+template class SHOGUN_EXPORT CDecompressString<float64_t>;
+template class SHOGUN_EXPORT CDecompressString<floatmax_t>;
 }

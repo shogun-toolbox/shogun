@@ -23,7 +23,7 @@ template <class ST> class CStringFeatures;
  *
  * \sa CWeightedDegreeStringKernel
  */
-class CHashedWDFeaturesTransposed : public CDotFeatures
+class SHOGUN_EXPORT CHashedWDFeaturesTransposed : public CDotFeatures
 {
 	public:
 		/** default constructor  */

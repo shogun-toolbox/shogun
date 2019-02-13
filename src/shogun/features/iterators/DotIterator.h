@@ -38,11 +38,11 @@
 namespace shogun
 {
 
-	class DotIterator
+	class SHOGUN_EXPORT DotIterator
 	{
 		class iterator;
 
-		class feature_vector
+		class SHOGUN_EXPORT feature_vector
 		{
 		public:
 			/** constructor
@@ -84,7 +84,7 @@ namespace shogun
 			friend class iterator;
 		};
 
-		class iterator
+		class SHOGUN_EXPORT iterator
 		{
 			using value_type = feature_vector;
 			using difference_type = index_t;

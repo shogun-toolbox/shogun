@@ -20,7 +20,7 @@ class CModelSelectionParameters;
 /** @brief Model selection class which searches for the best model by a random
  * search. See CModelSelection for details.
  */
-class CRandomSearchModelSelection : public CModelSelection
+class SHOGUN_EXPORT CRandomSearchModelSelection : public CModelSelection
 {
 public:
 	/** constructor */

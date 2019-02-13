@@ -46,7 +46,7 @@ namespace shogun
  * The variational distribution is Gaussian
  *
  */
-class CVariationalGaussianLikelihood : public CVariationalLikelihood
+class SHOGUN_EXPORT CVariationalGaussianLikelihood : public CVariationalLikelihood
 {
 public:
 	/** default constructor */

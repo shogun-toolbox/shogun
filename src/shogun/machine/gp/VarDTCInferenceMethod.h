@@ -49,7 +49,7 @@ namespace shogun
  * method.
  *
  */
-class CVarDTCInferenceMethod: public CSingleSparseInference
+class SHOGUN_EXPORT CVarDTCInferenceMethod: public CSingleSparseInference
 {
 public:
 	/** default constructor */

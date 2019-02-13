@@ -129,7 +129,7 @@ class CDynamicObjectArray;
  * \endcode
  *
  */
-class CNeuralNetworkFileReader : public CSGObject
+class SHOGUN_EXPORT CNeuralNetworkFileReader : public CSGObject
 {
 public:
 	/** default constructor */

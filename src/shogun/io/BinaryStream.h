@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Heiko Strathmann, Yuyu Zhang,
  *          Evan Shelhamer, Bjoern Esser
  */
 

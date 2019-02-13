@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #ifdef _MSC_VER
 #define PATH_DELIMITER "\\"
@@ -13,6 +14,24 @@
 
 using namespace shogun;
 using namespace std;
+
+void dump_content(const std::string& fname)
+{
+	ifstream is(fname, ios_base::in);
+	if (is.is_open())
+	{
+		string line;
+		while(getline(is,line))
+		{
+			cout << line << '\n';
+		}
+		is.close();
+	}
+	else
+	{
+		throw std::runtime_error("could not open file for reading!");
+	}
+}
 
 int main(int argc, const char *argv[])
 {
@@ -30,10 +49,11 @@ int main(int argc, const char *argv[])
     << target << PATH_DELIMITER << rel_dir << PATH_DELIMITER << name;
     string fname_full_generated(os.str());
     os.clear();
-    os.str("");
+    os.str(std::string());
     os << reference_results_dir << PATH_DELIMITER << rel_dir << PATH_DELIMITER << name;
     string fname_full_reference(os.str());
 
+    dump_content(fname_full_reference);
     init_shogun_with_defaults();
 
     CSerializableAsciiFile* f = new CSerializableAsciiFile(fname_full_generated.c_str(), 'r');

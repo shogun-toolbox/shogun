@@ -28,7 +28,7 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CExponentialKernel: public CDotKernel
+class SHOGUN_EXPORT CExponentialKernel: public CDotKernel
 {
 	public:
 		/** default constructor

@@ -16,7 +16,7 @@ namespace shogun
 /** @brief CHingeLoss implements the hinge
  * loss function.
  */
-class CHingeLoss: public CLossFunction
+class SHOGUN_EXPORT CHingeLoss: public CLossFunction
 {
 public:
 	/**

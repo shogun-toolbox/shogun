@@ -49,7 +49,7 @@ namespace shogun
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Wrapped cost function used for the NLOPT minimizer */
-class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
+class SHOGUN_EXPORT SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
 {
 public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }

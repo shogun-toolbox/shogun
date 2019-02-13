@@ -32,7 +32,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CMatchWordStringKernel: public CStringKernel<uint16_t>
+class SHOGUN_EXPORT CMatchWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */

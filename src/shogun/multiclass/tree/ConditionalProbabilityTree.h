@@ -27,7 +27,7 @@ namespace shogun
  *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
  *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
  */
-class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
+class SHOGUN_EXPORT CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
     /** constructor */

@@ -31,7 +31,7 @@ class CFeatures;
  * \f]
  *
  */
-class CGaussianNaiveBayes : public CNativeMulticlassMachine
+class SHOGUN_EXPORT CGaussianNaiveBayes : public CNativeMulticlassMachine
 {
 
 public:

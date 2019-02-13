@@ -54,7 +54,7 @@ class CEigenSolver;
  * adapted from KRYLSTAT (Copyright 2011 by Erlend Aune <erlenda@math.ntnu.no>)
  * under GPL2+. See https://github.com/Froskekongen/KRYLSTAT.
  */
-class CRationalApproximation : public COperatorFunction<float64_t>
+class SHOGUN_EXPORT CRationalApproximation : public COperatorFunction<float64_t>
 {
 public:
 	/** default constructor */

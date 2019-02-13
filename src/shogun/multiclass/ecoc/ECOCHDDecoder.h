@@ -16,7 +16,7 @@ namespace shogun
 {
 
 /** Hamming Distance Decoder */
-class CECOCHDDecoder: public CECOCSimpleDecoder
+class SHOGUN_EXPORT CECOCHDDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */

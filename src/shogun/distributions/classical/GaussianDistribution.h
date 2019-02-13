@@ -57,7 +57,7 @@ namespace shogun
  * \f$\Sigma=LL^T\f$.
  */
 
-class CGaussianDistribution: public CProbabilityDistribution
+class SHOGUN_EXPORT CGaussianDistribution: public CProbabilityDistribution
 {
 public:
 	/** Default constructor */

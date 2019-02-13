@@ -40,7 +40,7 @@ namespace shogun
 	 * Note that besides lzo compression, this library is thread safe.
 	 *
 	 */
-	class CCompressor : public CSGObject
+	class SHOGUN_EXPORT CCompressor : public CSGObject
 	{
 	public:
 		/** default constructor  */

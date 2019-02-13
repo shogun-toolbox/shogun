@@ -87,7 +87,7 @@ class CNeuralLayer;
  * neural network
  *
  */
-class CDeepBeliefNetwork : public CSGObject
+class SHOGUN_EXPORT CDeepBeliefNetwork : public CSGObject
 {
 public:
 	/** default constructor */

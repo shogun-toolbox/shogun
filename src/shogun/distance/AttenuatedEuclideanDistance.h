@@ -33,7 +33,7 @@ namespace shogun
  * \f]
  *
  */
-class CAttenuatedEuclideanDistance: public CRealDistance
+class SHOGUN_EXPORT CAttenuatedEuclideanDistance: public CRealDistance
 {
 	public:
 		/** default constructor */

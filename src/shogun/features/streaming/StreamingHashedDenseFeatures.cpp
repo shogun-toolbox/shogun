@@ -206,17 +206,17 @@ SGSparseVector<ST> CStreamingHashedDenseFeatures<ST>::get_vector()
 	return current_vector;
 }
 
-template class CStreamingHashedDenseFeatures<bool>;
-template class CStreamingHashedDenseFeatures<char>;
-template class CStreamingHashedDenseFeatures<int8_t>;
-template class CStreamingHashedDenseFeatures<uint8_t>;
-template class CStreamingHashedDenseFeatures<int16_t>;
-template class CStreamingHashedDenseFeatures<uint16_t>;
-template class CStreamingHashedDenseFeatures<int32_t>;
-template class CStreamingHashedDenseFeatures<uint32_t>;
-template class CStreamingHashedDenseFeatures<int64_t>;
-template class CStreamingHashedDenseFeatures<uint64_t>;
-template class CStreamingHashedDenseFeatures<float32_t>;
-template class CStreamingHashedDenseFeatures<float64_t>;
-template class CStreamingHashedDenseFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<bool>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<char>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<int8_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<uint8_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<int16_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<uint16_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<int32_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<uint32_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<int64_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<uint64_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<float32_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<float64_t>;
+template class SHOGUN_EXPORT CStreamingHashedDenseFeatures<floatmax_t>;
 }

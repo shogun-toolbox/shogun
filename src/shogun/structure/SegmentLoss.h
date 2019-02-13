@@ -18,7 +18,7 @@ namespace shogun
 {
 	template <class T> class CDynamicArray;
 /** @brief class IntronList */
-class CSegmentLoss : public CSGObject
+class SHOGUN_EXPORT CSegmentLoss : public CSGObject
 {
         public:
 

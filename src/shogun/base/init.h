@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 
@@ -39,106 +39,106 @@ namespace shogun
 	 * @param cancel_computations function pointer to check for exception
 	 *
 	 */
-	void init_shogun(
+	SHOGUN_EXPORT void init_shogun(
 	    const std::function<void(FILE*, const char*)> print_message = nullptr,
 	    const std::function<void(FILE*, const char*)> print_warning = nullptr,
 	    const std::function<void(FILE*, const char*)> print_error = nullptr);
 
 	/** init shogun with defaults */
-	void init_shogun_with_defaults();
+	SHOGUN_EXPORT void init_shogun_with_defaults();
 
 	/** This function must be called when one stops using libshogun. It will
 	 * perform a number of cleanups */
-	void exit_shogun();
+	SHOGUN_EXPORT void exit_shogun();
 
 	/** set the global io object
 	 *
 	 * @param io io object to use
 	 */
-	void set_global_io(SGIO* io);
+	SHOGUN_EXPORT void set_global_io(SGIO* io);
 
 	/** get the global io object
 	 *
 	 * @return io object
 	 */
-	SGIO* get_global_io();
+	SHOGUN_EXPORT SGIO* get_global_io();
 
 	/** @return the globally over-ridden floating point epsilon for
 	 * CMath::fequals
 	 */
-	float64_t get_global_fequals_epsilon();
+	SHOGUN_EXPORT float64_t get_global_fequals_epsilon();
 
 	/** Globally over-ride the floating point epsilon for CMath::fequals.
 	 * Hack required for CSGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_epsilon new epsilon to use
 	 */
-	void set_global_fequals_epsilon(float64_t fequals_epsilon);
+	SHOGUN_EXPORT void set_global_fequals_epsilon(float64_t fequals_epsilon);
 
 	/** @return whether global linient check for CMath::fequals is enabled
 	 */
-	bool get_global_fequals_tolerant();
+	SHOGUN_EXPORT bool get_global_fequals_tolerant();
 
 	/** Globally enable linient check for CMath::fequals.
 	 * Hack required for CSGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_tolerant whether or not to use tolerant check
 	 */
-	void set_global_fequals_tolerant(bool fequals_tolerant);
+	SHOGUN_EXPORT void set_global_fequals_tolerant(bool fequals_tolerant);
 
 	/** set the global parallel object
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_global_parallel(Parallel* parallel);
+	SHOGUN_EXPORT void set_global_parallel(Parallel* parallel);
 
 	/** get the global parallel object
 	 *
 	 * @return parallel object
 	 */
-	Parallel* get_global_parallel();
+	SHOGUN_EXPORT Parallel* get_global_parallel();
 
 	/** set the global version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_global_version(Version* version);
+	SHOGUN_EXPORT void set_global_version(Version* version);
 
 	/** get the global version object
 	 *
 	 * @return version object
 	 */
-	Version* get_global_version();
+	SHOGUN_EXPORT Version* get_global_version();
 
 	/** set the global random object
 	 *
 	 * @param rand random object to use
 	 */
-	void set_global_rand(CRandom* rand);
+	SHOGUN_EXPORT void set_global_rand(CRandom* rand);
 
 	/** get the global random object
 	 *
 	 * @return random object
 	 */
-	CRandom* get_global_rand();
+	SHOGUN_EXPORT CRandom* get_global_rand();
 
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object
  *
  * @return linalg object
  */
-SGLinalg* get_global_linalg();
+SHOGUN_EXPORT SGLinalg* get_global_linalg();
 #endif
 
 /** get the global singnal handler object
  *
  * @return linalg object
  */
-CSignal* get_global_signal();
+SHOGUN_EXPORT CSignal* get_global_signal();
 
 /** Checks environment variables and modifies global objects
  */
-void init_from_env();
+SHOGUN_EXPORT void init_from_env();
 
 /// function called to print normal messages
 extern std::function<void(FILE*, const char*)> sg_print_message;

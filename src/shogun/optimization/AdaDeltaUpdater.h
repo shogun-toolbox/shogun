@@ -54,7 +54,7 @@ namespace shogun
  * Matthew D. Zeiler, ADADELTA: An Adaptive Learning Rate Method, arXiv:1212.5701
  *
  * */
-class AdaDeltaUpdater: public DescendUpdaterWithCorrection
+class SHOGUN_EXPORT AdaDeltaUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */

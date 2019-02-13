@@ -83,7 +83,7 @@ enum EAENoiseType
  *
  * NOTE: Contractive convolutional autoencoders are not supported.
  */
-class CAutoencoder : public CNeuralNetwork
+class SHOGUN_EXPORT CAutoencoder : public CNeuralNetwork
 {
 public:
 	/** default constructor */

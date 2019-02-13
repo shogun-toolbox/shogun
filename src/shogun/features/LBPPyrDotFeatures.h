@@ -22,7 +22,7 @@ namespace shogun
  * Original code can be found here : https://github.com/grenaud/freeIbis/tree/master/libocas_v093
  *
  */
-class CLBPPyrDotFeatures : public CDotFeatures
+class SHOGUN_EXPORT CLBPPyrDotFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */

@@ -30,7 +30,7 @@ class CDistance;
  * sg('create_converter','lpp',k,width);
  *
  */
-class CLocalityPreservingProjections: public CLaplacianEigenmaps
+class SHOGUN_EXPORT CLocalityPreservingProjections: public CLaplacianEigenmaps
 {
 public:
 

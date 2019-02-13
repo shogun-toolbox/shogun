@@ -17,7 +17,7 @@ namespace shogun
 	fit_multiclass() to
 	fit the parameters on the predictions and the true labels. Call calibrate to
 	calibrate predictions. **/
-	class CCalibration : public CSGObject
+	class SHOGUN_EXPORT CCalibration : public CSGObject
 	{
 	public:
 		/** Constructor. */

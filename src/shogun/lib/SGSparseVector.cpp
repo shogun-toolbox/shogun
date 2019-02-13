@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soumyajit De, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Thoralf Klein, Soumyajit De, Soeren Sonnenburg, Heiko Strathmann,
  *          Weijie Lin, Abinash Panda
  */
 
@@ -109,9 +109,9 @@ T SGSparseVector<T>::dense_dot(SGVector<ST> vec)
 	return result;
 }
 
-template complex128_t SGSparseVector<complex128_t>::dense_dot<float64_t>(SGVector<float64_t>);
-template complex128_t SGSparseVector<complex128_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
-template float64_t SGSparseVector<float64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
+template SHOGUN_EXPORT complex128_t SGSparseVector<complex128_t>::dense_dot<float64_t>(SGVector<float64_t>);
+template SHOGUN_EXPORT complex128_t SGSparseVector<complex128_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
+template SHOGUN_EXPORT float64_t SGSparseVector<float64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
 
 template <class T>
 T SGSparseVector<T>::sparse_dot(const SGSparseVector<T> &v)
@@ -657,7 +657,7 @@ operator==(const SGSparseVectorEntry<T>& other) const
 #ifndef REAL_SPARSE_EQUALS
 #define REAL_SPARSE_EQUALS(real_t)                                             \
 	template <>                                                                \
-	bool SGSparseVectorEntry<real_t>::operator==(                              \
+	SHOGUN_EXPORT bool SGSparseVectorEntry<real_t>::operator==(                              \
 	    const SGSparseVectorEntry<real_t>& other) const                        \
 	{                                                                          \
 		if (feat_index != other.feat_index)                                    \
@@ -674,7 +674,7 @@ REAL_SPARSE_EQUALS(floatmax_t)
 #endif // REAL_SPARSE_EQUALS
 
 template <>
-bool SGSparseVectorEntry<complex128_t>::
+SHOGUN_EXPORT bool SGSparseVectorEntry<complex128_t>::
 operator==(const SGSparseVectorEntry<complex128_t>& other) const
 {
 	if (feat_index != other.feat_index)
@@ -686,18 +686,18 @@ operator==(const SGSparseVectorEntry<complex128_t>& other) const
 		       entry.imag(), other.entry.imag(), LDBL_EPSILON);
 }
 
-template class SGSparseVector<bool>;
-template class SGSparseVector<char>;
-template class SGSparseVector<int8_t>;
-template class SGSparseVector<uint8_t>;
-template class SGSparseVector<int16_t>;
-template class SGSparseVector<uint16_t>;
-template class SGSparseVector<int32_t>;
-template class SGSparseVector<uint32_t>;
-template class SGSparseVector<int64_t>;
-template class SGSparseVector<uint64_t>;
-template class SGSparseVector<float32_t>;
-template class SGSparseVector<float64_t>;
-template class SGSparseVector<floatmax_t>;
-template class SGSparseVector<complex128_t>;
+template class SHOGUN_EXPORT SGSparseVector<bool>;
+template class SHOGUN_EXPORT SGSparseVector<char>;
+template class SHOGUN_EXPORT SGSparseVector<int8_t>;
+template class SHOGUN_EXPORT SGSparseVector<uint8_t>;
+template class SHOGUN_EXPORT SGSparseVector<int16_t>;
+template class SHOGUN_EXPORT SGSparseVector<uint16_t>;
+template class SHOGUN_EXPORT SGSparseVector<int32_t>;
+template class SHOGUN_EXPORT SGSparseVector<uint32_t>;
+template class SHOGUN_EXPORT SGSparseVector<int64_t>;
+template class SHOGUN_EXPORT SGSparseVector<uint64_t>;
+template class SHOGUN_EXPORT SGSparseVector<float32_t>;
+template class SHOGUN_EXPORT SGSparseVector<float64_t>;
+template class SHOGUN_EXPORT SGSparseVector<floatmax_t>;
+template class SHOGUN_EXPORT SGSparseVector<complex128_t>;
 }

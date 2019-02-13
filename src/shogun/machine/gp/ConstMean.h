@@ -45,7 +45,7 @@ namespace shogun
  *
  * Simple mean function that assumes a mean of Const value.
  */
-class CConstMean : public CMeanFunction
+class SHOGUN_EXPORT CConstMean : public CMeanFunction
 {
 public:
 	/** default constructor

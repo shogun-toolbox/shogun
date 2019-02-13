@@ -31,7 +31,7 @@ namespace shogun
     state can be forced to clear using
     reset_train_state() method.
  */
-class CMulticlassLibLinear : public CLinearMulticlassMachine
+class SHOGUN_EXPORT CMulticlassLibLinear : public CLinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

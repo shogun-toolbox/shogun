@@ -62,7 +62,7 @@ namespace shogun
  * to many when add_subset() is called many times) with add_subset_in_place().
  * The latter does not allow to remove such modifications one-by-one.
  */
-class CFeatures : public CSGObject
+class SHOGUN_EXPORT CFeatures : public CSGObject
 {
 	public:
 		/** constructor

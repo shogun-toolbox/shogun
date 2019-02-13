@@ -45,7 +45,7 @@ namespace shogun
  * used.
  *
  */
-class CNeuralSoftmaxLayer : public CNeuralLinearLayer
+class SHOGUN_EXPORT CNeuralSoftmaxLayer : public CNeuralLinearLayer
 {
 public:
 	/** default constructor */

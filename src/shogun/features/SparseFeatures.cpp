@@ -646,18 +646,18 @@ template<class ST> void CSparseFeatures<ST>::save_with_labels(CLibSVMFile* write
 	sparse_feature_matrix.save_with_labels(writer, labels);
 }
 
-template class CSparseFeatures<bool>;
-template class CSparseFeatures<char>;
-template class CSparseFeatures<int8_t>;
-template class CSparseFeatures<uint8_t>;
-template class CSparseFeatures<int16_t>;
-template class CSparseFeatures<uint16_t>;
-template class CSparseFeatures<int32_t>;
-template class CSparseFeatures<uint32_t>;
-template class CSparseFeatures<int64_t>;
-template class CSparseFeatures<uint64_t>;
-template class CSparseFeatures<float32_t>;
-template class CSparseFeatures<float64_t>;
-template class CSparseFeatures<floatmax_t>;
-template class CSparseFeatures<complex128_t>;
+template class SHOGUN_EXPORT CSparseFeatures<bool>;
+template class SHOGUN_EXPORT CSparseFeatures<char>;
+template class SHOGUN_EXPORT CSparseFeatures<int8_t>;
+template class SHOGUN_EXPORT CSparseFeatures<uint8_t>;
+template class SHOGUN_EXPORT CSparseFeatures<int16_t>;
+template class SHOGUN_EXPORT CSparseFeatures<uint16_t>;
+template class SHOGUN_EXPORT CSparseFeatures<int32_t>;
+template class SHOGUN_EXPORT CSparseFeatures<uint32_t>;
+template class SHOGUN_EXPORT CSparseFeatures<int64_t>;
+template class SHOGUN_EXPORT CSparseFeatures<uint64_t>;
+template class SHOGUN_EXPORT CSparseFeatures<float32_t>;
+template class SHOGUN_EXPORT CSparseFeatures<float64_t>;
+template class SHOGUN_EXPORT CSparseFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CSparseFeatures<complex128_t>;
 }

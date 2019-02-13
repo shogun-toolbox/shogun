@@ -33,7 +33,7 @@ namespace shogun
  * diagonally dominant.
  *
  */
-class COligoStringKernel : public CStringKernel<char>
+class SHOGUN_EXPORT COligoStringKernel : public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

@@ -28,7 +28,7 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  *
  */
-class CJediSep: public CICAConverter
+class SHOGUN_EXPORT CJediSep: public CICAConverter
 {
 	public:
 

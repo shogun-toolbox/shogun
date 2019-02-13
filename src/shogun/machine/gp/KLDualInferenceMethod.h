@@ -45,7 +45,7 @@ namespace shogun
 {
 
 /** @brief Build-in minimizer for KLDualInference */
-class CKLDualInferenceMethodMinimizer: public CLBFGSMinimizer
+class SHOGUN_EXPORT CKLDualInferenceMethodMinimizer: public CLBFGSMinimizer
 {
 public:
 	CKLDualInferenceMethodMinimizer(): CLBFGSMinimizer() { init(); }
@@ -105,7 +105,7 @@ private:
  *
  * For detailed information, please refer to the paper.
  */
-class CKLDualInferenceMethod: public CKLInference
+class SHOGUN_EXPORT CKLDualInferenceMethod: public CKLInference
 {
 friend class KLDualInferenceMethodCostFunction;
 public:

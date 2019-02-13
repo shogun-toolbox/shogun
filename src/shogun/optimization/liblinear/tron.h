@@ -9,7 +9,7 @@
 namespace shogun
 {
 /** class function */
-class function
+class SHOGUN_EXPORT function
 {
 public:
 	/** fun
@@ -52,7 +52,7 @@ public:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class Tron */
-class CTron : public CSGObject
+class SHOGUN_EXPORT CTron : public CSGObject
 {
 public:
 	CTron() { }

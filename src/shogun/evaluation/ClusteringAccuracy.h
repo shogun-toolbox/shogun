@@ -16,7 +16,7 @@ namespace shogun
 
 /** @brief clustering accuracy
  */
-class CClusteringAccuracy: public CClusteringEvaluation
+class SHOGUN_EXPORT CClusteringAccuracy: public CClusteringEvaluation
 {
 public:
 	/** constructor */

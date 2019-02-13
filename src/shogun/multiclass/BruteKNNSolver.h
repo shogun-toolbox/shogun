@@ -16,7 +16,7 @@ namespace shogun
 {
 
 /* Standard KNN solver. Test points are compared to all training data for each prediction. */
-class CBruteKNNSolver : public CKNNSolver
+class SHOGUN_EXPORT CBruteKNNSolver : public CKNNSolver
 {
 	public:
 		/** default constructor */

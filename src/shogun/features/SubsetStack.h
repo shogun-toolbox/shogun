@@ -33,7 +33,7 @@ namespace shogun
  * mapping. On  removal, the last element on stack will be removed. This is done
  * for computational convenience.
  */
-class CSubsetStack: public CSGObject
+class SHOGUN_EXPORT CSubsetStack: public CSGObject
 {
 public:
 	/** Constructor. Creates empty subset stack

@@ -25,7 +25,7 @@ namespace shogun
  * \sa CLinearMachine
  * \sa http://en.wikipedia.org/wiki/Perceptron
  */
-class CPerceptron : public CIterativeMachine<CLinearMachine>
+class SHOGUN_EXPORT CPerceptron : public CIterativeMachine<CLinearMachine>
 {
 	public:
 

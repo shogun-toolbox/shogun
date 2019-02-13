@@ -18,7 +18,7 @@ namespace shogun
 /* Virtual base class for all KNN solvers */
 
 class CDistanceMachine;
-class CKNNSolver : public CDistanceMachine
+class SHOGUN_EXPORT CKNNSolver : public CDistanceMachine
 {
 	public:
 		/** default constructor */

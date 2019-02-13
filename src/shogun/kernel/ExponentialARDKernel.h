@@ -60,7 +60,7 @@ enum EARDKernelType
  * When \f$\Lambda=\textbf{diag}(\lambda) \f$ is, the last case becomes the second case.
  *
  */
-class CExponentialARDKernel: public CDotKernel
+class SHOGUN_EXPORT CExponentialARDKernel: public CDotKernel
 {
 public:
 	/** default constructor */

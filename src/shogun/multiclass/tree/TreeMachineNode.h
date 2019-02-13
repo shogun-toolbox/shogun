@@ -49,7 +49,7 @@ namespace shogun
  * specified using template specifier.
  */
 template <typename T>
-class CTreeMachineNode
+class SHOGUN_EXPORT CTreeMachineNode
 	: public CSGObject
 {
 public:

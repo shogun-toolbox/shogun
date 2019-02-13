@@ -17,7 +17,7 @@ namespace shogun
 /** Generate random ECOC codebook containing +1 and -1, and
  * select the best one.
  */
-class CECOCRandomDenseEncoder: public CECOCEncoder
+class SHOGUN_EXPORT CECOCRandomDenseEncoder: public CECOCEncoder
 {
 public:
 	/** Default constructor */

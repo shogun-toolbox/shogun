@@ -47,7 +47,7 @@ namespace shogun
  * www.eecs.berkeley.edu/~elghaoui/Teaching/EE227A/lecture18.pdf
  *
  */
-class ProximalPenalty: public Penalty
+class SHOGUN_EXPORT ProximalPenalty: public Penalty
 {
 public:
 	virtual ~ProximalPenalty() {}; 

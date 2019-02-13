@@ -23,7 +23,7 @@ class GradientModelSelectionCostFunction;
 /** @brief Model selection class which searches for the best model by a
  * gradient-search.
  */
-class CGradientModelSelection : public CModelSelection
+class SHOGUN_EXPORT CGradientModelSelection : public CModelSelection
 {
 friend class GradientModelSelectionCostFunction;
 

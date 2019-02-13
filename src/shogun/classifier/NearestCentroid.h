@@ -28,7 +28,7 @@ class CDistanceMachine;
  * NearestCentroid requires a CDistance object to work with (e.g., CEuclideanDistance ).
  */
 
-class CNearestCentroid : public CDistanceMachine{
+class SHOGUN_EXPORT CNearestCentroid : public CDistanceMachine{
 
 public:
 

@@ -66,7 +66,7 @@ struct segment_loss_struct
  * Structure and Function collection.
  * This Class implements a Dynamic Programming functions.
  */
-class CDynProg : public CSGObject
+class SHOGUN_EXPORT CDynProg : public CSGObject
 {
 public:
 	/** constructor

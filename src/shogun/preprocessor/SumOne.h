@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evgeniy Andreev, Yuyu Zhang,
  *          Saurabh Goyal
  */
 
@@ -26,7 +26,7 @@ namespace shogun
  * \f]
  *
  */
-class CSumOne : public CDensePreprocessor<float64_t>
+class SHOGUN_EXPORT CSumOne : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */

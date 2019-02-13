@@ -25,7 +25,7 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 54(9), 3270-3278.
  *
  */
-class CQDiag : public CApproxJointDiagonalizer
+class SHOGUN_EXPORT CQDiag : public CApproxJointDiagonalizer
 {
 	public:
 

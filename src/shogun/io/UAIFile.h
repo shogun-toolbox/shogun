@@ -22,7 +22,7 @@ namespace shogun
  * See http://graphmod.ics.uci.edu/uai08/FileFormat for more
  * details.
  */
-class CUAIFile : public CFile
+class SHOGUN_EXPORT CUAIFile : public CFile
 {
 public:
     /** default constructor */

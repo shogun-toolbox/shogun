@@ -44,7 +44,7 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class KLInferenceCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }

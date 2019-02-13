@@ -22,7 +22,7 @@ namespace shogun
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortUlongString : public CStringPreprocessor<uint64_t>
+class SHOGUN_EXPORT CSortUlongString : public CStringPreprocessor<uint64_t>
 {
 public:
 	/** default constructor */

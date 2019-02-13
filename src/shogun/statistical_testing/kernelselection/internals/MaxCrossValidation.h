@@ -45,7 +45,7 @@ template <typename T> class SGVector;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class MaxCrossValidation : public KernelSelection
+class SHOGUN_EXPORT MaxCrossValidation : public KernelSelection
 {
 public:
 	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const index_t&, const float64_t&);

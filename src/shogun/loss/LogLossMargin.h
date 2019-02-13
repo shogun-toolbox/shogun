@@ -16,7 +16,7 @@ namespace shogun
 /** @brief Class CLogLossMargin implements a
  * margin-based log-likelihood loss function.
  */
-class CLogLossMargin: public CLossFunction
+class SHOGUN_EXPORT CLogLossMargin: public CLossFunction
 {
 public:
 	/**

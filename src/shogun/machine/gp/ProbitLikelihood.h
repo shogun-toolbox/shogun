@@ -48,7 +48,7 @@ namespace shogun
  * where \f$\Phi: \mathbb{R} \mapsto [0, 1]\f$ is the cumulative distribution function (CDF) of
  * the normal distribution \f$\mathcal{N}(0, 1)\f$.
  */
-class CProbitLikelihood : public CLikelihoodModel
+class SHOGUN_EXPORT CProbitLikelihood : public CLikelihoodModel
 {
 public:
 	/** default constructor */

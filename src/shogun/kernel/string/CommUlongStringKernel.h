@@ -44,7 +44,7 @@ template <class ST> class CStringFeatures;
  * improvement here when a whole set of sequences is ADDed) using sorted lists.
  *
  */
-class CCommUlongStringKernel: public CStringKernel<uint64_t>
+class SHOGUN_EXPORT CCommUlongStringKernel: public CStringKernel<uint64_t>
 {
 	public:
 		/** constructor

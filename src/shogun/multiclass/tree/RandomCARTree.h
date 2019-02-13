@@ -45,7 +45,7 @@ namespace shogun
  * split. In randomized CART, a few (fixed number) attributes are randomly chosen from all available attributes while deciding the best split.
  * This is unlike the original CART where all available attributes are considered while deciding the best split.
  */
-class CRandomCARTree : public CCARTree
+class SHOGUN_EXPORT CRandomCARTree : public CCARTree
 {
 public:
 	/** constructor */

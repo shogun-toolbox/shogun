@@ -18,4 +18,4 @@ ExternalProject_Add(
 		&& ${CMAKE_COMMAND} -E copy_directory ${STAN_INCLUDE_DIR_EIGEN} ${THIRD_PARTY_INCLUDE_DIR}/eigen
 	LOG_DOWNLOAD ON
 	)
-add_dependencies(libshogun StanMath)
+ADD_SHOGUN_DEPENDENCY(StanMath)

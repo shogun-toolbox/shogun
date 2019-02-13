@@ -25,7 +25,7 @@ namespace shogun
  *  \f]
  *
  */
-class CBrayCurtisDistance: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CBrayCurtisDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

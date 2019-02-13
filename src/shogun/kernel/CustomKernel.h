@@ -29,7 +29,7 @@ namespace shogun
  *
  *
  */
-class CCustomKernel: public CKernel
+class SHOGUN_EXPORT CCustomKernel: public CKernel
 {
 	void init();
 

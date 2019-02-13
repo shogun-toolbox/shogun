@@ -18,7 +18,7 @@ namespace shogun
 class CKernel;
 
 /** TODO doc */
-class CKernelStructuredOutputMachine : public CStructuredOutputMachine
+class SHOGUN_EXPORT CKernelStructuredOutputMachine : public CStructuredOutputMachine
 {
 	public:
 		/** default constructor  */

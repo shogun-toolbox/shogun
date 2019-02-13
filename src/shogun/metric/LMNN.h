@@ -29,7 +29,7 @@ class CLMNNStatistics;
  * Weinberger, K. Q., Saul, L. K.
  * Distance Metric Learning for Large Margin Nearest Neighbor Classification.
  */
-class CLMNN : public CSGObject
+class SHOGUN_EXPORT CLMNN : public CSGObject
 {
 	public:
 		/** default constructor */
@@ -242,7 +242,7 @@ class CLMNN : public CSGObject
  * @brief Class LMNNStatistics used to give access to intermediate results
  * obtained training LMNN.
  */
-class CLMNNStatistics : public CSGObject
+class SHOGUN_EXPORT CLMNNStatistics : public CSGObject
 {
 	public:
 		/** default constructor */

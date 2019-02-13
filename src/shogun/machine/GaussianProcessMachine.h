@@ -57,7 +57,7 @@ namespace shogun
  *
  * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
  */
-class CGaussianProcessMachine : public CMachine
+class SHOGUN_EXPORT CGaussianProcessMachine : public CMachine
 {
 public:
 	/** default constructor */

@@ -35,7 +35,7 @@ namespace shogun
 {
 /** @brief Class Time that implements a stopwatch based on either cpu time or wall
  * clock time. */
-class CTime : public CSGObject
+class SHOGUN_EXPORT CTime : public CSGObject
 {
 	public:
 		/** constructor

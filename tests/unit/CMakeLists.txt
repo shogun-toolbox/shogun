@@ -7,7 +7,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 function (add_unit_test_executable EXECUTABLE TARGET SRC)
 	ADD_EXECUTABLE(${EXECUTABLE} ${SRC} utils/Utils.cpp)
-	add_dependencies(${EXECUTABLE} GoogleMock shogun::shogun)
 	target_link_libraries(${EXECUTABLE} PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
 	IF (SANITIZER_FLAGS)
 		set_target_properties(${EXECUTABLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})

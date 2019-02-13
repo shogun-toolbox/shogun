@@ -24,7 +24,7 @@ namespace shogun
  * where
  * \f$ I_i({\bf x},{\bf x'})=1\f$ if \f$x_i=x'_i\f$ and 0 otherwise.
  */
-class CLocalityImprovedStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

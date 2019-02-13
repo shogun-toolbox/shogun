@@ -31,7 +31,7 @@
 
 namespace shogun
 {
-class CSerializableXmlFile
+class SHOGUN_EXPORT CSerializableXmlFile
 	:public CSerializableFile
 {
 	friend class SerializableXmlReader00;

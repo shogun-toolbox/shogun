@@ -48,7 +48,7 @@ template<class C> class SGMatrix;
 /** @brief The helper class is used for Laplace and KL methods
  *
  */
-class CMatrixOperations
+class SHOGUN_EXPORT CMatrixOperations
 {
 public:
 	static SGMatrix<float64_t> get_choleksy(SGVector<float64_t> W, SGVector<float64_t> sW,

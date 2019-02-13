@@ -28,7 +28,7 @@ struct TSGDataType;
  *
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CMLDataHDF5File : public CFile
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT CMLDataHDF5File : public CFile
 {
 public:
 	/** default constructor  */

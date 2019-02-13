@@ -55,7 +55,7 @@ namespace shogun
  * This specific implementation was adapted from the infFITC_Laplace.m file in the
  * GPML toolbox.
  */
-class CSingleFITCLaplaceInferenceMethod: public CSingleFITCInference
+class SHOGUN_EXPORT CSingleFITCLaplaceInferenceMethod: public CSingleFITCInference
 {
 friend class CFITCPsiLine;
 friend class CSingleFITCLaplaceNewtonOptimizer; 
@@ -389,7 +389,7 @@ protected:
 };
 
 /** @brief The build-in minimizer for SingleFITCLaplaceInference */
-class CSingleFITCLaplaceNewtonOptimizer: public Minimizer
+class SHOGUN_EXPORT CSingleFITCLaplaceNewtonOptimizer: public Minimizer
 {
 public:
 	CSingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }

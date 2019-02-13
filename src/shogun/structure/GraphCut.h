@@ -99,7 +99,7 @@ struct GCNodePtr
  *
  * Currently, only binary lablel is supported, factor order <= 3
  */
-class CGraphCut : public CMAPInferImpl
+class SHOGUN_EXPORT CGraphCut : public CMAPInferImpl
 {
 public:
 	/** Constructor */

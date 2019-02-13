@@ -1,13 +1,16 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Yuyu Zhang, Shashwat Lal Das, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Shashwat Lal Das, Viktor Gal,
  *          Fernando Iglesias, Sergey Lisitsyn, Shell Hu, Liang Pang, Wu Lin
  */
 #ifndef _FEATURE_TYPES__H__
 #define _FEATURE_TYPES__H__
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
+
+#include <string>
 
 namespace shogun
 {
@@ -65,6 +68,6 @@ namespace shogun
 		FP_DOT = 1,
 		FP_STREAMING_DOT = 2
 	};
-	std::string feature_type(EFeatureType f);
+	SHOGUN_EXPORT std::string feature_type(EFeatureType f);
 }
 #endif // _FEATURE_TYPES__H__

@@ -24,7 +24,7 @@ namespace shogun
  *
  *	Normalization is based on a mask that is defined by a number of pair of tasks.
  */
-class CMultitaskKernelMaskPairNormalizer: public CKernelNormalizer
+class SHOGUN_EXPORT CMultitaskKernelMaskPairNormalizer: public CKernelNormalizer
 {
 
 public:

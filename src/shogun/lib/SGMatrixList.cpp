@@ -109,18 +109,18 @@ SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_component
 	return out;
 }
 
-template class SGMatrixList<bool>;
-template class SGMatrixList<char>;
-template class SGMatrixList<int8_t>;
-template class SGMatrixList<uint8_t>;
-template class SGMatrixList<int16_t>;
-template class SGMatrixList<uint16_t>;
-template class SGMatrixList<int32_t>;
-template class SGMatrixList<uint32_t>;
-template class SGMatrixList<int64_t>;
-template class SGMatrixList<uint64_t>;
-template class SGMatrixList<float32_t>;
-template class SGMatrixList<float64_t>;
-template class SGMatrixList<floatmax_t>;
+template class SHOGUN_EXPORT SGMatrixList<bool>;
+template class SHOGUN_EXPORT SGMatrixList<char>;
+template class SHOGUN_EXPORT SGMatrixList<int8_t>;
+template class SHOGUN_EXPORT SGMatrixList<uint8_t>;
+template class SHOGUN_EXPORT SGMatrixList<int16_t>;
+template class SHOGUN_EXPORT SGMatrixList<uint16_t>;
+template class SHOGUN_EXPORT SGMatrixList<int32_t>;
+template class SHOGUN_EXPORT SGMatrixList<uint32_t>;
+template class SHOGUN_EXPORT SGMatrixList<int64_t>;
+template class SHOGUN_EXPORT SGMatrixList<uint64_t>;
+template class SHOGUN_EXPORT SGMatrixList<float32_t>;
+template class SHOGUN_EXPORT SGMatrixList<float64_t>;
+template class SHOGUN_EXPORT SGMatrixList<floatmax_t>;
 
 } /* namespace shogun */

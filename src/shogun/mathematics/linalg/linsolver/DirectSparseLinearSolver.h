@@ -17,7 +17,7 @@ namespace shogun
 /** @brief Class that provides a solve method for real sparse-matrix
  * linear systems using LLT
  */
-class CDirectSparseLinearSolver : public CLinearSolver<float64_t, float64_t>
+class SHOGUN_EXPORT CDirectSparseLinearSolver : public CLinearSolver<float64_t, float64_t>
 {
 public:
 	/** default constructor */

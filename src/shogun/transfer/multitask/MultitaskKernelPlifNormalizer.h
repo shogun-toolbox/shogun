@@ -20,7 +20,7 @@ namespace shogun
 /** @brief The MultitaskKernel allows learning a piece-wise linear function (PLIF) via MKL
  *
  */
-class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
+class SHOGUN_EXPORT CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 public:

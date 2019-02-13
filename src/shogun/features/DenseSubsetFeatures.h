@@ -21,7 +21,7 @@ template<class ST> class SGVector;
 class CDotFeatures;
 
 /** SubsetFeatures wrap features but only uses a subset of the variables */
-template<class ST> class CDenseSubsetFeatures: public CDotFeatures
+template<class ST> class SHOGUN_EXPORT CDenseSubsetFeatures: public CDotFeatures
 {
 public:
     /** default constructor */

@@ -15,7 +15,7 @@ namespace shogun
 {
 
 /** Utility for ShareBoost to handle optimization */
-class ShareBoostOptimizer
+class SHOGUN_EXPORT ShareBoostOptimizer
 {
 public:
 	/** constructor */

@@ -24,7 +24,7 @@ class CIndexBlock;
  * Can be constructed via CIndexBlock instance having
  * sub blocks, adjacency matrix or precomputed indices.
  */
-class CIndexBlockTree : public CIndexBlockRelation
+class SHOGUN_EXPORT CIndexBlockTree : public CIndexBlockRelation
 {
 public:
 

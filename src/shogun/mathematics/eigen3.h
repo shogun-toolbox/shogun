@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soumyajit De, Viktor Gal, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soumyajit De, Viktor Gal, Heiko Strathmann,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -9,6 +9,7 @@
 #define EIGEN3_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
 
 	//#define EIGEN_RUNTIME_NO_MALLOC
 	#include <Eigen/Eigen>
@@ -43,7 +44,7 @@ template<class T> class SGSparseMatrix;
  * integration with shogun. Currently it provides a method for
  * converting SGSparseMatrix to Eigen3 SparseMatrix.
  */
-template<typename T> class EigenSparseUtil
+template<typename T> class SHOGUN_EXPORT EigenSparseUtil
 {
 	public:
 	/** Converts a SGSparseMatrix to Eigen3 SparseMatrix by copying

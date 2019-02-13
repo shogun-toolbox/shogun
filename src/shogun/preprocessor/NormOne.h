@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Saurabh Goyal, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Saurabh Goyal,
  *          Sergey Lisitsyn
  */
 
@@ -28,7 +28,7 @@ namespace shogun
  * It therefore does not need any initialization. It is most useful to get data
  * onto a ball of radius one.
  */
-class CNormOne : public CDensePreprocessor<float64_t>
+class SHOGUN_EXPORT CNormOne : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */

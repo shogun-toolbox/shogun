@@ -57,7 +57,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifdef USE_GPL_SHOGUN
 /** Wrapper class used for the Brent minimizer */
-class CMultiPsiLine : public func_base
+class SHOGUN_EXPORT CMultiPsiLine : public func_base
 {
 public:
 	float64_t log_scale;

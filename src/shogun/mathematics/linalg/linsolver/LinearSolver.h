@@ -19,7 +19,7 @@ template<class T> class CLinearOperator;
  * for linear systems, that takes a linear operator \f$A\f$, a vector \f$b\f$,
  * solves the system \f$Ax=b\f$ and returns the vector \f$x\f$.
  */
-template<class T, class ST=T> class CLinearSolver : public CSGObject
+template<class T, class ST=T> class SHOGUN_EXPORT CLinearSolver : public CSGObject
 {
 public:
 	/** default constructor */

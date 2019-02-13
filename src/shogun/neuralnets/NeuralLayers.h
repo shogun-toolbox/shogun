@@ -52,7 +52,7 @@ namespace shogun
  * a reference to the same object.
  *
  */
-class CNeuralLayers : public CSGObject
+class SHOGUN_EXPORT CNeuralLayers : public CSGObject
 {
 public:
 	/** default constructor */

@@ -28,7 +28,7 @@ namespace shogun
 /** @brief mapped sparse matrix for
  * representing graph relations of tasks
  */
-class MappedSparseMatrix
+class SHOGUN_EXPORT MappedSparseMatrix
 {
 
     public:
@@ -83,7 +83,7 @@ class MappedSparseMatrix
 
 
 /** @brief class to implement LibLinear */
-class CLibLinearMTL : public CLinearMachine
+class SHOGUN_EXPORT CLibLinearMTL : public CLinearMachine
 {
 	public:
 		/** default constructor  */

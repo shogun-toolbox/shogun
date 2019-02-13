@@ -27,7 +27,7 @@ class CTokenizer;
  *
  * w: http://en.wikipedia.org/wiki/Circular_buffer
  */
-class CCircularBuffer : public CSGObject
+class SHOGUN_EXPORT CCircularBuffer : public CSGObject
 {
 public:
 	/** default constructor */

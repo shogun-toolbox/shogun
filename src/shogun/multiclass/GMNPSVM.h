@@ -19,7 +19,7 @@ namespace shogun
  *
  * It uses CGMNPLib for training (in true multiclass-SVM fashion).
  */
-class CGMNPSVM : public CMulticlassSVM
+class SHOGUN_EXPORT CGMNPSVM : public CMulticlassSVM
 {
 	void init();
 

@@ -60,7 +60,7 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
+class SHOGUN_EXPORT CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
 {
 public:
 	CLogitVGPiecewiseBoundLikelihood();

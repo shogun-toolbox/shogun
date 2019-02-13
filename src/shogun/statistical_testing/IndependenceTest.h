@@ -59,7 +59,7 @@ namespace internal
  * the other distribution in its original order
  *
  */
-class CIndependenceTest : public CTwoDistributionTest
+class SHOGUN_EXPORT CIndependenceTest : public CTwoDistributionTest
 {
 public:
 	/** Default constructor */

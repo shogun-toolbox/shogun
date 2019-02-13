@@ -54,7 +54,7 @@ class CDistance;
  * sg('create_converter','mds');
  *
  */
-class CMultidimensionalScaling: public CEmbeddingConverter
+class SHOGUN_EXPORT CMultidimensionalScaling: public CEmbeddingConverter
 {
 public:
 

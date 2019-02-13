@@ -28,7 +28,7 @@ namespace shogun
  * multivariate isotropic Gaussian in a certain dimensions, where one selected
  * dimension has its mean shifted by some value.
  */
-class CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
+class SHOGUN_EXPORT CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
 {
 public:
 	/** Constructor */

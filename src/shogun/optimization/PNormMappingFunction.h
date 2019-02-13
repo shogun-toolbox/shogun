@@ -41,7 +41,7 @@ namespace shogun
  * Gentile, Claudio. "The robustness of the p-norm algorithms."
  * Machine Learning 53.3 (2003): 265-299.
  */
-class PNormMappingFunction: public MappingFunction
+class SHOGUN_EXPORT PNormMappingFunction: public MappingFunction
 {
 public:
 	PNormMappingFunction()

@@ -44,7 +44,7 @@
 
 namespace shogun
 {
-	class ParameterObserverTensorBoard : public ParameterObserverInterface
+	class SHOGUN_EXPORT ParameterObserverTensorBoard : public ParameterObserverInterface
 	{
 
 	public:

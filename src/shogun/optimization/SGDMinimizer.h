@@ -42,7 +42,7 @@ namespace shogun
  * http://cs231n.github.io/neural-networks-3/#sgd
  */
 
-class SGDMinimizer: public FirstOrderStochasticMinimizer
+class SHOGUN_EXPORT SGDMinimizer: public FirstOrderStochasticMinimizer
 {
 public:
 	/** Default constructor */

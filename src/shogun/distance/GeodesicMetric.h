@@ -29,7 +29,7 @@ namespace shogun
  * Geodesic distance</a>
  *
  */
-class CGeodesicMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CGeodesicMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

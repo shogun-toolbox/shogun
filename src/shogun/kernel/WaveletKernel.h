@@ -30,7 +30,7 @@ namespace shogun
  * \f]
  *
  */
-class CWaveletKernel: public CDotKernel
+class SHOGUN_EXPORT CWaveletKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

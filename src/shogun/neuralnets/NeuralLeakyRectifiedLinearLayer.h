@@ -47,7 +47,7 @@ namespace shogun
  *
  * When used as an output layer, a squared error measure is used
  */
-class CNeuralLeakyRectifiedLinearLayer : public CNeuralRectifiedLinearLayer
+class SHOGUN_EXPORT CNeuralLeakyRectifiedLinearLayer : public CNeuralRectifiedLinearLayer
 {
 public:
 	/** default constructor */

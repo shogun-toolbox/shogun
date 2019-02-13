@@ -48,7 +48,7 @@
 namespace shogun {
 
 	namespace any_detail{
-		std::string demangled_type_helper(const char *name);
+		SHOGUN_EXPORT std::string demangled_type_helper(const char *name);
 	}
 
 	/** Converts compiler-dependent name of class to
@@ -225,13 +225,13 @@ namespace shogun {
 			return lhs == rhs;
 		}
 		template <>
-		bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
+		SHOGUN_EXPORT bool compare_impl_eq(const float32_t& lhs, const float32_t& rhs);
 		template <>
-		bool compare_impl_eq(const float64_t& lhs, const float64_t& rhs);
+		SHOGUN_EXPORT bool compare_impl_eq(const float64_t& lhs, const float64_t& rhs);
 		template <>
-		bool compare_impl_eq(const floatmax_t& lhs, const floatmax_t& rhs);
+		SHOGUN_EXPORT bool compare_impl_eq(const floatmax_t& lhs, const floatmax_t& rhs);
 		template <>
-		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
+		SHOGUN_EXPORT bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs);
 
 		template <class T>
 		auto compare_impl(general, const T& lhs, const T& rhs)
@@ -385,7 +385,7 @@ namespace shogun {
 			return 0;
 		}
 
-		void free_object(CSGObject* obj);
+		SHOGUN_EXPORT void free_object(CSGObject* obj);
 
 		template <class T, class S>
 		inline auto free_array(T** ptr, S size) -> decltype(ptr[0]->unref())

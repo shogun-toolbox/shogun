@@ -39,7 +39,7 @@ namespace shogun
 /** @brief The base mapping function for mirror descend 
  *
  */
-class MappingFunction:public CSGObject
+class SHOGUN_EXPORT MappingFunction:public CSGObject
 {
 public:
 	virtual ~MappingFunction(){};

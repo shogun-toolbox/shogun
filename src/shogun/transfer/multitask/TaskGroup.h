@@ -22,7 +22,7 @@ namespace shogun
  *
  * @see CTask
  */
-class CTaskGroup : public CTaskRelation
+class SHOGUN_EXPORT CTaskGroup : public CTaskRelation
 {
 public:
 

@@ -43,7 +43,7 @@ namespace shogun
  *	http://www.shloosl.com/~ali/random-features/
  *	https://research.microsoft.com/apps/video/dl.aspx?id=103390&l=i
  */
-class CRandomKitchenSinksDotFeatures : public CDotFeatures
+class SHOGUN_EXPORT CRandomKitchenSinksDotFeatures : public CDotFeatures
 {
 public:
 

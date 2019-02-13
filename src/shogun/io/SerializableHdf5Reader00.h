@@ -15,7 +15,7 @@
 namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class SerializableHdf5Reader00
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT SerializableHdf5Reader00
 	:public CSerializableFile::TSerializableReader {
 	CSerializableHdf5File* m_file;
 

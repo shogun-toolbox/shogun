@@ -29,7 +29,7 @@ namespace shogun
  * This specific implementation was adapted from the infLaplace.m file in the
  * GPML toolbox.
  */
-class CSingleLaplaceInferenceMethod: public CLaplaceInference
+class SHOGUN_EXPORT CSingleLaplaceInferenceMethod: public CLaplaceInference
 {
 friend class CSingleLaplaceNewtonOptimizer; 
 friend class SingleLaplaceInferenceMethodCostFunction;
@@ -240,7 +240,7 @@ protected:
 
 
 /** @brief The build-in minimizer for SingleLaplaceInference */
-class CSingleLaplaceNewtonOptimizer: public Minimizer
+class SHOGUN_EXPORT CSingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
 	CSingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }

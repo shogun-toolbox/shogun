@@ -46,7 +46,7 @@ namespace shogun
  * This class takes the mean of data used for Gaussian Process Regression. It
  * also includes the derivatives of the specified function.
  */
-class CMeanFunction : public CSGObject
+class SHOGUN_EXPORT CMeanFunction : public CSGObject
 {
 public:
 	/** constructor */

@@ -45,7 +45,7 @@ namespace shogun
  * TU Berlin, 2009
  *
  * */
-class CScatterSVM : public CMulticlassSVM
+class SHOGUN_EXPORT CScatterSVM : public CMulticlassSVM
 {
 	public:
 		/** default constructor  */

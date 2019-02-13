@@ -31,7 +31,7 @@ class CDistance;
  * this function is computed recusively
  */
 
-class CANOVAKernel: public CDotKernel
+class SHOGUN_EXPORT CANOVAKernel: public CDotKernel
 {
 public:
 	/** default constructor */

@@ -28,7 +28,7 @@ template <class ST> struct SGSparseVectorEntry;
  * - Strings are written out as one string per line
  *
  */
-	class CStreamingFile: public CSGObject
+	class SHOGUN_EXPORT CStreamingFile: public CSGObject
 	{
 	public:
 		/** default constructor	 */

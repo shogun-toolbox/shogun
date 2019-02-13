@@ -25,7 +25,7 @@ class CFeatures;
  * Algorithms and Applications, Neural Networks, 13(4-5), 2000,
  * pp. 411-430`
  */
-class CFastICA: public CICAConverter
+class SHOGUN_EXPORT CFastICA: public CICAConverter
 {
 	public:
 

@@ -41,7 +41,7 @@ namespace shogun
  * SquaredLoss function at values below Huber delta and like absolute deviation
  * at values greater than the delta.
  */
-class CHuberLoss: public CLossFunction
+class SHOGUN_EXPORT CHuberLoss: public CLossFunction
 {
 public:
 	/** default constructor */

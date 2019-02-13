@@ -19,7 +19,7 @@ class CDotFeatures;
  *
  */
 
-class CGaussianCompactKernel: public CGaussianKernel
+class SHOGUN_EXPORT CGaussianCompactKernel: public CGaussianKernel
 {
     public:
         /** default constructor */

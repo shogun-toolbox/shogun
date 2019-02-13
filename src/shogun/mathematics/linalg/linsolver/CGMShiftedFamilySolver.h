@@ -25,7 +25,7 @@ template<class T> class SGVector;
  * open source library Krylstat (https://github.com/Froskekongen/KRYLSTAT/),
  * written by Erlend Aune, under GPL2+
  */
-class CCGMShiftedFamilySolver
+class SHOGUN_EXPORT CCGMShiftedFamilySolver
  : public CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>
 {
 

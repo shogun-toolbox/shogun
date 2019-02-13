@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Yuyu Zhang,
  *          Bjoern Esser
  */
 #ifndef __SGSTRINGLIST_H__

@@ -20,7 +20,7 @@ namespace shogun
  * Uses implementation from the Tapkee library.
  *
  */
-class CManifoldSculpting : public CEmbeddingConverter
+class SHOGUN_EXPORT CManifoldSculpting : public CEmbeddingConverter
 {
 public:
 

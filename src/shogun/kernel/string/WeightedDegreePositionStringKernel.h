@@ -43,7 +43,7 @@ class CSVM;
  *   to shifts (in either direction) of extent s, and S(l) determines
  *   the shift range at position l.
  */
-class CWeightedDegreePositionStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CWeightedDegreePositionStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */

@@ -119,17 +119,17 @@ bool SGStringList<T>::equals(const SGStringList<T>& other) const
 	return true;
 }
 
-template class SGStringList<bool>;
-template class SGStringList<char>;
-template class SGStringList<int8_t>;
-template class SGStringList<uint8_t>;
-template class SGStringList<int16_t>;
-template class SGStringList<uint16_t>;
-template class SGStringList<int32_t>;
-template class SGStringList<uint32_t>;
-template class SGStringList<int64_t>;
-template class SGStringList<uint64_t>;
-template class SGStringList<float32_t>;
-template class SGStringList<float64_t>;
-template class SGStringList<floatmax_t>;
+template class SHOGUN_EXPORT SGStringList<bool>;
+template class SHOGUN_EXPORT SGStringList<char>;
+template class SHOGUN_EXPORT SGStringList<int8_t>;
+template class SHOGUN_EXPORT SGStringList<uint8_t>;
+template class SHOGUN_EXPORT SGStringList<int16_t>;
+template class SHOGUN_EXPORT SGStringList<uint16_t>;
+template class SHOGUN_EXPORT SGStringList<int32_t>;
+template class SHOGUN_EXPORT SGStringList<uint32_t>;
+template class SHOGUN_EXPORT SGStringList<int64_t>;
+template class SHOGUN_EXPORT SGStringList<uint64_t>;
+template class SHOGUN_EXPORT SGStringList<float32_t>;
+template class SHOGUN_EXPORT SGStringList<float64_t>;
+template class SHOGUN_EXPORT SGStringList<floatmax_t>;
 }

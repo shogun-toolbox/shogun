@@ -22,7 +22,7 @@ namespace shogun
  *  This Implementation is ported from the Olivier Chapelles fast newton based SVM solver, Which could be found here :http://mloss.org/software/view/30/
  *  For further information on this implementation of SVM refer to this paper: http://www.kyb.mpg.de/publications/attachments/neco_%5B0%5D.pdf
 */
-class CNewtonSVM : public CIterativeMachine<CLinearMachine>
+class SHOGUN_EXPORT CNewtonSVM : public CIterativeMachine<CLinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);

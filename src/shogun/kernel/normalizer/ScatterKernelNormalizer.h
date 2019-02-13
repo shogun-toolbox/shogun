@@ -19,7 +19,7 @@
 namespace shogun
 {
 /** @brief the scatter kernel normalizer */
-class CScatterKernelNormalizer: public CKernelNormalizer
+class SHOGUN_EXPORT CScatterKernelNormalizer: public CKernelNormalizer
 {
 
 public:

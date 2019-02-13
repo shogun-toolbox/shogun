@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#include <shogun/shogun_export.h>
+
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <windows.h>

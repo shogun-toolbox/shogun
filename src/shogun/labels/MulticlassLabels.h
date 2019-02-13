@@ -30,7 +30,7 @@ namespace shogun
  *
  * valid values for labels are 0...nr_classes-1
  */
-class CMulticlassLabels : public CDenseLabels
+class SHOGUN_EXPORT CMulticlassLabels : public CDenseLabels
 {
 	public:
 		/** default constructor */
@@ -67,7 +67,7 @@ class CMulticlassLabels : public CDenseLabels
 		CMulticlassLabels(const CMulticlassLabels& orig);
 
 		/** destructor */
-		~CMulticlassLabels();
+		virtual ~CMulticlassLabels();
 
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
@@ -163,7 +163,7 @@ class CMulticlassLabels : public CDenseLabels
 };
 
 #ifndef SWIG
-Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
+SHOGUN_EXPORT Some<CMulticlassLabels> multiclass_labels(CLabels* orig);
 #endif // SWIG
 }
 #endif

@@ -26,7 +26,7 @@ namespace shogun
  *     Multilabel Classification
  *     http://papers.nips.cc/paper/4520-mandatory-leaf-node-prediction-in-hierarchical-multilabel-classification.pdf
  */
-class CHierarchicalMultilabelModel : public CStructuredModel
+class SHOGUN_EXPORT CHierarchicalMultilabelModel : public CStructuredModel
 {
 public:
 	/** default constructor */

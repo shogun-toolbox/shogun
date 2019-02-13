@@ -19,7 +19,7 @@ namespace shogun
  * number of feature objects (but don't actually contain any).
  *
  * This is used in the CCustomKernel.*/
-class CDummyFeatures : public CFeatures
+class SHOGUN_EXPORT CDummyFeatures : public CFeatures
 {
 	public:
 		/** default constructor  */

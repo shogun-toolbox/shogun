@@ -15,7 +15,7 @@ namespace shogun
 {
 
 /** One-vs-Rest Encoder */
-class CECOCOVREncoder: public CECOCEncoder
+class SHOGUN_EXPORT CECOCOVREncoder: public CECOCEncoder
 {
 public:
     /** constructor */

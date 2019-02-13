@@ -67,7 +67,7 @@ class CIndependenceTest;
  * the labels and sets this as features \f$\mathbf{Y}\sim q\f$ to the estimator
  * which is required to compute the measure.
  */
-class CDependenceMaximization : public CFeatureSelection<float64_t>
+class SHOGUN_EXPORT CDependenceMaximization : public CFeatureSelection<float64_t>
 {
 public:
 	/** Default constructor */

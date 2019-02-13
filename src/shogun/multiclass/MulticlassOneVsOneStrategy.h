@@ -21,7 +21,7 @@ namespace shogun
  * [1] J. Milgram, M. Cheriet, R.Sabourin, "One Against One" or "One Against One":
  * Which One is Better for Handwriting Recognition with SVMs?
  */
-class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
+class SHOGUN_EXPORT CMulticlassOneVsOneStrategy: public CMulticlassStrategy
 {
 public:
 	/** constructor */

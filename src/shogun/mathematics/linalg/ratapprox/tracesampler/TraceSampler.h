@@ -17,7 +17,7 @@ template<class T> class SGVector;
 /** @brief Abstract template base class that provides an interface for sampling
  * the trace of a linear operator using an abstract sample method
  */
-class CTraceSampler : public CSGObject
+class SHOGUN_EXPORT CTraceSampler : public CSGObject
 {
 public:
 	/** default constructor */

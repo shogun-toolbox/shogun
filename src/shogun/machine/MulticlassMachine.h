@@ -24,7 +24,7 @@ class CMulticlassLabels;
 class CMultilabelLabels;
 
 /** @brief experimental abstract generic multiclass machine class */
-class CMulticlassMachine : public CBaseMulticlassMachine
+class SHOGUN_EXPORT CMulticlassMachine : public CBaseMulticlassMachine
 {
 	public:
 		/** default constructor  */

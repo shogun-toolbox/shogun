@@ -18,7 +18,7 @@ namespace shogun
 /** @brief CFactorGraphFeatures maintains an array of factor graphs,
  * each graph is a sample, i.e. an instance of structured input.
  */
-class CFactorGraphFeatures : public CFeatures
+class SHOGUN_EXPORT CFactorGraphFeatures : public CFeatures
 {
 	public:
 		/** default constructor */

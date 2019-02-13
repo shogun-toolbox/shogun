@@ -25,7 +25,7 @@ template <class T> class SGSparseVector;
 /** @brief Class CSVFile used to read data from comma-separated values (CSV)
  * files. See http://en.wikipedia.org/wiki/Comma-separated_values.
  */
-class CCSVFile : public CFile
+class SHOGUN_EXPORT CCSVFile : public CFile
 {
 public:
 	/** default constructor */

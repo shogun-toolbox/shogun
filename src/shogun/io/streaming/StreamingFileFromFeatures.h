@@ -31,7 +31,7 @@ class CFeatures;
  * StringFeatures should only implement the get_(type)*_string()
  * functions.
  */
-class CStreamingFileFromFeatures: public CStreamingFile
+class SHOGUN_EXPORT CStreamingFileFromFeatures: public CStreamingFile
 {
 public:
 	/**

@@ -21,7 +21,7 @@ namespace shogun
 /** @brief Class that is able to generate various data samples, which may be
  * used for examples in SHOGUN.
  */
-class CDataGenerator: public CSGObject
+class SHOGUN_EXPORT CDataGenerator: public CSGObject
 {
 public:
 	CDataGenerator();

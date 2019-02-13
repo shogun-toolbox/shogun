@@ -26,7 +26,7 @@ namespace shogun
 	 * feature representation: \f$\Psi(\bold{x_i},\bold{h_i})\f$ and the inference
 	 * of the latent variable \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 	 */
-	class CLatentModel: public CSGObject
+	class SHOGUN_EXPORT CLatentModel: public CSGObject
 	{
 		public:
 			/** default ctor */

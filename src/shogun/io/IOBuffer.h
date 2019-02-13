@@ -30,7 +30,7 @@ namespace shogun
  *
  */
 
- class CIOBuffer : public CSGObject
+ class SHOGUN_EXPORT CIOBuffer : public CSGObject
  {
 
  public:

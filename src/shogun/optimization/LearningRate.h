@@ -44,7 +44,7 @@ namespace shogun
  * )
  *
  */
-class LearningRate: public CSGObject
+class SHOGUN_EXPORT LearningRate: public CSGObject
 {
 public:
 	virtual ~LearningRate() {};

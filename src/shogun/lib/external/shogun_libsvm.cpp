@@ -77,7 +77,7 @@ class SVC_QMC;
 // l is the number of total data items
 // size is the cache size limit in bytes
 //
-class Cache
+class SHOGUN_EXPORT Cache
 {
 public:
 	Cache(int32_t l, int64_t size);
@@ -205,7 +205,7 @@ void Cache::swap_index(int32_t i, int32_t j)
 // the constructor of Kernel prepares to calculate the l*l kernel matrix
 // the member function get_Q is for getting one column from the Q Matrix
 //
-class QMatrix {
+class SHOGUN_EXPORT QMatrix {
 public:
 	virtual Qfloat *get_Q(int32_t column, int32_t len) const = 0;
 	virtual Qfloat *get_QD() const = 0;
@@ -219,7 +219,7 @@ class LibSVMKernel;
 
 extern Parallel* sg_parallel;
 
-class LibSVMKernel: public QMatrix {
+class SHOGUN_EXPORT LibSVMKernel: public QMatrix {
 public:
 	LibSVMKernel(int32_t l, svm_node * const * x, const svm_parameter& param);
 	virtual ~LibSVMKernel();
@@ -291,7 +291,7 @@ LibSVMKernel::~LibSVMKernel()
 //
 // solution will be put in \alpha, objective value will be put in obj
 //
-class Solver {
+class SHOGUN_EXPORT Solver {
 public:
 	Solver() : m_cancel_computation(false){};
 	virtual ~Solver() {};
@@ -988,7 +988,7 @@ float64_t Solver::calculate_rho()
 //
 //Solve with individually weighted examples
 //
-class WeightedSolver : public Solver
+class SHOGUN_EXPORT WeightedSolver : public Solver
 {
 
 public:
@@ -1018,7 +1018,7 @@ protected:
 //
 // additional constraint: e^T \alpha = constant
 //
-class Solver_NU : public Solver
+class SHOGUN_EXPORT Solver_NU : public Solver
 {
 public:
 	Solver_NU() {}
@@ -1280,7 +1280,7 @@ float64_t Solver_NU::calculate_rho()
 	return (r1-r2)/2;
 }
 
-class SVC_QMC: public LibSVMKernel
+class SHOGUN_EXPORT SVC_QMC: public LibSVMKernel
 {
 public:
 	SVC_QMC(const svm_problem& prob, const svm_parameter& param, const schar *y_, int32_t n_class, float64_t fac)
@@ -1356,7 +1356,7 @@ private:
 //
 // additional constraint: e^T \alpha = constant
 //
-class Solver_NUMC : public Solver
+class SHOGUN_EXPORT Solver_NUMC : public Solver
 {
 public:
 	Solver_NUMC(int32_t n_class, float64_t svm_nu)
@@ -1662,7 +1662,7 @@ float64_t Solver_NUMC::calculate_rho()
 //
 // Q matrices for various formulations
 //
-class SVC_Q: public LibSVMKernel
+class SHOGUN_EXPORT SVC_Q: public LibSVMKernel
 {
 public:
 	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
@@ -1711,7 +1711,7 @@ private:
 };
 
 
-class ONE_CLASS_Q: public LibSVMKernel
+class SHOGUN_EXPORT ONE_CLASS_Q: public LibSVMKernel
 {
 public:
 	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
@@ -1755,7 +1755,7 @@ private:
 	Qfloat *QD;
 };
 
-class SVR_Q: public LibSVMKernel
+class SHOGUN_EXPORT SVR_Q: public LibSVMKernel
 {
 public:
 	SVR_Q(const svm_problem& prob, const svm_parameter& param)

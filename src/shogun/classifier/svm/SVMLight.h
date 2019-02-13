@@ -222,7 +222,7 @@ struct SHRINK_STATE
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class SVMlight */
-class CSVMLight : public CSVM
+class SHOGUN_EXPORT CSVMLight : public CSVM
 {
  public:
   /** default constructor */

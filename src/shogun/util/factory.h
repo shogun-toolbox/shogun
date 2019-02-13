@@ -7,6 +7,7 @@
 #define FACTORY_H_
 
 #include <shogun/base/class_list.h>
+#include <shogun/base/some.h>
 #include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/classifier/svm/SVM.h>
@@ -20,7 +21,10 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>

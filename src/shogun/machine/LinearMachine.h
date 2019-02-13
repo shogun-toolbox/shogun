@@ -59,7 +59,7 @@ class CRegressionLabels;
  *	\sa CDotFeatures
  *
  * */
-class CLinearMachine : public CMachine
+class SHOGUN_EXPORT CLinearMachine : public CMachine
 {
 	public:
 		/** default constructor */

@@ -22,7 +22,7 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\frac{1}{N}\sum_{i=1}^N k({\bf x}_i, {\bf x}_i) - \sum_{i,j=1}^N, k({\bf x}_i,{\bf x'}_j)/N^2}
  * \f]
  */
-class CVarianceKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CVarianceKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor

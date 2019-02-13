@@ -39,7 +39,7 @@ namespace shogun
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
-class CLibLinearRegression : public CLinearMachine
+class SHOGUN_EXPORT CLibLinearRegression : public CLinearMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION)

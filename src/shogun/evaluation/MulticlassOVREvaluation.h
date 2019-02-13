@@ -24,7 +24,7 @@ class CLabels;
  * binary OvR decomposition and given binary
  * evaluation technique.
  */
-class CMulticlassOVREvaluation: public CEvaluation
+class SHOGUN_EXPORT CMulticlassOVREvaluation: public CEvaluation
 {
 public:
 	/** constructor */

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Fernando Iglesias, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Heiko Strathmann,
  *          Saurabh Goyal, Sergey Lisitsyn
  */
 
@@ -36,7 +36,7 @@ namespace shogun
  *
  * \sa CLPBoost
  */
-class CLPM : public CLinearMachine
+class SHOGUN_EXPORT CLPM : public CLinearMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);

@@ -49,7 +49,7 @@ namespace shogun
  * ...
  * </pre>
  */
-class CProtobufFile : public CFile
+class SHOGUN_EXPORT CProtobufFile : public CFile
 {
 public:
 	/** default constructor */

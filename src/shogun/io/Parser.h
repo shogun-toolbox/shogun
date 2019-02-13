@@ -18,7 +18,7 @@ namespace shogun
 class CTokenizer;
 
 /** @brief Class for reading from a string */
-class CParser : public CSGObject
+class SHOGUN_EXPORT CParser : public CSGObject
 {
 public:
 	/** default constructor */

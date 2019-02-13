@@ -28,7 +28,7 @@ class CDistance;
  *
  */
 
-class CLogKernel: public CKernel
+class SHOGUN_EXPORT CLogKernel: public CKernel
 {
 public:
 	/** default constructor */

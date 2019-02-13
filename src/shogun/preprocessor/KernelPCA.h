@@ -28,7 +28,7 @@ class CKernel;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8744
  *
  */
-class CKernelPCA : public CPreprocessor
+class SHOGUN_EXPORT CKernelPCA : public CPreprocessor
 {
 public:
 		/** default constructor

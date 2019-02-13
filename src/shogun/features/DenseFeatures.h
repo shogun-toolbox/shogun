@@ -60,7 +60,7 @@ class CDotFeatures;
  * See comments to find out whether it is supported for that method.
  * See also CFeatures class documentation
  */
-template<class ST> class CDenseFeatures: public CDotFeatures
+template<class ST> class SHOGUN_EXPORT CDenseFeatures: public CDotFeatures
 {
 public:
 	/** constructor
@@ -481,12 +481,10 @@ public:
 	 */
 	CFeatures* create_merged_copy(CFeatures* other) const;
 
-/** helper method used to specialize a base class instance
- *
- */
-#ifndef SWIG
-	[[deprecated("use .as template function")]]
-#endif
+	/** helper method used to specialize a base class instance
+	 *
+	 */
+	SHOGUN_DEPRECATED
 	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
 
 #ifndef SWIG // SWIG should skip this part

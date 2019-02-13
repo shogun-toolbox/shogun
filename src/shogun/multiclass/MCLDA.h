@@ -29,7 +29,7 @@ namespace shogun
  *
  */
 
-class CMCLDA : public CNativeMulticlassMachine
+class SHOGUN_EXPORT CMCLDA : public CNativeMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

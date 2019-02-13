@@ -34,7 +34,7 @@ enum ETransformType
 };
 
 /** @brief class Plif */
-class CPlif: public CPlifBase
+class SHOGUN_EXPORT CPlif: public CPlifBase
 {
 	public:
 		/** constructor

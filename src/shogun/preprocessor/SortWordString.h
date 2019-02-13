@@ -23,7 +23,7 @@ namespace shogun
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortWordString : public CStringPreprocessor<uint16_t>
+class SHOGUN_EXPORT CSortWordString : public CStringPreprocessor<uint16_t>
 {
 public:
 	/** default constructor */

@@ -45,7 +45,7 @@ template<class ST> class SGVector;
 class CDotFeatures;
 
 /** SubSamples wrap CDotFeatures but only uses a subset of samples */
-template<class ST> class CDenseSubSamplesFeatures: public CDotFeatures
+template<class ST> class SHOGUN_EXPORT CDenseSubSamplesFeatures: public CDotFeatures
 {
 public:
     /** default constructor */

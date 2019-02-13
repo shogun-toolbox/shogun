@@ -30,7 +30,7 @@ namespace shogun
  * Tanimoto coefficient</a>
  * @see CCosineDistance
  */
-class CTanimotoDistance: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CTanimotoDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

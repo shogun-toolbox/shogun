@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief shogun n-dimensional array */
-template<class T> class SGNDArray : public SGReferencedData
+template<class T> class SHOGUN_EXPORT SGNDArray : public SGReferencedData
 {
 	public:
 		/** default constructor */

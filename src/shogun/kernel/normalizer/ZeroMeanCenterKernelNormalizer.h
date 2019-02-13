@@ -9,7 +9,7 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {

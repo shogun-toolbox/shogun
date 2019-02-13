@@ -24,7 +24,7 @@ namespace shogun
  *
  * Note: Basically the same as LinearByteKernel but on signed chars.
  */
-class CLinearStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CLinearStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor

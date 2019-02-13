@@ -17,9 +17,11 @@ namespace shogun
 	class CPipeline;
 
 	/** @brief Builder of pipeline. */
-	class CPipelineBuilder : public CSGObject
+	class SHOGUN_EXPORT CPipelineBuilder : public CSGObject
 	{
 	public:
+		CPipelineBuilder();
+
 		virtual ~CPipelineBuilder();
 
 		/** Add a transformer with default name to pipeline. The name is
@@ -85,7 +87,7 @@ namespace shogun
 	 * or testing and a machine as the final stage. Features are transformed by
 	 * transformers and fed into the next stage sequentially.
 	 */
-	class CPipeline : public CMachine
+	class SHOGUN_EXPORT CPipeline : public CMachine
 	{
 		friend class CPipelineBuilder;
 

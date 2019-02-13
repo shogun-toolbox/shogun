@@ -48,7 +48,7 @@ namespace shogun
  * Stochastic Gradient Descent Training for L1-regularized Log-linear Models with Cumulative Penalty
  */
 
-class L1PenaltyForTG: public L1Penalty
+class SHOGUN_EXPORT L1PenaltyForTG: public L1Penalty
 {
 public:
 	/* Constructor */

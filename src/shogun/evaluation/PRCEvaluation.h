@@ -21,7 +21,7 @@ class CLabels;
  * (Precision Recall Curve) and an area under PRC curve (auPRC).
  *
  */
-class CPRCEvaluation: public CBinaryClassEvaluation
+class SHOGUN_EXPORT CPRCEvaluation: public CBinaryClassEvaluation
 {
 public:
 	/** constructor */

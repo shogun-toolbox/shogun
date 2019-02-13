@@ -36,7 +36,7 @@ namespace shogun
 	 *     Cutting-Plane Training of Structural SVMs,
 	 *     Machine Learning Journal, 77(1):27-59
 	 */
-	class CCCSOSVM : public CLinearStructuredOutputMachine
+	class SHOGUN_EXPORT CCCSOSVM : public CLinearStructuredOutputMachine
 	{
 		public:
 			/** default constructor*/

@@ -28,7 +28,7 @@ class CDistance;
  *
  */
 
-class CPowerKernel: public CKernel
+class SHOGUN_EXPORT CPowerKernel: public CKernel
 {
 public:
 	/** default constructor */

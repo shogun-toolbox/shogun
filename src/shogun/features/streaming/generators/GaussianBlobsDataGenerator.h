@@ -26,7 +26,7 @@ namespace shogun
  * is a 2D grid-like mixture of a number Gaussians at a certain distance from each
  * other, and where each Gaussian is stretched and rotated by a factor.
  */
-class CGaussianBlobsDataGenerator: public CStreamingDenseFeatures<float64_t>
+class SHOGUN_EXPORT CGaussianBlobsDataGenerator: public CStreamingDenseFeatures<float64_t>
 {
 public:
 	/** Constructor */

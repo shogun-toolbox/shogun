@@ -27,7 +27,7 @@ namespace shogun
  * The Journal of Machine Learning Research, 5, 777-800.
  *
  */
-class CFFDiag : public CApproxJointDiagonalizer
+class SHOGUN_EXPORT CFFDiag : public CApproxJointDiagonalizer
 {
 	public:
 

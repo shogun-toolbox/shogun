@@ -44,7 +44,7 @@ class CCommWordStringKernel;
  * direct maps.
  *
  */
-class CWeightedCommWordStringKernel: public CCommWordStringKernel
+class SHOGUN_EXPORT CWeightedCommWordStringKernel: public CCommWordStringKernel
 {
 	public:
 		/** default constructor  */

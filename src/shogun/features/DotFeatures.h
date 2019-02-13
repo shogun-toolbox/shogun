@@ -38,7 +38,7 @@ namespace shogun
  * - iteration over all (potentially) non-zero features of \f${\bf x}\f$
  *
  */
-class CDotFeatures : public CFeatures
+class SHOGUN_EXPORT CDotFeatures : public CFeatures
 {
 	public:
 

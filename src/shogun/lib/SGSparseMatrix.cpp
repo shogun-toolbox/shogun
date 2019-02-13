@@ -50,7 +50,7 @@ SGSparseMatrix<T>::~SGSparseMatrix()
 }
 
 template <> template <>
-const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
+SHOGUN_EXPORT const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 	SGVector<float64_t> v) const
 {
 	SGVector<complex128_t> result(num_vectors);
@@ -63,7 +63,7 @@ const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 }
 
 template <> template <>
-const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
+SHOGUN_EXPORT const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 	SGVector<int32_t> v) const
 {
 	SGVector<complex128_t> result(num_vectors);
@@ -76,7 +76,7 @@ const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 }
 
 template <> template <>
-const SGVector<float64_t> SGSparseMatrix<float64_t>::operator*(
+SHOGUN_EXPORT const SGVector<float64_t> SGSparseMatrix<float64_t>::operator*(
 	SGVector<int32_t> v) const
 {
 	SGVector<float64_t> result(num_vectors);
@@ -100,7 +100,7 @@ void SGSparseMatrix<T>::load(CFile* loader)
 }
 
 template<>
-void SGSparseMatrix<complex128_t>::load(CFile* loader)
+SHOGUN_EXPORT void SGSparseMatrix<complex128_t>::load(CFile* loader)
 {
 	SG_SERROR("SGSparseMatrix::load():: Not supported for complex128_t");
 }
@@ -121,7 +121,7 @@ template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(CLibSV
 	return labels;
 }
 
-template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(CLibSVMFile* file, bool do_sort_features) { return SGVector<float64_t>(); }
+template<> SHOGUN_EXPORT  SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(CLibSVMFile* file, bool do_sort_features) { return SGVector<float64_t>(); }
 
 
 template<class T>
@@ -135,7 +135,7 @@ void SGSparseMatrix<T>::save(CFile* saver)
 }
 
 template<>
-void SGSparseMatrix<complex128_t>::save(CFile* saver)
+SHOGUN_EXPORT void SGSparseMatrix<complex128_t>::save(CFile* saver)
 {
 	SG_SERROR("SGSparseMatrix::save():: Not supported for complex128_t");
 }
@@ -317,18 +317,18 @@ bool SGSparseMatrix<T>::equals(const SGSparseMatrix<T>& other) const
 	return true;
 }
 
-template class SGSparseMatrix<bool>;
-template class SGSparseMatrix<char>;
-template class SGSparseMatrix<int8_t>;
-template class SGSparseMatrix<uint8_t>;
-template class SGSparseMatrix<int16_t>;
-template class SGSparseMatrix<uint16_t>;
-template class SGSparseMatrix<int32_t>;
-template class SGSparseMatrix<uint32_t>;
-template class SGSparseMatrix<int64_t>;
-template class SGSparseMatrix<uint64_t>;
-template class SGSparseMatrix<float32_t>;
-template class SGSparseMatrix<float64_t>;
-template class SGSparseMatrix<floatmax_t>;
-template class SGSparseMatrix<complex128_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<bool>;
+template class SHOGUN_EXPORT SGSparseMatrix<char>;
+template class SHOGUN_EXPORT SGSparseMatrix<int8_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<uint8_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<int16_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<uint16_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<int32_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<uint32_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<int64_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<uint64_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<float32_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<float64_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<floatmax_t>;
+template class SHOGUN_EXPORT SGSparseMatrix<complex128_t>;
 }

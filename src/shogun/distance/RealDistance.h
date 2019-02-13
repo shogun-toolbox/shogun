@@ -15,7 +15,7 @@
 namespace shogun
 {
 /** @brief class RealDistance */
-class CRealDistance : public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CRealDistance : public CDenseDistance<float64_t>
 {
 public:
 	/** default constructor */

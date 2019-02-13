@@ -41,7 +41,7 @@ namespace shogun
  * direct maps.
  *
  */
-class CCommWordStringKernel : public CStringKernel<uint16_t>
+class SHOGUN_EXPORT CCommWordStringKernel : public CStringKernel<uint16_t>
 {
 	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;

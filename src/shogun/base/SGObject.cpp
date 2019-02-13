@@ -109,77 +109,77 @@ namespace shogun
 	extern SGIO* sg_io;
 	extern Version* sg_version;
 
-	template<> void CSGObject::set_generic<bool>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<bool>()
 	{
 		m_generic = PT_BOOL;
 	}
 
-	template<> void CSGObject::set_generic<char>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<char>()
 	{
 		m_generic = PT_CHAR;
 	}
 
-	template<> void CSGObject::set_generic<int8_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<int8_t>()
 	{
 		m_generic = PT_INT8;
 	}
 
-	template<> void CSGObject::set_generic<uint8_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<uint8_t>()
 	{
 		m_generic = PT_UINT8;
 	}
 
-	template<> void CSGObject::set_generic<int16_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<int16_t>()
 	{
 		m_generic = PT_INT16;
 	}
 
-	template<> void CSGObject::set_generic<uint16_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<uint16_t>()
 	{
 		m_generic = PT_UINT16;
 	}
 
-	template<> void CSGObject::set_generic<int32_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<int32_t>()
 	{
 		m_generic = PT_INT32;
 	}
 
-	template<> void CSGObject::set_generic<uint32_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<uint32_t>()
 	{
 		m_generic = PT_UINT32;
 	}
 
-	template<> void CSGObject::set_generic<int64_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<int64_t>()
 	{
 		m_generic = PT_INT64;
 	}
 
-	template<> void CSGObject::set_generic<uint64_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<uint64_t>()
 	{
 		m_generic = PT_UINT64;
 	}
 
-	template<> void CSGObject::set_generic<float32_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<float32_t>()
 	{
 		m_generic = PT_FLOAT32;
 	}
 
-	template<> void CSGObject::set_generic<float64_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<float64_t>()
 	{
 		m_generic = PT_FLOAT64;
 	}
 
-	template<> void CSGObject::set_generic<floatmax_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<floatmax_t>()
 	{
 		m_generic = PT_FLOATMAX;
 	}
 
-	template<> void CSGObject::set_generic<CSGObject*>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<CSGObject*>()
 	{
 		m_generic = PT_SGOBJECT;
 	}
 
-	template<> void CSGObject::set_generic<complex128_t>()
+	template<> SHOGUN_EXPORT void CSGObject::set_generic<complex128_t>()
 	{
 		m_generic = PT_COMPLEX128;
 	}

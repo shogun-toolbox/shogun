@@ -20,7 +20,7 @@ namespace shogun
  * \mathbb{C}^{n}\f$ being the vector. The result is a vector \f$y\in
  * \mathbb{C}^{m}\f$.
  */
-template<class T> class CMatrixOperator : public CLinearOperator<T>
+template<class T> class SHOGUN_EXPORT CMatrixOperator : public CLinearOperator<T>
 {
 public:
 	/** default constructor */

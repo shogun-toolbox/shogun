@@ -70,7 +70,7 @@ struct MessageEdge
 };
 
 /** If tree structure, do exact inference, otherwise loopy belief propagation */
-IGNORE_IN_CLASSLIST class CBeliefPropagation : public CMAPInferImpl
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT CBeliefPropagation : public CMAPInferImpl
 {
 public:
 	CBeliefPropagation();
@@ -95,7 +95,7 @@ protected:
  * Foundations and Trends in Computer Graphics and Vision series
  * of now publishers, 2011.
  */
-IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation
+IGNORE_IN_CLASSLIST class SHOGUN_EXPORT CTreeMaxProduct : public CBeliefPropagation
 {
 	typedef std::unordered_map<uint32_t, uint32_t> msg_map_type;
 	typedef std::unordered_map<uint32_t, std::set<uint32_t> > msgset_map_type;

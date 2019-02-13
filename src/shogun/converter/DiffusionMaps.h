@@ -32,7 +32,7 @@ class CKernel;
  * sg('create_converter','diffusion_maps',t,width);
  *
  */
-class CDiffusionMaps: public CEmbeddingConverter
+class SHOGUN_EXPORT CDiffusionMaps: public CEmbeddingConverter
 {
 public:
 

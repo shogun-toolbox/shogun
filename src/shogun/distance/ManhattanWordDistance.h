@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief class ManhattanWordDistance */
-class CManhattanWordDistance: public CStringDistance<uint16_t>
+class SHOGUN_EXPORT CManhattanWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor */

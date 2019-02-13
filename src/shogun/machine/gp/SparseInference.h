@@ -68,7 +68,7 @@ namespace shogun
  * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{Sparse}\f$.
  *
  */
-class CSparseInference: public CInference
+class SHOGUN_EXPORT CSparseInference: public CInference
 {
 public:
 	/** default constructor */

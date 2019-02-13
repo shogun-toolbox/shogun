@@ -61,7 +61,7 @@ namespace shogun {
  * subsampled uniformly. To implement another sampling method one has to
  * override the method 'subsample_indices'.
  */
-class CKRRNystrom : public CKernelRidgeRegression
+class SHOGUN_EXPORT CKRRNystrom : public CKernelRidgeRegression
 {
 public:
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);

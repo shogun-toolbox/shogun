@@ -17,4 +17,4 @@ ExternalProject_Add(
 
 ExternalProject_Get_Property(MSIntTypes SOURCE_DIR)
 SET(MSINTTYPES_INCLUDE_DIR ${SOURCE_DIR})
-add_dependencies(libshogun MSIntTypes)
+ADD_SHOGUN_DEPENDENCY(MSIntTypes)

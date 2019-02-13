@@ -21,7 +21,7 @@ namespace shogun
 /** @brief Base-class for parameterized Kernel Normalizers
  *
  */
-class CMultitaskKernelMklNormalizer: public CKernelNormalizer
+class SHOGUN_EXPORT CMultitaskKernelMklNormalizer: public CKernelNormalizer
 {
 
 public:

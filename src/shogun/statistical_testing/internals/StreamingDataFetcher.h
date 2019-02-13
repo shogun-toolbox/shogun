@@ -44,7 +44,7 @@ namespace internal
 
 class DataManager;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class StreamingDataFetcher : public DataFetcher
+class SHOGUN_EXPORT StreamingDataFetcher : public DataFetcher
 {
 	friend class DataManager;
 public:

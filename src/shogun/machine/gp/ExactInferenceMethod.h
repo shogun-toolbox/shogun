@@ -63,7 +63,7 @@ namespace shogun
  * NOTE: The Gaussian Likelihood Function must be used for this inference
  * method.
  */
-class CExactInferenceMethod: public CInference
+class SHOGUN_EXPORT CExactInferenceMethod: public CInference
 {
 public:
 	/** default constructor */

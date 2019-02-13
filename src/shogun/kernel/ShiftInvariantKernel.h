@@ -52,7 +52,7 @@ namespace internal
  * \f]
  * For example, Gaussian (RBF) kernel is a shfit invariant kernel.
  */
-class CShiftInvariantKernel: public CKernel
+class SHOGUN_EXPORT CShiftInvariantKernel: public CKernel
 {
 
 	friend class internal::KernelManager;

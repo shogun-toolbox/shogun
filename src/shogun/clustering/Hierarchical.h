@@ -32,7 +32,7 @@ class CDistanceMachine;
  * are merged.
  *
  * cf e.g. http://en.wikipedia.org/wiki/Data_clustering*/
-class CHierarchical : public CDistanceMachine
+class SHOGUN_EXPORT CHierarchical : public CDistanceMachine
 {
 	public:
 		/** default constructor */

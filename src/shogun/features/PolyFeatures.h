@@ -21,7 +21,7 @@ namespace shogun
  * see DotFeatures for further discription
  *
  */
-class CPolyFeatures : public CDotFeatures
+class SHOGUN_EXPORT CPolyFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */

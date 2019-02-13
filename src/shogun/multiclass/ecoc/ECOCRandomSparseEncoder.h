@@ -31,7 +31,7 @@ namespace shogun
  * * Q(+1) = 1/K + (K-2)/K * P(+1)
  * * Q(-1) = 1/K + (K-2)/K * P(-1)
  */
-class CECOCRandomSparseEncoder: public CECOCEncoder
+class SHOGUN_EXPORT CECOCRandomSparseEncoder: public CECOCEncoder
 {
 public:
     /** constructor

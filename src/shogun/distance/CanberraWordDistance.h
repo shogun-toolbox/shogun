@@ -17,7 +17,7 @@
 namespace shogun
 {
 /**@brief class CanberraWordDistance */
-class CCanberraWordDistance: public CStringDistance<uint16_t>
+class SHOGUN_EXPORT CCanberraWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor */

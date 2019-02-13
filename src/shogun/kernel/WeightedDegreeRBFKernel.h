@@ -11,7 +11,7 @@ namespace shogun
 {
 
 /** @brief weighted degree RBF kernel */
-class CWeightedDegreeRBFKernel: public CDotKernel
+class SHOGUN_EXPORT CWeightedDegreeRBFKernel: public CDotKernel
 {
 	public:
 		/** default constructor

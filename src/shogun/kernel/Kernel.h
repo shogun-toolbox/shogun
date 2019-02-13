@@ -151,7 +151,7 @@ class CSVM;
  * the kernel type get_kernel_type()). A good example to look at is the
  * GaussianKernel.
  */
-class CKernel : public CSGObject
+class SHOGUN_EXPORT CKernel : public CSGObject
 {
 	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;

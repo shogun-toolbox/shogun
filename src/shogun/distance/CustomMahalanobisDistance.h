@@ -25,7 +25,7 @@ namespace shogun
  * Mahalanobis matrix.
  *
  */
-class CCustomMahalanobisDistance : public CRealDistance
+class SHOGUN_EXPORT CCustomMahalanobisDistance : public CRealDistance
 {
 	public:
 		/** default constructor */

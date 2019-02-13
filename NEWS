@@ -49,6 +49,8 @@
                 - json build error fix [Andrew Wildman]
                 - Fix segfault in ROC error message [Chinmay Kousik]
                 - Fix potential memory leak in GMM [Marcus Edel]
+                - Fix shared and static library generation 
+                for Windows [Viktor Gal]
         * Known issues:
                 - Ruby examples do not work with new API due to potential swig
                 bug, see https://github.com/shogun-toolbox/shogun/issues/4177.

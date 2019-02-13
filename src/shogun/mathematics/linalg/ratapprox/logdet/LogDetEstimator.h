@@ -24,7 +24,7 @@ template<class T> class SGMatrix;
  * and calls solve of COperatorFunction, stores the resulting in
  * a vector, then simply computes running averages over the estimates
  */
-class CLogDetEstimator : public CSGObject
+class SHOGUN_EXPORT CLogDetEstimator : public CSGObject
 {
 public:
 	/** Default constructor */

@@ -21,7 +21,7 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'})-k({\bf x},{\bf x'})}
  * \f]
  */
-class CTanimotoKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CTanimotoKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor

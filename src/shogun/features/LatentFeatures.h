@@ -19,7 +19,7 @@ namespace shogun
 	 * It's basically a very generic way of storing features of any (user-defined) form
 	 * based on CData.
 	 */
-	class CLatentFeatures : public CFeatures
+	class SHOGUN_EXPORT CLatentFeatures : public CFeatures
 	{
 		public:
 			/** default constructor */

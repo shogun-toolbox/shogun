@@ -19,7 +19,7 @@
 namespace shogun {
 
 /** @brief Base class of the labels used in Structured Output (SO) problems */
-class CStructuredLabels : public CLabels
+class SHOGUN_EXPORT CStructuredLabels : public CLabels
 {
 
 	public:

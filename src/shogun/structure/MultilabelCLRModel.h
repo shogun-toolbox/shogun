@@ -22,7 +22,7 @@ namespace shogun
  * [1] J. Furnkranz, et.al. Multilabel Classification via Calibrated Label Ranking.
  *     https://www.mathematik.uni-marburg.de/~eyke/publications/ml08.pdf
  */
-class CMultilabelCLRModel : public CStructuredModel
+class SHOGUN_EXPORT CMultilabelCLRModel : public CStructuredModel
 {
 public:
 	/** default constructor */

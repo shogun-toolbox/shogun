@@ -26,7 +26,7 @@ class CLabels;
  * Fawcett, Tom (2004) ROC Graphs:
  * Notes and Practical Considerations for Researchers; Machine Learning, 2004
  */
-class CROCEvaluation: public CBinaryClassEvaluation
+class SHOGUN_EXPORT CROCEvaluation: public CBinaryClassEvaluation
 {
 public:
 	/** constructor */

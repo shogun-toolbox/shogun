@@ -12,4 +12,4 @@ ExternalProject_Add(
 
 SET(TCMalloc_INCLUDE_DIR ${THIRD_PARTY_DIR}/include/tcmalloc)
 SET(TCMalloc_LIBRARIES ${THIRD_PARTY_DIR}/libs/tcmalloc/libtcmalloc_minimal.a)
-add_dependencies(libshogun TCMalloc)
+ADD_SHOGUN_DEPENDENCY(TCMalloc)

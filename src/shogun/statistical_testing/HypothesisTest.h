@@ -66,7 +66,7 @@ class DataManager;
  *
  * Abstract base class.
  */
-class CHypothesisTest : public CSGObject
+class SHOGUN_EXPORT CHypothesisTest : public CSGObject
 {
 public:
 	/** Default constructor */

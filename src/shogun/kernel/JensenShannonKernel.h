@@ -23,7 +23,7 @@ namespace shogun
  * k({\bf x},{\bf x'})= \sum_{i=0}^{l} \frac{x_i}{2} \log_2\frac{x_i+x'_i}{x_i} + \frac{x'_i}{2} \log_2\frac{x_i+x'_i}{x'_i}
  * \f]
  * */
-class CJensenShannonKernel: public CDotKernel
+class SHOGUN_EXPORT CJensenShannonKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

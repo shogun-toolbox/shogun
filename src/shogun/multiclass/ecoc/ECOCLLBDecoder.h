@@ -18,7 +18,7 @@ namespace shogun
  * Using OVREncoder with this Decoder should be equivlalent to
  * traditional OVR Strategy.
  */
-class CECOCLLBDecoder: public CECOCSimpleDecoder
+class SHOGUN_EXPORT CECOCLLBDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */

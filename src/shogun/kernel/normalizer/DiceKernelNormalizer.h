@@ -21,7 +21,7 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{2k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'}}
  * \f]
  */
-class CDiceKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CDiceKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor

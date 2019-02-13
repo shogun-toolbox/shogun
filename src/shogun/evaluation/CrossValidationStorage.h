@@ -50,7 +50,7 @@ namespace shogun
 	/**
 	 * Store information about a single fold run.
 	 */
-	class CrossValidationFoldStorage : public CSGObject
+	class SHOGUN_EXPORT CrossValidationFoldStorage : public CSGObject
 	{
 	public:
 		CrossValidationFoldStorage();
@@ -201,7 +201,7 @@ namespace shogun
 	/**
 	 * This class store some information about CrossValidation runs.
 	 */
-	class CrossValidationStorage : public CSGObject
+	class SHOGUN_EXPORT CrossValidationStorage : public CSGObject
 	{
 	public:
 		/** Constructor */

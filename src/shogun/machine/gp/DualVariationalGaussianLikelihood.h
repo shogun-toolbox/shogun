@@ -59,7 +59,7 @@ namespace shogun
  * In this setting, \f$\alpha\f$ and \f$\lambda\f$ are called dual parameters for \f$\mu\f$ and \f$\sigma^2\f$ respectively.
  *
  */
-class CDualVariationalGaussianLikelihood : public CVariationalGaussianLikelihood
+class SHOGUN_EXPORT CDualVariationalGaussianLikelihood : public CVariationalGaussianLikelihood
 {
 public:
 	/** default constructor */

@@ -35,7 +35,7 @@ class CDistance;
  * sg('create_converter','lltsa',k);
  *
  */
-class CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment
+class SHOGUN_EXPORT CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment
 {
 public:
 

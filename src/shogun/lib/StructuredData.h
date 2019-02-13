@@ -16,7 +16,7 @@ namespace shogun
 {
 
 /** @brief Base class of the components of StructuredLabels */
-class CStructuredData : public CSGObject
+class SHOGUN_EXPORT CStructuredData : public CSGObject
 {
 
 	public:

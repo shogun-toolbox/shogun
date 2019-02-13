@@ -26,7 +26,7 @@ namespace shogun
  *      h(x_i)|}$
  * \f]
  */
-class CMultilabelAccuracy : public CEvaluation
+class SHOGUN_EXPORT CMultilabelAccuracy : public CEvaluation
 {
 public:
 	/** default constructor */

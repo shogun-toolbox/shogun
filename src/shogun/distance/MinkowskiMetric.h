@@ -35,7 +35,7 @@ namespace shogun
  *
  * @see <a href="http://en.wikipedia.org/wiki/Distance">Wikipedia: Distance</a>
  */
-class CMinkowskiMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CMinkowskiMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor  */

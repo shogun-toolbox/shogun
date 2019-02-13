@@ -30,7 +30,7 @@ class CFeatures;
  * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
  *
  */
-class CJade: public CICAConverter
+class SHOGUN_EXPORT CJade: public CICAConverter
 {
 	public:
 

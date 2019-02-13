@@ -72,7 +72,7 @@ namespace shogun
  *
  * cf. http://tesis-algoritmo-c45.googlecode.com/files/C45.ppt
  */
-class CC45ClassifierTree : public CTreeMachine<C45TreeNodeData>
+class SHOGUN_EXPORT CC45ClassifierTree : public CTreeMachine<C45TreeNodeData>
 {
 public:
 	/** constructor */

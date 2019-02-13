@@ -38,7 +38,7 @@ namespace shogun
  * \f]
  *
  */
-class CRidgeKernelNormalizer : public CKernelNormalizer
+class SHOGUN_EXPORT CRidgeKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** constructor

@@ -84,7 +84,7 @@ template <class T> class CDenseFeatures;
  * contraction can also be used through set_contraction_coefficient() and
  * noise_type and noise_parameter. See CAutoencoder for more details.
  */
-class CDeepAutoencoder : public CAutoencoder
+class SHOGUN_EXPORT CDeepAutoencoder : public CAutoencoder
 {
 public:
 	/** default constructor */

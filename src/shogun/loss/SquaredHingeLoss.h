@@ -17,7 +17,7 @@ namespace shogun
 /** @brief Class CSquaredHingeLoss implements a
  * squared hinge loss function.
  */
-class CSquaredHingeLoss: public CLossFunction
+class SHOGUN_EXPORT CSquaredHingeLoss: public CLossFunction
 {
 public:
 	/**

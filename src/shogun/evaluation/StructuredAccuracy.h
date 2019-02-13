@@ -18,7 +18,7 @@ namespace shogun
 /**
  * @brief class CStructuredAccuracy used to compute accuracy of structured classification
  */
-class CStructuredAccuracy : public CEvaluation
+class SHOGUN_EXPORT CStructuredAccuracy : public CEvaluation
 {
 public:
 	/** default constructor */

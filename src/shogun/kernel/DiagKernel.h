@@ -21,7 +21,7 @@ namespace shogun
  * constant otherwise, i.e.\f$k({\bf x_i}, {\bf x_j})= \delta_{ij} c\f$
  *
  */
-class CDiagKernel: public CKernel
+class SHOGUN_EXPORT CDiagKernel: public CKernel
 {
 	public:
 		/** default constructor  */

@@ -113,7 +113,7 @@ private:
  * Must not be an CSGObject to prevent a recursive call of
  * constructors.
  */
-class Parameter
+class SHOGUN_EXPORT Parameter
 {
 public:
 	/** explicit constructor */

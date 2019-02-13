@@ -1063,17 +1063,17 @@ SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
 	return linalg::matrix_prod(get_feature_matrix(), other, false);
 }
 
-template class CDenseFeatures<bool>;
-template class CDenseFeatures<char>;
-template class CDenseFeatures<int8_t>;
-template class CDenseFeatures<uint8_t>;
-template class CDenseFeatures<int16_t>;
-template class CDenseFeatures<uint16_t>;
-template class CDenseFeatures<int32_t>;
-template class CDenseFeatures<uint32_t>;
-template class CDenseFeatures<int64_t>;
-template class CDenseFeatures<uint64_t>;
-template class CDenseFeatures<float32_t>;
-template class CDenseFeatures<float64_t>;
-template class CDenseFeatures<floatmax_t>;
+template class SHOGUN_EXPORT CDenseFeatures<bool>;
+template class SHOGUN_EXPORT CDenseFeatures<char>;
+template class SHOGUN_EXPORT CDenseFeatures<int8_t>;
+template class SHOGUN_EXPORT CDenseFeatures<uint8_t>;
+template class SHOGUN_EXPORT CDenseFeatures<int16_t>;
+template class SHOGUN_EXPORT CDenseFeatures<uint16_t>;
+template class SHOGUN_EXPORT CDenseFeatures<int32_t>;
+template class SHOGUN_EXPORT CDenseFeatures<uint32_t>;
+template class SHOGUN_EXPORT CDenseFeatures<int64_t>;
+template class SHOGUN_EXPORT CDenseFeatures<uint64_t>;
+template class SHOGUN_EXPORT CDenseFeatures<float32_t>;
+template class SHOGUN_EXPORT CDenseFeatures<float64_t>;
+template class SHOGUN_EXPORT CDenseFeatures<floatmax_t>;
 }

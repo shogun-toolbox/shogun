@@ -64,7 +64,7 @@ enum LIBSVR_SOLVER_TYPE
 	LIBSVR_NU_SVR = 2
 };
 #endif
-class CLibSVR : public CSVM
+class SHOGUN_EXPORT CLibSVR : public CSVM
 {
 	public:
 		/** problem type */

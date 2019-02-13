@@ -38,6 +38,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <vector>
 
@@ -93,7 +94,7 @@ class CMulticlassLabels;
 	 * based on whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses
 	 * ::CLASSIC_FLDA)
 	 */
-	class CFisherLDA : public CDensePreprocessor<float64_t>
+	class SHOGUN_EXPORT CFisherLDA : public CDensePreprocessor<float64_t>
 	{
 	public:
 		/** standard constructor

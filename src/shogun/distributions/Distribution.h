@@ -37,7 +37,7 @@ class CMath;
  * used to compute e.g. the TOP and Fisher Kernel (cf. CPluginEstimate, CHistogramKernel,
  * CTOPFeatures and CFKFeatures ).
  */
-class CDistribution : public CSGObject
+class SHOGUN_EXPORT CDistribution : public CSGObject
 {
 	public:
 		/** default constructor */
@@ -197,9 +197,7 @@ class CDistribution : public CSGObject
 		 * @param object generic object
 		 * @return Distribution object
 		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
+		SHOGUN_DEPRECATED
 		static CDistribution* obtain_from_generic(CSGObject* object);
 
 	protected:

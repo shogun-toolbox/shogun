@@ -39,7 +39,7 @@ class CMAPInferImpl;
  * the prediction is obtained by \f$ {\arg\max} _{\bold{y}} P(\bold{Y}
  * = \bold{y} | \bold{x}; \bold{w}) \f$.
  */
-class CMAPInference : public CSGObject
+class SHOGUN_EXPORT CMAPInference : public CSGObject
 {
 public:
 	/** default constructor */
@@ -91,7 +91,7 @@ protected:
 /** @brief Class CMAPInferImpl abstract class
  * of MAP inference implementation
  */
-class CMAPInferImpl : public CSGObject
+class SHOGUN_EXPORT CMAPInferImpl : public CSGObject
 {
 public:
 	/** default constructor */

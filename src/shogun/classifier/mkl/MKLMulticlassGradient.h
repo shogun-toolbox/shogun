@@ -20,7 +20,7 @@ namespace shogun
  *	it solves the corresponding linear problem arising in SIP formulation for
  *	MKL using a gradient based approach
  */
-class MKLMulticlassGradient: public MKLMulticlassOptimizationBase
+class SHOGUN_EXPORT MKLMulticlassGradient: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor

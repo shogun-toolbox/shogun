@@ -29,7 +29,7 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Kullback-Leibler_divergence">
  * Wikipedia: Kullback-Leibler divergence</a>
  */
-class CJensenMetric: public CDenseDistance<float64_t>
+class SHOGUN_EXPORT CJensenMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */

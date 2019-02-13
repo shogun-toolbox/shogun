@@ -42,7 +42,7 @@ class CKernel;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class Kernel
+class SHOGUN_EXPORT Kernel
 {
 public:
 	explicit Kernel(CKernel* kernel) : m_kernel(kernel)
@@ -57,7 +57,7 @@ private:
 	CKernel* m_kernel;
 };
 
-class SelfAdjointPrecomputedKernel
+class SHOGUN_EXPORT SelfAdjointPrecomputedKernel
 {
 public:
 	SelfAdjointPrecomputedKernel() : m_num_feat_vec(0)

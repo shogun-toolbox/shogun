@@ -23,7 +23,7 @@ template <class ST> class CStringFeatures;
  *
  * \sa CWeightedDegreeStringKernel
  */
-class CSNPFeatures : public CDotFeatures
+class SHOGUN_EXPORT CSNPFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */

@@ -139,7 +139,7 @@ enum EProblemType
  * locking.
  *
  */
-class CMachine : public CStoppableSGObject
+class SHOGUN_EXPORT CMachine : public CStoppableSGObject
 {
 	friend class CPipeline;
 

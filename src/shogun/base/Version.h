@@ -23,7 +23,7 @@ class RefCount;
  * example the svn revision, time and date of compile and compilation and
  * the linkflags used.
  */
-class Version
+class SHOGUN_EXPORT Version
 {
 public:
 	/** constructor */

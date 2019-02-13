@@ -28,7 +28,7 @@ namespace shogun
  *
  * valid values for labels are all real-valued numbers.
  */
-class CRegressionLabels : public CDenseLabels
+class SHOGUN_EXPORT CRegressionLabels : public CDenseLabels
 {
 	public:
 		/** default constructor */
@@ -52,6 +52,8 @@ class CRegressionLabels : public CDenseLabels
 		 */
 		CRegressionLabels(CFile* loader);
 
+		virtual ~CRegressionLabels();
+
 		/** get label type
 		 *
 		 * @return label type real
@@ -72,7 +74,7 @@ class CRegressionLabels : public CDenseLabels
 };
 
 #ifndef SWIG
-Some<CRegressionLabels> regression_labels(CLabels* orig);
+SHOGUN_EXPORT Some<CRegressionLabels> regression_labels(CLabels* orig);
 #endif // SWIG
 }
 #endif

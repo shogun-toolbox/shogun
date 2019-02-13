@@ -24,7 +24,7 @@ namespace shogun
 
 	/** @brief type to encapsulate the results of an evaluation run.
 	 */
-	class CCrossValidationResult : public CEvaluationResult
+	class SHOGUN_EXPORT CCrossValidationResult : public CEvaluationResult
 	{
 	public:
 		CCrossValidationResult()
@@ -160,7 +160,7 @@ namespace shogun
 	 * objects (might be changed later).
 	 *
 	 */
-	class CCrossValidation : public CMachineEvaluation
+	class SHOGUN_EXPORT CCrossValidation : public CMachineEvaluation
 	{
 	public:
 		/** constructor */

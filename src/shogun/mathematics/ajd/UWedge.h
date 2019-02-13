@@ -25,7 +25,7 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
  *
  */
-class CUWedge : public CApproxJointDiagonalizer
+class SHOGUN_EXPORT CUWedge : public CApproxJointDiagonalizer
 {
 	public:
 

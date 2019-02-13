@@ -71,7 +71,7 @@ namespace shogun
  * \f], where t is a local variable and the inequality holds for every t>0.
  * See Bernoulli-logit in Table 2 of the paper for detailed information
  */
-class CLogitDVGLikelihood : public CDualVariationalGaussianLikelihood
+class SHOGUN_EXPORT CLogitDVGLikelihood : public CDualVariationalGaussianLikelihood
 {
 public:
 	/** default constructor */

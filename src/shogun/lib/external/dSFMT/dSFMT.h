@@ -40,6 +40,7 @@ extern "C" {
 #endif
 
 #include <shogun/lib/config.h>
+#include <shogun/shogun_export.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -189,7 +190,7 @@ void dsfmt_chk_init_gen_rand(dsfmt_t *dsfmt, uint32_t seed, int mexp);
 void dsfmt_chk_init_by_array(dsfmt_t *dsfmt, uint32_t init_key[],
 			     int key_length, int mexp);
 const char *dsfmt_get_idstring(void);
-int dsfmt_get_min_array_size(void);
+SHOGUN_EXPORT int dsfmt_get_min_array_size(void);
 
 #if defined(__GNUC__)
 #  define DSFMT_PRE_INLINE inline static

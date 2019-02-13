@@ -20,7 +20,7 @@ namespace shogun
 class CKMeansBase;
 	
 /** Class for the mini batch KMeans */
-class CKMeansMiniBatch : public CKMeansBase
+class SHOGUN_EXPORT CKMeansMiniBatch : public CKMeansBase
 {
 	public:
 		/** default constructor */

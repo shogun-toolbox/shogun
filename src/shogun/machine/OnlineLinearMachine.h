@@ -48,7 +48,7 @@ class CRegressionLabels;
  *	\f]
  *
  * */
-class COnlineLinearMachine : public CMachine
+class SHOGUN_EXPORT COnlineLinearMachine : public CMachine
 {
 	public:
 		/** default constructor */

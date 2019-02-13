@@ -21,7 +21,7 @@ namespace shogun
  * see DotFeatures for further discription
  *
  */
-class CSparsePolyFeatures : public CDotFeatures
+class SHOGUN_EXPORT CSparsePolyFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */

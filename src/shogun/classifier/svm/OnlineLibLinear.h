@@ -31,7 +31,7 @@ namespace shogun
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
-class COnlineLibLinear : public COnlineLinearMachine
+class SHOGUN_EXPORT COnlineLibLinear : public COnlineLinearMachine
 {
 public:
 

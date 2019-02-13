@@ -46,7 +46,7 @@ class CKernel;
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
  * \f]
  */
-class CKernelNormalizer : public CSGObject
+class SHOGUN_EXPORT CKernelNormalizer : public CSGObject
 {
 	public:
 

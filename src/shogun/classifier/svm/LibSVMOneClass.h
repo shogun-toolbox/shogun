@@ -18,7 +18,7 @@
 namespace shogun
 {
 /** @brief class LibSVMOneClass */
-class CLibSVMOneClass : public CSVM
+class SHOGUN_EXPORT CLibSVMOneClass : public CSVM
 {
 	public:
 		/** default constructor */

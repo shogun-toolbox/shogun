@@ -46,7 +46,7 @@ namespace shogun
  * solution can again be written as a linear combination of kernels (cf.
  * CKernelMachine) with bias \f$b=0\f$.
  */
-class CKernelRidgeRegression : public CKernelMachine
+class SHOGUN_EXPORT CKernelRidgeRegression : public CKernelMachine
 {
 	public:
 		/** problem type */

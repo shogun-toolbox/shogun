@@ -70,7 +70,7 @@ struct CImpostorNode
 /**
  * Class CLMNNImpl used to hide the implementation details of LMNN.
  */
-class CLMNNImpl
+class SHOGUN_EXPORT CLMNNImpl
 {
 	public:
 

@@ -35,7 +35,7 @@ class CHMM;
  * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CFKFeatures: public CDenseFeatures<float64_t>
+class SHOGUN_EXPORT CFKFeatures: public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */

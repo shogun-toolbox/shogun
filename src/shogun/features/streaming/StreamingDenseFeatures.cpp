@@ -358,17 +358,17 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	return result;
 }
 
-template class CStreamingDenseFeatures<bool> ;
-template class CStreamingDenseFeatures<char> ;
-template class CStreamingDenseFeatures<int8_t> ;
-template class CStreamingDenseFeatures<uint8_t> ;
-template class CStreamingDenseFeatures<int16_t> ;
-template class CStreamingDenseFeatures<uint16_t> ;
-template class CStreamingDenseFeatures<int32_t> ;
-template class CStreamingDenseFeatures<uint32_t> ;
-template class CStreamingDenseFeatures<int64_t> ;
-template class CStreamingDenseFeatures<uint64_t> ;
-template class CStreamingDenseFeatures<float32_t> ;
-template class CStreamingDenseFeatures<float64_t> ;
-template class CStreamingDenseFeatures<floatmax_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<bool> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<char> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<int8_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<uint8_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<int16_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<uint16_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<int32_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<uint32_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<int64_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<uint64_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<float32_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<float64_t> ;
+template class SHOGUN_EXPORT CStreamingDenseFeatures<floatmax_t> ;
 }

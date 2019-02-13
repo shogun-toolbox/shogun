@@ -69,7 +69,7 @@ enum EPreprocessorType
  * as
  * a wrapper to more specific methods.
  */
-class CPreprocessor : public CTransformer
+class SHOGUN_EXPORT CPreprocessor : public CTransformer
 {
 public:
 	/** constructor */

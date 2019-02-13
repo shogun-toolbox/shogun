@@ -67,7 +67,7 @@ namespace shogun
  * The Journal of Machine Learning Research 14.1 (2013): 567-599.
  *
  */
-class FirstOrderSAGCostFunction
+class SHOGUN_EXPORT FirstOrderSAGCostFunction
 	: public FirstOrderStochasticCostFunction
 {
 public:

@@ -24,7 +24,7 @@ namespace shogun
 #ifdef USE_GPL_SHOGUN
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Wrapper class used for the Brent minimizer */
-class PsiLine : public func_base
+class SHOGUN_EXPORT PsiLine : public func_base
 {
 public:
 	float64_t log_scale;
@@ -63,7 +63,7 @@ public:
 };
 #endif //USE_GPL_SHOGUN
 
-class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
+class SHOGUN_EXPORT SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public: 
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }

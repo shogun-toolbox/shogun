@@ -16,7 +16,7 @@ namespace shogun
 	/**
 	 * @brief CMeanRule simply averages the outputs of the Machines in the ensemble.
 	 */
-	class CMeanRule : public CCombinationRule
+	class SHOGUN_EXPORT CMeanRule : public CCombinationRule
 	{
 		public:
 			CMeanRule();

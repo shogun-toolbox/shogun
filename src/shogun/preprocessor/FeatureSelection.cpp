@@ -346,95 +346,95 @@ EPreprocessorType CFeatureSelection<ST>::get_type() const
 }
 
 template<>
-EFeatureType CFeatureSelection<floatmax_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<float64_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<float32_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<float32_t>::get_feature_type()
 {
 	return F_SHORTREAL;
 }
 
 template<>
-EFeatureType CFeatureSelection<int16_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint16_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }
 
 template<>
-EFeatureType CFeatureSelection<char>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<char>::get_feature_type()
 {
 	return F_CHAR;
 }
 
 template<>
-EFeatureType CFeatureSelection<int8_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<int8_t>::get_feature_type()
 {
 	return F_CHAR;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint8_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }
 
 template<>
-EFeatureType CFeatureSelection<int32_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<int32_t>::get_feature_type()
 {
 	return F_INT;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint32_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<uint32_t>::get_feature_type()
 {
 	return F_UINT;
 }
 
 template<>
-EFeatureType CFeatureSelection<int64_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<int64_t>::get_feature_type()
 {
 	return F_LONG;
 }
 
 template<>
-EFeatureType CFeatureSelection<uint64_t>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }
 
 template<>
-EFeatureType CFeatureSelection<bool>::get_feature_type()
+SHOGUN_EXPORT EFeatureType CFeatureSelection<bool>::get_feature_type()
 {
 	return F_BOOL;
 }
 
-template class CFeatureSelection<bool>;
-template class CFeatureSelection<char>;
-template class CFeatureSelection<int8_t>;
-template class CFeatureSelection<uint8_t>;
-template class CFeatureSelection<int16_t>;
-template class CFeatureSelection<uint16_t>;
-template class CFeatureSelection<int32_t>;
-template class CFeatureSelection<uint32_t>;
-template class CFeatureSelection<int64_t>;
-template class CFeatureSelection<uint64_t>;
-template class CFeatureSelection<float32_t>;
-template class CFeatureSelection<float64_t>;
-template class CFeatureSelection<floatmax_t>;
+template class SHOGUN_EXPORT CFeatureSelection<bool>;
+template class SHOGUN_EXPORT CFeatureSelection<char>;
+template class SHOGUN_EXPORT CFeatureSelection<int8_t>;
+template class SHOGUN_EXPORT CFeatureSelection<uint8_t>;
+template class SHOGUN_EXPORT CFeatureSelection<int16_t>;
+template class SHOGUN_EXPORT CFeatureSelection<uint16_t>;
+template class SHOGUN_EXPORT CFeatureSelection<int32_t>;
+template class SHOGUN_EXPORT CFeatureSelection<uint32_t>;
+template class SHOGUN_EXPORT CFeatureSelection<int64_t>;
+template class SHOGUN_EXPORT CFeatureSelection<uint64_t>;
+template class SHOGUN_EXPORT CFeatureSelection<float32_t>;
+template class SHOGUN_EXPORT CFeatureSelection<float64_t>;
+template class SHOGUN_EXPORT CFeatureSelection<floatmax_t>;
 
 }

@@ -69,7 +69,7 @@ namespace shogun
  * https://gist.github.com/yorkerlin/b64a015491833562d11a
  *
  */
-class CKLCovarianceInferenceMethod: public CKLInference
+class SHOGUN_EXPORT CKLCovarianceInferenceMethod: public CKLInference
 {
 public:
 	/** default constructor */

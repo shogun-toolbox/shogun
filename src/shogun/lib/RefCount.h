@@ -10,7 +10,7 @@ namespace shogun
 /** brief This class implements a thread-safe counter used for
  * reference counting.
  */
-class RefCount
+class SHOGUN_EXPORT RefCount
 {
 public:
 	/** Constructor

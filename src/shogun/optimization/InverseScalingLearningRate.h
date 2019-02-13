@@ -48,7 +48,7 @@ namespace shogun
  * and \f$k\f$ is the exponent term.
  *
  */
-class InverseScalingLearningRate: public LearningRate
+class SHOGUN_EXPORT InverseScalingLearningRate: public LearningRate
 {
 public:
 	/*  Constructor */

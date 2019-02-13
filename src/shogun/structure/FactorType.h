@@ -17,7 +17,7 @@ namespace shogun
 
 /** @brief Class CFactorType defines the way of factor parameterization
  */
-class CFactorType : public CSGObject
+class SHOGUN_EXPORT CFactorType : public CSGObject
 {
 public:
 	/** default constructor is prohibitted */
@@ -115,7 +115,7 @@ protected:
 /** @brief Class CTableFactorType the way that store assignments of variables
  * and energies in a table or a multi-array
  */
-class CTableFactorType : public CFactorType
+class SHOGUN_EXPORT CTableFactorType : public CFactorType
 {
 public:
 	/** default constructor */

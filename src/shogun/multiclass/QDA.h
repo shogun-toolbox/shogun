@@ -29,7 +29,7 @@ namespace shogun
  *  the classes are distributed with equal co-variance.
  *  TODO
  */
-class CQDA : public CNativeMulticlassMachine
+class SHOGUN_EXPORT CQDA : public CNativeMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

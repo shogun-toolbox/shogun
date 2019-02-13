@@ -62,7 +62,7 @@ class CDynamicObjectArray;
 /** @brief Handles convolution and gradient calculation for a single feature
  * map in a convolutional neural network
  */
-class CConvolutionalFeatureMap
+class SHOGUN_EXPORT CConvolutionalFeatureMap
 {
 public:
 	/** Constuctor

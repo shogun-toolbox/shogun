@@ -48,7 +48,7 @@ namespace shogun
  * Please see method get_corrected_descend_direction() for details
  *
  */
-class AdaptMomentumCorrection: public MomentumCorrection
+class SHOGUN_EXPORT AdaptMomentumCorrection: public MomentumCorrection
 {
 public:
 

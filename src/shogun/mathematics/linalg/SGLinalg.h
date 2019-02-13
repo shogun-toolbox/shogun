@@ -48,7 +48,7 @@ namespace shogun
 {
 
 	/** @brief linalg library backend */
-	class SGLinalg
+	class SHOGUN_EXPORT SGLinalg
 	{
 	public:
 		/** Mutex of GPU transfer methods */
@@ -141,7 +141,7 @@ namespace shogun
 namespace shogun
 {
 	/** Variable that holds the CPU and GPU backends. */
-	extern std::unique_ptr<SGLinalg> sg_linalg;
+	SHOGUN_EXPORT extern std::unique_ptr<SGLinalg> sg_linalg;
 }
 
 #endif // SG_LINALG_H__

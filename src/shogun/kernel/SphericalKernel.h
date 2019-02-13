@@ -30,7 +30,7 @@ class CDistance;
  *
  */
 
-class CSphericalKernel: public CKernel
+class SHOGUN_EXPORT CSphericalKernel: public CKernel
 {
 	public:
 	/** default constructor */

@@ -13,6 +13,10 @@
 
 namespace shogun
 {
+	CPipelineBuilder::CPipelineBuilder()
+	{
+	}
+
 	CPipelineBuilder::~CPipelineBuilder()
 	{
 		for (auto&& stage : m_stages)

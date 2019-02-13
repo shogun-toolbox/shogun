@@ -13,7 +13,7 @@
 namespace shogun
 {
 /** @brief Class Lock used for synchronization in concurrent programs. */
-class CLock
+class SHOGUN_EXPORT CLock
 {
 public:
 	/** lock the object */

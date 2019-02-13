@@ -58,7 +58,7 @@ enum EEvaluationMode
  * faster than ball trees at lower dimensions. In case of high dimensional data, ball tree tends to out-perform KD-tree.
  * By default, the class used is Ball tree.
  */
-class CKernelDensity : public CDistribution
+class SHOGUN_EXPORT CKernelDensity : public CDistribution
 {
 public :
 	/** Constructor

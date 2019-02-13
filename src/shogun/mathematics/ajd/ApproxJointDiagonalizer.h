@@ -27,7 +27,7 @@ namespace shogun
  * a set \f${C^1 ... C^k}\f$ of real valued symmetric
  * \f$NxN\f$ matrices - \f$V*C*V^T\f$
  */
-class CApproxJointDiagonalizer : public CSGObject
+class SHOGUN_EXPORT CApproxJointDiagonalizer : public CSGObject
 {
 	public:
 

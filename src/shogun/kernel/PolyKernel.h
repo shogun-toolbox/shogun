@@ -30,7 +30,7 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyKernel: public CDotKernel
+class SHOGUN_EXPORT CPolyKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

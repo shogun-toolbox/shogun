@@ -20,7 +20,7 @@ namespace shogun
 
 /** @brief Class CFactorGraph a factor graph is a structured input in general
  */
-class CFactorGraph : public CSGObject
+class SHOGUN_EXPORT CFactorGraph : public CSGObject
 {
 
 public:

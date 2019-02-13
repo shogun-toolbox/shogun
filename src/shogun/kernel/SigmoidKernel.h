@@ -23,7 +23,7 @@ namespace shogun
  * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
  */
-class CSigmoidKernel: public CDotKernel
+class SHOGUN_EXPORT CSigmoidKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */

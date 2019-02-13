@@ -120,7 +120,7 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject
+class SHOGUN_EXPORT CSGObject
 {
 public:
 	/** Definition of observed subject */

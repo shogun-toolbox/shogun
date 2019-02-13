@@ -94,7 +94,7 @@ template <typename> class SGVector;
  * [2]: Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
  * A fast, consistent kernel two-sample test.
  */
-class CQuadraticTimeMMD : public CMMD
+class SHOGUN_EXPORT CQuadraticTimeMMD : public CMMD
 {
 	friend class CMultiKernelQuadraticTimeMMD;
 

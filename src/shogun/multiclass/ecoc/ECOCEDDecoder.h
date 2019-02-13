@@ -21,7 +21,7 @@ namespace shogun
  * ED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2}
  * \f]
  */
-class CECOCEDDecoder: public CECOCSimpleDecoder
+class SHOGUN_EXPORT CECOCEDDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */

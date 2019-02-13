@@ -24,7 +24,7 @@ namespace shogun
 	 * resumed, anytime.
 	 */
 	template <class T>
-	class CIterativeMachine : public T
+	class SHOGUN_EXPORT CIterativeMachine : public T
 	{
 	public:
 		/** Default constructor */

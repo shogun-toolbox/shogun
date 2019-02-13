@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Roman Votyakov, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Jacob Walker, Roman Votyakov, Heiko Strathmann, Yuyu Zhang,
  *          Sergey Lisitsyn, Soeren Sonnenburg
  */
 
@@ -19,7 +19,7 @@ namespace shogun
  *
  * Does not provide any label evaluation measure, however.
  */
-class CGradientCriterion : public CEvaluation
+class SHOGUN_EXPORT CGradientCriterion : public CEvaluation
 {
 public:
 	/** default constructor */

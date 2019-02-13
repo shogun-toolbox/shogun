@@ -194,16 +194,16 @@ void CGPUMatrix<T>::init()
 template<typename T> struct dummy {};
 template<typename T> class CGPUMatrix<dummy<T> > {};
 
-template class CGPUMatrix<char>;
-template class CGPUMatrix<uint8_t>;
-template class CGPUMatrix<int16_t>;
-template class CGPUMatrix<uint16_t>;
-template class CGPUMatrix<int32_t>;
-template class CGPUMatrix<uint32_t>;
-template class CGPUMatrix<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
-template class CGPUMatrix<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
-template class CGPUMatrix<float32_t>;
-template class CGPUMatrix<float64_t>;
+template class SHOGUN_EXPORT CGPUMatrix<char>;
+template class SHOGUN_EXPORT CGPUMatrix<uint8_t>;
+template class SHOGUN_EXPORT CGPUMatrix<int16_t>;
+template class SHOGUN_EXPORT CGPUMatrix<uint16_t>;
+template class SHOGUN_EXPORT CGPUMatrix<int32_t>;
+template class SHOGUN_EXPORT CGPUMatrix<uint32_t>;
+template class SHOGUN_EXPORT CGPUMatrix<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
+template class SHOGUN_EXPORT CGPUMatrix<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
+template class SHOGUN_EXPORT CGPUMatrix<float32_t>;
+template class SHOGUN_EXPORT CGPUMatrix<float64_t>;
 }
 
 #endif // HAVE_CXX11

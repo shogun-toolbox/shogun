@@ -29,7 +29,7 @@ namespace shogun
  * by Pavel Kuksa <pkuksa@cs.rutgers.edu> and
  * Vladimir Pavlovic <vladimir@cs.rutgers.edu>
  */
-class CSparseSpatialSampleStringKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CSparseSpatialSampleStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor

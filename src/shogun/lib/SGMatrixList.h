@@ -17,7 +17,7 @@ namespace shogun
 {
 
 /** @brief shogun matrix list */
-template<class T> class SGMatrixList : public SGReferencedData
+template<class T> class SHOGUN_EXPORT SGMatrixList : public SGReferencedData
 {
 	public:
 		/** default constructor */

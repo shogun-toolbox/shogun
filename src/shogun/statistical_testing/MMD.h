@@ -117,7 +117,7 @@ template <typename> class SGVector;
  * Sivaraman Balakrishnan, Massimiliano Pontil, Kenji Fukumizu: Optimal kernel choice
  * for large-scale two-sample tests. NIPS 2012: 1214-1222.
  */
-class CMMD : public CTwoSampleTest
+class SHOGUN_EXPORT CMMD : public CTwoSampleTest
 {
 public:
 	/** Default constructor */

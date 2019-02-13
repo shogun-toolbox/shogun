@@ -76,7 +76,7 @@ namespace shogun
  * have gone from the node. \n
  * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
  */
-class CCARTree : public CTreeMachine<CARTreeNodeData>
+class SHOGUN_EXPORT CCARTree : public CTreeMachine<CARTreeNodeData>
 {
 public:
 	/** default constructor */

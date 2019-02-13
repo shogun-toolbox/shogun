@@ -17,7 +17,7 @@ namespace shogun
 {
 
 /** Multiclass Strategy that uses ECOC coding */
-class CECOCStrategy: public CMulticlassStrategy
+class SHOGUN_EXPORT CECOCStrategy: public CMulticlassStrategy
 {
 public:
     /** default constructor, do not call, only to make serializer happy */

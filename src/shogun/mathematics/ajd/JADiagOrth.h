@@ -27,7 +27,7 @@ namespace shogun
  * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
  *
  */
-class CJADiagOrth : public CApproxJointDiagonalizer
+class SHOGUN_EXPORT CJADiagOrth : public CApproxJointDiagonalizer
 {
 	public:
 

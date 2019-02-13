@@ -20,7 +20,7 @@ namespace shogun
 /** @brief Class evaluates a machine using its associated differentiable
  * function for the function value and its gradient with respect to parameters.
  */
-class CGradientEvaluation: public CMachineEvaluation
+class SHOGUN_EXPORT CGradientEvaluation: public CMachineEvaluation
 {
 public:
 	/** default constructor */

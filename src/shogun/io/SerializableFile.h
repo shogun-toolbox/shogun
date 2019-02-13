@@ -18,7 +18,7 @@ namespace shogun
 template <class T> struct SGSparseVectorEntry;
 
 /** @brief serializable file */
-class CSerializableFile :public CSGObject
+class SHOGUN_EXPORT CSerializableFile :public CSGObject
 {
 public:
 	/** @brief serializable reader */

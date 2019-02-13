@@ -18,7 +18,7 @@ namespace shogun
 {
 /** @brief class LibSVMMultiClass. Does one vs one
  * classification. */
-class CMulticlassLibSVM : public CMulticlassSVM
+class SHOGUN_EXPORT CMulticlassLibSVM : public CMulticlassSVM
 {
 	public:
 		/** default constructor */

@@ -22,7 +22,7 @@ class CLabels;
  * labels.
  *
  */
-class CBinaryClassEvaluation: public CEvaluation
+class SHOGUN_EXPORT CBinaryClassEvaluation: public CEvaluation
 {
 
 public:
