@@ -691,9 +691,9 @@ namespace shogun
 		complex128_t mean_impl(const Container<complex128_t>& a) const;
 
 		/** Real eigen3 vector and matrix standard deviation method */
-        template <typename T>
-        typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-        std_deviation_impl(const SGMatrix<T>& mat) const;
+		template <typename T>
+		typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+		std_deviation_impl(const SGMatrix<T>& mat) const;
 
 		/** Eigen3 multiply_by_logistic_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for

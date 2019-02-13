@@ -1515,9 +1515,9 @@ namespace shogun
 		 * @return The vector mean \f$\bar{a}_i\f$ or matrix mean
 		 * \f$\bar{m}_{i,j}\f$
 		 */
-        template <typename T>
-        typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-        std_deviation(const SGMatrix<T>& mat)
+		template <typename T>
+		typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+		std_deviation(const SGMatrix<T>& mat)
 		{
 			REQUIRE(mat.size() > 0, "Vector/Matrix cannot be empty!\n");
 			return infer_backend(mat)->std_deviation(mat);
