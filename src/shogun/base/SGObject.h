@@ -699,14 +699,23 @@ protected:
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
 	}
 
+	/** Puts a pointer to some parameter into the parameter map.
+	 * The parameter is expected to be initialised at runtime
+	 * using the provided lambda.
+	 *
+	 * @param name name of the parameter
+	 * @param value pointer to the parameter value
+	 * @param lambda lambda defining function to initialise the value of the parameter
+	 * @param properties properties of the parameter (e.g. if model selection is supported)
+	 */
 	template <typename T>
 	void watch_param(
 			const std::string& name, T* value,
-            std::function<Any()> lambda_,
+			std::function<Any()> lambda,
 			AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(lambda_)));
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(lambda)));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.
