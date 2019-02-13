@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:stretch-backports
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update -qq && apt-get upgrade -y && \
