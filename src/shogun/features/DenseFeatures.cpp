@@ -1027,6 +1027,14 @@ SGVector<ST> CDenseFeatures<ST>::mean() const
 }
 
 template <typename ST>
+ST CDenseFeatures<ST>::std() const
+{
+	ASSERT_FLOATING_POINT
+
+	return linalg::std_deviation(get_feature_matrix());
+}
+
+template <typename ST>
 SGMatrix<ST> CDenseFeatures<ST>::cov() const
 {
 	// TODO optimize non batch mode, but get_feature_vector is non const :(

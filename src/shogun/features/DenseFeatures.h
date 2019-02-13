@@ -299,6 +299,12 @@ public:
 	 */
 	SGVector<ST> mean() const;
 
+	/** Computes the standard deviation of all feature vectors
+	 * @return Standard deviation of all feature vectors
+	 */
+	//TODO: write columnwise std
+	ST std() const;
+
 	/** Computes the \f$DxD\f$ (uncentered, un-normalized) covariance matrix
 	 *
 	 *\f[
