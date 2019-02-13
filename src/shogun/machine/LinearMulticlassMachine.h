@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Chiyuan Zhang, Fernando Iglesias, 
- *          Evan Shelhamer, Viktor Gal, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Chiyuan Zhang, Fernando Iglesias,
+ *          Evan Shelhamer, Viktor Gal, Soeren Sonnenburg, Yuyu Zhang,
  *          Evangelos Anagnostopoulos
  */
 
@@ -130,13 +130,13 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** construct linear machine from given linear machine */
-		virtual CMachine* get_machine_from_trained(CMachine* machine)
+		virtual CMachine* get_machine_from_trained(CMachine* machine) const
 		{
 			return new CLinearMachine(machine->as<CLinearMachine>());
 		}
 
 		/** get number of rhs feature vectors */
-		virtual int32_t get_num_rhs_vectors()
+		virtual int32_t get_num_rhs_vectors() const
 		{
 			return m_features->get_num_vectors();
 		}

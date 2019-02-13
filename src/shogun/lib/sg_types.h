@@ -37,7 +37,6 @@ namespace shogun
 		using Head = T1;
 		static constexpr int size = sizeof...(Args) + 1;
 	};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	using sg_feature_types = Types<
 	    Unknown, bool, char, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
@@ -243,6 +242,7 @@ namespace shogun
 		using type = typename types_detail::popTypesImplTypes<
 		    TypesT, TypesT1, true>::type;
 	};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 } // namespace shogun
 
 #endif // SHOGUN_TYPE_H

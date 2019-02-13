@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer,
  *          Youssef Emad El-Din, Evgeniy Andreev, Thoralf Klein, Bjoern Esser,
  *          Fernando Iglesias
  */
@@ -101,7 +101,7 @@ void CLinearMachine::set_bias(float64_t b)
 	bias=b;
 }
 
-float64_t CLinearMachine::get_bias()
+float64_t CLinearMachine::get_bias() const
 {
 	return bias;
 }

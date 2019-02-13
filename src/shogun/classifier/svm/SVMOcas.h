@@ -123,6 +123,8 @@ class CSVMOcas : public CLinearMachine
 		 */
 		virtual float64_t compute_primal_objective() const;
 
+		/** @return object name */
+		inline const char* get_name() const { return "SVMOcas"; }
 	protected:
 		/** compute W
 		 *
@@ -177,7 +179,6 @@ class CSVMOcas : public CLinearMachine
 			  return;
 		}
 
-	protected:
 		/** train SVM classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -188,8 +189,6 @@ class CSVMOcas : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		/** @return object name */
-		inline const char* get_name() const { return "SVMOcas"; }
 	private:
 		void init();
 
