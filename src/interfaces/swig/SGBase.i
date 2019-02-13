@@ -411,6 +411,18 @@ namespace shogun
             }
         }
 
+        bool parameter_is_sg_base(const std::string& name) const {
+            auto params = $self->get_params();
+            if (params.find(name) != params.end()) {
+                if ($self->get(name, std::nothrow) != nullptr)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+        }
+
 #ifdef SWIGPYTHON
         std::string __str__() const
         {

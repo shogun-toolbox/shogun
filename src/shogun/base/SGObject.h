@@ -440,11 +440,21 @@ public:
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Will attempt to get specified object of appropriate internal type.
+	 * If this is not possible it will raise a ShogunException.
 	 *
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name);
+	CSGObject* get(const std::string& name) const noexcept(false);
+
+	/** Untyped getter for an object class parameter, identified by a name.
+	 * Does not throw an error if class parameter object cannot be casted
+	 * to appropriate internal type.
+	 *
+	 * @param name name of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
@@ -588,7 +598,7 @@ public:
 
 protected:
 	template <typename T>
-	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	CSGObject* get_sgobject_type_dispatcher(const std::string& name) const
 	{
 		if (has<T*>(name))
 		{
