@@ -16,6 +16,10 @@ steps:
     downloadPath: $(build.binariesDirectory)
 
 - bash: |
+    sudo xcode-select --switch /Applications/Xcode_10.app/Contents/Developer
+  displayName: Select XCode10 env
+
+- bash: |
     brew update
     brew install ccache pkg-config arpack eigen glpk hdf5 json-c lapack lzo nlopt snappy xz libomp
   displayName: Install dependencies
