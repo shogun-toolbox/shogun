@@ -18,7 +18,7 @@ MeanFunction mean = gp_mean("ZeroMean")
 #![create_instance]
 LikelihoodModel gauss_likelihood = gp_likelihood("GaussianLikelihood")
 Inference inference_method = gp_inference("ExactInferenceMethod", kernel=k, features=features_train, mean_function=mean, labels=labels_train, likelihood_model=gauss_likelihood)
-Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method, labels=labels_train)
+Machine gp_regression = machine("GaussianProcessRegression", inference_method=inference_method, labels=labels_train, compute_variance=True)
 #![create_instance]
 
 #![train_and_apply]
