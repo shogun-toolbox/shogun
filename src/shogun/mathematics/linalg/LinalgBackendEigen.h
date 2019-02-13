@@ -34,9 +34,9 @@
 #define LINALG_BACKEND_EIGEN_H__
 
 #include <numeric>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/LinalgMacros.h>
@@ -269,6 +269,12 @@ namespace shogun
 		BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
 		BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
+
+/** Implementation of @see LinalgBackendBase::std_deviation */
+#define BACKEND_GENERIC_REAL_STD(Type, Container)                             \
+	virtual float64_t std_deviation(const Container<Type>& a) const;
+		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
+#undef BACKEND_GENERIC_REAL_STD
 
 /** Implementation of @see linalg::multiply_by_logistic_derivative */
 #define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
@@ -683,6 +689,11 @@ namespace shogun
 		/** Complex eigen3 vector and matrix mean method */
 		template <template <typename> class Container>
 		complex128_t mean_impl(const Container<complex128_t>& a) const;
+
+		/** Real eigen3 vector and matrix standard deviation method */
+        template <typename T>
+        typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+        std_deviation_impl(const SGMatrix<T>& mat) const;
 
 		/** Eigen3 multiply_by_logistic_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for

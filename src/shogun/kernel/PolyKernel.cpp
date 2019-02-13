@@ -4,6 +4,7 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Kyle McQuisten
  */
 
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/PolyKernel.h>
@@ -80,8 +81,17 @@ void CPolyKernel::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO, [this]() {
-		    return make_any(
-		        1.0 / static_cast<double>(
-		                  ((CDotFeatures*)this->lhs)->get_dim_feature_space()));
+		    if (lhs->get_feature_type() >= 110 &&
+		        lhs->get_feature_type() <= 140)
+			    return make_any(
+			        1.0 /
+			        static_cast<double>(
+			            ((CDotFeatures*)this->lhs)->get_dim_feature_space()));
+		    else
+			    return make_any(
+			        1.0 /
+			        (static_cast<double>(
+			             ((CDotFeatures*)this->lhs)->get_dim_feature_space()) *
+			         ((CDenseFeatures<float64_t>*)(this->lhs))->std()));
 	    });
 }
