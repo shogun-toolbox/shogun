@@ -1,6 +1,8 @@
 #ifndef __SG_UNIQUE_H__
 #define __SG_UNIQUE_H__
 
+#include <shogun/base/macros.h>
+
 namespace shogun
 {
 
@@ -29,19 +31,16 @@ namespace shogun
 				delete reinterpret_cast<T*>(data);
 			}
 
-			/** Not implemented copy constructor */
-			Unique(const Unique&);
-			/** Not implemented assignment operator */
-			Unique& operator=(const Unique& other);
-
 			/** Access underlying unique object as a raw pointer */
-			inline T* operator->() const
+			SG_FORCED_INLINE T* operator->() const
 			{
 				return reinterpret_cast<T*>(data);
 			}
 		private:
 			/** Untyped data storage */
 			void* data;
+
+			SG_DELETE_COPY_AND_ASSIGN(Unique);
 	};
 
 }
