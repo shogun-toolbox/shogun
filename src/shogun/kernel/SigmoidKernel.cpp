@@ -16,24 +16,24 @@ CSigmoidKernel::CSigmoidKernel() : CDotKernel()
 }
 
 CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
-: CDotKernel(size)
+    : CDotKernel(size)
 {
 	init();
 
-	gamma=g;
-	coef0=c;
+	gamma = g;
+	coef0 = c;
 }
 
 CSigmoidKernel::CSigmoidKernel(
-	CDotFeatures* l, CDotFeatures* r, int32_t size, float64_t g, float64_t c)
-: CDotKernel(size)
+    CDotFeatures* l, CDotFeatures* r, int32_t size, float64_t g, float64_t c)
+    : CDotKernel(size)
 {
 	init();
 
-	gamma=g;
-	coef0=c;
+	gamma = g;
+	coef0 = c;
 
-	init(l,r);
+	init(l, r);
 }
 
 CSigmoidKernel::~CSigmoidKernel()
@@ -57,10 +57,10 @@ void CSigmoidKernel::init()
 	coef0 = 0.0;
 
 	SG_ADD(
-	    &gamma, "gamma", "Scaler for the dot product",
+	    &gamma, "gamma", "Scaler for the dot product.",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO, [this]() {
-		    if (lhs->get_feature_type() >= 110 &&
-		        lhs->get_feature_type() <= 140)
+		    if (lhs->get_feature_class() >= EFeatureClass::C_STREAMING_DENSE &&
+		        lhs->get_feature_class() <= EFeatureClass::C_STREAMING_VW)
 			    return make_any(
 			        1.0 /
 			        static_cast<double>(
@@ -70,7 +70,9 @@ void CSigmoidKernel::init()
 			        1.0 /
 			        (static_cast<double>(
 			             ((CDotFeatures*)this->lhs)->get_dim_feature_space()) *
-			         ((CDenseFeatures<float64_t>*)(this->lhs))->std()));
+			         ((CDenseFeatures<float64_t>*)(this->lhs))
+			             ->std(false)
+			             .get_element(0)));
 	    });
 	SG_ADD(&coef0, "coef0", "Coefficient 0.", ParameterProperties::HYPER);
 }
