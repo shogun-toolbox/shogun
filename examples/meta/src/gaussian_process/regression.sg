@@ -27,7 +27,7 @@ Labels labels_predict = gp_regression.apply(features_test)
 #![train_and_apply]
 
 #![compute_variance]
-RealVector variances = labels_predict.get_real_vector("confidence")
+RealVector variances = labels_predict.get_real_vector("current_values")
 #![compute_variance]
 
 #![optimize_marginal_likelihood]

@@ -50,7 +50,6 @@ CDenseLabels::~CDenseLabels()
 void CDenseLabels::init()
 {
 	SG_ADD(&m_labels, "labels", "The labels.");
-	SG_ADD(&m_confidence, "confidence", "The confidence.");
 }
 
 void CDenseLabels::set_to_one()

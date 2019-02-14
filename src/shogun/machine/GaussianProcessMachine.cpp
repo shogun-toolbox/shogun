@@ -63,7 +63,7 @@ void CGaussianProcessMachine::init()
 
 	SG_ADD(&m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
-	SG_ADD(&m_compute_variance, "compute_variance", "Whether variance is computed");
+	SG_ADD(&m_compute_variance, "compute_variance", "Whether predictive variance is computed in predictions");
 }
 
 CGaussianProcessMachine::~CGaussianProcessMachine()

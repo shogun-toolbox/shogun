@@ -141,7 +141,9 @@ private:
 protected:
 	/** inference method */
 	CInference* m_method;
-	/** Whether variance is computed. If true, the variance is available in the result labels */
+	/** Whether predictive variance is computed in predictions. If true, the predictive variance
+	 * can be obtained via labels->get("current_values")
+	 */
 	bool m_compute_variance;
 };
 }
