@@ -505,11 +505,11 @@ namespace shogun
 #undef BACKEND_GENERIC_MAX
 
 /**
-* Wrapper method that computes mean of SGVectors and SGMatrices
-* that are composed of real numbers.
-*
-* @see linalg::mean
-*/
+ * Wrapper method that computes mean of SGVectors and SGMatrices
+ * that are composed of real numbers.
+ *
+ * @see linalg::mean
+ */
 #define BACKEND_GENERIC_REAL_MEAN(Type, Container)                             \
 	virtual float64_t mean(const Container<Type>& a) const                     \
 	{                                                                          \
@@ -521,11 +521,11 @@ namespace shogun
 #undef BACKEND_GENERIC_REAL_MEAN
 
 /**
-* Wrapper method that computes mean of SGVectors and SGMatrices
-* that are composed of complex numbers.
-*
-* @see linalg::mean
-*/
+ * Wrapper method that computes mean of SGVectors and SGMatrices
+ * that are composed of complex numbers.
+ *
+ * @see linalg::mean
+ */
 #define BACKEND_GENERIC_COMPLEX_MEAN(Container)                                \
 	virtual complex128_t mean(const Container<complex128_t>& a) const          \
 	{                                                                          \
@@ -543,7 +543,8 @@ namespace shogun
  * @see linalg::std_deviation
  */
 #define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
-	virtual float64_t std_deviation(const Container<Type>& a) const            \
+	virtual SGVector<float64_t> std_deviation(                                 \
+	    const Container<Type>& a, bool colwise) const                          \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 		return 0;                                                              \
@@ -583,10 +584,10 @@ namespace shogun
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
 
 /**
-* Wrapper method that range fills a vector of matrix.
-*
-* @see linalg::range_fill
-*/
+ * Wrapper method that range fills a vector of matrix.
+ *
+ * @see linalg::range_fill
+ */
 #define BACKEND_GENERIC_RANGE_FILL(Type, Container)                            \
 	virtual void range_fill(Container<Type>& a, const Type start) const        \
 	{                                                                          \
@@ -657,10 +658,10 @@ namespace shogun
 #undef BACKEND_GENERIC_SET_CONST
 
 /**
-* Wrapper method of sum that works with generic vectors or matrices.
-*
-* @see linalg::sum
-*/
+ * Wrapper method of sum that works with generic vectors or matrices.
+ *
+ * @see linalg::sum
+ */
 #define BACKEND_GENERIC_SUM(Type, Container)                                   \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const             \
 	{                                                                          \
@@ -685,10 +686,10 @@ namespace shogun
 #undef BACKEND_GENERIC_SOFTMAX
 
 /**
-* Wrapper method of squared error method.
-*
-* @see linalg::squared_error
-*/
+ * Wrapper method of squared error method.
+ *
+ * @see linalg::squared_error
+ */
 #define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
 	virtual Type squared_error(                                                \
 	    const Container<Type>& P, const Container<Type>& Q) const              \
@@ -700,10 +701,10 @@ namespace shogun
 #undef BACKEND_GENERIC_SQUARED_ERROR
 
 /**
-* Wrapper method of sum that works with matrix blocks.
-*
-* @see linalg::sum
-*/
+ * Wrapper method of sum that works with matrix blocks.
+ *
+ * @see linalg::sum
+ */
 #define BACKEND_GENERIC_BLOCK_SUM(Type, Container)                             \
 	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag)    \
 	    const                                                                  \
@@ -715,10 +716,10 @@ namespace shogun
 #undef BACKEND_GENERIC_BLOCK_SUM
 
 /**
-* Wrapper method of sum that works with symmetric matrices.
-*
-* @see linalg::sum_symmetric
-*/
+ * Wrapper method of sum that works with symmetric matrices.
+ *
+ * @see linalg::sum_symmetric
+ */
 #define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container)                         \
 	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const   \
 	{                                                                          \
@@ -729,10 +730,10 @@ namespace shogun
 #undef BACKEND_GENERIC_SYMMETRIC_SUM
 
 /**
-* Wrapper method of sum that works with symmetric matrix blocks.
-*
-* @see linalg::sum
-*/
+ * Wrapper method of sum that works with symmetric matrix blocks.
+ *
+ * @see linalg::sum
+ */
 #define BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM(Type, Container)                   \
 	virtual Type sum_symmetric(                                                \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
@@ -759,10 +760,10 @@ namespace shogun
 #undef BACKEND_GENERIC_COLWISE_SUM
 
 /**
-* Wrapper method of matrix colwise sum that works with dense matrices.
-*
-* @see linalg::colwise_sum
-*/
+ * Wrapper method of matrix colwise sum that works with dense matrices.
+ *
+ * @see linalg::colwise_sum
+ */
 #define BACKEND_GENERIC_BLOCK_COLWISE_SUM(Type, Container)                     \
 	virtual SGVector<Type> colwise_sum(                                        \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
@@ -789,10 +790,10 @@ namespace shogun
 #undef BACKEND_GENERIC_ROWWISE_SUM
 
 /**
-* Wrapper method of matrix rowwise sum that works with dense matrices.
-*
-* @see linalg::rowwise_sum
-*/
+ * Wrapper method of matrix rowwise sum that works with dense matrices.
+ *
+ * @see linalg::rowwise_sum
+ */
 #define BACKEND_GENERIC_BLOCK_ROWWISE_SUM(Type, Container)                     \
 	virtual SGVector<Type> rowwise_sum(                                        \
 	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
@@ -914,6 +915,6 @@ namespace shogun
 #undef DEFINE_FOR_NON_COMPLEX_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 	};
-}
+} // namespace shogun
 
 #endif // LINALG_BACKEND_BASE_H__

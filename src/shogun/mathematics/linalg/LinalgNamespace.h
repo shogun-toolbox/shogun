@@ -1516,11 +1516,12 @@ namespace shogun
 		 * \f$\bar{m}_{i,j}\f$
 		 */
 		template <typename T>
-		typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-		std_deviation(const SGMatrix<T>& mat)
+		typename std::enable_if<
+		    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
+		std_deviation(const SGMatrix<T>& mat, bool colwise = true)
 		{
 			REQUIRE(mat.size() > 0, "Vector/Matrix cannot be empty!\n");
-			return infer_backend(mat)->std_deviation(mat);
+			return infer_backend(mat)->std_deviation(mat, colwise);
 		}
 
 		/**
@@ -1889,7 +1890,7 @@ namespace shogun
 		{
 			infer_backend(a)->zero(a);
 		}
-	}
-}
+	} // namespace linalg
+} // namespace shogun
 
 #endif // LINALG_NAMESPACE_H_

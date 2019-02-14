@@ -64,10 +64,10 @@ BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 #define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
-	float64_t LinalgBackendEigen::std_deviation(const Container<Type>& a)      \
-	    const                                                                  \
+	SGVector<float64_t> LinalgBackendEigen::std_deviation(                     \
+	    const Container<Type>& a, bool colwise) const                          \
 	{                                                                          \
-		return std_deviation_impl(a);                                          \
+		return std_deviation_impl(a, colwise);                                 \
 	}
 DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
 #undef BACKEND_GENERIC_REAL_STD
@@ -184,11 +184,33 @@ LinalgBackendEigen::mean_impl(const Container<complex128_t>& a) const
 }
 
 template <typename T>
-typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-LinalgBackendEigen::std_deviation_impl(const SGMatrix<T>& mat) const
+typename std::enable_if<
+    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
+LinalgBackendEigen::std_deviation_impl(
+    const SGMatrix<T>& mat, bool colwise) const
 {
+	SGVector<float64_t> result;
+
 	typename SGMatrix<T>::EigenMatrixXtMap m = mat;
-	return std::sqrt(((m.array() - m.mean()).pow(2)).mean());
+	Eigen::MatrixXd d = m.template cast<double>();
+	if (colwise)
+	{
+		result = SGVector<float64_t>(mat.num_rows);
+
+		Eigen::Map<Eigen::VectorXd> result_eig(result.vector, result.vlen);
+
+		result_eig =
+		    (d.colwise() - d.rowwise().mean()).array().pow(2).rowwise().sum() /
+		    d.cols();
+	}
+	else
+	{
+		result = SGVector<float64_t>(1);
+		result.set_element(
+		    std::sqrt(((d.array() - d.mean()).pow(2)).mean()), 0);
+	}
+
+	return result;
 }
 
 template <typename T>
