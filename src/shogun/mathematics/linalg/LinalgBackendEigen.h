@@ -271,8 +271,9 @@ namespace shogun
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 /** Implementation of @see LinalgBackendBase::std_deviation */
-#define BACKEND_GENERIC_REAL_STD(Type, Container)                             \
-	virtual float64_t std_deviation(const Container<Type>& a) const;
+#define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
+	virtual SGVector<float64_t> std_deviation(                                 \
+	    const Container<Type>& a, bool colwise = true) const;
 		DEFINE_FOR_NON_COMPLEX_PTYPE(BACKEND_GENERIC_REAL_STD, SGMatrix)
 #undef BACKEND_GENERIC_REAL_STD
 
@@ -692,8 +693,9 @@ namespace shogun
 
 		/** Real eigen3 vector and matrix standard deviation method */
 		template <typename T>
-		typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-		std_deviation_impl(const SGMatrix<T>& mat) const;
+		typename std::enable_if<
+		    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
+		std_deviation_impl(const SGMatrix<T>& mat, bool colwise = true) const;
 
 		/** Eigen3 multiply_by_logistic_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for
