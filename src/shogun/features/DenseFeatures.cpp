@@ -1027,11 +1027,12 @@ SGVector<ST> CDenseFeatures<ST>::mean() const
 }
 
 template <typename ST>
-ST CDenseFeatures<ST>::std() const
+SGVector<float64_t > CDenseFeatures<ST>::std(bool colwise) const
 {
 	ASSERT_FLOATING_POINT
 
-	return linalg::std_deviation(get_feature_matrix());
+	auto mat = get_feature_matrix();
+	return linalg::std_deviation(mat, colwise);
 }
 
 template <typename ST>

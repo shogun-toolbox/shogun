@@ -300,10 +300,11 @@ public:
 	SGVector<ST> mean() const;
 
 	/** Computes the standard deviation of all feature vectors
-	 * @return Standard deviation of all feature vectors
+	 * @param colwise if true calculates feature wise standard deviation,
+	 * otherwise calculates the matrix standard deviation
+	 * @return Standard deviation of all feature vectors or of whole matrix
 	 */
-	//TODO: write columnwise std
-	ST std() const;
+	SGVector<float64_t > std(bool colwise = true) const;
 
 	/** Computes the \f$DxD\f$ (uncentered, un-normalized) covariance matrix
 	 *
