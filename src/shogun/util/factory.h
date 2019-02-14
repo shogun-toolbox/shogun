@@ -50,7 +50,7 @@ namespace shogun
 	CFeatures* features(const std::string& name);
 	CLikelihoodModel* gp_likelihood(const std::string& name);
 	CMeanFunction* gp_mean(const std::string& name);
-	CDifferentiableFunction* differentiable_function(const std::string& name);
+	CDifferentiableFunction* differentiable(const std::string& name);
 	CInference* gp_inference(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
@@ -79,7 +79,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CLikelihoodModel, gp_likelihood)
 	BASE_CLASS_FACTORY(CMeanFunction, gp_mean)
 	BASE_CLASS_FACTORY(CInference, gp_inference)
-	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable_function)
+	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
