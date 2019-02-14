@@ -192,7 +192,7 @@ LinalgBackendEigen::std_deviation_impl(
 	SGVector<float64_t> result;
 
 	typename SGMatrix<T>::EigenMatrixXtMap m = mat;
-	Eigen::MatrixXd d = m.template cast<double>();
+	Eigen::MatrixXd d = m.template cast<float64_t>();
 	if (colwise)
 	{
 		result = SGVector<float64_t>(mat.num_rows);
@@ -200,8 +200,9 @@ LinalgBackendEigen::std_deviation_impl(
 		Eigen::Map<Eigen::VectorXd> result_eig(result.vector, result.vlen);
 
 		result_eig =
-		    (d.colwise() - d.rowwise().mean()).array().pow(2).rowwise().sum() /
-		    d.cols();
+		    ((d.colwise() - d.rowwise().mean()).array().pow(2).rowwise().sum() /
+		     d.cols())
+		        .sqrt();
 	}
 	else
 	{

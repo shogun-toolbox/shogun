@@ -40,10 +40,12 @@ class LinalgBackendEigenNonIntegerTypesTest : public ::testing::Test
 {
 };
 
-SG_TYPED_TEST_CASE(LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
+SG_TYPED_TEST_CASE(
+    LinalgBackendEigenAllTypesTest, sg_all_primitive_types, bool, complex128_t);
 SG_TYPED_TEST_CASE(LinalgBackendEigenNonComplexTypesTest, sg_non_complex_types);
 SG_TYPED_TEST_CASE(LinalgBackendEigenRealTypesTest, sg_real_types);
-SG_TYPED_TEST_CASE(LinalgBackendEigenNonIntegerTypesTest, sg_non_integer_types, complex128_t);
+SG_TYPED_TEST_CASE(
+    LinalgBackendEigenNonIntegerTypesTest, sg_non_integer_types, complex128_t);
 
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGVector_add)
 {
@@ -1378,6 +1380,33 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_mean)
 	auto result = mean(mat);
 
 	EXPECT_NEAR(result, 4, get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation_colwise)
+{
+	const index_t nrows = 3, ncols = 3;
+	SGMatrix<TypeParam> mat(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	auto result = std_deviation(mat);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(
+		    result.get_element(i), 2.449489742783178, get_epsilon<TypeParam>());
+}
+
+TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation)
+{
+	const index_t nrows = 3, ncols = 3;
+	SGMatrix<TypeParam> mat(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	auto result = std_deviation(mat, false);
+
+	EXPECT_NEAR(
+	    result.get_element(0), 2.581988897471611, get_epsilon<TypeParam>());
 }
 
 TYPED_TEST(
