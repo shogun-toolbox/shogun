@@ -81,8 +81,8 @@ void CPolyKernel::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO, [this]() {
-		    if (lhs->get_feature_type() >= 110 &&
-		        lhs->get_feature_type() <= 140)
+		    if (lhs->get_feature_class() >= EFeatureClass::C_STREAMING_DENSE &&
+		        lhs->get_feature_class() <= EFeatureClass::C_STREAMING_VW)
 			    return make_any(
 			        1.0 /
 			        static_cast<double>(
@@ -92,6 +92,8 @@ void CPolyKernel::init()
 			        1.0 /
 			        (static_cast<double>(
 			             ((CDotFeatures*)this->lhs)->get_dim_feature_space()) *
-			         ((CDenseFeatures<float64_t>*)(this->lhs))->std()));
+			         ((CDenseFeatures<float64_t>*)(this->lhs))
+			             ->std(false)
+			             .get_element(0)));
 	    });
 }
