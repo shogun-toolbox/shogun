@@ -66,8 +66,11 @@ void CSOBI::fit_dense(CDenseFeatures<float64_t>* features)
 	MatrixXd M0 = cor(EX,int(m_tau[0]));
 	EigenSolver<MatrixXd> eig;
 	eig.compute(M0);
-	MatrixXd SPH = (eig.pseudoEigenvectors() * eig.pseudoEigenvalueMatrix().cwiseSqrt() * eig.pseudoEigenvectors ().transpose()).inverse();
-	MatrixXd spx = SPH*EX;
+	MatrixXd EVMsqrt = eig.pseudoEigenvalueMatrix().cwiseSqrt();
+	MatrixXd SPH = (eig.pseudoEigenvectors() * EVMsqrt *
+	                eig.pseudoEigenvectors().transpose())
+	                   .inverse();
+	MatrixXd spx = SPH * EX;
 
 	// Compute Correlation Matrices
 	index_t * M_dims = SG_MALLOC(index_t, 3);

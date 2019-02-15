@@ -502,11 +502,12 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
 	eigen_h(eigen_h.size()-1) = 0;
-
 	//bsxfun(@plus, l.^2, v)
-	eigen_l2_plus_s2 = (eigen_s2.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array().pow(2)).matrix();
+	VectorXd epl_pow = eigen_l.array().pow(2);
+	VectorXd eph_pow = eigen_h.array().pow(2);
+	eigen_l2_plus_s2 = (eigen_s2.replicate(1,eigen_l.rows()).array().transpose().colwise() + epl_pow.array()).matrix();
 	//bsxfun(@plus, h.^2, v)
-	eigen_h2_plus_s2 = (eigen_s2.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array().pow(2)).matrix();
+	eigen_h2_plus_s2 = (eigen_s2.replicate(1,eigen_h.rows()).array().transpose().colwise() + eph_pow.array()).matrix();
 	//pl.*l - ph.*h
 	eigen_weighted_pdf_diff = (eigen_pl.array().colwise() * eigen_l.array() - eigen_ph.array().colwise() * eigen_h.array()).matrix();
 
