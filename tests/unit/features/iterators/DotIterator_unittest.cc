@@ -92,5 +92,5 @@ TEST(DotIterator, add)
 	}
 
 	for (i = 0; i < vec.vlen; ++i)
-		EXPECT_EQ(vec[i], res[i]);
+		EXPECT_NEAR(vec[i], res[i], 1E-12);
 }
