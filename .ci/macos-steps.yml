@@ -11,7 +11,7 @@ steps:
 - template: ./download-extract.yml
   parameters:
     name: 'CCache'
-    artifactName: $(ccacheArtifactName)
+    artifactName: $(ccacheArtifactName)-$(use_mkl)
     destinationFolder: $(ccacheDir)
     downloadPath: $(build.binariesDirectory)
 
@@ -44,4 +44,4 @@ steps:
     name: 'CCache'
     dir: $(ccacheDir)
     archive: $(ccacheArchive)
-    artifactName: $(ccacheArtifactName)
+    artifactName: $(ccacheArtifactName)-$(use_mkl)
