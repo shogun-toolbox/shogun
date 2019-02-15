@@ -132,12 +132,23 @@ jobs:
     ccacheDir: '$(build.binariesDirectory)/ccache'
     ccacheArtifactName: 'ccache-macos'
     ccacheArchive: '$(Build.ArtifactStagingDirectory)/ccache-$(Build.BuildId).tar'
+    commonMacOSCMakeFlags: '-DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF'
 
   pool:
     vmImage: xcode9-macos10.13
 
   steps:
   - template: ./macos-steps.yml
+
+  strategy:
+    maxParallel: 2
+    matrix:
+      ACCELERATE:
+        use_mkl: false
+        cmakeOptions: '$(commonMacOSCMakeFlags)'
+      MKL:
+        use_mkl: true
+        cmakeOptions: '$(commonMacOSCMakeFlags) -DBLAS_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DLAPACK_LIBRARIES=$(CONDA)/lib/libmkl_core.dylib -DBLA_VENDOR=Intel'
 
 - job: windows_libshogun
   displayName: Windows
