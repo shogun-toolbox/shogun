@@ -57,7 +57,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 		result=new CRegressionLabels(get_mean_vector(feat));
 		if (m_compute_variance)
-			result->put("confidence", get_variance_vector(feat));
+			result->put("current_values", get_variance_vector(feat));
 
 		SG_UNREF(feat);
 	}
@@ -65,7 +65,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	{
 		result=new CRegressionLabels(get_mean_vector(data));
 		if (m_compute_variance)
-			result->put("confidence", get_variance_vector(data));
+			result->put("current_values", get_variance_vector(data));
 	}
 
 	return result;
