@@ -57,3 +57,8 @@ div.toctree-wrapper > p.caption {
     font-weight: 300;
     margin-bottom: 0.5em;
 }
+
+.citation td.label {
+    display: block;
+}
+
