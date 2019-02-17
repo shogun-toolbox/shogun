@@ -133,6 +133,8 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 		SG_REF(data);
 
 	CBinaryLabels* result=new CBinaryLabels(get_mean_vector(data));
+	if (m_compute_variance)
+		result->put("current_values", get_variance_vector(data));
 	SG_UNREF(data);
 
 	return result;

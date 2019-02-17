@@ -60,6 +60,7 @@ CGaussianProcessMachine::CGaussianProcessMachine(CInference* method)
 void CGaussianProcessMachine::init()
 {
 	m_method=NULL;
+	m_compute_variance = false;
 
 	SG_ADD(&m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
