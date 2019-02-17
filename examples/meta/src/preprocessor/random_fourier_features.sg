@@ -1,0 +1,21 @@
+File data_train = csv_file("../../data/fm_train_real.dat")
+File data_test = csv_file("../../data/fm_test_real.dat")
+
+Math:init_random(12345)
+
+#![create_features]
+Features feats_train = features(data_train)
+Features feats_test = features(data_test)
+#![create_features]
+
+#![create_preprocessor]
+Transformer preproc = transformer("RandomFourierGaussPreproc")
+preproc.fit(feats_train)
+#![create_preprocessor]
+
+#![transform_features]
+Features feats_train_trans = preproc.transform(feats_train)
+Features feats_test_trans = preproc.transform(feats_test)
+RealMatrix feats_train_trans_matrix = feats_train_trans.get_real_matrix("feature_matrix")
+RealMatrix feats_test_trans_matrix = feats_test_trans.get_real_matrix("feature_matrix")
+#![transform_features]

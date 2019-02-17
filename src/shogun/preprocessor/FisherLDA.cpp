@@ -81,6 +81,8 @@ void CFisherLDA::initialize_parameters()
 	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.");
 	SG_ADD(
 	    &m_eigenvalues_vector, "eigenvalues_vector", "Vector with Eigenvalues.");
+	SG_ADD(
+	    &m_method, "method", "Matrix decomposition method.");
 }
 
 CFisherLDA::~CFisherLDA()

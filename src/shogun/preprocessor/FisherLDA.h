@@ -44,6 +44,8 @@
 namespace shogun
 {
 
+class CMulticlassLabels;
+
 	/** Matrix decomposition method for Fisher LDA */
 	enum EFLDAMethod
 	{
