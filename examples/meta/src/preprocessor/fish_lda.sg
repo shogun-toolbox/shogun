@@ -1,0 +1,19 @@
+File data_train = csv_file("../../data/fm_train_real.dat")
+File data_labels = csv_file("../../data/label_train_multiclass.dat")
+
+#![create_features]
+Features feats_train = features(data_train)
+Labels feats_labels = labels(data_labels)
+#![create_features]
+
+#![create_preprocessor]
+Transformer preproc = transformer("FisherLDA")
+preproc.put("final_dimensions", 1)
+preproc.put("method", enum EFLDAMethod.CANVAR_FLDA)
+preproc.fit(feats_train, feats_labels)
+#![create_preprocessor]
+
+#![transform_features]
+Features feats_traing_trans = preproc.transform(feats_train)
+RealMatrix feats_train_trans_matrix = feats_traing_trans.get_real_matrix("feature_matrix")
+#![transform_features]
