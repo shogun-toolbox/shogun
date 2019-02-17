@@ -17,9 +17,9 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=label_traindat):
-    from shogun import CrossValidation, CrossValidationResult
+    from shogun import machine_evaluation
     from shogun import ContingencyTableEvaluation, ACCURACY
-    from shogun import StratifiedCrossValidationSplitting
+    from shogun import splitting_strategy
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
@@ -50,15 +50,17 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     #classifier.print_modsel_params()
 
     # splitting strategy for cross-validation
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
+    splitting_strategy = splitting_strategy(
+        "StratifiedCrossValidationSplitting", labels=labels, num_subsets=10)
 
     # evaluation method
     evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
 
     # cross-validation instance
-    cross_validation=CrossValidation(classifier, features, labels,
-                                     splitting_strategy, evaluation_criterium)
-    cross_validation.set_autolock(False)
+    cross_validation = machine_evaluation(
+        "CrossValidation", machine=classifier, features=features,
+        labels=labels, splitting_strategy=splitting_strategy,
+        evaluation_criterion=evaluation_criterium, autolock=False)
 
     # model selection instance
     model_selection=GridSearchModelSelection(cross_validation, param_tree_root)

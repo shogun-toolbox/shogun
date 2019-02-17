@@ -575,7 +575,7 @@ public:
 
 		SG_SERROR(
 			"Object of type %s cannot be converted to type %s.\n",
-			demangled_type<std::remove_pointer_t<decltype(this)>>().c_str(),
+			this->get_name(),
 			demangled_type<T>().c_str());
 		return nullptr;
 	}

@@ -7,8 +7,7 @@ Labels reg_labels = labels(f_labels)
 #![set parameters]
 int num_subsets = 5
 int min_subset_size = 4
-TimeSeriesSplitting splitting(reg_labels, num_subsets)
-splitting.set_min_subset_size(min_subset_size)
+SplittingStrategy splitting = splitting_strategy("TimeSeriesSplitting", labels=reg_labels, num_subsets=num_subsets, min_subset_size=min_subset_size)
 #![set parameters]
 
 #![build subsets]

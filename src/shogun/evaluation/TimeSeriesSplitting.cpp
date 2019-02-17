@@ -51,6 +51,8 @@ void CTimeSeriesSplitting::init()
 {
 	m_rng = sg_rand;
 	m_min_subset_size = 1;
+	SG_ADD(&m_min_subset_size, "min_subset_size", 
+			"The minimum subset size for test set")
 }
 
 void CTimeSeriesSplitting::build_subsets()
