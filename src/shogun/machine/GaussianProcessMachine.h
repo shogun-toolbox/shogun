@@ -141,8 +141,8 @@ private:
 protected:
 	/** inference method */
 	CInference* m_method;
-	/** Whether predictive variance is computed in predictions. If true, the predictive variance
-	 * can be obtained via labels->get("current_values")
+	/** Whether predictive variance is computed in predictions. If true, the
+	 * values are stored in the current_values vector of the predicted labels
 	 */
 	bool m_compute_variance;
 };
