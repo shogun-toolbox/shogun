@@ -256,10 +256,10 @@ def run_demo():
 
     crit = GradientCriterion();
 
-    grad=GradientEvaluation(gp, feat_train, labels,
-			crit);
-
-    grad.set_function(inf);
+    grad = machine_evaluation(
+            "GradientEvaluation", machine=gp, features=feat_train,
+            labels=labels, evaluation_criterion=crit,
+            differentiable_function=inf);
 
     gp.print_modsel_params();
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos,
  *          Vladislav Horbatiuk, Evgeniy Andreev, Evan Shelhamer, Bjoern Esser
  */
 
@@ -167,7 +167,7 @@ int32_t CCombinedFeatures::get_num_feature_obj() const
 void CCombinedFeatures::init()
 {
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
-	SG_ADD(&feature_array, "array", "Feature array.");
+	SG_ADD(&feature_array, "feature_array", "Feature array.");
 }
 
 CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const

@@ -1363,7 +1363,12 @@ _FACTORIES = ["distance",
               "transformer",
               "layer",
               "splitting_strategy",
-              "machine_evaluation"
+              "machine_evaluation",
+              "features",
+              "differentiable",
+              "gp_inference",
+              "gp_mean",
+              "gp_likelihood",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
@@ -1373,9 +1378,9 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     via .put
     """
     _obj = getattr(sys.modules[__name__], object_name)
-    def _internal_factory(name, **kwargs):
+    def _internal_factory(name, *args, **kwargs):
 
-        new_obj = _obj(name)
+        new_obj = _obj(name, *args)
         for k,v in kwargs.items():
             new_obj.put(k, v)
         return new_obj

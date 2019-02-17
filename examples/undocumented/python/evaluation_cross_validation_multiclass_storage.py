@@ -18,10 +18,10 @@ label_traindat=concatenate((zeros(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
-    from shogun import CrossValidation, CrossValidationResult
+    from shogun import machine_evaluation
     from shogun import ParameterObserverCV
     from shogun import MulticlassAccuracy, F1Measure
-    from shogun import StratifiedCrossValidationSplitting
+    from shogun import splitting_strategy
     from shogun import MulticlassLabels
     from shogun import RealFeatures, CombinedFeatures
     from shogun import CombinedKernel
@@ -54,20 +54,21 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 3)
+    splitting_strategy = splitting_strategy(
+        "StratifiedCrossValidationSplitting", labels=labels, num_subsets=3)
 
     # evaluation method
     evaluation_criterium=MulticlassAccuracy()
 
     # cross-validation instance
-    cross_validation=CrossValidation(svm, comb_features, labels,
-        splitting_strategy, evaluation_criterium)
-    cross_validation.set_autolock(False)
+    cross_validation = machine_evaluation(
+        "CrossValidation", machine=svm, features=comb_features,
+        labels=labels, splitting_strategy=splitting_strategy,
+        evaluation_criterion=evaluation_criterium, autolock=False, num_runs=3)
 
     # append cross validation parameter observer
     multiclass_storage=ParameterObserverCV()
     cross_validation.subscribe_to_parameters(multiclass_storage)
-    cross_validation.set_num_runs(3)
 
     # perform cross-validation
     result=cross_validation.evaluate()
