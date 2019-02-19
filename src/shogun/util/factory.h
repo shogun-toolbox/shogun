@@ -120,8 +120,8 @@ namespace shogun
 	}
 
 	CFeatures* string_features(
-	    CFile* file, EAlphabet alpha = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
+	    CFile* file, machine_int_t alphabet_type = DNA,
+	    machine_int_t primitive_type = PT_CHAR)
 	{
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
@@ -129,7 +129,7 @@ namespace shogun
 		switch (primitive_type)
 		{
 		case PT_CHAR:
-			result = new CStringFeatures<char>(file, alpha);
+			result = new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
 			break;
 		default:
 			SG_SNOTIMPLEMENTED

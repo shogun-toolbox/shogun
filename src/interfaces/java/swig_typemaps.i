@@ -693,11 +693,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].slen, arr);
 		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
 		JCALL1(DeleteLocalRef, jenv, jarr);
-
-		SG_FREE(str[i].string);
-		SG_FREE(arr);
 	}
-	SG_FREE(str);
 	$result = res;
 }
 
@@ -718,7 +714,7 @@ TYPEMAP_STRINGFEATURES(int64_t, int, Int, jint, "Int[][]", "[[I")
 TYPEMAP_STRINGFEATURES(uint64_t, long, Long, jlong, "Long[][]", "[[J")
 TYPEMAP_STRINGFEATURES(long long, long, Long, jlong, "Long[][]", "[[J")
 TYPEMAP_STRINGFEATURES(float32_t, float, Float, jfloat, "Float[][]", "[[F")
-TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
+TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Double[][]", "[[D")
 
 #undef TYPEMAP_STRINGFEATURES
 
@@ -777,9 +773,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 		jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
 		JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
 		JCALL1(DeleteLocalRef, jenv, jstr);
-		SG_FREE(str[i].string);
 	}
-	SG_FREE(str);
 	$result = res;
 }
 

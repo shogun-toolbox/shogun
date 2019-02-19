@@ -54,7 +54,7 @@ This needs `shogun.oct` to be visible, which is either in `path/to/build/src/int
 
 Running an example:
 
-    python path/to/octave_example.py
+    octave path/to/octave_example.m
 
 ### Ruby
 This needs `shogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
