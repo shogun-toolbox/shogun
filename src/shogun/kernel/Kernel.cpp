@@ -116,12 +116,12 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-    //increase reference counts
-    SG_REF(l);
-    if (l==r)
+	//increase reference counts
+	SG_REF(l);
+	if (l==r)
 		lhs_equals_rhs=true;
 	else // l!=r
-        SG_REF(r);
+		SG_REF(r);
 
 	lhs=l;
 	rhs=r;

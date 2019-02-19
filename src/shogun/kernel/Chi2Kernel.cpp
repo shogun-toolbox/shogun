@@ -19,7 +19,7 @@ CChi2Kernel::init()
 }
 
 CChi2Kernel::CChi2Kernel()
-: CDotKernel(0), width(0)
+: CDotKernel(0), width(1)
 {
 	init();
 }
@@ -52,6 +52,8 @@ bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	REQUIRE(width>0,
+		"width not set to positive value. Current width %d \n", width);
 	int32_t alen, blen;
 	bool afree, bfree;
 
@@ -94,4 +96,10 @@ CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
 	/* since an additional reference is returned */
 	SG_REF(kernel);
 	return (CChi2Kernel*)kernel;
+}
+
+void CChi2Kernel::set_width(int32_t w)
+{
+	REQUIRE(w>0, "Parameter width should be > 0");
+	width=w;
 }
