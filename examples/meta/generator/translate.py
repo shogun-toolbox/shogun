@@ -341,6 +341,10 @@ class Translator:
         if self.targetDict["Dependencies"].get("IncludeGlobalFunctions"):
             dependencies = dependencies.union(globalFunctions)
 
+        if "ExcludeImport" in self.targetDict["Dependencies"]:
+            for item in self.targetDict["Dependencies"].get("ExcludeImport"):
+                dependencies.discard(item)
+
         dependencies = list(dependencies)
 
         translations = list(set(map(self.translateDependencyElement, dependencies)))

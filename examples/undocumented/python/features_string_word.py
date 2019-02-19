@@ -24,7 +24,7 @@ def features_string_word (strings, start, order, gap, rev):
 	wf.set_feature_vector(array([1,2,3,4,5], dtype=uint16), 0)
 
 	#print("strings", wf.get_features())
-	return wf.get_features(), wf
+	return wf.get_string_list(), wf
 
 if __name__=='__main__':
 	print('StringWordFeatures')

@@ -21,7 +21,7 @@ def features_string_char (strings):
 	f.set_feature_vector(array(['t','e','s','t']), 0)
 
 	#print("strings", f.get_features())
-	return f.get_features(), f
+	return f.get_string_list(), f
 
 if __name__=='__main__':
 	print('StringCharFeatures')

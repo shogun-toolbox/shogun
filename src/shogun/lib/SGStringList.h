@@ -66,6 +66,14 @@ public:
 	 */
 	SGStringList<T> clone() const;
 
+
+	/** Equals method
+	 * @param other SGStringList to compare with
+	 * @return false iff the number of strings, the maximum string length or
+	 * any of the string items are different, true otherwise
+	 */
+	bool equals(const SGStringList<T>& other) const;
+
 protected:
 
 	/** copy data */
