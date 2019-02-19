@@ -354,8 +354,8 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 void CKMeansBase::init()
 {
-	max_iter=10000;
-	k=3;
+	max_iter=300;
+	k=8;
 	dimensions=0;
 	fixed_centers=false;
 	use_kmeanspp=false;
