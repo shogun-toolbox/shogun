@@ -137,7 +137,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 
 void CKMeansMiniBatch::init_mb_params()
 {
-	batch_size=-1;
+	batch_size=100;
 
 	SG_ADD(
 		&batch_size, "batch_size", "batch size for mini-batch KMeans");
