@@ -144,7 +144,7 @@ TEST(KMeans, minibatch_training_test)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeansMiniBatch* clustering=new CKMeansMiniBatch(1, distance,initial_centers);
+	CKMeansMiniBatch* clustering=new CKMeansMiniBatch(1, distance, initial_centers);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
