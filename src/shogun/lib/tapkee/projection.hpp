@@ -55,7 +55,7 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 
 	virtual DenseVector project(const DenseVector& vec)
 	{
-		return proj_mat*(vec-mean_vec);
+		return proj_mat.transpose()*(vec-mean_vec);
 	}
 
 	DenseMatrix proj_mat;

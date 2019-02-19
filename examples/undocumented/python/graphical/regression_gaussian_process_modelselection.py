@@ -7,11 +7,10 @@ def regression_gaussian_process_modelselection (n=100, n_test=100, \
 		x_range=5, x_range_test=10, noise_var=0.4):
 
 	from shogun import RealFeatures, RegressionLabels
-	from shogun import GaussianKernel
+	from shogun import kernel, machine_evaluation
 	from shogun import GradientModelSelection, ModelSelectionParameters
 	from shogun import GaussianLikelihood, ZeroMean, \
-		ExactInferenceMethod, GaussianProcessRegression, GradientCriterion, \
-		GradientEvaluation
+		ExactInferenceMethod, GaussianProcessRegression, GradientCriterion
 
 	# easy regression data: one dimensional noisy sine wave
 	X_train = random.rand(1,n)*x_range
@@ -26,7 +25,7 @@ def regression_gaussian_process_modelselection (n=100, n_test=100, \
 	feats_test = RealFeatures(X_test)
 
 	# GP specification
-	kernel = GaussianKernel(10, 0.05)
+	kernel = kernel("GaussianKernel", log_width=log(0.05))
 
 	mean = ZeroMean()
 
@@ -57,8 +56,10 @@ def regression_gaussian_process_modelselection (n=100, n_test=100, \
 	legend(["training", "ground truth", "mean predictions"])
 
 	# evaluate our inference method for its derivatives
-	grad = GradientEvaluation(gp, feats_train, labels, GradientCriterion(), False)
-	grad.set_function(inf)
+	grad = machine_evaluation(
+		"GradientEvaluation", machine=gp, features=feats_train,
+		labels=labels, evaluation_criterion=GradientCriterion(),
+		autolock=False, differentiable_function=inf)
 
 	# handles all of the above structures in memory
 	grad_search = GradientModelSelection(grad)

@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
@@ -22,6 +23,9 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
+#include <shogun/machine/gp/Inference.h>
+#include <shogun/machine/gp/MeanFunction.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -43,6 +47,11 @@ namespace shogun
 	CSplittingStrategy* splitting_strategy(const std::string& name);
 	CMachineEvaluation* machine_evaluation(const std::string& name);
 	CSVM* svm(const std::string& name);
+	CFeatures* features(const std::string& name);
+	CLikelihoodModel* gp_likelihood(const std::string& name);
+	CMeanFunction* gp_mean(const std::string& name);
+	CDifferentiableFunction* differentiable(const std::string& name);
+	CInference* gp_inference(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -66,6 +75,11 @@ namespace shogun
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
 	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
 	BASE_CLASS_FACTORY(CSVM, svm)
+	BASE_CLASS_FACTORY(CFeatures, features)
+	BASE_CLASS_FACTORY(CLikelihoodModel, gp_likelihood)
+	BASE_CLASS_FACTORY(CMeanFunction, gp_mean)
+	BASE_CLASS_FACTORY(CInference, gp_inference)
+	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)

@@ -605,7 +605,7 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 {
 	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
 	REQUIRE(eigen_A.rows()==eigen_A.cols(),
-		"Input matrix should be a sqaure matrix row(%d) col(%d)\n",
+		"Input matrix should be a square matrix row(%d) col(%d)\n",
 		eigen_A.rows(), eigen_A.cols());
 
 	PartialPivLU<MatrixXd> lu(eigen_A);

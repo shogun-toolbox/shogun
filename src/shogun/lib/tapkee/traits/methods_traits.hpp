@@ -11,17 +11,16 @@ namespace tapkee
 
 //! Traits used to obtain information about dimension reduction methods compile-time
 //!
-template <int method> struct MethodTraits
-{
-	static const bool needs_kernel;
-	static const bool needs_distance;
-	static const bool needs_features;
-};
+template <int method, typename Enable = void> struct MethodTraits;
 
-#define METHOD_TRAIT(X,kernel_needed,distance_needed,features_needed)			\
-template <> const bool MethodTraits<X>::needs_kernel = kernel_needed;			\
-template <> const bool MethodTraits<X>::needs_distance = distance_needed;		\
-template <> const bool MethodTraits<X>::needs_features = features_needed		\
+#define METHOD_TRAIT(X,kernel_needed,distance_needed,features_needed)   \
+template <int method>                                                   \
+struct MethodTraits<method, typename std::enable_if<method==X>::type>   \
+{                                                                       \
+    static const bool needs_kernel   = kernel_needed;                   \
+    static const bool needs_distance = distance_needed;                 \
+    static const bool needs_features = features_needed;                 \
+}
 
 #define METHOD_THAT_NEEDS_ONLY_KERNEL_IS(X) METHOD_TRAIT(X,true,false,false)
 #define METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(X) METHOD_TRAIT(X,false,true,false)
