@@ -368,21 +368,44 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
+%typemap(out) shogun::SGStringList<char>
+{
+    shogun::SGString<char>* str = $1.strings;
+    int32_t i, num_strings = $1.num_strings;
+
+    Cell c(num_strings, 1);
+
+    for (i = 0; i < num_strings; i++) {
+        c(i)=std::string(str[i].string);
+    }
+
+    $result = c;
+}
+
 %typemap(out) shogun::SGStringList<type>
 {
-    /* TODO STRING OUT TYPEMAPS */
+    shogun::SGString<type>* str = $1.strings;
+    int32_t i, num_strings = $1.num_strings;
+
+    ColumnVector c(dim_vector(num_strings, 1));
+
+    for (i = 0; i < num_strings; i++) {
+        c(i)=*str[i].string;
+    }
+
+    $result = c;
 }
 %enddef
 
-TYPEMAP_STRINGFEATURES_OUT(char,          charMatrix)
-TYPEMAP_STRINGFEATURES_OUT(uint8_t,       uint8NDArray)
-TYPEMAP_STRINGFEATURES_OUT(int16_t,       int16NDArray)
-TYPEMAP_STRINGFEATURES_OUT(uint16_t,      uint16NDArray)
-TYPEMAP_STRINGFEATURES_OUT(int32_t,       int32NDArray)
-TYPEMAP_STRINGFEATURES_OUT(uint32_t,      uint32NDArray)
-TYPEMAP_STRINGFEATURES_OUT(int64_t,       int64NDArray)
-TYPEMAP_STRINGFEATURES_OUT(uint64_t,      uint64NDArray)
-TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
+TYPEMAP_STRINGFEATURES_OUT(char,          Cell)
+TYPEMAP_STRINGFEATURES_OUT(uint8_t,       ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(int16_t,       ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(uint16_t,      ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(int32_t,       ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(uint32_t,      ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(int64_t,       ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(uint64_t,      ColumnVector)
+TYPEMAP_STRINGFEATURES_OUT(float64_t,     ColumnVector)
 
 #undef TYPEMAP_STRINGFEATURES_OUT
 

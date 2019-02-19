@@ -229,9 +229,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	for (i = 0; i < rows; i++) {
 		sg_memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
 		res = res + cols;
-		SG_FREE(str[i].string);
 	}
-	SG_FREE(str);
 	$result = res;
 }
 
@@ -341,7 +339,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 	string[] result = new string[size];
 	for (int i = 0; i < size; i++) {
-			result[i] = Marshal.PtrToStringAnsi(ptrarray[i + 1]);
+		result[i] = Marshal.PtrToStringAnsi(ptrarray[i + 1]);
 	}
 
 	Marshal.FreeCoTaskMem(ranks[0]);

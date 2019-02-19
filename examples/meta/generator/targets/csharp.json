@@ -62,7 +62,8 @@
         "ShortRealMatrix": "float[,]",
         "RealMatrix": "double[,]",
         "LongRealMatrix": "double[,]",
-        "ComplexMatrix": "Complex[,]"
+        "ComplexMatrix": "Complex[,]",
+        "StringCharList": "String[]"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
