@@ -9,6 +9,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <shogun/lib/auto_init_factory.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
@@ -70,7 +71,6 @@ void CPolyKernel::init()
 	degree = 0;
 	m_c = 0.0;
 	m_gamma = 1.0;
-
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(
 	    &degree, "degree", "Degree of polynomial kernel",
@@ -80,20 +80,6 @@ void CPolyKernel::init()
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
-	    ParameterProperties::HYPER | ParameterProperties::AUTO, [this]() {
-		    if (lhs->get_feature_class() >= EFeatureClass::C_STREAMING_DENSE &&
-		        lhs->get_feature_class() <= EFeatureClass::C_STREAMING_VW)
-			    return make_any(
-			        1.0 /
-			        static_cast<double>(
-			            ((CDotFeatures*)this->lhs)->get_dim_feature_space()));
-		    else
-			    return make_any(
-			        1.0 /
-			        (static_cast<double>(
-			             ((CDotFeatures*)this->lhs)->get_dim_feature_space()) *
-			         ((CDenseFeatures<float64_t>*)(this->lhs))
-			             ->std(false)
-			             .get_element(0)));
-	    });
+	    ParameterProperties::HYPER | ParameterProperties::AUTO,
+	    std::make_shared<factory::GammaFeatureNumberInit>(this));
 }

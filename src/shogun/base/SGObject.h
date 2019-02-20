@@ -102,7 +102,7 @@ template <class T> class SGStringList;
 			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
-#define SG_ADD5(param, name, description, param_properties, lambda_)           \
+#define SG_ADD5(param, name, description, param_properties, auto_init)         \
 	{                                                                          \
 		static_assert(                                                         \
 		    static_cast<bool>((param_properties)&ParameterProperties::AUTO),   \
@@ -110,7 +110,7 @@ template <class T> class SGStringList;
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, lambda_, pprop);                        \
+		this->watch_param(name, param, auto_init, pprop);                      \
 		if (pprop.get_model_selection())                                       \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.get_gradient())                                              \
@@ -715,17 +715,17 @@ protected:
 	 *
 	 * @param name name of the parameter
 	 * @param value pointer to the parameter value
-	 * @param lambda lambda defining function to initialise the value of the parameter
+	 * @param auto_init AutoInit object to initialise the value of the parameter
 	 * @param properties properties of the parameter (e.g. if model selection is supported)
 	 */
 	template <typename T>
 	void watch_param(
 			const std::string& name, T* value,
-			std::function<Any()> lambda,
+			std::shared_ptr<factory::AutoInit> auto_init,
 			AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
-		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(lambda)));
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(auto_init)));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.
@@ -825,6 +825,7 @@ protected:
 	 */
 	virtual CSGObject* create_empty() const;
 
+	/** Initialises all parameters with ParameterProperties::AUTO flag */
 	void initialise_auto_params();
 
 private:

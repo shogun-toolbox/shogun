@@ -22,7 +22,7 @@ namespace shogun
 			static const char* const kDescription;
 
 		public:
-			GammaFeatureNumberInit(CKernel* kernel)
+			explicit GammaFeatureNumberInit(CKernel* kernel)
 			    : AutoInit(kName, kDescription)
 			{
 				SG_REF(kernel);

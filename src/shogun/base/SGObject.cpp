@@ -1075,7 +1075,7 @@ void CSGObject::initialise_auto_params()
 	auto params = self->filter(ParameterProperties::AUTO);
 	for (const auto& param : params)
 	{
-		update_parameter(param.first, param.second.get_init_function()());
+		update_parameter(param.first, param.second.get_init_function()->operator()());
 	}
 }
 
