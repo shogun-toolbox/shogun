@@ -1,17 +1,20 @@
 #!/usr/bin/env python
+import shogun as sg
 traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_inversemultiquadric (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
-	from shogun import RealFeatures, InverseMultiQuadricKernel, EuclideanDistance, CSVFile
+	from shogun import RealFeatures, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 
-	distance=EuclideanDistance(feats_train, feats_train)
-	kernel=InverseMultiQuadricKernel(feats_train, feats_train, shift_coef, distance)
+	distance = sg.distance('EuclideanDistance')
+	kernel = sg.kernel('InverseMultiQuadricKernel', coef=shift_coef,
+			   distance=distance)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

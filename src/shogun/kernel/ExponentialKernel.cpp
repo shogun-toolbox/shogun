@@ -63,6 +63,6 @@ void CExponentialKernel::load_serializable_post() throw (ShogunException)
 void CExponentialKernel::init()
 {
 	SG_ADD(&m_width, "width", "Kernel width.", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_distance, "distance", "Distance to be used.",
+	SG_ADD(&m_distance, "distance", "Distance to be used.",
 	    ParameterProperties::HYPER);
 }
