@@ -7,10 +7,11 @@
 #ifndef __ANYPARAMETER_H__
 #define __ANYPARAMETER_H__
 
+#include <shogun/lib/abstract_auto_init.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/bitmask_operators.h>
 
-#include <string>
+#include <memory>
 
 namespace shogun
 {
@@ -149,18 +150,16 @@ namespace shogun
 		}
 		explicit AnyParameter(const Any& value) : m_value(value), m_properties()
 		{
-			m_init_function = [& m_value = m_value]() { return m_value; };
 		}
 		AnyParameter(const Any& value, AnyParameterProperties properties)
 		    : m_value(value), m_properties(properties)
 		{
-			m_init_function = [& m_value = m_value]() { return m_value; };
 		}
 		AnyParameter(
 		    const Any& value, AnyParameterProperties properties,
-		    std::function<Any()> lambda_)
+		    std::shared_ptr<factory::AutoInit> auto_init)
 		    : m_value(value), m_properties(properties),
-		      m_init_function(std::move(lambda_))
+		      m_init_function(std::move(auto_init))
 		{
 		}
 		AnyParameter(const AnyParameter& other)
@@ -189,7 +188,7 @@ namespace shogun
 			return m_properties;
 		}
 
-		const std::function<Any()>& get_init_function() const
+		std::shared_ptr<factory::AutoInit> get_init_function() const
 		{
 			return m_init_function;
 		}
@@ -210,7 +209,7 @@ namespace shogun
 	private:
 		Any m_value;
 		AnyParameterProperties m_properties;
-		std::function<Any()> m_init_function;
+		std::shared_ptr<factory::AutoInit> m_init_function;
 	};
 } // namespace shogun
 
