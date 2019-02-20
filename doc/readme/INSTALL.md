@@ -116,12 +116,12 @@ See the Docker documentation for further details.
 Shogun is can be automatically built from source from the following langauges.
 
 ### Python pypi <a name="pypi"></a>
-You can install from [pipy](https://pypi.python.org/pypi/shogun-ml/).
+You can install from [pypi](https://pypi.python.org/pypi/shogun-ml/).
 There is limited control over options and it might take a long time as everything is done from scratch.
 
     pip install shogun-ml
 
-We do not reccomend this option and suggest to rather compile by hand as described below.
+We do not recommend this option and suggest to rather compile by hand as described below.
 
 
 # Compiling manually <a name="manual"></a>
