@@ -298,6 +298,13 @@ class CDynamicObjectArray : public CSGObject
 			return append_element(serialized_element);
 		}
 
+		template <typename T>
+		inline bool append_element(SGStringList<T> e, const char* name="")
+		{
+			auto serialized_element = new CStringListSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
 		/** append array element to the end of array
 		 *
 		 * @param e element to append

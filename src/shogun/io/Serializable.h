@@ -36,6 +36,7 @@
 #define SHOGUN_SERIALIZABLE_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGStringList.h>
 
 namespace shogun
 {
@@ -55,8 +56,8 @@ struct extract_value_type<X<T, Args...>>
 #endif
 
 /** @brief A trait that makes a none SGObject SG-serializable
- * This only works with classes derived of SGReferencedData (SGVector, SGMatrix etc)
- * and fundamental types (std::is_arithmetic)
+ * This only works with classes derived of SGReferencedData (SGVector, SGMatrix,
+ * SGStringList, etc) and fundamental types.
  */
 template<class T> class CSerializable: public CSGObject
 {
@@ -123,6 +124,33 @@ public:
 
 	/** @return name of the CSGObject, without C prefix */
 	virtual const char* get_name() const { return "MatrixSerializable"; }
+};
+
+// FIXME: there is no SG_ADD for SGStringList so need to do that manually.
+// can be dropped once SG_ADD works with SGStringList
+// Note: cannot inherit from CSerializable as need to overload/change init()
+template<class T> class CStringListSerializable: public CSGObject
+{
+public:
+	CStringListSerializable() : CSGObject() { init(); }
+	CStringListSerializable(SGStringList<T> value, const char* value_name="") : CSGObject()
+	{
+		init();
+		m_value = value;
+	}
+	virtual ~CStringListSerializable() {}
+	virtual const char* get_name() const { return "StringListSerializable"; }
+
+protected:
+	virtual void init()
+	{
+		set_generic<T>();
+		m_value = SGStringList<T>();
+		m_parameters->add_vector(&m_value.strings, &m_value.num_strings, "value",
+				"Serialized value");
+	}
+
+	SGStringList<T> m_value;
 };
 };
 #endif // SHOGUN_SERIALIZABLE_H_
