@@ -57,8 +57,6 @@ CParameterObserverCV::~CParameterObserverCV()
 
 void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
-	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type());
-
 	if (value.first.get_value().type_info().hash_code() ==
 	    typeid(CrossValidationStorage*).hash_code())
 	{
@@ -73,10 +71,8 @@ void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 		m_observations.push_back(recalled_value);
 	}
 	else
-	{
-		SG_SERROR(
-		    "ParameterObserverCV: The observed value received is not of "
-		    "type CrossValidationStorage\n");
+	{	SG_SPRINT("%s: Received an observed valye which is not "
+		"of type CrossValidationStorage\n", this.get_name());
 	}
 }
 
