@@ -27,10 +27,9 @@
 #include <shogun/lib/tag.h>
 
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <map>
-#include <unordered_map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -51,7 +50,7 @@ struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
 
-using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>>;
+using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
 
 /*******************************************************************************
  * define reference counter macros
@@ -122,6 +121,16 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
+
+#define VALUE_TO_STRING_MACRO(s) #s
+
+#define SG_ADD_OPTION(param_name, enum_value)                                  \
+	{                                                                          \
+		static_assert(                                                         \
+		    std::is_enum<decltype(enum_value)>::value, "Expected an enum!");   \
+		m_string_to_enum_map[param_name][VALUE_TO_STRING_MACRO(enum_value)] =  \
+		    enum_value;                                                        \
+	}
 
 /*******************************************************************************
  * End of macros for registering parameter properties
@@ -413,26 +422,30 @@ public:
 		put(Tag<T*>(name), value);
 	}
 
-    /** Typed setter for an enum mapped with a string, identified by a name.
-     *
-     * @param name name of the parameter
-     * @param value value of the parameter
+	/** Typed setter for an enum mapped with a string, identified by a name.
+	 *
+	 * @param name name of the parameter
+	 * @param value value of the parameter
 	 */
 	template <class T>
-	void put(const std::string& name, const std::string& value) noexcept(false)
+	void
+	put(const std::string& name, const std::string& value) noexcept(false)
 	{
-		if (m_enum_to_string_map.find(get_name()) == m_enum_to_string_map.end())
-			SG_ERROR("There is no enum mapping for the %s", get_name());
+		if (m_string_to_enum_map.find(name) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+				"There are no options for the parameter %s::%s", get_name(),
+				name.c_str());
+		}
 
-		auto string_to_enum_map = m_enum_to_string_map[get_name()];
-
-		if (string_to_enum_map.find(name) == string_to_enum_map.end())
-			SG_ERROR("There is no enum mapping for the parameter %s::%s", get_name(), name);
-
-		auto string_to_enum = string_to_enum_map[name];
+		auto string_to_enum = m_string_to_enum_map[name];
 
 		if (string_to_enum.find(value) == string_to_enum.end())
-			SG_ERROR("There is no enum mapping for '%s' in %s::%s", value, get_name(), name);
+		{
+			SG_ERROR(
+				"There is no enum mapping for '%s' in %s::%s",
+				value.c_str(), get_name(), name.c_str());
+		}
 
 		machine_int_t enum_value = string_to_enum[value];
 
@@ -645,9 +658,9 @@ public:
 	void list_observable_parameters();
 
 	/** Get string to enum mapping */
-	stringToEnumMapType get_enum_to_string_map() const
+	stringToEnumMapType get_string_to_enum_map() const
 	{
-		return m_enum_to_string_map;
+		return m_string_to_enum_map;
 	}
 
 protected:
@@ -950,7 +963,7 @@ protected:
 		const std::string& name, const SG_OBS_VALUE_TYPE type,
 		const std::string& description);
 
-	static stringToEnumMapType m_enum_to_string_map;
+	stringToEnumMapType m_string_to_enum_map;
 
 private:
 	void push_back(CDynamicObjectArray* array, CSGObject* value);

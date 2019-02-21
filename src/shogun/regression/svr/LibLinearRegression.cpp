@@ -54,10 +54,9 @@ void CLibLinearRegression::register_parameters()
 	SG_ADD(
 		(machine_int_t*)&m_liblinear_regression_type,
 		"liblinear_regression_type", "Type of LibLinear regression.");
-	m_enum_to_string_map[get_name()]["liblinear_regression_type"] = {
-		{"L2R_L2LOSS_SVR", 0},
-		{"L2R_L1LOSS_SVR_DUAL", 1},
-		{"L2R_L2LOSS_SVR_DUAL", 2}};
+	SG_ADD_OPTION("liblinear_regression_type", L2R_L2LOSS_SVR);
+    SG_ADD_OPTION("liblinear_regression_type", L2R_L1LOSS_SVR_DUAL);
+    SG_ADD_OPTION("liblinear_regression_type", L2R_L2LOSS_SVR_DUAL);
 }
 
 CLibLinearRegression::~CLibLinearRegression()

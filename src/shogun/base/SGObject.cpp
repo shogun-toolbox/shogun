@@ -1122,5 +1122,3 @@ void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)
 	ASSERT(array);
 	array->push_back(value);
 }
-
-stringToEnumMapType CSGObject::m_enum_to_string_map;
