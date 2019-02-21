@@ -6,10 +6,10 @@
  *          Bjoern Esser
  */
 
-#include <shogun/lib/config.h>
 #include <shogun/base/progress.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/optimization/liblinear/tron.h>
@@ -20,12 +20,14 @@ using namespace shogun;
 CLibLinearRegression::CLibLinearRegression() :
 	CLinearMachine()
 {
+	register_parameters();
 	init_defaults();
 }
 
 CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLabels* labs) :
 	CLinearMachine()
 {
+	register_parameters();
 	init_defaults();
 	set_C(C);
 	set_features(feats);
@@ -43,11 +45,19 @@ void CLibLinearRegression::init_defaults()
 
 void CLibLinearRegression::register_parameters()
 {
-	SG_ADD(&m_C, "m_C", "regularization constant",ParameterProperties::HYPER);
-	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon");
-	SG_ADD(&m_epsilon, "m_tube_epsilon", "svr tube epsilon",ParameterProperties::HYPER);
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations");
-	SG_ADD(&m_use_bias, "m_use_bias", "indicates whether bias should be used");
+	SG_ADD(&m_C, "C", "regularization constant", ParameterProperties::HYPER);
+	SG_ADD(
+		&m_epsilon, "m_tube_epsilon", "svr tube epsilon",
+		ParameterProperties::HYPER);
+	SG_ADD(&m_max_iter, "max_iter", "max number of iterations");
+	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
+	SG_ADD(
+		(machine_int_t*)&m_liblinear_regression_type,
+		"liblinear_regression_type", "Type of LibLinear regression.");
+	m_enum_to_string_map[get_name()]["liblinear_regression_type"] = {
+		{"L2R_L2LOSS_SVR", 0},
+		{"L2R_L1LOSS_SVR_DUAL", 1},
+		{"L2R_L2LOSS_SVR_DUAL", 2}};
 }
 
 CLibLinearRegression::~CLibLinearRegression()
@@ -174,7 +184,6 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		w_size = prob->n;
 	double eps = get_epsilon();
 	int i, s, iter = 0;
-	int max_iter = 1000;
 	int active_size = l;
 	int *index = new int[l];
 
@@ -214,7 +223,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	}
 
 	auto pb = SG_PROGRESS(range(10));
-	while(iter < max_iter)
+	while(iter < m_max_iter)
 	{
 		Gmax_new = 0;
 		Gnorm1_new = 0;
@@ -333,7 +342,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 	pb.complete_absolute();
 	SG_INFO("\noptimization finished, #iter = %d\n", iter)
-	if(iter >= max_iter)
+	if(iter >= m_max_iter)
 		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")
 
 	// calculate objective value

@@ -414,31 +414,30 @@ public:
 	}
 
     /** Typed setter for an enum mapped with a string, identified by a name.
-     * identified by a name.
      *
      * @param name name of the parameter
      * @param value value of the parameter
-     */
-    template <class T>
-    void put(const std::string& name, const std::string& value) noexcept(false)
-    {
-        if (m_enum_to_string_map.find(get_name()) == m_enum_to_string_map.end())
-            SG_ERROR("There is no enum mapping for the %s", get_name());
+	 */
+	template <class T>
+	void put(const std::string& name, const std::string& value) noexcept(false)
+	{
+		if (m_enum_to_string_map.find(get_name()) == m_enum_to_string_map.end())
+			SG_ERROR("There is no enum mapping for the %s", get_name());
 
 		auto string_to_enum_map = m_enum_to_string_map[get_name()];
 
-        if (string_to_enum_map.find(name) == string_to_enum_map.end())
-            SG_ERROR("There is no enum mapping for the parameter %s::%s", get_name(), name);
+		if (string_to_enum_map.find(name) == string_to_enum_map.end())
+			SG_ERROR("There is no enum mapping for the parameter %s::%s", get_name(), name);
 
-        auto string_to_enum = string_to_enum_map[name];
+		auto string_to_enum = string_to_enum_map[name];
 
-        if (string_to_enum.find(value) == string_to_enum.end())
+		if (string_to_enum.find(value) == string_to_enum.end())
 			SG_ERROR("There is no enum mapping for '%s' in %s::%s", value, get_name(), name);
 
-        machine_int_t enum_value = string_to_enum[value];
+		machine_int_t enum_value = string_to_enum[value];
 
-        put(Tag<machine_int_t>(name), enum_value);
-    }
+		put(Tag<machine_int_t>(name), enum_value);
+	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
 	* type, identified by a name.
@@ -645,6 +644,7 @@ public:
 	/** Print to stdout a list of observable parameters */
 	void list_observable_parameters();
 
+	/** Get string to enum mapping */
 	stringToEnumMapType get_enum_to_string_map() const
 	{
 		return m_enum_to_string_map;
