@@ -14,7 +14,7 @@
 
 namespace shogun
 {
-	namespace factory
+	namespace params
 	{
 		class GammaFeatureNumberInit : public AutoInit
 		{
@@ -23,21 +23,16 @@ namespace shogun
 
 		public:
 			explicit GammaFeatureNumberInit(CKernel* kernel)
-			    : AutoInit(kName, kDescription)
+			    : AutoInit(kName, kDescription), m_kernel(kernel)
 			{
-				SG_REF(kernel);
-				m_kernel = kernel;
-			}
-
-			~GammaFeatureNumberInit() override
-			{
-				SG_UNREF(m_kernel);
 			}
 
 			Any operator()() override
 			{
+				if (m_kernel == nullptr)
+					SG_SERROR("m_kernel is not pointing to a CKernel object");
 				Any result;
-				auto m_lhs = m_kernel->get<CFeatures*>("lhs");
+				auto m_lhs = m_kernel->get_lhs();
 				if (m_lhs->get_feature_class() >=
 				        EFeatureClass::C_STREAMING_DENSE &&
 				    m_lhs->get_feature_class() <= EFeatureClass::C_STREAMING_VW)

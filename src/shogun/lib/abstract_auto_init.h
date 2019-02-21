@@ -13,7 +13,7 @@ namespace shogun
 {
 	class Any;
 
-	namespace factory
+	namespace params
 	{
 		class AutoInit
 		{
@@ -24,7 +24,6 @@ namespace shogun
 			}
 
 			virtual Any operator()() = 0;
-			virtual ~AutoInit() = default;
 
 		protected:
 			const std::string m_name;
