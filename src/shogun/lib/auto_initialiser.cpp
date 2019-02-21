@@ -4,11 +4,11 @@
  * Authors: Gil Hoben
  */
 
-#include <shogun/lib/auto_init_factory.h>
+#include <shogun/lib/auto_initialiser.h>
 
 namespace shogun
 {
-	namespace factory
+	namespace params
 	{
 		const char* const GammaFeatureNumberInit::kName =
 		    "GammaFeatureNumberInit";

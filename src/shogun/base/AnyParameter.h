@@ -157,7 +157,7 @@ namespace shogun
 		}
 		AnyParameter(
 		    const Any& value, AnyParameterProperties properties,
-		    std::shared_ptr<factory::AutoInit> auto_init)
+		    std::shared_ptr<params::AutoInit> auto_init)
 		    : m_value(value), m_properties(properties),
 		      m_init_function(std::move(auto_init))
 		{
@@ -188,7 +188,7 @@ namespace shogun
 			return m_properties;
 		}
 
-		std::shared_ptr<factory::AutoInit> get_init_function() const
+		std::shared_ptr<params::AutoInit> get_init_function() const
 		{
 			return m_init_function;
 		}
@@ -209,7 +209,7 @@ namespace shogun
 	private:
 		Any m_value;
 		AnyParameterProperties m_properties;
-		std::shared_ptr<factory::AutoInit> m_init_function;
+		std::shared_ptr<params::AutoInit> m_init_function;
 	};
 } // namespace shogun
 
