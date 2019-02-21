@@ -147,7 +147,7 @@ class CLibLinearRegression : public CLinearMachine
 protected:
 
 		/** train machine */
-		bool train_machine(CFeatures* data = NULL) override;
+		virtual bool train_machine(CFeatures* data = NULL);
 
 private:
 		/** solve svr with l1 or l2 loss */

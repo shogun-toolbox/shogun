@@ -1102,8 +1102,7 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 		{
 			SG_ERROR(
 			    "Cannot get parameter %s::%s of type %s as object, not a "
-			    "shogun "
-			    "object base type.\n",
+			    "shogun object base type.\n",
 			    get_name(), name.c_str(),
 			    self->map[BaseTag(name)].get_value().type().c_str());
 		}

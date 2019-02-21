@@ -431,8 +431,8 @@ namespace shogun
             auto param_to_enum_map = $self->get_string_to_enum_map();
 
             if (param_to_enum_map.find(name) == param_to_enum_map.end())
-			{
-                SG_SERROR("There are no options for the parameter '%s'", name.c_str());
+            {
+                SG_SERROR("There are no options for parameter %s::%s", $self->get_name(), name.c_str());
             }
 
             auto string_to_enum_map = param_to_enum_map[name];

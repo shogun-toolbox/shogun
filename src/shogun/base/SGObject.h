@@ -434,7 +434,7 @@ public:
 		if (m_string_to_enum_map.find(name) == m_string_to_enum_map.end())
 		{
 			SG_ERROR(
-				"There are no options for the parameter %s::%s", get_name(),
+				"There are no options for parameter %s::%s", get_name(),
 				name.c_str());
 		}
 
@@ -443,7 +443,7 @@ public:
 		if (string_to_enum.find(value) == string_to_enum.end())
 		{
 			SG_ERROR(
-				"There is no enum mapping for '%s' in %s::%s",
+				"Illegal option '%s' for parameter %s::%s",
 				value.c_str(), get_name(), name.c_str());
 		}
 
