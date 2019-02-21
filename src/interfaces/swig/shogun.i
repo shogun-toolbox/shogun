@@ -243,6 +243,8 @@ namespace shogun
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
 
+%template(put) CSGObject::put<std::string>;
+
 %define PUT_ADD(sg_class)
 %template(put) CSGObject::put<sg_class, sg_class, void>;
 %template(add) CSGObject::add<sg_class, sg_class>;

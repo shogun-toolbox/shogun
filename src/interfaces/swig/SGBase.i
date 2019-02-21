@@ -423,6 +423,27 @@ namespace shogun
                 SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
         }
 
+        std::vector<std::string> param_options(const std::string& name) const {
+            std::vector<std::string> result;
+
+            auto enum_to_string_map = $self->get_enum_to_string_map();
+
+            if (enum_to_string_map.find($self->get_name()) == enum_to_string_map.end())
+                SG_SERROR("There are no parameter options for the class '%s'", $self->get_name());
+
+            std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>> class_to_param = enum_to_string_map[$self->get_name()];
+
+            if (class_to_param.find(name) == class_to_param.end())
+                SG_SERROR("There is no enum mapping for the parameter '%s'", name.c_str());
+
+            std::unordered_map<std::string, machine_int_t> string_to_enum = class_to_param[name];
+
+            for (auto const& each: string_to_enum)
+                result.push_back(each.first);
+
+            return result;
+        }
+
 #ifdef SWIGPYTHON
         std::string __str__() const
         {
