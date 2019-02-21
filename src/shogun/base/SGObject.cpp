@@ -969,7 +969,19 @@ std::string CSGObject::to_string() const
 	{
 		ss << it->first.name() << "=";
 		auto value = it->second.get_value();
-		if (value.visitable())
+		if (m_string_to_enum_map.find(it->first.name()) !=
+		    m_string_to_enum_map.end())
+		{
+			auto param_enum_map = m_string_to_enum_map.at(it->first.name());
+			auto enum_value = any_cast<machine_int_t>(value);
+			auto enum_map_it = std::find_if(
+			    param_enum_map.begin(), param_enum_map.end(),
+			    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
+				    return p.second == enum_value;
+			    });
+			ss << enum_map_it->first;
+		}
+		else if (value.visitable())
 		{
 			value.visit(visitor.get());
 		}
