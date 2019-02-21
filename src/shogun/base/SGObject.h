@@ -721,7 +721,7 @@ protected:
 	template <typename T>
 	void watch_param(
 			const std::string& name, T* value,
-			std::shared_ptr<factory::AutoInit> auto_init,
+			std::shared_ptr<params::AutoInit> auto_init,
 			AnyParameterProperties properties = AnyParameterProperties())
 	{
 		BaseTag tag(name);
@@ -826,7 +826,7 @@ protected:
 	virtual CSGObject* create_empty() const;
 
 	/** Initialises all parameters with ParameterProperties::AUTO flag */
-	void initialise_auto_params();
+	void init_auto_params();
 
 private:
 	void set_global_objects();

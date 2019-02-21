@@ -9,7 +9,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/lib/auto_init_factory.h>
+#include <shogun/lib/auto_initialiser.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
@@ -81,5 +81,5 @@ void CPolyKernel::init()
 	SG_ADD(
 	    &m_gamma, "gamma", "Scaler for the dot product",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    std::make_shared<factory::GammaFeatureNumberInit>(this));
+	    std::make_shared<params::GammaFeatureNumberInit>(this));
 }

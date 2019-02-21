@@ -6,7 +6,7 @@
 
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/SigmoidKernel.h>
-#include <shogun/lib/auto_init_factory.h>
+#include <shogun/lib/auto_initialiser.h>
 #include <shogun/lib/common.h>
 
 using namespace shogun;
@@ -60,6 +60,6 @@ void CSigmoidKernel::init()
 	SG_ADD(
 	    &gamma, "gamma", "Scaler for the dot product.",
 	    ParameterProperties::HYPER | ParameterProperties::AUTO,
-	    std::make_shared<factory::GammaFeatureNumberInit>(this));
+	    std::make_shared<params::GammaFeatureNumberInit>(this));
 	SG_ADD(&coef0, "coef0", "Coefficient 0.", ParameterProperties::HYPER);
 }

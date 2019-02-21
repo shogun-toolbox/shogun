@@ -1070,7 +1070,7 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
-void CSGObject::initialise_auto_params()
+void CSGObject::init_auto_params()
 {
 	auto params = self->filter(ParameterProperties::AUTO);
 	for (const auto& param : params)

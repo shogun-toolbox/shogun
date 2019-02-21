@@ -61,7 +61,7 @@ class CDotKernel : public CKernel
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
 			CKernel::init(l,r);
-			initialise_auto_params();
+			init_auto_params();
 
 			ASSERT(l->has_property(FP_DOT))
 			ASSERT(r->has_property(FP_DOT))
