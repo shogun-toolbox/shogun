@@ -50,13 +50,6 @@ namespace shogun
 	/* Timepoint */
 	typedef std::chrono::steady_clock::time_point time_point;
 
-	/* Type of the observed value */
-	enum SG_OBS_VALUE_TYPE
-	{
-		TENSORBOARD,
-		CROSSVALIDATION
-	};
-
 	/**
 	 * Observed value which is emitted by algorithms.
 	 */
@@ -70,8 +63,8 @@ namespace shogun
 		 * @param value Any-wrapped value of the param
 		 */
 		ObservedValue(
-		    int64_t step, std::string& name, Any value, SG_OBS_VALUE_TYPE type)
-		    : m_step(step), m_name(name), m_value(value), m_type(type)
+		    int64_t step, std::string& name, Any value)
+		    : m_step(step), m_name(name), m_value(value)
 		{
 		}
 
@@ -132,25 +125,7 @@ namespace shogun
 		}
 
 		/**
-		 * Get the type of this ObservedValue
-		 * @return observed value type
-		 */
-		SG_OBS_VALUE_TYPE get_type() const
-		{
-			return m_type;
-		}
-
-		/**
-		 * Set the observed value type
-		 * @param type type of this observed value
-		 */
-		void set_type(const SG_OBS_VALUE_TYPE type)
-		{
-			m_type = type;
-		}
-
-		/**
-		* Helper method to generate an ObservedValue (TensorBoard oriented)
+		* Helper method to generate an ObservedValue.
 		* @param step the step
 		* @param name the param's name we are observing
 		* @param value the param's value
@@ -159,7 +134,7 @@ namespace shogun
 		static ObservedValue
 		make_observation(int64_t step, std::string& name, Any value)
 		{
-			return ObservedValue(step, name, value, TENSORBOARD);
+			return ObservedValue(step, name, value);
 		}
 
 	protected:
@@ -169,8 +144,6 @@ namespace shogun
 		std::string m_name;
 		/** Parameter's value */
 		Any m_value;
-		/** ObservedValue type */
-		SG_OBS_VALUE_TYPE m_type;
 	};
 
 	/**
