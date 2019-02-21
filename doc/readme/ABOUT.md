@@ -1,4 +1,4 @@
-Shogun is and open-source machine learning library that offers a wide range of efficient and unified machine learning methods.
+Shogun is an open-source machine learning library that offers a wide range of efficient and unified machine learning methods.
 
 #### Shogun is accessible
 
