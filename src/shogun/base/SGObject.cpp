@@ -50,8 +50,7 @@ namespace shogun
 {
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
-	typedef std::unordered_map<
-	    std::string, std::pair<SG_OBS_VALUE_TYPE, std::string>>
+	typedef std::unordered_map<std::string, std::string>
 	    ObsParamsList;
 
 	class CSGObject::Self
