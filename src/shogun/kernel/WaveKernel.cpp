@@ -48,7 +48,7 @@ bool CWaveKernel::init(CFeatures* l, CFeatures* r)
 void CWaveKernel::init()
 {
 	SG_ADD(&m_theta, "theta", "Theta kernel parameter.", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_distance, "distance", "Distance to be used.",
+	SG_ADD(&m_distance, "distance", "Distance to be used.",
 	    ParameterProperties::HYPER);
 }
 

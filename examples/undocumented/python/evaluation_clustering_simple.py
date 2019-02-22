@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 parameter_list = [[1000,2,8],[1000,4,8]]
 
+import shogun as sg
 from numpy import *
 #from pylab import *
 
 def run_clustering(data, k):
 	from shogun import KMeans
 	from shogun import Math_init_random
-	from shogun import EuclideanDistance
 	from shogun import RealFeatures
 
 	fea = RealFeatures(data)
-	distance = EuclideanDistance(fea, fea)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(fea, fea)
 	kmeans=KMeans(k, distance)
 
 	#print("Running clustering...")
@@ -20,7 +21,6 @@ def run_clustering(data, k):
 	return kmeans.get_cluster_centers()
 
 def assign_labels(data, centroids, ncenters):
-	from shogun import EuclideanDistance
 	from shogun import RealFeatures, MulticlassLabels
 	from shogun import KNN
 	from numpy import arange
@@ -28,7 +28,8 @@ def assign_labels(data, centroids, ncenters):
 	labels = MulticlassLabels(arange(0.,ncenters))
 	fea = RealFeatures(data)
 	fea_centroids = RealFeatures(centroids)
-	distance = EuclideanDistance(fea_centroids, fea_centroids)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(fea_centroids, fea_centroids)
 	knn = KNN(1, distance, labels)
 	knn.train()
 	return knn.apply(fea)

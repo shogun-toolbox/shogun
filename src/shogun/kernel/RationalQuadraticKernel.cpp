@@ -55,7 +55,7 @@ float64_t CRationalQuadraticKernel::compute(int32_t idx_a, int32_t idx_b)
 void CRationalQuadraticKernel::init()
 {
 	SG_ADD(&m_coef, "coef", "Kernel coefficient.", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_distance, "distance", "Distance to be used.",
+	SG_ADD(&m_distance, "distance", "Distance to be used.",
 	    ParameterProperties::HYPER);
 }
 

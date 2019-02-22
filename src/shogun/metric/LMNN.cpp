@@ -149,7 +149,7 @@ SGMatrix<float64_t> CLMNN::get_linear_transform() const
 	return m_linear_transform;
 }
 
-CCustomMahalanobisDistance* CLMNN::get_distance() const
+CDistance* CLMNN::get_distance() const
 {
 	// Compute Mahalanobis distance matrix M = L^T*L
 	auto M = linalg::matrix_prod(
