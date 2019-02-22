@@ -790,28 +790,10 @@ class CSGObject::ParameterObserverList
 {
 public:
 	void register_param(
-	    const std::string& name, const SG_OBS_VALUE_TYPE type,
+	    const std::string& name,
 	    const std::string& description)
 	{
-		m_list_obs_params[name] = std::make_pair(type, description);
-	}
-
-	std::string type_name(SG_OBS_VALUE_TYPE type)
-	{
-		std::string value;
-		switch (type)
-		{
-		case TENSORBOARD:
-			value = std::string("Tensorboard");
-			break;
-		case CROSSVALIDATION:
-			value = std::string("CrossValidation");
-			break;
-		default:
-			value = std::string("Unknown");
-			break;
-		}
-		return value;
+		m_list_obs_params[name] = description;
 	}
 
 	ObsParamsList get_list() const
@@ -825,10 +807,10 @@ private:
 };
 
 void CSGObject::register_observable_param(
-    const std::string& name, const SG_OBS_VALUE_TYPE type,
+    const std::string& name,
     const std::string& description)
 {
-	param_obs_list->register_param(name, type, description);
+	param_obs_list->register_param(name, description);
 }
 
 void CSGObject::list_observable_parameters()
@@ -838,9 +820,8 @@ void CSGObject::list_observable_parameters()
 	for (auto const& x : param_obs_list->get_list())
 	{
 		SG_PRINT(
-		    "%s [%s]: %s\n", x.first.c_str(),
-		    param_obs_list->type_name(x.second.first).c_str(),
-		    x.second.second.c_str());
+		    "%s: %s\n", x.first.c_str(),
+		    x.second.c_str());
 	}
 }
 
