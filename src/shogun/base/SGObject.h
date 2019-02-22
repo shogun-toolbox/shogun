@@ -14,6 +14,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
+#include <shogun/base/macros.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -64,25 +65,6 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  * Macros for registering parameter properties
  ******************************************************************************/
 
-#ifdef _MSC_VER
-
-#define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
-#define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
-#define INTERNAL_EXPAND(x) x
-#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 5, 4, 3, 2, 1, 0))
-#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, _5_, count, ...) count
-
-#else
-
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
-
-#endif
-
-#define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
-#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
-#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
-
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
@@ -121,16 +103,6 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
-
-#define VALUE_TO_STRING_MACRO(s) #s
-
-#define SG_ADD_OPTION(param_name, enum_value)                                  \
-	{                                                                          \
-		static_assert(                                                         \
-		    std::is_enum<decltype(enum_value)>::value, "Expected an enum!");   \
-		m_string_to_enum_map[param_name][VALUE_TO_STRING_MACRO(enum_value)] =  \
-		    enum_value;                                                        \
-	}
 
 /*******************************************************************************
  * End of macros for registering parameter properties
@@ -963,6 +935,7 @@ protected:
 		const std::string& name, const SG_OBS_VALUE_TYPE type,
 		const std::string& description);
 
+	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
 
 private:

@@ -47,16 +47,16 @@ void CLibLinearRegression::register_parameters()
 {
 	SG_ADD(&m_C, "C", "regularization constant", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_epsilon, "m_tube_epsilon", "svr tube epsilon",
+	    &m_epsilon, "tube_epsilon", "svr tube epsilon",
 	    ParameterProperties::HYPER);
-	SG_ADD(&m_max_iter, "max_iter", "max number of iterations");
+	SG_ADD(&m_max_iter, "max_iterations", "max number of iterations");
 	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
 	SG_ADD(
 	    (machine_int_t*)&m_liblinear_regression_type,
 	    "liblinear_regression_type", "Type of LibLinear regression.");
-	SG_ADD_OPTION("liblinear_regression_type", L2R_L2LOSS_SVR);
-	SG_ADD_OPTION("liblinear_regression_type", L2R_L1LOSS_SVR_DUAL);
-	SG_ADD_OPTION("liblinear_regression_type", L2R_L2LOSS_SVR_DUAL);
+	SG_ADD_OPTIONS(
+	    "liblinear_regression_type", L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL,
+	    L2R_L2LOSS_SVR_DUAL);
 }
 
 CLibLinearRegression::~CLibLinearRegression()
