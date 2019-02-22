@@ -20,31 +20,10 @@
 /* Remove C Prefix */
 %rename(Distance) CDistance;
 %rename(CustomDistance) CCustomDistance;
-%rename(KernelDistance) CKernelDistance;
-%rename(RealDistance) CRealDistance;
-%rename(CanberraMetric) CCanberraMetric;
-%rename(ChebyshewMetric) CChebyshewMetric;
-%rename(GeodesicMetric) CGeodesicMetric;
-%rename(JensenMetric) CJensenMetric;
-%rename(ManhattanMetric) CManhattanMetric;
-%rename(MinkowskiMetric) CMinkowskiMetric;
-%rename(HammingWordDistance) CHammingWordDistance;
-%rename(ManhattanWordDistance) CManhattanWordDistance;
-%rename(CanberraWordDistance) CCanberraWordDistance;
-%rename(EuclideanDistance) CEuclideanDistance;
-%rename(SparseEuclideanDistance) CSparseEuclideanDistance;
-%rename(BrayCurtisDistance) CBrayCurtisDistance;
-%rename(ChiSquareDistance) CChiSquareDistance;
-%rename(CosineDistance) CCosineDistance;
-%rename(TanimotoDistance) CTanimotoDistance;
-%rename(MahalanobisDistance) CMahalanobisDistance;
-%rename(DirectorDistance) CDirectorDistance;
-%rename(CustomMahalanobisDistance) CCustomMahalanobisDistance;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distance/Distance.h>
 %include <shogun/distance/CustomDistance.h>
-%include <shogun/distance/KernelDistance.h>
 
 /* Templates Class DenseDistance*/
 %include <shogun/distance/DenseDistance.h>
@@ -105,21 +84,4 @@ namespace shogun
 }
 
 %include <shogun/distance/RealDistance.h>
-%include <shogun/distance/CanberraMetric.h>
-%include <shogun/distance/ChebyshewMetric.h>
-%include <shogun/distance/GeodesicMetric.h>
-%include <shogun/distance/JensenMetric.h>
-%include <shogun/distance/ManhattanMetric.h>
-%include <shogun/distance/MinkowskiMetric.h>
-%include <shogun/distance/HammingWordDistance.h>
-%include <shogun/distance/ManhattanWordDistance.h>
-%include <shogun/distance/CanberraWordDistance.h>
-%include <shogun/distance/EuclideanDistance.h>
-%include <shogun/distance/SparseEuclideanDistance.h>
-%include <shogun/distance/BrayCurtisDistance.h>
-%include <shogun/distance/ChiSquareDistance.h>
-%include <shogun/distance/CosineDistance.h>
-%include <shogun/distance/TanimotoDistance.h>
-%include <shogun/distance/MahalanobisDistance.h>
 %include <shogun/distance/DirectorDistance.h>
-%include <shogun/distance/CustomMahalanobisDistance.h>

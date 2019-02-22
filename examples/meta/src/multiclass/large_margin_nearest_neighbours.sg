@@ -17,7 +17,7 @@ LMNN lmnn(features_train, labels_train, k)
 
 #![train_metric]
 lmnn.train()
-CustomMahalanobisDistance lmnn_distance = lmnn.get_distance()	
+Distance lmnn_distance = lmnn.get_distance()
 #![train_metric]
 
 #![train_and_apply]

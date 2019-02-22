@@ -48,7 +48,7 @@ bool CPowerKernel::init(CFeatures* l, CFeatures* r)
 void CPowerKernel::init()
 {
 	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	SG_ADD(&distance, "distance", "Distance to be used.",
 			ParameterProperties::HYPER);
 }
 

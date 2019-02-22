@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import shogun as sg
+
+
 def get_dataset():
 	from os.path import exists
 	filename = "../../../data/uci/optdigits/optdigits.tes"
@@ -27,11 +30,11 @@ parameter_list = [[fea, gnd_raw, 10]]
 
 def run_clustering(data, k):
 	from shogun import KMeans
-	from shogun import EuclideanDistance
 	from shogun import RealFeatures
 
 	fea = RealFeatures(data)
-	distance = EuclideanDistance(fea, fea)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(fea, fea)
 	kmeans=KMeans(k, distance)
 
 	# print("Running clustering...")
@@ -40,7 +43,6 @@ def run_clustering(data, k):
 	return kmeans.get_cluster_centers()
 
 def assign_labels(data, centroids, ncenters):
-	from shogun import EuclideanDistance
 	from shogun import RealFeatures, MulticlassLabels
 	from shogun import KNN
 	from numpy import arange
@@ -48,7 +50,8 @@ def assign_labels(data, centroids, ncenters):
 	labels = MulticlassLabels(arange(0.,ncenters))
 	fea = RealFeatures(data)
 	fea_centroids = RealFeatures(centroids)
-	distance = EuclideanDistance(fea_centroids, fea_centroids)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(fea_centroids, fea_centroids)
 	knn = KNN(1, distance, labels)
 	knn.train()
 	return knn.apply(fea)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 traindna = '../data/fm_train_dna.dat'
 testdna = '../data/fm_test_dna.dat'
 
@@ -6,7 +7,7 @@ parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,4,0,False]]
 
 def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=0,reverse=False):
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import SortWordString, ManhattanWordDistance, CSVFile
+	from shogun import SortWordString, distance, CSVFile
 
 	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
@@ -20,7 +21,8 @@ def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	distance=ManhattanWordDistance(feats_train, feats_train)
+	distance = sg.distance('ManhattanWordDistance')
+	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)

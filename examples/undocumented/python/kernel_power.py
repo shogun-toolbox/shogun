@@ -1,18 +1,20 @@
 #!/usr/bin/env python
+import shogun as sg
 
 traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
 def kernel_power (train_fname=traindat,test_fname=testdat, degree=2.0):
-	from shogun import RealFeatures, PowerKernel, EuclideanDistance, CSVFile
+	from shogun import RealFeatures, kernel, distance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 
-	distance=EuclideanDistance(feats_train, feats_train)
+	distance = sg.distance('EuclideanDistance')
 
-	kernel=PowerKernel(feats_train, feats_train, degree, distance)
+	kernel = sg.kernel('PowerKernel', degree=degree, distance=distance)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

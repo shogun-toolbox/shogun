@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -14,7 +15,6 @@ def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
 	from shogun import SortWordString
-	from shogun import HammingWordDistance
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
@@ -30,7 +30,8 @@ def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	distance=HammingWordDistance(feats_train, feats_train, use_sign)
+	distance = sg.distance("HammingWordDistance", use_sign=use_sign)
+	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)

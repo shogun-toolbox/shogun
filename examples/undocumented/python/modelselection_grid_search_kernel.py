@@ -14,8 +14,6 @@ from shogun import ContingencyTableEvaluation, ACCURACY
 from shogun import splitting_strategy
 from shogun import BinaryLabels
 from shogun import RealFeatures
-from shogun import PowerKernel
-from shogun import MinkowskiMetric
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
 from shogun import ParameterCombination
@@ -45,7 +43,7 @@ def create_param_tree():
 	param_gaussian_kernel.append_child(gaussian_kernel_width)
 	root.append_child(param_gaussian_kernel)
 
-	power_kernel=PowerKernel()
+	power_kernel = sg.kernel('PowerKernel')
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
@@ -58,7 +56,7 @@ def create_param_tree():
 	param_power_kernel_degree.build_values(1.0, 2.0, R_LINEAR)
 	param_power_kernel.append_child(param_power_kernel_degree)
 
-	metric=MinkowskiMetric(10)
+	metric = sg.distance('MinkowskiMetric', k=10)
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list

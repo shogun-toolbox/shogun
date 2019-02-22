@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
 from numpy import where
+import shogun as sg
 
 lm=LoadMatrix()
 traindat = lm.load_numbers('../data/fm_train_real.dat')
@@ -10,15 +11,15 @@ parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_spherical (fm_train_real=traindat,fm_test_real=testdat, sigma=1.0):
 	from shogun import RealFeatures
-	from shogun import MultiquadricKernel
-	from shogun import EuclideanDistance
+	from shogun import kernel, distance
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
-	distance=EuclideanDistance(feats_train, feats_train)
+	distance = sg.distance('EuclideanDistance')
 
-	kernel=MultiquadricKernel(feats_train, feats_train, sigma, distance)
+	kernel = sg.kernel('MultiquadricKernel', coef=sigma, distance=distance)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
