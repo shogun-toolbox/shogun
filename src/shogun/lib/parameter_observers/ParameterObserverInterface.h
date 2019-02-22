@@ -108,11 +108,6 @@ namespace shogun
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_parameters;
-
-		/**
-		 * The type of params this observers accept
-		 */
-		SG_OBS_VALUE_TYPE m_type;
 	};
 }
 
