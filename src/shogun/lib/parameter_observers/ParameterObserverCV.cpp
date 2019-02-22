@@ -46,7 +46,6 @@ using namespace shogun;
 CParameterObserverCV::CParameterObserverCV(bool verbose)
     : ParameterObserverInterface(), m_verbose(verbose)
 {
-	m_type = CROSSVALIDATION;
 }
 
 CParameterObserverCV::~CParameterObserverCV()
