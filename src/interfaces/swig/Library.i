@@ -403,6 +403,12 @@ namespace shogun
     {
         $self->append_element(v, name);
     }
+
+    template <typename T, typename X = typename std::enable_if_t<std::is_same<SGStringList<typename extract_value_type<T>::value_type>, T>::value>>
+    void append_element_string_list(T v, const char* name="")
+    {
+        $self->append_element(v, name);
+    }
 }
 
     /* Specialize DynamicObjectArray::append_element function */
@@ -430,6 +436,7 @@ namespace shogun
 #ifdef USE_INT32
     %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
+	%template(append_element_string_char_list) CDynamicObjectArray::append_element_string_list<SGStringList<char>, SGStringList<char>>;
 }
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>

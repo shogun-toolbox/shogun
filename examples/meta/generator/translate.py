@@ -76,7 +76,8 @@ def getBasicTypesToStore():
 
 def getSGTypesToStore():
     """ Returns all SG* types which will be serialized """
-    return ("RealVector","RealMatrix","FloatVector","FloatMatrix")
+    return ("RealVector","RealMatrix","FloatVector","FloatMatrix",
+            "StringCharList")
 
 def getSGTypeToStoreMethodName(sgType):
     """ Translates given SG* type into meta language type """
@@ -90,6 +91,8 @@ def getSGTypeToStoreMethodName(sgType):
         return "real_matrix"
     elif sgType=="FloatMatrix":
         return "float_matrix"
+    elif sgType=="StringCharList":
+        return "string_char_list"
 
     else:
         raise RuntimeError("Given Shogun type \"%s\" cannot be translated to meta type", sgType)
