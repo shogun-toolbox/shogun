@@ -54,13 +54,27 @@
 	{                                                                          \
 		static_assert(                                                         \
 		    std::is_enum<decltype(enum_value)>::value, "Expected an enum!");   \
-		m_string_to_enum_map[param_name][VALUE_TO_STRING_MACRO(enum_value)] =  \
-		    enum_value;                                                        \
-	}
-
-#define SG_ADD_OPTION0()                                                       \
-	{                                                                          \
-		static_assert(false, "No arguments provided");                         \
+		if (has(param_name))                                                   \
+		{                                                                      \
+			m_string_to_enum_map[param_name]                                   \
+			                    [VALUE_TO_STRING_MACRO(enum_value)] =          \
+			                        enum_value;                                \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			SG_ERROR(                                                          \
+			    "Register parameter %s::%s with SG_ADD before adding options", \
+			    get_name(), param_name);                                       \
+		}                                                                      \
+		try                                                                    \
+		{                                                                      \
+			get<machine_int_t>(param_name);                                    \
+		}                                                                      \
+		catch (ShogunException&)                                                \
+		{                                                                      \
+			SG_ERROR(                                                          \
+			    "Only parameters of type machine_int_t can have options");     \
+		}                                                                      \
 	}
 
 #define SG_ADD_OPTION1(param_name)                                             \
