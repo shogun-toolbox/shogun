@@ -154,17 +154,19 @@ namespace shogun
 	 */
 	CFeatures* string_features(
 	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
-	    bool rev, EPrimitiveType primitive_type)
+	    bool rev, machine_int_t primitive_type)
 	{
 
 		REQUIRE_E(features, std::invalid_argument, "No features provided.\n");
 		REQUIRE_E(
 		    features->get_feature_class() == C_STRING &&
 		        features->get_feature_type() == F_CHAR,
-		    std::invalid_argument, "Only StringCharFeatures are supported, "
-		                           "provided feature class (%d), feature type "
-		                           "(%d).\n",
-		    features->get_feature_class(), features->get_feature_type());
+		    std::invalid_argument, "Given features must be char-based StringFeatures, "
+		                           "provided (%s) have feature class (%d), feature type "
+		                           "(%d) and class name.\n",
+		                           features->get_name(),
+								   features->get_feature_class(),
+								   features->get_feature_type());
 
 		auto string_features = features->as<CStringFeatures<char>>();
 

@@ -1351,9 +1351,8 @@ _GETTERS = ["get",
             "get_real_matrix",
             "get_real_vector",
             "get_int_vector",
-            "get_bool_string_list",
             "get_char_string_list",
-            "get_int_string_list"
+            "get_word_string_list"
    ]
 
 _FACTORIES = ["distance",

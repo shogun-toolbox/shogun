@@ -62,10 +62,8 @@
             "get_real": "$object.get($arguments)",
             "get_real_vector": "$object.get($arguments)",
             "get_real_matrix": "$object.get($arguments)",
-            "get_bool_string_list": "$object.get($arguments)",
             "get_char_string_list": "$object.get($arguments)",
-            "get_real_string_list": "$object.get($arguments)",
-            "get_int_string_list": "$object.get($arguments)"
+            "get_word_string_list": "$object.get($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments$kwargs)",
