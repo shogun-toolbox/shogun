@@ -631,7 +631,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 #endif
 
 /* input/output typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JNIDESC, CLASSDESC)
+%define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, CLASSDESC)
 
 %typemap(jni) shogun::SGStringList<SGTYPE>	%{jobjectArray%}
 %typemap(jtype) shogun::SGStringList<SGTYPE>		%{JTYPE[][]%}
@@ -672,29 +672,34 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 }
 
 %typemap(out) shogun::SGStringList<SGTYPE> {
-	shogun::SGString<SGTYPE>* str = $1.strings;
-	int32_t i, j, num = $1.num_strings;
-	jclass cls;
-	jobjectArray res;
+	shogun::SGString<SGTYPE>* string_array = $1.strings;
+	int32_t num_strings = $1.num_strings;
+	
+	// class for inner array (the invidivual strings)
+	jclass cls = JCALL1(FindClass, jenv, CLASSDESC);
 
-	cls = JCALL1(FindClass, jenv, CLASSDESC);
-	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
+	// create outer array of inner array types
+	jobjectArray outer = JCALL3(NewObjectArray, jenv, num_strings, cls, NULL);
 
-	for (i = 0; i < num; i++) {
-		SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-		sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+	for (auto i : range(num_strings)) {
+		auto string = string_array[i];
+		auto slen = string.slen;
+		
+		##JNITYPE##Array inner = JCALL1(New##JAVATYPE##Array, jenv, slen);
 
-		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].slen);
-
-		JNITYPE* arr = SG_MALLOC(JNITYPE, str[i].slen);
-		for (j = 0; j < str[i].slen; j++) {
-			arr[j] = (JNITYPE)data[j];
+		// convert to java type and pass to inner array
+		JNITYPE* inner_data = SG_MALLOC(JNITYPE, slen);
+		for (auto j : range(slen))
+		{
+			inner_data[j] = (JNITYPE)string.string[j];
 		}
-		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].slen, arr);
-		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
-		JCALL1(DeleteLocalRef, jenv, jarr);
+		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, inner, 0, slen, inner_data);
+		
+		// place inner into outer array
+		JCALL3(SetObjectArrayElement, jenv, outer, i, inner);
+		JCALL1(DeleteLocalRef, jenv, inner);
 	}
-	$result = res;
+	$result = outer;
 }
 
 %typemap(javain) shogun::SGStringList<SGTYPE> "$javainput"
@@ -704,17 +709,17 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 %enddef
 
-TYPEMAP_STRINGFEATURES(bool, boolean, Boolean, jboolean, "Boolen[][]", "[[Z")
-TYPEMAP_STRINGFEATURES(uint8_t, byte, Byte, jbyte, "Byte[][]", "[[S")
-TYPEMAP_STRINGFEATURES(int16_t, short, Short, jshort, "Short[][]", "[[S")
-TYPEMAP_STRINGFEATURES(uint16_t, int, Int, jint, "Int[][]", "[[I")
-TYPEMAP_STRINGFEATURES(int32_t, int, Int, jint, "Int[][]", "[[I")
-TYPEMAP_STRINGFEATURES(uint32_t, long, Long, jlong, "Long[][]", "[[J")
-TYPEMAP_STRINGFEATURES(int64_t, int, Int, jint, "Int[][]", "[[I")
-TYPEMAP_STRINGFEATURES(uint64_t, long, Long, jlong, "Long[][]", "[[J")
-TYPEMAP_STRINGFEATURES(long long, long, Long, jlong, "Long[][]", "[[J")
-TYPEMAP_STRINGFEATURES(float32_t, float, Float, jfloat, "Float[][]", "[[F")
-TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Double[][]", "[[D")
+TYPEMAP_STRINGFEATURES(bool, boolean, Boolean, jboolean, "[Z")
+TYPEMAP_STRINGFEATURES(uint8_t, byte, Byte, jbyte, "[S")
+TYPEMAP_STRINGFEATURES(int16_t, short, Short, jshort, "[S")
+TYPEMAP_STRINGFEATURES(uint16_t, int, Int, jint, "[I")
+TYPEMAP_STRINGFEATURES(int32_t, int, Int, jint, "[I")
+TYPEMAP_STRINGFEATURES(uint32_t, long, Long, jlong, "[J")
+TYPEMAP_STRINGFEATURES(int64_t, int, Int, jint, "[I")
+TYPEMAP_STRINGFEATURES(uint64_t, long, Long, jlong, "[J")
+TYPEMAP_STRINGFEATURES(long long, long, Long, jlong, "[J")
+TYPEMAP_STRINGFEATURES(float32_t, float, Float, jfloat, "[F")
+TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 
 #undef TYPEMAP_STRINGFEATURES
 

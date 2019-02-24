@@ -1,0 +1,12 @@
+File words = csv_file("../../data/words.dat")
+Features f_char = string_features(words, enum EAlphabet.RAWBYTE)
+int max_string_length = f_char.get_int("max_string_length")
+int number_of_strings = f_char.get_int("num_vectors")
+StringCharList char_list = f_char.get_char_string_list("string_list")
+
+int start = 0
+int p_order = 2
+int gap = 0
+bool reverse = False
+Features f_word = string_features(f_char, start, p_order, gap, reverse, enum EPrimitiveType.PT_UINT16)
+StringWordList word_list = f_word.get_word_string_list("string_list")

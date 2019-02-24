@@ -47,6 +47,7 @@
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
         "StringCharFeatures": "StringFeatures<char>",
         "StringCharList": "SGStringList<char>",
+        "StringWordList": "SGStringList<uint16_t>",
         "Default": "$typeName",
         "bool": "bool",
         "string": "char*",
@@ -99,9 +100,8 @@
             "get_real_vector": "$object->get<SGVector<float64_t>>($arguments)",
             "get_real_matrix": "$object->get<SGMatrix<float64_t>>($arguments)",
             "get_int_string_list": "$object->get<SGStringList<int32_t>>($arguments)",
-            "get_bool_string_list": "$object->get<SGStringList<bool>>($arguments)",
             "get_char_string_list": "$object->get<SGStringList<char>>($arguments)",
-            "get_real_string_list": "$object->get<SGStringList<float64_t>>($arguments)"
+            "get_word_string_list": "$object->get<SGStringList<uint16_t>>($arguments)"
         },
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",

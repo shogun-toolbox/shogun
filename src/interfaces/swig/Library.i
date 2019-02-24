@@ -437,6 +437,7 @@ namespace shogun
     %template(append_element_int) CDynamicObjectArray::append_element<int32_t, int32_t>;
 #endif
 	%template(append_element_string_char_list) CDynamicObjectArray::append_element_string_list<SGStringList<char>, SGStringList<char>>;
+	%template(append_element_string_word_list) CDynamicObjectArray::append_element_string_list<SGStringList<uint16_t>, SGStringList<uint16_t>>;
 }
 %include <shogun/lib/IndexBlock.h>
 %include <shogun/lib/IndexBlockRelation.h>
