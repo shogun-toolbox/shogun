@@ -120,33 +120,28 @@ void CNeuralLayer::init()
 	is_training = false;
 	autoencoder_position = NLAP_NONE;
 
-	SG_ADD(&m_num_neurons, "num_neurons",
-	       "Number of Neurons");
-	SG_ADD(&m_width, "width",
-	       "Width");
-	SG_ADD(&m_height, "height",
-	       "Height");
-	SG_ADD(&m_input_indices, "input_indices",
-	       "Input Indices");
-	SG_ADD(&m_input_sizes, "input_sizes",
-	       "Input Sizes");
-	SG_ADD(&dropout_prop, "dropout_prop",
-	       "Dropout Probabilty");
-	SG_ADD(&contraction_coefficient, "contraction_coefficient",
-	       "Contraction Coefficient");
-	SG_ADD(&is_training, "is_training",
-	       "is_training");
-	SG_ADD(&m_batch_size, "batch_size",
-	       "Batch Size");
-	SG_ADD(&m_activations, "activations",
-	       "Activations");
-	SG_ADD(&m_activation_gradients, "activation_gradients",
-	       "Activation Gradients");
-	SG_ADD(&m_local_gradients, "local_gradients",
-	       "Local Gradients");
-	SG_ADD(&m_dropout_mask, "dropout_mask",
-	       "Dropout mask");
+	SG_ADD(&m_num_neurons, "num_neurons", "Number of Neurons");
+	SG_ADD(&m_width, "width", "Width");
+	SG_ADD(&m_height, "height", "Height");
+	SG_ADD(&m_input_indices, "input_indices", "Input Indices");
+	SG_ADD(&m_input_sizes, "input_sizes", "Input Sizes");
+	SG_ADD(&dropout_prop, "dropout_prop", "Dropout Probabilty");
+	SG_ADD(
+	    &contraction_coefficient, "contraction_coefficient",
+	    "Contraction Coefficient");
+	SG_ADD(&is_training, "is_training", "is_training");
+	SG_ADD(&m_batch_size, "batch_size", "Batch Size");
+	SG_ADD(&m_activations, "activations", "Activations");
+	SG_ADD(
+	    &m_activation_gradients, "activation_gradients",
+	    "Activation Gradients");
+	SG_ADD(&m_local_gradients, "local_gradients", "Local Gradients");
+	SG_ADD(&m_dropout_mask, "dropout_mask", "Dropout mask");
 
-	SG_ADD((machine_int_t*)&autoencoder_position, "autoencoder_position",
-	       "Autoencoder Position");
+	SG_ADD(
+	    (machine_int_t*)&autoencoder_position, "autoencoder_position",
+	    "Autoencoder Position");
+
+	SG_ADD_OPTIONS(
+	    "autoencoder_position", NLAP_NONE, NLAP_ENCODING, NLAP_DECODING);
 }

@@ -57,6 +57,9 @@ void CLibLinearRegression::register_parameters()
 	SG_ADD_OPTIONS(
 	    "liblinear_regression_type", L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL,
 	    L2R_L2LOSS_SVR_DUAL);
+	SG_ADD_OPTIONS(
+			"liblinear_regression_type", L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL,
+			L2R_L2LOSS_SVR_DUAL);
 }
 
 CLibLinearRegression::~CLibLinearRegression()

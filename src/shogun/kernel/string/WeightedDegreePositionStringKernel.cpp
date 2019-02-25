@@ -1877,90 +1877,99 @@ void CWeightedDegreePositionStringKernel::load_serializable_post() throw (Shogun
 
 void CWeightedDegreePositionStringKernel::init()
 {
-	weights=NULL;
-	weights_length=0;
-	weights_degree=0;
-	position_weights=NULL;
-	position_weights_len=0;
+	weights = NULL;
+	weights_length = 0;
+	weights_degree = 0;
+	position_weights = NULL;
+	position_weights_len = 0;
 
-	position_weights_lhs=NULL;
-	position_weights_lhs_len=0;
-	position_weights_rhs=NULL;
-	position_weights_rhs_len=0;
+	position_weights_lhs = NULL;
+	position_weights_lhs_len = 0;
+	position_weights_rhs = NULL;
+	position_weights_rhs_len = 0;
 
-	weights_buffer=NULL;
-	mkl_stepsize=1;
-	degree=1;
-	length=0;
+	weights_buffer = NULL;
+	mkl_stepsize = 1;
+	degree = 1;
+	length = 0;
 
-	max_shift=0;
-	max_mismatch=0;
-	seq_length=0;
-	shift=NULL;
-	shift_len=0;
+	max_shift = 0;
+	max_mismatch = 0;
+	seq_length = 0;
+	shift = NULL;
+	shift_len = 0;
 
-	block_weights=NULL;
-	block_computation=true;
-	type=E_EXTERNAL;
-	which_degree=-1;
-	tries=CTrie<DNATrie>(1);
-	poim_tries=CTrie<POIMTrie>(1);
+	block_weights = NULL;
+	block_computation = true;
+	type = E_EXTERNAL;
+	which_degree = -1;
+	tries = CTrie<DNATrie>(1);
+	poim_tries = CTrie<POIMTrie>(1);
 
-	tree_initialized=false;
-	use_poim_tries=false;
-	m_poim_distrib=NULL;
+	tree_initialized = false;
+	use_poim_tries = false;
+	m_poim_distrib = NULL;
 
-	m_poim=NULL;
-	m_poim_num_sym=0;
-	m_poim_num_feat=0;
-	m_poim_result_len=0;
+	m_poim = NULL;
+	m_poim_num_sym = 0;
+	m_poim_num_feat = 0;
+	m_poim_result_len = 0;
 
-	alphabet=NULL;
+	alphabet = NULL;
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
-	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
-			"weights", "WD Kernel weights.");
+	m_parameters->add_matrix(
+	    &weights, &weights_degree, &weights_length, "weights",
+	    "WD Kernel weights.");
 	watch_param("weights", &weights, &weights_degree, &weights_length);
 
-	m_parameters->add_vector(&position_weights, &position_weights_len,
-			"position_weights",
-			"Weights per position.");
+	m_parameters->add_vector(
+	    &position_weights, &position_weights_len, "position_weights",
+	    "Weights per position.");
 	watch_param("position_weights", &position_weights, &position_weights_len);
 
-	m_parameters->add_vector(&position_weights_lhs, &position_weights_lhs_len,
-			"position_weights_lhs",
-			"Weights per position left hand side.");
+	m_parameters->add_vector(
+	    &position_weights_lhs, &position_weights_lhs_len,
+	    "position_weights_lhs", "Weights per position left hand side.");
 	watch_param(
 	    "position_weights_lhs", &position_weights_lhs,
 	    &position_weights_lhs_len);
 
-	m_parameters->add_vector(&position_weights_rhs, &position_weights_rhs_len,
-			"position_weights_rhs",
-			"Weights per position right hand side.");
+	m_parameters->add_vector(
+	    &position_weights_rhs, &position_weights_rhs_len,
+	    "position_weights_rhs", "Weights per position right hand side.");
 	watch_param(
 	    "position_weights_rhs", &position_weights_rhs,
 	    &position_weights_rhs_len);
 
-	m_parameters->add_vector(&shift, &shift_len,
-			"shift",
-			"Shift Vector.");
+	m_parameters->add_vector(&shift, &shift_len, "shift", "Shift Vector.");
 	watch_param("shift", &shift, &shift_len);
 
-	SG_ADD(&max_shift, "max_shift", "Maximal shift.", ParameterProperties::HYPER);
-	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", ParameterProperties::HYPER);
-	SG_ADD(&degree, "degree", "Order of WD kernel.", ParameterProperties::HYPER);
-	SG_ADD(&max_mismatch, "max_mismatch",
-			"Number of allowed mismatches.", ParameterProperties::HYPER);
-	SG_ADD(&block_computation, "block_computation",
-			"If block computation shall be used.");
-	SG_ADD((machine_int_t*) &type, "type",
-			"WeightedDegree kernel type.", ParameterProperties::HYPER);
-	SG_ADD(&which_degree, "which_degree",
-			"The selected degree. All degrees are used by default (for value -1).",
-			ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &alphabet, "alphabet",
-			"Alphabet of Features.");
+	SG_ADD(
+	    &max_shift, "max_shift", "Maximal shift.", ParameterProperties::HYPER);
+	SG_ADD(
+	    &mkl_stepsize, "mkl_stepsize", "MKL step size.",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &degree, "degree", "Order of WD kernel.", ParameterProperties::HYPER);
+	SG_ADD(
+	    &max_mismatch, "max_mismatch", "Number of allowed mismatches.",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &block_computation, "block_computation",
+	    "If block computation shall be used.");
+	SG_ADD(
+	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &which_degree, "which_degree",
+	    "The selected degree. All degrees are used by default (for value -1).",
+	    ParameterProperties::HYPER);
+	SG_ADD((CSGObject**)&alphabet, "alphabet", "Alphabet of Features.");
+	SG_ADD_OPTIONS(
+	    "type", E_WD, E_EXTERNAL, E_BLOCK_CONST, E_BLOCK_LINEAR, E_BLOCK_SQPOLY,
+	    E_BLOCK_CUBICPOLY, E_BLOCK_EXP, E_BLOCK_LOG);
 }

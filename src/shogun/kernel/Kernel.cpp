@@ -937,6 +937,8 @@ void CKernel::register_params()   {
 		  "Optimization type.");
 	SG_ADD(&properties, "properties", "Kernel properties.");
 	SG_ADD(&normalizer, "normalizer", "Normalize the kernel.", ParameterProperties::HYPER);
+
+	SG_ADD_OPTIONS("opt_type", FASTBUTMEMHUNGRY, SLOWBUTMEMEFFICIENT);
 }
 
 
