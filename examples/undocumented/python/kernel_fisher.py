@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
-from numpy import where
+import numpy as np
 lm=LoadMatrix()
 
 traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
 label_traindat = lm.load_labels('../data/label_train_dna.dat')
-parameter_list = [[traindat,testdat,label_traindat,1,4,1e-1,1,0,False,[1,False,True]],[traindat,testdat,label_traindat,3,4,1e-1,1,0,False,[1,False,True]]]
+parameter_list = [[traindat,testdat,label_traindat,1,4,1e-1,1,0,False,1],[traindat,testdat,label_traindat,3,4,1e-1,1,0,False,1]]
 
-fm_hmm_pos=[ traindat[i] for i in where([label_traindat==1])[1] ]
-fm_hmm_neg=[ traindat[i] for i in where([label_traindat==-1])[1] ]
+fm_hmm_pos=[ traindat[i] for i in np.where([label_traindat==1])[1] ]
+fm_hmm_neg=[ traindat[i] for i in np.where([label_traindat==-1])[1] ]
 
 def kernel_fisher (fm_train_dna=traindat, fm_test_dna=testdat,
 		label_train_dna=label_traindat,
 		N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,
-		kargs=[1,False,True]):
+		c=1):
 
 	from shogun import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
-	from shogun import PolyKernel
-	from shogun import HMM, BW_NORMAL#, MSG_DEBUG
+	from shogun import HMM, BW_NORMAL
+	import shogun as sg
 
 	# train HMM for positive class
 	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
@@ -50,7 +50,8 @@ def kernel_fisher (fm_train_dna=traindat, fm_test_dna=testdat,
 	neg.set_observations(wordfeats_train)
 	feats_train=FKFeatures(10, pos, neg)
 	feats_train.set_opt_a(-1) #estimate prior
-	kernel=PolyKernel(feats_train, feats_train, *kargs)
+	kernel=sg.kernel("PolyKernel", c=c)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	# get kernel on testing data
