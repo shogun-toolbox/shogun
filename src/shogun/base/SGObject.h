@@ -538,7 +538,7 @@ public:
 	 * @return value of the parameter identified by the input tag
 	 */
 	template <typename T>
-	T get(const Tag<T>& _tag) const throw(ShogunException)
+	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
 		try
@@ -564,7 +564,7 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 	template <typename T, typename U = void>
-	T get(const std::string& name) const throw(ShogunException)
+	T get(const std::string& name) const noexcept(false)
 	{
 		Tag<T> tag(name);
 		return get(tag);
@@ -832,6 +832,16 @@ public:
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
 	virtual CSGObject* clone();
+
+	/**
+	 * Looks up the option name of a parameter given the enum value.
+	 *
+	 * @param param the parameter name
+	 * @param value the enum value to query
+	 * @return the string representation of the enum (option name)
+	 */
+	std::string string_enum_reverse_lookup(
+			const std::string& param, machine_int_t value) const;
 
 protected:
 	/** Returns an empty instance of own type.

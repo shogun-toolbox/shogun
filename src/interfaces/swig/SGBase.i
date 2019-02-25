@@ -443,6 +443,15 @@ namespace shogun
             return result;
         }
 
+        std::string get_enum(const std::string& name) const {
+            auto param_to_enum_map = $self->get_string_to_enum_map();
+            if (param_to_enum_map.find(name) == param_to_enum_map.end())
+            {
+                SG_SERROR("There are no options for parameter %s::%s", $self->get_name(), name.c_str());
+            }
+            return $self->string_enum_reverse_lookup(name, $self->get<machine_int_t>(name));
+        }
+
 #ifdef SWIGPYTHON
         std::string __str__() const
         {

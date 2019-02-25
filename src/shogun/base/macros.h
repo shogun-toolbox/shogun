@@ -70,7 +70,7 @@
 		{                                                                      \
 			get<machine_int_t>(param_name);                                    \
 		}                                                                      \
-		catch (ShogunException&)                                                \
+		catch (ShogunException&)                                               \
 		{                                                                      \
 			SG_ERROR(                                                          \
 			    "Only parameters of type machine_int_t can have options");     \
