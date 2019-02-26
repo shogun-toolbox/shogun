@@ -6,7 +6,7 @@ BinaryLabels labels_train(f_labels_train)
 Kernel subkernel = kernel("GaussianKernel", log_width=1.7)
 subkernel.init(feats_train, feats_train)
 
-AUCKernel auc(0, subkernel)
+Kernel auc = kernel("AUCKernel", subkernel=subkernel)
 auc.setup_auc_maximization(labels_train)
 
 RealMatrix km_train = auc.get_kernel_matrix()
