@@ -1349,7 +1349,7 @@ import sys
 # by default add new getter method names to the end
 # of the list
 _GETTERS = ["get",
-            "get_enum",
+            "get_option",
             "get_real",
             "get_int",
             "get_real_matrix",

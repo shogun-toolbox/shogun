@@ -443,7 +443,7 @@ namespace shogun
             return result;
         }
 
-        std::string get_enum(const std::string& name) const {
+        std::string get_option(const std::string& name) const {
             auto param_to_enum_map = $self->get_string_to_enum_map();
             if (param_to_enum_map.find(name) == param_to_enum_map.end())
             {
