@@ -123,11 +123,37 @@
 import org.jblas.*;
 %}
 
+%define PUT_ENUM_INT_DISPATCHER(TAG, VALUE)
+    auto string_to_enum_map = $self->get_string_to_enum_map();
+
+    if (string_to_enum_map.find(TAG.name()) == string_to_enum_map.end()) {
+        $self->put(TAG, VALUE);
+        return;
+    }
+
+    auto val = static_cast<machine_int_t>(VALUE);
+    auto string_to_enum = string_to_enum_map[TAG.name()];
+    auto count = std::count_if(string_to_enum.begin(), string_to_enum.end(),
+                               [val](const std::pair <std::string, machine_int_t> &p) {
+                                   return val == p.second;
+                               });
+
+    if (count > 0)
+    {
+        $self->put(Tag<machine_int_t>(TAG.name()), val);
+    }
+    else
+    {
+        SG_SERROR("There is no option in %s::%s for value %i",
+                $self->get_name(), TAG.name().c_str(), val);
+    }
+%enddef
+
 namespace shogun
 {
 %extend CSGObject
 {
-	template <typename T, typename U= typename std::enable_if_t<std::is_arithmetic<T>::value>>
+	template <typename T, typename U = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 	void put_scalar_dispatcher(const std::string& name, T value)
 	{
 		Tag<T> tag_t(name);
@@ -136,9 +162,13 @@ namespace shogun
 		Tag<float64_t> tag_float64(name);
 
 		if ($self->has(tag_int32))
-			$self->put(tag_int32, (int32_t)value);
+		{
+            PUT_ENUM_INT_DISPATCHER(tag_int32, (int32_t) value);
+        }
 		else if ($self->has(tag_int64))
-			$self->put(tag_int64, (int64_t)value);
+		{
+            PUT_ENUM_INT_DISPATCHER(tag_int64, (int64_t) value);
+        }
 		else if ($self->has(tag_float64))
 			$self->put(tag_float64, (float64_t)value);
 		else
