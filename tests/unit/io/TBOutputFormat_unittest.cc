@@ -62,7 +62,7 @@ void test_case_scalar(T value_val)
 
 	time_point timestamp;
 	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	ObservedValue emitted_value{1, param_name, make_any(v)};
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -80,7 +80,7 @@ void test_case_scalar_error(T value_val)
 
 	time_point timestamp;
 	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	ObservedValue emitted_value{1, param_name, make_any(v)};
 
 	std::string node_name = "node";
 	EXPECT_THROW(
@@ -108,7 +108,7 @@ void test_case_vector(std::vector<T> v)
 
 	time_point timestamp;
 	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	ObservedValue emitted_value{1, param_name, make_any(v)};
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -129,7 +129,7 @@ void test_case_vector_error(std::vector<T> v)
 
 	time_point timestamp;
 	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	ObservedValue emitted_value{1, param_name, make_any(v)};
 
 	std::string node_name = "node";
 	EXPECT_THROW(
