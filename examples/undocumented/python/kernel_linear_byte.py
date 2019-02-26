@@ -5,7 +5,6 @@ testdat = '../data/fm_test_byte.dat'
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
 def kernel_linear_byte (train_fname=traindat,test_fname=testdat):
-	from shogun import LinearKernel
 	import shogun as sg
 
 	feats_train=sg.features(sg.csv_file(train_fname), sg.PT_UINT8)

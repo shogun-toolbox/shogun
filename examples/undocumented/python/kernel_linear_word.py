@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
-from numpy import ushort
+import numpy as np
 
 lm=LoadMatrix()
-traindat = ushort(lm.load_numbers('../data/fm_train_word.dat'))
-testdat = ushort(lm.load_numbers('../data/fm_test_word.dat'))
+traindat = np.ushort(lm.load_numbers('../data/fm_train_word.dat'))
+testdat = np.ushort(lm.load_numbers('../data/fm_test_word.dat'))
 
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.2]]
 
 def kernel_linear_word (fm_train_word=traindat,fm_test_word=testdat,scale=1.2):
 
-	from shogun import LinearKernel, AvgDiagKernelNormalizer
+	from shogun import AvgDiagKernelNormalizer
 	import shogun as sg
 
 	feats_train=sg.features(fm_train_word)

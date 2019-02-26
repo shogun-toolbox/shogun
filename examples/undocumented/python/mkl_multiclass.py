@@ -13,7 +13,7 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 	width, C, epsilon, num_threads, mkl_epsilon, mkl_norm):
 
 	from shogun import CombinedFeatures, MulticlassLabels
-	from shogun import CombinedKernel, LinearKernel
+	from shogun import CombinedKernel
 	from shogun import MKLMulticlass
 	import shogun as sg
 
@@ -30,7 +30,7 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 
 	subkfeats_train = sg.features(fm_train_real)
 	subkfeats_test = sg.features(fm_test_real)
-	subkernel = LinearKernel()
+	subkernel = sg.kernel("LinearKernel")
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)

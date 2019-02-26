@@ -14,7 +14,7 @@ def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=tr
 	from shogun import StringCharFeatures, CombinedFeatures, DNA
 	import shogun as sg
 
-	kernel=CombinedKernel()
+	kernel=sg.CombinedKernel()
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 

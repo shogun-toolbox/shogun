@@ -17,6 +17,8 @@ import sys
 import random
 import bz2
 import pickle
+import inspect
+import shogun as sg
 
 ###################################################
 #             Random Data
