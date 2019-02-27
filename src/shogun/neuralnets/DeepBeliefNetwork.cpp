@@ -583,9 +583,6 @@ void CDeepBeliefNetwork::init()
 	m_num_params = 0;
 	m_sigma = 0.01;
 
-	SG_ADD(
-	    (machine_int_t*)&m_visible_units_type, "visible_units_type",
-	    "Type of the visible units");
 	SG_ADD(&m_num_layers, "num_layers", "Number of layers");
 	SG_ADD(
 	    (CSGObject**)&m_layer_sizes, "layer_sizes",
@@ -652,5 +649,7 @@ void CDeepBeliefNetwork::init()
 	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma");
 
 	SG_ADD_OPTIONS(
-	    "visible_units_type", RBMVUT_BINARY, RBMVUT_GAUSSIAN, RBMVUT_SOFTMAX);
+	    (machine_int_t*)&m_visible_units_type, "visible_units_type",
+	    "Type of the visible units", ParameterProperties::HYPER, RBMVUT_BINARY,
+	    RBMVUT_GAUSSIAN, RBMVUT_SOFTMAX);
 }

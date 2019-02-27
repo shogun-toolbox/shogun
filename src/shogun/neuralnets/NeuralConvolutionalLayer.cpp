@@ -296,22 +296,17 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD(&m_stride_x, "stride_x", "X Stride");
 	SG_ADD(&m_stride_y, "stride_y", "Y Stride");
 
-	SG_ADD(
-	    (machine_int_t*)&m_initialization_mode, "initialization_mode",
-	    "Initialization Mode");
-
-	SG_ADD(
-	    (machine_int_t*)&m_activation_function, "activation_function",
-	    "Activation Function");
-
 	SG_ADD(&m_convolution_output, "convolution_output", "Convolution Output");
 
 	SG_ADD(
 	    &m_convolution_output_gradients, "convolution_output_gradients",
 	    "Convolution Output Gradients");
 
-	SG_ADD_OPTIONS("initialization_mode", NORMAL, RE_NORMAL);
 	SG_ADD_OPTIONS(
-	    "activation_function", CMAF_IDENTITY, CMAF_LOGISTIC,
-	    CMAF_RECTIFIED_LINEAR)
+	    (machine_int_t*)&m_initialization_mode, "initialization_mode",
+	    "Initialization Mode", ParameterProperties::NONE, NORMAL, RE_NORMAL);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_activation_function, "activation_function",
+	    "Activation Function", ParameterProperties::NONE, CMAF_IDENTITY,
+	    CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR)
 }

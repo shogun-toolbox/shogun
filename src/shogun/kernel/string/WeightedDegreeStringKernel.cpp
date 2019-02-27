@@ -1031,14 +1031,13 @@ void CWeightedDegreeStringKernel::init()
 	    &block_computation, "block_computation",
 	    "If block computation shall be used.");
 	SG_ADD(
-	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
-	    ParameterProperties::HYPER);
-	SG_ADD(
 	    &which_degree, "which_degree",
 	    "The selected degree. All degrees are used by default (for value -1).",
 	    ParameterProperties::HYPER);
 	SG_ADD((CSGObject**)&alphabet, "alphabet", "Alphabet of Features.");
 	SG_ADD_OPTIONS(
-	    "type", E_WD, E_EXTERNAL, E_BLOCK_CONST, E_BLOCK_LINEAR, E_BLOCK_SQPOLY,
-	    E_BLOCK_CUBICPOLY, E_BLOCK_EXP, E_BLOCK_LOG);
+	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
+	    ParameterProperties::HYPER, E_WD, E_EXTERNAL, E_BLOCK_CONST,
+	    E_BLOCK_LINEAR, E_BLOCK_SQPOLY, E_BLOCK_CUBICPOLY, E_BLOCK_EXP,
+	    E_BLOCK_LOG);
 }

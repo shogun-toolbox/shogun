@@ -28,10 +28,10 @@ CMulticlassLibSVM::~CMulticlassLibSVM()
 
 void CMulticlassLibSVM::register_params()
 {
-	SG_ADD(
+	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
-	    "LibSVM solver type");
-	SG_ADD_OPTIONS("libsvm_solver_type", LIBSVM_C_SVC, LIBSVM_NU_SVC);
+	    "LibSVM solver type", ParameterProperties::NONE, LIBSVM_C_SVC,
+	    LIBSVM_NU_SVC);
 }
 
 bool CMulticlassLibSVM::train_machine(CFeatures* data)

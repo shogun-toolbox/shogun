@@ -63,16 +63,7 @@ void CPCA::init()
 	    &m_whitening, "whitening", "Whether data shall be whitened.",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    (machine_int_t*)&m_mode, "mode", "PCA Mode.",
-	    ParameterProperties::HYPER);
-	SG_ADD(
 	    &m_thresh, "m_thresh", "Cutoff threshold.", ParameterProperties::HYPER);
-	SG_ADD(
-	    (machine_int_t*)&m_mem_mode, "m_mem_mode",
-	    "Memory mode (in-place or reallocation).");
-	SG_ADD(
-	    (machine_int_t*)&m_method, "m_method",
-	    "Method used for PCA calculation");
 	SG_ADD(
 	    &m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance",
 	    "zero tolerance"
@@ -81,9 +72,18 @@ void CPCA::init()
 	SG_ADD(
 	    &m_target_dim, "target_dim", "target dimensionality of preprocessor",
 	    ParameterProperties::HYPER);
-	SG_ADD_OPTIONS("mode", THRESHOLD, VARIANCE_EXPLAINED, FIXED_NUMBER);
-	SG_ADD_OPTIONS("m_mem_mode", MEM_REALLOCATE, MEM_IN_PLACE);
-	SG_ADD_OPTIONS("m_method", AUTO, SVD, EVD);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_mode, "mode", "PCA Mode.",
+	    ParameterProperties::HYPER, THRESHOLD, VARIANCE_EXPLAINED,
+	    FIXED_NUMBER);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_mem_mode, "m_mem_mode",
+	    "Memory mode (in-place or reallocation).", ParameterProperties::NONE,
+	    MEM_REALLOCATE, MEM_IN_PLACE);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_method, "m_method",
+	    "Method used for PCA calculation", ParameterProperties::NONE, AUTO, SVD,
+	    EVD);
 }
 
 CPCA::~CPCA()

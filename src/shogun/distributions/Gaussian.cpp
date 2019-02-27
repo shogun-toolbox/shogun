@@ -341,8 +341,9 @@ void CGaussian::register_params()
 	SG_ADD(&m_d, "m_d", "Diagonal.");
 	SG_ADD(&m_mean, "m_mean", "Mean.");
 	SG_ADD(&m_constant, "m_constant", "Constant part.");
-	SG_ADD((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.");
-	SG_ADD_OPTIONS("m_cov_type", FULL, DIAG, SPHERICAL);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.",
+	    ParameterProperties::NONE, FULL, DIAG, SPHERICAL);
 }
 
 void CGaussian::decompose_cov(SGMatrix<float64_t> cov)

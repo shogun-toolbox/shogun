@@ -630,9 +630,6 @@ void CRBM::init()
 	    "Whether to sample the visible units during (P)CD");
 	SG_ADD(&l2_coefficient, "l2_coefficient", "L2 regularization coeff");
 	SG_ADD(&l1_coefficient, "l1_coefficient", "L1 regularization coeff");
-	SG_ADD(
-	    (machine_int_t*)&monitoring_method, "monitoring_method",
-	    "Monitoring Method");
 	SG_ADD(&monitoring_interval, "monitoring_interval", "Monitoring Interval");
 
 	SG_ADD(
@@ -667,6 +664,7 @@ void CRBM::init()
 	SG_ADD(&m_params, "params", "Parameters");
 
 	SG_ADD_OPTIONS(
-	    "monitoring_method", RBMMM_RECONSTRUCTION_ERROR,
-	    RBMMM_PSEUDO_LIKELIHOOD);
+	    (machine_int_t*)&monitoring_method, "monitoring_method",
+	    "Monitoring Method", ParameterProperties::NONE,
+	    RBMMM_RECONSTRUCTION_ERROR, RBMMM_PSEUDO_LIKELIHOOD);
 }

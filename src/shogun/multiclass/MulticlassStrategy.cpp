@@ -38,12 +38,11 @@ void CMulticlassStrategy::init()
 	    (CSGObject**)&m_rejection_strategy, "rejection_strategy",
 	    "Strategy of rejection");
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
-	SG_ADD(
-	    (machine_int_t*)&m_prob_heuris, "prob_heuris",
-	    "Probability estimation heuristics");
 	SG_ADD_OPTIONS(
-	    "prob_heuris", PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE,
-	    OVO_HASTIE, OVO_HAMAMURA)
+	    (machine_int_t*)&m_prob_heuris, "prob_heuris",
+	    "Probability estimation heuristics", ParameterProperties::NONE,
+	    PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE, OVO_HASTIE,
+	    OVO_HAMAMURA)
 }
 
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)

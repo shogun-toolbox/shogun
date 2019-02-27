@@ -350,8 +350,9 @@ void CSVMOcas::init()
 	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.");
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 	SG_ADD(&bufsize, "bufsize", "Maximum number of cutting planes.");
-	SG_ADD((machine_int_t*)&method, "method", "SVMOcas solver type.");
-	SG_ADD_OPTIONS("method", SVM_OCAS, SVM_BMRM);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&method, "method", "SVMOcas solver type.",
+	    ParameterProperties::NONE, SVM_OCAS, SVM_BMRM);
 }
 
 float64_t CSVMOcas::compute_primal_objective() const

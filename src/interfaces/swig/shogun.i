@@ -163,12 +163,12 @@ namespace shogun
 
 		if ($self->has(tag_int32))
 		{
-            PUT_ENUM_INT_DISPATCHER(tag_int32, (int32_t) value);
-        }
+			PUT_ENUM_INT_DISPATCHER(tag_int32, (int32_t) value);
+		}
 		else if ($self->has(tag_int64))
 		{
-            PUT_ENUM_INT_DISPATCHER(tag_int64, (int64_t) value);
-        }
+			PUT_ENUM_INT_DISPATCHER(tag_int64, (int64_t) value);
+		}
 		else if ($self->has(tag_float64))
 			$self->put(tag_float64, (float64_t)value);
 		else

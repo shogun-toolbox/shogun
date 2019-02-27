@@ -49,15 +49,22 @@ template <class ST>
 void CFeatureSelection<ST>::initialize_parameters()
 {
 	SG_ADD(&m_target_dim, "target_dim", "target dimension");
-	SG_ADD((machine_int_t*)&m_algorithm, "algorithm",
-			"the feature selectiona algorithm");
-	SG_ADD((machine_int_t*)&m_policy, "policy", "feature removal policy");
-	SG_ADD(&m_num_remove, "num_remove", "number or percentage of features to "
-			"be removed");
-	SG_ADD((CSGObject**)&m_labels, "labels",
-			"the class labels for the features");
-	SG_ADD((CSGObject**)&m_subset, "subset",
-			"indices of selected features");
+	SG_ADD(
+		&m_num_remove, "num_remove",
+		"number or percentage of features to "
+		"be removed");
+	SG_ADD(
+		(CSGObject**)&m_labels, "labels",
+		"the class labels for the features");
+	SG_ADD(
+		(CSGObject**)&m_subset, "subset", "indices of selected features");
+	SG_ADD_OPTIONS(
+		(machine_int_t*)&m_policy, "policy", "feature removal policy",
+		ParameterProperties::NONE, BACKWARD_ELIMINATION, FORWARD_SELECTION);
+	SG_ADD_OPTIONS(
+		(machine_int_t*)&m_algorithm, "algorithm",
+		"the feature selectiona algorithm", ParameterProperties::NONE,
+		BACKWARD_ELIMINATION, FORWARD_SELECTION);
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;

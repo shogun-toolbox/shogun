@@ -21,16 +21,15 @@ CMachine::CMachine()
 	m_store_model_features = false;
 
 	SG_ADD(&m_max_train_time, "max_train_time", "Maximum training time.");
-	SG_ADD((machine_int_t*)&m_solver_type, "solver_type", "Type of solver.");
-
 	SG_ADD(&m_labels, "labels", "Labels to be used.");
 	SG_ADD(
 	    &m_store_model_features, "store_model_features",
 	    "Should feature data of model be stored after training?");
 	SG_ADD(&m_data_locked, "data_locked", "Indicates whether data is locked");
 	SG_ADD_OPTIONS(
-	    "solver_type", ST_AUTO, ST_CPLEX, ST_GLPK, ST_NEWTON, ST_DIRECT,
-	    ST_ELASTICNET, ST_BLOCK_NORM);
+	    (machine_int_t*)&m_solver_type, "solver_type", "Type of solver.",
+	    ParameterProperties::NONE, ST_AUTO, ST_CPLEX, ST_GLPK, ST_NEWTON,
+	    ST_DIRECT, ST_ELASTICNET, ST_BLOCK_NORM);
 }
 
 CMachine::~CMachine()

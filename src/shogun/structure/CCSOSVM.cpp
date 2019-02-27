@@ -715,8 +715,9 @@ void CCCSOSVM::init()
 	SG_ADD(&m_max_iter, "m_max_iter", "Maximum number of iterations");
 	SG_ADD(&m_max_rho, "m_max_rho", "Max rho");
 	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value");
-	SG_ADD((machine_int_t*)&m_qp_type, "m_qp_type", "QP Solver Type");
-	SG_ADD_OPTIONS("m_qp_type", MOSEK, SVMLIGHT);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_qp_type, "m_qp_type", "QP Solver Type",
+	    ParameterProperties::NONE, MOSEK, SVMLIGHT);
 }
 
 EMachineType CCCSOSVM::get_classifier_type()

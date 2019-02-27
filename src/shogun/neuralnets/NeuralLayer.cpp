@@ -138,10 +138,8 @@ void CNeuralLayer::init()
 	SG_ADD(&m_local_gradients, "local_gradients", "Local Gradients");
 	SG_ADD(&m_dropout_mask, "dropout_mask", "Dropout mask");
 
-	SG_ADD(
-	    (machine_int_t*)&autoencoder_position, "autoencoder_position",
-	    "Autoencoder Position");
-
 	SG_ADD_OPTIONS(
-	    "autoencoder_position", NLAP_NONE, NLAP_ENCODING, NLAP_DECODING);
+	    (machine_int_t*)&autoencoder_position, "autoencoder_position",
+	    "Autoencoder Position", ParameterProperties::NONE, NLAP_NONE,
+	    NLAP_ENCODING, NLAP_DECODING);
 }

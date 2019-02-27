@@ -1503,10 +1503,9 @@ void CCARTree::init()
 	SG_ADD(&m_max_depth, "max_depth", "max allowed tree depth");
 	SG_ADD(&m_min_node_size, "min_node_size", "min allowed node size");
 	SG_ADD(&m_label_epsilon, "label_epsilon", "epsilon for labels");
-	SG_ADD(
-	    (machine_int_t*)&m_mode, "mode",
-	    "problem type (multiclass or regression)");
 	SG_ADD_OPTIONS(
-	    "mode", PT_BINARY, PT_REGRESSION, PT_MULTICLASS, PT_STRUCTURED,
-	    PT_LATENT, PT_CLASS);
+	    (machine_int_t*)&m_mode, "mode",
+	    "problem type (multiclass or regression)", ParameterProperties::NONE,
+	    PT_BINARY, PT_REGRESSION, PT_MULTICLASS, PT_STRUCTURED, PT_LATENT,
+	    PT_CLASS);
 }

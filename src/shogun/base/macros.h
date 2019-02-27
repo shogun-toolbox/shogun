@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal
+ * Authors: Viktor Gal, Gil Hoben
  */
 
 #ifndef __SG_MACROS_H__
@@ -34,7 +34,7 @@
 	INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(                            \
 	    __VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
 #define INTERNAL_GET_ARG_COUNT_PRIVATE(                                        \
-    _0_, _1_, _2_, _3_, _4_, _5_, _6_, _7_, _8_, _9_ count, ...)               \
+    _0_, _1_, _2_, _3_, _4_, _5_, _6_, _7_, _8_, _9_, count, ...)              \
 	count
 
 #else
@@ -50,7 +50,7 @@
 
 #define VALUE_TO_STRING_MACRO(s) #s
 
-#define SG_ADD_OPTION(param_name, enum_value)                                  \
+#define SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 	{                                                                          \
 		static_assert(                                                         \
 		    std::is_enum<decltype(enum_value)>::value, "Expected an enum!");   \
@@ -66,15 +66,6 @@
 			    "Register parameter %s::%s with SG_ADD before adding options", \
 			    get_name(), param_name);                                       \
 		}                                                                      \
-		try                                                                    \
-		{                                                                      \
-			get<machine_int_t>(param_name);                                    \
-		}                                                                      \
-		catch (ShogunException&)                                               \
-		{                                                                      \
-			SG_ERROR(                                                          \
-			    "Only parameters of type machine_int_t can have options");     \
-		}                                                                      \
 	}
 
 #define SG_ADD_OPTION1(param_name)                                             \
@@ -84,51 +75,81 @@
 
 #define SG_ADD_OPTION2(param_name, enum_value)                                 \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 	}
 
 #define SG_ADD_OPTION3(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION2(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION4(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION3(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION5(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION4(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION6(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION5(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION7(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION6(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION8(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION7(param_name, __VA_ARGS__)                                \
 	}
 
 #define SG_ADD_OPTION9(param_name, enum_value, ...)                            \
 	{                                                                          \
-		SG_ADD_OPTION(param_name, enum_value)                                  \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 		SG_ADD_OPTION8(param_name, __VA_ARGS__)                                \
 	}
 
-#define SG_ADD_OPTIONS(...) VARARG(SG_ADD_OPTION, __VA_ARGS__)
+#define SG_ADD_OPTION(...) VARARG(SG_ADD_OPTION, __VA_ARGS__)
 
+// TODO: in C++17 add a if constexpr in the macro to support SG_ADD3 and
+//  SG_ADD4. This is needed because param_properties is a enum class
+//  so will cause issues during compilation if used in the wrong place.
+//  In C++17 do this:
+//  if constexpr(std::is_same<
+//		         decltype(param_properties), ParameterProperties>::value)
+//     {
+//	       SG_ADD(param, name, description, param_properties)
+//         VARARG(SG_ADD_OPTION, name, __VA_ARGS__)
+//     }
+//  else
+//     {
+//         SG_ADD(param, name, description)
+//         VARARG(SG_ADD_OPTION, name, param_properties, __VA_ARGS__)
+//     }
+#define SG_ADD_OPTIONS(param, name, description, param_properties, ...)        \
+	{                                                                          \
+		static_assert(                                                         \
+		    std::is_same<                                                      \
+		        typename std::remove_pointer<decltype(param)>::type,           \
+		        machine_int_t>::value,                                         \
+		    "SG_ADD_OPTIONS requires param of type machine_int_t");            \
+		static_assert(                                                         \
+		    std::is_same<                                                      \
+		        decltype(param_properties), ParameterProperties>::value,       \
+		    "SG_ADD_OPTIONS requires ParameterProperties in the fourth "       \
+		    "argument position");                                              \
+		SG_ADD(param, name, description, param_properties)                     \
+		VARARG(SG_ADD_OPTION, name, __VA_ARGS__)                               \
+	}
 #endif
