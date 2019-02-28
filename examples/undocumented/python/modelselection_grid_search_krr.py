@@ -87,7 +87,6 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
 def create_param_tree():
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun import ParameterCombination
-    from shogun import PolyKernel
     import math
     import shogun as sg
     root=ModelSelectionParameters()
@@ -117,7 +116,7 @@ def create_param_tree():
     root.append_child(param_gaussian_kernel)
 
     # polynomial kernel with degree
-    poly_kernel=PolyKernel()
+    poly_kernel=sg.kernel("PolyKernel")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

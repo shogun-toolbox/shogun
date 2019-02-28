@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
+import shogun as sg
 lm=LoadMatrix()
 traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
@@ -13,7 +14,8 @@ def kernel_linear_string (fm_train_dna=traindat,fm_test_dna=testdat):
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
 
-	kernel=LinearStringKernel(feats_train, feats_train)
+	kernel=sg.kernel("LinearStringKernel")
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

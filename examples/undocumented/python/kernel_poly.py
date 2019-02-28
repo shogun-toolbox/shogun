@@ -2,17 +2,17 @@
 traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 
-parameter_list = [[traindat,testdat,4,0.0,True],[traindat,testdat,5,0.0,True]]
+parameter_list = [[traindat,testdat,4,0.0],[traindat,testdat,5,0.0]]
 
-def kernel_poly (train_fname=traindat,test_fname=testdat,degree=4,c=0.0,
-	use_normalization=True):
-	from shogun import RealFeatures, PolyKernel, CSVFile
+def kernel_poly (train_fname=traindat,test_fname=testdat,degree=4,c=0.0):
+	from shogun import RealFeatures, CSVFile
+	import shogun as sg
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 
-	kernel=PolyKernel(
-		feats_train, feats_train, degree, c, use_normalization)
+	kernel = sg.kernel("PolyKernel", degree=degree, c=c)
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

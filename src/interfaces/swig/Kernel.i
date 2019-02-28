@@ -75,7 +75,6 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
 %rename(OligoStringKernel) COligoStringKernel;
-%rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
 %rename(PowerKernel) CPowerKernel;
 %rename(LogKernel) CLogKernel;
@@ -199,7 +198,6 @@ namespace shogun
 %include <shogun/kernel/string/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/string/MatchWordStringKernel.h>
 %include <shogun/kernel/string/OligoStringKernel.h>
-%include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/string/PolyMatchStringKernel.h>
 %include <shogun/kernel/PowerKernel.h>
 %include <shogun/kernel/LogKernel.h>

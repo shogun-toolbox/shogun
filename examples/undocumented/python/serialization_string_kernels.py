@@ -1,29 +1,21 @@
 #!/usr/bin/env python
 
-from shogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, CTaxonomy
-from shogun import CombinedKernel, WeightedDegreeRBFKernel
 from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
 from shogun import DNA, PROTEIN, Labels
 from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from shogun import MSG_DEBUG
 from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
-from shogun import WeightedDegreeStringKernel
 try:
 	from shogun import SVMLight
 except ImportError:
 	print("SVMLight is not available")
 	exit(0)
-from numpy import concatenate, ones
-from numpy.random import randn, seed
 import numpy
 import sys
-import types
 import random
 import bz2
 import pickle
-import inspect
 
 ###################################################
 #             Random Data
