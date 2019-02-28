@@ -20,7 +20,8 @@ steps:
     brew install ccache pkg-config arpack eigen glpk hdf5 json-c lapack lzo nlopt snappy xz
   displayName: Install dependencies
 
-- script: sudo $(CONDA)/bin/conda install mkl-devel -y -q
+- script: |
+    sudo $(CONDA)/bin/conda install mkl-devel -y -q
   condition: eq(variables['use_mkl'], 'true')
   displayName: Install MKL
 

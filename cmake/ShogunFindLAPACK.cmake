@@ -48,11 +48,12 @@ IF (LAPACK_FOUND)
 
     # trying to use the new Single Dynamic Library of MKL
     # https://software.intel.com/en-us/articles/a-new-linking-model-single-dynamic-library-mkl_rt-since-intel-mkl-103
-    IF (NOT "${LAPACK_LIBRARIES}" MATCHES ".*/.*mkl_rt.*")
+    IF (NOT "${LAPACK_LIBRARIES}" MATCHES .*mkl_rt.*$)
+      message("${LAPACK_LIBRARIES}")
       # just use the mkl_rt and let the user specify/decide all the MKL specific
       # optimisation runtime
       SET(MKL_LIBRARIES ${LAPACK_LIBRARIES})
-      LIST(FILTER MKL_LIBRARIES INCLUDE REGEX ".*/.*mkl_core.*")
+      LIST(FILTER MKL_LIBRARIES INCLUDE REGEX ".*mkl_core.*$")
       get_filename_component(MKL_PATH ${MKL_LIBRARIES} DIRECTORY)
       find_library(MKL_RT mkl_rt PATHS ${MKL_PATH})
       IF (MKL_RT)
@@ -65,8 +66,13 @@ IF (LAPACK_FOUND)
       ENDIF()
     ENDIF()
 
+    message("-- LAPACK_LIBRARIES: ${LAPACK_LIBRARIES}")
+    message("-- MKL_PATH: ${MKL_PATH}")
+    message("-- MKL_LIBRARIES: ${MKL_LIBRARIES}")
+
     IF (ENABLE_EIGEN_LAPACK)
       FIND_PATH(MKL_INCLUDE_DIR mkl.h HINTS ${MKL_PATH}/../include/)
+      message("-- MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
       IF(NOT MKL_INCLUDE_DIR)
         MESSAGE(STATUS "Found MKL, but not mkl.h. Make sure that mkl headers are available in order to use MKL as BLAS/Lapack backend for Eigen.")
         SET(ENABLE_EIGEN_LAPACK OFF CACHE BOOL "Use ${ENABLE_EIGEN_LAPACK}" FORCE)
