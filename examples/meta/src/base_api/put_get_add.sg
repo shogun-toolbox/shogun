@@ -33,6 +33,8 @@ Machine svm = machine("LibSVM")
 svm.put("kernel", k)
 Kernel k2 = as_kernel(svm.get("kernel"))
 svm.put("kernel", k2)
+svm.put("libsvm_solver_type", 2)
+svm.put("libsvm_solver_type", "LIBSVM_C_SVC")
 
 CSVFile f_feats("../../data/regression_1d_sinc_features_train.dat")
 Features feats = features(f_feats)

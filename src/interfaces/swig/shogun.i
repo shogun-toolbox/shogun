@@ -125,19 +125,16 @@ import org.jblas.*;
 
 %define PUT_ENUM_INT_DISPATCHER(TAG, VALUE)
     auto string_to_enum_map = $self->get_string_to_enum_map();
-
     if (string_to_enum_map.find(TAG.name()) == string_to_enum_map.end()) {
         $self->put(TAG, VALUE);
         return;
     }
-
     auto val = static_cast<machine_int_t>(VALUE);
     auto string_to_enum = string_to_enum_map[TAG.name()];
     auto count = std::count_if(string_to_enum.begin(), string_to_enum.end(),
                                [val](const std::pair <std::string, machine_int_t> &p) {
                                    return val == p.second;
                                });
-
     if (count > 0)
     {
         $self->put(Tag<machine_int_t>(TAG.name()), val);
@@ -273,7 +270,7 @@ namespace shogun
 %template(get_int_vector) CSGObject::get_vector_as_matrix_dispatcher<SGMatrix<int32_t>, int32_t>;
 #endif // SWIGJAVA
 
-%template(put) CSGObject::put<std::string>;
+%template(put) CSGObject::put<std::string, std::string>;
 
 %define PUT_ADD(sg_class)
 %template(put) CSGObject::put<sg_class, sg_class, void>;

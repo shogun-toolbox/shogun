@@ -150,6 +150,6 @@
 		    "SG_ADD_OPTIONS requires ParameterProperties in the fourth "       \
 		    "argument position");                                              \
 		SG_ADD(param, name, description, param_properties)                     \
-		VARARG(SG_ADD_OPTION, name, __VA_ARGS__)                               \
+		SG_ADD_OPTION(name, __VA_ARGS__)                                       \
 	}
 #endif

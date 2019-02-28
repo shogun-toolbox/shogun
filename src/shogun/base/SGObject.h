@@ -339,14 +339,15 @@ public:
 		return value.has_type<T>();
 	}
 
+#ifndef SWIG
 	/** Setter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T>
-	void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 		if (has_parameter(_tag))
 		{
@@ -380,6 +381,40 @@ public:
 		}
 	}
 
+	/** Setter for a class parameter that has values of type string,
+	 * identified by a Tag.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param _tag name and type information of parameter
+	 * @param value value of the parameter
+	 */
+    template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	{
+	    std::string val_string(value);
+
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+					"There are no options for parameter %s::%s", get_name(),
+					_tag.name().c_str());
+		}
+
+		auto string_to_enum = m_string_to_enum_map[_tag.name()];
+
+		if (string_to_enum.find(val_string) == string_to_enum.end())
+		{
+			SG_ERROR(
+					"Illegal option '%s' for parameter %s::%s",
+                    val_string.c_str(), get_name(), _tag.name().c_str());
+		}
+
+		machine_int_t enum_value = string_to_enum[val_string];
+
+		put(Tag<machine_int_t>(_tag.name()), enum_value);
+	}
+#endif
+
 	/** Typed setter for an object class parameter of a Shogun base class type,
 	 * identified by a name.
 	 *
@@ -392,36 +427,6 @@ public:
 	void put(const std::string& name, T* value)
 	{
 		put(Tag<T*>(name), value);
-	}
-
-	/** Typed setter for an enum mapped with a string, identified by a name.
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter
-	 */
-	template <class T>
-	void
-	put(const std::string& name, const std::string& value) noexcept(false)
-	{
-		if (m_string_to_enum_map.find(name) == m_string_to_enum_map.end())
-		{
-			SG_ERROR(
-				"There are no options for parameter %s::%s", get_name(),
-				name.c_str());
-		}
-
-		auto string_to_enum = m_string_to_enum_map[name];
-
-		if (string_to_enum.find(value) == string_to_enum.end())
-		{
-			SG_ERROR(
-				"Illegal option '%s' for parameter %s::%s",
-				value.c_str(), get_name(), name.c_str());
-		}
-
-		machine_int_t enum_value = string_to_enum[value];
-
-		put(Tag<machine_int_t>(name), enum_value);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
