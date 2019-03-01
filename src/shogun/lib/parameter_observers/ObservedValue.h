@@ -70,7 +70,7 @@ namespace shogun
 		 * @param value Any-wrapped value of the param
 		 */
 		ObservedValue(
-		    int64_t step, std::string& name, Any value, SG_OBS_VALUE_TYPE type)
+		    int64_t step, std::string name, Any value, SG_OBS_VALUE_TYPE type)
 		    : m_step(step), m_name(name), m_value(value), m_type(type)
 		{
 		}
@@ -108,7 +108,7 @@ namespace shogun
 		 * Set the param's name
 		 * @param name
 		 */
-		void set_name(const std::string& name)
+		void set_name(const std::string name)
 		{
 			m_name = name;
 		}
@@ -157,7 +157,7 @@ namespace shogun
 		* @return an ObservedValue object initialized
 		*/
 		static ObservedValue
-		make_observation(int64_t step, std::string& name, Any value)
+		make_observation(int64_t step, std::string name, Any value)
 		{
 			return ObservedValue(step, name, value, TENSORBOARD);
 		}
