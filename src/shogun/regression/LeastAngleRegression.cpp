@@ -316,6 +316,9 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 					map_Xa.block(0, i_kick+1, numRows, numCols-i_kick).eval();			
 		}
 
+		// Observe this value directly
+		observe(ObservedValue::make_observation(nloop, std::string("betas"), make_any(beta)));
+
 		nloop++;
 		m_beta_path_t.push_back(beta);
 		if (int32_t(m_num_active) >= get_path_size())
