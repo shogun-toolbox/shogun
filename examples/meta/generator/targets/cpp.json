@@ -101,7 +101,9 @@
             "get_real_matrix": "$object->get<SGMatrix<float64_t>>($arguments)",
             "get_int_string_list": "$object->get<SGStringList<int32_t>>($arguments)",
             "get_char_string_list": "$object->get<SGStringList<char>>($arguments)",
-            "get_word_string_list": "$object->get<SGStringList<uint16_t>>($arguments)"
+            "get_option": "$object->get<std::string>($arguments)"
+            "get_word_string_list": "$object->get<SGStringList<uint16_t>>($arguments)",
+            "get_option": "$object->get<std::string>($arguments)"
         },
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",

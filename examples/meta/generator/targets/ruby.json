@@ -11,6 +11,7 @@
             "Separator": "\n",
             "InitialSeperatorWhenArgs>0": false
         },
+        "string": "$name = $arguments",
         "CharVector": "$name = NArray.byte($arguments)",
         "ByteVector": "$name = NArray.byte($arguments)",
         "WordVector": "$name = NArray.byte($arguments)",

@@ -536,13 +536,14 @@ public:
 		put(Tag<T>(name), value);
 	}
 
+#ifndef SWIG
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T>
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
@@ -561,6 +562,19 @@ public:
 		// we won't be there
 		return any_cast<T>(value);
 	}
+
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	T get(const Tag<T>& _tag) const noexcept(false)
+	{
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+					"There are no options for parameter %s::%s", get_name(),
+					_tag.name().c_str());
+		}
+		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
+	}
+#endif
 
 	/** Getter for a class parameter, identified by a name.
 	 * Throws an exception if the class does not have such a parameter.

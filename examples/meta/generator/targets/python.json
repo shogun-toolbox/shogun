@@ -20,6 +20,7 @@
             "Separator": ", ",
             "InitialSeperatorWhenArgs>0": true
         },
+        "string": "$name = $arguments",
         "BoolVector": "$name = np.zeros( ($arguments), dtype='bool')",
         "CharVector": "$name = np.zeros( ($arguments), dtype='|S1')",
         "ByteVector": "$name = np.zeros( ($arguments), dtype='uint8')",
@@ -63,7 +64,8 @@
             "get_real_vector": "$object.get($arguments)",
             "get_real_matrix": "$object.get($arguments)",
             "get_char_string_list": "$object.get($arguments)",
-            "get_word_string_list": "$object.get($arguments)"
+            "get_word_string_list": "$object.get($arguments)",
+            "get_option": "$object.get($arguments)"
         },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments$kwargs)",

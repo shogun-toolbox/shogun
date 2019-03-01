@@ -261,6 +261,7 @@ namespace shogun
 %template(get_real_matrix) CSGObject::get<SGMatrix<float64_t>, void>;
 %template(get_char_string_list) CSGObject::get<SGStringList<char>, void>;
 %template(get_word_string_list) CSGObject::get<SGStringList<uint16_t>, void>;
+%template(get_option) CSGObject::get<std::string, void>;
 
 #ifndef SWIGJAVA
 %template(get_real_vector) CSGObject::get<SGVector<float64_t>, void>;
