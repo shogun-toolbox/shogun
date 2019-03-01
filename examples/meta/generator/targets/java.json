@@ -6,7 +6,7 @@
         "IncludeGlobalFunctions": false,
         "DependencyListElement": "import org.shogun.$typeName;",
         "DependencyListSeparator": "\n",
-        "ExcludeImport": ["StringCharList"]
+        "ExcludeImport": ["StringCharList", "StringWordList"]
     },
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
@@ -70,7 +70,8 @@
         "RealMatrix": "DoubleMatrix",
         "LongRealMatrix": "DoubleMatrix",
         "ComplexMatrix": "DoubleMatrix",
-        "StringCharList": "String[]"
+        "StringCharList": "String[]",
+        "StringWordList": "int[][]"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",

@@ -105,7 +105,8 @@ class FastParser:
         'RealMatrix': 'SHOGUNSGTYPE',
         'LongRealMatrix': 'SHOGUNSGTYPE',
         'ComplexMatrix': 'SHOGUNSGTYPE',
-        'StringCharList':'SHOGUNSGTYPE'
+        'StringCharList':'SHOGUNSGTYPE',
+        'StringWordList':'SHOGUNSGTYPE'
     }
 
     t_INTLITERAL = "-?[0-9]+"
