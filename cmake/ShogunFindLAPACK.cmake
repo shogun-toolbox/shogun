@@ -84,7 +84,6 @@ IF (LAPACK_FOUND)
     include(CheckLibraryExists)
     # test whether we have cblas.h in the header paths and the detected
     # LAPACK_LIBRARIES contains all the libraries to compile even with cblas_* functions
-    string(REPLACE "\\" "/" LAPACK_LIBRARIES "${LAPACK_LIBRARIES}")
     check_library_exists("${LAPACK_LIBRARIES}" cblas_dgemv "" FOUND_CBLAS_DGEMV)
 
     # detect if the detected Lapack is atlas
