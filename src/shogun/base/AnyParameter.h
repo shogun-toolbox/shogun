@@ -37,7 +37,8 @@ namespace shogun
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
 		MODEL = 1u << 2,
-		AUTO = 1u << 10
+		AUTO = 1u << 10,
+		CONST = 1u << 11
 	};
 
 	enableEnumClassBitmask(ParameterProperties);

@@ -735,7 +735,15 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	self->update(_tag, value);
+	if (!self->map[_tag].get_properties().has_property(
+	        ParameterProperties::CONST))
+		self->update(_tag, value);
+	else
+	{
+		SG_ERROR(
+		    "%s::%s is marked as read-only and cannot be modified", get_name(),
+		    _tag.name().c_str());
+	}
 	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
 }
 
