@@ -70,7 +70,7 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		 * @param target target
 		 */
 		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL);
+			int32_t num, int32_t& len, float64_t* target=NULL) const;
 
 		/** load base data
 		 *

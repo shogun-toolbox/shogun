@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Evan Shelhamer,
  *          Sergey Lisitsyn, Bjoern Esser
  */
 
@@ -79,7 +79,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions)
 }
 
-float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	float64_t result=0;
 
@@ -110,7 +110,7 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 	return result;
 }
 
-float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	float64_t result=0;
 
@@ -129,7 +129,7 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	return result;
 }
 
-void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	if (stop<=start)
 		return;
@@ -162,7 +162,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	SG_FREE(tmp);
 }
 
-void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	if (num<=0)
 		return;
@@ -194,7 +194,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 	SG_FREE(tmp);
 }
 
-void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	uint32_t offs=0;
 
@@ -262,7 +262,7 @@ void CCombinedDotFeatures::free_feature_iterator(void* iterator)
 	}
 }
 
-CDotFeatures* CCombinedDotFeatures::get_feature_obj(int32_t idx)
+CDotFeatures* CCombinedDotFeatures::get_feature_obj(int32_t idx) const
 {
 	return (CDotFeatures*) feature_array->get_element(idx);
 }
@@ -292,7 +292,7 @@ bool CCombinedDotFeatures::delete_feature_obj(int32_t idx)
 	return succesful_deletion;
 }
 
-int32_t CCombinedDotFeatures::get_num_feature_obj()
+int32_t CCombinedDotFeatures::get_num_feature_obj() const
 {
 	return feature_array->get_num_elements();
 }

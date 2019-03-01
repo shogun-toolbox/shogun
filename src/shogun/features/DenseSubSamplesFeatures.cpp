@@ -120,7 +120,7 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<in
 }
 
 template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
-	int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+	int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	check_bound(vec_idx1);
 	CDenseSubSamplesFeatures<ST>* df_f= dynamic_cast<CDenseSubSamplesFeatures<ST>* >(df);
@@ -138,20 +138,20 @@ template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
 }
 
 template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dense_dot(
-	int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+	int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	check_bound(vec_idx1);
 	return m_fea->dense_dot(m_idx[vec_idx1], vec2, vec2_len);
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index)
+template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index) const
 {
 	REQUIRE(index<m_idx.vlen && index>=0,
 		"Index (%d) is out of bound (%d)\n", index, m_idx.vlen);
 }
 
 template<class ST> void CDenseSubSamplesFeatures<ST>::add_to_dense_vec(
-	float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+	float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	check_bound(vec_idx1);
 	m_fea->add_to_dense_vec(alpha, m_idx[vec_idx1], vec2, vec2_len, abs_val);

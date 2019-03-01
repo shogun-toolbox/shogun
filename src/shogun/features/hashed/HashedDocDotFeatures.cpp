@@ -73,7 +73,7 @@ int32_t CHashedDocDotFeatures::get_dim_feature_space() const
 	return CMath::pow(2, num_bits);
 }
 
-float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_name() == get_name())
@@ -96,12 +96,12 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	return result;
 }
 
-float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)
+float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2) const
 {
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
-float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
 
@@ -175,7 +175,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 }
 
 void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-	float64_t* vec2, int32_t vec2_len, bool abs_val)
+	float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
 

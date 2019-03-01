@@ -22,7 +22,7 @@ namespace shogun
 			    : m_name(name), m_description(description)
 			{
 			}
-
+			virtual ~AutoInit() = default;
 			virtual Any operator()() = 0;
 
 		protected:

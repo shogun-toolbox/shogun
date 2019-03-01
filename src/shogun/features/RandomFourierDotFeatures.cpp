@@ -72,7 +72,7 @@ const char* CRandomFourierDotFeatures::get_name() const
 	return "RandomFourierDotFeatures";
 }
 
-float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx)
+float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
 	return std::cos(dot_result) * constant;

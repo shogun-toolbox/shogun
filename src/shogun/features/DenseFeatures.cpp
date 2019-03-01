@@ -120,7 +120,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
 	num_features = 0;
 }
 
-template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree)
+template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree) const
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
@@ -176,7 +176,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 	return feat;
 }
 
-template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t num)
+template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t num) const
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
@@ -193,7 +193,7 @@ template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t n
 	return SGVector<ST>(vector, vlen, do_free);
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
+template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree) const
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -202,7 +202,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, in
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num)
+template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num) const
 {
 	free_feature_vector(vec.vector, num, false);
 	vec=SGVector<ST>();
@@ -405,7 +405,7 @@ template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  
 template<class ST> int32_t CDenseFeatures<ST>::get_dim_feature_space() const { return num_features; }
 
 template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
-		int32_t vec_idx2)
+		int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -429,7 +429,7 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 }
 
 template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-		float64_t* vec2, int32_t vec2_len, bool abs_val)
+		float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -455,7 +455,7 @@ template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, in
 
 template<>
 void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-		float64_t* vec2, int32_t vec2_len, bool abs_val)
+		float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -585,7 +585,7 @@ CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 }
 
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
-		ST* target)
+		ST* target) const
 {
 	SG_NOTIMPLEMENTED
 	len = 0;
@@ -631,7 +631,7 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
 
 template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len)
+		const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -651,7 +651,7 @@ template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
 }
 
 template<> float64_t CDenseFeatures<char>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len)
+		const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -671,7 +671,7 @@ template<> float64_t CDenseFeatures<char>::dense_dot(int32_t vec_idx1,
 }
 
 template<> float64_t CDenseFeatures<int8_t>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len)
+		const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -691,7 +691,7 @@ template<> float64_t CDenseFeatures<int8_t>::dense_dot(int32_t vec_idx1,
 }
 
 template<> float64_t CDenseFeatures<uint8_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -711,7 +711,7 @@ template<> float64_t CDenseFeatures<uint8_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<int16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -731,7 +731,7 @@ template<> float64_t CDenseFeatures<int16_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<uint16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -751,7 +751,7 @@ template<> float64_t CDenseFeatures<uint16_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<int32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -771,7 +771,7 @@ template<> float64_t CDenseFeatures<int32_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<uint32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -791,7 +791,7 @@ template<> float64_t CDenseFeatures<uint32_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<int64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -811,7 +811,7 @@ template<> float64_t CDenseFeatures<int64_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<uint64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -831,7 +831,7 @@ template<> float64_t CDenseFeatures<uint64_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<float32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -851,7 +851,7 @@ template<> float64_t CDenseFeatures<float32_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<float64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -870,7 +870,7 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 }
 
 template<> float64_t CDenseFeatures<floatmax_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 

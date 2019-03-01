@@ -79,7 +79,7 @@ template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 	return new CSparseFeatures<ST>(*this);
 }
 
-template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
+template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index) const
 {
 	REQUIRE(index>=0 && index<get_num_features(),
 		"get_feature(num=%d,index=%d): index exceeds [0;%d]\n",
@@ -108,7 +108,7 @@ template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int3
 	return len;
 }
 
-template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(int32_t num)
+template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(int32_t num) const
 {
 	REQUIRE(num>=0 && num<get_num_vectors(),
 		"get_sparse_feature_vector(num=%d): num exceeds [0;%d]\n",
@@ -170,7 +170,7 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 	}
 }
 
-template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b)
+template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b) const
 {
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 	ST result = sv.dense_dot(alpha,vec,dim,b);
@@ -178,7 +178,7 @@ template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* 
 	return result;
 }
 
-template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val) const
 {
 	REQUIRE(vec, "add_to_dense_vec(num=%d,dim=%d): vec must not be NULL\n",
 		num, dim);
@@ -213,12 +213,12 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 
 template<>
 void CSparseFeatures<complex128_t>::add_to_dense_vec(float64_t alpha,
-	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+	int32_t num, float64_t* vec, int32_t dim, bool abs_val) const
 {
 	SG_NOTIMPLEMENTED;
 }
 
-template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
+template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num) const
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -324,7 +324,7 @@ template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class() const
 	return C_SPARSE;
 }
 
-template<class ST> void CSparseFeatures<ST>::free_feature_vector(int32_t num)
+template<class ST> void CSparseFeatures<ST>::free_feature_vector(int32_t num) const
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -433,7 +433,7 @@ template<class ST> int32_t CSparseFeatures<ST>::get_dim_feature_space() const
 }
 
 template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2)
+		CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -451,13 +451,13 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 }
 
 template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2)
+		CDotFeatures* df, int32_t vec_idx2) const
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
 }
 
-template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	REQUIRE(vec2, "dense_dot(vec_idx1=%d,vec2_len=%d): vec2 must not be NULL\n",
 		vec_idx1, vec2_len);
@@ -488,7 +488,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 }
 
 template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
-	const float64_t* vec2, int32_t vec2_len)
+	const float64_t* vec2, int32_t vec2_len) const
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
@@ -565,7 +565,7 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 }
 
 template<class ST> SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_feature_vector(int32_t num,
-	int32_t& len, SGSparseVectorEntry<ST>* target)
+	int32_t& len, SGSparseVectorEntry<ST>* target) const
 {
 	SG_NOTIMPLEMENTED
 
