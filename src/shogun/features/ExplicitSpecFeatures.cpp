@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, Viktor Gal,
  *          Evan Shelhamer, Evangelos Anagnostopoulos, Sanuj Sharma
  */
 
@@ -57,7 +57,7 @@ int32_t CExplicitSpecFeatures::get_dim_feature_space() const
 	return spec_size;
 }
 
-float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -72,7 +72,7 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	return linalg::dot(vec1, vec2);
 }
 
-float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
@@ -85,7 +85,7 @@ float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	return result;
 }
 
-void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)

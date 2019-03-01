@@ -97,7 +97,7 @@ protected:
 	 * @param par_idx the idx of the parameter vector
 	 * @return the (optionally) modified result
 	 */
-	virtual float64_t post_dot(float64_t dot_result, index_t par_idx);
+	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
 
 	/** Generates a random parameter vector, subclasses must override this
 	 *

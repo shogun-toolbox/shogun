@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Evgeniy Andreev,
  *          Evan Shelhamer
  */
 
@@ -103,7 +103,7 @@ CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 	SG_FREE(normalization_factors);
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -166,7 +166,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
 		return result;
 }
 
-float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
@@ -205,7 +205,7 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 	return result;
 }
 
-void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	int32_t len1=-1;
 	bool free_vec1;

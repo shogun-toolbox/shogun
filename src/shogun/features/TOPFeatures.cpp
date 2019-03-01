@@ -79,7 +79,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 }
 
 float64_t* CTOPFeatures::compute_feature_vector(
-	int32_t num, int32_t &len, float64_t* target)
+	int32_t num, int32_t &len, float64_t* target) const
 {
 	float64_t* featurevector=target;
 
@@ -95,7 +95,7 @@ float64_t* CTOPFeatures::compute_feature_vector(
 }
 
 void CTOPFeatures::compute_feature_vector(
-	float64_t* featurevector, int32_t num, int32_t& len)
+	float64_t* featurevector, int32_t num, int32_t& len) const
 {
 	int32_t i,j,p=0,x=num;
 	int32_t idx=0;

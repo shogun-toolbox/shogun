@@ -102,7 +102,7 @@ public:
 	 * @param vec_idx2 index of second vector
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
-			int32_t vec_idx2);
+			int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -113,7 +113,7 @@ public:
 	 * @param vec2_len length of real valued vector
 	 */
 	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2,
-			int32_t vec2_len);
+			int32_t vec2_len) const;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -126,7 +126,7 @@ public:
 	 * @param abs_val if true add the absolute value
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-			float64_t* vec2, int32_t vec2_len, bool abs_val = false);
+			float64_t* vec2, int32_t vec2_len, bool abs_val = false) const;
 
 	/** get number of non-zero features in vector
 	 *
@@ -211,7 +211,7 @@ protected:
 	 * @param vec_idx the feature vector index
 	 * @param par_idx the parameter vector index
 	 */
-	virtual float64_t dot(index_t vec_idx, index_t par_idx);
+	virtual float64_t dot(index_t vec_idx, index_t par_idx) const;
 
 	/** subclass must override this to perform any operations
 	 * on the dot result between a feature vector and a parameter vector w
@@ -220,7 +220,7 @@ protected:
 	 * @param par_idx the idx of the parameter vector
 	 * @return the (optionally) modified result
 	 */
-	virtual float64_t post_dot(float64_t dot_result, index_t par_idx);
+	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
 
 	/** Generates a random parameter vector, subclasses must override this
 	 *
