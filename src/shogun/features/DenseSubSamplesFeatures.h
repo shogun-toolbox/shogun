@@ -86,7 +86,7 @@ public:
 	 *
 	 * abstract base method
 	 *
-	 * @return feature class 
+	 * @return feature class
 	 */
 	virtual EFeatureClass get_feature_class() const;
 
@@ -114,7 +114,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -123,7 +123,7 @@ public:
 	 * @param vec2_len length of real valued vector
 	 */
 	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2,
-		int32_t vec2_len);
+		int32_t vec2_len) const;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -134,7 +134,7 @@ public:
 	 * @param abs_val if true add the absolute value
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-		float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
 
 	/** get number of non-zero features in vector
 	 *
@@ -167,7 +167,7 @@ public:
 	 * @return true if a new non-zero feature got returned
 	 */
 	virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
-	
+
 	/** clean up iterator
 	 * call this function with the iterator returned by get_feature_iterator
 	 *
@@ -184,12 +184,12 @@ public:
 	 */
 	virtual bool support_compatible_class() const {return true;}
 
-	/** Given a class in right hand side, does this class support compatible computation? 
+	/** Given a class in right hand side, does this class support compatible computation?
 	 *
 	 * for example, is this->dot(rhs_prt) valid,
-	 * where rhs_prt is the class in right hand side 
+	 * where rhs_prt is the class in right hand side
 	 *
-	 * @param rhs the class in right hand side 
+	 * @param rhs the class in right hand side
 	 * @return whether this class supports compatible computation
 	 */
 	virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
@@ -200,7 +200,7 @@ private:
 	/** check whether the index is out of bound
 	 * @param index index of m_idx
 	 */
-	void check_bound(int32_t index);
+	void check_bound(int32_t index) const;
 
 	/* full samples  */
 	CDenseFeatures<ST> *m_fea;

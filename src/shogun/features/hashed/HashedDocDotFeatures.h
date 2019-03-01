@@ -76,14 +76,14 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
 	 * @param vec_idx1 index of first vector
 	 * @param vec2 dense vector
 	 */
-	virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2);
+	virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2) const;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -91,7 +91,7 @@ public:
 	 * @param vec2 pointer to real valued vector
 	 * @param vec2_len length of real valued vector
 	 */
-	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -101,7 +101,7 @@ public:
 	 * @param vec2_len length of real valued vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
 
 	/** get number of non-zero features in vector
 	 *

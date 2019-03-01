@@ -123,7 +123,7 @@ public:
 	 * caller via free_feature_vector
 	 * @return feature vector
 	 */
-	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree);
+	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree) const;
 
 	/** get feature vector num
 	 *
@@ -132,7 +132,7 @@ public:
 	 * @param num index of vector
 	 * @return feature vector
 	 */
-	SGVector<ST> get_feature_vector(int32_t num);
+	SGVector<ST> get_feature_vector(int32_t num) const;
 
 	/** free feature vector
 	 *
@@ -142,7 +142,7 @@ public:
 	 * @param num index in feature cache
 	 * @param dofree if vector should be really deleted
 	 */
-	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree);
+	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree) const;
 
 	/** free feature vector
 	 *
@@ -151,7 +151,7 @@ public:
 	 * @param vec feature vector to free
 	 * @param num index in feature cache
 	 */
-	void free_feature_vector(SGVector<ST> vec, int32_t num);
+	void free_feature_vector(SGVector<ST> vec, int32_t num) const;
 
 	/**
 	 * Extracts the feature vectors mentioned in idx and replaces them in
@@ -287,7 +287,7 @@ public:
 	 * @param vec_idx2 index of second vector
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
-			int32_t vec_idx2);
+			int32_t vec_idx2) const;
 
 	/** Computes the sum of all feature vectors
 	 * @return Sum of all feature vectors
@@ -345,7 +345,7 @@ public:
 	 * @param vec2_len length of real valued vector
 	 */
 	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2,
-			int32_t vec2_len);
+			int32_t vec2_len) const;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -358,7 +358,7 @@ public:
 	 * @param abs_val if true add the absolute value
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-			float64_t* vec2, int32_t vec2_len, bool abs_val = false);
+			float64_t* vec2, int32_t vec2_len, bool abs_val = false) const;
 
 	/** get number of non-zero features in vector
 	 *
@@ -509,7 +509,7 @@ protected:
 	 * @return feature vector
 	 */
 	virtual ST* compute_feature_vector(int32_t num, int32_t& len,
-			ST* target = NULL);
+			ST* target = NULL) const;
 
 	/** free feature matrix and cache
 	 *

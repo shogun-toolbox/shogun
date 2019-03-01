@@ -170,7 +170,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 
 template <class ST>
 float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
-	int32_t vec_idx2)
+	int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -187,7 +187,7 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 
 template <class ST>
 float64_t CHashedSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2,
-	int32_t vec2_len)
+	int32_t vec2_len) const
 {
 	ASSERT(vec2_len == dim)
 
@@ -233,7 +233,7 @@ float64_t CHashedSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t
 
 template <class ST>
 void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-	float64_t* vec2, int32_t vec2_len, bool abs_val)
+	float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)

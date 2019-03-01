@@ -43,12 +43,12 @@ CDotFeatures::CDotFeatures(CFile* loader)
 	init();
 }
 
-float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> vec2)
+float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> vec2) const
 {
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
-void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(output)
 	// write access is internally between output[start..stop] so the following
@@ -102,7 +102,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	pb.complete();
 }
 
-void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(sub_index)
 	ASSERT(output)
@@ -182,7 +182,7 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 	return v;
 }
 
-SGVector<float64_t> CDotFeatures::get_mean()
+SGVector<float64_t> CDotFeatures::get_mean() const
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -198,6 +198,44 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	linalg::scale(mean, mean, 1.0 / num);
 
 	return mean;
+}
+
+SGVector<float64_t> CDotFeatures::get_std(bool colwise) const
+{
+	auto num=get_num_vectors();
+	auto dim=get_dim_feature_space();
+	ASSERT(num>0)
+	ASSERT(dim>0)
+
+	auto mean = get_mean();
+	if (!colwise)
+	{
+		auto global_mean = linalg::sum(mean) / dim;
+		linalg::set_const(mean, global_mean);
+	}
+
+	linalg::scale(mean, mean, -1.0);
+	SGVector<float64_t> std(dim);
+	for (index_t i = 0; i < num; ++i)
+	{
+		auto m = mean.clone();
+		add_to_dense_vec(1, i, m.vector, dim);
+		linalg::element_prod(m, m, m);
+		linalg::add(m, std, std);
+	}
+
+	if (!colwise)
+	{
+		SGVector<float64_t> global_std(1);
+		global_std[0] = std::sqrt(linalg::sum(std) / (num*dim));
+		return global_std;
+	}
+
+	linalg::scale(std, std, 1.0 / num);
+	for (index_t i = 0; i < num; ++i)
+		std[i] = std::sqrt(std[i]);
+
+	return std;
 }
 
 SGVector<float64_t>

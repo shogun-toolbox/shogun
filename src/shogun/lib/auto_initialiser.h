@@ -27,28 +27,31 @@ namespace shogun
 			{
 			}
 
+			~GammaFeatureNumberInit() override = default;
+
 			Any operator()() override
 			{
-				if (m_kernel == nullptr)
-					SG_SERROR("m_kernel is not pointing to a CKernel object");
-				Any result;
-				auto m_lhs = m_kernel->get_lhs();
-				if (m_lhs->get_feature_class() >=
-				        EFeatureClass::C_STREAMING_DENSE &&
-				    m_lhs->get_feature_class() <= EFeatureClass::C_STREAMING_VW)
-					result = make_any(
-					    1.0 /
-					    static_cast<double>(
-					        ((CDotFeatures*)m_lhs)->get_dim_feature_space()));
-				else
-					result = make_any(
-					    1.0 /
-					    (static_cast<double>(
-					         ((CDotFeatures*)m_lhs)->get_dim_feature_space()) *
-					     ((CDenseFeatures<float64_t>*)(m_lhs))
-					         ->std(false)
-					         .get_element(0)));
-				return result;
+				REQUIRE(m_kernel != nullptr, "m_kernel is not pointing to a CKernel object");
+
+				auto lhs = m_kernel->get_lhs();
+				switch (lhs->get_feature_class())
+				{
+					case EFeatureClass::C_DENSE:
+					case EFeatureClass::C_SPARSE:
+					{
+						auto dot_features = (CDotFeatures*)lhs;
+						return make_any(
+						    1.0 /
+						    (static_cast<float64_t>(
+								dot_features->get_dim_feature_space()) *
+								dot_features->get_std(false)[0]));
+					}
+					default:
+						return make_any(
+							1.0 /
+							static_cast<float64_t>(
+								((CDotFeatures*)lhs)->get_dim_feature_space()));
+				}
 			}
 
 		private:

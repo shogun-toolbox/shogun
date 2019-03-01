@@ -20,7 +20,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct HASHEDWD_THREAD_PARAM
 {
-	CHashedWDFeaturesTransposed* hf;
+	const CHashedWDFeaturesTransposed* hf;
 	int32_t* sub_index;
 	float64_t* output;
 	int32_t start;
@@ -121,7 +121,7 @@ CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -153,7 +153,7 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 	return sum/CMath::sq(normalization_const);
 }
 
-float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -196,7 +196,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 	return sum/normalization_const;
 }
 
-void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(output)
 	// write access is internally between output[start..stop] so the following
@@ -289,7 +289,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	SG_FREE(index);
 }
 
-void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(sub_index)
 	ASSERT(output)
@@ -378,7 +378,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 {
 	HASHEDWD_THREAD_PARAM* par=(HASHEDWD_THREAD_PARAM*) p;
-	CHashedWDFeaturesTransposed* hf=par->hf;
+	const CHashedWDFeaturesTransposed* hf=par->hf;
 	int32_t* sub_index=par->sub_index;
 	float64_t* output=par->output;
 	int32_t start=par->start;
@@ -504,7 +504,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)

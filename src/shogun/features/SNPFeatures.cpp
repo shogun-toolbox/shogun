@@ -127,7 +127,7 @@ char* CSNPFeatures::get_major_base_string()
 	return (char*) m_str_maj;
 }
 
-float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
+float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -185,7 +185,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 	return total;
 }
 
-float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -224,7 +224,7 @@ float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32
 	return sum/normalization_const;
 }
 
-void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)

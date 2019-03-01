@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
- *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
+ *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer,
  *          Bjoern Esser, Evangelos Anagnostopoulos
  */
 #ifndef _LBP_PYR_DOTFEATURES__H__
@@ -88,7 +88,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
 
 		/** iterate over the non-zero features
 		 *
@@ -139,7 +139,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
 
 		/** compute alpha*x+vec2
 		 *
@@ -150,7 +150,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param abs_val if true add the absolute value
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
 
 		/** gets a copy of the specified image.
 		 *
@@ -159,13 +159,13 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param height the height of the image (returned by reference)
 		 * @return the image at the given index
 		 */
-		uint32_t* get_image(int32_t index, int32_t& width, int32_t& height);
+		uint32_t* get_image(int32_t index, int32_t& width, int32_t& height) const;
 
 		/** returns the transformed representation of the image
 		 *
 		 * @param index the index of the image
 		 */
-		SGVector<char> get_transformed_image(int32_t index);
+		SGVector<char> get_transformed_image(int32_t index) const;
 	protected:
 
 		/** lib lbp pyr get dim
@@ -179,7 +179,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param x the x index
 		 * @param y the y index
 		 */
-		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y);
+		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y) const;
 
 	private:
 

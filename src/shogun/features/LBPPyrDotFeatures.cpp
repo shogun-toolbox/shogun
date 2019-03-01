@@ -93,7 +93,7 @@ void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(strcmp(df->get_name(),get_name())==0)
 	CLBPPyrDotFeatures* lbp_feat = (CLBPPyrDotFeatures* ) df;
@@ -105,7 +105,7 @@ float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	return linalg::dot(vec1, vec2);
 }
 
-SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)
+SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index) const
 {
 	SGVector<char> vec(vec_nDim);
 	SGVector<char>::fill_vector(vec, vec_nDim, 0);
@@ -152,7 +152,7 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)
 	return vec;
 }
 
-uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& height)
+uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& height) const
 {
 	int32_t len;
 	bool do_free;
@@ -166,7 +166,7 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 	return img;
 }
 
-float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != vec_nDim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
@@ -214,7 +214,7 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	return dot_prod;
 }
 
-void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != vec_nDim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
@@ -263,7 +263,7 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 	SG_FREE(img);
 }
 
-uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t y)
+uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t y) const
 {
 	uint8_t pattern = 0;
 	uint32_t center = img[LIBLBP_INDEX(y,x,image_height)];
