@@ -21,6 +21,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
 #include <shogun/machine/gp/Inference.h>
@@ -52,6 +53,7 @@ namespace shogun
 	CMeanFunction* gp_mean(const std::string& name);
 	CDifferentiableFunction* differentiable(const std::string& name);
 	CInference* gp_inference(const std::string& name);
+	CLossFunction* loss(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -80,6 +82,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CMeanFunction, gp_mean)
 	BASE_CLASS_FACTORY(CInference, gp_inference)
 	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
+	BASE_CLASS_FACTORY(CLossFunction, loss)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
