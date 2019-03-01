@@ -20,8 +20,7 @@ void ParameterObserverLogger::on_next(const TimedObservedValue &value) {
 	// Dispatch the value and print it
 	//sg_any_dispatch(value.first.get_value(), sg_all_typemap, f_print, f_print, f_print);
 
-	SG_PRINT("[%l] Received an observed value with name \"%s\"",
-			 convert_to_millis(value.second), value.first.get_name().c_str());
+	SG_PRINT("[%l] Received an observed value\n",convert_to_millis(value.second));
 
 }
 
