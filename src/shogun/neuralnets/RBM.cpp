@@ -666,5 +666,5 @@ void CRBM::init()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&monitoring_method, "monitoring_method",
 	    "Monitoring Method", ParameterProperties::NONE,
-	    RBMMM_RECONSTRUCTION_ERROR, RBMMM_PSEUDO_LIKELIHOOD);
+	    SG_OPTIONS(RBMMM_RECONSTRUCTION_ERROR, RBMMM_PSEUDO_LIKELIHOOD));
 }

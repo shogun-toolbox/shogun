@@ -50,6 +50,10 @@
 
 #define VALUE_TO_STRING_MACRO(s) #s
 
+#define SG_ADD_OPTION(...) VARARG(SG_ADD_OPTION, __VA_ARGS__)
+
+#define SG_OPTIONS(...) __VA_ARGS__
+
 #define SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 	{                                                                          \
 		static_assert(                                                         \
@@ -78,49 +82,91 @@
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
 	}
 
+#ifdef _MSC_VER
 #define SG_ADD_OPTION3(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION2(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION4(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION3(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION5(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION4(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION6(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION5(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION7(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION6(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION8(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION7(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
 	}
 
 #define SG_ADD_OPTION9(param_name, enum_value, ...)                            \
 	{                                                                          \
 		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
-		SG_ADD_OPTION8(param_name, __VA_ARGS__)                                \
+		SG_ADD_OPTION(param_name, __VA_ARGS__)                                 \
+	}
+#else
+#define SG_ADD_OPTION3(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION2(param_name, __VA_ARGS__)                                 \
 	}
 
-#define SG_ADD_OPTION(...) VARARG(SG_ADD_OPTION, __VA_ARGS__)
+#define SG_ADD_OPTION4(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION3(param_name, __VA_ARGS__)                                 \
+	}
+
+#define SG_ADD_OPTION5(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION4(param_name, __VA_ARGS__)                                 \
+	}
+
+#define SG_ADD_OPTION6(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION5(param_name, __VA_ARGS__)                                 \
+	}
+
+#define SG_ADD_OPTION7(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION6(param_name, __VA_ARGS__)                                 \
+	}
+
+#define SG_ADD_OPTION8(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION7(param_name, __VA_ARGS__)                                 \
+	}
+
+#define SG_ADD_OPTION9(param_name, enum_value, ...)                            \
+	{                                                                          \
+		SG_ADD_OPTION_BASE(param_name, enum_value)                             \
+		SG_ADD_OPTION8(param_name, __VA_ARGS__)                                 \
+	}
+#endif
 
 // TODO: in C++17 add a if constexpr in the macro to support SG_ADD3 and
 //  SG_ADD4. This is needed because param_properties is a enum class
@@ -130,12 +176,12 @@
 //		         decltype(param_properties), ParameterProperties>::value)
 //     {
 //	       SG_ADD(param, name, description, param_properties)
-//         VARARG(SG_ADD_OPTION, name, __VA_ARGS__)
+//         SG_ADD_OPTION(name, __VA_ARGS__)
 //     }
 //  else
 //     {
 //         SG_ADD(param, name, description)
-//         VARARG(SG_ADD_OPTION, name, param_properties, __VA_ARGS__)
+//         SG_ADD_OPTION(name, param_properties, __VA_ARGS__)
 //     }
 #define SG_ADD_OPTIONS(param, name, description, param_properties, ...)        \
 	{                                                                          \
@@ -149,7 +195,7 @@
 		        decltype(param_properties), ParameterProperties>::value,       \
 		    "SG_ADD_OPTIONS requires ParameterProperties in the fourth "       \
 		    "argument position");                                              \
-		SG_ADD(param, name, description, param_properties)                     \
-		SG_ADD_OPTION(name, __VA_ARGS__)                                       \
+		SG_ADD(param, name, description, param_properties);                    \
+		SG_ADD_OPTION(name, __VA_ARGS__);                                      \
 	}
 #endif

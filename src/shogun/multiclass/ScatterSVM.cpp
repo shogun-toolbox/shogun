@@ -54,13 +54,17 @@ void CScatterSVM::register_params()
 	SG_ADD(&rho, "rho", "Scatter SVM rho");
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes");
 
+#ifdef USE_SVMLIGHT
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&scatter_type, "scatter_type", "Type of scatter SVM",
-	    ParameterProperties::NONE, NO_BIAS_LIBSVM,
-#ifdef USE_SVMLIGHT
-	    NO_BIAS_SVMLIGHT,
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(NO_BIAS_LIBSVM, NO_BIAS_SVMLIGHT, TEST_RULE1, TEST_RULE2));
+#else
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&scatter_type, "scatter_type", "Type of scatter SVM",
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(NO_BIAS_LIBSVM, TEST_RULE1, TEST_RULE2));
 #endif // USE_SVMLIGHT
-	    TEST_RULE1, TEST_RULE2);
 }
 
 bool CScatterSVM::train_machine(CFeatures* data)

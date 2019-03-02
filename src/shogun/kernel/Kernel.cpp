@@ -941,7 +941,8 @@ void CKernel::register_params()
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&opt_type, "opt_type", "Optimization type.",
-	    ParameterProperties::NONE, FASTBUTMEMHUNGRY, SLOWBUTMEMEFFICIENT);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(FASTBUTMEMHUNGRY, SLOWBUTMEMEFFICIENT));
 }
 
 

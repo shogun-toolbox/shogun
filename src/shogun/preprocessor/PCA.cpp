@@ -74,16 +74,16 @@ void CPCA::init()
 	    ParameterProperties::HYPER);
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_mode, "mode", "PCA Mode.",
-	    ParameterProperties::HYPER, THRESHOLD, VARIANCE_EXPLAINED,
-	    FIXED_NUMBER);
+	    ParameterProperties::HYPER,
+	    SG_OPTIONS(THRESHOLD, VARIANCE_EXPLAINED, FIXED_NUMBER));
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_mem_mode, "m_mem_mode",
 	    "Memory mode (in-place or reallocation).", ParameterProperties::NONE,
-	    MEM_REALLOCATE, MEM_IN_PLACE);
+	    SG_OPTIONS(MEM_REALLOCATE, MEM_IN_PLACE));
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_method, "m_method",
-	    "Method used for PCA calculation", ParameterProperties::NONE, AUTO, SVD,
-	    EVD);
+	    "Method used for PCA calculation", ParameterProperties::NONE,
+	    SG_OPTIONS(AUTO, SVD, EVD));
 }
 
 CPCA::~CPCA()

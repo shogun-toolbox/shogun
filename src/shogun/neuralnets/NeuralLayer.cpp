@@ -140,6 +140,6 @@ void CNeuralLayer::init()
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&autoencoder_position, "autoencoder_position",
-	    "Autoencoder Position", ParameterProperties::NONE, NLAP_NONE,
-	    NLAP_ENCODING, NLAP_DECODING);
+	    "Autoencoder Position", ParameterProperties::NONE,
+	    SG_OPTIONS(NLAP_NONE, NLAP_ENCODING, NLAP_DECODING));
 }

@@ -356,10 +356,14 @@ void CHomogeneousKernelMap::register_params()
 	SG_ADD(&m_table, "table", "Lookup-table");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_kernel, "kernel", "Kernel type to use.",
-	    ParameterProperties::HYPER, HomogeneousKernelIntersection,
-	    HomogeneousKernelChi2, HomogeneousKernelJS);
+	    ParameterProperties::HYPER,
+	    SG_OPTIONS(
+	        HomogeneousKernelIntersection, HomogeneousKernelChi2,
+	        HomogeneousKernelJS));
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_window, "window", "Window type to use.",
-	    ParameterProperties::HYPER, HomogeneousKernelMapWindowUniform,
-	    HomogeneousKernelMapWindowRectangular);
+	    ParameterProperties::HYPER,
+	    SG_OPTIONS(
+	        HomogeneousKernelMapWindowUniform,
+	        HomogeneousKernelMapWindowRectangular));
 }

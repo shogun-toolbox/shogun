@@ -55,8 +55,8 @@ void CLibSVR::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvr_solver_type",
-	    "LibSVR Solver type", ParameterProperties::NONE, LIBSVR_EPSILON_SVR,
-	    LIBSVR_NU_SVR);
+	    "LibSVR Solver type", ParameterProperties::NONE,
+	    SG_OPTIONS(LIBSVR_EPSILON_SVR, LIBSVR_NU_SVR));
 }
 
 EMachineType CLibSVR::get_classifier_type()

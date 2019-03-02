@@ -650,6 +650,6 @@ void CDeepBeliefNetwork::init()
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_visible_units_type, "visible_units_type",
-	    "Type of the visible units", ParameterProperties::HYPER, RBMVUT_BINARY,
-	    RBMVUT_GAUSSIAN, RBMVUT_SOFTMAX);
+	    "Type of the visible units", ParameterProperties::HYPER,
+	    SG_OPTIONS(RBMVUT_BINARY, RBMVUT_GAUSSIAN, RBMVUT_SOFTMAX));
 }

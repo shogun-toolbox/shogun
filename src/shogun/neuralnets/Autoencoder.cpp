@@ -181,5 +181,6 @@ void CAutoencoder::init()
 	    "Contraction Coefficient");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_noise_type, "noise_type", "Noise Type",
-	    ParameterProperties::NONE, AENT_NONE, AENT_DROPOUT, AENT_GAUSSIAN);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(AENT_NONE, AENT_DROPOUT, AENT_GAUSSIAN));
 }

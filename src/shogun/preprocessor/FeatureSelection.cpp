@@ -60,11 +60,12 @@ void CFeatureSelection<ST>::initialize_parameters()
 		(CSGObject**)&m_subset, "subset", "indices of selected features");
 	SG_ADD_OPTIONS(
 		(machine_int_t*)&m_policy, "policy", "feature removal policy",
-		ParameterProperties::NONE, BACKWARD_ELIMINATION, FORWARD_SELECTION);
+		ParameterProperties::NONE,
+		SG_OPTIONS(BACKWARD_ELIMINATION, FORWARD_SELECTION));
 	SG_ADD_OPTIONS(
 		(machine_int_t*)&m_algorithm, "algorithm",
 		"the feature selectiona algorithm", ParameterProperties::NONE,
-		BACKWARD_ELIMINATION, FORWARD_SELECTION);
+		SG_OPTIONS(BACKWARD_ELIMINATION, FORWARD_SELECTION));
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;

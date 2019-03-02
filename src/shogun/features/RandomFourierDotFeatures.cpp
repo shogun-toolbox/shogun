@@ -61,7 +61,7 @@ CRandomFourierDotFeatures::~CRandomFourierDotFeatures()
 		SG_ADD(&constant, "constant", "A constant needed");
 		SG_ADD_OPTIONS(
 		    (machine_int_t*)&kernel, "kernel", "The kernel to approximate",
-		    ParameterProperties::NONE, GAUSSIAN, NOT_SPECIFIED);
+		    ParameterProperties::NONE, SG_OPTIONS(GAUSSIAN, NOT_SPECIFIED));
 	}
 
 CFeatures* CRandomFourierDotFeatures::duplicate() const

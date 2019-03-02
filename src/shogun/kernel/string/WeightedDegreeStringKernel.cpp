@@ -1037,7 +1037,8 @@ void CWeightedDegreeStringKernel::init()
 	SG_ADD((CSGObject**)&alphabet, "alphabet", "Alphabet of Features.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
-	    ParameterProperties::HYPER, E_WD, E_EXTERNAL, E_BLOCK_CONST,
-	    E_BLOCK_LINEAR, E_BLOCK_SQPOLY, E_BLOCK_CUBICPOLY, E_BLOCK_EXP,
-	    E_BLOCK_LOG);
+	    ParameterProperties::HYPER,
+	    SG_OPTIONS(
+	        E_WD, E_EXTERNAL, E_BLOCK_CONST, E_BLOCK_LINEAR, E_BLOCK_SQPOLY,
+	        E_BLOCK_CUBICPOLY, E_BLOCK_EXP, E_BLOCK_LOG));
 }

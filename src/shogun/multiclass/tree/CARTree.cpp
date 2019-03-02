@@ -1506,6 +1506,7 @@ void CCARTree::init()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_mode, "mode",
 	    "problem type (multiclass or regression)", ParameterProperties::NONE,
-	    PT_BINARY, PT_REGRESSION, PT_MULTICLASS, PT_STRUCTURED, PT_LATENT,
-	    PT_CLASS);
+	    SG_OPTIONS(
+	        PT_BINARY, PT_REGRESSION, PT_MULTICLASS, PT_STRUCTURED, PT_LATENT,
+	        PT_CLASS));
 }

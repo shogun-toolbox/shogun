@@ -53,8 +53,8 @@ void CLDA::init()
 	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_method, "m_method",
-	    "Method used for LDA calculation", ParameterProperties::NONE, AUTO_LDA,
-	    SVD_LDA, FLD_LDA);
+	    "Method used for LDA calculation", ParameterProperties::NONE,
+	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA));
 }
 
 CLDA::~CLDA()

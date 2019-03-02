@@ -54,8 +54,8 @@ void CLibLinearRegression::register_parameters()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_liblinear_regression_type,
 	    "liblinear_regression_type", "Type of LibLinear regression.",
-	    ParameterProperties::NONE, L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL,
-	    L2R_L2LOSS_SVR_DUAL);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(L2R_L2LOSS_SVR, L2R_L1LOSS_SVR_DUAL, L2R_L2LOSS_SVR_DUAL));
 }
 
 CLibLinearRegression::~CLibLinearRegression()
@@ -83,7 +83,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	SGVector<float64_t> w;
-	liblinear_problem prob;
+	auto prob = liblinear_problem();
 	prob.use_bias = get_use_bias();
 
 	if (prob.use_bias)
@@ -111,7 +111,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	{
 		case L2R_L2LOSS_SVR:
 		{
-			double* Cs = SG_MALLOC(double, prob.l);
+			float64_t* Cs = SG_MALLOC(float64_t, prob.l);
 			for(int i = 0; i < prob.l; i++)
 				Cs[i] = get_C();
 
@@ -172,29 +172,29 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const liblinear_problem *prob)
 {
 	int l = prob->l;
-	double C = get_C();
-	double p = get_tube_epsilon();
+	float64_t C = get_C();
+	float64_t p = get_tube_epsilon();
 	// number of features, excluding bias
 	int w_size;
 	if (prob->use_bias)
 		w_size = prob->n - 1;
 	else
 		w_size = prob->n;
-	double eps = get_epsilon();
+	float64_t eps = get_epsilon();
 	int i, s, iter = 0;
 	int active_size = l;
 	int *index = new int[l];
 
-	double d, G, H;
-	double Gmax_old = CMath::INFTY;
-	double Gmax_new, Gnorm1_new;
-	double Gnorm1_init = 0.0;
+	float64_t d, G, H;
+	float64_t Gmax_old = CMath::INFTY;
+	float64_t Gmax_new, Gnorm1_new;
+	float64_t Gnorm1_init = 0.0;
 	SGVector<float64_t> beta(l);
 	SGVector<float64_t> QD(l);
-	double *y = prob->y;
+	float64_t *y = prob->y;
 
 	// L2R_L2LOSS_SVR_DUAL
-	double lambda[1], upper_bound[1];
+	float64_t lambda[1], upper_bound[1];
 	lambda[0] = 0.5/C;
 	upper_bound[0] = CMath::INFTY;
 
@@ -242,9 +242,9 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			if (prob->use_bias)
 				G+=w.vector[w_size];
 
-			double Gp = G+p;
-			double Gn = G-p;
-			double violation = 0;
+			float64_t Gp = G+p;
+			float64_t Gn = G-p;
+			float64_t violation = 0;
 			if(beta[i] == 0)
 			{
 				if(Gp < 0)
@@ -302,7 +302,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			if(fabs(d) < 1.0e-12)
 				continue;
 
-			double beta_old = beta[i];
+			float64_t beta_old = beta[i];
 			beta[i] = CMath::min(CMath::max(beta[i]+d, -upper_bound[GETI(i)]), upper_bound[GETI(i)]);
 			d = beta[i]-beta_old;
 

@@ -41,8 +41,8 @@ void CMulticlassStrategy::init()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_prob_heuris, "prob_heuris",
 	    "Probability estimation heuristics", ParameterProperties::NONE,
-	    PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE, OVO_HASTIE,
-	    OVO_HAMAMURA)
+	    SG_OPTIONS(PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE, OVO_HASTIE,
+	    OVO_HAMAMURA))
 }
 
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)

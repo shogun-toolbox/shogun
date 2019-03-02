@@ -791,8 +791,8 @@ void CNeuralNetwork::init()
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_optimization_method, "optimization_method",
-	    "Optimization Method", ParameterProperties::NONE, NNOM_GRADIENT_DESCENT,
-	    NNOM_LBFGS);
+	    "Optimization Method", ParameterProperties::NONE,
+	    SG_OPTIONS(NNOM_GRADIENT_DESCENT, NNOM_LBFGS));
 	SG_ADD(
 	    &m_gd_mini_batch_size, "gd_mini_batch_size",
 	    "Gradient Descent Mini-batch size");

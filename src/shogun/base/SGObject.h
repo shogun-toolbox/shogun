@@ -388,7 +388,7 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-    template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
 	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 	    std::string val_string(value);

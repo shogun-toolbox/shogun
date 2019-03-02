@@ -28,8 +28,10 @@ CMachine::CMachine()
 	SG_ADD(&m_data_locked, "data_locked", "Indicates whether data is locked");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_solver_type, "solver_type", "Type of solver.",
-	    ParameterProperties::NONE, ST_AUTO, ST_CPLEX, ST_GLPK, ST_NEWTON,
-	    ST_DIRECT, ST_ELASTICNET, ST_BLOCK_NORM);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(
+	        ST_AUTO, ST_CPLEX, ST_GLPK, ST_NEWTON, ST_DIRECT, ST_ELASTICNET,
+	        ST_BLOCK_NORM));
 }
 
 CMachine::~CMachine()

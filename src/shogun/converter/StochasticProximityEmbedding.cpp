@@ -32,7 +32,7 @@ void CStochasticProximityEmbedding::init()
 	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_strategy, "m_strategy", "SPE strategy",
-	    ParameterProperties::NONE, SPE_GLOBAL, SPE_LOCAL);
+	    ParameterProperties::NONE, SG_OPTIONS(SPE_GLOBAL, SPE_LOCAL));
 }
 
 CStochasticProximityEmbedding::~CStochasticProximityEmbedding()

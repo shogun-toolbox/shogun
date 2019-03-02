@@ -58,9 +58,10 @@ void CLibLinear::init()
 	SG_ADD(&m_linear_term, "linear_term", "Linear Term");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&liblinear_solver_type, "liblinear_solver_type",
-	    "Type of LibLinear solver.", ParameterProperties::NONE, L2R_LR,
-	    L2R_L2LOSS_SVC_DUAL, L2R_L2LOSS_SVC, L2R_L1LOSS_SVC_DUAL,
-	    L1R_L2LOSS_SVC, L1R_LR, L2R_LR_DUAL)
+	    "Type of LibLinear solver.", ParameterProperties::NONE,
+	    SG_OPTIONS(
+	        L2R_LR, L2R_L2LOSS_SVC_DUAL, L2R_L2LOSS_SVC, L2R_L1LOSS_SVC_DUAL,
+	        L1R_L2LOSS_SVC, L1R_LR, L2R_LR_DUAL))
 }
 
 CLibLinear::~CLibLinear()

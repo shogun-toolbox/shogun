@@ -65,8 +65,8 @@ void CKNN::init()
 	SG_ADD(&m_leaf_size, "leaf_size", "Leaf size for KDTree");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_knn_solver, "knn_solver", "Algorithm to solve knn",
-	    ParameterProperties::NONE, KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE,
-	    KNN_LSH);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE, KNN_LSH));
 }
 
 CKNN::~CKNN()

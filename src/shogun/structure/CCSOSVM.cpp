@@ -717,7 +717,7 @@ void CCCSOSVM::init()
 	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_qp_type, "m_qp_type", "QP Solver Type",
-	    ParameterProperties::NONE, MOSEK, SVMLIGHT);
+	    ParameterProperties::NONE, SG_OPTIONS(MOSEK, SVMLIGHT));
 }
 
 EMachineType CCCSOSVM::get_classifier_type()

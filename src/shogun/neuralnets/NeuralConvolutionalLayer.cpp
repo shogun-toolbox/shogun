@@ -304,9 +304,10 @@ void CNeuralConvolutionalLayer::init()
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_initialization_mode, "initialization_mode",
-	    "Initialization Mode", ParameterProperties::NONE, NORMAL, RE_NORMAL);
+	    "Initialization Mode", ParameterProperties::NONE,
+	    SG_OPTIONS(NORMAL, RE_NORMAL));
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_activation_function, "activation_function",
-	    "Activation Function", ParameterProperties::NONE, CMAF_IDENTITY,
-	    CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR)
+	    "Activation Function", ParameterProperties::NONE,
+	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR))
 }

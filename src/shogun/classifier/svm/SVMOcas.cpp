@@ -352,7 +352,7 @@ void CSVMOcas::init()
 	SG_ADD(&bufsize, "bufsize", "Maximum number of cutting planes.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&method, "method", "SVMOcas solver type.",
-	    ParameterProperties::NONE, SVM_OCAS, SVM_BMRM);
+	    ParameterProperties::NONE, SG_OPTIONS(SVM_OCAS, SVM_BMRM));
 }
 
 float64_t CSVMOcas::compute_primal_objective() const
