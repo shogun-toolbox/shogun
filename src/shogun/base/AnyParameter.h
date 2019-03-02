@@ -38,7 +38,7 @@ namespace shogun
 		GRADIENT = 1u << 1,
 		MODEL = 1u << 2,
 		AUTO = 1u << 10,
-		CONST = 1u << 11
+		READONLY = 1u << 11
 	};
 
 	enableEnumClassBitmask(ParameterProperties);

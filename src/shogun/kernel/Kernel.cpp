@@ -922,7 +922,7 @@ void CKernel::register_params()
 	SG_ADD(&cache_size, "cache_size", "Cache size in MB.");
 	SG_ADD(
 		&lhs, "lhs", "Feature vectors to occur on left hand side.",
-		ParameterProperties::CONST);
+		ParameterProperties::READONLY);
 	SG_ADD(
 	    &rhs, "rhs", "Feature vectors to occur on right hand side.");
 	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",

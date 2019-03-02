@@ -736,7 +736,7 @@ void CSGObject::create_parameter(
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
 	if (!self->map[_tag].get_properties().has_property(
-	        ParameterProperties::CONST))
+	        ParameterProperties::READONLY))
 		self->update(_tag, value);
 	else
 	{
