@@ -14,6 +14,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
+#include <shogun/base/macros.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -27,6 +28,7 @@
 #include <shogun/lib/tag.h>
 
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -49,6 +51,8 @@ struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
 
+using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
+
 /*******************************************************************************
  * define reference counter macros
  ******************************************************************************/
@@ -60,25 +64,6 @@ template <class T> class SGStringList;
 /*******************************************************************************
  * Macros for registering parameter properties
  ******************************************************************************/
-
-#ifdef _MSC_VER
-
-#define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
-#define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
-#define INTERNAL_EXPAND(x) x
-#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 5, 4, 3, 2, 1, 0))
-#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, _5_, count, ...) count
-
-#else
-
-#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
-
-#endif
-
-#define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
-#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
-#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
@@ -354,14 +339,15 @@ public:
 		return value.has_type<T>();
 	}
 
+#ifndef SWIG
 	/** Setter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T>
-	void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 		if (has_parameter(_tag))
 		{
@@ -395,6 +381,40 @@ public:
 		}
 	}
 
+	/** Setter for a class parameter that has values of type string,
+	 * identified by a Tag.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param _tag name and type information of parameter
+	 * @param value value of the parameter
+	 */
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	{
+	    std::string val_string(value);
+
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+					"There are no options for parameter %s::%s", get_name(),
+					_tag.name().c_str());
+		}
+
+		auto string_to_enum = m_string_to_enum_map[_tag.name()];
+
+		if (string_to_enum.find(val_string) == string_to_enum.end())
+		{
+			SG_ERROR(
+					"Illegal option '%s' for parameter %s::%s",
+                    val_string.c_str(), get_name(), _tag.name().c_str());
+		}
+
+		machine_int_t enum_value = string_to_enum[val_string];
+
+		put(Tag<machine_int_t>(_tag.name()), enum_value);
+	}
+#endif
+
 	/** Typed setter for an object class parameter of a Shogun base class type,
 	 * identified by a name.
 	 *
@@ -410,8 +430,7 @@ public:
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
-	* type,
-	* identified by a name.
+	* type, identified by a name.
 	*
 	* @param name name of the parameter
 	* @param value value of the parameter
@@ -517,14 +536,15 @@ public:
 		put(Tag<T>(name), value);
 	}
 
+#ifndef SWIG
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T>
-	T get(const Tag<T>& _tag) const throw(ShogunException)
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
 		try
@@ -543,6 +563,19 @@ public:
 		return any_cast<T>(value);
 	}
 
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	T get(const Tag<T>& _tag) const noexcept(false)
+	{
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+					"There are no options for parameter %s::%s", get_name(),
+					_tag.name().c_str());
+		}
+		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
+	}
+#endif
+
 	/** Getter for a class parameter, identified by a name.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
@@ -550,7 +583,7 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 	template <typename T, typename U = void>
-	T get(const std::string& name) const throw(ShogunException)
+	T get(const std::string& name) const noexcept(false)
 	{
 		Tag<T> tag(name);
 		return get(tag);
@@ -614,6 +647,12 @@ public:
 
 	/** Print to stdout a list of observable parameters */
 	void list_observable_parameters();
+
+	/** Get string to enum mapping */
+	stringToEnumMapType get_string_to_enum_map() const
+	{
+		return m_string_to_enum_map;
+	}
 
 protected:
 	template <typename T>
@@ -813,6 +852,16 @@ public:
 	 */
 	virtual CSGObject* clone();
 
+	/**
+	 * Looks up the option name of a parameter given the enum value.
+	 *
+	 * @param param the parameter name
+	 * @param value the enum value to query
+	 * @return the string representation of the enum (option name)
+	 */
+	std::string string_enum_reverse_lookup(
+			const std::string& param, machine_int_t value) const;
+
 protected:
 	/** Returns an empty instance of own type.
 	 *
@@ -914,6 +963,9 @@ protected:
 	void register_observable_param(
 		const std::string& name, const SG_OBS_VALUE_TYPE type,
 		const std::string& description);
+
+	/** mapping from strings to enum for SWIG interface */
+	stringToEnumMapType m_string_to_enum_map;
 
 private:
 	void push_back(CDynamicObjectArray* array, CSGObject* value);

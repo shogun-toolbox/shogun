@@ -329,35 +329,33 @@ void CSVMOcas::compute_W(
 
 void CSVMOcas::init()
 {
-	use_bias=true;
-	bufsize=3000;
-	C1=1;
-	C2=1;
+	use_bias = true;
+	bufsize = 3000;
+	C1 = 1;
+	C2 = 1;
 
-	epsilon=1e-3;
-	method=SVM_OCAS;
-	old_w=NULL;
-	tmp_a_buf=NULL;
-	cp_value=NULL;
-	cp_index=NULL;
-	cp_nz_dims=NULL;
-	cp_bias=NULL;
+	epsilon = 1e-3;
+	method = SVM_OCAS;
+	old_w = NULL;
+	tmp_a_buf = NULL;
+	cp_value = NULL;
+	cp_index = NULL;
+	cp_nz_dims = NULL;
+	cp_bias = NULL;
 
 	primal_objective = 0.0;
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
-	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.");
+	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.");
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
-	SG_ADD(
-	    &bufsize, "bufsize", "Maximum number of cutting planes.");
-	SG_ADD(
-	    (machine_int_t*)&method, "method", "SVMOcas solver type.");
+	SG_ADD(&bufsize, "bufsize", "Maximum number of cutting planes.");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&method, "method", "SVMOcas solver type.",
+	    ParameterProperties::NONE, SG_OPTIONS(SVM_OCAS, SVM_BMRM));
 }
 
 float64_t CSVMOcas::compute_primal_objective() const
 {
 	return primal_objective;
 }
-

@@ -79,7 +79,7 @@ enum ERBMVisibleUnitType
  * where \f$ b \f$ is the bias vector for the visible units, \f$ c \f$ is the
  * bias vector for the hidden units, and \f$ W \f$ is the weight matrix.
  *
- * The probability distribution is defined through the energy fucntion as:
+ * The probability distribution is defined through the energy function as:
  * \f[
  * P(v,h) = \frac{exp(-E(v,h))}{\sum_{v,h} exp(-E(v,h))}
  * \f]

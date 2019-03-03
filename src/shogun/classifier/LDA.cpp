@@ -36,22 +36,25 @@ CLDA::CLDA(
 	init();
 	set_features(traindat);
 	set_labels(trainlab);
-	m_method=method;
-	m_gamma=gamma;
+	m_method = method;
+	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
 }
 
 void CLDA::init()
 {
-	m_method=AUTO_LDA;
-	m_gamma=0;
+	m_method = AUTO_LDA;
+	m_gamma = 0;
 	m_bdc_svd = true;
 
 	SG_ADD(
-	    (machine_int_t*)&m_method, "m_method",
-	    "Method used for LDA calculation");
-	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", ParameterProperties::HYPER);
+	    &m_gamma, "m_gamma", "Regularization parameter",
+	    ParameterProperties::HYPER);
 	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_method, "m_method",
+	    "Method used for LDA calculation", ParameterProperties::NONE,
+	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA));
 }
 
 CLDA::~CLDA()

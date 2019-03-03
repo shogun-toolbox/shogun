@@ -89,7 +89,9 @@ class CKernelNormalizer : public CSGObject
 		 */
 		virtual void register_params()
 		{
-			SG_ADD((machine_int_t*) &m_type, "m_type", "Normalizer type.");
+			SG_ADD_OPTIONS(
+			    (machine_int_t*)&m_type, "m_type", "Normalizer type.",
+			    ParameterProperties::NONE, SG_OPTIONS(N_REGULAR, N_MULTITASK));
 		}
 
 		/** getter for normalizer type

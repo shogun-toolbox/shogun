@@ -36,7 +36,10 @@ CLibSVM::~CLibSVM()
 
 void CLibSVM::register_params()
 {
-	SG_ADD((machine_int_t*) &solver_type, "libsvm_solver_type", "LibSVM Solver type");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&solver_type, "libsvm_solver_type",
+	    "LibSVM Solver type", ParameterProperties::NONE,
+	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
 bool CLibSVM::train_machine(CFeatures* data)

@@ -1345,7 +1345,11 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %pythoncode %{
 import sys
 
+# only change the order if you know what you're doing!
+# by default add new getter method names to the end
+# of the list
 _GETTERS = ["get",
+            "get_option",
             "get_real",
             "get_int",
             "get_real_matrix",

@@ -1496,10 +1496,17 @@ void CCARTree::init()
 	SG_ADD(&m_weights, "weights", "weights");
 	SG_ADD(&m_weights_set, "weights_set", "weights set");
 	SG_ADD(&m_types_set, "types_set", "feature types set");
-	SG_ADD(&m_apply_cv_pruning, "apply_cv_pruning", "apply cross validation pruning");
+	SG_ADD(
+	    &m_apply_cv_pruning, "apply_cv_pruning",
+	    "apply cross validation pruning");
 	SG_ADD(&m_folds, "folds", "number of subsets for cross validation");
 	SG_ADD(&m_max_depth, "max_depth", "max allowed tree depth");
 	SG_ADD(&m_min_node_size, "min_node_size", "min allowed node size");
 	SG_ADD(&m_label_epsilon, "label_epsilon", "epsilon for labels");
-	SG_ADD((machine_int_t*)&m_mode, "mode", "problem type (multiclass or regression)");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_mode, "mode",
+	    "problem type (multiclass or regression)", ParameterProperties::NONE,
+	    SG_OPTIONS(
+	        PT_BINARY, PT_REGRESSION, PT_MULTICLASS, PT_STRUCTURED, PT_LATENT,
+	        PT_CLASS));
 }

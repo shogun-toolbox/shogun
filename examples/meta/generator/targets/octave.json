@@ -11,6 +11,7 @@
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
+        "string": "$name = $arguments",
         "CharVector": "$name = zeros(1, $arguments, 'char')",
         "ByteVector": "$name = zeros(1, $arguments, 'int8')",
         "WordVector": "$name = zeros(1, $arguments, 'int16')",
