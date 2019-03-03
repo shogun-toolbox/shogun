@@ -44,6 +44,74 @@ public:
 			return sum/vec.vlen;
 		}
 
+	/** Calculates equally weighted cumulative moving average.
+	 * Given \f$cma_{n-1}=\{av_1, ..., av_m\}\f$ and \f$datum=\{x_1, ..., x_m\}\f$,
+	 * this is \f$cma_n=\{av_1+\frac{x_1-av_1}{n}, ..., av_m+\frac{x_m-av_m}{n}\}\f$
+	 *
+	 * @param cma the previous moving average
+	 * @param datum new datum point
+	 * @param n number of data points including the new datum point
+	 * @param result the vector that saves the result 
+	 */
+	template<typename T>
+		static void cumulative_moving_average(
+			const SGVector<T>& cma, const SGVector<T>& datum,
+			int32_t n, SGVector<T>& result) 
+		{
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;  
+			linalg::add<T>(datum, cma, result, alpha, beta);
+		}
+
+	/** Calculates equally weighted cumulative moving average.
+	 * Given \f$cma\f$ and \f$datum\f$, this is \f$cma+\frac{datum-cma}{n}\f$
+	 *
+	 * @param cma the previous moving average
+	 * @param datum new datum point
+	 * @param n number of data points including the new datum point
+	 */
+	template<typename T>
+		static T cumulative_moving_average(
+			const T cma, const T datum, int32_t n) 
+		{
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;  
+			return alpha*datum + beta*cma;
+		}
+
+	/** Calculates exponentially weighted moving average. Given
+	 * \f$ema_{n-1}=\{av_1, ..., av_m\}\f$ and \f$datum=\{x_1, ..., x_m\}\f$, this
+	 * is \f$ema_n=\{(1-alpha)*av_1+alpha*x_1, ..., (1-alpha)*av_m+alpha*x_m\}\f$
+	 *
+	 * @param ema the previous moving average
+	 * @param datum new datum point
+	 * @param alpha discounting factor
+	 * @param result the vector that saves the result 
+	 */
+	template<typename T>
+		static void exponential_moving_average(
+			const SGVector<T>& ema, const SGVector<T>& datum,
+			T alpha, SGVector<T>& result) 
+		{
+			T beta = 1 - alpha;
+			linalg::add<T>(datum, ema, result, alpha, beta);
+		}
+	
+	/** Calculates exponentially weighted moving average. Given
+	 * \f$ema\f$ and \f$datum\f$, this is \f$(1-alpha)*ema+alpha*datum\f$
+	 *
+	 * @param cma the previous cumulative moving average
+	 * @param datum new datum point
+	 * @param alpha discounting factor
+	 */
+	template<typename T>
+		static T exponential_moving_average(const T ema, const T datum, T alpha) 
+		{
+			T beta = 1 - alpha;
+			return alpha*datum + beta*ema;
+		}
+	
+
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is
 	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
