@@ -420,7 +420,27 @@ namespace shogun
                     return false;
             }
             else
+            {
                 SG_SERROR("There is no parameter called '%s' in %s", name.c_str(), $self->get_name());
+            }
+        }
+
+        std::vector<std::string> param_options(const std::string& name) const {
+            std::vector<std::string> result;
+
+            auto param_to_enum_map = $self->get_string_to_enum_map();
+
+            if (param_to_enum_map.find(name) == param_to_enum_map.end())
+            {
+                SG_SERROR("There are no options for parameter %s::%s", $self->get_name(), name.c_str());
+            }
+
+            auto string_to_enum_map = param_to_enum_map[name];
+
+            for (auto const& each: string_to_enum_map)
+                result.push_back(each.first);
+
+            return result;
         }
 
 #ifdef SWIGPYTHON

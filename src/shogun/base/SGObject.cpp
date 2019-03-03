@@ -50,8 +50,8 @@ namespace shogun
 {
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
-	typedef std::unordered_map<std::string,
-	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
+	typedef std::unordered_map<
+	    std::string, std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
 
 	class CSGObject::Self
@@ -969,7 +969,12 @@ std::string CSGObject::to_string() const
 	{
 		ss << it->first.name() << "=";
 		auto value = it->second.get_value();
-		if (value.visitable())
+		if (m_string_to_enum_map.find(it->first.name()) !=
+		    m_string_to_enum_map.end())
+		{
+			ss << string_enum_reverse_lookup(it->first.name(), any_cast<machine_int_t>(value));
+		}
+		else if (value.visitable())
 		{
 			value.visit(visitor.get());
 		}
@@ -1102,8 +1107,7 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 		{
 			SG_ERROR(
 			    "Cannot get parameter %s::%s of type %s as object, not a "
-			    "shogun "
-			    "object base type.\n",
+			    "shogun object base type.\n",
 			    get_name(), name.c_str(),
 			    self->map[BaseTag(name)].get_value().type().c_str());
 		}
@@ -1121,4 +1125,17 @@ void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)
 {
 	ASSERT(array);
 	array->push_back(value);
+}
+
+std::string CSGObject::string_enum_reverse_lookup(
+    const std::string& param, machine_int_t value) const
+{
+	auto param_enum_map = m_string_to_enum_map.at(param);
+	auto enum_value = value;
+	auto enum_map_it = std::find_if(
+	    param_enum_map.begin(), param_enum_map.end(),
+	    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
+		    return p.second == enum_value;
+	    });
+	return enum_map_it->first;
 }

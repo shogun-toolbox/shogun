@@ -44,16 +44,27 @@ CScatterSVM::~CScatterSVM()
 
 void CScatterSVM::register_params()
 {
-	SG_ADD((machine_int_t*) &scatter_type, "scatter_type", "Type of scatter SVM");
-
 	m_parameters->add_vector(&norm_wc, &norm_wc_len, "norm_wc", "Norm of w_c");
 	watch_param("norm_wc", &norm_wc, &norm_wc_len);
 
-	m_parameters->add_vector(&norm_wcw, &norm_wcw_len, "norm_wcw", "Norm of w_cw");
+	m_parameters->add_vector(
+	    &norm_wcw, &norm_wcw_len, "norm_wcw", "Norm of w_cw");
 	watch_param("norm_wcw", &norm_wcw, &norm_wcw_len);
 
 	SG_ADD(&rho, "rho", "Scatter SVM rho");
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes");
+
+#ifdef USE_SVMLIGHT
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&scatter_type, "scatter_type", "Type of scatter SVM",
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(NO_BIAS_LIBSVM, NO_BIAS_SVMLIGHT, TEST_RULE1, TEST_RULE2));
+#else
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&scatter_type, "scatter_type", "Type of scatter SVM",
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(NO_BIAS_LIBSVM, TEST_RULE1, TEST_RULE2));
+#endif // USE_SVMLIGHT
 }
 
 bool CScatterSVM::train_machine(CFeatures* data)

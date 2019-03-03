@@ -6,12 +6,12 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/preprocessor/PCA.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
+#include <shogun/preprocessor/PCA.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -49,27 +49,41 @@ void CPCA::init()
 	m_thresh = 1e-6;
 	m_mem_mode = MEM_REALLOCATE;
 	m_method = AUTO;
-	m_eigenvalue_zero_tolerance=1e-15;
+	m_eigenvalue_zero_tolerance = 1e-15;
 	m_target_dim = 1;
 
-	SG_ADD(&m_transformation_matrix, "transformation_matrix",
+	SG_ADD(
+	    &m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).");
 	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.");
-	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
+	SG_ADD(
+	    &m_eigenvalues_vector, "eigenvalues_vector",
 	    "Vector with Eigenvalues.");
-	SG_ADD(&m_whitening, "whitening", "Whether data shall be whitened.",
+	SG_ADD(
+	    &m_whitening, "whitening", "Whether data shall be whitened.",
 	    ParameterProperties::HYPER);
-	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", ParameterProperties::HYPER);
-	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", ParameterProperties::HYPER);
-	SG_ADD((machine_int_t*) &m_mem_mode, "m_mem_mode",
-		"Memory mode (in-place or reallocation).");
-	SG_ADD((machine_int_t*) &m_method, "m_method",
-		"Method used for PCA calculation");
-	SG_ADD(&m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance", "zero tolerance"
-	" for determining zero eigenvalues during whitening to avoid numerical issues");
+	SG_ADD(
+	    &m_thresh, "m_thresh", "Cutoff threshold.", ParameterProperties::HYPER);
+	SG_ADD(
+	    &m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance",
+	    "zero tolerance"
+	    " for determining zero eigenvalues during whitening to avoid numerical "
+	    "issues");
 	SG_ADD(
 	    &m_target_dim, "target_dim", "target dimensionality of preprocessor",
 	    ParameterProperties::HYPER);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_mode, "mode", "PCA Mode.",
+	    ParameterProperties::HYPER,
+	    SG_OPTIONS(THRESHOLD, VARIANCE_EXPLAINED, FIXED_NUMBER));
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_mem_mode, "m_mem_mode",
+	    "Memory mode (in-place or reallocation).", ParameterProperties::NONE,
+	    SG_OPTIONS(MEM_REALLOCATE, MEM_IN_PLACE));
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_method, "m_method",
+	    "Method used for PCA calculation", ParameterProperties::NONE,
+	    SG_OPTIONS(AUTO, SVD, EVD));
 }
 
 CPCA::~CPCA()
