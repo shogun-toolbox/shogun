@@ -28,7 +28,6 @@
 %rename(GPBTSVM) CGPBTSVM;
 #endif //USE_GPL_SHOGUN
 %rename(LDA) CLDA;
-%rename(LibLinear) CLibLinear; 
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(SVMLightOneClass) CSVMLightOneClass;
@@ -84,7 +83,6 @@
 %include <shogun/classifier/svm/GPBTSVM.h>
 #endif //USE_GPL_SHOGUN
 %include <shogun/classifier/LDA.h>
-%include <shogun/classifier/svm/LibLinear.h> 
 #ifdef USE_SVMLIGHT
 %ignore VERSION;
 %ignore VERSION_DATE;
