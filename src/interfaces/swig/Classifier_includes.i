@@ -7,7 +7,6 @@
  #endif //USE_GPL_SHOGUN
  #include <shogun/machine/DistanceMachine.h>
  #include <shogun/classifier/LDA.h>
- #include <shogun/classifier/svm/LibLinear.h> 
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
