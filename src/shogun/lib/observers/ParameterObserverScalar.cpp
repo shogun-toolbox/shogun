@@ -61,7 +61,7 @@ ParameterObserverScalar::~ParameterObserverScalar()
 {
 }
 
-void ParameterObserverScalar::on_next(const TimedObservedValue& value)
+void ParameterObserverScalar::on_next_impl(const TimedObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
