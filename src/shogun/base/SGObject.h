@@ -839,7 +839,7 @@ protected:
 	}
 
 #ifndef SWIG
-	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	/** Puts a pointer to a (lazily evaluated) const function into the parameter map.
 	 *
 	 * @param name name of the parameter
 	 * @param method pointer to the method
@@ -850,11 +850,26 @@ protected:
 		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-			ParameterProperties::HYPER |
-			ParameterProperties::GRADIENT |
-            ParameterProperties::MODEL);
+			ParameterProperties::NONE);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
+		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
+	}
+
+	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	 *
+	 * @param name name of the parameter
+	 * @param method pointer to the method
+	 */
+	template <typename T, typename S>
+	void watch_method(const std::string& name, T (S::*method)())
+	{
+		BaseTag tag(name);
+		AnyParameterProperties properties(
+			"Dynamic parameter",
+				ParameterProperties::NONE);
+		std::function<T()> bind_method =
+			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
 #endif

@@ -51,7 +51,7 @@ class CAUCKernel: public CDotKernel
 		 * @return new label object to be used together with this kernel in SVM
 		 * training for AUC maximization
 		 */
-		CLabels* setup_auc_maximization(CLabels* labels);
+        int32_t setup_auc_maximization();
 
 		/** initialize kernel
 		 *
@@ -99,6 +99,8 @@ class CAUCKernel: public CDotKernel
 	protected:
 		/** the subkernel */
 		CKernel* subkernel;
+		/** the labels */
+		CLabels* labels;
 };
 }
 #endif /* _AUCKERNEL_H__ */

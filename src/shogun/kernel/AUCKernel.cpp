@@ -16,8 +16,10 @@ using namespace shogun;
 void
 CAUCKernel::init()
 {
-	SG_ADD((CSGObject**) &subkernel, "subkernel", "The subkernel.",
+	SG_ADD((CKernel**) &subkernel, "subkernel", "The subkernel.",
 	    ParameterProperties::HYPER);
+	SG_ADD((CLabels**) &labels, "labels", "The labels.");
+	watch_method("setup_auc_maximization", &CAUCKernel::setup_auc_maximization);
 }
 
 CAUCKernel::CAUCKernel()
@@ -39,7 +41,7 @@ CAUCKernel::~CAUCKernel()
 	cleanup();
 }
 
-CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
+int32_t CAUCKernel::setup_auc_maximization()
 {
 	SG_INFO("setting up AUC maximization\n")
 	ASSERT(labels)
@@ -112,7 +114,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 	SG_FREE(labels_auc);
 
-	return lab_auc;
+	return 1;
 }
 
 
