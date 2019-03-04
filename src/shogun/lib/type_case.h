@@ -145,7 +145,7 @@ namespace shogun
 #undef SG_ADD_SGVECTOR_TYPE
 #undef SG_ADD_SGMATRIX_TYPE
 
-		std::string print_map(const typemap& map)
+		SG_FORCED_INLINE std::string print_map(const typemap& map)
 		{
 			auto msg = std::string("<");
 			for (auto it : map)
@@ -158,7 +158,7 @@ namespace shogun
 			return msg;
 		}
 
-		TYPE get_type(const Any& any, const typemap& map)
+		SG_FORCED_INLINE TYPE get_type(const Any& any, const typemap& map)
 		{
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
