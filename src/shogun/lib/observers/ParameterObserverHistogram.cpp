@@ -61,7 +61,7 @@ ParameterObserverHistogram::~ParameterObserverHistogram()
 {
 }
 
-void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
+void ParameterObserverHistogram::on_next_impl(const TimedObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();

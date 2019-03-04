@@ -32,12 +32,13 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#ifndef SHOGUN_PARAMETEROBSERVERINTERFACE_H
-#define SHOGUN_PARAMETEROBSERVERINTERFACE_H
+#ifndef SHOGUN_PARAMETEROBSERVER_H
+#define SHOGUN_PARAMETEROBSERVER_H
 
 #include <stdexcept>
 #include <vector>
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/observers/observers_utils.h>
 
@@ -47,32 +48,32 @@ namespace shogun
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserverInterface
+	class ParameterObserver : public CSGObject
 	{
 
 	public:
 		/**
 		* Default constructor
 		*/
-		ParameterObserverInterface();
+		ParameterObserver();
 
 		/**
 		 * Constructor
 		 * @param parameters list of parameters which we want to watch over
 		 */
-		ParameterObserverInterface(std::vector<std::string>& parameters);
+		ParameterObserver(std::vector<std::string>& parameters);
 
 		/**
 		 * Constructor
 		 * @param filename name of the generated output file
 		 * @param parameters list of parameters which we want to watch over
 		 */
-		ParameterObserverInterface(
+		ParameterObserver(
 		    const std::string& filename, std::vector<std::string>& parameters);
 		/**
 		 * Virtual destructor
 		 */
-		virtual ~ParameterObserverInterface();
+		virtual ~ParameterObserver();
 
 		/**
 		 * Filter function, check if the parameter name supplied is what
@@ -83,11 +84,41 @@ namespace shogun
 		virtual bool filter(const std::string& param);
 
 		/**
+		 * Get the i-th observation recorded. It will be presented
+		 * to the user as an Any value which need to be casted.
+		 * @param i id of the observation
+		 * @return Any value with the observation
+		 */
+		virtual Any get_observation(int i);
+
+		/**
+		 * Get the total number of observation received.
+		 * @return number of obsevation received.
+		 */
+		const size_t get_num_observations() const
+		{
+			return m_observations.size();
+		};
+
+		/**
+		 * Erase all observations registered so far by the observer.
+		 */
+		virtual void clear()
+		{
+			m_observations.clear();
+		};
+
+		/**
 		 * Method which will be called when the parameter observable emits a
 		 * value.
 		 * @param value the value emitted by the parameter observable
 		 */
-		virtual void on_next(const TimedObservedValue& value) = 0;
+		void on_next(const TimedObservedValue& value)
+		{
+			m_observations.push_back(value.first.get_value());
+			on_next_impl(value);
+		};
+
 		/**
 		 * Method which will be called on errors
 		 */
@@ -98,16 +129,31 @@ namespace shogun
 		virtual void on_complete() = 0;
 
 		/**
-		 * Method useful to empty the observer from
-		 * obseverd value it may have stored.
+		 * Get the name of this class
+		 * @return name as a string
 		 */
-		virtual void clear(){};
+		virtual const char* get_name() const
+		{
+			return "ParameterObserver";
+		}
 
 	protected:
+		/**
+		 * Implementation of the on_next method which will be needed
+		 * in order to process the observed value
+		 * @param value the observed value
+		 */
+		virtual void on_next_impl(const TimedObservedValue& value) = 0;
+
 		/**
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_parameters;
+
+		/**
+		 * Observations recorded each time we compute on_next()
+		 */
+		std::vector<Any> m_observations;
 	};
 }
 
