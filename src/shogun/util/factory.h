@@ -7,13 +7,13 @@
 #define FACTORY_H_
 
 #include <shogun/base/class_list.h>
+#include <shogun/classifier/svm/SVM.h>
 #include <shogun/converter/Converter.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/classifier/svm/SVM.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
-#include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
@@ -22,12 +22,13 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
 #include <shogun/machine/gp/Inference.h>
-#include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -55,6 +56,7 @@ namespace shogun
 	CDifferentiableFunction* differentiable(const std::string& name);
 	CInference* gp_inference(const std::string& name);
 	CLossFunction* loss(const std::string& name);
+	ParameterObserver* parameter_observer(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -84,6 +86,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CInference, gp_inference)
 	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
 	BASE_CLASS_FACTORY(CLossFunction, loss)
+	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)

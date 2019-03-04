@@ -1,19 +1,11 @@
-%rename(ParameterObserverCV) CParameterObserverCV;
+/*
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Giovanni De Toni
+ */
 
 %{
-    #include <shogun/lib/observers/ParameterObserverInterface.h>
-	#include <shogun/lib/observers/ParameterObserverCV.h>
-#ifdef HAVE_TFLOGGER
-	#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
-    #include <shogun/lib/observers/ParameterObserverScalar.h>
-    #include <shogun/lib/observers/ParameterObserverHistogram.h>
-#endif // HAVE_TFLOGGER
+    #include <shogun/lib/parameter_observers/ParameterObserver.h>
 %}
 
-%include <shogun/lib/observers/ParameterObserverInterface.h>
-%include <shogun/lib/observers/ParameterObserverCV.h>
-#ifdef HAVE_TFLOGGER
-%include <shogun/lib/observers/ParameterObserverTensorBoard.h>
-%include <shogun/lib/observers/ParameterObserverScalar.h>
-%include <shogun/lib/observers/ParameterObserverHistogram.h>
-#endif // HAVE_TFLOGGER
+%include <shogun/lib/parameter_observers/ParameterObserver.h>

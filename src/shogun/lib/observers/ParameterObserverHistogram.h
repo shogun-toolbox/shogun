@@ -47,8 +47,7 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * histograms, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard,
-	                                   public CSGObject
+	class ParameterObserverHistogram : public ParameterObserverTensorBoard
 	{
 
 	public:
@@ -58,7 +57,6 @@ namespace shogun
 		    const std::string& filename, std::vector<std::string>& parameters);
 		~ParameterObserverHistogram();
 
-		virtual void on_next(const TimedObservedValue& value);
 		virtual void on_error(std::exception_ptr);
 		virtual void on_complete();
 
@@ -70,6 +68,9 @@ namespace shogun
 		{
 			return "ParameterObserverHistogram";
 		}
+
+	protected:
+		virtual void on_next_impl(const TimedObservedValue& value);
 	};
 }
 
