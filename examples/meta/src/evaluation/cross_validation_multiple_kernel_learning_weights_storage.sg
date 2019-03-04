@@ -32,7 +32,7 @@ MachineEvaluation cross = machine_evaluation("CrossValidation", machine=svm, fea
 #![create_cross_validation]
 
 #![create_observer]
-ParameterObserverCV mkl_obs(True)
+ParameterObserver mkl_obs = parameter_observer("ParameterObserverCV")
 cross.subscribe_to_parameters(mkl_obs)
 #[!create_observer]
 

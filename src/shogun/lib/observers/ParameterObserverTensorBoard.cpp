@@ -40,21 +40,21 @@
 using namespace shogun;
 
 ParameterObserverTensorBoard::ParameterObserverTensorBoard()
-    : ParameterObserverInterface(), m_writer("shogun")
+    : ParameterObserver(), m_writer("shogun")
 {
 	m_writer.init();
 }
 
 ParameterObserverTensorBoard::ParameterObserverTensorBoard(
     std::vector<std::string>& parameters)
-    : ParameterObserverInterface(parameters), m_writer("shogun")
+    : ParameterObserver(parameters), m_writer("shogun")
 {
 	m_writer.init();
 }
 
 ParameterObserverTensorBoard::ParameterObserverTensorBoard(
     const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverInterface(parameters), m_writer(filename.c_str())
+    : ParameterObserver(parameters), m_writer(filename.c_str())
 {
 	m_writer.init();
 }
