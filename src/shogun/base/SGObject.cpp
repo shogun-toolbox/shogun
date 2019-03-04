@@ -21,8 +21,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/observers/ParameterObserverInterface.h>
-
+#include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/base/class_list.h>
 
 #include <stdio.h>
@@ -762,7 +761,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
+void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },

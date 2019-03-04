@@ -33,31 +33,30 @@
 *
 */
 #include <shogun/lib/RefCount.h>
-#include <shogun/lib/observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/ParameterObserver.h>
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+ParameterObserver::ParameterObserver() : m_parameters()
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
-    std::vector<std::string>& parameters)
+ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+ParameterObserver::ParameterObserver(
     const std::string& filename, std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
 }
 
-ParameterObserverInterface::~ParameterObserverInterface()
+ParameterObserver::~ParameterObserver()
 {
 }
 
-bool ParameterObserverInterface::filter(const std::string& param)
+bool ParameterObserver::filter(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
 	if (m_parameters.size() == 0)
@@ -67,4 +66,12 @@ bool ParameterObserverInterface::filter(const std::string& param)
 		if (v == param)
 			return true;
 	return false;
+}
+
+Any ParameterObserver::get_observation(int i)
+{
+	REQUIRE(
+	    i < m_observations.size(), "The id of the observation is to great.");
+	REQUIRE(i >= 0, "The id of the observation must be greater than zero.");
+	return m_observations[i];
 }

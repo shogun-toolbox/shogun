@@ -38,7 +38,8 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
-#include <shogun/lib/observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/observers_utils.h>
+#include <shogun/lib/observers/ParameterObserver.h>
 
 namespace shogun
 {
@@ -46,41 +47,14 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class CParameterObserverCV : public ParameterObserverInterface,
-	                             public CSGObject
+	class CParameterObserverCV : public ParameterObserver
 	{
 
 	public:
 		CParameterObserverCV(bool verbose = false);
 		virtual ~CParameterObserverCV();
-
-		virtual void on_next(const TimedObservedValue& value);
 		virtual void on_error(std::exception_ptr ptr);
 		virtual void on_complete();
-
-		/* Erase all observations done so far */
-		virtual void clear();
-
-		/**
-		 * Get the total number of cross validation runs received
-		 * by this observer.
-		 * @return number of runs.
-		 */
-		const int32_t get_num_observations() const;
-
-		/**
-		 * Get a CrossValidationStorage object which will store
-		 * the result of a CrossValidation run.
-		 * @param run index of the run
-		 * @return a CrossValidationStorage object
-		 */
-		CrossValidationStorage* get_observation(int run) const;
-
-		/**
-		 * Print data contained into a CrossValidationStorage object.
-		 * @param value CrossValidationStorage object
-		 */
-		void print_observed_value(CrossValidationStorage* value) const;
 
 		/**
 		* Get class name.
@@ -92,13 +66,20 @@ namespace shogun
 		}
 
 	private:
+		/**
+		 * Print data contained into a CrossValidationStorage object.
+		 * @param value CrossValidationStorage object
+		 */
+		void print_observed_value(CrossValidationStorage* value) const;
+
+		/**
+		 * Print information of a machine
+		 * @param machine given machine
+		 */
 		void print_machine_information(CMachine* machine) const;
 
 	protected:
-		/**
-		 * Observation's vector
-		 */
-		std::vector<CrossValidationStorage*> m_observations;
+		virtual void on_next_impl(const TimedObservedValue& value);
 
 		/**
 		 * enable printing of information
