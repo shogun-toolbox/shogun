@@ -38,13 +38,12 @@
 #ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 #define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 
-#include <shogun/lib/observers/ParameterObserverInterface.h>
-
+#include <shogun/lib/observers/ParameterObserver.h>
 #include <tflogger/event_logger.h>
 
 namespace shogun
 {
-	class ParameterObserverTensorBoard : public ParameterObserverInterface
+	class ParameterObserverTensorBoard : public ParameterObserver
 	{
 
 	public:
