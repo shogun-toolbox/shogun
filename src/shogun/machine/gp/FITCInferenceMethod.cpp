@@ -401,12 +401,12 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+        const AnyParameter *param)
 {
 	//time complexity O(m*n)
-	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
+	REQUIRE(!param->get_properties().get_name().compare("log_sigma"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			m_model->get_name(), param->m_name)
+			m_model->get_name(), param->get_properties().get_name())
 
 	// create eigen representation of dg, al, w, W and B
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);

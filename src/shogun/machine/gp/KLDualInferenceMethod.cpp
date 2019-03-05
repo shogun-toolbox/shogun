@@ -371,8 +371,7 @@ void CKLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVec
 
 	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
 
-	TParameter* lambda_param=lik->m_parameters->get_parameter("lambda");
-	SGVector<float64_t>d_lambda=lik->get_dual_first_derivative(lambda_param);
+	SGVector<float64_t>d_lambda=lik->get_dual_first_derivative(get_parameter_by_name("lambda"));
 	Map<VectorXd> eigen_d_lambda(d_lambda.vector, d_lambda.vlen);
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -532,10 +531,8 @@ void CKLDualInferenceMethod::update_alpha()
 
 	nlml_new=optimization();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-	m_dv=lik->get_variational_first_derivative(s2_param);
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-	m_df=lik->get_variational_first_derivative(mu_param);
+	m_dv=lik->get_variational_first_derivative(get_parameter_by_name("sigma2"));
+	m_df=lik->get_variational_first_derivative(get_parameter_by_name("mu"));
 }
 
 float64_t CKLDualInferenceMethod::optimization()

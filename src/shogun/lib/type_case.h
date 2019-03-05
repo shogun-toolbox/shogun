@@ -24,7 +24,7 @@ namespace shogun
 		int64_t, uint64_t, float32_t, float64_t, floatmax_t, SGVector<int32_t>,
 		SGVector<int64_t>, SGVector<float32_t>, SGVector<float64_t>,
 		SGVector<floatmax_t>, SGMatrix<int32_t>, SGMatrix<int64_t>,
-		SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>>
+		SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>, CSGObject*, CKernel*, CLikelihoodModel*, CMeanFunction*>
 		SG_TYPES;
 
 	enum class TYPE
@@ -54,7 +54,10 @@ namespace shogun
 		T_SGMATRIX_FLOATMAX = 23,
 		T_SGMATRIX_INT32 = 24,
 		T_SGMATRIX_INT64 = 25,
-		T_UNDEFINED = 26
+		T_UNDEFINED = 26,
+        T_CKERNEL = 27,
+        T_CLIKELIHOOD_MODEL = 28,
+        T_CMEANFUNCTION = 29
 	};
 
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
@@ -115,6 +118,10 @@ namespace shogun
 	{                                                                          \
 	};
 
+        SG_ADD_PRIMITIVE_TYPE(CSGObject*, TYPE::T_SGOBJECT)
+        SG_ADD_PRIMITIVE_TYPE(CKernel*, TYPE::T_CKERNEL)
+        SG_ADD_PRIMITIVE_TYPE(CLikelihoodModel*, TYPE::T_CLIKELIHOOD_MODEL)
+        SG_ADD_PRIMITIVE_TYPE(CMeanFunction*, TYPE::T_CMEANFUNCTION)
 		SG_ADD_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
 		SG_ADD_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
 		SG_ADD_PRIMITIVE_TYPE(int8_t, TYPE::T_INT8)
@@ -463,6 +470,12 @@ static const typemap sg_non_integer_typemap = {
 		ADD_TYPE_TO_MAP(float64_t , TYPE::T_FLOAT64)
 		ADD_TYPE_TO_MAP(floatmax_t , TYPE::T_FLOATMAX)
 		ADD_TYPE_TO_MAP(complex128_t, TYPE::T_COMPLEX128)
+};
+static const typemap sg_object_typemap = {
+        ADD_TYPE_TO_MAP(CSGObject* , TYPE::T_SGOBJECT)
+        ADD_TYPE_TO_MAP(CKernel* , TYPE::T_CKERNEL)
+        ADD_TYPE_TO_MAP(CLikelihoodModel*, TYPE::T_CLIKELIHOOD_MODEL)
+        ADD_TYPE_TO_MAP(CMeanFunction*, TYPE::T_CMEANFUNCTION)
 };
 #undef ADD_TYPE_TO_MAP
 

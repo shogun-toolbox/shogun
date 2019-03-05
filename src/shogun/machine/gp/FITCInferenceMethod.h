@@ -182,7 +182,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param);
+            const AnyParameter *param);
 
 	/** update gradients */
 	virtual void compute_gradient();

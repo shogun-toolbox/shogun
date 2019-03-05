@@ -243,7 +243,7 @@ public:
 	 * @param values_map map, which contains parameters and its values
 	 */
 	virtual void build_parameter_values_map(
-			CMap<TParameter*, SGVector<float64_t> >* values_map);
+			CMap<AnyParameter*, SGVector<float64_t> >* values_map);
 
 	/** builds map, which contains parameters and its parents
 	 *

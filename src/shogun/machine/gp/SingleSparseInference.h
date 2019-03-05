@@ -153,7 +153,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		const TParameter* param)=0;
+		const AnyParameter* param)=0;
 
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
@@ -164,7 +164,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
+            const AnyParameter *param);
 
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
@@ -175,7 +175,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
+			const AnyParameter *param);
 
 	/** check the bound constraint is vailid or not
 	 *
@@ -218,7 +218,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param)=0;
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const AnyParameter* param)=0;
 
 	/** whether the kernel supports to get the gradient wrt inducing points or not*/
 	bool m_fully_sparse;

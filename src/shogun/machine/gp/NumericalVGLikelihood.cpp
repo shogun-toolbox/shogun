@@ -95,11 +95,11 @@ void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 }
 
 SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
-	const TParameter* param) const
+	const AnyParameter* param) const
 {
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
-	if (!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")))
+	REQUIRE(param->get_properties().get_name().c_str(), "Param name is required (param->m_name should not be NULL)\n");
+	if (!(param->get_properties().get_name().compare("mu") && param->get_properties().get_name().compare("sigma2")))
 		return SGVector<float64_t> ();
 
 	SGVector<float64_t> res(m_lab.vlen);
@@ -155,19 +155,19 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
 }
 
 SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
-		const TParameter* param) const
+		const AnyParameter* param) const
 {
 	//based on the likKL(v, lik, varargin) function in infKL.m
 
 	//compute gradient using numerical integration
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
-	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	REQUIRE(param->get_properties().get_name().c_str(), "Param name is required (param->m_name should not be NULL)\n");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param
-	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
+	REQUIRE(!(param->get_properties().get_name().compare("mu") && param->get_properties().get_name().compare("sigma2")),
 		"Can't compute derivative of the variational expection ",
 		"of log LogitLikelihood using numerical integration ",
 		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter\n",
-		get_name(), param->m_name);
+		get_name(), param->get_properties().get_name());
 
 	SGVector<float64_t> res(m_mu.vlen);
 	res.zero();
@@ -182,7 +182,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	else if (supports_regression())
 		lab=new CRegressionLabels(m_lab);
 
-	if (strcmp(param->m_name, "mu")==0)
+	if (param->get_properties().get_name().compare("mu")==0)
 	{
 		//Compute the derivative wrt mu
 

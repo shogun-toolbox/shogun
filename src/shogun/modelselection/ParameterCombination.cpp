@@ -760,13 +760,13 @@ void CParameterCombination::apply_to_modsel_parameter(
 }
 
 void CParameterCombination::build_parameter_values_map(
-		CMap<TParameter*, SGVector<float64_t> >* dict)
+		CMap<AnyParameter*, SGVector<float64_t> >* dict)
 {
 	if (m_param)
 	{
 		for (index_t i=0; i<m_param->get_num_parameters(); i++)
 		{
-			TParameter* param=m_param->get_parameter(i);
+			AnyParameter* param=m_param->get_parameter(i);
 			TSGDataType type=param->m_datatype;
 
 			if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||

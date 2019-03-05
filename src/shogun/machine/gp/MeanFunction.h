@@ -71,9 +71,9 @@ public:
 	 * @return derivative of mean function with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
-			const TParameter* param, index_t index=-1)
+			const AnyParameter* param, index_t index=-1)
 	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->get_properties().get_name())
 		return SGVector<float64_t>();
 	}
 };

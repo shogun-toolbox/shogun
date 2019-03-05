@@ -234,7 +234,7 @@ void CProductKernel::init()
 }
 
 SGMatrix<float64_t> CProductKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
+		const AnyParameter* param, index_t index)
 {
 	CKernel* k=get_kernel(0);
 	SGMatrix<float64_t> temp_kernel=k->get_kernel_matrix();

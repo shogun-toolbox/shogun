@@ -80,22 +80,22 @@ template <class T> class SGStringList;
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
 #define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
 
-#define SG_ADD3(param, name, description)                                      \
-	{                                                                          \
-		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, AnyParameterProperties(description));   \
+#define SG_ADD3(param, name, description)                                      		\
+	{                                                                          		\
+		this->m_parameters->add(param, name, description);                     		\
+		this->watch_param(name, param, AnyParameterProperties(name, description));  \
 	}
 
-#define SG_ADD4(param, name, description, param_properties)                    \
-	{                                                                          \
-		AnyParameterProperties pprop =                                         \
-		    AnyParameterProperties(description, param_properties);             \
-		this->m_parameters->add(param, name, description);                     \
-		this->watch_param(name, param, pprop);                                 \
-		if (pprop.get_model_selection())                                       \
-			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.get_gradient())                                              \
-			this->m_gradient_parameters->add(param, name, description);        \
+#define SG_ADD4(param, name, description, param_properties)                    		\
+	{                                                                          		\
+		AnyParameterProperties pprop =                                         		\
+		    AnyParameterProperties(name, description, param_properties);            \
+		this->m_parameters->add(param, name, description);                     		\
+		this->watch_param(name, param, pprop);                                 		\
+		if (pprop.get_model_selection())                                       		\
+			this->m_model_selection_parameters->add(param, name, description); 		\
+		if (pprop.get_gradient())                                              		\
+			this->m_gradient_parameters->add(param, name, description);        		\
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
@@ -294,13 +294,29 @@ public:
 	 */
 	index_t get_modsel_param_index(const char* param_name);
 
-	/** Builds a dictionary of all parameters in SGObject as well of those
+
+	/** Returns a vector with pairs of the name of the parameter and
+	 * its properties
+	 *
+	 * @param property parameter property
+	 * @return vector with pairs of the name and parameter properties
+	 */
+	std::vector<std::pair<std::string, AnyParameter>>  get_parameters_by_property(ParameterProperties property);
+
+    /** Returns a AnyParameter pointer of the requested parameter
+     *
+     * @param name parameter name
+     * @return AnyParameter pointer
+     */
+	AnyParameter* get_parameter_by_name(std::string name);
+
+    /** Builds a dictionary of all parameters in SGObject as well of those
 	 *  of SGObjects that are parameters of this object. Dictionary maps
 	 *  parameters to the objects that own them.
 	 *
 	 * @param dict dictionary of parameters to be built.
 	 */
-	void build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict);
+	void build_gradient_parameter_dictionary(CMap<AnyParameter*, CSGObject*>* dict);
 
 	/** Checks if object has a class parameter identified by a name.
 	 *
@@ -739,6 +755,7 @@ protected:
 	{
 		BaseTag tag(name);
 		AnyParameterProperties properties(
+            name,
 			"Dynamic parameter",
 			ParameterProperties::HYPER |
 			ParameterProperties::GRADIENT |

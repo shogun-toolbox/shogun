@@ -185,12 +185,10 @@ void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
-	m_dv=lik->get_variational_first_derivative(s2_param);
+	m_dv=lik->get_variational_first_derivative(get_parameter_by_name("sigma2"));
 	Map<VectorXd> eigen_dv(m_dv.vector, m_dv.vlen);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
-	m_df=lik->get_variational_first_derivative(mu_param);
+	m_df=lik->get_variational_first_derivative(get_parameter_by_name("mu"));
 	Map<VectorXd> eigen_df(m_df.vector, m_df.vlen);
 	//U=inv(L')*diag(sW)
 	MatrixXd eigen_U=eigen_L.triangularView<Upper>().adjoint().solve(MatrixXd(eigen_sW.asDiagonal()));

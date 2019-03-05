@@ -847,9 +847,9 @@ class CKernel : public CSGObject
 		 * @return gradient with respect to parameter
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(
-				const TParameter* param, index_t index=-1)
+				const AnyParameter* param, index_t index=-1)
 		{
-			SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+			SG_ERROR("Can't compute derivative wrt %s parameter\n", param->get_properties().get_name())
 			return SGMatrix<float64_t>();
 		}
 
@@ -861,7 +861,7 @@ class CKernel : public CSGObject
 		 * @return diagonal part of gradient with respect to parameter
 		 */
 		virtual SGVector<float64_t> get_parameter_gradient_diagonal(
-				const TParameter* param, index_t index=-1)
+				const AnyParameter* param, index_t index=-1)
 		{
 			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}

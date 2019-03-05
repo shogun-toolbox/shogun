@@ -153,7 +153,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		const TParameter* param);
+		const AnyParameter* param);
 
 	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt the diagonal part of cov-like hyperparameter \f$\theta\f$
@@ -180,7 +180,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_related_inducing_features(
-	SGMatrix<float64_t> BdK, const TParameter* param);
+	SGMatrix<float64_t> BdK, const AnyParameter* param);
 
 	/** update alpha vector */
 	virtual void update_alpha()=0;
@@ -201,7 +201,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param)=0;
+            const AnyParameter *param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -211,7 +211,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
+			const AnyParameter *param);
 
 	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
 	 * Note that in order to call this method, kernel must support FITC inference,
@@ -222,7 +222,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param);
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const AnyParameter* param);
 
 	/** Note that alpha is NOT post.alpha
 	 * alpha and post.alpha are defined in infFITC.m and infFITC_Laplace.m

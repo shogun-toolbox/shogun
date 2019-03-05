@@ -44,6 +44,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/type_case.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
 #endif //USE_GPL_SHOGUN
@@ -164,7 +165,7 @@ float64_t CMultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 }
 
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	//SoftMax likelihood does not have this kind of derivative
 	SG_ERROR("Not Implemented!\n");
@@ -427,11 +428,11 @@ float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t
 }
 
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+        const AnyParameter *param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	REQUIRE(!param->get_properties().get_name().compare("log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+			get_name(), param->get_properties().get_name())
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -446,15 +447,21 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_m
 }
 
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	REQUIRE(param, "Param not set\n");
-	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
-	result=SGVector<float64_t>(len);
+
+    SGVector<float64_t> result;
+    auto param_value = param->get_value();
+    int64_t len;
+    auto f_scalar = [&len](auto value) { len=1; };
+    auto f_vector = [&len, &param_value](auto value) { len=param_value.as<SGVector<float64_t>>().vlen; };
+    auto f_matrix = [&len, &param_value](auto value) { len=param_value.as<SGMatrix<float64_t>>().num_rows*param_value.as<SGMatrix<float64_t>>().num_cols; };
+    sg_any_dispatch(param->get_value(), sg_all_typemap, f_scalar, f_vector, f_matrix);
+    result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -473,7 +480,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -482,8 +489,14 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	const index_t n=m_labels->get_num_labels();
 
 	REQUIRE(param, "Param not set\n");
+
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	auto param_value = param->get_value();
+	int64_t len;
+	auto f_scalar = [&len](auto value) { len=1;};
+	auto f_vector = [&len, &param_value](auto value) { len=param_value.as<SGVector<float64_t>>().vlen; };
+	auto f_matrix = [&len, &param_value](auto value) { len=param_value.as<SGMatrix<float64_t>>().num_rows*param_value.as<SGMatrix<float64_t>>().num_cols; };
+	sg_any_dispatch(param->get_value(), sg_all_typemap, f_scalar, f_vector, f_matrix);
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)

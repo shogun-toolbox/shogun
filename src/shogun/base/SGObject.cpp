@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include <shogun/machine/Machine.h>
 #include <shogun/distance/Distance.h>
@@ -46,6 +47,10 @@
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 
+#include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/MeanFunction.h>
+
+#include <shogun/lib/type_case.h>
 
 namespace shogun
 {
@@ -538,24 +543,39 @@ void CSGObject::print_modsel_params()
 {
 	SG_PRINT("parameters available for model selection for %s:\n", get_name())
 
-	index_t num_param=m_model_selection_parameters->get_num_parameters();
+	Any any;
+	auto found_it_lambda = [&any](auto type) {
+		std::cout << "Type " << demangled_type<decltype(type)>() << std::endl;
+	};
+			
+	SG_PRINT("Model selection parameters:\n");
+
+	index_t num_param = 0;
+	for (auto it = self->map.begin(); it != self->map.end(); ++it )
+	{
+		if (it->second.get_properties().get_model_selection() == 1)
+		{
+			num_param++;
+			
+			// Get the name of the parameter
+			std::cout << "\t " << it->first.name();
+			// Get the description of the parameter
+			std::cout << " (" << it->second.get_properties().get_description() << "): ";
+			// Get the type of the parameter
+			any = it->second.get_value();
+			try 
+			{
+				shogun::sg_any_dispatch(any, shogun::sg_all_typemap, found_it_lambda);
+			}
+			catch (ShogunException &msg) 
+			{
+				std::cout << msg.what() << std::endl;
+			}
+		}
+	}
 
 	if (!num_param)
 		SG_PRINT("\tnone\n")
-
-	for (index_t i=0; i<num_param; i++)
-	{
-		TParameter* current=m_model_selection_parameters->get_parameter(i);
-		index_t  l=200;
-		char* type=SG_MALLOC(char, l);
-		if (type)
-		{
-			current->m_datatype.to_string(type, l);
-			SG_PRINT("\t%s (%s): %s\n", current->m_name, current->m_description,
-					type);
-			SG_FREE(type);
-		}
-	}
 }
 
 SGStringList<char> CSGObject::get_modelsel_names()
@@ -657,25 +677,63 @@ void CSGObject::get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
 	}
 }
 
-void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict)
+std::vector<std::pair<std::string, AnyParameter>> CSGObject::get_parameters_by_property(ParameterProperties property)
 {
-	for (index_t i=0; i<m_gradient_parameters->get_num_parameters(); i++)
-	{
-		TParameter* p=m_gradient_parameters->get_parameter(i);
-		dict->add(p, this);
-	}
+    std::vector<std::pair<std::string, AnyParameter>> result;
 
-	for (index_t i=0; i<m_model_selection_parameters->get_num_parameters(); i++)
+	for (auto it = self->map.begin(); it != self->map.end(); ++it )
 	{
-		TParameter* p=m_model_selection_parameters->get_parameter(i);
-		CSGObject* child=*(CSGObject**)(p->m_parameter);
-
-		if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
-				(p->m_datatype.m_ctype == CT_SCALAR) &&	child)
+		if (it->second.get_properties().has_property(property))
 		{
-			child->build_gradient_parameter_dictionary(dict);
+			if(!(it->second.get_value().empty()))
+            {
+                result.push_back(std::make_pair(it->first.name(), it->second));
+			}
 		}
 	}
+
+	return result;
+}
+
+AnyParameter* CSGObject::get_parameter_by_name(std::string name)
+{
+	for (auto it = self->map.begin(); it != self->map.end(); ++it )
+	{
+		if (it->first.name().compare(name))
+		{
+			return &it->second;
+		}
+	}
+}
+
+void CSGObject::build_gradient_parameter_dictionary(CMap<AnyParameter*, CSGObject*>* dict)
+{
+    std::vector<std::pair<std::string, AnyParameter>> results = get_parameters_by_property(ParameterProperties::GRADIENT);
+    std::pair<std::string, AnyParameter> *parameter;
+
+    auto found_it_lambda = [&](auto value) {
+		auto temp_val = get(parameter->first);
+		temp_val->build_gradient_parameter_dictionary(dict);
+    };
+
+    for (auto i:results)
+    {
+        dict->add(&(i.second), this);
+    }
+
+    results = get_parameters_by_property(ParameterProperties::HYPER);
+    for (auto i:results)
+    {
+        try
+        {
+			parameter = &i;
+            shogun::sg_any_dispatch(i.second.get_value(), shogun::sg_object_typemap, found_it_lambda);
+        }
+        catch (ShogunException &msg)
+        {
+            //std::cout << msg.what() << std::endl;
+        }
+    }
 }
 
 CSGObject* CSGObject::clone()
@@ -1070,6 +1128,12 @@ CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
 		return result;
 	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
 		return result;
+    if (auto* result = get_sgobject_type_dispatcher<CKernelNormalizer>(name))
+        return result;
+    if (auto* result = get_sgobject_type_dispatcher<CLikelihoodModel>(name))
+        return result;
+    if (auto* result = get_sgobject_type_dispatcher<CMeanFunction>(name))
+        return result;
 	return nullptr;
 }
 

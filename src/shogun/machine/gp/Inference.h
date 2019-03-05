@@ -168,8 +168,8 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >*
-	get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*,
+	virtual CMap<AnyParameter*, SGVector<float64_t> >*
+	get_negative_log_marginal_likelihood_derivatives(CMap<AnyParameter*,
 			CSGObject*>* parameters);
 
 	/** get alpha vector
@@ -242,8 +242,8 @@ public:
 	 * @return map of gradient. Keys are names of parameters, values are values
 	 * of derivative with respect to that parameter.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient(
-			CMap<TParameter*, CSGObject*>* parameters)
+	virtual CMap<AnyParameter*, SGVector<float64_t> >* get_gradient(
+			CMap<AnyParameter*, CSGObject*>* parameters)
 	{
         return get_negative_log_marginal_likelihood_derivatives(parameters);
 	}
@@ -418,7 +418,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param)=0;
+            const AnyParameter *param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -428,7 +428,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			const TParameter* param)=0;
+            const AnyParameter *param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -438,7 +438,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param)=0;
+            const AnyParameter *param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -448,7 +448,7 @@ protected:
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param)=0;
+            const AnyParameter *param)=0;
 
 	/** update gradients */
 	virtual void compute_gradient();

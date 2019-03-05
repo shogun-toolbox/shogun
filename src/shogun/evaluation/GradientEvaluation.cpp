@@ -43,7 +43,7 @@ void CGradientEvaluation::update_parameter_dictionary()
 {
 	SG_UNREF(m_parameter_dictionary);
 
-	m_parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	m_parameter_dictionary=new CMap<AnyParameter*, CSGObject*>();
 	m_diff->build_gradient_parameter_dictionary(m_parameter_dictionary);
 	SG_REF(m_parameter_dictionary);
 }
@@ -60,7 +60,7 @@ CEvaluationResult* CGradientEvaluation::evaluate_impl()
 	// set function value
 	result->set_value(m_diff->get_value());
 
-	CMap<TParameter*, SGVector<float64_t> >* gradient=m_diff->get_gradient(
+	CMap<AnyParameter*, SGVector<float64_t> >* gradient=m_diff->get_gradient(
 			m_parameter_dictionary);
 
 	// set gradient and parameter dictionary

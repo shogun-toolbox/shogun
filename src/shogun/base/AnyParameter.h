@@ -51,13 +51,15 @@ namespace shogun
 		/** Default constructor where all parameter properties are false
 		 */
 		AnyParameterProperties()
-		    : m_description("No description given"),
+		    : m_name("No name given"),
+		      m_description("No description given"),
 			  m_model_selection(MS_NOT_AVAILABLE),
 			  m_gradient(GRADIENT_NOT_AVAILABLE),
 		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
 		/** Constructor
+		 * @param name parameter name
 		 * @param description parameter description
 		 * @param hyperparameter set to true for parameters that determine
 		 * how training is performed, e.g. regularisation parameters
@@ -67,11 +69,13 @@ namespace shogun
 		 * weights and bias
 		 * */
 		AnyParameterProperties(
+            std::string name,
 		    std::string description,
 		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
 		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
 		    bool model = false)
-		    : m_description(description), m_model_selection(hyperparameter),
+		    : m_name(name), m_description(description),
+		      m_model_selection(hyperparameter),
 		      m_gradient(gradient)
 		{
 			m_attribute_mask = ParameterProperties::NONE;
@@ -83,23 +87,30 @@ namespace shogun
 				m_attribute_mask |= ParameterProperties::MODEL;
 		}
 		/** Mask constructor
+		 * @param name parameter name
 		 * @param description parameter description
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
 		AnyParameterProperties(
-		    std::string description, ParameterProperties attribute_mask)
-		    : m_description(description)
+            std::string name, std::string description,
+            ParameterProperties attribute_mask)
+		    : m_name(name), m_description(description)
 		{
 			m_attribute_mask = attribute_mask;
 		}
-		/** Copy contructor */
+		/** Copy constructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
-		    : m_description(other.m_description),
+		    : m_name(other.m_name),
+		      m_description(other.m_description),
 		      m_model_selection(other.m_model_selection),
 		      m_gradient(other.m_gradient),
 		      m_attribute_mask(other.m_attribute_mask)
 		{
 		}
+        const std::string& get_name() const
+        {
+            return m_name;
+        }
 		const std::string& get_description() const
 		{
 			return m_description;
@@ -131,6 +142,7 @@ namespace shogun
 		}
 
 	private:
+		std::string m_name;
 		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
 		EGradientAvailability m_gradient;

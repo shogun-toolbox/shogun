@@ -67,7 +67,7 @@ public:
 	}
 
 private:
-	/** initialses and registers parameters */
+	/** initialises and registers parameters */
 	void init();
 
 	/** evaluates differentiable function for value and derivative.
@@ -84,7 +84,7 @@ private:
 	CDifferentiableFunction* m_diff;
 
 	/** parameter dictionary of differentiable function */
-	CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
+	CMap<AnyParameter*, CSGObject*>*  m_parameter_dictionary;
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

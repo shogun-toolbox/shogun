@@ -125,7 +125,7 @@ void CCustomDistance::init()
 	m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix");
 	watch_param(
 	    "dmatrix", &dmatrix, &num_rows, &num_cols,
-	    AnyParameterProperties("Distance Matrix"));
+	    AnyParameterProperties("dmatrix", "Distance Matrix"));
 
 	SG_ADD(
 	    &upper_diagonal, "upper_diagonal", "Upper diagonal");

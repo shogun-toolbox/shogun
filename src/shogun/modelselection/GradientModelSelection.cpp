@@ -16,6 +16,7 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+#include <shogun/lib/type_case.h>
 
 using namespace shogun;
 
@@ -108,8 +109,8 @@ struct nlopt_params
 	/** pointer to current combination */
 	CParameterCombination* current_combination;
 
-	/** pointer to parmeter dictionary */
-	CMap<TParameter*, CSGObject*>* parameter_dictionary;
+	/** pointer to parameter dictionary */
+	CMap<AnyParameter*, CSGObject*>* parameter_dictionary;
 
 	/** do we want to print the state? */
 	bool print_state;
@@ -124,7 +125,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	nlopt_params* params=(nlopt_params*)func_data;
 
 	CParameterCombination* current_combination=params->current_combination;
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=params->parameter_dictionary;
+	CMap<AnyParameter*, CSGObject*>* parameter_dictionary=params->parameter_dictionary;
 	bool print_state=params->print_state;
 
 	index_t offset=0;
@@ -132,32 +133,41 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	// set parameters from vector model_vars
 	for (auto i : SG_PROGRESS(range(parameter_dictionary->get_num_elements())))
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
+		CMapNode<AnyParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
 
-		TParameter* param=node->key;
+		AnyParameter* param=node->key;
 		CSGObject* parent=node->data;
 
-		if (param->m_datatype.m_ctype==CT_VECTOR ||
-				param->m_datatype.m_ctype==CT_SGVECTOR ||
-				param->m_datatype.m_ctype==CT_SGMATRIX ||
-				param->m_datatype.m_ctype==CT_MATRIX)
-		{
 
-			for (index_t j=0; j<param->m_datatype.get_num_elements(); j++)
+        bool check = false;
+        auto param_value = param->get_value();
+        auto f_vector = [&check, param_value](auto value) { check=true; };
+        auto f_matrix = [&check, param_value](auto value) { check=true; };
+        sg_any_dispatch(param->get_value(), sg_all_typemap, None{}, f_vector, f_matrix);
+
+        int64_t len;
+        auto f_vector_len = [&len, param_value](auto value) { len=(param_value.as<SGVector<float64_t>*>())->vlen; };
+        auto f_matrix_len = [&len, param_value](auto value) { len=(param_value.as<SGMatrix<float64_t>*>())->num_rows*(param_value.as<SGMatrix<float64_t>*>())->num_cols; };
+
+		if (check)
+		{
+            sg_any_dispatch(param->get_value(), sg_all_typemap, None{}, f_vector_len, f_matrix_len);
+
+			for (index_t j=0; j<len; j++)
 			{
 
-				bool result=current_combination->set_parameter(param->m_name,
+				bool result=current_combination->set_parameter(param->get_properties().get_name().c_str(),
 						model_vars[offset++],	parent, j);
 				 REQUIRE(result, "Parameter %s not found in combination tree\n",
-						 param->m_name)
+                         param->get_properties().get_name())
 			}
 		}
 		else
 		{
-			bool result=current_combination->set_parameter(param->m_name,
+			bool result=current_combination->set_parameter(param->get_properties().get_name().c_str(),
 					model_vars[offset++], parent);
 			REQUIRE(result, "Parameter %s not found in combination tree\n",
-					param->m_name)
+                    param->get_properties().get_name())
 		}
 	}
 
@@ -196,8 +206,8 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 			return -cost;
 	}
 
-	CMap<TParameter*, SGVector<float64_t> >* gradient=gradient_result->get_gradient();
-	CMap<TParameter*, CSGObject*>* gradient_dictionary=
+	CMap<AnyParameter*, SGVector<float64_t> >* gradient=gradient_result->get_gradient();
+	CMap<AnyParameter*, CSGObject*>* gradient_dictionary=
 		gradient_result->get_paramter_dictionary();
 	SG_UNREF(gradient_result);
 
@@ -206,24 +216,24 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	// set derivative for each parameter from parameter dictionary
 	for (index_t i=0; i<parameter_dictionary->get_num_elements(); i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
+		CMapNode<AnyParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
 
 		SGVector<float64_t> derivative;
 
 		for (index_t j=0; j<gradient_dictionary->get_num_elements(); j++)
 		{
-			CMapNode<TParameter*, CSGObject*>* gradient_node=
+			CMapNode<AnyParameter*, CSGObject*>* gradient_node=
 				gradient_dictionary->get_node_ptr(j);
 
 			if (gradient_node->data==node->data &&
-					!strcmp(gradient_node->key->m_name, node->key->m_name))
+					!gradient_node->key->get_properties().get_name().compare(node->key->get_properties().get_name()))
 			{
 				derivative=gradient->get_element(gradient_node->key);
 			}
 		}
 
 		REQUIRE(derivative.vlen, "Can't find gradient wrt %s parameter!\n",
-				node->key->m_name);
+				node->key->get_properties().get_name());
 
 		sg_memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
 
@@ -301,8 +311,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		index_t total_variables=current_combination->get_parameters_length();
 
 		// build parameter->value map
-		CMap<TParameter*, SGVector<float64_t> >* argument=
-			new CMap<TParameter*, SGVector<float64_t> >();
+		CMap<AnyParameter*, SGVector<float64_t> >* argument=
+			new CMap<AnyParameter*, SGVector<float64_t> >();
 		current_combination->build_parameter_values_map(argument);
 
 		//  unroll current parameter combination into vector
@@ -312,7 +322,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 		for (index_t i=0; i<argument->get_num_elements(); i++)
 		{
-			CMapNode<TParameter*, SGVector<float64_t> >* node=argument->get_node_ptr(i);
+			CMapNode<AnyParameter*, SGVector<float64_t> >* node=argument->get_node_ptr(i);
 			sg_memcpy(model_vars.vector+offset, node->data.vector, sizeof(float64_t)*node->data.vlen);
 			offset+=node->data.vlen;
 		}
@@ -320,8 +330,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		SG_UNREF(argument);
 
 		// build parameter->sgobject map from current parameter combination
-		CMap<TParameter*, CSGObject*>* parameter_dictionary=
-			new CMap<TParameter*, CSGObject*>();
+		CMap<AnyParameter*, CSGObject*>* parameter_dictionary=
+			new CMap<AnyParameter*, CSGObject*>();
 		current_combination->build_parameter_parent_map(parameter_dictionary);
 
 		//data for computing the gradient

@@ -41,6 +41,7 @@
 #include <shogun/lib/DynamicArray.h>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/lib/type_case.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -475,11 +476,11 @@ void CEPInferenceMethod::update_deriv()
 }
 
 SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+        const AnyParameter *param)
 {
-	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
+	REQUIRE(!param->get_properties().get_name().compare("log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+			get_name(), param->get_properties().get_name())
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
@@ -494,22 +495,28 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 }
 
 SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_likelihood_model(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	SG_NOTIMPLEMENTED
 	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
 
 	REQUIRE(param, "Param not set\n");
+
 	SGVector<float64_t> result;
-	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
-	result=SGVector<float64_t>(len);
+	auto param_value = param->get_value();
+	int64_t len;
+    auto f_scalar = [&len](auto value) { len=1; };
+    auto f_vector = [&len, &param_value](auto value) { len=param_value.as<SGVector<float64_t>>().vlen; };
+    auto f_matrix = [&len, &param_value](auto value) { len=param_value.as<SGMatrix<float64_t>>().num_rows*param_value.as<SGMatrix<float64_t>>().num_cols; };
+    sg_any_dispatch(param->get_value(), sg_all_typemap, f_scalar, f_vector, f_matrix);
+    result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -531,7 +538,7 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 }
 
 SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
+		const AnyParameter *param)
 {
 	SG_NOTIMPLEMENTED
 	return SGVector<float64_t>();

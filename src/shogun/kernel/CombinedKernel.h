@@ -402,7 +402,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+		SGMatrix<float64_t> get_parameter_gradient(const AnyParameter* param,
 				index_t index=-1);
 
 		/** Get the Kernel array

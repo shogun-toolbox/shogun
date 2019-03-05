@@ -181,8 +181,8 @@ float64_t CInference::get_marginal_likelihood_estimate(
 	return CMath::log_mean_exp(sum);
 }
 
-CMap<TParameter*, SGVector<float64_t> >* CInference::
-get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* params)
+CMap<AnyParameter*, SGVector<float64_t> >* CInference::
+get_negative_log_marginal_likelihood_derivatives(CMap<AnyParameter*, CSGObject*>* params)
 {
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
@@ -193,15 +193,15 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	const index_t num_deriv=params->get_num_elements();
 
 	// create map of derivatives
-	CMap<TParameter*, SGVector<float64_t> >* result=
-		new CMap<TParameter*, SGVector<float64_t> >(num_deriv, num_deriv);
+	CMap<AnyParameter*, SGVector<float64_t> >* result=
+		new CMap<AnyParameter*, SGVector<float64_t> >(num_deriv, num_deriv);
 
 	SG_REF(result);
 
 	#pragma omp parallel for
 	for (index_t i=0; i<num_deriv; i++)
 	{
-        CMapNode<TParameter*, CSGObject*>* node=params->get_node_ptr(i);
+        CMapNode<AnyParameter*, CSGObject*>* node=params->get_node_ptr(i);
         SGVector<float64_t> gradient;
 
 		if(node->data == this)
@@ -227,7 +227,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 		else
 		{
 			SG_SERROR("Can't compute derivative of negative log marginal "
-					"likelihood wrt %s.%s", node->data->get_name(), node->key->m_name);
+					"likelihood wrt %s.%s", node->data->get_name(), node->key->get_properties().get_name());
 		}
 
 		#pragma omp critical
