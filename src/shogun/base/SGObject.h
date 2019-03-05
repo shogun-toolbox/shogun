@@ -646,7 +646,7 @@ public:
 	void subscribe_to_parameters(ParameterObserverInterface* obs);
 
 	/** Print to stdout a list of observable parameters */
-	void list_observable_parameters();
+	std::vector<std::string> list_observable_parameters();
 
 	/** Get string to enum mapping */
 	stringToEnumMapType get_string_to_enum_map() const
