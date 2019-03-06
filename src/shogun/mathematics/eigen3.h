@@ -8,12 +8,18 @@
 #ifndef EIGEN3_H_
 #define EIGEN3_H_
 
+#ifdef __cplusplus
+#include <complex>
+#define lapack_complex_float std::complex<float>
+#define lapack_complex_double std::complex<double>
+#endif
+
 #include <shogun/lib/config.h>
 
-	//#define EIGEN_RUNTIME_NO_MALLOC
-	#include <Eigen/Eigen>
-	#include <Eigen/Dense>
-	#include <Eigen/Sparse>
+//#define EIGEN_RUNTIME_NO_MALLOC
+#include <Eigen/Eigen>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 #if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
 	((EIGEN_MINOR_VERSION == 91) || (EIGEN_MINOR_VERSION == 92)))
