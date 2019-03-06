@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/lib/List.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
 
@@ -108,9 +109,8 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
 		/* Emit the value*/
-		std::string obs_value_name{"cross_validation_run"};
-		ObservedValue cv_data{i, obs_value_name, make_any(storage)};
-		observe(cv_data);
+		observe(ObservedValue::make_observation(i, "cross_validation_run", make_any(storage)));
+
 		SG_UNREF(storage)
 	}
 

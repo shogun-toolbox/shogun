@@ -62,7 +62,7 @@ namespace shogun
 		 * @param name param's name
 		 * @param value Any-wrapped value of the param
 		 */
-		ObservedValue(int64_t step, std::string& name, Any value);
+		ObservedValue(int64_t step, std::string name, Any value);
 
 		~ObservedValue();
 
@@ -97,7 +97,7 @@ namespace shogun
 		 * Set the param's name
 		 * @param name
 		 */
-		void set_observed_name(const std::string& name)
+		void set_observed_name(const std::string name)
 		{
 			m_name = name;
 		}
@@ -128,7 +128,7 @@ namespace shogun
 		* @return an ObservedValue object initialized
 		*/
 		static ObservedValue
-		make_observation(int64_t step, std::string& name, Any value)
+		make_observation(int64_t step, std::string name, Any value)
 		{
 			return ObservedValue(step, name, value);
 		}
