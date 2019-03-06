@@ -24,7 +24,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
-#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
 #include <map>
@@ -43,6 +42,7 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
+class ObservedValue;
 class CDynamicObjectArray;
 
 template <class T, class K> class CMap;
