@@ -84,12 +84,23 @@ namespace shogun
 		virtual bool filter(const std::string& param);
 
 		/**
-		 * Get the i-th observation recorded. It will be presented
-		 * to the user as an Any value which need to be casted.
-		 * @param i id of the observation
-		 * @return Any value with the observation
+		 * Get a vector with all the observations matching a certain name
+		 * and a certain name.
+		 * @tparam T the type of the observations
+		 * @param name the name of the observations
+		 * @return vector with the observations casted to the requested type
 		 */
-		virtual Any get_observation(int i);
+		template <class T>
+		std::vector<T> get_observations(std::string name);
+
+		/**
+		 * Return a single observation from the received ones.
+		 * @tparam T the type of the observation
+		 * @param i the index
+		 * @return the observation casted to the requested type
+		 */
+		template <class T>
+		T* get_observation(int i);
 
 		/**
 		 * Get the total number of observation received.
@@ -115,7 +126,7 @@ namespace shogun
 		 */
 		void on_next(const TimedObservedValue& value)
 		{
-			m_observations.push_back(value.first.get_value());
+			m_observations.push_back(value.first);
 			on_next_impl(value);
 		};
 
@@ -153,7 +164,8 @@ namespace shogun
 		/**
 		 * Observations recorded each time we compute on_next()
 		 */
-		std::vector<Any> m_observations;
+		std::vector<ObservedValue> m_observations;
+
 	};
 }
 
