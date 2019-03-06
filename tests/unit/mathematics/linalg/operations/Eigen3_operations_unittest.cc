@@ -1382,6 +1382,63 @@ TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_mean)
 	EXPECT_NEAR(result, 4, get_epsilon<TypeParam>());
 }
 
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, Scalar_update_mean)
+{
+	const index_t n = 1e5;
+	const TypeParam scale = 2;
+
+	TypeParam mean_increasing = 0;
+	TypeParam mean_decreasing = 0;
+	for (index_t i = 0; i < n; i++)
+	{
+		TypeParam datum_inc(scale * i);
+		TypeParam datum_dec(scale * (n - 1 - i));
+		update_mean(mean_increasing, datum_inc, i + 1);
+		update_mean(mean_decreasing, datum_dec, i + 1);
+	}
+	TypeParam mean_true((scale * (n - 1)) / 2.0);
+
+	auto epsilon = n * get_epsilon<TypeParam>();
+	EXPECT_NEAR(mean_increasing, mean_true, epsilon);
+	EXPECT_NEAR(mean_decreasing, mean_true, epsilon);
+	EXPECT_THROW(
+	    update_mean(mean_increasing, mean_increasing, 0), ShogunException);
+}
+
+TYPED_TEST(LinalgBackendEigenNonIntegerTypesTest, SGVector_update_mean)
+{
+	const index_t n = 1e5;
+	const index_t length = 3;
+	const TypeParam scale = 2;
+
+	SGVector<TypeParam> mean_increasing(length);
+	SGVector<TypeParam> mean_decreasing(length);
+	SGVector<TypeParam>::fill_vector(mean_increasing, length, 0);
+	SGVector<TypeParam>::fill_vector(mean_decreasing, length, 0);
+
+	SGVector<TypeParam> datum(length);
+	for (int i = 0; i < n; i++)
+	{
+		datum.range_fill(i);
+		datum.scale(scale);
+		update_mean(mean_increasing, datum, i + 1);
+		datum.range_fill(n - 1 - i);
+		datum.scale(scale);
+		update_mean(mean_decreasing, datum, i + 1);
+	}
+
+	auto epsilon = n * get_epsilon<TypeParam>();
+	for (int j = 0; j < length; j++)
+	{
+		EXPECT_NEAR(
+		    mean_increasing[j], ((2 * j + n - 1) * scale) / 2.0, epsilon);
+		EXPECT_NEAR(
+		    mean_decreasing[j], ((2 * j + n - 1) * scale) / 2.0, epsilon);
+	}
+	EXPECT_THROW(
+	    update_mean(mean_increasing, mean_increasing, 0), ShogunException);
+}
+
 TYPED_TEST(LinalgBackendEigenAllTypesTest, SGMatrix_std_deviation_colwise)
 {
 	const index_t nrows = 3, ncols = 3;
