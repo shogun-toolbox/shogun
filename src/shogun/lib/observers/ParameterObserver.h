@@ -91,7 +91,41 @@ namespace shogun
 		 * @return vector with the observations casted to the requested type
 		 */
 		template <class T>
-		std::vector<T> get_observations(std::string name);
+		std::vector<T> get_observations(std::string name)
+		{
+			std::vector<ObservedValue> result;
+			std::vector<T> final_vector;
+
+			// Filter the observations by keeping only the one which matches the name
+			std::copy_if(m_observations.begin(), m_observations.end(), std::back_inserter(result),
+						 [&name](ObservedValue v){
+							 return (v.get_name() == name);
+						 });
+
+			// If we did not find anything, the warn the user about it
+			if (result.size() == 0)
+			{
+				SG_WARNING("%s was not found in the observation registered!", name.c_str());
+			}
+
+			// Convert the observations to the correct name
+			std::transform(result.begin(), result.end(), std::back_inserter(final_vector),
+						   [this, &name](ObservedValue v) {
+							   try
+							   {
+								   return any_cast<T>(v.get_value());
+							   }
+							   catch (const TypeMismatchException& exc)
+							   {
+								   SG_ERROR(
+										   "Cannot get observation %s::%s of type %s, incompatible "
+												   "requested type %s.\n",
+										   this->get_name(), name.c_str(), exc.actual().c_str(),
+										   exc.expected().c_str());
+							   }
+						   });
+			return final_vector;
+		}
 
 		/**
 		 * Return a single observation from the received ones.
@@ -100,7 +134,23 @@ namespace shogun
 		 * @return the observation casted to the requested type
 		 */
 		template <class T>
-		T* get_observation(int i);
+		T* get_observation(int i)
+		{
+			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound.", i);
+			ObservedValue v = this->m_observations[i];
+			try
+			{
+				return &(any_cast<T>(v.get_value()));
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+						"Cannot get observation %s::%s of type %s, incompatible "
+								"requested type %s.\n",
+						get_name(), v.get_name(), exc.actual().c_str(),
+						exc.expected().c_str());
+			}
+		};
 
 		/**
 		 * Get the total number of observation received.
