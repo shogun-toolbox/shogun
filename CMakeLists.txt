@@ -47,10 +47,6 @@ if (MSVC)
 	endif()
 endif()
 
-### FIXME: remove these flags when the codebase
-# is cleared up
-set(HAVE_CXX11 ON)
-
 ############# minimum library versions ###################
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 

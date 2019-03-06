@@ -91,11 +91,7 @@ TEST(DenseMatrixOperator, shift_apply)
 	SGVector<complex128_t> diag=op.get_diagonal();
 	for (index_t i=0; i<diag.vlen; ++i)
 	{
-#if defined(HAVE_CXX11) || defined(_LIBCPP_VERSION)
 		diag[i].imag(diag[i].imag()-0.75);
-#else
-		diag[i].imag()-=0.75;
-#endif
 	}
 	op.set_diagonal(diag);
 
@@ -106,11 +102,7 @@ TEST(DenseMatrixOperator, shift_apply)
 	m.set_const(complex128_t(0.5, 0.0));
 	for (index_t i=0; i<size; ++i)
 	{
-#if defined(HAVE_CXX11) || defined(_LIBCPP_VERSION)
 		m(i,i).imag(m(i,i).imag()-0.75);
-#else
-		m(i,i).imag()-=0.75;
-#endif
 	}
 
 	SGVector<complex128_t> r2=op.apply(b);

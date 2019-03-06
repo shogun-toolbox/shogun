@@ -35,7 +35,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUMatrix.h>
 #include <viennacl/matrix.hpp>
@@ -199,5 +198,4 @@ TEST(GPUMatrix, from_eigen3)
 		EXPECT_EQ(eigen_mat(i), gpu_mat[i]);
 }
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

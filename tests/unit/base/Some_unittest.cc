@@ -4,7 +4,6 @@
 #include <shogun/classifier/AveragedPerceptron.h>
 #include <shogun/kernel/GaussianKernel.h>
 
-#ifdef HAVE_CXX11
 using namespace shogun;
 
 TEST(Some,basic)
@@ -87,4 +86,3 @@ TEST(Some, constructor_new_type_wrong_casting)
 	EXPECT_TRUE(kernel.get() != nullptr);
 }
 
-#endif  // HAVE_CXX11
