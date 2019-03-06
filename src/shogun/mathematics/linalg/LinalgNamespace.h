@@ -1507,6 +1507,36 @@ namespace shogun
 			return infer_backend(a)->mean(a);
 		}
 
+		/** Method that updates moving mean vector with new datum point.
+		 *
+		 * @param cma the previous moving mean
+		 * @param datum new datum point
+		 * @param n number of previous data points including the new datum point
+		 */
+		template <typename T>
+		void update_mean(SGVector<T>& cma, const SGVector<T>& datum, int32_t n)
+		{
+			REQUIRE(n > 0, "Number of data points (%d) must be at least 1", n);
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;
+			add(datum, cma, cma, alpha, beta);
+		}
+
+		/** Method that updates moving mean scalar with new datum point.
+		 *
+		 * @param cma the previous moving mean
+		 * @param datum new datum point
+		 * @param n number of previous data points including the new datum point
+		 */
+		template <typename T>
+		void update_mean(T& cma, const T datum, int32_t n)
+		{
+			REQUIRE(n > 0, "Number of data points (%d) must be at least 1", n);
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;
+			cma = alpha * datum + beta * cma;
+		}
+
 		/**
 		 * Method that computes the standard deviation of vectors or matrices
 		 * composed of real numbers.
