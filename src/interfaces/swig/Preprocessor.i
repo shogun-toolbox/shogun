@@ -99,4 +99,3 @@ namespace shogun
 #endif
 }
 
-%include <shogun/preprocessor/FisherLDA.h>

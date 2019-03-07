@@ -7,9 +7,7 @@ Labels feats_labels = labels(data_labels)
 #![create_features]
 
 #![create_preprocessor]
-Transformer preproc = transformer("FisherLDA")
-preproc.put("final_dimensions", 1)
-preproc.put("method", enum EFLDAMethod.CANVAR_FLDA)
+Transformer preproc = transformer("FisherLDA", final_dimensions=1, method="CANVAR_FLDA")
 preproc.fit(feats_train, feats_labels)
 #![create_preprocessor]
 
