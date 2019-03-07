@@ -63,8 +63,6 @@ void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 	/* Print information on screen if enabled*/
 	if (m_verbose)
 		print_observed_value(recalled_value);
-
-	m_observations.push_back(recalled_value);
 }
 
 void CParameterObserverCV::on_error(std::exception_ptr ptr)
