@@ -11,8 +11,8 @@ Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![preprocess_features]
-PruneVarSubMean SubMean()
-NormOne Normalize()
+Transformer SubMean = transformer("PruneVarSubMean")
+Transformer Normalize = transformer("NormOne")
 SubMean.fit(features_train)
 Features pruned_features_train = SubMean.transform(features_train)
 Features pruned_features_test = SubMean.transform(features_test)

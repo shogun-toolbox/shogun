@@ -5,35 +5,14 @@
  */
 
 /* Remove C Prefix */
-%rename(Preprocessor) CPreprocessor;
-%rename(SparsePreprocessor) CSparsePreprocessor;
-%rename(SumOne) CSumOne;
-%rename(NormOne) CNormOne;
-%rename(LogPlusOne) CLogPlusOne;
-%rename(PruneVarSubMean) CPruneVarSubMean;
-%rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
-%rename(HomogeneousKernelMap) CHomogeneousKernelMap;
-%rename(PNorm) CPNorm;
-%rename(RescaleFeatures) CRescaleFeatures;
-
-%rename(PCA) CPCA;
-%rename(KernelPCA) CKernelPCA;
-%rename(FisherLda) CFisherLDA;
-
-%rename(SortUlongString) CSortUlongString;
-%rename(SortWordString) CSortWordString;
-
 /* Feature selection framework */
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
 
 %newobject shogun::CFeatureSelection::remove_feats;
 
-%newobject shogun::CKernelPCA::apply_to_string_features;
-
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
-%include <shogun/preprocessor/Preprocessor.h>
 
 /* Templates Class DensePreprocessor*/
 %include <shogun/preprocessor/DensePreprocessor.h>
@@ -120,19 +99,4 @@ namespace shogun
 #endif
 }
 
-%include <shogun/preprocessor/SparsePreprocessor.h>
-%include <shogun/preprocessor/NormOne.h>
-%include <shogun/preprocessor/SumOne.h>
-%include <shogun/preprocessor/LogPlusOne.h>
-%include <shogun/preprocessor/PruneVarSubMean.h>
-%include <shogun/preprocessor/RandomFourierGaussPreproc.h>
-%include <shogun/preprocessor/HomogeneousKernelMap.h>
-%include <shogun/preprocessor/PNorm.h>
-%include <shogun/preprocessor/RescaleFeatures.h>
-
-%include <shogun/preprocessor/PCA.h>
-%include <shogun/preprocessor/KernelPCA.h>
 %include <shogun/preprocessor/FisherLDA.h>
-
-%include <shogun/preprocessor/SortUlongString.h>
-%include <shogun/preprocessor/SortWordString.h>

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import shogun as sg
 from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
 from shogun import DNA, PROTEIN, Labels
 from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
@@ -96,7 +97,7 @@ def get_spectrum_features(data, order=3, gap=0, reverse=True):
     charfeat = StringCharFeatures(data, DNA)
     feat = StringWordFeatures(charfeat.get_alphabet())
     feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
-    preproc = SortWordString()
+    preproc = sg.transformer("SortWordString")
     preproc.fit(feat)
     feat = preproc.transform(feat)
 
