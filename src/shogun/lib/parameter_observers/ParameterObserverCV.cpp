@@ -56,23 +56,14 @@ CParameterObserverCV::~CParameterObserverCV()
 
 void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
-	if (value.first.get_value().type_info().hash_code() ==
-	    typeid(CrossValidationStorage*).hash_code())
-	{
-		CrossValidationStorage* recalled_value =
-		    any_cast<CrossValidationStorage*>(value.first.get_value());
-		SG_REF(recalled_value);
+	CrossValidationStorage* recalled_value = value.first->get<CrossValidationStorage*>("value");
+	SG_REF(recalled_value);
 
-		/* Print information on screen if enabled*/
-		if (m_verbose)
-			print_observed_value(recalled_value);
+	/* Print information on screen if enabled*/
+	if (m_verbose)
+		print_observed_value(recalled_value);
 
-		m_observations.push_back(recalled_value);
-	}
-	else
-	{	SG_SPRINT("%s: Received an observed valye which is not "
-		"of type CrossValidationStorage\n", this->get_name());
-	}
+	m_observations.push_back(recalled_value);
 }
 
 void CParameterObserverCV::on_error(std::exception_ptr ptr)

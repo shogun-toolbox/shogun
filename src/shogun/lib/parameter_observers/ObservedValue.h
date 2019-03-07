@@ -40,6 +40,7 @@
 #include <utility>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/base/some.h>
 
 /**
  * Definitions of basic object with are needed by the Parameter
@@ -47,6 +48,10 @@
  */
 namespace shogun
 {
+
+	template <class T>
+	class ObservedValueTemplated;
+
 	/* Timepoint */
 	typedef std::chrono::steady_clock::time_point time_point;
 
@@ -59,66 +64,14 @@ namespace shogun
 		/**
 		 * Constructor
 		 * @param step step
-		 * @param name param's name
-		 * @param value Any-wrapped value of the param
+		 * @param name name of the observed value
 		 */
-		ObservedValue(int64_t step, std::string name, Any value);
-
-		~ObservedValue();
+		ObservedValue(int64_t step, char * name);
 
 		/**
-		 * Get the step
-		 * @return an integer representing the step
+		 * Destructor
 		 */
-		int64_t get_step() const
-		{
-			return m_step;
-		}
-
-		/**
-		 * Set the step
-		 * @param step step
-		 */
-		void set_step(int64_t step)
-		{
-			m_step = step;
-		}
-
-		/**
-		 * Get the param's name
-		 * @return param's name
-		 */
-		const std::string& get_observed_name() const
-		{
-			return m_name;
-		}
-
-		/**
-		 * Set the param's name
-		 * @param name
-		 */
-		void set_observed_name(const std::string name)
-		{
-			m_name = name;
-		}
-
-		/**
-		 * Get the Any-wrapped value
-		 * @return Any-wrapped value
-		 */
-		const Any& get_value() const
-		{
-			return m_value;
-		}
-
-		/**
-		 * Set the param's value
-		 * @param value
-		 */
-		void set_value(const Any& value)
-		{
-			m_value = value;
-		}
+		~ObservedValue() {};
 
 		/**
 		* Helper method to generate an ObservedValue.
@@ -127,28 +80,38 @@ namespace shogun
 		* @param value the param's value
 		* @return an ObservedValue object initialized
 		*/
-		static ObservedValue
-		make_observation(int64_t step, std::string name, Any value)
+		template <class T>
+		static Some<ObservedValue>
+		make_observation(int64_t step, char * name, T value)
 		{
-			return ObservedValue(step, name, value);
+			return Some<ObservedValue>::from_raw(
+					new ObservedValueTemplated<T>(step, name, value));
+		}
+
+		/**
+	 	* Return a any version of the stored type
+	 	* @return the any value
+	 	*/
+		virtual Any get_any() {
+			SG_NOTIMPLEMENTED
+			return make_any(nullptr);
 		}
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ObservedValue"; }
 
 	protected:
+
 		/** ObservedValue step (used by Tensorboard to print graphs) */
 		int64_t m_step;
 		/** Parameter's name */
-		std::string m_name;
-		/** Parameter's value */
-		Any m_value;
+		char * m_name;
 	};
 
 	/**
 	 * Observed value with a timestamp
 	 */
-	typedef std::pair<ObservedValue, time_point> TimedObservedValue;
+	typedef std::pair<Some<ObservedValue>, time_point> TimedObservedValue;
 
 	/**
 	 * Helper method to convert a time_point to milliseconds

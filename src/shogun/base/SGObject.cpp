@@ -773,14 +773,14 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
 	auto subscription = m_observable_params
-	                        ->filter([obs](ObservedValue v) {
-		                        return obs->filter(v.get_name());
+	                        ->filter([obs](Some<ObservedValue> v) {
+		                        return obs->filter(v->get<std::string>("name"));
 		                    })
 	                        .timestamp()
 	                        .subscribe(sub);
 }
 
-void CSGObject::observe(const ObservedValue value)
+void CSGObject::observe(const Some<ObservedValue> value)
 {
 	m_subscriber_params->on_next(value);
 }
