@@ -46,21 +46,21 @@ using namespace shogun;
 
 #define CHECK_TYPE(type)                                                       \
 	else if (                                                                  \
-	    value.first.get_value().type_info().hash_code() ==                     \
+	    value.first->get_any().type_info().hash_code() ==                     \
 	    typeid(type).hash_code())                                              \
 	{                                                                          \
 		summaryValue->set_simple_value(                                        \
-		    any_cast<type>(value.first.get_value()));                          \
+		    any_cast<type>(value.first->get_any()));                          \
 	}
 
 #define CHECK_TYPE_HISTO(type)                                                 \
 	else if (                                                                  \
-	    value.first.get_value().type_info().hash_code() ==                     \
+	    value.first->get_any().type_info().hash_code() ==                     \
 	    typeid(type).hash_code())                                              \
 	{                                                                          \
 		tensorflow::histogram::Histogram h;                                    \
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();     \
-		auto v = any_cast<type>(value.first.get_value());                      \
+		auto v = any_cast<type>(value.first->get_any());                      \
 		for (auto value_v : v)                                                 \
 			h.Add(value_v);                                                    \
 		h.EncodeToProto(hp, true);                                             \
@@ -77,18 +77,18 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	tensorflow::Event e;
 	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
-	e.set_step(value.first.get_step());
+	e.set_step(value.first->get<int64_t>("step"));
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first.get_name());
+	summaryValue->set_tag(value.first->get<std::string>("name"));
 	summaryValue->set_node_name(node_name);
 
 	auto write_summary = [&summaryValue=summaryValue](auto val) {
 		summaryValue->set_simple_value(val);
 	};
 
-	sg_any_dispatch(value.first.get_value(), sg_all_typemap, write_summary);
+	sg_any_dispatch(value.first->get_any(), sg_all_typemap, write_summary);
 
 	return e;
 }
@@ -99,19 +99,19 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	tensorflow::Event e;
 	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
-	e.set_step(value.first.get_step());
+	e.set_step(value.first->get<int64_t>("step"));
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first.get_name());
+	summaryValue->set_tag(value.first->get<std::string>("name"));
 	summaryValue->set_node_name(node_name);
 
-	if (value.first.get_value().type_info().hash_code() ==
+	if (value.first->get_any().type_info().hash_code() ==
 	    typeid(std::vector<int8_t>).hash_code())
 	{
 		tensorflow::histogram::Histogram h;
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
-		auto v = any_cast<std::vector<int8_t>>(value.first.get_value());
+		auto v = any_cast<std::vector<int8_t>>(value.first->get_any());
 		for (auto value_v : v)
 			h.Add(value_v);
 		h.EncodeToProto(hp, true);
@@ -131,7 +131,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	else
 	{
 		SG_ERROR(
-		    "Unsupported type %s", value.first.get_value().type_info().name());
+		    "Unsupported type %s", value.first->get_any().type_info().name());
 	}
 
 	return e;

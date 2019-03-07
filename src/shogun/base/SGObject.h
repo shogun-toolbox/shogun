@@ -124,14 +124,14 @@ class CSGObject
 {
 public:
 	/** Definition of observed subject */
-	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
 	/** Definition of observable */
-	typedef rxcpp::observable<ObservedValue,
-		                      rxcpp::dynamic_observable<ObservedValue>>
+	typedef rxcpp::observable<Some<ObservedValue>,
+		                      rxcpp::dynamic_observable<Some<ObservedValue>>>
 		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
+		Some<ObservedValue>, rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */
@@ -952,7 +952,7 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const ObservedValue value);
+	void observe(const Some<ObservedValue> value);
 
 	/**
 	 * Register which params this object can emit.
