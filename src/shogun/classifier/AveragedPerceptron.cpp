@@ -45,7 +45,10 @@ void CAveragedPerceptron::init_model(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
-		set_continue_features(data);
+	
+		SG_REF(data);
+		SG_UNREF(m_continue_features);
+		m_continue_features = data->as<CDotFeatures>();
 	}
 	ASSERT(features)
 

@@ -5,6 +5,7 @@
  */
 
 #include "utils/Utils.h"
+#include "utils/SGObjectIterator.h"
 #include <gtest/gtest.h>
 #include <iterator>
 #include <shogun/base/Parameter.h>
@@ -15,159 +16,6 @@
 #include <shogun/io/SerializableAsciiFile.h>
 
 using namespace shogun;
-
-// to have a type for non-template SGObject classes
-struct untemplated_sgobject
-{
-};
-
-/** Returns primitive type value for template parameter */
-template <class T>
-EPrimitiveType sg_primitive_type();
-template <class T>
-std::string sg_primitive_type_string();
-
-// stringizing the result of expansion of a macro argument used below
-// https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html
-#define STRING__(s) #s
-#define XSTRING__(s) STRING__(s)
-
-#define SG_PRIMITIVE_TYPE(T, ptype)                                            \
-	template <>                                                                \
-	EPrimitiveType sg_primitive_type<T>()                                      \
-	{                                                                          \
-		return ptype;                                                          \
-	}                                                                          \
-                                                                               \
-	template <>                                                                \
-	std::string sg_primitive_type_string<T>()                                  \
-	{                                                                          \
-		return std::string(XSTRING__(ptype));                                  \
-	}
-
-SG_PRIMITIVE_TYPE(bool, PT_BOOL);
-SG_PRIMITIVE_TYPE(char, PT_CHAR);
-SG_PRIMITIVE_TYPE(int8_t, PT_INT8);
-SG_PRIMITIVE_TYPE(uint8_t, PT_UINT8);
-SG_PRIMITIVE_TYPE(int16_t, PT_INT16);
-SG_PRIMITIVE_TYPE(int32_t, PT_INT32);
-SG_PRIMITIVE_TYPE(int64_t, PT_INT64);
-SG_PRIMITIVE_TYPE(float32_t, PT_FLOAT32);
-SG_PRIMITIVE_TYPE(float64_t, PT_FLOAT64);
-SG_PRIMITIVE_TYPE(floatmax_t, PT_FLOATMAX);
-SG_PRIMITIVE_TYPE(untemplated_sgobject, PT_NOT_GENERIC);
-#undef SG_PRIMITIVE_TYPE
-#undef XSTRING__
-#undef STRING__
-
-/** Helper to write c++11 style loops in tests that cover all Shogun classes */
-template <typename T>
-class sg_object_iterator
-{
-public:
-	sg_object_iterator()
-	{
-		m_class_names = available_objects();
-	}
-
-	sg_object_iterator(std::set<std::string> ignores)
-	{
-		m_class_names = available_objects();
-
-		std::set<std::string> diff;
-
-		std::set_difference(
-		    m_class_names.begin(), m_class_names.end(), ignores.begin(),
-		    ignores.end(), std::inserter(diff, diff.begin()));
-		m_class_names = diff;
-	}
-
-	class Iterator : public std::iterator<std::input_iterator_tag, T>
-	{
-	public:
-		Iterator(
-		    std::set<std::string>::iterator it,
-		    std::set<std::string>::iterator end)
-		    : m_it(it), m_end(end), m_obj(nullptr)
-		{
-			create_and_forward_if_necessary();
-		}
-		Iterator(const Iterator& other)
-		    : m_it(other.m_it), m_end(other.m_end), m_obj(other.m_obj)
-		{
-			create_and_forward_if_necessary();
-		}
-		Iterator(Iterator&& other)
-		    : m_it(other.m_it), m_end(other.m_end), m_obj(other.m_obj)
-		{
-			create_and_forward_if_necessary();
-		}
-		~Iterator()
-		{
-			SG_UNREF(m_obj);
-		}
-
-		Iterator& operator=(const Iterator&) = delete;
-		Iterator& operator++()
-		{
-			SG_UNREF(m_obj);
-			do
-			{
-				++m_it;
-
-				if (m_it == m_end)
-					return *this;
-
-				m_obj = create_obj();
-			} while (!m_obj);
-
-			return *this;
-		}
-		CSGObject* operator*()
-		{
-			return m_obj;
-		}
-		bool operator!=(const Iterator& other) const
-		{
-			return this->m_it != other.m_it;
-		}
-
-	private:
-		CSGObject* create_obj()
-		{
-			auto obj = create((*m_it).c_str(), sg_primitive_type<T>());
-			SG_REF(obj);
-			return obj;
-		}
-
-		void create_and_forward_if_necessary()
-		{
-			if (m_it == m_end)
-				return;
-
-			m_obj = create_obj();
-			while (!m_obj && m_it != m_end)
-			{
-				this->operator++();
-			}
-		}
-
-		std::set<std::string>::iterator m_it;
-		std::set<std::string>::iterator m_end;
-		CSGObject* m_obj;
-	};
-
-	Iterator begin() const
-	{
-		return Iterator(m_class_names.begin(), m_class_names.end());
-	}
-	Iterator end() const
-	{
-		return Iterator(m_class_names.end(), m_class_names.end());
-	}
-
-	std::set<std::string> m_class_names;
-};
 
 // list of classes that (currently) cannot be instantiated
 std::set<std::string> sg_object_all_ignores = {"ParseBuffer", "Set",
@@ -198,7 +46,7 @@ TYPED_TEST(SGObjectAll, sg_object_iterator)
 
 TYPED_TEST(SGObjectAll, clone_basic)
 {
-	for (auto obj : sg_object_iterator<TypeParam>(sg_object_all_ignores))
+	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
 		CSGObject* clone = nullptr;
@@ -221,7 +69,7 @@ TYPED_TEST(SGObjectAll, clone_basic)
 
 TYPED_TEST(SGObjectAll, clone_equals_empty)
 {
-	for (auto obj : sg_object_iterator<TypeParam>(sg_object_all_ignores))
+	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
 
@@ -234,7 +82,7 @@ TYPED_TEST(SGObjectAll, clone_equals_empty)
 
 TYPED_TEST(SGObjectAll, serialization_empty_ascii)
 {
-	for (auto obj : sg_object_iterator<TypeParam>(sg_object_all_ignores))
+	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
 

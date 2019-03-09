@@ -116,13 +116,6 @@ namespace shogun
 		{
 		}
 
-		void set_continue_features(CFeatures* data)
-		{
-			SG_REF(data);
-			SG_UNREF(m_continue_features);
-			m_continue_features = data;
-		}
-
 		/** Stores features to continue training */
 		CFeatures* m_continue_features;
 		/** Maximum Iterations */
