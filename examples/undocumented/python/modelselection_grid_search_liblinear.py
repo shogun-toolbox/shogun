@@ -25,7 +25,6 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     from shogun import ParameterCombination
     from shogun import BinaryLabels
     from shogun import RealFeatures
-    from shogun import L2R_L2LOSS_SVC
     import shogun as sg
 
     # build parameter tree to select C1 and C2
@@ -43,7 +42,7 @@ def modelselection_grid_search_liblinear (traindat=traindat, label_traindat=labe
     labels=BinaryLabels(label_traindat)
 
     # classifier
-    classifier=sg.machine("LibLinear", liblinear_solver_type=L2R_L2LOSS_SVC)
+    classifier=sg.machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
