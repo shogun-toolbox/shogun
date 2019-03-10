@@ -6,6 +6,7 @@
 
 /* Remove C Prefix */
 /* Feature selection framework */
+%rename(Preprocessor) CPreprocessor;
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
 
@@ -13,6 +14,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
+%include <shogun/preprocessor/Preprocessor.h>
 
 /* Templates Class DecompressString*/
 %include <shogun/preprocessor/DecompressString.h>
