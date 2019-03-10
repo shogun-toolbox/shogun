@@ -632,9 +632,29 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 
 template<typename ST>
 float64_t CDenseFeatures<ST>::dense_dot(int32_t vec_idx1,
-        const float64_t* vec2, int32_t vec_len2) const
+        const float64_t* vec2, int32_t vec2_len) const
 {
     ASSERT(vec2_len == num_features)
+
+	int32_t vlen;
+	bool vfree;
+	ST* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features)
+	float64_t result = 0;
+
+	for (int32_t i = 0; i < num_features; i++)
+		result += vec1[i] * vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> float64_t CDenseFeatures<bool>::dense_dot(
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+{
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
