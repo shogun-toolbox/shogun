@@ -338,6 +338,17 @@ namespace shogun {
 			return cloned;
 		}
 
+		template <class T>
+		inline auto clone(void** storage, std::vector<T>& value)
+		{
+			std::vector<T> cloned;
+			std::for_each(value.cbegin(), value.cend(),
+				[&cloned](auto o) {
+					cloned.push_back((T)clone_impl(maybe_most_important(), o));
+				});
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
+		}
+
 		template <class T, class S>
 		inline auto clone(void** storage, const ArrayReference<T, S>& value)
 		{
