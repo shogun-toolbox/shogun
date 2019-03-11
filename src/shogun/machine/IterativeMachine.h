@@ -94,6 +94,12 @@ namespace shogun
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL)
 		{
+			if (data) 
+			{
+				SG_REF(data);
+				SG_UNREF(m_continue_features);
+				m_continue_features = data;
+			}
 			m_current_iteration = 0;
 			m_complete = false;
 			init_model(data);

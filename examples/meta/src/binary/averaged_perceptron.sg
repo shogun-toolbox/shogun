@@ -11,7 +11,7 @@ Labels labels_test = labels(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-Machine perceptron = machine("AveragedPerceptron", labels=labels_train, learn_rate=1.0, max_iter=1000)
+Machine perceptron = machine("AveragedPerceptron", labels=labels_train, learn_rate=1.0, max_iterations=1000)
 #![set_parameters]
 
 #![train_and_apply]
