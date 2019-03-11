@@ -568,9 +568,20 @@ public:
 	{
 		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
 		{
-			SG_ERROR(
-					"There are no options for parameter %s::%s", get_name(),
-					_tag.name().c_str());
+			const Any value = get_parameter(_tag).get_value();
+			try
+			{
+				return any_cast<T>(value);
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+						"Cannot get parameter %s::%s of type %s, incompatible "
+								"requested type %s or there are no options for parameter %s::%s.\n",
+						get_name(), _tag.name().c_str(), exc.actual().c_str(),
+						exc.expected().c_str(), get_name(),
+						_tag.name().c_str());
+			}
 		}
 		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
 	}

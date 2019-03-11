@@ -44,15 +44,6 @@
 
 using namespace shogun;
 
-#define CHECK_TYPE(type)                                                       \
-	else if (                                                                  \
-	    value.first->get_any().type_info().hash_code() ==                     \
-	    typeid(type).hash_code())                                              \
-	{                                                                          \
-		summaryValue->set_simple_value(                                        \
-		    any_cast<type>(value.first->get_any()));                          \
-	}
-
 #define CHECK_TYPE_HISTO(type)                                                 \
 	else if (                                                                  \
 	    value.first->get_any().type_info().hash_code() ==                     \
