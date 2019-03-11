@@ -812,7 +812,7 @@ void CSGObject::register_observable_param(
 	param_obs_list->register_param(name, description);
 }
 
-std::vector<std::string> CSGObject::list_observable_parameters()
+std::vector<std::string> CSGObject::observable_names()
 {
 	std::vector<std::string> list;
 	for (auto const& x : param_obs_list->get_list())
