@@ -22,8 +22,8 @@ namespace shogun {
 		 * @param value the observed value
 		 */
 		ObservedValueTemplated(int64_t step, std::string name, T value)
-				: ObservedValue(step, name) {
-			SG_ADD(&v, "value", "Value of the observation", ParameterProperties::NONE);
+				: ObservedValue(step, name), m_observed_value(value) {
+			SG_ADD(&observed_value, "value", "Value of the observation", ParameterProperties::NONE);
 		}
 
 		~ObservedValueTemplated() {};
@@ -33,7 +33,7 @@ namespace shogun {
 		}
 
 	private:
-		T v;
+		T m_observed_value;
 	};
 }
 
