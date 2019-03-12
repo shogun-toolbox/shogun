@@ -1,6 +1,9 @@
 /*
-* Written (W) 2019 Giovanni De Toni
-*/
+ * This software is distributed under BSD 3-clause license (see LICENSE file).
+ *
+ * Authors: Giovanni De Toni
+ *
+ */
 
 #ifndef SHOGUN_OBSERVEDVALUETEMPLATED_H
 #define SHOGUN_OBSERVEDVALUETEMPLATED_H
@@ -10,6 +13,13 @@
 
 namespace shogun {
 
+	/**
+	 * Template ObservedValue which is used to store the real value we
+	 * want to send to the parameter observers. Therefore, we will be able
+	 * to expose only the ObservedValue class to SWIG without worrying
+	 * about the underlining type.
+	 * @tparam T the type of the observed value
+	 */
 	template<class T>
 	class ObservedValueTemplated : public ObservedValue {
 
@@ -27,13 +37,24 @@ namespace shogun {
 							  AnyParameterProperties("Value of the observation", ParameterProperties::NONE));
 		}
 
+		/**
+		 * Destructor
+		 */
 		~ObservedValueTemplated() {};
 
-		Any get_any() {
+		/**
+		 * @copydoc ObservedValue::get_any()
+		 * This method returns an Any reference of the observed
+		 * value stored by this class.
+		 */
+		virtual Any get_any() {
 			return make_any(m_observed_value);
 		}
 
 	private:
+		/**
+		 * Templated observed value
+		 */
 		T m_observed_value;
 	};
 }
