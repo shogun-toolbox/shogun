@@ -23,13 +23,13 @@ namespace shogun {
 		 */
 		ObservedValueTemplated(int64_t step, std::string name, T value)
 				: ObservedValue(step, name), m_observed_value(value) {
-			SG_ADD(&observed_value, "value", "Value of the observation", ParameterProperties::NONE);
+			SG_ADD(&m_observed_value, "value", "Value of the observation", ParameterProperties::NONE);
 		}
 
 		~ObservedValueTemplated() {};
 
 		Any get_any() {
-			return make_any(v);
+			return make_any(m_observed_value);
 		}
 
 	private:
