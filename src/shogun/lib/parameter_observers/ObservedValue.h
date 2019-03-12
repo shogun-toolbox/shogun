@@ -66,7 +66,7 @@ namespace shogun
 		 * @param step step
 		 * @param name name of the observed value
 		 */
-		ObservedValue(int64_t step, char * name);
+		ObservedValue(int64_t step, std::string name);
 
 		/**
 		 * Destructor
@@ -82,7 +82,7 @@ namespace shogun
 		*/
 		template <class T>
 		static Some<ObservedValue>
-		make_observation(int64_t step, char * name, T value)
+		make_observation(int64_t step, std::string name, T value)
 		{
 			return Some<ObservedValue>::from_raw(
 					new ObservedValueTemplated<T>(step, name, value));
@@ -105,7 +105,7 @@ namespace shogun
 		/** ObservedValue step (used by Tensorboard to print graphs) */
 		int64_t m_step;
 		/** Parameter's name */
-		char * m_name;
+		std::string m_name;
 	};
 
 	/**
