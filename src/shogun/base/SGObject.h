@@ -971,9 +971,8 @@ protected:
 	 * @param type the param type
 	 * @param description a user oriented description
 	 */
-	void register_observable_param(
-		const std::string& name,
-		const std::string& description);
+	void register_observable(
+		const std::string& name, const std::string& description);
 
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
