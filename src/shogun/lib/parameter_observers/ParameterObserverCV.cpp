@@ -56,7 +56,8 @@ CParameterObserverCV::~CParameterObserverCV()
 
 void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
-	CrossValidationStorage* recalled_value = value.first->get<CrossValidationStorage*>("value");
+	CrossValidationStorage* recalled_value =
+	    value.first->get<CrossValidationStorage*>("value");
 	SG_REF(recalled_value);
 
 	/* Print information on screen if enabled*/

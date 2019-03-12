@@ -50,8 +50,7 @@ namespace shogun
 {
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
-	typedef std::unordered_map<std::string, std::string>
-	    ObsParamsList;
+	typedef std::unordered_map<std::string, std::string> ObsParamsList;
 
 	class CSGObject::Self
 	{
@@ -788,9 +787,7 @@ void CSGObject::observe(const Some<ObservedValue> value)
 class CSGObject::ParameterObserverList
 {
 public:
-	void register_param(
-	    const std::string& name,
-	    const std::string& description)
+	void register_param(const std::string& name, const std::string& description)
 	{
 		m_list_obs_params[name] = description;
 	}

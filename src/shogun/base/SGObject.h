@@ -131,7 +131,8 @@ public:
 		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-		Some<ObservedValue>, rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
+		Some<ObservedValue>,
+		rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */
@@ -576,11 +577,11 @@ public:
 			catch (const TypeMismatchException& exc)
 			{
 				SG_ERROR(
-						"Cannot get parameter %s::%s of type %s, incompatible "
-								"requested type %s or there are no options for parameter %s::%s.\n",
-						get_name(), _tag.name().c_str(), exc.actual().c_str(),
-						exc.expected().c_str(), get_name(),
-						_tag.name().c_str());
+					"Cannot get parameter %s::%s of type %s, incompatible "
+					"requested type %s or there are no options for parameter "
+					"%s::%s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str(), get_name(), _tag.name().c_str());
 			}
 		}
 		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
