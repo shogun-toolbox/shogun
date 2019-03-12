@@ -43,7 +43,7 @@ namespace shogun
 		/**
 		 * Destructor
 		 */
-		~ObservedValue() {};
+		~ObservedValue(){};
 
 		/**
 		* Helper method to generate an ObservedValue.
@@ -57,23 +57,26 @@ namespace shogun
 		make_observation(int64_t step, std::string name, T value)
 		{
 			return Some<ObservedValue>::from_raw(
-					new ObservedValueTemplated<T>(step, name, value));
+			    new ObservedValueTemplated<T>(step, name, value));
 		}
 
 		/**
-	 	* Return a any version of the stored type.
-	 	* @return the any value.
-	 	*/
-		virtual Any get_any() {
+		* Return a any version of the stored type.
+		* @return the any value.
+		*/
+		virtual Any get_any()
+		{
 			SG_NOTIMPLEMENTED
 			return make_any(nullptr);
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "ObservedValue"; }
+		virtual const char* get_name() const
+		{
+			return "ObservedValue";
+		}
 
 	protected:
-
 		/** ObservedValue step (used by Tensorboard to print graphs) */
 		int64_t m_step;
 		/** Parameter's name */

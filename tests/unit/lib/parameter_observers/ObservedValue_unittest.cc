@@ -2,9 +2,9 @@
 * Written (W) 2019 Giovanni De Toni
 */
 
-#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
-#include <shogun/lib/config.h>
 #include "sg_gtest_utilities.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
 
 using namespace shogun;
 

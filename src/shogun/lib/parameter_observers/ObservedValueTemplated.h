@@ -11,7 +11,8 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 
-namespace shogun {
+namespace shogun
+{
 
 	/**
 	 * Template ObservedValue which is used to store the real value we
@@ -20,11 +21,11 @@ namespace shogun {
 	 * about the underlining type.
 	 * @tparam T the type of the observed value
 	 */
-	template<class T>
-	class ObservedValueTemplated : public ObservedValue {
+	template <class T>
+	class ObservedValueTemplated : public ObservedValue
+	{
 
 	public:
-
 		/**
 		 * Constructor
 		 * @param step step
@@ -32,22 +33,26 @@ namespace shogun {
 		 * @param value the observed value
 		 */
 		ObservedValueTemplated(int64_t step, std::string name, T value)
-				: ObservedValue(step, name), m_observed_value(value) {
-			this->watch_param("value", &m_observed_value,
-							  AnyParameterProperties("Value of the observation", ParameterProperties::NONE));
+		    : ObservedValue(step, name), m_observed_value(value)
+		{
+			this->watch_param(
+			    "value", &m_observed_value,
+			    AnyParameterProperties(
+			        "Value of the observation", ParameterProperties::NONE));
 		}
 
 		/**
 		 * Destructor
 		 */
-		~ObservedValueTemplated() {};
+		~ObservedValueTemplated(){};
 
 		/**
 		 * @copydoc ObservedValue::get_any()
 		 * This method returns an Any reference of the observed
 		 * value stored by this class.
 		 */
-		virtual Any get_any() {
+		virtual Any get_any()
+		{
 			return make_any(m_observed_value);
 		}
 
@@ -59,4 +64,4 @@ namespace shogun {
 	};
 }
 
-#endif //SHOGUN_OBSERVEDVALUETEMPLATED_H
+#endif // SHOGUN_OBSERVEDVALUETEMPLATED_H
