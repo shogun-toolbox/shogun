@@ -805,9 +805,8 @@ private:
 	ObsParamsList m_list_obs_params;
 };
 
-void CSGObject::register_observable_param(
-    const std::string& name,
-    const std::string& description)
+void CSGObject::register_observable(
+    const std::string& name, const std::string& description)
 {
 	param_obs_list->register_param(name, description);
 }
