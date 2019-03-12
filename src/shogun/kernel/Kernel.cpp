@@ -920,11 +920,14 @@ void CKernel::save_serializable_post() throw (ShogunException)
 void CKernel::register_params()
 {
 	SG_ADD(&cache_size, "cache_size", "Cache size in MB.");
-	SG_ADD(&lhs, "lhs", "Feature vectors to occur on left hand side.");
-	SG_ADD(&rhs, "rhs", "Feature vectors to occur on right hand side.");
 	SG_ADD(
-	    &lhs_equals_rhs, "lhs_equals_rhs",
-	    "If features on lhs are the same as on rhs.");
+		&lhs, "lhs", "Feature vectors to occur on left hand side.",
+		ParameterProperties::READONLY);
+	SG_ADD(
+		&rhs, "rhs", "Feature vectors to occur on right hand side.",
+		ParameterProperties::READONLY);
+	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",
+		"If features on lhs are the same as on rhs.");
 	SG_ADD(&num_lhs, "num_lhs", "Number of feature vectors on left hand side.");
 	SG_ADD(
 	    &num_rhs, "num_rhs", "Number of feature vectors on right hand side.");
