@@ -48,11 +48,11 @@ void CLDA::init()
 	m_bdc_svd = true;
 
 	SG_ADD(
-	    &m_gamma, "m_gamma", "Regularization parameter",
+	    &m_gamma, "gamma", "Regularization parameter",
 	    ParameterProperties::HYPER);
-	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm");
+	SG_ADD(&m_bdc_svd, "bdc_svd", "Use BDC-SVD algorithm");
 	SG_ADD_OPTIONS(
-	    (machine_int_t*)&m_method, "m_method",
+	    (machine_int_t*)&m_method, "method",
 	    "Method used for LDA calculation", ParameterProperties::NONE,
 	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA));
 }

@@ -47,6 +47,7 @@ void CLeastAngleRegression::init()
 	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", ParameterProperties::HYPER);
 	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", ParameterProperties::HYPER);
 	SG_ADD(&m_lasso, "lasso", "Max l1-norm of estimator", ParameterProperties::HYPER);
+	watch_method("path_size", &CLeastAngleRegression::get_path_size);
 }
 
 CLeastAngleRegression::~CLeastAngleRegression()
