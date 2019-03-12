@@ -12,7 +12,8 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_kernel_and_mean_function]
-Kernel k = kernel("GaussianKernel", lhs=features_train, rhs=features_train, log_width=0.0)
+Kernel k = kernel("GaussianKernel", log_width=0.0)
+k.init(features_train, features_train)
 ZeroMean mean_function()
 #![create_kernel_and_mean_function]
 
