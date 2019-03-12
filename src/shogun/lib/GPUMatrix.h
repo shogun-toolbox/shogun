@@ -37,7 +37,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
 
 #include <shogun/lib/common.h>
 #include <memory>
@@ -214,6 +213,5 @@ public:
 }
 #endif // SWIG
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL
 #endif // __GPUMATRIX_H__
