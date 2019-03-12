@@ -155,20 +155,20 @@ TEST(TBOutputFormatTest, fail_convert_scalar)
 	test_case_scalar_error<complex128_t>(1);
 };
 
-TYPED_TEST(TBOutputFormatTest, DISABLED_convert_all_types_histo)
+TYPED_TEST(TBOutputFormatTest, convert_all_types_histo)
 {
 	std::vector<TypeParam> v;
 	v.push_back((TypeParam)1);
 	v.push_back((TypeParam)2);
-	//test_case_vector<TypeParam>(v);
+	test_case_vector<TypeParam>(v);
 };
 
-TEST(TBOutputFormat, DISABLED_fail_convert_histo)
+TEST(TBOutputFormat, fail_convert_histo)
 {
 	std::vector<complex128_t> v;
 	v.push_back((complex128_t)1);
 	v.push_back((complex128_t)2);
-	//test_case_vector_error<complex128_t>(v);
+	test_case_vector_error<complex128_t>(v);
 }
 
 #endif // HAVE_TFLOGGER
