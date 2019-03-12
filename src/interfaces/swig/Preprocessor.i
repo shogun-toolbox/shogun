@@ -16,6 +16,24 @@
 %include <shogun/lib/Compressor.h>
 %include <shogun/preprocessor/Preprocessor.h>
 
+/* Templates Class StringPreprocessor*/
+%include <shogun/preprocessor/StringPreprocessor.h>
+namespace shogun
+{
+#ifdef USE_UINT64
+    %template(StringUlongPreprocessor) CStringPreprocessor<uint64_t>;
+#endif
+#ifdef USE_UINT16
+    %template(StringWordPreprocessor) CStringPreprocessor<uint16_t>;
+#endif
+#ifdef USE_UINT8
+    %template(StringBytePreprocessor) CStringPreprocessor<uint8_t>;
+#endif
+#ifdef USE_CHAR
+    %template(StringCharPreprocessor) CStringPreprocessor<char>;
+#endif
+}
+
 /* Templates Class DecompressString*/
 %include <shogun/preprocessor/DecompressString.h>
 namespace shogun

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import shogun as sg
-from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
+from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures
 from shogun import DNA, PROTEIN, Labels
 from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
