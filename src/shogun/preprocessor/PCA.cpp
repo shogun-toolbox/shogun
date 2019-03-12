@@ -63,7 +63,7 @@ void CPCA::init()
 	    &m_whitening, "whitening", "Whether data shall be whitened.",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_thresh, "m_thresh", "Cutoff threshold.", ParameterProperties::HYPER);
+	    &m_thresh, "thresh", "Cutoff threshold.", ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance",
 	    "zero tolerance"
@@ -77,11 +77,11 @@ void CPCA::init()
 	    ParameterProperties::HYPER,
 	    SG_OPTIONS(THRESHOLD, VARIANCE_EXPLAINED, FIXED_NUMBER));
 	SG_ADD_OPTIONS(
-	    (machine_int_t*)&m_mem_mode, "m_mem_mode",
+	    (machine_int_t*)&m_mem_mode, "mem_mode",
 	    "Memory mode (in-place or reallocation).", ParameterProperties::NONE,
 	    SG_OPTIONS(MEM_REALLOCATE, MEM_IN_PLACE));
 	SG_ADD_OPTIONS(
-	    (machine_int_t*)&m_method, "m_method",
+	    (machine_int_t*)&m_method, "method",
 	    "Method used for PCA calculation", ParameterProperties::NONE,
 	    SG_OPTIONS(AUTO, SVD, EVD));
 }
