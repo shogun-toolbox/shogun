@@ -89,16 +89,16 @@ void CParameterObserverCV::print_observed_value(
 	for (int i = 0; i < value->get_num_folds(); i++)
 	{
 		auto f = value->get_fold(i);
-		SG_SPRINT("\n")
-		SG_SPRINT("Current run index: %i\n", f->get_current_run_index())
-		SG_SPRINT("Current fold index: %i\n", f->get_current_fold_index())
+		SG_PRINT("\n")
+		SG_PRINT("Current run index: %i\n", f->get_current_run_index())
+		SG_PRINT("Current fold index: %i\n", f->get_current_fold_index())
 		f->get_train_indices().display_vector("Train Indices ");
 		f->get_test_indices().display_vector("Test Indices ");
 		print_machine_information(f->get_trained_machine());
 		f->get_test_result()->get_values().display_vector("Test Labels ");
 		f->get_test_true_result()->get_values().display_vector(
 		    "Test True Label ");
-		SG_SPRINT("Evaluation result: %f\n", f->get_evaluation_result());
+		SG_PRINT("Evaluation result: %f\n", f->get_evaluation_result());
 		SG_UNREF(f)
 	}
 }
@@ -109,14 +109,14 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 	{
 		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("Learned Weights = ");
-		SG_SPRINT("Learned Bias = %f\n", linear_machine->get_bias())
+		SG_PRINT("Learned Bias = %f\n", linear_machine->get_bias())
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
 		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
-		SG_SPRINT("Learned Bias = %f\n", kernel_machine->get_bias())
+		SG_PRINT("Learned Bias = %f\n", kernel_machine->get_bias())
 	}
 
 	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||
@@ -163,7 +163,7 @@ CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 	return obs;
 }
 
-const int CParameterObserverCV::get_num_observations() const
+const size_t CParameterObserverCV::get_num_observations() const
 {
 	return m_observations.size();
 }
