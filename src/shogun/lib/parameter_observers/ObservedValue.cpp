@@ -10,7 +10,7 @@ using namespace shogun;
 ObservedValue::ObservedValue(int64_t step, std::string name)
 	: CSGObject(), m_step(step), m_name(name)
 {
-	SG_ADD(&step, "step", "Step", ParameterProperties::NONE);
-	this->watch_param("name", &name,
+	SG_ADD(&m_step, "step", "Step", ParameterProperties::NONE);
+	this->watch_param("name", &m_name,
 					  AnyParameterProperties("Name of the observed value", ParameterProperties::NONE));
 }
