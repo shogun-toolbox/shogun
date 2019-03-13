@@ -19,7 +19,7 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
     from shogun import machine_evaluation
-    from shogun import ParameterObserverCV
+    from shogun import parameter_observer
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import splitting_strategy
     from shogun import MulticlassLabels
@@ -67,15 +67,15 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
         evaluation_criterion=evaluation_criterium, autolock=False, num_runs=3)
 
     # append cross validation parameter observer
-    multiclass_storage=ParameterObserverCV()
+    multiclass_storage=parameter_observer("ParameterObserverCV")
     cross_validation.subscribe_to_parameters(multiclass_storage)
 
     # perform cross-validation
     result=cross_validation.evaluate()
 
     # get first observation and first fold
-    obs = multiclass_storage.get_observations()[0]
-    fold = obs.get_folds_results()[0]
+    obs = multiclass_storage.get_observation(0).get_CV_storage("value")
+    fold = obs.get_fold(0)
 
     # get fold ROC for first class
     eval_ROC = ROCEvaluation()
