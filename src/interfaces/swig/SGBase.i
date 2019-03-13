@@ -114,6 +114,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
+ #include <shogun/base/some.h>
  #include <shogun/base/SGObject.h>
  #include <shogun/lib/StoppableSGObject.h>
 
@@ -377,6 +378,7 @@ namespace std {
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+%include <shogun/base/some.h>
 %include <shogun/lib/StoppableSGObject.h>
 
 namespace shogun
