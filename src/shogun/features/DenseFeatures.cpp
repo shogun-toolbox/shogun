@@ -631,8 +631,29 @@ GET_FEATURE_TYPE(F_DREAL, float64_t)
 GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
 
-template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) const
+template<typename ST>
+float64_t CDenseFeatures<ST>::dense_dot(int32_t vec_idx1,
+        const float64_t* vec2, int32_t vec2_len) const
+{
+    ASSERT(vec2_len == num_features)
+
+	int32_t vlen;
+	bool vfree;
+	ST* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features)
+	float64_t result = 0;
+
+	for (int32_t i = 0; i < num_features; i++)
+		result += vec1[i] * vec2[i];
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+
+	return result;
+}
+
+template<> float64_t CDenseFeatures<bool>::dense_dot(
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == num_features)
 
@@ -645,206 +666,6 @@ template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
 
 	for (int32_t i = 0; i < num_features; i++)
 		result += vec1[i] ? vec2[i] : 0;
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<char>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	char* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<int8_t>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	int8_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<uint8_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	uint8_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<int16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	int16_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<uint16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	uint16_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<int32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	int32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<uint32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	uint32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<int64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	int64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<uint64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	uint64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<float32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	float32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 
@@ -864,26 +685,6 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	ASSERT(vlen == num_features)
 	SGVector<float64_t> tmp(const_cast<float64_t*>(vec2), vec2_len, false);
 	float64_t result = linalg::dot(sg_vec1, tmp);
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> float64_t CDenseFeatures<floatmax_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
-{
-	ASSERT(vec2_len == num_features)
-
-	int32_t vlen;
-	bool vfree;
-	floatmax_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features)
-	float64_t result = 0;
-
-	for (int32_t i = 0; i < num_features; i++)
-		result += vec1[i] * vec2[i];
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 
