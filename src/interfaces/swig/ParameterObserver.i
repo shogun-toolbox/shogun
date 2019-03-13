@@ -14,6 +14,6 @@
 
 namespace shogun {
 
-%template(get_CV_storage) ParameterObserver::get<CrossValidationStorage*>;
+%template(get_CV_storage) CSGObject::get<CrossValidationStorage*, void>;
 
 }
