@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
+import shogun as sg
 lm=LoadMatrix()
 
 traindna = lm.load_dna('../data/fm_train_dna.dat')
@@ -11,12 +12,11 @@ def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order
 
 	from shogun import CommWordStringKernel
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import SortWordString
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = SortWordString()
+	preproc = sg.transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 

@@ -14,13 +14,12 @@ def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 		fm_test_real=testdat,order=3,gap=0,reverse=False,use_sign=False):
 
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import SortWordString
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc=SortWordString()
+	preproc = sg.transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
