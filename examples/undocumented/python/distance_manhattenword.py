@@ -7,12 +7,12 @@ parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,4,0,False]]
 
 def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=0,reverse=False):
 	from shogun import StringCharFeatures, StringWordFeatures, DNA
-	from shogun import SortWordString, distance, CSVFile
+	from shogun import distance, CSVFile
 
 	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	preproc = SortWordString()
+	preproc = sg.transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 

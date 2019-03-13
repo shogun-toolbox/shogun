@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+import shogun as sg
 parameter_list=[[10,7,0,False]]
 
 def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 	import gc
 	from shogun import Alphabet,StringCharFeatures,StringWordFeatures,DNA
-	from shogun import SortWordString, MSG_DEBUG
+	from shogun import MSG_DEBUG
 	from shogun import CommWordStringKernel, IdentityKernelNormalizer
 	from numpy import mat
 
@@ -64,7 +65,7 @@ def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 		trainudat=StringWordFeatures(traindat.get_alphabet());
 		trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
 		#trainudat.io.set_loglevel(MSG_DEBUG)
-		pre = SortWordString()
+		pre = sg.transformer("SortWordString")
 		#pre.io.set_loglevel(MSG_DEBUG)
 		pre.fit(trainudat)
 		trainudat = pre.transform(trainudat)

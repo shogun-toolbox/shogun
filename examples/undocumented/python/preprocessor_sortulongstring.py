@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
+import shogun as sg
 lm=LoadMatrix()
 
 traindna = lm.load_dna('../data/fm_train_dna.dat')
@@ -11,7 +12,6 @@ def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,orde
 
 	from shogun import CommUlongStringKernel
 	from shogun import StringCharFeatures, StringUlongFeatures, DNA
-	from shogun import SortUlongString
 
 
 	charfeat=StringCharFeatures(DNA)
@@ -24,7 +24,7 @@ def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,orde
 	feats_test=StringUlongFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	preproc = SortUlongString()
+	preproc = sg.transformer("SortUlongString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 	feats_test = preproc.transform(feats_test)
