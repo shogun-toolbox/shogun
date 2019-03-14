@@ -37,6 +37,7 @@
 #include <shogun/lib/memory.h>
 #include <stdexcept>
 #include <functional>
+#include <map>
 
 using namespace shogun;
 
@@ -804,7 +805,6 @@ TEST(Any, compare_string_maps)
 
 TEST(Any, compare_object_maps)
 {
-
         auto lhs_obj = std::make_shared<Object>();
         auto rhs_obj = std::make_shared<Object>();
         EXPECT_TRUE(lhs_obj->equals(rhs_obj.get()));
