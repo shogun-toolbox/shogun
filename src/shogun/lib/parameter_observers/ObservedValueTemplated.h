@@ -15,10 +15,7 @@ namespace shogun
 {
 
 	/**
-	 * Template ObservedValue which is used to store the real value we
-	 * want to send to the parameter observers. Therefore, we will be able
-	 * to expose only the ObservedValue class to SWIG without worrying
-	 * about the underlining type.
+	 * Templated specialisation of ObservedValue that stores the actual data.
 	 * @tparam T the type of the observed value
 	 */
 	template <class T>
