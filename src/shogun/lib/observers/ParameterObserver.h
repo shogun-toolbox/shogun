@@ -85,17 +85,18 @@ namespace shogun
 
 		/**
 		 * Get a vector with all the observations matching a certain name
-		 * and a certain name.
+		 * and a certain name (not SG_REF).
 		 * @tparam T the type of the observations
 		 * @param name the name of the observations
 		 * @return vector with the observations casted to the requested type
 		 */
-		std::vector<Some<ObservedValue>> get_observations(std::string name)
+		std::vector<ObservedValue*> get_observations(std::string name)
 		{
-			std::vector<Some<ObservedValue>> result;
+			std::vector<Some<ObservedValue>> filter;
+			std::vector<ObservedValue*> result;
 
 			// Filter the observations by keeping only the one which matches the name
-			std::copy_if(m_observations.begin(), m_observations.end(), std::back_inserter(result),
+			std::copy_if(m_observations.begin(), m_observations.end(), std::back_inserter(filter),
 						 [&name](Some<ObservedValue> v){
 							 return (v->get<std::string>("name") == name);
 						 });
@@ -106,19 +107,23 @@ namespace shogun
 				SG_WARNING("%s was not found in the observation registered!", name.c_str());
 			}
 
+			// Copy the raw vectors from the observation array
+			std::transform(filter.begin(), filter.end(), result.begin(),
+						   [](Some<ObservedValue> x) { return x.get();});
+
 			return result;
 		}
 
 		/**
-		 * Return a single observation from the received ones.
+		 * Return a single observation from the received ones (not SG_REF).
 		 * @tparam T the type of the observation
 		 * @param i the index
 		 * @return the observation casted to the requested type
 		 */
-		Some<ObservedValue> get_observation(size_t i)
+		ObservedValue * get_observation(size_t i)
 		{
 			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound.", i);
-			return this->m_observations[i];
+			return this->m_observations[i].get();
 		};
 
 		/**
