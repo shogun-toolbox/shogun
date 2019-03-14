@@ -12,11 +12,20 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/type_case.h>
+
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
 
 namespace shogun
 {
+
+class CSGObject;
+template <class ST> class SGString;
+template <class T> class SGMatrix;
+template <class T> class SGSparseMatrix;
+template <class T> class SGVector;
+template <class T> class SGSparseVector;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EContainerType
@@ -40,22 +49,75 @@ enum EStructType
 
 enum EPrimitiveType
 {
-	PT_BOOL=0,
-	PT_CHAR=1,
-	PT_INT8=2,
-	PT_UINT8=3,
-	PT_INT16=4,
-	PT_UINT16=5,
-	PT_INT32=6,
-	PT_UINT32=7,
-	PT_INT64=8,
-	PT_UINT64=9,
-	PT_FLOAT32=10,
-	PT_FLOAT64=11,
-	PT_FLOATMAX=12,
-	PT_SGOBJECT=13,
-	PT_COMPLEX128=14,
-	PT_UNDEFINED=15
+	PT_BOOL=(int)TYPE::T_BOOL,
+	PT_CHAR=(int)TYPE::T_CHAR,
+	PT_INT8=(int)TYPE::T_INT8,
+	PT_UINT8=(int)TYPE::T_UINT8,
+	PT_INT16=(int)TYPE::T_INT16,
+	PT_UINT16=(int)TYPE::T_UINT16,
+	PT_INT32=(int)TYPE::T_INT32,
+	PT_UINT32=(int)TYPE::T_UINT32,
+	PT_INT64=(int)TYPE::T_INT64,
+	PT_UINT64=(int)TYPE::T_UINT64,
+	PT_FLOAT32=(int)TYPE::T_FLOAT32,
+	PT_FLOAT64=(int)TYPE::T_FLOAT64,
+	PT_FLOATMAX=(int)TYPE::T_FLOATMAX,
+	PT_SGOBJECT=(int)TYPE::T_SGOBJECT,
+	PT_COMPLEX128=(int)TYPE::T_COMPLEX128,
+	PT_UNDEFINED=(int)TYPE::T_UNDEFINED
+};
+
+namespace type_internal
+{
+	template<template<class> class CT, class T>
+	struct sg_container_type
+	{
+	};
+
+	template<template<class> class ST, class T>
+	struct sg_struct_type
+	{
+	};
+
+	template<template<class> class CT, class T>
+	struct is_sg_container : public std::false_type
+	{
+	};
+
+	template<template<class> class ST, class T>
+	struct is_sg_struct : public std::false_type
+	{
+	};
+
+	#define SG_ADD_CONTAINER_TYPE(CT, type_)                                         \
+	template <typename T>                                                                \
+	struct sg_container_type<CT, T>                                                          \
+	{                                                                          \
+		static constexpr EContainerType ctype = type_;                                   \
+	};																			\
+	template <typename T>                                                                \
+	struct is_sg_container<CT, T> : public std::true_type                             \
+	{                                                                          \
+	};
+
+	#define SG_ADD_STRUCT_TYPE(ST, type_)                                         \
+	template <typename T>                                                                \
+	struct sg_struct_type<ST, T>                                                          \
+	{                                                                          \
+		static constexpr EStructType stype = type_;                                   \
+	};																				\
+	template <typename T>                                                                \
+	struct is_sg_struct<ST, T> : public std::true_type                             \
+	{                                                                          \
+	};
+
+	SG_ADD_CONTAINER_TYPE(SGVector, CT_SGVECTOR)
+	SG_ADD_CONTAINER_TYPE(SGMatrix, CT_MATRIX)
+	SG_ADD_STRUCT_TYPE(SGString, ST_STRING)
+	SG_ADD_STRUCT_TYPE(SGSparseVector, ST_SPARSE)
+
+	#undef SG_ADD_CONTAINER_TYPE
+	#undef SG_ADD_STRUCT_TYPE
 };
 
 /** Returns string representation of primitive type

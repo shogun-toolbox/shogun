@@ -114,7 +114,6 @@ namespace shogun
 	struct is_sg_matrix<T> : public std::true_type                             \
 	{                                                                          \
 	};
-
 		SG_ADD_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
 		SG_ADD_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
 		SG_ADD_PRIMITIVE_TYPE(int8_t, TYPE::T_INT8)
@@ -139,13 +138,13 @@ namespace shogun
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<floatmax_t>, TYPE::T_SGMATRIX_FLOATMAX)
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<int32_t>, TYPE::T_SGMATRIX_INT32)
 		SG_ADD_SGMATRIX_TYPE(SGMatrix<int64_t>, TYPE::T_SGMATRIX_INT64)
-
+		
 #undef SG_ADD_TYPE
 #undef SG_ADD_PRIMITIVE_TYPE
 #undef SG_ADD_SGVECTOR_TYPE
 #undef SG_ADD_SGMATRIX_TYPE
 
-		std::string print_map(const typemap& map)
+		static inline std::string print_map(const typemap& map)
 		{
 			auto msg = std::string("<");
 			for (auto it : map)
@@ -158,7 +157,7 @@ namespace shogun
 			return msg;
 		}
 
-		TYPE get_type(const Any& any, const typemap& map)
+		static inline TYPE get_type(const Any& any, const typemap& map)
 		{
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
