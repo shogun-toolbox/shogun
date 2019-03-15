@@ -6,8 +6,8 @@
 #include <string>
 #include <shogun/base/class_list.h>
 
-using namespace shogun;
-
+namespace
+{
 // to have a type for non-template SGObject classes
 struct untemplated_sgobject
 {
@@ -161,4 +161,6 @@ public:
 
 	std::set<std::string> m_class_names;
 };
+
+} // namespace shogun
 #endif //__SG_OBJECT_ITERATOR_H__
