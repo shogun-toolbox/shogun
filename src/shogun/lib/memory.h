@@ -43,12 +43,12 @@ void* operator new[](size_t size);
 void operator delete[](void *p) throw();
 
 #ifdef HAVE_ALIGNED_MALLOC
-#ifdef HAVE_STD_ALIGNED_ALLOC
+#ifdef HAVE_ALIGNED_NEW
 void* operator new(size_t count, std::align_val_t al);
 void* operator new[](size_t count, std::align_val_t al);
 void operator delete(void *p, std::align_val_t al);
 void operator delete[](void *p, std::align_val_t al);
-#endif // HAVE_STD_ALIGNED_ALLOC
+#endif // HAVE_ALIGNED_NEW
 
 #ifdef TRACE_MEMORY_ALLOCS
 #define SG_ALIGNED_MALLOC(type, len, al) sg_aligned_malloc<type>(size_t(len), al, __FILE__, __LINE__)
