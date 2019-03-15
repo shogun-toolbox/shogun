@@ -1,0 +1,18 @@
+File traindat = csv_file("../../data/fm_train_real.dat")
+File testdat = csv_file("../../data/fm_test_real.dat")
+
+#![create_features]
+Features feats_train = features(traindat)
+Features feats_test = features(testdat)
+#![create_features]
+
+#![create_kernel]
+Kernel anova_kernel = kernel("ANOVAKernel", cardinality=2)
+anova_kernel.init(feats_train, feats_train)
+#![create_kernel]
+
+#![get_kernel_features]
+RealMatrix K_train_train = anova_kernel.get_kernel_matrix()
+anova_kernel.init(feats_train, feats_test)
+RealMatrix K_train_test = anova_kernel.get_kernel_matrix()
+#![get_kernel_features]
