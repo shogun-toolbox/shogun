@@ -403,11 +403,6 @@ SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
   $<INSTALL_INTERFACE:include/shogun/third_party/rapidjson>
 )
 
-SHOGUN_DEPENDENCIES(
-  LIBRARY LibXml2
-  SCOPE PUBLIC
-  CONFIG_FLAG HAVE_XML)
-
 if (NOT WIN32)
   # FIXME: HDF5 linking on WIN32 is broken.
   # at least with the hdf5 supplied in anaconda
