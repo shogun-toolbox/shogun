@@ -7,8 +7,6 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableJsonFile.h>
-#include <shogun/io/SerializableXmlFile.h>
 #include <shogun/io/SerializableHdf5File.h>
 
 using namespace shogun;
@@ -110,60 +108,6 @@ void test_hdf5(Parameter* save_param, Parameter* load_param)
 	check_content_equal(save_param, load_param);
 }
 
-void test_json(Parameter* save_param, Parameter* load_param)
-{
-	/* TODO, json file leaks memory, also save methods */
-	SG_SPRINT("testing json serialization\n");
-	SG_SPRINT("to save:\n");
-	print(save_param);
-	SG_SPRINT("loaded before:\n");
-	print(load_param);
-
-	CSerializableJsonFile* file;
-
-	file=new CSerializableJsonFile(filename, 'w');
-	save_param->save(file);
-	file->close();
-	SG_UNREF(file);
-
-	file=new CSerializableJsonFile(filename, 'r');
-	load_param->load(file);
-	file->close();
-	SG_UNREF(file);
-
-	SG_SPRINT("loaded after:\n");
-	print(load_param);
-
-	check_content_equal(save_param, load_param);
-}
-
-void test_xml(Parameter* save_param, Parameter* load_param)
-{
-	/* TODO, xml file leaks memory and produces a read error */
-	SG_SPRINT("testing xml serialization\n");
-	SG_SPRINT("to save:\n");
-	print(save_param);
-	SG_SPRINT("loaded before:\n");
-	print(load_param);
-
-	CSerializableXmlFile* file;
-
-	file=new CSerializableXmlFile(filename, 'w');
-	save_param->save(file);
-	file->close();
-	SG_UNREF(file);
-
-	file=new CSerializableXmlFile(filename, 'r');
-	load_param->load(file);
-	file->close();
-	SG_UNREF(file);
-
-	SG_SPRINT("loaded after:\n");
-	print(load_param);
-
-	check_content_equal(save_param, load_param);
-}
-
 void reset_values(Parameter* save_param, Parameter* load_param)
 {
 	TParameter* p;
@@ -212,20 +156,12 @@ int main(int argc, char **argv)
 	lp->add(&lv, "vector", "description");
 	lp->add(&lm, "matrix", "description");
 
-	/* still leaks memory TODO */
-	reset_values(sp, lp);
-	test_json(sp, lp);
-
 	reset_values(sp, lp);
 	test_ascii(sp, lp);
 
 	/* still leaks memory TODO */
 	reset_values(sp, lp);
 	test_hdf5(sp, lp);
-
-	/* still leaks memory TODO */
-	reset_values(sp, lp);
-	test_xml(sp, lp);
 
 	/* clean up */
 	sv.destroy_vector();

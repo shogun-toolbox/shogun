@@ -35,7 +35,7 @@ import os
 class_str = 'class'
 types = ["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
          "INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
-config_tests = ["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK",
+config_tests = ["HAVE_HDF5", "HAVE_LAPACK",
                 "USE_CPLEX", "USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP",
                 "USE_BZIP2", "USE_LZMA", "USE_MOSEK", "HAVE_COLPACK",
                 "HAVE_NLOPT", "HAVE_PROTOBUF", "HAVE_VIENNACL", "USE_GPL_SHOGUN",
