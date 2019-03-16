@@ -12,6 +12,8 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Statistics.h>
 
+#include <set>
+
 using namespace shogun;
 
 CBinaryLabels::CBinaryLabels() : CDenseLabels()
@@ -139,8 +141,28 @@ CLabels* CBinaryLabels::duplicate() const
 	return new CBinaryLabels(*this);
 }
 
-namespace shogun
-{
+
+namespace shogun {
+	SG_FORCED_INLINE Some<CBinaryLabels> from_multiclass(CMulticlassLabels* orig) {
+		auto result_vector = orig->get_labels();
+		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
+		auto min = *std::min_element(unique.begin(), unique.end());
+
+		ASSERT(unique.size() == 2);
+
+		SGVector<int32_t> converted(result_vector.vlen);
+		std::transform(
+				result_vector.begin(), result_vector.end(), converted.begin(),
+				[&min](int32_t old_label) {
+					if (old_label == min)
+						return -1;
+					else
+						return 1;
+				});
+
+		return some<CBinaryLabels>(converted);
+	}
+
 	Some<CBinaryLabels> binary_labels(CLabels* orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
@@ -150,6 +172,8 @@ namespace shogun
 			{
 			case LT_BINARY:
 				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
+			case LT_MULTICLASS:
+				return from_multiclass((CMulticlassLabels*)orig);
 			default:
 				SG_SNOTIMPLEMENTED
 			}
