@@ -29,6 +29,7 @@ namespace shogun
 	class CDifferentiableFunction;
 	class CInference;
 	class CLossFunction;
+	class CTokenizer;
 
 	// type trait to enable certain methods only for shogun base types
 	template <class T>

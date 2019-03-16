@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 
 strings=['example document 1','example document 2','example document 3','example document 4']
 
@@ -24,7 +25,7 @@ def converter_hasheddoc(strings):
 	normalize=True
 
 	#create converter
-	converter=HashedDocConverter(tokenizer, num_bits, normalize)
+	converter = sg.transformer('HashedDocConverter', tokernizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
 
 	converted_feats=converter.transform(f)
 
