@@ -141,24 +141,30 @@ CLabels* CBinaryLabels::duplicate() const
 	return new CBinaryLabels(*this);
 }
 
-
-namespace shogun {
-	SG_FORCED_INLINE Some<CBinaryLabels> from_multiclass(CMulticlassLabels* orig) {
+namespace shogun
+{
+	SG_FORCED_INLINE Some<CBinaryLabels>
+	from_multiclass(CMulticlassLabels* orig)
+	{
 		auto result_vector = orig->get_labels();
 		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
 		auto min = *std::min_element(unique.begin(), unique.end());
 
-		ASSERT(unique.size() == 2);
+		REQUIRE(
+		    unique.size() == 2,
+		    "%s must contain two unique labels, but contains %d. Cannot "
+		    "convert to binary labels.\n",
+		    orig->get_name(), unique.size());
 
 		SGVector<int32_t> converted(result_vector.vlen);
 		std::transform(
-				result_vector.begin(), result_vector.end(), converted.begin(),
-				[&min](int32_t old_label) {
-					if (old_label == min)
-						return -1;
-					else
-						return 1;
-				});
+		    result_vector.begin(), result_vector.end(), converted.begin(),
+		    [&min](int32_t old_label) {
+			    if (old_label == min)
+				    return -1;
+			    else
+				    return 1;
+		    });
 
 		return some<CBinaryLabels>(converted);
 	}
