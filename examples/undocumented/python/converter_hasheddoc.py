@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 
 strings=['example document 1','example document 2','example document 3','example document 4']
 
@@ -7,7 +8,6 @@ parameter_list=[[strings]]
 def converter_hasheddoc(strings):
 	from shogun import SparseRealFeatures, RAWBYTE, StringCharFeatures, Features, HashedDocDotFeatures
 	from shogun import NGramTokenizer
-	from shogun import HashedDocConverter
 	from numpy import array
 
 	#create string features
@@ -24,7 +24,7 @@ def converter_hasheddoc(strings):
 	normalize=True
 
 	#create converter
-	converter=HashedDocConverter(tokenizer, num_bits, normalize)
+	converter = sg.transformer('HashedDocConverter', tokenizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
 
 	converted_feats=converter.transform(f)
 
