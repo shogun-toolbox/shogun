@@ -17,5 +17,12 @@ namespace shogun
 		    "parameter. If the standard deviation of the features can be "
 		    "calculated then gamma = 1 / (n_features * std(features)), else "
 		    "gamma = 1 / n_features.";
-	} // namespace factory
+
+		const char* const GaussianWidthAutoInit::kName =
+				"GaussianWidthInit";
+		const char* const GaussianWidthAutoInit::kDescription =
+				"Automatic initialisation of the kernel log width "
+				"using the median of the pairwise euclidean distance "
+				"of all the features.";
+	} // namespace params
 } // namespace shogun
