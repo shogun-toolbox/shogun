@@ -204,6 +204,7 @@ CrossValidationStorage::CrossValidationStorage() : CSGObject()
 	SG_ADD(
 	    (CSGObject**)&m_expose_labels, "m_expose_labels",
 	    "The labels used for this cross-validation", ParameterProperties::HYPER);
+	this->watch_param("folds", &m_folds_results, AnyParameterProperties("Fold results"));
 }
 
 CrossValidationStorage::~CrossValidationStorage()
