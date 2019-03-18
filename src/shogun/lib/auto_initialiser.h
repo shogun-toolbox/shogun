@@ -13,9 +13,6 @@
 #include <shogun/lib/abstract_auto_init.h>
 #include <shogun/lib/any.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/kernel/DistanceKernel.h>
-
-#include <iostream>
 
 namespace shogun
 {
@@ -108,19 +105,33 @@ namespace shogun
 					auto distance_kernel = CEuclideanDistance();
 					distance_kernel.init(lhs, rhs);
 					auto pdist = distance_kernel.get_distance_matrix();
-					auto result = SGVector<float64_t>((lhs->get_num_vectors()*lhs->get_num_vectors()-lhs->get_num_vectors())/2);
+					auto result = SGVector<float64_t>(
+					    (lhs->get_num_vectors() * lhs->get_num_vectors() -
+					     lhs->get_num_vectors()) /
+					    2);
 					// copy upper triangular wihout a particular order
 					index_t idx = 0;
-					for (int i = 0; i < lhs->get_num_vectors(); ++i) {
-						for (int j = i + 1; j < lhs->get_num_vectors(); ++j) {
+					for (int i = 0; i < lhs->get_num_vectors(); ++i)
+					{
+						for (int j = i + 1; j < lhs->get_num_vectors(); ++j)
+						{
 							result.set_element(pdist.get_element(i, j), idx);
 							++idx;
 						}
 					}
-					return make_any(std::log(linalg::median(result) / 2.0) / 2.0);
+					return make_any(
+					    std::log(linalg::median(result) / 2.0) / 2.0);
 				}
 				default:
-					return make_any(1.0);
+				{
+#ifdef __builtin_log
+					constexpr float64_t default_value =
+					    __builtin_log(0.5) / 2.0;
+#else
+					float64_t default_value = std::log(0.5) / 2.0;
+#endif
+					return make_any(default_value);
+				}
 				}
 			}
 

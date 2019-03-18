@@ -6,10 +6,11 @@
  *          Tonmoy Saikia, Sergey Lisitsyn, Matt Aasted, Sanuj Sharma
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/lib/auto_initialiser.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -145,5 +146,5 @@ void GaussianKernel::register_params()
 	    &m_log_width, "log_width", "Kernel width in log domain",
 	    ParameterProperties::AUTO | ParameterProperties::HYPER |
 	        ParameterProperties::GRADIENT,
-		std::make_shared<params::GaussianWidthAutoInit>(this));
+	    std::make_shared<params::GaussianWidthAutoInit>(this));
 }
