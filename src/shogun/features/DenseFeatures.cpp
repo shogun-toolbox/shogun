@@ -752,7 +752,15 @@ SGVector<ST> DenseFeatures<ST>::mean() const
 }
 
 template <typename ST>
-SGVector<float64_t > DenseFeatures<ST>::std(bool colwise) const
+ST CDenseFeatures<ST>::median() const
+{
+	ASSERT_FLOATING_POINT
+	auto mat = get_feature_matrix();
+	return linalg::median(mat);
+}
+
+template <typename ST>
+SGVector<ST> CDenseFeatures<ST>::std(bool colwise) const
 {
 	ASSERT_FLOATING_POINT
 

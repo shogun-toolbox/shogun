@@ -595,7 +595,7 @@ namespace shogun
  * @see linalg::std_deviation
  */
 #define BACKEND_GENERIC_REAL_STD(Type, Container)                              \
-	virtual SGVector<float64_t> std_deviation(                                 \
+	virtual SGVector<Type> std_deviation(                                      \
 	    const Container<Type>& a, bool colwise) const                          \
 	{                                                                          \
 		not_implemented(SOURCE_LOCATION);;                                                    \
