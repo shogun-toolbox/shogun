@@ -40,6 +40,7 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/util/utils.h>
 
 using namespace shogun;
 
@@ -164,7 +165,12 @@ CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 	return obs;
 }
 
-const size_t CParameterObserverCV::get_num_observations() const
+const int32_t CParameterObserverCV::get_num_observations() const
 {
-	return m_observations.size();
+	try {
+		return size_t_to_int32_cast(m_observations.size());
+	} catch (std::exception e)
+	{
+		SG_WARNING("Exception occurred while calling %s::get_num_observations(): %s\n", e.what());
+	}
 }
