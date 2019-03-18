@@ -296,7 +296,6 @@ PUT_ADD(CSVM)
 PUT_ADD(CMeanFunction)
 PUT_ADD(CLikelihoodModel)
 PUT_ADD(CTokenizer)
-PUT_ADD(ParameterObserver)
 
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;
