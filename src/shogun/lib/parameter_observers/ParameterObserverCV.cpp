@@ -164,7 +164,7 @@ CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 	return obs;
 }
 
-const int32_t CParameterObserverCV::get_num_observations() const
+const size_t CParameterObserverCV::get_num_observations() const
 {
 	return m_observations.size();
 }
