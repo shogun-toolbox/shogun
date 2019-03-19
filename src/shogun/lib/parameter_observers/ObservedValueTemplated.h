@@ -36,22 +36,13 @@ namespace shogun
 			    "value", &m_observed_value,
 			    AnyParameterProperties(
 			        "Value of the observation", ParameterProperties::NONE));
+            m_any_value = make_any(m_observed_value);
 		}
 
 		/**
 		 * Destructor
 		 */
 		~ObservedValueTemplated(){};
-
-		/**
-		 * @copydoc ObservedValue::get_any()
-		 * This method returns an Any reference of the observed
-		 * value stored by this class.
-		 */
-		virtual Any get_any()
-		{
-			return make_any(m_observed_value);
-		}
 
 	private:
 		/**
