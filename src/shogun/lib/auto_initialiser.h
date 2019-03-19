@@ -9,6 +9,7 @@
 
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/abstract_auto_init.h>
 #include <shogun/lib/any.h>
@@ -33,7 +34,7 @@ namespace shogun
 
 			Any operator()() final
 			{
-				require(m_kernel != nullptr, "m_kernel is not pointing to a Kernel object");
+				require(m_kernel, "No kernel provided!");
 
 				auto lhs = m_kernel->get_lhs();
 				switch (lhs->get_feature_class())
@@ -93,9 +94,7 @@ namespace shogun
 
 			Any operator()() final
 			{
-				REQUIRE(
-				    m_kernel != nullptr,
-				    "m_kernel is not pointing to a CKernel object");
+				REQUIRE(m_kernel != nullptr, "No kernel provided!");
 				auto lhs = m_kernel->get_lhs();
 				auto rhs = m_kernel->get_rhs();
 				switch (lhs->get_feature_class())
@@ -120,15 +119,14 @@ namespace shogun
 						}
 					}
 					return make_any(
-					    std::log(linalg::median(result) / 2.0) / 2.0);
+					    CGaussianKernel::to_log_width(linalg::median(result)));
 				}
 				default:
 				{
-#ifdef __builtin_log
-					constexpr float64_t default_value =
-					    __builtin_log(0.5) / 2.0;
+#ifdef __GNUC__
+					constexpr float64_t default_value = std::log(0.5) / 2.0;
 #else
-					float64_t default_value = std::log(0.5) / 2.0;
+					float64_t default_value = CGaussianKernel::to_log_width(1);
 #endif
 					return make_any(default_value);
 				}
