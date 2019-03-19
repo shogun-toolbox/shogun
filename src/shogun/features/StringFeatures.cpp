@@ -29,6 +29,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures() : CFeatures(0)
 {
 	init();
 	alphabet=new CAlphabet();
+	SG_REF(alphabet);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(EAlphabet alpha) : CFeatures(0)
@@ -72,6 +73,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
 
 	ASSERT(alpha)
 	SG_REF(alpha);
+	SG_UNREF(alphabet);
 	alphabet=alpha;
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;

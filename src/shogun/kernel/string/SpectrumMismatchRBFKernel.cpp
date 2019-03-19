@@ -319,6 +319,7 @@ void CSpectrumMismatchRBFKernel::init()
 	max_mismatch=0;
 	width=0.0;
 	kernel_matrix=new CDynamicArray<float64_t>();
+	SG_REF(kernel_matrix);
 	initialized=false;
 	target_letter_0=0;
 }

@@ -303,6 +303,7 @@ void CBaggingMachine::set_machine(CMachine* machine)
 void CBaggingMachine::init()
 {
 	m_bags = new CDynamicObjectArray();
+	SG_REF(m_bags);
 	m_machine = NULL;
 	m_features = NULL;
 	m_combination_rule = NULL;

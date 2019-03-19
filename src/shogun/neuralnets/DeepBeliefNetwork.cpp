@@ -579,6 +579,7 @@ void CDeepBeliefNetwork::init()
 	m_visible_units_type = RBMVUT_BINARY;
 	m_num_layers = 0;
 	m_layer_sizes = new CDynamicArray<int32_t>();
+	SG_REF(m_layer_sizes);
 	m_batch_size = 0;
 	m_num_params = 0;
 	m_sigma = 0.01;
