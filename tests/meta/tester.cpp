@@ -33,10 +33,8 @@ int main(int argc, const char *argv[])
     SG_REF(f);
     SG_REF(f_ref);
 
-    CDynamicObjectArray* a = new CDynamicObjectArray();
-    CDynamicObjectArray* a_ref = new CDynamicObjectArray();
-    SG_REF(a);
-    SG_REF(a_ref);
+    auto a = some<CDynamicObjectArray>();
+    auto a_ref = some<CDynamicObjectArray>();
 
     if (!a->load_serializable(f))
 		SG_SERROR(
@@ -80,8 +78,6 @@ int main(int argc, const char *argv[])
 
 	SG_UNREF(f);
 	SG_UNREF(f_ref);
-	SG_UNREF(a);
-	SG_UNREF(a_ref);
 
 	exit_shogun();
 	return !(loaded_equals_ref && ref_equals_loaded);

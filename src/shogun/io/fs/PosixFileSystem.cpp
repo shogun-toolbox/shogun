@@ -99,6 +99,8 @@ public:
 
 	error_condition close() override
 	{
+		if (m_file == nullptr)
+			return generic_category().default_error_condition(EBADF);
 		if (fclose(m_file) != 0)
 			return generic_category().default_error_condition(errno);
 		m_file = nullptr;

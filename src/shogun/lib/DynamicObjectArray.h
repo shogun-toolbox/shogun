@@ -52,10 +52,11 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim2 dimension 2
 		 */
 		CDynamicObjectArray(size_t dim1, size_t dim2 = 1)
-		: CSGObject(), m_array(dim1*dim2)
+		: CSGObject()
 		{
 			dim1_size = dim1;
 			dim2_size = dim2;
+			m_array.reserve(dim1_size*dim2_size);
 			init();
 		}
 
@@ -280,7 +281,8 @@ class CDynamicObjectArray : public CSGObject
 		inline bool delete_element(size_t idx)
 		{
 			auto e=m_array[idx];
-			std::remove(m_array.begin(), m_array.end(), e);
+			m_array.erase(std::remove(m_array.begin(), m_array.end(), e),
+				m_array.end());
 			SG_UNREF(e);
 			return true;
 		}
@@ -306,7 +308,7 @@ class CDynamicObjectArray : public CSGObject
 		inline CDynamicObjectArray& operator=(CDynamicObjectArray& orig)
 		{
 			/* SG_REF all new elements (implicitly) */
-			for (auto v: orig.m_array)
+			for (auto& v: orig.m_array)
 				SG_REF(v);
 
 			/* unref after adding to avoid possible deletion */
@@ -391,7 +393,7 @@ class CDynamicObjectArray : public CSGObject
 		inline void unref_all()
 		{
 			/* SG_UNREF all my elements */
-			for (auto o: m_array)
+			for (auto& o: m_array)
 				SG_UNREF(o);
 		}
 

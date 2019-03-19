@@ -15,7 +15,7 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     python3-jinja2 python3-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang-6.0 \
     openjdk-8-jdk ruby ruby-dev python3-ply sphinx-doc python3-pip \
-    exuberant-ctags clang-format-3.8 libcolpack-dev lcov \
+    exuberant-ctags clang-format-3.8 libcolpack-dev rapidjson-dev lcov \
     protobuf-compiler libprotobuf-dev googletest
 RUN apt-get -t stretch-backports install -qq --force-yes --no-install-recommends cmake
 

@@ -25,8 +25,8 @@ error_condition CFileInputStream::read(string* buffer, int64_t size)
 	if (data.data() != result_buffer)
 		memmove(result_buffer, data.data(), data.size());
 
-		buffer->resize(data.size());
-		if (!r || io::is_out_of_range(r))
+	buffer->resize(data.size());
+	if (!r || io::is_out_of_range(r))
 		m_pos += data.size();
 	return r;
 }

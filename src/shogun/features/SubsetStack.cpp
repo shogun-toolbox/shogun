@@ -61,9 +61,8 @@ CSubsetStack::~CSubsetStack()
 
 void CSubsetStack::remove_all_subsets()
 {
-	/* delete all active subsets, backwards due to DynArray implementation */
-	for (index_t i=m_active_subsets_stack->get_num_elements()-1; i>=0; --i)
-		m_active_subsets_stack->delete_element(i);
+	for (index_t i=0; i < m_active_subsets_stack->get_num_elements(); ++i)
+		m_active_subsets_stack->pop_back();
 
 	SG_UNREF(m_active_subset);
 	m_active_subset = nullptr;

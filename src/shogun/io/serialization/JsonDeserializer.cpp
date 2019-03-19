@@ -4,19 +4,17 @@
  */
 
 #include <memory>
+#include <stack>
 
 #include <shogun/base/class_list.h>
 #include <shogun/base/macros.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/ShogunErrc.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/util/converters.h>
+#include <shogun/util/system.h>
 
 #include <rapidjson/reader.h>
 #include <rapidjson/document.h>
-
-#include <iostream>
 
 using namespace rapidjson;
 using namespace shogun;
@@ -33,135 +31,199 @@ extern const char* const kNameKey;
 extern const char* const kGenericKey;
 extern const char* const kParametersKey;
 
-template<typename Reader, typename Fn, typename V>
-void read_vector(Reader* reader, Fn f, V vector)
-{
-	auto json_array = reader->GetArray();
-	if (!json_array.Size())
-		return;
-	vector->resize_vector(json_array.Size());
-	auto it = json_array.Begin();
-	index_t idx = 0;
-	for (;it != json_array.End(); ++it, ++idx)
-	{
-		vector->vector[idx] = ((*it).*f)();
-	}
-}
-
-template<typename Reader, typename Fn, typename V>
-void read_matrix(Reader* reader, Fn f, V* matrix)
-{
-	auto json_array = reader->GetArray();
-	if (!json_array.Size())
-		return;
-
-	SGVector<typename V::Scalar> v;
-	auto it = json_array.Begin();
-	read_vector(it, f, &v);
-	V m(v.vlen, json_array.Size());
-	index_t col = 0;
-	// TODO: could do this with less memory consumption
-	// i.e. directly set elements and not to do copies
-	m.set_column(col, v);
-	for (++col, ++it; it != json_array.End(); ++it, ++col)
-	{
-		read_vector(it, f, &v);
-		m.set_column(col, v);
-	}
-	*matrix = m;
-}
-
 template<class ValueType>
 class JSONReaderVisitor: public AnyVisitor
 {
+	using ReverseConstIterator = reverse_iterator<typename ValueType::ConstValueIterator>;
+
 public:
 	JSONReaderVisitor(): AnyVisitor() {}
+	~JSONReaderVisitor() override {}
 
-	virtual void on(bool* v)
+	void on(bool* v) override
 	{
-		*v = m_current_value->GetBool();
+		*v = next_element<bool>(&ValueType::GetBool);
+		SG_SDEBUG("read bool with value %d\n", *v);
 	}
-	virtual void on(int32_t* v)
+	void on(char* v) override
 	{
-		*v = m_current_value->GetInt();
+		*v = utils::safe_convert<char>(next_element<int32_t>(&ValueType::GetInt));
+		SG_SDEBUG("read char with value %d\n", *v);
 	}
-	virtual void on(int64_t* v)
+	void on(int8_t* v) override
 	{
-		*v = m_current_value->GetInt64();
+		*v = utils::safe_convert<int8_t>(next_element<int32_t>(&ValueType::GetInt));
+		SG_SDEBUG("read int8_t with value %d\n", *v);
 	}
-	virtual void on(uint64_t* v)
+	void on(uint8_t* v) override
 	{
-		*v = m_current_value->GetUint64();
+		*v = utils::safe_convert<uint8_t>(next_element<uint32_t>(&ValueType::GetUint));
+		SG_SDEBUG("read uint8_t with value %d\n", *v);
 	}
-	virtual void on(float32_t* v)
+	void on(int16_t* v) override
 	{
-		*v = utils::safe_convert<float32_t>(m_current_value->GetDouble());
+		*v = utils::safe_convert<int16_t>(next_element<int32_t>(&ValueType::GetInt));
+		SG_SDEBUG("read int16_t with value %d\n", *v);
 	}
-	virtual void on(float64_t* v)
+	void on(uint16_t* v) override
 	{
-		*v = m_current_value->GetDouble();
+		*v = utils::safe_convert<uint16_t>(next_element<uint32_t>(&ValueType::GetUint));
+		SG_SDEBUG("read uint16_t with value %d\n", *v);
 	}
-	virtual void on(floatmax_t* v)
+	void on(int32_t* v) override
 	{
-		*v = utils::safe_convert<floatmax_t>(m_current_value->GetDouble());
+		*v = next_element<int32_t>(&ValueType::GetInt);
+		SG_SDEBUG("read int32_t with value %d\n", *v);
 	}
-	virtual void on(CSGObject** v)
+	void on(uint32_t* v) override
+	{
+		*v = next_element<uint32_t>(&ValueType::GetUint);
+		SG_SDEBUG("read uint32_t with value %d\n", *v);
+	}
+	void on(int64_t* v) override
+	{
+		*v = next_element<int64_t>(&ValueType::GetInt64);
+		SG_SDEBUG("read int64_t with value %" PRId64 "\n", *v);
+	}
+	void on(uint64_t* v) override
+	{
+		*v = next_element<uint64_t>(&ValueType::GetUint64);
+		SG_SDEBUG("read uint64_t with value %" PRIu64 "\n", *v);
+	}
+	void on(float32_t* v) override
+	{
+		*v = utils::safe_convert<float32_t>(next_element<float64_t>(&ValueType::GetDouble));
+		SG_SDEBUG("read float with value %f\n", *v);
+	}
+	void on(float64_t* v) override
+	{
+		*v = next_element<float64_t>(&ValueType::GetDouble);
+		SG_SDEBUG("read double with value %f\n", *v);
+	}
+	void on(floatmax_t* v) override
+	{
+		assert(!m_value_stack.empty());
+		auto _v = m_value_stack.top();
+		auto floatmax_pair = _v->GetArray();
+		assert(floatmax_pair.Size() == 2);
+		uint64_t array[2];
+		// FIXME: check array[0] == array[1]
+		array[utils::is_big_endian() ? 1 : 0] = floatmax_pair.GetUint64();
+		array[utils::is_big_endian() ? 0 : 1] = floatmax_pair.GetUint64();
+		m_value_stack.pop();
+
+		v = reinterpret_cast<floatmax_t*>(array);
+		SG_SDEBUG("read floatmax_t with value %Lf\n", *v);
+	}
+	void on(complex128_t* v) override
+	{
+		assert(!m_value_stack.empty());
+		auto _v = m_value_stack.top();
+		auto complex_pair = _v->GetArray();
+		assert(complex_pair.Size() == 2);
+		v->real(complex_pair.GetDouble());
+		v->imag(complex_pair.GetDouble());
+		m_value_stack.pop();
+	}
+	void on(CSGObject** v) override
 	{
 		SG_SDEBUG("reading SGObject: ");
-		*v = object_reader(m_current_value, this);
+		if (*v != nullptr)
+			SG_UNREF(*v);
+		*v = object_reader(m_value_stack.top(), this);
+		if (*v != nullptr)
+			SG_REF(*v);
+		m_value_stack.pop();
 	}
-	virtual void on(SGVector<int32_t>* v)
+	void enter_matrix(index_t* rows, index_t* cols) override
 	{
-		SG_SDEBUG("reading SGVector<int>: ")
-		read_vector(m_current_value, &ValueType::GetInt, v);
-	}
-	virtual void on(SGVector<float32_t>* v)
-	{
-		SG_SDEBUG("reading SGVector<float32_t>: ")
-		// FIXME: safe_convert should be checked!
-		read_vector(m_current_value, &ValueType::GetDouble, v);
-	}
-	virtual void on(SGVector<float64_t>* v)
-	{
-		SG_SDEBUG("reading SGVector<float64_t>: ")
-		read_vector(m_current_value, &ValueType::GetDouble, v);
-	}
-	virtual void on(SGMatrix<int32_t>* v)
-	{
-		SG_SDEBUG("reading SGMatrix<int>>: ")
-		read_matrix(m_current_value, &ValueType::GetInt, v);
-	}
-	virtual void on(SGMatrix<float32_t>* v)
-	{
-		SG_SDEBUG("reading SGMatrix<float32_t>>: ")
-		// FIXME: safe_convert should be checked!
-		read_matrix(m_current_value, &ValueType::GetDouble, v);
-	}
-	virtual void on(SGMatrix<float64_t>* v)
-	{
-		SG_SDEBUG("reading SGMatrix<float64_t>>: ")
-		read_matrix(m_current_value, &ValueType::GetDouble, v);
-	}
-
-	virtual void on(std::vector<CSGObject*>* v)
-	{
-		SG_SDEBUG("reading std::vector<CSGObject*>: ");
-		for (auto& o: m_current_value->GetArray())
+		auto json_array = m_value_stack.top()->GetArray();
+		m_value_stack.pop();
+		*cols = json_array.Size();
+		if (*cols != 0)
 		{
-			REQUIRE(o.IsObject(), "Vector of CSGObject should contain objects!")
-			CSGObject* sg_obj = nullptr;
-			on(&sg_obj);
-			if (sg_obj != nullptr)
-				v->push_back(sg_obj);
+			ReverseConstIterator col_begin(json_array.End());
+			ReverseConstIterator col_end(json_array.Begin());
+			*rows = col_begin->GetArray().Size();
+			SG_SDEBUG("reading matrix of size: %d x %d\n", *rows, *cols);
+			do
+			{
+				auto json_row = col_begin->GetArray();
+				ReverseConstIterator row_begin(json_row.End());
+				ReverseConstIterator row_end(json_row.Begin());
+				do
+				{
+					m_value_stack.emplace(addressof(*row_begin));
+				} while (++row_begin != row_end);
+			} while (++col_begin != col_end);
+		}
+	}
+	void enter_vector(index_t* size) override
+	{
+		read_array(size, "SGVector");
+	}
+	void enter_std_vector(size_t* size) override
+	{
+		read_array(size, "std::vector");
+	}
+	void enter_map(size_t* size) override
+	{
+		auto json_array = m_value_stack.top()->GetArray();
+		m_value_stack.pop();
+		*size = utils::safe_convert<size_t>(json_array.Size());
+		SG_SDEBUG("reading map of size: %d\n", *size);
+		if (*size == 0)
+			return;
+		for (auto it = json_array.Begin(); it != json_array.End(); ++it)
+		{
+			auto json_row = it->GetArray();
+			for (auto row_it = json_row.Begin();
+				row_it != json_row.End(); ++row_it)
+			{
+				m_value_stack.emplace(addressof(*row_it));
+			}
 		}
 	}
 
-	void set(const ValueType* v)
+	void push(const ValueType* v)
 	{
-		m_current_value = v;
+		m_value_stack.emplace(v);
 	}
 private:
-	const ValueType* m_current_value;
+	template<typename T, typename Fn>
+	T next_element(Fn f)
+	{
+		if (m_value_stack.empty())
+			return 0;
+
+		auto _v = m_value_stack.top();
+		auto r = (_v->*f)();
+		m_value_stack.pop();
+
+		return r;
+	}
+
+	template<class T>
+	void read_array(T* size, const std::string& type)
+	{
+		auto json_array = m_value_stack.top()->GetArray();
+		m_value_stack.pop();
+		*size = utils::safe_convert<T>(json_array.Size());
+		SG_SDEBUG("reading '%s' of size: %d\n", type.c_str(), *size);
+		if (*size == 0)
+			return;
+
+		ReverseConstIterator rbegin(json_array.End());
+		ReverseConstIterator rend(json_array.Begin());
+		do
+		{
+			m_value_stack.emplace(addressof(*rbegin));
+		} while (++rbegin != rend);
+	}
+
+private:
+	stack<const ValueType*> m_value_stack;
+	SG_DELETE_COPY_AND_ASSIGN(JSONReaderVisitor);
 };
 
 class CIStreamAdapter
@@ -169,55 +231,72 @@ class CIStreamAdapter
 public:
 	typedef char Ch;
 
-	CIStreamAdapter(Some<CInputStream> is): m_stream(is) {}
+	CIStreamAdapter(Some<CInputStream> is, size_t buffer_size = 65536):
+		m_stream(is),
+		m_buffer_size(buffer_size)
+	{
+		m_buffer.reserve(m_buffer_size);
+		read();
+	}
+
+
+	~CIStreamAdapter()
+	{
+		m_buffer.clear();
+	}
 
 	Ch Peek() const
 	{
-		string c;
-		auto current_pos = m_stream->tell();
-		auto r = m_stream->read(&c, 1);
-		if (!r)
-		{
-			m_stream->reset();
-			m_stream->skip(current_pos);
-			return c[0];
-		}
-		else if (io::is_out_of_range(r))
-		{
-			return '\0';
-		}
-		else
-		{
-			throw io::to_system_error(r);
-		}
+		return m_buffer[m_pos];
 	}
 
 	Ch Take()
 	{
-		string c;
-		auto r = m_stream->read(&c, 1);
-		if (r)
-		{
-			// eof
-			if (io::is_out_of_range(r))
-				return '\0';
-			throw io::to_system_error(r);
-		}
-		return c[0];
+		Ch c = m_buffer[m_pos];
+		read();
+		return c;
 	}
 
 	size_t Tell() const
 	{
-		return utils::safe_convert<size_t>(m_stream->tell());
+		return utils::safe_convert<size_t>(m_stream->tell()) - (m_limit + 1 - m_pos);
 	}
+
 
 	Ch* PutBegin() { assert(false); return 0; }
 	void Put(Ch) { assert(false); }
 	void Flush() { assert(false); }
 	size_t PutEnd(Ch*) { assert(false); return 0; }
+private:
+	void read()
+	{
+		if (m_pos < m_limit)
+		{
+			++m_pos;
+		}
+		else if (!m_eof)
+		{
+			auto ec = m_stream->read(&m_buffer, m_buffer_size);
+			m_pos = 0;
+			m_limit = m_buffer.size() - 1;
+			if (m_buffer.empty() || io::is_out_of_range(ec))
+			{
+				m_buffer.append("\0");
+				++m_limit;
+				m_eof = true;
+			}
+			else if (ec)
+				throw io::to_system_error(ec);
+		}
+	}
 
 private:
 	Some<CInputStream> m_stream;
+	string m_buffer;
+	size_t m_buffer_size;
+	size_t m_pos = 0;
+	size_t m_limit = 0;
+	bool m_eof = false;
 	SG_DELETE_COPY_AND_ASSIGN(CIStreamAdapter);
 };
 
@@ -241,7 +320,7 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor)
 	auto obj_params = value[kParametersKey].GetObject();
 	for_each(obj_params.MemberBegin(), obj_params.MemberEnd(),
 		[&obj, &visitor](const auto& member) {
-			visitor->set(&(member.value));
+			visitor->push(addressof(member.value));
 			obj->visit_parameter(BaseTag(member.name.GetString()), visitor);
 		});
 	return obj;
@@ -260,7 +339,7 @@ Some<CSGObject> CJsonDeserializer::read()
 	CIStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
 	Document reader;
-	reader.ParseStream(is);
+	reader.ParseStream<kParseNanAndInfFlag>(is);
 	auto reader_visitor =
 		make_unique<JSONReaderVisitor<Document::ValueType>>();
 	return wrap<CSGObject>(object_reader(

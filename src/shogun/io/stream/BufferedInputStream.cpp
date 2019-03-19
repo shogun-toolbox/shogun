@@ -6,6 +6,7 @@ using namespace shogun::io;
 
 CBufferedInputStream::CBufferedInputStream(CInputStream* is, size_t buffer_bytes):
 	CInputStream(),
+	m_is(is),
 	m_size(buffer_bytes)
 {
 	m_buffer.reserve(m_size);

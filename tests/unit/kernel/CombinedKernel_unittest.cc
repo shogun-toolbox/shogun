@@ -2,7 +2,12 @@
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/stream/BufferedInputStream.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -205,16 +210,26 @@ TEST(CombinedKernelTest,serialization)
 
 	combined->set_subkernel_weights(weights);
 
+	SG_REF(combined);
+	auto fs = io::FileSystemRegistry::instance();
+	std::string filename("combined_kernel.weights");
+	ASSERT_TRUE(fs->file_exists(filename));
+	std::unique_ptr<io::WritableFile> file;
+	ASSERT_FALSE(fs->new_writable_file(filename, &file));
+	auto fos = some<io::CFileOutputStream>(file.get());
+	auto serializer = some<io::CJsonSerializer>();
+	serializer->attach(fos);
+	serializer->write(wrap<CSGObject>(combined));
 
-	CSerializableAsciiFile* outfile = new CSerializableAsciiFile("combined_kernel.weights",'w');
-	combined->save_serializable(outfile);
-	SG_UNREF(outfile);
-
-
-	CSerializableAsciiFile* infile = new CSerializableAsciiFile("combined_kernel.weights",'r');
-	CCombinedKernel* combined_read = new CCombinedKernel();
-	combined_read->load_serializable(infile);
-	SG_UNREF(infile);
+	std::unique_ptr<io::RandomAccessFile> raf;
+	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+	auto fis = some<io::CFileInputStream>(raf.get());
+	auto bis = some<io::CBufferedInputStream>(fis.get());
+	auto deserializer = some<io::CJsonDeserializer>();
+	deserializer->attach(bis);
+	auto deser_obj = deserializer->read();
+	auto combined_read = static_cast<CCombinedKernel*>(deser_obj.get());
+	ASSERT_FALSE(fs->delete_file(filename));
 
 	CGaussianKernel* k0 = (CGaussianKernel*) combined_read->get_kernel(0);
 	CGaussianKernel* k1 = (CGaussianKernel*) combined_read->get_kernel(1);
@@ -232,8 +247,6 @@ TEST(CombinedKernelTest,serialization)
 	EXPECT_EQ(weights[0], w[0]);
 	EXPECT_EQ(weights[1], w[1]);
 	EXPECT_EQ(weights[2], w[2]);
-	SG_UNREF(combined_read);
-	SG_UNREF(combined);
 }
 
 TEST(CombinedKernelTest,combination)
