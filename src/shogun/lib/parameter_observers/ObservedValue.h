@@ -60,15 +60,16 @@ namespace shogun
 			    new ObservedValueTemplated<T>(step, name, value));
 		}
 
+#ifndef SWIG
 		/**
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
 		virtual Any get_any()
 		{
-			SG_NOTIMPLEMENTED
-			return make_any(nullptr);
+			return m_any_value;
 		}
+#endif
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -81,6 +82,8 @@ namespace shogun
 		int64_t m_step;
 		/** Parameter's name */
 		std::string m_name;
+        /** Untyped value */
+        Any m_any_value;
 	};
 
 	/**
