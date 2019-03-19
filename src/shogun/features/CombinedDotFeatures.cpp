@@ -15,7 +15,7 @@ CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
 	init();
 
-	feature_array=new CDynamicObjectArray();
+
 	update_dim_feature_space_and_num_vec();
 }
 
@@ -24,8 +24,6 @@ CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
 	num_dimensions(orig.num_dimensions)
 {
 	init();
-
-	feature_array=new CDynamicObjectArray();
 }
 
 CFeatures* CCombinedDotFeatures::duplicate() const
@@ -341,6 +339,9 @@ void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
 
 void CCombinedDotFeatures::init()
 {
+	feature_array=new CDynamicObjectArray();
+	SG_REF(feature_array);
+
 	SG_ADD(
 	    &num_dimensions, "num_dimensions", "Total number of dimensions.");
 	SG_ADD(

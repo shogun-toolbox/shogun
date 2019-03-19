@@ -618,8 +618,11 @@ void CRBM::init()
 	m_num_visible = 0;
 	m_num_visible_groups = 0;
 	m_visible_group_sizes = new CDynamicArray<int32_t>();
+	SG_REF(m_visible_group_sizes);
 	m_visible_group_types = new CDynamicArray<int32_t>();
+	SG_REF(m_visible_group_types);
 	m_visible_state_offsets = new CDynamicArray<int32_t>();
+	SG_REF(m_visible_state_offsets);
 	m_num_params = 0;
 	m_batch_size = 0;
 

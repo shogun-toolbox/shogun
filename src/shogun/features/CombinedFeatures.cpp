@@ -16,8 +16,6 @@ CCombinedFeatures::CCombinedFeatures()
 : CFeatures(0)
 {
 	init();
-
-	feature_array = new CDynamicObjectArray();
 	num_vec=0;
 }
 
@@ -25,8 +23,6 @@ CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
 : CFeatures(0)
 {
 	init();
-
-	feature_array=new CDynamicObjectArray();
 	//TODO copy features
 	num_vec=orig.num_vec;
 }
@@ -166,6 +162,9 @@ int32_t CCombinedFeatures::get_num_feature_obj() const
 
 void CCombinedFeatures::init()
 {
+	feature_array = new CDynamicObjectArray();
+	SG_REF(feature_array);
+
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
 }
