@@ -66,7 +66,7 @@ namespace shogun
 		 * by this observer.
 		 * @return number of runs.
 		 */
-		const int32_t get_num_observations() const;
+		const size_t get_num_observations() const;
 
 		/**
 		 * Get a CrossValidationStorage object which will store
