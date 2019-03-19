@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <shogun/io/ShogunErrc.h>
+#include <algorithm>
 
+#include <shogun/io/ShogunErrc.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/serialization/JsonSerializer.h>
-
-#include <algorithm>
 
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -28,6 +27,7 @@ public:
 			(char*)buffer,
 			(char*)buffer + size,
 			std::back_inserter(m_buffer));
+		return {};
 	}
 	const char* get_name() const override
 	{
@@ -127,6 +127,8 @@ TEST(JsonSerialization, basic_serializer)
 	auto stream = some<CDummyOutputStream>();
 	serializer->attach(stream);
 	serializer->write(obj);
+
+	SG_SDEBUG("serialized to json: %s\n", stream->buffer().c_str());
 
 	auto deserializer = some<CJsonDeserializer>();
 	auto istream = some<CDummyInputStream>(stream->buffer());

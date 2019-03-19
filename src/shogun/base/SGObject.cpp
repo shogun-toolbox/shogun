@@ -36,11 +36,8 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
-#include <stack>
-#include <utility>
 
 #include <shogun/distance/Distance.h>
-#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>

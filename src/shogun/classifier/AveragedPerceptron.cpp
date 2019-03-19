@@ -26,6 +26,7 @@ void CAveragedPerceptron::init()
 {
 	set_max_iter(1000);
 	set_learn_rate(0.1);
+	cached_bias = 0.0;
 
 	SG_ADD(
 	    &learn_rate, "learn_rate", "Learning rate.",
@@ -67,15 +68,15 @@ void CAveragedPerceptron::init_model(CFeatures* data)
 void CAveragedPerceptron::iteration()
 {
 	bool converged = true;
-	
+
 	SGVector<float64_t> w = get_w();
 	auto labels = binary_labels(m_labels)->get_int_labels();
 	auto iter_train_labels = labels.begin();
-	
+
 	int32_t num_vec = features->get_num_vectors();
 	// this assumes that m_current_iteration starts at 0
 	int32_t num_prev_weights = num_vec * m_current_iteration + 1;
-	
+
 	for (const auto& feature : DotIterator(features))
 	{
 		const auto true_label = *(iter_train_labels++);

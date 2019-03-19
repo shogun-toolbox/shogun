@@ -7,7 +7,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/io/SerializableHdf5File.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/BinaryLabels.h>

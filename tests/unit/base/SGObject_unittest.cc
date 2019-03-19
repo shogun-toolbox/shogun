@@ -10,7 +10,12 @@
 #include <shogun/base/class_list.h>
 #include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/stream/BufferedInputStream.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/lib/DataType.h>
@@ -21,11 +26,6 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/util/converters.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 
 using namespace shogun;
 
@@ -303,7 +303,6 @@ TEST(SGObject,ref_unref_simple)
 	EXPECT_TRUE(labs == NULL);
 }
 
-#ifdef USE_GPL_SHOGUN
 TEST(SGObject,equals_complex_equal)
 {
 	/* create some easy regression data: 1d noisy sine wave */
@@ -342,36 +341,50 @@ TEST(SGObject,equals_complex_equal)
 
 	// apply regression
 	CRegressionLabels* predictions=gpr->apply_regression(feat_test);
-	//predictions->get_labels().display_vector("predictions");
 
 	/* save and load instance to compare */
-	const char* filename_gpr="gpr_instance.txt";
-	const char* filename_predictions="predictions_instance.txt";
+	std::string filename_gpr {"gpr_instance.json"};
+	std::string filename_predictions {"predictions_instance.json"};
 
-	auto file = some<CSerializableAsciiFile>(filename_gpr, 'w');
-	gpr->save_serializable(file);
-	file->close();
+	auto fs = io::FileSystemRegistry::instance();
+	ASSERT_TRUE(fs->file_exists(filename_gpr));
+	std::unique_ptr<io::WritableFile> file;
+	ASSERT_FALSE(fs->new_writable_file(filename_gpr, &file));
+	auto fos = some<io::CFileOutputStream>(file.get());
+	auto serializer = some<io::CJsonSerializer>();
+	serializer->attach(fos);
+	serializer->write(gpr);
 
-	file = some<CSerializableAsciiFile>(filename_predictions, 'w');
-	predictions->save_serializable(file);
-	file->close();
+	SG_REF(predictions);
+	ASSERT_TRUE(fs->file_exists(filename_predictions));
+	ASSERT_FALSE(fs->new_writable_file(filename_predictions, &file));
+	fos = some<io::CFileOutputStream>(file.get());
+	serializer->attach(fos);
+	serializer->write(wrap<CSGObject>(predictions));
 
-	file = some<CSerializableAsciiFile>(filename_gpr, 'r');
-	auto gpr_copy = some<CGaussianProcessRegression>();
-	gpr_copy->load_serializable(file);
-	file->close();
+	std::unique_ptr<io::RandomAccessFile> raf;
+	ASSERT_FALSE(fs->new_random_access_file(filename_gpr, &raf));
+	auto fis = some<io::CFileInputStream>(raf.get());
+	auto bis = some<io::CBufferedInputStream>(fis.get());
+	auto deserializer = some<io::CJsonDeserializer>();
+	deserializer->attach(bis);
+	auto gpr_copy = deserializer->read();
 
-	file = some<CSerializableAsciiFile>(filename_predictions, 'r');
-	auto predictions_copy = some<CRegressionLabels>();
-	predictions_copy->load_serializable(file);
+	ASSERT_FALSE(fs->new_random_access_file(filename_predictions, &raf));
+	fis = some<io::CFileInputStream>(raf.get());
+	bis = some<io::CBufferedInputStream>(fis.get());
+	deserializer->attach(bis);
+	auto predictions_copy = deserializer->read();
 
 	/* now compare */
 	set_global_fequals_epsilon(1e-10);
-	EXPECT_TRUE(predictions->equals(predictions_copy));
-	EXPECT_TRUE(gpr->equals(gpr_copy));
+	ASSERT_TRUE(predictions->equals(predictions_copy));
+	ASSERT_TRUE(gpr->equals(gpr_copy));
 	set_global_fequals_epsilon(0);
+	SG_UNREF(predictions);
+	ASSERT_FALSE(fs->delete_file(filename_gpr));
+	ASSERT_FALSE(fs->delete_file(filename_predictions));
 }
-#endif //USE_GPL_SHOGUN
 
 #ifdef USE_GPL_SHOGUN
 TEST(SGObject,update_parameter_hash)

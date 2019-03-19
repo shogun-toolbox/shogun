@@ -20,7 +20,7 @@ namespace shogun
 		{
 		public:
 			CFileOutputStream(WritableFile* dest, bool free = false):
-				COutputStream(), m_dst(dest) {}
+				COutputStream(), m_dst(dest), m_free(free) {}
 			~CFileOutputStream() override
 			{
 				if (m_free)

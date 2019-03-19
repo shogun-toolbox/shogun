@@ -1,11 +1,9 @@
 #include "sg_gtest_utilities.h"
 
-#include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 
 #include "utils/Utils.h"
-
 
 using namespace shogun;
 
@@ -168,32 +166,4 @@ TYPED_TEST(CDynamicArrayFixture, append_array_bool)
 	EXPECT_EQ(this->wrapper_array->get_element(0), (TypeParam)1);
 	EXPECT_EQ(this->wrapper_array->get_element(1), (TypeParam)0);
 	EXPECT_EQ(this->wrapper_array->get_element(2), (TypeParam)1);
-}
-
-TYPED_TEST(CDynamicArrayFixture, save_serializable)
-{
-	/* generate file name */
-	char filename[] = "serialization-asciiCDynamicArray.XXXXXX";
-	generate_temp_filename(filename);
-
-	CSerializableAsciiFile* file = new CSerializableAsciiFile(filename, 'w');
-	this->wrapper_array->save_serializable(file);
-	file->close();
-	SG_UNREF(file);
-
-	file = new CSerializableAsciiFile(filename, 'r');
-	CDynamicArray<TypeParam>* new_array = new CDynamicArray<TypeParam>();
-	new_array->load_serializable(file);
-	file->close();
-	SG_UNREF(file);
-
-	ASSERT(this->wrapper_array->get_num_elements() == 5)
-	for (int32_t i = 0; i < this->wrapper_array->get_num_elements(); i++)
-	{
-		EXPECT_EQ(
-		    this->wrapper_array->get_element(i), new_array->get_element(i));
-	}
-
-	SG_UNREF(new_array);
-	unlink(filename);
 }

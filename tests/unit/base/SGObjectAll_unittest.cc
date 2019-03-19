@@ -13,7 +13,11 @@
 #include <shogun/base/class_list.h>
 #include <shogun/base/range.h>
 #include <shogun/base/some.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 
 using namespace shogun;
 
@@ -80,37 +84,41 @@ TYPED_TEST(SGObjectAll, clone_equals_empty)
 	}
 }
 
-TYPED_TEST(SGObjectAll, serialization_empty_ascii)
+TYPED_TEST(SGObjectAll, serialization_empty_json)
 {
 	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
 
-		std::string filename = "shogun-unittest-serialization-ascii-" +
+		std::string filename = "shogun-unittest-serialization-json-" +
 		                       std::string(obj->get_name()) + "_" +
 		                       sg_primitive_type_string<TypeParam>() +
 		                       ".XXXXXX";
 
 		generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-		auto file_save = some<CSerializableAsciiFile>(filename.c_str(), 'w');
-		ASSERT_TRUE(obj->save_serializable(file_save));
-		file_save->close();
+		SG_REF(obj);
+		auto fs = io::FileSystemRegistry::instance();
+		ASSERT_FALSE(fs->file_exists(filename));
+		std::unique_ptr<io::WritableFile> file;
+		ASSERT_FALSE(fs->new_writable_file(filename, &file));
+		auto fos = some<io::CFileOutputStream>(file.get());
+		auto serializer = some<io::CJsonSerializer>();
+		serializer->attach(fos);
+		serializer->write(wrap<CSGObject>(obj));
 
-		CSGObject* loaded = create(obj->get_name(), obj->get_generic());
-		ASSERT_NE(loaded, nullptr);
-		auto file_load = some<CSerializableAsciiFile>(filename.c_str(), 'r');
-		ASSERT_TRUE(loaded->load_serializable(file_load));
-		file_load->close();
+		std::unique_ptr<io::RandomAccessFile> raf;
+		ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+		auto fis = some<io::CFileInputStream>(raf.get());
+		auto deserializer = some<io::CJsonDeserializer>();
+		deserializer->attach(fis);
+		auto loaded = deserializer->read();
 
 		// set accuracy to tolerate lossy formats
 		set_global_fequals_epsilon(1e-14);
 		ASSERT_TRUE(obj->equals(loaded));
 		set_global_fequals_epsilon(0);
-
-		SG_UNREF(loaded);
-
-		ASSERT_EQ(unlink(filename.c_str()), 0);
+		ASSERT_FALSE(fs->delete_file(filename));
 	}
 }
 

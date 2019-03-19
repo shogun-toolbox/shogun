@@ -628,13 +628,13 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	{
 		SG_DEBUG("not appending kernel weights\n")
 		int32_t i=0 ;
-		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
+		for (index_t k_idx=0; k_idx<get_num_kernels(); ++k_idx)
 		{
 			CKernel* k = get_kernel(k_idx);
 			subkernel_weights_buffer[i] = k->get_combined_kernel_weight();
 
 			SG_UNREF(k);
-			i++ ;
+			++i;
 		}
 	}
 

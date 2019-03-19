@@ -4,9 +4,15 @@
  * Authors: Heiko Strathmann
  */
 #include <gtest/gtest.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/base/some.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/SparseFeatures.h>
+#include <string>
 
 using namespace shogun;
 
@@ -27,24 +33,33 @@ TEST(SparseFeaturesTest,serialization)
 	//data.display_matrix();
 
 	/* create sparse features */
-	CSparseFeatures<int32_t>* sparse_features=new CSparseFeatures<int32_t>(data);
+	auto sparse_features=some<CSparseFeatures<int32_t>>(data);
 
-	CSerializableAsciiFile* outfile = new CSerializableAsciiFile("sparseFeatures.txt", 'w');
-	sparse_features->save_serializable(outfile);
-	SG_UNREF(outfile);
+	auto fs = io::FileSystemRegistry::instance();
+	std::string filename("sparseFeatures.json");
+	ASSERT_TRUE(fs->file_exists(filename));
+	std::unique_ptr<io::WritableFile> file;
+	ASSERT_FALSE(fs->new_writable_file(filename, &file));
+	auto fos = some<io::CFileOutputStream>(file.get());
+	auto serializer = some<io::CJsonSerializer>();
+	serializer->attach(fos);
+	serializer->write(sparse_features);
 
-	CSparseFeatures<int32_t>* sparse_features_loaded = new CSparseFeatures<int32_t>();
-	CSerializableAsciiFile* infile= new CSerializableAsciiFile("sparseFeatures.txt", 'r');
-	sparse_features_loaded->load_serializable(infile);
-	SG_UNREF(infile);
+	std::unique_ptr<io::RandomAccessFile> raf;
+	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+	auto fis = some<io::CFileInputStream>(raf.get());
+	auto deserializer = some<io::CJsonDeserializer>();
+	deserializer->attach(fis);
+	auto sparse_features_loaded = deserializer->read();
 
-	SGMatrix<int32_t> data_loaded = sparse_features_loaded->get_full_feature_matrix();
+	ASSERT_FALSE(fs->delete_file(filename));
+
+	SGMatrix<int32_t> data_loaded =
+		(static_cast<CSparseFeatures<int32_t>*>(sparse_features_loaded.get()))
+			->get_full_feature_matrix();
 	//data_loaded.display_matrix();
 
 	EXPECT_TRUE(data_loaded.equals(data));
-
-	SG_UNREF(sparse_features);
-	SG_UNREF(sparse_features_loaded);
 }
 
 TEST(SparseFeaturesTest,constructor_from_dense)

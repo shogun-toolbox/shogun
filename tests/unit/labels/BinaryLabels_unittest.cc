@@ -1,13 +1,17 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, durovo, Olivier NGuyen, Viktor Gal, Weijie Lin, 
+ * Authors: Heiko Strathmann, durovo, Olivier NGuyen, Viktor Gal, Weijie Lin,
  *          Thoralf Klein
  */
 #include "utils/Utils.h"
 #include <gtest/gtest.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/stream/FileOutputStream.h>
 #include <shogun/base/range.h>
-#include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
@@ -39,38 +43,41 @@ public:
 
 TEST_F(BinaryLabels, serialization)
 {
-	CBinaryLabels* labels = new CBinaryLabels(10);
+	auto labels = some<CBinaryLabels>(10);
 	SGVector<float64_t> lab = SGVector<float64_t>(labels->get_num_labels());
 	lab.random(1, 10);
 	labels->set_values(lab);
 	labels->set_labels(lab);
 
 	/* generate file name */
-	char filename[] = "serialization-asciiCBinaryLabels.XXXXXX";
-	generate_temp_filename(filename);
+	std::string filename = "serialization-json-CBinaryLabels.XXXXXX";
+	generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-	CSerializableAsciiFile* file = new CSerializableAsciiFile(filename, 'w');
-	labels->save_serializable(file);
-	file->close();
-	SG_UNREF(file);
+	auto fs = io::FileSystemRegistry::instance();
+	ASSERT_TRUE(fs->file_exists(filename));
+	std::unique_ptr<io::WritableFile> file;
+	ASSERT_FALSE(fs->new_writable_file(filename, &file));
+	auto fos = some<io::CFileOutputStream>(file.get());
+	auto serializer = some<io::CJsonSerializer>();
+	serializer->attach(fos);
+	serializer->write(labels);
 
-	file = new CSerializableAsciiFile(filename, 'r');
-	CBinaryLabels* new_labels = new CBinaryLabels;
-	new_labels->load_serializable(file);
-	file->close();
-	SG_UNREF(file);
+	std::unique_ptr<io::RandomAccessFile> raf;
+	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+	auto fis = some<io::CFileInputStream>(raf.get());
+	auto deserializer = some<io::CJsonDeserializer>();
+	deserializer->attach(fis);
+	auto deser_obj = deserializer->read();
+	ASSERT_FALSE(fs->delete_file(filename));
 
-	ASSERT(new_labels->get_num_labels() == 10)
+	auto new_labels = static_cast<CBinaryLabels*>(deser_obj.get());
+	ASSERT_TRUE(new_labels->get_num_labels() == 10)
 
 	for (int32_t i = 0; i < new_labels->get_num_labels(); i++)
 	{
 		EXPECT_NEAR(labels->get_value(i), new_labels->get_value(i), 1E-15);
 		EXPECT_NEAR(labels->get_label(i), new_labels->get_label(i), 1E-15);
 	}
-	unlink(filename);
-
-	SG_UNREF(labels);
-	SG_UNREF(new_labels);
 }
 
 TEST_F(BinaryLabels, set_values_labels_from_constructor)
