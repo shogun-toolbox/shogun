@@ -34,6 +34,7 @@ TEST(LibLinearRegression, lr_with_bias)
 		new CLibLinearRegression(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
+	lr->set_tube_epsilon(epsilon);
 	lr->train();
 
 	CRegressionLabels* predicted_labels =
@@ -69,6 +70,7 @@ TEST(LibLinearRegression, lr_without_bias)
 			new CLibLinearRegression(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
+	lr->set_tube_epsilon(epsilon);
 	lr->train();
 
 	CRegressionLabels* predicted_labels =
