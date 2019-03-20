@@ -3,6 +3,9 @@
 #include <algorithm>
 
 #include <shogun/io/ShogunErrc.h>
+#include <shogun/io/serialization/BitserySerializer.h>
+#include <shogun/io/serialization/BitseryDeserializer.h>
+
 #include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 
@@ -116,21 +119,26 @@ private:
 	string::const_iterator m_current_pos;
 };
 
+template <typename T>
+class SerializationTest : public ::testing::Test {};
 
-TEST(JsonSerialization, basic_serializer)
+using SerializerTypes = ::testing::Types<
+	pair<CJsonSerializer, CJsonDeserializer>,
+	pair<CBitserySerializer, CBitseryDeserializer>>;
+TYPED_TEST_CASE(SerializationTest, SerializerTypes);
+
+TYPED_TEST(SerializationTest, serialize)
 {
 	SGMatrix<float64_t> data {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
 	auto df = new CDenseFeatures<float64_t>(data);
 	auto obj = some<CGaussianKernel>(df, df, 2.0);
 
-	auto serializer = some<CJsonSerializer>();
+	auto serializer = some<typename TypeParam::first_type>();
 	auto stream = some<CDummyOutputStream>();
 	serializer->attach(stream);
 	serializer->write(obj);
 
-	SG_SDEBUG("serialized to json: %s\n", stream->buffer().c_str());
-
-	auto deserializer = some<CJsonDeserializer>();
+	auto deserializer = some<typename TypeParam::second_type>();
 	auto istream = some<CDummyInputStream>(stream->buffer());
 	deserializer->attach(istream);
 	auto deser_obj = deserializer->read();

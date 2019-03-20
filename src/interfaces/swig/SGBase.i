@@ -129,7 +129,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
  #include <shogun/io/SerializableFile.h>
  #include <shogun/io/SerializableAsciiFile.h>
- #include <shogun/io/SerializableHdf5File.h>
 
  static int pickle_ascii;
 #endif
@@ -451,14 +450,7 @@ namespace shogun
             char* fname=tmpnam(NULL);
             FILE* tmpf=fopen(fname, "w");
             CSerializableFile* fstream=NULL;
-#ifdef HAVE_HDF5
-            if (pickle_ascii)
-                fstream = new CSerializableAsciiFile(fname, 'w');
-            else
-                fstream = new CSerializableHdf5File(fname, 'w');
-#else
             fstream = new CSerializableAsciiFile(fname, 'w');
-#endif
             $self->save_serializable(fstream);
             fstream->close();
             delete fstream;
@@ -502,21 +494,6 @@ namespace shogun
             ASSERT(total==len);
 
             CSerializableFile* fstream=NULL;
-#ifdef HAVE_HDF5
-            if (pickle_ascii)
-                fstream = new CSerializableAsciiFile(fname, 'r');
-            else
-            {
-                try
-                {
-                    fstream = new CSerializableHdf5File(fname, 'r');
-                }
-                catch (ShogunException& e)
-                {
-                    fstream = new CSerializableAsciiFile(fname, 'r');
-                }
-            }
-#else
             try
             {
                 fstream = new CSerializableAsciiFile(fname, 'r');
@@ -528,7 +505,6 @@ namespace shogun
                             " support! -  cannot load file %s." \
                             " (exception was %s)", e.what());
             }
-#endif
             $self->load_serializable(fstream);
             fstream->close();
             delete fstream;

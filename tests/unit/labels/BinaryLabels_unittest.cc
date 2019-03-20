@@ -54,29 +54,30 @@ TEST_F(BinaryLabels, serialization)
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
 
 	auto fs = io::FileSystemRegistry::instance();
-	ASSERT_TRUE(fs->file_exists(filename));
+	ASSERT_TRUE(!fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
-	ASSERT_FALSE(fs->new_writable_file(filename, &file));
+	ASSERT_TRUE(!fs->new_writable_file(filename, &file));
 	auto fos = some<io::CFileOutputStream>(file.get());
 	auto serializer = some<io::CJsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(labels);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
-	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+	ASSERT_TRUE(!fs->new_random_access_file(filename, &raf));
 	auto fis = some<io::CFileInputStream>(raf.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(fis);
 	auto deser_obj = deserializer->read();
-	ASSERT_FALSE(fs->delete_file(filename));
+	ASSERT_TRUE(!fs->delete_file(filename));
 
 	auto new_labels = static_cast<CBinaryLabels*>(deser_obj.get());
-	ASSERT_TRUE(new_labels->get_num_labels() == 10)
+	ASSERT_TRUE(new_labels->get_num_labels() == 10);
 
+	float64_t eps = 1E-14;
 	for (int32_t i = 0; i < new_labels->get_num_labels(); i++)
 	{
-		EXPECT_NEAR(labels->get_value(i), new_labels->get_value(i), 1E-15);
-		EXPECT_NEAR(labels->get_label(i), new_labels->get_label(i), 1E-15);
+		EXPECT_NEAR(labels->get_value(i), new_labels->get_value(i), eps);
+		EXPECT_NEAR(labels->get_label(i), new_labels->get_label(i), eps);
 	}
 }
 
