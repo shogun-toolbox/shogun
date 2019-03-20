@@ -45,6 +45,7 @@ namespace shogun
 		 */
 		~ObservedValue(){};
 
+#ifndef SWIG
 		/**
 		* Helper method to generate an ObservedValue.
 		* @param step the step
@@ -60,12 +61,11 @@ namespace shogun
 			    new ObservedValueTemplated<T>(step, name, value));
 		}
 
-#ifndef SWIG
 		/**
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
-		virtual Any get_any()
+		virtual Any& get_any()
 		{
 			return m_any_value;
 		}
