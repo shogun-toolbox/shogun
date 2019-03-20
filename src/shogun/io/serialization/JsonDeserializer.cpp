@@ -108,8 +108,8 @@ public:
 		assert(floatmax_pair.Size() == 2);
 		uint64_t array[2];
 		// FIXME: check array[0] == array[1]
-		array[utils::is_big_endian() ? 1 : 0] = floatmax_pair.GetUint64();
-		array[utils::is_big_endian() ? 0 : 1] = floatmax_pair.GetUint64();
+		array[utils::is_big_endian() ? 1 : 0] = floatmax_pair[0].GetUint64();
+		array[utils::is_big_endian() ? 0 : 1] = floatmax_pair[1].GetUint64();
 		m_value_stack.pop();
 
 		v = reinterpret_cast<floatmax_t*>(array);
@@ -121,8 +121,8 @@ public:
 		auto _v = m_value_stack.top();
 		auto complex_pair = _v->GetArray();
 		assert(complex_pair.Size() == 2);
-		v->real(complex_pair.GetDouble());
-		v->imag(complex_pair.GetDouble());
+		v->real(complex_pair[0].GetDouble());
+		v->imag(complex_pair[1].GetDouble());
 		m_value_stack.pop();
 	}
 	void on(CSGObject** v) override

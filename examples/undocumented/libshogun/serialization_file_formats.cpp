@@ -7,7 +7,6 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableHdf5File.h>
 
 using namespace shogun;
 
@@ -81,33 +80,6 @@ void test_ascii(Parameter* save_param, Parameter* load_param)
 	check_content_equal(save_param, load_param);
 }
 
-void test_hdf5(Parameter* save_param, Parameter* load_param)
-{
-	/* TODO, HDF5 file leaks memory */
-	SG_SPRINT("testing hdf5 serialization\n");
-	SG_SPRINT("to save:\n");
-	print(save_param);
-	SG_SPRINT("loaded before:\n");
-	print(load_param);
-
-	CSerializableHdf5File* file;
-
-	file=new CSerializableHdf5File(filename, 'w');
-	save_param->save(file);
-	file->close();
-	SG_UNREF(file);
-
-	file=new CSerializableHdf5File(filename, 'r');
-	load_param->load(file);
-	file->close();
-	SG_UNREF(file);
-
-	SG_SPRINT("loaded after:\n");
-	print(load_param);
-
-	check_content_equal(save_param, load_param);
-}
-
 void reset_values(Parameter* save_param, Parameter* load_param)
 {
 	TParameter* p;
@@ -158,10 +130,6 @@ int main(int argc, char **argv)
 
 	reset_values(sp, lp);
 	test_ascii(sp, lp);
-
-	/* still leaks memory TODO */
-	reset_values(sp, lp);
-	test_hdf5(sp, lp);
 
 	/* clean up */
 	sv.destroy_vector();

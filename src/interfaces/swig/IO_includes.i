@@ -15,8 +15,6 @@
 #include <shogun/io/HDF5File.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableHdf5File.h>
-#include <shogun/io/NeuralNetworkFileReader.h>
 #include <shogun/io/SimpleFile.h>
 #include <shogun/io/MemoryMappedFile.h>
 %}

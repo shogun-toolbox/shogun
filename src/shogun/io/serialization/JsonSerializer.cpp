@@ -155,7 +155,7 @@ public:
 	}
 	void on(complex128_t* v) override
 	{
-		SG_SDEBUG("writing complex128_t with value %f\n", *v);
+		SG_SDEBUG("writing complex128_t with value (%f, %f)\n", v->real(), v->imag());
 		m_json_writer.StartArray();
 		m_json_writer.Double(v->real());
 		m_json_writer.Double(v->imag());
