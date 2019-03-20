@@ -38,6 +38,7 @@ void CLibLinearRegression::init_defaults()
 {
 	set_C(1.0);
 	set_epsilon(1e-2);
+	set_tube_epsilon(0);
 	set_max_iter(10000);
 	set_use_bias(false);
 	set_liblinear_regression_type(L2R_L1LOSS_SVR_DUAL);
@@ -103,7 +104,6 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-	prob.y=SG_MALLOC(float64_t, prob.l);
 	auto labels = regression_labels(m_labels);
 	prob.y = labels->get_labels();
 
