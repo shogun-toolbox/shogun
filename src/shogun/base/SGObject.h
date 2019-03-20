@@ -25,6 +25,10 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/base/range.h>
+
 
 #include <map>
 #include <unordered_map>
@@ -647,6 +651,9 @@ public:
 	 */
 #ifndef SWIG // SWIG should skip this part
 	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params() const;
+
+	std::map<std::string, std::shared_ptr<const AnyParameter>> get_params(ParameterProperties) const;
+
 #endif
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
@@ -1040,6 +1047,124 @@ private:
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
 };
+
+	class ToStringVisitor : public AnyVisitor
+	{
+	public:
+		ToStringVisitor(std::stringstream* ss) : AnyVisitor(), m_stream(ss)
+		{
+		}
+
+		virtual void on(bool* v)
+		{
+			stream() << (*v ? "true" : "false");
+		}
+		virtual void on(int32_t* v)
+		{
+			stream() << *v;
+		}
+		virtual void on(int64_t* v)
+		{
+			stream() << *v;
+		}
+		virtual void on(float* v)
+		{
+			stream() << *v;
+		}
+		virtual void on(double* v)
+		{
+			stream() << *v;
+		}
+		virtual void on(long double* v)
+		{
+			stream() << *v;
+		}
+		virtual void on(CSGObject** v)
+		{
+			if (*v)
+			{
+				stream() << (*v)->get_name() << "(...)";
+			}
+			else
+			{
+				stream() << "null";
+			}
+		}
+		virtual void on(SGVector<int>* v)
+		{
+			to_string(v);
+		}
+		virtual void on(SGVector<float>* v)
+		{
+			to_string(v);
+		}
+		virtual void on(SGVector<double>* v)
+		{
+			to_string(v);
+		}
+		virtual void on(SGMatrix<int>* mat)
+		{
+			to_string(mat);
+		}
+		virtual void on(SGMatrix<float>* mat)
+		{
+			to_string(mat);
+		}
+		virtual void on(SGMatrix<double>* mat)
+		{
+			to_string(mat);
+		}
+
+	private:
+		std::stringstream& stream()
+		{
+			return *m_stream;
+		}
+
+		template <class T>
+		void to_string(SGMatrix<T>* m)
+		{
+			if (m)
+			{
+				stream() << "Matrix<" << demangled_type<T>() << ">(" << m->num_rows
+						 << "," << m->num_cols << "): [";
+				for (auto col : range(m->num_cols))
+				{
+					stream() << "[";
+					for (auto row : range(m->num_rows))
+					{
+						stream() << (*m)(row, col);
+						if (row < m->num_rows - 1)
+							stream() << ",";
+					}
+					stream() << "]";
+					if (col < m->num_cols)
+						stream() << ",";
+				}
+				stream() << "]";
+			}
+		}
+
+		template <class T>
+		void to_string(SGVector<T>* v)
+		{
+			if (v)
+			{
+				stream() << "Vector<" << demangled_type<T>() << ">(" << v->vlen
+						 << "): [";
+				for (auto i : range(v->vlen))
+				{
+					stream() << (*v)[i];
+					if (i < v->vlen - 1)
+						stream() << ",";
+				}
+				stream() << "]";
+			}
+		}
+
+	private:
+		std::stringstream* m_stream;
+	};
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

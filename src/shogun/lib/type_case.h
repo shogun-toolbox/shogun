@@ -56,11 +56,9 @@ namespace shogun
 		T_SGMATRIX_INT64 = 25,
 		T_UNDEFINED = 26
 	};
-
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
+		namespace type_internal {
 
-	namespace type_internal
-	{
 		template <typename T>
 		struct sg_type
 		{
@@ -90,30 +88,30 @@ namespace shogun
 		{
 		};
 
-#define SG_ADD_TYPE(T, type_)                                                  \
-	template <>                                                                \
-	struct sg_type<T>                                                          \
-	{                                                                          \
-		static constexpr TYPE ptype = type_;                                   \
-	};
-#define SG_ADD_PRIMITIVE_TYPE(T, type_)                                        \
-	SG_ADD_TYPE(T, type_)                                                      \
-	template <>                                                                \
-	struct is_sg_primitive<T> : public std::true_type                          \
-	{                                                                          \
-	};
-#define SG_ADD_SGVECTOR_TYPE(T, type_)                                         \
-	SG_ADD_TYPE(T, type_)                                                      \
-	template <>                                                                \
-	struct is_sg_vector<T> : public std::true_type                             \
-	{                                                                          \
-	};
-#define SG_ADD_SGMATRIX_TYPE(T, type_)                                         \
-	SG_ADD_TYPE(T, type_)                                                      \
-	template <>                                                                \
-	struct is_sg_matrix<T> : public std::true_type                             \
-	{                                                                          \
-	};
+	#define SG_ADD_TYPE(T, type_)                                                  \
+		template <>                                                                \
+		struct sg_type<T>                                                          \
+		{                                                                          \
+			static constexpr TYPE ptype = type_;                                   \
+		};
+	#define SG_ADD_PRIMITIVE_TYPE(T, type_)                                        \
+		SG_ADD_TYPE(T, type_)                                                      \
+		template <>                                                                \
+		struct is_sg_primitive<T> : public std::true_type                          \
+		{                                                                          \
+		};
+	#define SG_ADD_SGVECTOR_TYPE(T, type_)                                         \
+		SG_ADD_TYPE(T, type_)                                                      \
+		template <>                                                                \
+		struct is_sg_vector<T> : public std::true_type                             \
+		{                                                                          \
+		};
+	#define SG_ADD_SGMATRIX_TYPE(T, type_)                                         \
+		SG_ADD_TYPE(T, type_)                                                      \
+		template <>                                                                \
+		struct is_sg_matrix<T> : public std::true_type                             \
+		{                                                                          \
+		};
 
 		SG_ADD_PRIMITIVE_TYPE(bool, TYPE::T_BOOL)
 		SG_ADD_PRIMITIVE_TYPE(char, TYPE::T_CHAR)
@@ -164,7 +162,7 @@ namespace shogun
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
 
-			return it == map.end() ? TYPE::T_UNDEFINED : map.at(type);
+			return it == map.end() ? TYPE::T_UNDEFINED : (*it).second;
 		}
 
 		template <typename T>
@@ -205,8 +203,8 @@ namespace shogun
 #else
 		template <typename FunctorTraits>
 		using check_lambda_return = std::conditional_t<
-				std::is_void<typename FunctorTraits::result_type>::value, ok,
-				assert_return_type_is_valid>;
+			std::is_void<typename FunctorTraits::result_type>::value, ok,
+			assert_return_type_is_valid>;
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER < 1920
@@ -220,7 +218,9 @@ namespace shogun
 
 #if defined(_MSC_VER) && _MSC_VER < 1920
 		template <typename F, typename... Args>
-		struct auto_function_traits {};
+		struct auto_function_traits
+		{
+		};
 #else
 		template <typename F>
 		struct function_traits : function_traits<decltype(&F::operator())>
@@ -268,7 +268,7 @@ namespace shogun
 			-> decltype(execute_function_check_return_type<T>(
 				check_lambda_return<TraitsT>{}, any, func))
 		{
-			execute_function_check_return_type<T>(
+			return execute_function_check_return_type<T>(
 				check_lambda_return<TraitsT>{}, any, func);
 		}
 
@@ -312,7 +312,8 @@ namespace shogun
 		template <
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
-			typename traits = auto_function_traits<VectorLambdaT, int>,
+			typename traits =
+				auto_function_traits<VectorLambdaT, SGVector<int>>,
 			std::enable_if_t<
 				is_sg_vector<T>::value && !is_none<VectorLambdaT>::value>* =
 				nullptr>
@@ -327,7 +328,8 @@ namespace shogun
 		template <
 			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
 			typename MatrixLambdaT,
-			typename traits = auto_function_traits<MatrixLambdaT, int>,
+			typename traits =
+				auto_function_traits<MatrixLambdaT, SGMatrix<int>>,
 			std::enable_if_t<
 				is_sg_matrix<T>::value && !is_none<MatrixLambdaT>::value>* =
 				nullptr>

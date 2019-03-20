@@ -7,4 +7,5 @@
 #include <shogun/modelselection/GradientModelSelection.h>
 #endif //USE_GPL_SHOGUN
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/modelselection/NewGridSearch.h>
 %}

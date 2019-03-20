@@ -300,5 +300,17 @@ PUT_ADD(CTokenizer)
 %template(kernel) kernel<float64_t, float64_t>;
 %template(features) features<float64_t>;
 
+%template(attach) ParameterNode::attach<int32_t>;
+#ifndef SWIGJAVA
+%template(attach) ParameterNode::attach<int64_t>;
+#endif // SWIGJAVA
+%template(attach) ParameterNode::attach<float64_t>;
+%template(attach) ParameterNode::attach<bool>;
+%template(attach) GridParameters::attach<bool>;
+%template(attach) GridParameters::attach<int32_t>;
+%template(attach) GridParameters::attach<float64_t>;
+#ifndef SWIGJAVA
+%template(attach) GridParameters::attach<int64_t>;
+#endif // SWIGJAVA
 
 } // namespace shogun
