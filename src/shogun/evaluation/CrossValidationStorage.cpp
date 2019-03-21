@@ -50,20 +50,27 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CSGObject()
 	m_test_true_result = NULL;
 
 	SG_ADD(
-	    &m_current_run_index, "m_current_run_index",
+	    &m_current_run_index, "current_run_index",
 	    "The current run index of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_current_fold_index, "m_current_fold_index", "The current fold index",
+	    &m_current_fold_index, "current_fold_index", "The current fold index",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    (CSGObject**)&m_trained_machine, "m_trained_machine",
+	    &m_trained_machine, "trained_machine",
 	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    (CSGObject**)&m_test_result, "m_test_result",
+	    &m_test_result, "test_result",
 	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    (CSGObject**)&m_test_true_result, "m_test_true_result",
+	    &m_test_true_result, "test_true_result",
 	    "The true test result for this fold", ParameterProperties::HYPER);
+	SG_ADD(&m_train_indices, "train_indices",
+		   "Indices used for training", ParameterProperties::HYPER);
+	SG_ADD(&m_test_indices, "test_indices",
+		   "Indices used for testing", ParameterProperties::HYPER);
+	SG_ADD(&m_evaluation_result, "evaluation_result",
+		   "Result of the evaluation", ParameterProperties::HYPER);
+
 }
 
 CrossValidationFoldStorage::~CrossValidationFoldStorage()
@@ -73,94 +80,8 @@ CrossValidationFoldStorage::~CrossValidationFoldStorage()
 	SG_UNREF(m_trained_machine);
 }
 
-void CrossValidationFoldStorage::set_run_index(index_t run_index)
-{
-	m_current_run_index = run_index;
-}
-
-void CrossValidationFoldStorage::set_fold_index(index_t fold_index)
-{
-	m_current_fold_index = fold_index;
-}
-
-void CrossValidationFoldStorage::set_train_indices(SGVector<index_t> indices)
-{
-	m_train_indices = indices;
-}
-
-void CrossValidationFoldStorage::set_test_indices(SGVector<index_t> indices)
-{
-	m_test_indices = indices;
-}
-
-void CrossValidationFoldStorage::set_trained_machine(CMachine* machine)
-{
-	SG_REF(machine)
-	SG_UNREF(m_trained_machine)
-	m_trained_machine = machine;
-}
-
-void CrossValidationFoldStorage::set_test_result(CLabels* results)
-{
-	SG_REF(results)
-	SG_UNREF(m_test_result)
-	m_test_result = results;
-}
-
-void CrossValidationFoldStorage::set_test_true_result(CLabels* results)
-{
-	SG_REF(results)
-	SG_UNREF(m_test_true_result)
-	m_test_true_result = results;
-}
-
 void CrossValidationFoldStorage::post_update_results()
 {
-}
-
-void CrossValidationFoldStorage::set_evaluation_result(float64_t result)
-{
-	m_evaluation_result = result;
-}
-
-index_t CrossValidationFoldStorage::get_current_run_index() const
-{
-	return m_current_run_index;
-}
-
-index_t CrossValidationFoldStorage::get_current_fold_index() const
-{
-	return m_current_fold_index;
-}
-
-const SGVector<index_t>& CrossValidationFoldStorage::get_train_indices() const
-{
-	return m_train_indices;
-}
-
-const SGVector<index_t>& CrossValidationFoldStorage::get_test_indices() const
-{
-	return m_test_indices;
-}
-
-CMachine* CrossValidationFoldStorage::get_trained_machine() const
-{
-	return m_trained_machine;
-}
-
-CLabels* CrossValidationFoldStorage::get_test_result() const
-{
-	return m_test_result;
-}
-
-CLabels* CrossValidationFoldStorage::get_test_true_result() const
-{
-	return m_test_true_result;
-}
-
-float64_t CrossValidationFoldStorage::get_evaluation_result() const
-{
-	return m_evaluation_result;
 }
 
 CrossValidationFoldStorage* CrossValidationStorage::get_fold(int fold) const
