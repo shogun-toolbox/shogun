@@ -167,11 +167,15 @@ CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 
 const int32_t CParameterObserverCV::get_num_observations() const
 {
-	try {
-		return shogun::utils::safe_convert<int32_t>(m_observations.size());
-	} catch (std::overflow_error e)
+	try
 	{
-		SG_WARNING("Exception occurred while calling %s::get_num_observations(): %s\n", e.what());
+		return shogun::utils::safe_convert<int32_t>(m_observations.size());
+	}
+	catch (std::overflow_error e)
+	{
+		SG_WARNING(
+		    "Exception occurred while calling %s::get_num_observations(): %s\n",
+		    e.what());
 	}
 	return -1;
 }

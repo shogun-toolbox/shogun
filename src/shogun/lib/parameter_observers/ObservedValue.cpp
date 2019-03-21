@@ -15,6 +15,5 @@ ObservedValue::ObservedValue(int64_t step, std::string name)
 {
 	SG_ADD(&m_step, "step", "Step");
 	this->watch_param(
-	    "name", &m_name,
-	    AnyParameterProperties("Name of the observed value"));
+	    "name", &m_name, AnyParameterProperties("Name of the observed value"));
 }

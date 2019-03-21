@@ -55,8 +55,8 @@ namespace shogun
 		* @return an ObservedValue object initialized
 		*/
 		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, std::string description, T value)
+		static Some<ObservedValue> make_observation(
+		    int64_t step, std::string name, std::string description, T value)
 		{
 			return Some<ObservedValue>::from_raw(
 			    new ObservedValueTemplated<T>(step, name, description, value));
@@ -83,8 +83,8 @@ namespace shogun
 		int64_t m_step;
 		/** Parameter's name */
 		std::string m_name;
-        /** Untyped value */
-        Any m_any_value;
+		/** Untyped value */
+		Any m_any_value;
 	};
 
 	/**

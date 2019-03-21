@@ -811,9 +811,9 @@ void CSGObject::register_observable(
 std::vector<std::string> CSGObject::observable_names()
 {
 	std::vector<std::string> list;
-	std::transform(param_obs_list->get_list().begin(),
-				   param_obs_list->get_list().end(), list.begin(),
-				   [](auto const &x ) {return x.first;});
+	std::transform(
+	    param_obs_list->get_list().begin(), param_obs_list->get_list().end(),
+	    list.begin(), [](auto const& x) { return x.first; });
 	return list;
 }
 
