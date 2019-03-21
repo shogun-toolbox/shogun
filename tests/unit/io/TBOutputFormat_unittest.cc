@@ -62,7 +62,7 @@ void test_case_scalar(T value_val)
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<T>(1, "test", v));
+	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -80,7 +80,7 @@ void test_case_scalar_error(T value_val)
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<T>(1, "test", v));
+	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
 	EXPECT_THROW(
@@ -108,7 +108,7 @@ void test_case_vector(std::vector<T> v)
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<std::vector<T>>(1, "test", v));
+	    new ObservedValueTemplated<std::vector<T>>(1, "test", "test description", v));
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -129,7 +129,7 @@ void test_case_vector_error(std::vector<T> v)
 
 	time_point timestamp;
 	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
-	    new ObservedValueTemplated<std::vector<T>>(1, "test", v));
+	    new ObservedValueTemplated<std::vector<T>>(1, "test", "test_description", v));
 
 	std::string node_name = "node";
 	EXPECT_THROW(
