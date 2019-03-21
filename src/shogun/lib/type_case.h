@@ -158,7 +158,8 @@ namespace shogun
 			return msg;
 		}
 
-		SG_FORCED_INLINE static TYPE get_type(const Any& any, const typemap& map)
+		SG_FORCED_INLINE static TYPE
+		get_type(const Any& any, const typemap& map)
 		{
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
