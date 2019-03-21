@@ -40,6 +40,20 @@ namespace shogun
 		}
 
 		/**
+		 * Constructor which takes AnyParameterProperties for the observed value
+		 * @param step step
+		 * @param name the observed value's name
+		 * @param value the observed value
+		 * @param properties properties of that observed value
+		 */
+		ObservedValueTemplated(int64_t step, std::string name, T value, AnyParameterProperties properties)
+		: ObservedValue(step, name), m_observed_value(value)
+		{
+			this->watch_param("value", &m_observed_value, properties);
+			m_any_value = make_any(m_observed_value);
+		}
+
+		/**
 		 * Destructor
 		 */
 		~ObservedValueTemplated(){};

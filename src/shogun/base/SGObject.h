@@ -988,6 +988,20 @@ protected:
 	void observe(const Some<ObservedValue> value);
 
 	/**
+	 * Build an observation of a parameter registered in the object
+	 * by providing its name.
+	 * @param name parameter's name
+	 */
+	template <class T>
+	Some<ObservedValue> make_tag_observation(int64_t step, std::string name)
+	{
+		BaseTag t(name);
+		auto param = this->get_parameter(t);
+		return ObservedValue::make_observation<T>(
+				step, name, any_cast<T>(param.get_value()), param.get_properties());
+	}
+
+	/**
 	 * Register which params this object can emit.
 	 * @param name the param name
 	 * @param type the param type
