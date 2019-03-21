@@ -39,12 +39,12 @@
 
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
 #include <shogun/lib/tfhistogram/histogram.h>
 #include <tflogger/event.pb.h>
 #include <tflogger/summary.pb.h>
 #include <utility>
 #include <vector>
-
 
 using namespace shogun;
 
@@ -61,8 +61,8 @@ void test_case_scalar(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -79,8 +79,8 @@ void test_case_scalar_error(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
 	EXPECT_THROW(
@@ -107,8 +107,9 @@ void test_case_vector(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	    new ObservedValueTemplated<std::vector<T>>(
+	        1, "test", "test description", v));
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -128,8 +129,9 @@ void test_case_vector_error(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	std::string param_name = "test";
-	ObservedValue emitted_value{1, param_name, make_any(v), TENSORBOARD};
+	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	    new ObservedValueTemplated<std::vector<T>>(
+	        1, "test", "test_description", v));
 
 	std::string node_name = "node";
 	EXPECT_THROW(

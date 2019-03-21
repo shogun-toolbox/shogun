@@ -63,8 +63,6 @@ ParameterObserverScalar::~ParameterObserverScalar()
 
 void ParameterObserverScalar::on_next(const TimedObservedValue& value)
 {
-	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type())
-
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
 	auto event_value = format.convert_scalar(value, node_name);

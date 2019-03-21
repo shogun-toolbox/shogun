@@ -18,34 +18,51 @@ namespace shogun
 	{
 
 		template <typename I, typename J>
-		static typename std::enable_if<std::is_signed<I>::value && std::is_signed<J>::value, I>::type safe_convert(J value)
+		static typename std::enable_if<
+		    std::is_signed<I>::value && std::is_signed<J>::value, I>::type
+		safe_convert(J value)
 		{
-			if (std::isfinite(value) && (value < std::numeric_limits<I>::lowest() || value > std::numeric_limits<I>::max()))
-				throw std::overflow_error("value cannot be stored in a variable of type requested");
+			if (std::isfinite(value) &&
+			    (value < std::numeric_limits<I>::lowest() ||
+			     value > std::numeric_limits<I>::max()))
+				throw std::overflow_error(
+				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<std::is_signed<I>::value && std::is_unsigned<J>::value, I>::type safe_convert(J value)
+		static typename std::enable_if<
+		    std::is_signed<I>::value && std::is_unsigned<J>::value, I>::type
+		safe_convert(J value)
 		{
-			if (value > static_cast<typename std::make_unsigned<I>::type>(std::numeric_limits<I>::max()))
-				throw std::overflow_error("value cannot be stored in a variable of type requested");
+			if (value > static_cast<typename std::make_unsigned<I>::type>(
+			                std::numeric_limits<I>::max()))
+				throw std::overflow_error(
+				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<std::is_unsigned<I>::value && std::is_signed<J>::value, I>::type safe_convert(J value)
+		static typename std::enable_if<
+		    std::is_unsigned<I>::value && std::is_signed<J>::value, I>::type
+		safe_convert(J value)
 		{
-			if (value < 0 || static_cast<typename std::make_unsigned<J>::type>(value) > std::numeric_limits<I>::max())
-				throw std::overflow_error("value cannot be stored in a variable of type requested");
+			if (value < 0 ||
+			    static_cast<typename std::make_unsigned<J>::type>(value) >
+			        std::numeric_limits<I>::max())
+				throw std::overflow_error(
+				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<std::is_unsigned<I>::value && std::is_unsigned<J>::value, I>::type safe_convert(J value)
+		static typename std::enable_if<
+		    std::is_unsigned<I>::value && std::is_unsigned<J>::value, I>::type
+		safe_convert(J value)
 		{
 			if (value > std::numeric_limits<I>::max())
-				throw std::overflow_error("value cannot be stored in a variable of type requested");
+				throw std::overflow_error(
+				    "value cannot be stored in a variable of type requested");
 			return static_cast<I>(value);
 		}
 	}

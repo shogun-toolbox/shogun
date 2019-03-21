@@ -24,7 +24,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
-#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
 #include <map>
@@ -43,6 +42,7 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
+class ObservedValue;
 class CDynamicObjectArray;
 
 template <class T, class K> class CMap;
@@ -124,14 +124,15 @@ class CSGObject
 {
 public:
 	/** Definition of observed subject */
-	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
 	/** Definition of observable */
-	typedef rxcpp::observable<ObservedValue,
-		                      rxcpp::dynamic_observable<ObservedValue>>
+	typedef rxcpp::observable<Some<ObservedValue>,
+		                      rxcpp::dynamic_observable<Some<ObservedValue>>>
 		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
+		Some<ObservedValue>,
+		rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */
@@ -568,9 +569,20 @@ public:
 	{
 		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
 		{
-			SG_ERROR(
-					"There are no options for parameter %s::%s", get_name(),
-					_tag.name().c_str());
+			const Any value = get_parameter(_tag).get_value();
+			try
+			{
+				return any_cast<T>(value);
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+					"Cannot get parameter %s::%s of type %s, incompatible "
+					"requested type %s or there are no options for parameter "
+					"%s::%s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str(), get_name(), _tag.name().c_str());
+			}
 		}
 		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
 	}
@@ -646,7 +658,7 @@ public:
 	void subscribe_to_parameters(ParameterObserverInterface* obs);
 
 	/** Print to stdout a list of observable parameters */
-	void list_observable_parameters();
+	std::vector<std::string> observable_names();
 
 	/** Get string to enum mapping */
 	stringToEnumMapType get_string_to_enum_map() const
@@ -952,7 +964,7 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const ObservedValue value);
+	void observe(const Some<ObservedValue> value);
 
 	/**
 	 * Register which params this object can emit.
@@ -960,9 +972,8 @@ protected:
 	 * @param type the param type
 	 * @param description a user oriented description
 	 */
-	void register_observable_param(
-		const std::string& name, const SG_OBS_VALUE_TYPE type,
-		const std::string& description);
+	void register_observable(
+		const std::string& name, const std::string& description);
 
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
