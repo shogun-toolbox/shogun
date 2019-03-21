@@ -59,7 +59,7 @@ namespace shogun
 		make_observation(int64_t step, std::string name, std::string description, T value)
 		{
 			return Some<ObservedValue>::from_raw(
-			    new ObservedValueTemplated<T>(step, name, value, description));
+			    new ObservedValueTemplated<T>(step, name, description, value));
 		}
 
 		/**
