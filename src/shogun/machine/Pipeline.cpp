@@ -234,7 +234,7 @@ namespace shogun
 		get_machine()->store_model_features();
 	}
 
-	CSGObject* CPipeline::clone()
+	CSGObject* CPipeline::clone() const
 	{
 		auto result = CMachine::clone()->as<CPipeline>();
 		for (auto&& stage : m_stages)

@@ -122,7 +122,7 @@ namespace shogun
 		 */
 		virtual void set_store_model_features(bool store_model) override;
 
-		virtual CSGObject* clone() override;
+		virtual CSGObject* clone() const override;
 
 		virtual EProblemType get_machine_problem_type() const override;
 
