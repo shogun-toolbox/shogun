@@ -50,15 +50,16 @@ namespace shogun
 		* Helper method to generate an ObservedValue.
 		* @param step the step
 		* @param name the param's name we are observing
+		* @param description the param's description
 		* @param value the param's value
 		* @return an ObservedValue object initialized
 		*/
 		template <class T>
 		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, T value)
+		make_observation(int64_t step, std::string name, std::string description, T value)
 		{
 			return Some<ObservedValue>::from_raw(
-			    new ObservedValueTemplated<T>(step, name, value));
+			    new ObservedValueTemplated<T>(step, name, value, description));
 		}
 
 		/**
