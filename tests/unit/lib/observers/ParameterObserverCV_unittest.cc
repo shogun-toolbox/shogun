@@ -127,14 +127,14 @@ TEST(ParameterObserverCV, get_observations_locked)
 		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get_fold(j);
-			EXPECT_EQ(fold->get_current_run_index(), i);
-			EXPECT_EQ(fold->get_current_fold_index(), j);
-			EXPECT_TRUE(fold->get_train_indices().size() != 0);
-			EXPECT_TRUE(fold->get_test_indices().size() != 0);
-			EXPECT_TRUE(fold->get_trained_machine() != NULL);
-			EXPECT_TRUE(fold->get_test_result()->get_num_labels() != 0);
-			EXPECT_TRUE(fold->get_test_true_result()->get_num_labels() != 0);
-			EXPECT_TRUE(fold->get_evaluation_result() != 0);
+			EXPECT_EQ(fold->get<index_t>("current_run_index"), i);
+			EXPECT_EQ(fold->get<index_t>("current_fold_index"), j);
+			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
+			EXPECT_TRUE(fold->get<SGVector<index_t>>("test_indices").size() != 0);
+			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<CLabels*>("test_result")->get_num_labels() != 0);
+			EXPECT_TRUE(fold->get<CLabels*>("test_true_result")->get_num_labels() != 0);
+			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
 			SG_UNREF(fold)
 		}
 		SG_UNREF(run)
@@ -155,14 +155,14 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		for (int j = 0; j < run->get_num_folds(); j++)
 		{
 			auto fold = run->get_fold(j);
-			EXPECT_EQ(fold->get_current_run_index(), i);
-			EXPECT_EQ(fold->get_current_fold_index(), j);
-			EXPECT_TRUE(fold->get_train_indices().size() != 0);
-			EXPECT_TRUE(fold->get_test_indices().size() != 0);
-			EXPECT_TRUE(fold->get_trained_machine() != NULL);
-			EXPECT_TRUE(fold->get_test_result()->get_num_labels() != 0);
-			EXPECT_TRUE(fold->get_test_true_result()->get_num_labels() != 0);
-			EXPECT_TRUE(fold->get_evaluation_result() != 0);
+			EXPECT_EQ(fold->get<index_t>("current_run_index"), i);
+			EXPECT_EQ(fold->get<index_t>("current_fold_index"), j);
+			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
+			EXPECT_TRUE(fold->get<SGVector<index_t>>("test_indices").size() != 0);
+			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<CLabels*>("test_result")->get_num_labels() != 0);
+			EXPECT_TRUE(fold->get<CLabels*>("test_true_result")->get_num_labels() != 0);
+			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
 			SG_UNREF(fold)
 		}
 		SG_UNREF(run)
