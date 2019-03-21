@@ -14,4 +14,5 @@ TEST(ObservedValue, set_correct)
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);
+	EXPECT_EQ(obs->get_any(), Any());
 };
