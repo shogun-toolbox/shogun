@@ -862,7 +862,7 @@ public:
 	 * @return an identical copy of the given object, which is disjoint in memory.
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
-	virtual CSGObject* clone();
+	virtual CSGObject* clone() const;
 
 	/**
 	 * Looks up the option name of a parameter given the enum value.

@@ -686,7 +686,7 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-CSGObject* CSGObject::clone()
+CSGObject* CSGObject::clone() const
 {
 	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), this);
 	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());

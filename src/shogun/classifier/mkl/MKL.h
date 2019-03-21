@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Viktor Gal, Evan Shelhamer,
  *          Sergey Lisitsyn, Bjoern Esser, Leon Kuchenbecker
  */
 #ifndef __MKL_H__
@@ -91,7 +91,7 @@ class CMKL : public CSVM
 		 */
 		virtual ~CMKL();
 
-		virtual CSGObject* clone();
+		virtual CSGObject* clone() const;
 
 		/** SVM to use as constraint generator in MKL SIP
 		 *

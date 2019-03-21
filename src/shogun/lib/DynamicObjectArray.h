@@ -459,7 +459,7 @@ class CDynamicObjectArray : public CSGObject
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual CSGObject* clone()
+		virtual CSGObject* clone() const
 		{
 			CDynamicObjectArray* cloned = (CDynamicObjectArray*) CSGObject::clone();
 			// Since the array vector is registered with
