@@ -63,6 +63,22 @@ namespace shogun
 		}
 
 		/**
+		* Helper method to generate an ObservedValue with custom properties.
+		* @param step the step
+		* @param name the param's name we are observing
+		* @param description the param's description
+		* @param value the param's value
+		* @return an ObservedValue object initialized
+		*/
+		template <class T>
+		static Some<ObservedValue>
+		make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
+		{
+			return Some<ObservedValue>::from_raw(
+					new ObservedValueTemplated<T>(step, name, value, properties));
+		}
+
+		/**
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
