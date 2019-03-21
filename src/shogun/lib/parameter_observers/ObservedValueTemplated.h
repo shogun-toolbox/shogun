@@ -29,13 +29,13 @@ namespace shogun
 		 * @param name the observed value's name
 		 * @param value the observed value
 		 */
-		ObservedValueTemplated(int64_t step, std::string name, T value)
+		ObservedValueTemplated(int64_t step, std::string name, std::string description, T value)
 		    : ObservedValue(step, name), m_observed_value(value)
 		{
 			this->watch_param(
 			    "value", &m_observed_value,
 			    AnyParameterProperties(
-			        "Value of the observation", ParameterProperties::NONE));
+			        description, ParameterProperties::NONE));
             m_any_value = make_any(m_observed_value);
 		}
 
