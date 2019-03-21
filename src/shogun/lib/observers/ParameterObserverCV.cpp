@@ -80,15 +80,15 @@ void CParameterObserverCV::print_observed_value(
 	{
 		auto f = value->get_fold(i);
 		SG_PRINT("\n")
-		SG_PRINT("Current run index: %i\n", f->get_current_run_index())
-		SG_PRINT("Current fold index: %i\n", f->get_current_fold_index())
-		f->get_train_indices().display_vector("Train Indices ");
-		f->get_test_indices().display_vector("Test Indices ");
-		print_machine_information(f->get_trained_machine());
-		f->get_test_result()->get_values().display_vector("Test Labels ");
-		f->get_test_true_result()->get_values().display_vector(
+		SG_PRINT("Current run index: %i\n", f->get<index_t>("current_run_index"))
+		SG_PRINT("Current fold index: %i\n", f->get<index_t>("current_fold_index"))
+		f->get<SGVector<index_t>>("train_indices").display_vector("Train Indices ");
+		f->get<SGVector<index_t>>("test_indices").display_vector("Test Indices ");
+		print_machine_information(f->get<CMachine*>("trained_machine"));
+		f->get<CLabels*>("test_result")->get_values().display_vector("Test Labels ");
+		f->get<CLabels*>("test_true_result")->get_values().display_vector(
 		    "Test True Label ");
-		SG_PRINT("Evaluation result: %f\n", f->get_evaluation_result());
+		SG_PRINT("Evaluation result: %f\n", f->get<float64_t>("evaluation_result"));
 		SG_UNREF(f)
 	}
 }
