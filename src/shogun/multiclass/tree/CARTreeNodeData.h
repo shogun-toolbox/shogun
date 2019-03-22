@@ -75,21 +75,19 @@ struct CARTreeNodeData
 		weight_minus_branch=0.;
 		num_leaves=0;
 	}
-
-	/** print data
-	 * @param data the data to be printed
-	 */
-	static void print_data(const CARTreeNodeData &data)
-	{
-		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
-		data.transit_into_values.display_vector(data.transit_into_values.vector,data.transit_into_values.vlen, "transit values");
-		SG_SPRINT("total weight=%f\n", data.total_weight);
-		SG_SPRINT("errored weight of node=%f\n", data.weight_minus_node);
-		SG_SPRINT("errored weight of subtree=%f\n", data.weight_minus_branch);
-		SG_SPRINT("number of leaves in subtree=%d\n", data.num_leaves);
-	}
 };
 
+template<class T>
+constexpr void register_params(CARTreeNodeData& n, T* o)
+{
+	o->watch_param("attribute_id", &n.attribute_id, AnyParameterProperties("classifying feature index"));
+	o->watch_param("transit_into_values", &n.transit_into_values, AnyParameterProperties("transit values"));
+	o->watch_param("node_label", &n.node_label, AnyParameterProperties("node label"));
+	o->watch_param("total_weight", &n.total_weight, AnyParameterProperties("total_weight"));
+	o->watch_param("weight_minus_node", &n.weight_minus_node, AnyParameterProperties("errored weight of node"));
+	o->watch_param("weight_minus_branch", &n.weight_minus_branch, AnyParameterProperties("errored weight of subtree"));
+	o->watch_param("num_leaves", &n.num_leaves, AnyParameterProperties("number of leaves in subtree"));
+}
 
 } /* shogun */
 

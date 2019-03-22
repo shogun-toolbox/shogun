@@ -67,17 +67,18 @@ struct C45TreeNodeData
 		total_weight=0.0;
 		weight_minus=0.0;
 	}
-
-	/** print data
-	 * @param data the data to be printed
-	 */
-	static void print_data(const C45TreeNodeData &data)
-	{
-		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
-		SG_SPRINT("transit feature value=%f\n", data.transit_if_feature_value);
-	}
 };
 
+template<class T>
+constexpr void register_params(C45TreeNodeData& n, T* o)
+{
+	o->watch_param("attribute_id", &n.attribute_id, AnyParameterProperties("classifying feature index"));
+	o->watch_param("transit_into_values", &n.transit_if_feature_value, AnyParameterProperties("transit values"));
+	o->watch_param("class_label", &n.class_label, AnyParameterProperties("class_label"));
+	o->watch_param("total_weight", &n.total_weight, AnyParameterProperties("total weight"));
+	o->watch_param("weight_minus", &n.weight_minus,
+		AnyParameterProperties("weight of all samples present in the node during training not belonging to class_label class"));
+}
 
 } /* shogun */
 

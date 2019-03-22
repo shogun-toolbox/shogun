@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Yuyu Zhang, Bjoern Esser, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Yuyu Zhang, Bjoern Esser,
  *          Chiyuan Zhang
  */
 
@@ -26,13 +26,14 @@ struct ConditionalProbabilityTreeNodeData
 	ConditionalProbabilityTreeNodeData(): label(-1), p_right(0)
 	{
 	}
-
-	/** print data */
-	static void print_data(const ConditionalProbabilityTreeNodeData &data)
-	{
-		SG_SPRINT("label=%d\n", data.label)
-	}
 };
+
+template<class T>
+constexpr void register_params(ConditionalProbabilityTreeNodeData& n, T* o)
+{
+	o->watch_param("label", &n.label, AnyParameterProperties("label"));
+	o->watch_param("p_right", &n.p_right, AnyParameterProperties("prob of right subtree used in prediction"));
+}
 
 
 } /* shogun */

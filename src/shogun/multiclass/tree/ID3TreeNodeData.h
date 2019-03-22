@@ -59,17 +59,15 @@ struct id3TreeNodeData
 		transit_if_feature_value=-1.0;
 		class_label=-1.0;
 	}
-
-	/** print data
-	 * @param data the data to be printed
-	 */
-	static void print_data(const id3TreeNodeData &data)
-	{
-		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
-		SG_SPRINT("transit feature value=%f\n", data.transit_if_feature_value);
-	}
 };
 
+template<class T>
+constexpr void register_params(id3TreeNodeData& n, T* o)
+{
+	o->watch_param("attribute_id", &n.attribute_id, AnyParameterProperties("classifying feature index"));
+	o->watch_param("transit_if_feature_value", &n.transit_if_feature_value, AnyParameterProperties("distinct feature values possible for attribute_id"));
+	o->watch_param("class_label", &n.class_label, AnyParameterProperties("class label of data (-1 for internal nodes)"));
+}
 
 } /* shogun */
 
