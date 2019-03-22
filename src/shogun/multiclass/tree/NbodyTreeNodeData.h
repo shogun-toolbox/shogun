@@ -76,6 +76,19 @@ struct NbodyTreeNodeData
 		radius=0;
 	}
 };
+
+template<class T>
+constexpr void register_params(NbodyTreeNodeData& n, T* o)
+{
+	o->watch_param("start_idx", &n.start_idx, AnyParameterProperties("start index"));
+	o->watch_param("end_idx", &n.end_idx, AnyParameterProperties("end index"));
+	o->watch_param("is_leaf", &n.is_leaf, AnyParameterProperties("is leaf"));
+	o->watch_param("bbox_upper", &n.bbox_upper, AnyParameterProperties("bounding box upper bounds"));
+	o->watch_param("bbox_lower", &n.bbox_lower, AnyParameterProperties("bounding box lower bounds"));
+	o->watch_param("radius", &n.radius, AnyParameterProperties("radius of point cloud in node"));
+	o->watch_param("center", &n.center, AnyParameterProperties("node center"));
+}
+
 } /* shogun */
 
 #endif /* _NBODYTREENODEDATA_H__ */

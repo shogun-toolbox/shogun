@@ -203,8 +203,6 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 		node_q.pop();
 	}
 
-	//m_root->debug_print(RelaxedTreeNodeData::print_data);
-
 	return true;
 }
 

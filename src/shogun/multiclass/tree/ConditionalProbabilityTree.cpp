@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sanuj Sharma, Sergey Lisitsyn, 
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sanuj Sharma, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -136,14 +136,6 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	}
 
 	return true;
-}
-
-void CConditionalProbabilityTree::print_tree()
-{
-	if (m_root)
-		m_root->debug_print(ConditionalProbabilityTreeNodeData::print_data);
-	else
-		printf("Empty Tree\n");
 }
 
 void CConditionalProbabilityTree::train_example(CStreamingDenseFeatures<float32_t>* ex, int32_t label)
