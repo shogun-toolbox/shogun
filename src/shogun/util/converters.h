@@ -16,10 +16,17 @@ namespace shogun
 {
 	namespace utils
 	{
+		template<typename T>
+		using try_make_unsigned =
+			typename std::conditional_t<
+				std::is_integral<T>::value,
+				std::make_unsigned<T>,
+				std::common_type<T>
+			>;
 
 		template <typename I, typename J>
-		static typename std::enable_if<
-		    std::is_signed<I>::value && std::is_signed<J>::value, I>::type
+		static typename std::enable_if_t<
+		    std::is_signed<I>::value && std::is_signed<J>::value, I>
 		safe_convert(J value)
 		{
 			if (std::isfinite(value) &&
@@ -31,11 +38,11 @@ namespace shogun
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<
-		    std::is_signed<I>::value && std::is_unsigned<J>::value, I>::type
+		static typename std::enable_if_t<
+		    std::is_signed<I>::value && std::is_unsigned<J>::value, I>
 		safe_convert(J value)
 		{
-			if (value > static_cast<typename std::make_unsigned<I>::type>(
+			if (value > static_cast<typename try_make_unsigned<I>::type>(
 			                std::numeric_limits<I>::max()))
 				throw std::overflow_error(
 				    "value cannot be stored in a variable of type requested");
@@ -43,12 +50,12 @@ namespace shogun
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<
-		    std::is_unsigned<I>::value && std::is_signed<J>::value, I>::type
+		static typename std::enable_if_t<
+		    std::is_unsigned<I>::value && std::is_signed<J>::value, I>
 		safe_convert(J value)
 		{
 			if (value < 0 ||
-			    static_cast<typename std::make_unsigned<J>::type>(value) >
+			    static_cast<typename try_make_unsigned<J>::type>(value) >
 			        std::numeric_limits<I>::max())
 				throw std::overflow_error(
 				    "value cannot be stored in a variable of type requested");
@@ -56,8 +63,8 @@ namespace shogun
 		}
 
 		template <typename I, typename J>
-		static typename std::enable_if<
-		    std::is_unsigned<I>::value && std::is_unsigned<J>::value, I>::type
+		static typename std::enable_if_t<
+		    std::is_unsigned<I>::value && std::is_unsigned<J>::value, I>
 		safe_convert(J value)
 		{
 			if (value > std::numeric_limits<I>::max())
