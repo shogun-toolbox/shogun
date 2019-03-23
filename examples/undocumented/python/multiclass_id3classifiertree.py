@@ -18,13 +18,14 @@ parameter_list = [[train_data, train_labels, test_data]]
 
 def multiclass_id3classifiertree(train=train_data,labels=train_labels,test=test_data):
 	try:
-		from shogun import RealFeatures, MulticlassLabels, ID3ClassifierTree
+		import shogun as sg
+		from shogun import MulticlassLabels, ID3ClassifierTree
 	except ImportError:
 		return
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(train)
-	feats_test=RealFeatures(test)
+	feats_train=sg.features(train)
+	feats_test=sg.features(test)
 	feats_labels=MulticlassLabels(labels)
 
 	# ID3 Tree formation

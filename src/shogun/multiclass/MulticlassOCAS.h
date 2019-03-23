@@ -30,7 +30,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		 * @param features features
 		 * @param labs labels
 		 */
-		CMulticlassOCAS(float64_t C, CDotFeatures* features, CLabels* labs);
+		CMulticlassOCAS(float64_t C, CFeatures* features, CLabels* labs);
 
 		/** destructor */
 		virtual ~CMulticlassOCAS();

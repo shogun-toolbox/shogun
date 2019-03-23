@@ -11,14 +11,15 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_trace_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
-	from shogun import BinaryLabels, RealFeatures, Task, TaskGroup
+	from shogun import BinaryLabels, Task, TaskGroup
 	try:
 		from shogun import MultitaskTraceLogisticRegression
 	except ImportError:
 		print("MultitaskTraceLogisticRegression not available")
 		exit(0)
+	import shogun as sg
 
-	features = RealFeatures(hstack((traindat,traindat)))
+	features = sg.features(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_vectors = features.get_num_vectors()

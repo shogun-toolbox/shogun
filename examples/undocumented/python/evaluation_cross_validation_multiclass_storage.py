@@ -23,7 +23,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import splitting_strategy
     from shogun import MulticlassLabels
-    from shogun import RealFeatures, CombinedFeatures
+    from shogun import CombinedFeatures
     from shogun import CombinedKernel
     from shogun import MKLMulticlass
     from shogun import Statistics, MSG_DEBUG, Math
@@ -34,7 +34,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     Math.init_random(1)
 
     # training data, combined features all on same data
-    features=RealFeatures(traindat)
+    features=sg.features(traindat)
     comb_features=CombinedFeatures()
     comb_features.append_feature_obj(features)
     comb_features.append_feature_obj(features)

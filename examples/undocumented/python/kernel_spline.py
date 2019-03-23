@@ -9,13 +9,13 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
 def kernel_spline (fm_train_real=traindat,fm_test_real=testdat):
-	from shogun import RealFeatures
-	from shogun import SplineKernel
+	import shogun as sg
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+	feats_train=sg.features(fm_train_real)
+	feats_test=sg.features(fm_test_real)
 
-	kernel=SplineKernel(feats_train, feats_train)
+	kernel=sg.kernel("SplineKernel")
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

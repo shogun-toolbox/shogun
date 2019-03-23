@@ -12,16 +12,17 @@ parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
 def multiclass_c45classifiertree(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
-		from shogun import RealFeatures, MulticlassLabels, CSVFile, C45ClassifierTree
+		from shogun import MulticlassLabels, C45ClassifierTree
 		from numpy import random, int32
 	except ImportError:
 		print("Could not import Shogun and/or numpy modules")
 		return
+	import shogun as sg
 
 	# wrap features and labels into Shogun objects
-	feats_train=RealFeatures(CSVFile(train))
-	feats_test=RealFeatures(CSVFile(test))
-	train_labels=MulticlassLabels(CSVFile(labels))
+	feats_train=sg.features(sg.csv_file(train))
+	feats_test=sg.features(sg.csv_file(test))
+	train_labels=MulticlassLabels(sg.csv_file(labels))
 
 	# divide train dataset into training and validation subsets in the ratio 2/3 to 1/3
 	subset=int32(random.permutation(feats_train.get_num_vectors()))

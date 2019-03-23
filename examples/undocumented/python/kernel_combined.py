@@ -11,15 +11,15 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,traindna,testdna],[traindat,testdat,traindna,testdna]]
 def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
 	from shogun import CombinedKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
-	from shogun import RealFeatures, StringCharFeatures, CombinedFeatures, DNA
+	from shogun import StringCharFeatures, CombinedFeatures, DNA
 	import shogun as sg
 
 	kernel=CombinedKernel()
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
-	subkfeats_train=RealFeatures(fm_train_real)
-	subkfeats_test=RealFeatures(fm_test_real)
+	subkfeats_train=sg.features(fm_train_real)
+	subkfeats_test=sg.features(fm_test_real)
 	subkernel=sg.kernel("GaussianKernel", log_width=1.1)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)

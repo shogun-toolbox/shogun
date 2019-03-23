@@ -23,14 +23,13 @@ def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_t
     from shogun import MeanSquaredError
     from shogun import splitting_strategy
     from shogun import RegressionLabels
-    from shogun import RealFeatures
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
     import shogun as sg
 
     # training data
-    features_train=RealFeatures(traindat)
+    features_train=sg.features(traindat)
     labels=RegressionLabels(label_traindat)
 
     # kernel

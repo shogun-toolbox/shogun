@@ -26,7 +26,6 @@ parameter_list = [[traindat,label_traindat]]
 
 def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=label_traindat):
 	from shogun import MulticlassSOLabels
-	from shogun import RealFeatures
 	from shogun import SOSVMHelper
 	try:
 		from shogun import BMRM, PPBMRM, P3BMRM, DualLibQPBMSOSVM
@@ -34,9 +33,10 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 		print("At least one of BMRM, PPBMRM, P3BMRM, DualLibQPBMSOSVM not available")
 		exit(0)
 	from shogun import MulticlassModel, RealNumber
+	import shogun as sg
 
 	labels = MulticlassSOLabels(label_train_multiclass)
-	features = RealFeatures(fm_train_real.T)
+	features = sg.features(fm_train_real.T)
 
 	model = MulticlassModel(features, labels)
 	sosvm = DualLibQPBMSOSVM(model, labels, 1.0)

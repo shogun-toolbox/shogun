@@ -24,7 +24,8 @@ def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 	feats_test = preproc.transform(feats_test)
 
 	use_sign=False
-	kernel=WeightedCommWordStringKernel(feats_train, feats_train, use_sign)
+	kernel = sg.kernel("WeightedCommWordStringKernel", use_sign=use_sign)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

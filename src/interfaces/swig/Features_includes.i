@@ -2,6 +2,7 @@
 #include <shogun/lib/Compressor.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>
+#include <shogun/features/DenseFeatures.h> 
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/streaming/StreamingStringFeatures.h>
@@ -12,7 +13,6 @@
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/features/DummyFeatures.h>

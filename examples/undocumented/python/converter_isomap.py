@@ -3,10 +3,10 @@ data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
 def converter_isomap (data_fname):
-	from shogun import RealFeatures, CSVFile
+	from shogun import CSVFile
 	from shogun import Isomap
 		
-	features = RealFeatures(CSVFile(data))
+	features = sg.features(CSVFile(data))
 
 	converter = Isomap()
 	converter.set_k(20)

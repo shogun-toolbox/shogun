@@ -29,7 +29,8 @@ def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,orde
 	feats_train = preproc.transform(feats_train)
 	feats_test = preproc.transform(feats_test)
 
-	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
+	kernel=sg.kernel("CommUlongStringKernel", use_sign=use_sign)
+	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

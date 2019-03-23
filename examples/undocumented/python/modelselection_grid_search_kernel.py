@@ -13,7 +13,6 @@ from shogun import machine_evaluation
 from shogun import ContingencyTableEvaluation, ACCURACY
 from shogun import splitting_strategy
 from shogun import BinaryLabels
-from shogun import RealFeatures
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
 from shogun import ParameterCombination
@@ -83,7 +82,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	matrix=random.rand(dim_vectors, num_vectors)
 
 	# create num_feautres 2-dimensional vectors
-	features=RealFeatures(matrix)
+	features=sg.features(matrix)
 
 	# create labels, two classes
 	labels=BinaryLabels(num_vectors)
