@@ -38,7 +38,7 @@ void CLibLinearRegression::init_defaults()
 {
 	set_C(1.0);
 	set_epsilon(1e-2);
-	set_tube_epsilon(0);
+	set_tube_epsilon(1e-1);
 	set_max_iter(10000);
 	set_use_bias(false);
 	set_liblinear_regression_type(L2R_L1LOSS_SVR_DUAL);
@@ -48,7 +48,10 @@ void CLibLinearRegression::register_parameters()
 {
 	SG_ADD(&m_C, "C", "regularization constant", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_epsilon, "tube_epsilon", "svr tube epsilon",
+	    &m_tube_epsilon, "tube_epsilon", "svr tube epsilon",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &m_epsilon, "epsilon", "tolerance of termination criterion",
 	    ParameterProperties::HYPER);
 	SG_ADD(&m_max_iter, "max_iterations", "max number of iterations");
 	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
