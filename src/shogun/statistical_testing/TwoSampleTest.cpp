@@ -50,6 +50,9 @@ CTwoSampleTest::Self::Self(index_t num_kernels) : kernel_mgr(num_kernels)
 CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest()
 {
 	self=std::unique_ptr<Self>(new Self(TwoSampleTest::num_kernels));
+
+	// FIXME: remove and rather register the kernel itself
+	watch_method("kernel", &CTwoSampleTest::get_kernel);
 }
 
 CTwoSampleTest::~CTwoSampleTest()

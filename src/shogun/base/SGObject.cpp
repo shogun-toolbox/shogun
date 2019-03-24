@@ -1092,47 +1092,36 @@ void CSGObject::init_auto_params()
 	}
 }
 
+CSGObject* CSGObject::get(const std::string& name, index_t index) const
+{
+	auto* result = sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByNameIndex(index)));
+	if (!result && has(name))
+	{
+		SG_ERROR(
+			"Cannot get array parameter %s::%s[%d] of type %s as object.\n",
+			get_name(), name.c_str(), index,
+			self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	return result;
+}
+
 CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
     noexcept
 {
-	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CKernel>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CFeatures>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
-		return result;
-	return nullptr;
+	return sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByName()));
 }
 
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
 	auto* result = get(name, std::nothrow);
-	if (result == nullptr)
+	if (!result && has(name))
 	{
-		if (self->map.find(BaseTag(name)) != self->map.end())
-		{
-			SG_ERROR(
-			    "Cannot get parameter %s::%s of type %s as object, not a "
-			    "shogun object base type.\n",
-			    get_name(), name.c_str(),
-			    self->map[BaseTag(name)].get_value().type().c_str());
-		}
-		else
-		{
-			SG_ERROR(
-			    "There is no parameter '%s' in %s.\n", name.c_str(),
-			    get_name());
-		}
+		SG_ERROR(
+			"Cannot get parameter %s::%s of type %s as object.\n",
+			get_name(), name.c_str(),
+			self->map[BaseTag(name)].get_value().type().c_str());
 	}
 	return result;
-}
-
-void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)
-{
-	ASSERT(array);
-	array->push_back(value);
 }
 
 std::string CSGObject::string_enum_reverse_lookup(
@@ -1146,4 +1135,5 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
+
 }
