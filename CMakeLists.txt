@@ -288,7 +288,7 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
-OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
+OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" OFF)
 # note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
