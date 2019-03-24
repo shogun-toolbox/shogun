@@ -10,11 +10,11 @@ All interfaces require the Shogun library to be visible to your system.
 You can prepend the *folder* (!=full filename) of `libshogun.*` to an environmental variable.
 On Linux, this is done with
 
-    export LD_LIBRARY_PATH="path/to/libshogun.so:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="path/to/directory-with-libshogun.so:$LD_LIBRARY_PATH"
 
 On MacOS
 
-    export DYLD_LIBRARY_PATH="path/to/libshogun.dylib:$DYLD_LIBRARY_PATH"
+    export DYLD_LIBRARY_PATH="path/to/directory-with-libshogun.dylib:$DYLD_LIBRARY_PATH"
 
 Note that `libshogun.*` was copied to `path/to/shogun-install/lib/` when running `make install`.
 You can also make it point to the build directory `path/to/build/src/shogun/` to make it available after a successful `make`.
