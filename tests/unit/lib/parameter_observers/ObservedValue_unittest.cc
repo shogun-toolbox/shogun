@@ -28,3 +28,15 @@ TEST(ObservedValue, set_correct_properties)
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);
 	EXPECT_EQ(obs->get_params().find("value")->second->get_properties(), any_prop);
 };
+
+TEST(ObservedValue, set_correct_parameter)
+{
+	int32_t p = 42;
+	AnyParameter param(make_any(p),
+					   AnyParameterProperties("test description", ParameterProperties::MODEL));
+
+	auto obs = ObservedValue::make_observation(1, "test", param);
+	EXPECT_EQ(obs->get<int64_t>("step"), 1);
+	EXPECT_EQ(obs->get<std::string>("name"), "test");
+	EXPECT_EQ(obs->get<int32_t>("value"), 42);
+};
