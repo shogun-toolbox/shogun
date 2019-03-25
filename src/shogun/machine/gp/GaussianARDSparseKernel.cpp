@@ -61,18 +61,6 @@ CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
 	initialize_sparse_kernel();
 }
 
-CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel* kernel)
-{
-	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
-	{
-		SG_SERROR("Provided kernel is not of type CGaussianARDSparseKernel!\n");
-	}
-
-	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDSparseKernel*)kernel;
-}
-
 SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {

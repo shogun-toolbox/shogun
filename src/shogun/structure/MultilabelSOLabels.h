@@ -43,24 +43,6 @@ public:
 	/** destructor */
 	~CSparseMultilabel() { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be CSparseMultilabel
-	 */
-	static CSparseMultilabel * obtain_from_generic(CStructuredData * base_data)
-	{
-		if (base_data->get_structured_data_type() == SDT_SPARSE_MULTILABEL)
-		{
-			return (CSparseMultilabel *) base_data;
-		}
-		else
-		{
-			SG_SERROR("base_data must be of dynamic type CSparseMultilabel\n");
-		}
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char * get_name() const
 	{

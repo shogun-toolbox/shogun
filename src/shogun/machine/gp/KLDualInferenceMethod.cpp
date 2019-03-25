@@ -219,21 +219,6 @@ CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 	init();
 }
 
-CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_DUAL)
-	{
-		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n");
-	}
-
-	SG_REF(inference);
-	return (CKLDualInferenceMethod*)inference;
-}
-
 SGVector<float64_t> CKLDualInferenceMethod::get_alpha()
 {
 	if (parameter_hash_changed())

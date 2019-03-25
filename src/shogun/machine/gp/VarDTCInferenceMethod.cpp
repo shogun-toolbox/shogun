@@ -109,19 +109,6 @@ void CVarDTCInferenceMethod::update()
 	SG_DEBUG("leaving\n");
 }
 
-CVarDTCInferenceMethod* CVarDTCInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_SPARSE_REGRESSION)
-		SG_SERROR("Provided inference is not of type CVarDTCInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CVarDTCInferenceMethod*)inference;
-}
-
 void CVarDTCInferenceMethod::check_members() const
 {
 	CSingleSparseInference::check_members();

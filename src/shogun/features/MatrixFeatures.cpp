@@ -162,14 +162,6 @@ template< class ST > void CMatrixFeatures< ST >::cleanup()
 	m_num_features = 0;
 }
 
-template< class ST > CMatrixFeatures< ST >* CMatrixFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
-{
-	REQUIRE(base_features->get_feature_class() == C_MATRIX,
-			"base_features must be of dynamic type CMatrixFeatures\n")
-
-	return (CMatrixFeatures< ST >*) base_features;
-}
-
 template class CMatrixFeatures<bool>;
 template class CMatrixFeatures<char>;
 template class CMatrixFeatures<int8_t>;

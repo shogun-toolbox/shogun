@@ -439,17 +439,3 @@ SGVector<float64_t> CGaussian::sample()
 	SG_DEBUG("Leaving\n");
 	return samp;
 }
-
-CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
-{
-	if (!distribution)
-		return NULL;
-
-	CGaussian* casted=dynamic_cast<CGaussian*>(distribution);
-	if (!casted)
-		return NULL;
-
-	/* since an additional reference is returned */
-	SG_REF(casted);
-	return casted;
-}

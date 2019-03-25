@@ -99,13 +99,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_MULTIPLE; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted CMultiLaplaceInferenceMethod object
-	 */
-	static CMultiLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
-
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

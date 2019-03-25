@@ -57,25 +57,6 @@ namespace shogun
 			return "CrossValidationResult";
 		}
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param eval_result its dynamic type must be CCrossValidationResult
-		 */
-		static CCrossValidationResult*
-		obtain_from_generic(CEvaluationResult* eval_result)
-		{
-			if (!eval_result)
-				return NULL;
-
-			REQUIRE(
-			    eval_result->get_result_type() == CROSSVALIDATION_RESULT,
-			    "CrossValidationResult::obtain_from_generic(): argument is"
-			    "of wrong type!\n");
-
-			SG_REF(eval_result);
-			return (CCrossValidationResult*)eval_result;
-		}
-
 		/** print result */
 		virtual void print_result()
 		{

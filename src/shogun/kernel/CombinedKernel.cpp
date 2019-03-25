@@ -891,19 +891,6 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 	return result;
 }
 
-CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
-{
-	if (kernel->get_kernel_type()!=K_COMBINED)
-	{
-		SG_SERROR("CCombinedKernel::obtain_from_generic(): provided kernel is "
-				"not of type CCombinedKernel!\n");
-	}
-
-	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CCombinedKernel*)kernel;
-}
-
 CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 {
 	CList* return_list = new CList(true);

@@ -92,13 +92,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_FITC_LAPLACE_SINGLE; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted CSingleFITCLaplaceInferenceMethod object
-	 */
-	static CSingleFITCLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
-
 	/**
 	 * @return whether combination of Laplace approximation inference method and
 	 * given likelihood function supports regression

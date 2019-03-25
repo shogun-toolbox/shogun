@@ -43,23 +43,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "GradientResult"; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param eval_result evaluation result
-	 *
-	 * @return casted CGradientResult object
-	 */
-	static CGradientResult* obtain_from_generic(CEvaluationResult* eval_result)
-	{
-		ASSERT(eval_result);
-
-		REQUIRE(eval_result->get_result_type()==GRADIENTEVALUATION_RESULT,
-				"Provided evaluation result is not of type CGradientResult!\n")
-
-		SG_REF(eval_result);
-		return (CGradientResult*) eval_result;
-	}
-
 	/** return what type of result we are.
 	 *
 	 * @return result type

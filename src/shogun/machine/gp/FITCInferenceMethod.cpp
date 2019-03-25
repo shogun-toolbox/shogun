@@ -83,19 +83,6 @@ void CFITCInferenceMethod::update()
 	SG_DEBUG("leaving\n");
 }
 
-CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
-		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CFITCInferenceMethod*)inference;
-}
-
 void CFITCInferenceMethod::check_members() const
 {
 	CSingleFITCInference::check_members();

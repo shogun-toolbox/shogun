@@ -76,15 +76,3 @@ float64_t CDistribution::update_params_em(const SGVector<float64_t> alpha_k)
 	SG_NOTIMPLEMENTED
 	return -1;
 }
-
-CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
-{
-	if (!object)
-		return NULL;
-
-	CDistribution* casted=dynamic_cast<CDistribution*>(object);
-	if (!casted)
-		return NULL;
-
-	return casted;
-}

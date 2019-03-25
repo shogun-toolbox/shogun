@@ -137,13 +137,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_KL_DUAL; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted CKLDualInferenceMethod object
-	 */
-	static CKLDualInferenceMethod * obtain_from_generic(CInference* inference);
-
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:

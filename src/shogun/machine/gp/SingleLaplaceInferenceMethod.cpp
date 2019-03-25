@@ -298,19 +298,6 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-CSingleLaplaceInferenceMethod* CSingleLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_LAPLACE_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleLaplaceInferenceMethod\n")
-
-	SG_REF(inference);
-	return (CSingleLaplaceInferenceMethod*)inference;
-}
-
 CSingleLaplaceInferenceMethod::~CSingleLaplaceInferenceMethod()
 {
 }

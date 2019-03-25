@@ -206,15 +206,6 @@ class CGaussian : public CDistribution
 		 */
 		SGVector<float64_t> sample();
 
-		/** @param distribution is casted to CGaussian, NULL if not possible
-		 * Note that the object is SG_REF'ed
-		 * @return casted CGaussian object
-		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
-		static CGaussian* obtain_from_generic(CDistribution* distribution);
-
 		/** @return object name */
 		virtual const char* get_name() const { return "Gaussian"; }
 

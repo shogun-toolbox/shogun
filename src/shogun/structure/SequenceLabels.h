@@ -36,20 +36,6 @@ public:
 	/** destructor */
 	~CSequence() { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be CSequence
-	 */
-	static CSequence* obtain_from_generic(CStructuredData* base_data)
-	{
-		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
-			return (CSequence*) base_data;
-		else
-			SG_SERROR("base_data must be of dynamic type CSequence\n")
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "Sequence"; }
 

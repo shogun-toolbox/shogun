@@ -171,20 +171,6 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 	return SGVector<float64_t> ();
 }
 
-CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		SG_SERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CMultiLaplaceInferenceMethod*)inference;
-}
-
-
 void CMultiLaplaceInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K

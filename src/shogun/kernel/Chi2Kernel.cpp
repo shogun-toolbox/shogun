@@ -85,19 +85,6 @@ float64_t CChi2Kernel::get_width()
 	return width;
 }
 
-CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
-{
-	if (kernel->get_kernel_type()!=K_CHI2)
-	{
-		SG_SERROR("Provided kernel is "
-				"not of type CChi2Kernel!\n");
-	}
-
-	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CChi2Kernel*)kernel;
-}
-
 void CChi2Kernel::set_width(int32_t w)
 {
 	REQUIRE(w>0, "Parameter width should be > 0");

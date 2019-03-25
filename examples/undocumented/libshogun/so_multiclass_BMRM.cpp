@@ -238,7 +238,8 @@ int main(int argc, char * argv[])
 
 	for (uint32_t i=0; i<num_feat; ++i)
 	{
-		CRealNumber* rn = CRealNumber::obtain_from_generic( out->get_label(i) );
+		CRealNumber* rn = out->get_label(i)->as<CRealNumber>();
+		SG_REF(rn)
 		error+=(rn->value==labs.get_element(i)) ? 0.0 : 1.0;
 		SG_UNREF(rn);	// because of out->get_label(i) above
 	}

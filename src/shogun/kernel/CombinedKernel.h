@@ -386,15 +386,6 @@ class CCombinedKernel : public CKernel
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();
 
-		/** Returns a  casted version of the given kernel. Throws an error
-		 * if parameter is not of class CombinedKernel. SG_REF's the returned
-		 * kernel
-		 *
-		 * @param kernel kernel to cast to CombinedKernel
-		 * @return casted version of kernel.
-		 */
-		static CCombinedKernel* obtain_from_generic(CKernel* kernel);
-
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter

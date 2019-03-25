@@ -40,20 +40,6 @@ public:
 
 	~CFactorGraphObservation() { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be CFactorGraphObservation
-	 */
-	static CFactorGraphObservation* obtain_from_generic(CStructuredData* base_data)
-	{
-		if ( base_data->get_structured_data_type() == SDT_FACTOR_GRAPH )
-			return (CFactorGraphObservation*) base_data;
-		else
-			SG_SERROR("base_data must be of dynamic type CFactorGraphObservation\n")
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "FactorGraphObservation"; }
 

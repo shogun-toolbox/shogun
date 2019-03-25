@@ -75,14 +75,6 @@ class CFactorGraphFeatures : public CFeatures
 		 * @return pointer of CFactorGraph
 		 */
 		CFactorGraph* get_sample(index_t idx);
-
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_feats its dynamic type must be CFactorGraphFeatures
-		 * @return pointer to CFactorGraphFeatures
-		 */
-		static CFactorGraphFeatures* obtain_from_generic(CFeatures* base_feats);
-
 	protected:
 		/** array of CFactorGraph */
 		CDynamicObjectArray* m_samples;

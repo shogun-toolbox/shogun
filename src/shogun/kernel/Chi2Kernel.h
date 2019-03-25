@@ -65,12 +65,6 @@ class CChi2Kernel: public CDotKernel
 		/** @return width of the kernel */
 		virtual float64_t get_width();
 
-		/** @param kernel is casted to CChi2Kernel, error if not possible
-		 * is SG_REF'ed
-		 * @return casted CGaussianKernel object
-		 */
-		static CChi2Kernel* obtain_from_generic(CKernel* kernel);
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type CHI2

@@ -405,18 +405,6 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::compute_mvmK(SGVector<flo
 	return res;
 }
 
-CSingleFITCLaplaceInferenceMethod* CSingleFITCLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	REQUIRE(inference!=NULL, "Inference should be not NULL");
-
-	if (inference->get_inference_type()!=INF_FITC_LAPLACE_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CSingleFITCLaplaceInferenceMethod*)inference;
-}
-
 SGMatrix<float64_t> CSingleFITCLaplaceInferenceMethod::get_chol_inv(SGMatrix<float64_t> mtx)
 {
 	//time complexity O(m^3), where mtx is a m-by-m matrix

@@ -61,12 +61,6 @@ public:
 	/** destructor */
 	virtual ~CGaussianKernel();
 
-	/** @param kernel is casted to CGaussianKernel, error if not possible
-	 * is SG_REF'ed
-	 * @return casted CGaussianKernel object
-	 */
-	static CGaussianKernel* obtain_from_generic(CKernel* kernel);
-
 	/** Make a shallow copy of the kernel */
 	virtual CSGObject* shallow_copy() const;
 

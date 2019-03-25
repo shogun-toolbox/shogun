@@ -62,13 +62,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_SINGLE; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted CSingleLaplaceInferenceMethod object
-	 */
-	static CSingleLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
-
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

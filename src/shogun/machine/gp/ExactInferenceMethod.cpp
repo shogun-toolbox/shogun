@@ -301,19 +301,6 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 	return result;
 }
 
-CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_EXACT)
-		SG_SERROR("Provided inference is not of type CExactInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CExactInferenceMethod*)inference;
-}
-
 SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {

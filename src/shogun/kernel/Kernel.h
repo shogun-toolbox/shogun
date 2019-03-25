@@ -865,13 +865,6 @@ class CKernel : public CSGObject
 		{
 			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}
-
-		/** Obtains a kernel from a generic SGObject with error checking. Note
-		 * that if passing NULL, result will be NULL
-		 * @param kernel Object to cast to CKernel, is *not* SG_REFed
-		 * @return object casted to CKernel, NULL if not possible
-		 */
-		static CKernel* obtain_from_generic(CSGObject* kernel);
 	protected:
 		/** set property
 		 *

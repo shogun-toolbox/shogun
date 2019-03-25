@@ -97,19 +97,6 @@ void CGaussianARDKernel::precompute_squared()
 		m_sq_rhs=precompute_squared_helper((CDotFeatures*) rhs);
 }
 
-
-CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
-{
-	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
-	{
-		SG_SERROR("Provided kernel is not of type CGaussianARDKernel!\n");
-	}
-
-	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDKernel*)kernel;
-}
-
 float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
 {
 	SGMatrix<float64_t> left;

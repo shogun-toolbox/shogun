@@ -45,15 +45,6 @@ CGaussianKernel::~CGaussianKernel()
 	cleanup();
 }
 
-CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
-{
-	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN,
-		"Provided kernel (%s) must be of type CGaussianKernel!\n", kernel->get_name());
-
-	SG_REF(kernel);
-	return (CGaussianKernel*)kernel;
-}
-
 #include <typeinfo>
 CSGObject *CGaussianKernel::shallow_copy() const
 {

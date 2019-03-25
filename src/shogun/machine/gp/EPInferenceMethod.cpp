@@ -88,19 +88,6 @@ void CEPInferenceMethod::init()
 	m_fail_on_non_convergence=true;
 }
 
-CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_EP)
-		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CEPInferenceMethod*)inference;
-}
-
 float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())

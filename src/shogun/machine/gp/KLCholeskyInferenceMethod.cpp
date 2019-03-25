@@ -71,19 +71,6 @@ void CKLCholeskyInferenceMethod::init()
 		" The K^{-1}C matrix");
 }
 
-CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
-		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CKLCholeskyInferenceMethod*)inference;
-}
-
 SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference

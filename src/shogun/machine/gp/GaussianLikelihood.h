@@ -91,13 +91,6 @@ public:
 		m_log_sigma = std::log(sigma);
 	}
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param lik likelihood model
-	 * @return casted CGaussianLikelihood object
-	 */
-	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* lik);
-
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.

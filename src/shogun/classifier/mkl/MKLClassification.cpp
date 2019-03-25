@@ -37,16 +37,3 @@ void CMKLClassification::init_training()
 	REQUIRE(m_labels, "Labels not set.\n");
 	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
 }
-
-CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)
-{
-	if (machine == NULL)
-		return NULL;
-
-	if (machine->get_classifier_type() != CT_MKLCLASSIFICATION)
-		SG_SERROR("Provided machine is not of type CMKLClassification!")
-
-	CMKLClassification* casted = dynamic_cast<CMKLClassification*>(machine);
-	SG_REF(casted)
-	return casted;
-}

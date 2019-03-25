@@ -90,7 +90,9 @@ void test(int32_t num_samples)
 	// show labels
 	for (unsigned int n = 0; n < num_samples; ++n)
 	{
-		CFactorGraphObservation* fg_observ = CFactorGraphObservation::obtain_from_generic(labels->get_label(n));
+		CFactorGraphObservation* fg_observ =
+		    labels->get_label(n)->as<CFactorGraphObservation>();
+		SG_REF(fg_observ)
 		SG_SPRINT("- sample %d:\n", n);
 		SGVector<int32_t> fst = fg_observ->get_data();
 		SGVector<int32_t>::display_vector(fst.vector, fst.vlen);

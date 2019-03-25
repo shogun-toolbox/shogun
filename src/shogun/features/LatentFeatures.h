@@ -75,12 +75,6 @@ namespace shogun
 			 * @return the user defined CData at the given index
 			 */
 			CData* get_sample(index_t idx);
-
-			/** helper method used to specialize a base class instance
-			 *
-			 * @param base_feats its dynamic type must be CLatentFeatures
-			 */
-			static CLatentFeatures* obtain_from_generic(CFeatures* base_feats);
 		protected:
 			/** array of CData */
 			CDynamicObjectArray* m_samples;

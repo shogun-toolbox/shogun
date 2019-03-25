@@ -74,16 +74,3 @@ void CFactorGraphFeatures::init()
 {
 	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples");
 }
-
-CFactorGraphFeatures* CFactorGraphFeatures::obtain_from_generic(CFeatures* base_feats)
-{
-	REQUIRE(base_feats != NULL, "CFactorGraphFeatures::obtain_from_generic(): base_feats is NULL!\n");
-
-	if (base_feats->get_feature_class() == C_FACTOR_GRAPH)
-		return dynamic_cast<CFactorGraphFeatures*>(base_feats);
-	else
-		SG_SERROR("base_labels must be of dynamic type CFactorGraph!\n")
-
-	return NULL;
-}
-

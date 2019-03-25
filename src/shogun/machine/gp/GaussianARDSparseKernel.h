@@ -87,12 +87,6 @@ public:
 	CGaussianARDSparseKernel(CDotFeatures* l, CDotFeatures* r,
 		int32_t size=10);
 
-	/** @param kernel is casted to CGaussianARDSparseKernel, error if not possible
-	 * is SG_REF'ed
-	 * @return casted CGaussianARDSparseKernel object
-	 */
-	static CGaussianARDSparseKernel* obtain_from_generic(CKernel* kernel);
-
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param param the parameter

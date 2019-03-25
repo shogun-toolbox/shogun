@@ -481,14 +481,6 @@ public:
 	 */
 	CFeatures* create_merged_copy(CFeatures* other) const;
 
-/** helper method used to specialize a base class instance
- *
- */
-#ifndef SWIG
-	[[deprecated("use .as template function")]]
-#endif
-	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
-
 #ifndef SWIG // SWIG should skip this part
 	virtual CFeatures* shallow_subset_copy();
 #endif

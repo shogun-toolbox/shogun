@@ -107,19 +107,6 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
-CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
-		SG_SERROR("Provided inference is not of type CKLCovarianceInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CKLCovarianceInferenceMethod*)inference;
-}
-
 bool CKLCovarianceInferenceMethod::precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);

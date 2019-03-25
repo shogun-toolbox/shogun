@@ -37,20 +37,6 @@ struct CRealNumber : public CStructuredData
 	 */
 	CRealNumber(float64_t val) : CStructuredData(), value(val) { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be CRealNumber
-	 */
-	static CRealNumber* obtain_from_generic(CStructuredData* base_data)
-	{
-		if ( base_data->get_structured_data_type() == SDT_REAL )
-			return (CRealNumber*) base_data;
-		else
-			SG_SERROR("base_data must be of dynamic type CRealNumber\n")
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "RealNumber"; }
 

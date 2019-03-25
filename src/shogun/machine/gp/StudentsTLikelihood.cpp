@@ -290,18 +290,6 @@ CStudentsTLikelihood::~CStudentsTLikelihood()
 {
 }
 
-CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
-		CLikelihoodModel* lik)
-{
-	ASSERT(lik!=NULL);
-
-	if (lik->get_model_type()!=LT_STUDENTST)
-		SG_SERROR("Provided likelihood is not of type CStudentsTLikelihood!\n")
-
-	SG_REF(lik);
-	return (CStudentsTLikelihood*)lik;
-}
-
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_means(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {

@@ -59,18 +59,6 @@ CGaussianLikelihood::~CGaussianLikelihood()
 {
 }
 
-CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
-		CLikelihoodModel* lik)
-{
-	ASSERT(lik!=NULL);
-
-	if (lik->get_model_type()!=LT_GAUSSIAN)
-		SG_SERROR("Provided likelihood is not of type CGaussianLikelihood!\n")
-
-	SG_REF(lik);
-	return (CGaussianLikelihood*)lik;
-}
-
 SGVector<float64_t> CGaussianLikelihood::get_predictive_means(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {

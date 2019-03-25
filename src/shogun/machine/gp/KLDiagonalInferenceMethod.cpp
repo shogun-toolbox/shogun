@@ -69,19 +69,6 @@ void CKLDiagonalInferenceMethod::init()
 		"The K^{-1} matrix");
 }
 
-CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
-		CInference* inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		SG_SERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CKLDiagonalInferenceMethod*)inference;
-}
-
 SGVector<float64_t> CKLDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference

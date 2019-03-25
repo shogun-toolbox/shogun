@@ -191,17 +191,6 @@ class CDistribution : public CSGObject
 		 * @return sum of alpha_k values
 		 */
 		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
-
-		/** obtain from generic
-		 *
-		 * @param object generic object
-		 * @return Distribution object
-		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
-		static CDistribution* obtain_from_generic(CSGObject* object);
-
 	protected:
 		/** feature vectors */
 		CFeatures* features;
