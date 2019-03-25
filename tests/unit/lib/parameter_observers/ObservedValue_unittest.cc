@@ -3,8 +3,8 @@
 */
 
 #include "sg_gtest_utilities.h"
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
-#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
 
 using namespace shogun;
 
