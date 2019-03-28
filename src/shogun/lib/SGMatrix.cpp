@@ -506,6 +506,33 @@ void SGMatrix<T>::remove_column_mean()
 	SG_FREE(means);
 }
 
+template<class T>
+std::string SGMatrix<T>::to_string() const
+{
+	assert_on_cpu();
+	return to_string(matrix, num_rows, num_cols);
+}
+
+template<class T>
+std::string SGMatrix<T>::to_string(const T* matrix, index_t rows, index_t cols)
+{
+	std::stringstream ss;
+	ss << std::boolalpha << "[\n";
+	if (rows == 0 || cols == 0)
+	{
+		for (int64_t i=0; i<rows; ++i)
+		{
+			ss << "[";
+			for (int64_t j=0; j<cols; ++j)
+				ss << "\t" << matrix[j*rows+i]
+					<< (j == cols - 1 ? "" : ",");
+			ss << "]\n" << (i == rows-1 ? "" : ",");
+		}
+	}
+	ss << "]";
+	return ss.str();
+}
+
 template<class T> void SGMatrix<T>::display_matrix(const char* name) const
 {
 	assert_on_cpu();
@@ -520,256 +547,13 @@ void SGMatrix<T>::display_matrix(
 	matrix.display_matrix();
 }
 
-template <>
-void SGMatrix<bool>::display_matrix(
-	const bool* matrix, int32_t rows, int32_t cols, const char* name,
+template <class T>
+void SGMatrix<T>::display_matrix(
+	const T* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i] ? 1 : 0,
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<char>::display_matrix(
-	const char* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%c%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<int8_t>::display_matrix(
-	const int8_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<uint8_t>::display_matrix(
-	const uint8_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<int16_t>::display_matrix(
-	const int16_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<uint16_t>::display_matrix(
-	const uint16_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-
-template <>
-void SGMatrix<int32_t>::display_matrix(
-	const int32_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<uint32_t>::display_matrix(
-	const uint32_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-template <>
-void SGMatrix<int64_t>::display_matrix(
-	const int64_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<uint64_t>::display_matrix(
-	const uint64_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<float32_t>::display_matrix(
-	const float32_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%.18g%s", prefix, (float) matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<float64_t>::display_matrix(
-	const float64_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<floatmax_t>::display_matrix(
-	const floatmax_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
-				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGMatrix<complex128_t>::display_matrix(
-	const complex128_t* matrix, int32_t rows, int32_t cols, const char* name,
-	const char* prefix)
-{
-	ASSERT(rows>=0 && cols>=0)
-	SG_SPRINT("%s%s=[\n", prefix, name)
-	for (int64_t i=0; i<rows; i++)
-	{
-		SG_SPRINT("%s[", prefix)
-		for (int64_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t(%.18g+i%.18g)%s", prefix, matrix[j*rows+i].real(),
-				matrix[j*rows+i].imag(), j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
-	}
-	SG_SPRINT("%s]\n", prefix)
+	SG_SPRINT("%s%s=%s\n", prefix, name, to_string(matrix, rows, cols).c_str())
 }
 
 template <>
