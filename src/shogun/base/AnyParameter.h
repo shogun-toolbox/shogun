@@ -12,6 +12,7 @@
 #include <shogun/lib/bitmask_operators.h>
 
 #include <memory>
+#include <list>
 
 namespace shogun
 {
@@ -40,6 +41,14 @@ namespace shogun
 		AUTO = 1u << 10,
 		READONLY = 1u << 11
 	};
+
+	static const std::list<std::pair<ParameterProperties, std::string>> kParameterPropNames = {
+		{ParameterProperties::NONE, "NONE"},
+		{ParameterProperties::HYPER, "HYPER"},
+		{ParameterProperties::GRADIENT, "GRADIENT"},
+		{ParameterProperties::MODEL, "MODEL"},
+		{ParameterProperties::AUTO, "AUTO"},
+		{ParameterProperties::READONLY, "READONLY"}};
 
 	enableEnumClassBitmask(ParameterProperties);
 
@@ -134,6 +143,22 @@ namespace shogun
 		void remove_property(const ParameterProperties other)
 		{
 			m_attribute_mask &= ~other;
+		}
+		std::string to_string() const
+		{
+			std::stringstream ss;
+			ss << "Description: "<< m_description << " with attributes: [";
+			bool first_attrib = true;
+			for (const auto& it: kParameterPropNames)
+			{
+				if (has_property(it.first))
+				{
+					ss << (first_attrib ? "": " | ") << it.second;
+					first_attrib = false;
+				}
+			}
+			ss << "]";
+			return ss.str();
 		}
 
 	private:

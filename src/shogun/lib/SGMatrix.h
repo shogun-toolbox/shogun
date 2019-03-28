@@ -414,6 +414,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Remove column mean */
 		void remove_column_mean();
 
+		/** String representation of the matrix */
+		std::string to_string() const;
+
+		/** String representation of the matrix */
+		static std::string to_string(
+			const T* matrix, index_t rows, index_t cols);
+
 		/** Display matrix */
 		void display_matrix(const char* name="matrix") const;
 

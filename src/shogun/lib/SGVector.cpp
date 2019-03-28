@@ -439,6 +439,28 @@ REAL_EQUALS(floatmax_t)
 #endif // REAL_EQUALS
 
 template<class T>
+std::string SGVector<T>::to_string() const
+{
+	return to_string(vector, vlen);
+}
+
+template<class T>
+std::string SGVector<T>::to_string(const T* vector, index_t n)
+{
+	std::stringstream ss;
+	ss << "[";
+	if (n > 0)
+	{
+		const T* begin = vector;
+		const T* end = vector+n;
+		ss << std::boolalpha << *begin++;
+		std::for_each(begin, end, [&ss](auto _v) { ss << ", " << _v; });
+	}
+	ss << "]";
+	return ss.str();
+}
+
+template<class T>
 void SGVector<T>::display_vector(const char* name,
 		const char* prefix) const
 {
@@ -452,165 +474,12 @@ void SGVector<T>::display_vector(const SGVector<T> vector, const char* name,
 	vector.display_vector(prefix);
 }
 
-template <>
-void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* name,
+template <class T>
+void SGVector<T>::display_vector(const T* vector, int32_t n, const char* name,
 		const char* prefix)
 {
 	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i] ? 1 : 0, i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<char>::display_vector(const char* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-
-template <>
-void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%lld%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%llu%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%g%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, const char* name,
-		const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",")
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
-		const char* name, const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-	{
-		SG_SPRINT("%s%.36Lg%s", prefix, (long double) vector[i],
-				i==n-1? "" : ",");
-	}
-	SG_SPRINT("%s]\n", prefix)
-}
-
-template <>
-void SGVector<complex128_t>::display_vector(const complex128_t* vector, int32_t n,
-		const char* name, const char* prefix)
-{
-	REQUIRE(n>=0, "Vector size can not be negative.\n");
-	SG_SPRINT("%s%s=[", prefix, name)
-	for (int32_t i=0; i<n; i++)
-	{
-		SG_SPRINT("%s(%.36lg+i%.36lg)%s", prefix, vector[i].real(),
-				vector[i].imag(), i==n-1? "" : ",");
-	}
-	SG_SPRINT("%s]\n", prefix)
+	SG_SPRINT("%s%s=%s\n", prefix, name, to_string(vector, n).c_str())
 }
 
 template <class T>
