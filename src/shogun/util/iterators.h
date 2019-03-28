@@ -33,6 +33,8 @@
 #ifndef SHOGUN_ITERATORS_H_
 #define SHOGUN_ITERATORS_H_
 
+#include <iterator>
+
 namespace shogun
 {
 		template<typename T>

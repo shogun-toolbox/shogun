@@ -144,8 +144,8 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 		if (get_num_preprocessors())
 		{
 			int32_t tmp_len=result.num_feat_entries;
-			SGSparseVectorEntry<ST>* tmp_feat_before=result.features;
-			SGSparseVectorEntry<ST>* tmp_feat_after = NULL;
+			auto tmp_feat_before=result.features;
+			typename SGSparseVector<ST>::pointer tmp_feat_after = nullptr;
 
 			for (int32_t i=0; i<get_num_preprocessors(); i++)
 			{

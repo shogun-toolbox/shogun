@@ -22,6 +22,7 @@
 #include <atomic>
 #include <initializer_list>
 #include <memory>
+#include <string>
 
 namespace Eigen
 {
@@ -485,6 +486,12 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Returns new vector with sorted unique elements of current */
 		SGVector<T> unique();
+
+		// get the values of the vector in a string representation
+		std::string to_string() const;
+
+		// dont use this this is just until display_vector is dropped
+		static std::string to_string(const T* vector, index_t n);
 
 		/** Display array size */
 		void display_size() const;
