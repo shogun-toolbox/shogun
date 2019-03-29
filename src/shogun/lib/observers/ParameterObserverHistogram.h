@@ -39,7 +39,7 @@
 #define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
 
 namespace shogun
 {
