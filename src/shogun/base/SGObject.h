@@ -359,7 +359,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value) noexcept(false);
+	void put(const Tag<T>& _tag, const T& value, int64_t step=-1) noexcept(false);
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -369,7 +369,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	void put(const Tag<T>& _tag, const T& value, int64_t step=-1) noexcept(false)
 	{
 	    std::string val_string(value);
 
@@ -391,7 +391,7 @@ public:
 
 		machine_int_t enum_value = string_to_enum[val_string];
 
-		put(Tag<machine_int_t>(_tag.name()), enum_value);
+		put(Tag<machine_int_t>(_tag.name()), enum_value, step);
 	}
 #endif
 
@@ -404,9 +404,9 @@ public:
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
 		      class Z = void>
-	void put(const std::string& name, T* value)
+	void put(const std::string& name, T* value, int64_t step=-1)
 	{
-		put(Tag<T*>(name), value);
+		put(Tag<T*>(name), value, step);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -1208,7 +1208,7 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 	};
 
 	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
+	void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(false)
 	{
 		if (has_parameter(_tag))
 		{
@@ -1234,7 +1234,7 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
 
-			observe_tag<T>(1, _tag.name());
+			observe_tag<T>(step, _tag.name());
 		}
 		else
 		{
