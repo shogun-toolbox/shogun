@@ -36,7 +36,7 @@
 #ifdef HAVE_TFLOGGER
 
 #include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
+#include <shogun/lib/observers/ParameterObserverHistogram.h>
 
 using namespace shogun;
 
