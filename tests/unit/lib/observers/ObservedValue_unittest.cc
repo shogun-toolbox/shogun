@@ -10,7 +10,8 @@ using namespace shogun;
 
 TEST(ObservedValue, set_correct)
 {
-	auto obs = some<ObservedValueTemplated<int32_t>>(1, "test", "test description", 42);
+	auto obs = some<ObservedValueTemplated<int32_t>>(
+	    1, "test", "test description", 42);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("test"), 42);
@@ -25,6 +26,12 @@ TEST(ObservedValue, set_correct_parameter)
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("test"), 42);
-	EXPECT_TRUE(obs->get_params().find("test")->second->get_properties().get_description() == prop.get_description());
-	EXPECT_TRUE(obs->get_params().find("test")->second->get_properties().compare_mask(ParameterProperties::MODEL));
+	EXPECT_TRUE(
+	    obs->get_params()
+	        .find("test")
+	        ->second->get_properties()
+	        .get_description() == prop.get_description());
+	EXPECT_TRUE(
+	    obs->get_params().find("test")->second->get_properties().compare_mask(
+	        ParameterProperties::MODEL));
 };

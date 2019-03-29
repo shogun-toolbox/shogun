@@ -1137,10 +1137,9 @@ std::string CSGObject::string_enum_reverse_lookup(
 }
 
 ObservedValue::ObservedValue(int64_t step, std::string name)
-		: CSGObject(), m_step(step), m_name(name), m_any_value(Any())
+    : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
 {
 	SG_ADD(&m_step, "step", "Step");
 	this->watch_param(
-			"name", &m_name,
-			AnyParameterProperties("Name of the observed value"));
+	    "name", &m_name, AnyParameterProperties("Name of the observed value"));
 }
