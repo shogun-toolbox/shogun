@@ -38,7 +38,7 @@
 #ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 #define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/ParameterObserverInterface.h>
 
 #include <tflogger/event_logger.h>
 

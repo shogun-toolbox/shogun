@@ -107,11 +107,8 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		results[i] = evaluate_one_run(i, storage);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
-		/* Emit the value*/
-		observe(
-		    ObservedValue::make_observation<CrossValidationStorage*>(
-		        i, "cross_validation_run", "One run of CrossValidation",
-		        storage));
+		/* Emit the value */
+		observe(i, "cross_validation_run", "One run of CrossValidation", storage);
 
 		SG_UNREF(storage)
 	}
