@@ -58,7 +58,6 @@ public:
 	}
 };
 
-
 TEST(Type_case, positional_lambdas)
 {
 	float32_t a_scalar = 42.0;
@@ -96,7 +95,8 @@ TEST(Type_case, exception)
 	auto f_scalar = [&counter](auto value) { counter++; };
 
 	EXPECT_THROW(
-		sg_any_dispatch(any_scalar, sg_real_typemap, f_scalar), ShogunException);
+	    sg_any_dispatch(any_scalar, sg_real_typemap, f_scalar),
+	    ShogunException);
 	EXPECT_EQ(counter, 0);
 }
 
@@ -109,18 +109,14 @@ TEST(Type_case, modify_struct)
 	auto any_int = make_any(a_int);
 	auto any_float = make_any(a_float);
 
-	auto f_int = [&a_struct](auto value) {
-		a_struct.add_value(value);
-	};
+	auto f_int = [&a_struct](auto value) { a_struct.add_value(value); };
 
-	auto f_float = [&a_struct](auto value) {
-		a_struct.add_value(value);
-	};
+	auto f_float = [&a_struct](auto value) { a_struct.add_value(value); };
 
 	sg_any_dispatch(any_float, sg_real_typemap, f_float);
 	EXPECT_EQ(a_struct.get_value(), 84);
 	EXPECT_THROW(
-		sg_any_dispatch(any_int, sg_real_typemap, f_int), ShogunException);
+	    sg_any_dispatch(any_int, sg_real_typemap, f_int), ShogunException);
 	EXPECT_EQ(a_struct.get_value(), 84);
 }
 
@@ -136,12 +132,10 @@ TEST(Type_case, custom_map)
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 
-	typemap my_int_map = {
-			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
-			ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
-			ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
-			ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)
-	};
+	typemap my_int_map = {ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+	                          ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
+	                              ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
+	                                  ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)};
 
 #undef ADD_TYPE_TO_MAP
 
@@ -161,14 +155,16 @@ TEST(Type_case, static_asserts)
 	auto f_return_fail = [](auto a) { return 1; };
 	auto f_arity_fail = [](auto a, float b) {};
 #if defined(_MSC_VER) && _MSC_VER < 1920
-	StaticAssertOKEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_typemap, f_return_fail)), int>();
-	StaticAssertOKEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail)), type_internal::ok>();
+	// cannot test return type because it should be void and if lambda is ill
+	// formed raises compile time error in non msvc compilers. However, msvc
+	// ignores the static assertions.
+	StaticAssertOKEqTestHelper<
+	    decltype(sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail)),
+	    type_internal::ok>();
 #else
 	StaticAssertReturnTypeEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_typemap, f_return_fail))>();
+	    sg_any_dispatch(any_float, sg_all_typemap, f_return_fail))>();
 	StaticAssertArityEqTestHelper<decltype(
-		sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail))>();
+	    sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail))>();
 #endif
 }
