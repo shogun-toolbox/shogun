@@ -37,7 +37,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
+#include <shogun/lib/observers/ParameterObserverScalar.h>
 #include <vector>
 
 std::vector<std::string> test_params = {"a", "b", "c", "d"};
