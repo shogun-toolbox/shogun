@@ -41,7 +41,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
+#include <shogun/lib/observers/ParameterObserverCV.h>
 #include <shogun/regression/KernelRidgeRegression.h>
 
 #include "environments/RegressionTestEnvironment.h"

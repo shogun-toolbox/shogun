@@ -956,11 +956,24 @@ protected:
 	void observe(const Some<ObservedValue> value);
 
 	/**
-	 * Observe a parameter value using a pointer and emit
-	 * it to observer.
-	 * @param value pointer to the observed parameter's value.
+	 * Observe a parameter value given some information
+	 * @tparam T value of the parameter
+	 * @param step step
+	 * @param name name of the observed value
+	 * @param description description
+	 * @param value observed value
 	 */
-	void observe(ObservedValue * value);
+	template <class T>
+	void observe(int64_t step, std::string name, std::string description, T value);
+
+	/**
+	 * Observe a registered tag.
+	 * @tparam T type of the tag
+	 * @param step step
+	 * @param name tag's name
+	 */
+	template <class T>
+	void observe_tag(int64_t step, std::string name);
 
 	/**
 	 * Register which params this object can emit.
@@ -1117,51 +1130,6 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 
 #ifndef SWIG
 		/**
-		* Helper method to generate an ObservedValue.
-		* @param step the step
-		* @param name the param's name we are observing
-		* @param description the param's description
-		* @param value the param's value
-		* @return an ObservedValue object initialized
-		*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, std::string description, T value)
-		{
-			return Some<ObservedValue>::from_raw(
-					new ObservedValueTemplated<T>(step, name, description, value));
-		}
-
-		/**
-		* Helper method to generate an ObservedValue with custom properties.
-		* @param step the step
-		* @param name the param's name we are observing
-		* @param description the param's description
-		* @param value the param's value
-		* @return an ObservedValue object initialized
-		*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
-		{
-			return Some<ObservedValue>::from_raw(
-					new ObservedValueTemplated<T>(step, name, value, properties));
-		}
-
-		/**
-	 	* Build an observation of a parameter registered in the object
-	 	* by providing its name.
-	 	* @param name parameter's name
-	 	*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, AnyParameter param)
-		{
-			return ObservedValue::make_observation<T>(
-					step, name, any_cast<T>(param.get_value()), param.get_properties());
-		}
-
-		/**
 		* Return a any version of the stored type.
 		* @return the any value.
 		*/
@@ -1264,7 +1232,7 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
 
-			observe(ObservedValue::make_observation<T>(1, _tag.name(), get_parameter(_tag)));
+			observe_tag<T>(1, _tag.name());
 		}
 		else
 		{
@@ -1272,6 +1240,22 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 					"Parameter %s::%s does not exist.\n", get_name(),
 					_tag.name().c_str());
 		}
+	}
+
+	template <class T>
+	void CSGObject::observe(int64_t step, std::string name, std::string description, T value)
+	{
+		auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
+		this->observe(obs);
+	}
+
+	template <class T>
+	void CSGObject::observe_tag(int64_t step, std::string name)
+	{
+		auto param = this->get_parameter(BaseTag(name));
+		auto obs = some<ObservedValueTemplated<T>>(step, name, any_cast<T>(param.get_value()),
+												 param.get_properties());
+		this->observe(obs);
 	}
 }
 #endif // __SGOBJECT_H__
