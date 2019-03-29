@@ -13,7 +13,7 @@ TEST(ObservedValue, set_correct)
 	auto obs = some<ObservedValueTemplated<int32_t>>(1, "test", "test description", 42);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
-	EXPECT_EQ(obs->get<int32_t>("value"), 42);
+	EXPECT_EQ(obs->get<int32_t>("test"), 42);
 };
 
 TEST(ObservedValue, set_correct_parameter)
@@ -24,7 +24,7 @@ TEST(ObservedValue, set_correct_parameter)
 	auto obs = some<ObservedValueTemplated<int32_t>>(1, "test", p, prop);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
-	EXPECT_EQ(obs->get<int32_t>("value"), 42);
-	EXPECT_TRUE(obs->get_params().find("value")->second->get_properties().get_description() == prop.get_description());
-	EXPECT_TRUE(obs->get_params().find("value")->second->get_properties().compare_mask(ParameterProperties::MODEL));
+	EXPECT_EQ(obs->get<int32_t>("test"), 42);
+	EXPECT_TRUE(obs->get_params().find("test")->second->get_properties().get_description() == prop.get_description());
+	EXPECT_TRUE(obs->get_params().find("test")->second->get_properties().compare_mask(ParameterProperties::MODEL));
 };
