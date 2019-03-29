@@ -53,6 +53,9 @@ template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
 
+template <class T>
+SG_FORCED_INLINE void test();
+
 /*******************************************************************************
  * define reference counter macros
  ******************************************************************************/
@@ -350,6 +353,7 @@ public:
 	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
+		test<T>();
 		if (has_parameter(_tag))
 		{
 			auto parameter_value = get_parameter(_tag).get_value();
