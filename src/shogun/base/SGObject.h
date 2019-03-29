@@ -1213,7 +1213,7 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 				: ObservedValue(step, name), m_observed_value(value)
 		{
 			this->watch_param(
-					"value", &m_observed_value,
+					name, &m_observed_value,
 					AnyParameterProperties(
 							description, ParameterProperties::NONE));
 			m_any_value = make_any(m_observed_value);
@@ -1229,7 +1229,7 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 		ObservedValueTemplated(int64_t step, std::string name, T value, AnyParameterProperties properties)
 				: ObservedValue(step, name), m_observed_value(value)
 		{
-			this->watch_param("value", &m_observed_value, properties);
+			this->watch_param(name, &m_observed_value, properties);
 			m_any_value = make_any(m_observed_value);
 		}
 
