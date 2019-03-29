@@ -358,8 +358,10 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value, int64_t step=-1) noexcept(false);
+	template <typename T,
+		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	void
+	put(const Tag<T>& _tag, const T& value, int64_t step = -1) noexcept(false);
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -368,8 +370,10 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value, int64_t step=-1) noexcept(false)
+	template <typename T,
+		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	void
+	put(const Tag<T>& _tag, const T& value, int64_t step = -1) noexcept(false)
 	{
 	    std::string val_string(value);
 
@@ -404,7 +408,7 @@ public:
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
 		      class Z = void>
-	void put(const std::string& name, T* value, int64_t step=-1)
+	void put(const std::string& name, T* value, int64_t step = -1)
 	{
 		put(Tag<T*>(name), value, step);
 	}
@@ -964,7 +968,8 @@ protected:
 	 * @param value observed value
 	 */
 	template <class T>
-	void observe(int64_t step, std::string name, std::string description, T value);
+	void
+	observe(int64_t step, std::string name, std::string description, T value);
 
 	/**
 	 * Observe a registered tag.
@@ -1029,6 +1034,7 @@ private:
 	SGSubscriber* m_subscriber_params;
 };
 
+<<<<<<< e0409a4aa51ef99bc61b40f84fbd8c1eac2e8637
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace sgo_details
@@ -1111,153 +1117,162 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 
 	template <class T>
 	class ObservedValueTemplated;
+=======
+template <class T>
+class ObservedValueTemplated;
+>>>>>>> Fix code style.
+
+/**
+ * Observed value which is emitted by algorithms.
+ */
+class ObservedValue : public CSGObject
+{
+public:
+	/**
+	 * Constructor
+	 * @param step step
+	 * @param name name of the observed value
+	 */
+	ObservedValue(int64_t step, std::string name);
 
 	/**
-	 * Observed value which is emitted by algorithms.
+	 * Destructor
 	 */
-	class ObservedValue : public CSGObject
-	{
-	public:
-		/**
-		 * Constructor
-		 * @param step step
-		 * @param name name of the observed value
-		 */
-		ObservedValue(int64_t step, std::string name);
-
-		/**
-		 * Destructor
-		 */
-		~ObservedValue(){};
+	~ObservedValue(){};
 
 #ifndef SWIG
-		/**
-		* Return a any version of the stored type.
-		* @return the any value.
-		*/
-		virtual Any& get_any()
-		{
-			return m_any_value;
-		}
+	/**
+	* Return a any version of the stored type.
+	* @return the any value.
+	*/
+	virtual Any& get_any()
+	{
+		return m_any_value;
+	}
 #endif
 
-		/** @return object name */
-		virtual const char* get_name() const
-		{
-			return "ObservedValue";
-		}
+	/** @return object name */
+	virtual const char* get_name() const
+	{
+		return "ObservedValue";
+	}
 
-	protected:
-		/** ObservedValue step (used by Tensorboard to print graphs) */
-		int64_t m_step;
-		/** Parameter's name */
-		std::string m_name;
-		/** Untyped value */
-		Any m_any_value;
-	};
+protected:
+	/** ObservedValue step (used by Tensorboard to print graphs) */
+	int64_t m_step;
+	/** Parameter's name */
+	std::string m_name;
+	/** Untyped value */
+	Any m_any_value;
+};
+
+/**
+ * Templated specialisation of ObservedValue that stores the actual data.
+ * @tparam T the type of the observed value
+ */
+template <class T>
+class ObservedValueTemplated : public ObservedValue
+{
+
+public:
+	/**
+	 * Constructor
+	 * @param step step
+	 * @param name the observed value's name
+	 * @param value the observed value
+	 */
+	ObservedValueTemplated(
+		int64_t step, std::string name, std::string description, T value)
+		: ObservedValue(step, name), m_observed_value(value)
+	{
+		this->watch_param(
+			name, &m_observed_value,
+			AnyParameterProperties(description, ParameterProperties::NONE));
+		m_any_value = make_any(m_observed_value);
+	}
 
 	/**
-	 * Templated specialisation of ObservedValue that stores the actual data.
-	 * @tparam T the type of the observed value
+	 * Constructor which takes AnyParameterProperties for the observed value
+	 * @param step step
+	 * @param name the observed value's name
+	 * @param value the observed value
+	 * @param properties properties of that observed value
 	 */
-	template <class T>
-	class ObservedValueTemplated : public ObservedValue
+	ObservedValueTemplated(
+		int64_t step, std::string name, T value,
+		AnyParameterProperties properties)
+		: ObservedValue(step, name), m_observed_value(value)
 	{
+		this->watch_param(name, &m_observed_value, properties);
+		m_any_value = make_any(m_observed_value);
+	}
 
-	public:
-		/**
-		 * Constructor
-		 * @param step step
-		 * @param name the observed value's name
-		 * @param value the observed value
-		 */
-		ObservedValueTemplated(int64_t step, std::string name, std::string description, T value)
-				: ObservedValue(step, name), m_observed_value(value)
-		{
-			this->watch_param(
-					name, &m_observed_value,
-					AnyParameterProperties(
-							description, ParameterProperties::NONE));
-			m_any_value = make_any(m_observed_value);
-		}
+	/**
+	 * Destructor
+	 */
+	~ObservedValueTemplated(){};
 
-		/**
-		 * Constructor which takes AnyParameterProperties for the observed value
-		 * @param step step
-		 * @param name the observed value's name
-		 * @param value the observed value
-		 * @param properties properties of that observed value
-		 */
-		ObservedValueTemplated(int64_t step, std::string name, T value, AnyParameterProperties properties)
-				: ObservedValue(step, name), m_observed_value(value)
-		{
-			this->watch_param(name, &m_observed_value, properties);
-			m_any_value = make_any(m_observed_value);
-		}
+private:
+	/**
+	 * Templated observed value
+	 */
+	T m_observed_value;
+};
 
-		/**
-		 * Destructor
-		 */
-		~ObservedValueTemplated(){};
-
-	private:
-		/**
-		 * Templated observed value
-		 */
-		T m_observed_value;
-	};
-
-	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(false)
+template <typename T,
+	      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(
+	false)
+{
+	if (has_parameter(_tag))
 	{
-		if (has_parameter(_tag))
-		{
-			auto parameter_value = get_parameter(_tag).get_value();
-			if (!parameter_value.cloneable())
-			{
-				SG_ERROR(
-						"Cannot put parameter %s::%s.\n", get_name(),
-						_tag.name().c_str());
-			}
-			try
-			{
-				any_cast<T>(parameter_value);
-			}
-			catch (const TypeMismatchException& exc)
-			{
-				SG_ERROR(
-						"Cannot put parameter %s::%s of type %s, incompatible "
-								"provided type %s.\n",
-						get_name(), _tag.name().c_str(), exc.actual().c_str(),
-						exc.expected().c_str());
-			}
-			ref_value(value);
-			update_parameter(_tag, make_any(value));
-
-			observe_tag<T>(step, _tag.name());
-		}
-		else
+		auto parameter_value = get_parameter(_tag).get_value();
+		if (!parameter_value.cloneable())
 		{
 			SG_ERROR(
-					"Parameter %s::%s does not exist.\n", get_name(),
-					_tag.name().c_str());
+				"Cannot put parameter %s::%s.\n", get_name(),
+				_tag.name().c_str());
 		}
-	}
+		try
+		{
+			any_cast<T>(parameter_value);
+		}
+		catch (const TypeMismatchException& exc)
+		{
+			SG_ERROR(
+				"Cannot put parameter %s::%s of type %s, incompatible "
+				"provided type %s.\n",
+				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				exc.expected().c_str());
+		}
+		ref_value(value);
+		update_parameter(_tag, make_any(value));
 
-	template <class T>
-	void CSGObject::observe(int64_t step, std::string name, std::string description, T value)
-	{
-		auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
-		this->observe(obs);
+		observe_tag<T>(step, _tag.name());
 	}
+	else
+	{
+		SG_ERROR(
+			"Parameter %s::%s does not exist.\n", get_name(),
+			_tag.name().c_str());
+	}
+}
 
-	template <class T>
-	void CSGObject::observe_tag(int64_t step, std::string name)
-	{
-		auto param = this->get_parameter(BaseTag(name));
-		auto obs = some<ObservedValueTemplated<T>>(step, name, any_cast<T>(param.get_value()),
-												 param.get_properties());
-		this->observe(obs);
-	}
+template <class T>
+void CSGObject::observe(
+	int64_t step, std::string name, std::string description, T value)
+{
+	auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
+	this->observe(obs);
+}
+
+template <class T>
+void CSGObject::observe_tag(int64_t step, std::string name)
+{
+	auto param = this->get_parameter(BaseTag(name));
+	auto obs = some<ObservedValueTemplated<T>>(
+		step, name, any_cast<T>(param.get_value()), param.get_properties());
+	this->observe(obs);
+}
 }
 #endif // __SGOBJECT_H__
