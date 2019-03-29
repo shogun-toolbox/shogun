@@ -33,7 +33,7 @@
 *
 */
 #include <shogun/lib/RefCount.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/ParameterObserverInterface.h>
 
 using namespace shogun;
 

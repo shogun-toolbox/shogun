@@ -39,7 +39,7 @@
 
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/any.h>
-#include <shogun/lib/parameter_observers/observers_utils.h>
+#include <shogun/lib/observers/observers_utils.h>
 #include <shogun/lib/tfhistogram/histogram.h>
 #include <tflogger/event.pb.h>
 #include <tflogger/summary.pb.h>
