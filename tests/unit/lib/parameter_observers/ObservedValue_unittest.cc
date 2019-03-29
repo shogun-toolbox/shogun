@@ -26,7 +26,7 @@ TEST(ObservedValue, set_correct_properties)
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);
-	EXPECT_EQ(obs->get_params().find("value")->second->get_properties(), any_prop);
+	EXPECT_TRUE(obs->get_params().find("value")->second->get_properties().compare_mask(ParameterProperties::MODEL));
 };
 
 TEST(ObservedValue, set_correct_parameter)
@@ -35,7 +35,7 @@ TEST(ObservedValue, set_correct_parameter)
 	AnyParameter param(make_any(p),
 					   AnyParameterProperties("test description", ParameterProperties::MODEL));
 
-	auto obs = ObservedValue::make_observation(1, "test", param);
+	auto obs = ObservedValue::make_observation<int32_t>(1, "test", param);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);
