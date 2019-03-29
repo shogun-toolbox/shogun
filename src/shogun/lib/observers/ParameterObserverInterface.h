@@ -39,7 +39,7 @@
 #include <vector>
 
 #include <shogun/lib/any.h>
-#include <shogun/lib/parameter_observers/observers_utils.h>
+#include <shogun/lib/observers/observers_utils.h>
 
 namespace shogun
 {
