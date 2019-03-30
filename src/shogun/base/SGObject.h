@@ -1018,7 +1018,7 @@ protected:
 	 * @param name tag's name
 	 */
 	template <class T>
-	void observe_tag(int64_t step, std::string name);
+	void observe(int64_t step, std::string name);
 
 	/**
 	 * Register which params this object can emit.
@@ -1286,7 +1286,7 @@ void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(
 		ref_value(value);
 		update_parameter(_tag, make_any(value));
 
-		observe_tag<T>(step, _tag.name());
+		observe<T>(step, _tag.name());
 	}
 	else
 	{
@@ -1305,7 +1305,7 @@ void CSGObject::observe(
 }
 
 template <class T>
-void CSGObject::observe_tag(int64_t step, std::string name)
+void CSGObject::observe(int64_t step, std::string name)
 {
 	auto param = this->get_parameter(BaseTag(name));
 	auto obs = some<ObservedValueTemplated<T>>(
