@@ -1185,7 +1185,7 @@ public:
 	{
 		this->watch_param(
 			name, &m_observed_value,
-			AnyParameterProperties(description, ParameterProperties::NONE));
+			AnyParameterProperties(description, ParameterProperties::READONLY));
 		m_any_value = make_any(m_observed_value);
 	}
 
