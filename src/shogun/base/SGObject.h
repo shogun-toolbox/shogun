@@ -361,7 +361,7 @@ public:
 	template <typename T,
 		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	void
-	put(const Tag<T>& _tag, const T& value, int64_t step = -1) noexcept(false);
+	put(const Tag<T>& _tag, const T& value) noexcept(false);
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -373,7 +373,7 @@ public:
 	template <typename T,
 		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
 	void
-	put(const Tag<T>& _tag, const T& value, int64_t step = -1) noexcept(false)
+	put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 	    std::string val_string(value);
 
@@ -395,7 +395,7 @@ public:
 
 		machine_int_t enum_value = string_to_enum[val_string];
 
-		put(Tag<machine_int_t>(_tag.name()), enum_value, step);
+		put(Tag<machine_int_t>(_tag.name()), enum_value);
 	}
 #endif
 
@@ -408,9 +408,9 @@ public:
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
 		      class Z = void>
-	void put(const std::string& name, T* value, int64_t step = -1)
+	void put(const std::string& name, T* value)
 	{
-		put(Tag<T*>(name), value, step);
+		put(Tag<T*>(name), value);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -989,6 +989,19 @@ protected:
 	void register_observable(
 		const std::string& name, const std::string& description);
 
+	/**
+	 * Get the current step for the observed values.
+	 */
+	SG_FORCED_INLINE int64_t get_step()
+	{
+		int64_t step = -1;
+		Tag<int64_t> tag("current_iteration");
+		if (has(tag)) {
+			step = get(tag);
+		}
+		return step;
+	}
+
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
 
@@ -1221,7 +1234,7 @@ private:
 
 template <typename T,
 	      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(
+void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(
 	false)
 {
 	if (has_parameter(_tag))
@@ -1248,7 +1261,7 @@ void CSGObject::put(const Tag<T>& _tag, const T& value, int64_t step) noexcept(
 		ref_value(value);
 		update_parameter(_tag, make_any(value));
 
-		observe<T>(step, _tag.name());
+		observe<T>(this->get_step(), _tag.name());
 	}
 	else
 	{
