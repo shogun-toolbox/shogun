@@ -243,8 +243,7 @@ namespace shogun
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 		template <typename T, typename FunctorT>
-		auto final_function_execute(const Any& any, FunctorT func)
-			-> decltype(func(any_cast<T>(any)))
+		void final_function_execute(const Any& any, FunctorT func)
 		{
 			func(any_cast<T>(any));
 		}
