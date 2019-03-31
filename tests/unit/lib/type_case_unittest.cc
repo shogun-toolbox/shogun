@@ -132,10 +132,12 @@ TEST(Type_case, custom_map)
 #define ADD_TYPE_TO_MAP(TYPENAME, TYPE_ENUM)                                   \
 	{std::type_index(typeid(TYPENAME)), TYPE_ENUM},
 
-	typemap my_int_map = {ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
-	                          ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
-	                              ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
-	                                  ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)};
+	typemap my_int_map = {
+			ADD_TYPE_TO_MAP(int8_t, TYPE::T_INT8)
+			ADD_TYPE_TO_MAP(int16_t, TYPE::T_INT16)
+			ADD_TYPE_TO_MAP(int32_t, TYPE::T_INT32)
+			ADD_TYPE_TO_MAP(int64_t, TYPE::T_INT64)
+	};
 
 #undef ADD_TYPE_TO_MAP
 
@@ -154,14 +156,7 @@ TEST(Type_case, static_asserts)
 
 	auto f_return_fail = [](auto a) { return 1; };
 	auto f_arity_fail = [](auto a, float b) {};
-#if defined(_MSC_VER) && _MSC_VER < 1920
-	// cannot test return type because it should be void and if lambda is ill
-	// formed raises compile time error in non msvc compilers. However, msvc
-	// ignores the static assertions.
-	StaticAssertOKEqTestHelper<
-	    decltype(sg_any_dispatch(any_float, sg_all_typemap, f_arity_fail)),
-	    type_internal::ok>();
-#else
+#if !defined(_MSC_VER)
 	StaticAssertReturnTypeEqTestHelper<decltype(
 	    sg_any_dispatch(any_float, sg_all_typemap, f_return_fail))>();
 	StaticAssertArityEqTestHelper<decltype(
