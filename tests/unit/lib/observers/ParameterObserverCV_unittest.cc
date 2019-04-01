@@ -119,7 +119,8 @@ TEST(ParameterObserverCV, get_observations_locked)
 
 	for (size_t i = 0; i < par->get_num_observations(); i++)
 	{
-		auto run = par->get_observation(i)->get<CrossValidationStorage*>("value");
+		auto name = par->get<std::string>("name");
+		auto run = par->get_observation(i)->get<CrossValidationStorage*>("name");
 		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
@@ -147,7 +148,8 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 
 	for (size_t i = 0; i < par->get_num_observations(); i++)
 	{
-		auto run = par->get_observation(i)->get<CrossValidationStorage*>("value");
+		auto name = par->get<std::string>("name");
+		auto run = par->get_observation(i)->get<CrossValidationStorage*>(name);
 		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
