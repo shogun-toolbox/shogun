@@ -49,3 +49,8 @@ combined_kernel.add("kernel_array", k3)
 combined_kernel.add("kernel_array", k4)
 combined_kernel.init(feats, feats)
 RealMatrix K = combined_kernel.get_kernel_matrix()
+
+Kernel k3_ = as_kernel(combined_kernel.get("kernel_array", 0))
+Kernel k4_ = as_kernel(combined_kernel.get("kernel_array", 1))
+combined_kernel.add("kernel_array", k3)
+

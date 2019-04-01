@@ -1332,7 +1332,7 @@ for getter in _GETTERS:
     _rename_python_function(_shogun.SGObject, getter, _private_getter)
     _internal_getter_methods.append(_shogun.SGObject.__dict__[_private_getter])
 
-def _internal_get_param(self, name):
+def _internal_get_param(self, name, *args):
     """
     Returns the value of the given parameter.
     The return type depends on the parameter,
@@ -1342,7 +1342,7 @@ def _internal_get_param(self, name):
 
     for getter in _internal_getter_methods:
         try:
-            return getter(self, name)
+            return getter(self, name, *args)
         except SystemError:
             pass
         except Exception:
