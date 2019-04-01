@@ -1233,7 +1233,7 @@ private:
 };
 
 template <typename T,
-	      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	      typename std::enable_if_t<!is_string<T>::value>*>
 void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(
 	false)
 {
