@@ -30,10 +30,12 @@
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
+#include <rxcpp/rx-subscription.hpp>
 
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DotFeatures.h>
@@ -761,7 +763,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
+int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -770,12 +772,33 @@ void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
-	auto subscription = m_observable_params
+	rxcpp::subscription subscription = m_observable_params
 	                        ->filter([obs](Some<ObservedValue> v) {
 		                        return obs->filter(v->get<std::string>("name"));
 		                    })
 	                        .timestamp()
 	                        .subscribe(sub);
+
+	// Insert the subscription in the list
+	m_subscriptions.insert(
+			std::make_pair<int64_t, rxcpp::subscription>(
+					std::move(m_next_subscription_index),
+					std::move(subscription)));
+
+	return m_next_subscription_index++;
+}
+
+void CSGObject::unsubscribe(int64_t subscription_index) {
+
+	// Check if we have such subscription
+	auto it = m_subscriptions.find(subscription_index);
+	if (it == m_subscriptions.end())
+		SG_ERROR("The object %s does not have any registered parameter observer with index %i",
+		  this->get_name(), subscription_index);
+
+	// Unsubscribe from this SGObject and delete it from the map
+	it->second.unsubscribe();
+	m_subscriptions.erase(subscription_index);
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const
