@@ -56,15 +56,15 @@ int num_runs = 1
 int num_folds = 3
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_CROSS_VALIDATION, num_runs, num_folds, alpha)
 mmd.select_kernel()
-Kernel learnt_kernel_single = mmd.get_kernel()
+Kernel learnt_kernel_single = as_kernel(mmd.get("kernel"))
 real width = learnt_kernel_single.get_real("log_width")
 #![select_kernel_single]
 
 #![select_kernel_combined]
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_MMD, True)
 mmd.select_kernel()
-CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
-RealVector weights = learnt_kernel_combined.get_subkernel_weights()
+Kernel learnt_kernel_combined = as_kernel(mmd.get("kernel"))
+RealVector weights = learnt_kernel_combined.get_real_vector("subkernel_log_weights")
 #![select_kernel_combined]
 
 #![perform_test_optimized]

@@ -45,6 +45,17 @@ class ParameterObserverInterface;
 class ObservedValue;
 class CDynamicObjectArray;
 
+#ifndef SWIG
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+namespace sgo_details
+{
+template <typename T1, typename T2>
+bool dispatch_array_type(const CSGObject* obj, const std::string& name,
+		T2&& lambda);
+}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif // SWIG
+
 template <class T, class K> class CMap;
 
 struct TParameter;
@@ -444,38 +455,50 @@ public:
 			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
 			name.c_str());
 
-		Tag<CDynamicObjectArray*> tag_array_sg(name);
-		if (has(tag_array_sg))
-		{
-			auto array = get(tag_array_sg);
-			if (!array)
-			{
-				SG_ERROR(
-					"Cannot add object %s to parameters %s::%s, array "
-					"is not instantiated.\n",
-					value->get_name(), get_name(), name.c_str());
-			}
-
-			push_back(array, value);
-			return;
-		}
-
-		Tag<std::vector<T*>> tag_vector(name);
-		if (has(tag_vector))
-		{
-			// TODO this needs test once we have std::vector parameters
-			SG_NOTIMPLEMENTED
-			auto array = get(tag_vector);
+		auto push_back_lambda = [&value](auto& array) {
 			array.push_back(value);
+		};
+		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
 			return;
-		}
 
 		SG_ERROR(
-		    "Cannot add object %s to parameters %s::%s of type %s, there is no"
-		    " such array of parameters.\n",
+		    "Cannot add object %s to array parameter %s::%s of type %s.\n",
 		    value->get_name(), get_name(), name.c_str(),
 			demangled_type<T>().c_str());
 	}
+
+#ifndef SWIG
+	/** Typed array getter for an object array class parameter of a Shogun base class
+	* type, identified by a name and an index.
+	*
+	* Raises an error if parameter does not exist.
+	*
+	* @param name name of the parameter array
+	* @param index index of the element in the array
+	* @return desired element
+	*/
+	template <class T,
+			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index) const
+	{
+		CSGObject* result = nullptr;
+
+		auto get_lambda = [&index, &result](auto& array) {
+			result = array.at(index);
+		};
+		if (sgo_details::dispatch_array_type<T>(this, name, get_lambda))
+		{
+			ASSERT(result);
+			// guard against mixed types in the array
+			return result->as<T>();
+		}
+
+		SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
+				get_name(), name.c_str(), index, demangled_type<T>().c_str());
+
+		return nullptr;
+	}
+#endif
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Will attempt to get specified object of appropriate internal type.
@@ -494,6 +517,17 @@ public:
 	 * @return object parameter
 	 */
 	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
+
+	/** Untyped getter for an object array class parameter, identified by a name
+	 * and an index.
+	 * Will attempt to get specified object of appropriate internal type.
+	 * If this is not possible it will raise a ShogunException.
+	 *
+	 * @param name name of the parameter
+	 * @index index of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name, index_t index) const;
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
@@ -667,19 +701,6 @@ public:
 	}
 
 protected:
-	template <typename T>
-	CSGObject* get_sgobject_type_dispatcher(const std::string& name) const
-	{
-		if (has<T*>(name))
-		{
-			T* result = get<T*>(name);
-			SG_REF(result)
-			return (CSGObject*)result;
-		}
-
-		return nullptr;
-	}
-
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -978,9 +999,6 @@ protected:
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
 
-private:
-	void push_back(CDynamicObjectArray* array, CSGObject* value);
-
 public:
 	/** io */
 	SGIO* io;
@@ -1022,5 +1040,85 @@ private:
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
 };
+
+#ifndef SWIG
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+namespace sgo_details
+{
+template <typename T1, typename T2>
+bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lambda)
+{
+	Tag<CDynamicObjectArray*> tag_array_sg(name);
+	if (obj->has(tag_array_sg))
+	{
+		auto dispatched = obj->get(tag_array_sg);
+		lambda(*dispatched); // is stored as a pointer
+		return true;
+	}
+
+	Tag<std::vector<T1*>> tag_vector(name);
+	if (obj->has(tag_vector))
+	{
+		auto dispatched = obj->get(tag_vector);
+		lambda(dispatched);
+		return true;
+	}
+
+	return false;
+}
+
+struct GetByName
+{
+};
+
+struct GetByNameIndex
+{
+	GetByNameIndex(index_t index) : m_index(index) {}
+	index_t m_index;
+};
+
+template <typename T>
+CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByName)
+{
+	return obj->has<T*>(name) ? obj->get<T*>(name) : nullptr;
+}
+
+template <typename T>
+CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
+{
+	CSGObject* result = nullptr;
+	try
+	{
+		// there is no "has" that checks for array types, so check implicitly
+		result = obj->get<T>(name, how.m_index);
+	}
+	catch (const std::exception&) {}
+	return result;
+}
+
+template<typename T>
+CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& name,
+		T&& how)
+{
+	if (auto* result = get_if_possible<CKernel>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
+		return result;
+
+	return nullptr;
+}
+
+template<class T>
+CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
+		T&& how)
+{
+	REQUIRE(obj->has(name), "Parameter %s::%s does not exist.\n",
+			obj->get_name(), name.c_str());
+	return get_dispatch_all_base_types(obj, name, how);
+}
+}
+
+#endif //DOXYGEN_SHOULD_SKIP_THIS
+#endif //SWIG
 }
 #endif // __SGOBJECT_H__
