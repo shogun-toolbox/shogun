@@ -4,6 +4,7 @@
  * Authors: Gil Hoben
  */
 
+#include "NewGridSearch.h"
 #include <shogun/modelselection/NewGridSearch.h>
 
 using namespace shogun;
@@ -26,8 +27,7 @@ ParameterNode::ParameterNode(CSGObject& model)
 void ParameterNode::create_node(const std::string& name, CSGObject* obj)
 {
 	SG_SPRINT("ParameterNode::create_node\n")
-	m_nodes.insert(std::make_pair(
-	    name, std::make_shared<ParameterNode>(ParameterNode(*obj))));
+	m_nodes[name].emplace_back(new ParameterNode(*obj));
 }
 
 ParameterNode::ParameterNode(
@@ -38,9 +38,7 @@ ParameterNode::ParameterNode(
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
 		{
-			m_nodes.insert(std::make_pair(
-			    param.first,
-			    std::make_shared<ParameterNode>(ParameterNode(*value))));
+			m_nodes[param.first].emplace_back(new ParameterNode(*value));
 			SG_UNREF(value);
 		}
 	}
@@ -50,6 +48,14 @@ ParameterNode::ParameterNode(
 		m_param_mapping.insert(
 		    std::make_pair(param.first, param.second->get_value()));
 	}
+}
+
+ParameterNode*
+ParameterNode::attach(const std::string& param, ParameterNode* node)
+{
+	if (!set_param_helper(param, std::make_shared<ParameterNode>(*node)))
+		SG_SERROR("Could not attach %s", param.c_str());
+	return this;
 }
 
 ParameterNode* ParameterNode::attach(
@@ -72,14 +78,12 @@ bool ParameterNode::set_param_helper(
 	}
 	else
 	{
-		for (auto& node_i : m_nodes)
-			if (node_i.first == param)
-			{
-				node_i.second = node;
-				return true;
-			}
+		if (m_parent->has(param))
+		{
+			m_nodes[param].push_back(node);
+			return true;
+		}
 	}
-
 	return false;
 }
 
@@ -100,12 +104,27 @@ std::string ParameterNode::to_string() const
 
 	if (!m_nodes.empty())
 	{
-		ss << ", ";
+		if (!m_param_mapping.empty())
+			ss << ", ";
 
 		for (auto node = m_nodes.begin(); node != m_nodes.end(); ++node)
 		{
 			ss << (*node).first << "=";
-			(*node).second->to_string_helper(ss, visitor);
+			if (node->second.size() > 1)
+			{
+				ss << "[";
+			}
+			for (auto inner_node = node->second.begin();
+			     inner_node != node->second.end(); ++inner_node)
+			{
+				(*inner_node)->to_string_helper(ss, visitor);
+				if (std::next(inner_node) != node->second.end())
+					ss << ", ";
+			}
+			if (node->second.size() > 1)
+			{
+				ss << "]";
+			}
 			if (std::next(node) != m_nodes.end())
 				ss << ", ";
 		}
@@ -137,8 +156,18 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 	{
 		for (auto& node : m_nodes)
 		{
-			return node.second->set_param_helper(
-			    param.substr(param_iter + delimiter.size()), value);
+			if (node.second.size() > 1)
+			{
+				SG_ERROR(
+				    "Ambiguous call! More than one ParameterNode found in "
+				    "%s::%s. To specify a parameter in this ParameterNode use "
+				    "the attach method of ParameterNode %s",
+				    get_parent_name(), param.c_str(), get_parent_name())
+				return false;
+			}
+			else
+				return node.second[0]->set_param_helper(
+				    param.substr(param_iter + delimiter.size()), value);
 		}
 	}
 	else
@@ -172,14 +201,42 @@ ParameterNode* ParameterNode::get_current()
 
 CSGObject* ParameterNode::to_object(const std::shared_ptr<ParameterNode>& tree)
 {
+	// TODO: this is incomplete, but i dont want to see compiler warnings for
+	// this
+	return (tree->m_parent).get();
+}
+
+void ParameterNode::replace_node(
+    const std::string& node_name, size_t index,
+    const std::shared_ptr<ParameterNode>& node)
+{
+	auto it = m_nodes.find(node_name);
+
+	if (it != m_nodes.end())
+	{
+		if (index < (*it).second.size())
+			(*it).second[index] = node;
+		else
+		{
+			SG_ERROR(
+			    "Index out of range for %s::%s", get_parent_name(),
+			    node_name.c_str())
+		}
+	}
+	else
+	{
+		SG_ERROR(
+		    "Unable to find and replace %s::%s", get_parent_name(),
+		    node_name.c_str())
+	}
 }
 
 GridParameters::GridParameters(CSGObject& model)
-    : first(true), m_node_complete(false)
+    : m_first(true), m_node_complete(false)
 {
 	m_parent = std::shared_ptr<CSGObject>(model.clone());
-	// TODO: once all hyperparameters are flagged properly add
-	//  ParameterProperties::HYPER
+	// TODO: once all hyperparameters are flagged properly replace getter with
+	//  get_params.model(ParameterProperties::HYPER)
 	for (auto const& param : model.get_params())
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
@@ -189,6 +246,7 @@ GridParameters::GridParameters(CSGObject& model)
 		}
 	}
 	m_current_node = m_nodes.begin();
+	m_current_internal_node = m_current_node->second.begin();
 }
 
 void GridParameters::reset()
@@ -197,13 +255,12 @@ void GridParameters::reset()
 		m_param_iter[param_pair.first] = m_param_begin[param_pair.first];
 	m_node_complete = true;
 	m_current_param = m_param_mapping.end();
-	first = true;
+	m_first = true;
 }
 
 void GridParameters::create_node(const std::string& name, CSGObject* obj)
 {
-	m_nodes.insert(std::make_pair(
-	    name, std::make_shared<GridParameters>(GridParameters(*obj))));
+	m_nodes[name].emplace_back(new GridParameters(*obj));
 }
 
 ParameterNode* GridParameters::get_next()
@@ -213,6 +270,8 @@ ParameterNode* GridParameters::get_next()
 
 	std::string param;
 
+	// Lambda responsible with getting the current value.
+	// Also sets m_current_param to the last param in map
 	auto get_lambda = [&tree, &param, this](auto val) {
 		// decltype(val.begin()) is a "hacky" way of getting the iterator type
 		// without registering RandomIterator<T> in type_case.h but need to pass
@@ -229,6 +288,8 @@ ParameterNode* GridParameters::get_next()
 		}
 	};
 
+	// Lambda responsible with iterating and finding the next parameter to
+	// iterate over. Also signals the end of a node
 	auto increment_lambda = [&param, this](auto val) {
 		auto beginning = any_cast<decltype(val.begin())>(m_param_begin[param]);
 		auto current = any_cast<decltype(val.begin())>(m_param_iter[param]);
@@ -275,7 +336,8 @@ ParameterNode* GridParameters::get_next()
 						    param.c_str())
 						m_param_iter[param] = make_any(beginning);
 
-						if (std::prev(m_current_param) == m_param_mapping.begin())
+						if (std::prev(m_current_param) ==
+						    m_param_mapping.begin())
 						{
 							SG_SPRINT(
 							    "the end and the last param: %s\n",
@@ -330,45 +392,51 @@ ParameterNode* GridParameters::get_next()
 		}
 	};
 
+	SG_PRINT("FIRST 1: %s\n", tree->to_string().c_str());
+
 	for (const auto& node : m_nodes)
 	{
-		if (*m_current_node == node)
-			tree->attach(
-			    node.first,
-			    std::shared_ptr<ParameterNode>(
-			        std::dynamic_pointer_cast<GridParameters>(node.second)
-			            ->get_next()));
+		std::shared_ptr<ParameterNode> this_node(nullptr);
+
+		ParameterNode* (GridParameters::*fp)() = nullptr;
+
+		if (node != *m_current_node)
+			fp = &GridParameters::get_current;
 		else
-			tree->attach(
-			    node.first,
-			    std::shared_ptr<ParameterNode>(
-			        std::dynamic_pointer_cast<GridParameters>(node.second)
-			            ->get_current()));
-	}
+			fp = &GridParameters::get_next;
 
-	if (m_current_node != m_nodes.end() && !m_nodes.empty())
-	{
-		SG_SPRINT(
-		    "DEBUG CHECK NODE IS DONE: %s\n",
-		    m_current_node->second->get_parent_name())
-		if (std::dynamic_pointer_cast<GridParameters>(m_current_node->second)
-		        ->check_child_node_done())
+		for (auto inner_node = node.second.begin();
+		     inner_node != node.second.end(); ++inner_node)
 		{
-			SG_SPRINT(
-			    "DEBUG NODE IS DONE: %s\n",
-			    m_current_node->second->get_parent_name())
-			++m_current_node;
+			// replace the node of the object with current parameter
+			// representation
+			SG_PRINT("INNER NODE %s\n", inner_node->get()->get_parent_name())
+			if (inner_node == m_current_internal_node)
+			{
+				this_node = std::shared_ptr<ParameterNode>(
+				    (*std::dynamic_pointer_cast<GridParameters>(*inner_node).*
+				     fp)());
+				break;
+			}
 		}
-
-		if (m_current_node == m_nodes.end())
-			m_current_node = m_nodes.begin();
+		// need to check if this is an attach or replace, there are
+		// situations where the tree isn't aware at this point that it
+		// needs nodes, i.e. node is attached after calling constructor
+		if (tree->n_nodes() > 0)
+			tree->replace_node(node.first, 0, this_node);
+		else
+			tree->attach(node.first, this_node);
 	}
 
-	if (first)
+	SG_PRINT("FIRST 2: %s\n", tree->to_string().c_str());
+
+	if (m_first)
 	{
 		m_current_param = m_param_mapping.end();
-		first = false;
+		m_first = false;
 	}
+
+	bool iterate_this_loop = false;
 
 	for (auto param_pair = m_param_mapping.begin();
 	     param_pair != m_param_mapping.end(); ++param_pair)
@@ -382,55 +450,82 @@ ParameterNode* GridParameters::get_next()
 		if (m_nodes.empty())
 		{
 			// check if need to iterate bottom node param
-			if (std::next(param_pair) == m_current_param)
-			{
-				sg_any_dispatch(
-				    param_pair->second, sg_vector_typemap, shogun::None{},
-				    get_lambda);
-				sg_any_dispatch(
-				    param_pair->second, sg_vector_typemap, shogun::None{},
-				    increment_lambda);
-				for (; param_pair != m_param_mapping.end(); ++param_pair)
-				{
-					param = param_pair->first;
-					sg_any_dispatch(
-					    param_pair->second, sg_vector_typemap, shogun::None{},
-					    get_lambda);
-				}
-				if (m_node_complete)
-					reset();
-				return tree;
-			}
-			else
-				sg_any_dispatch(
-				    param_pair->second, sg_vector_typemap, shogun::None{},
-				    get_lambda);
+			iterate_this_loop = std::next(param_pair) == m_current_param;
 		}
 		else
 		{
 			// check if need to iterate params of this node or child nodes
-			if (std::dynamic_pointer_cast<GridParameters>(
-			        m_current_node->second)
-			        ->check_child_node_done() &&
-			    (param_pair == m_current_param ||
-			     std::next(param_pair) == m_param_mapping.end()))
+			iterate_this_loop = std::dynamic_pointer_cast<GridParameters>(
+			                        *m_current_internal_node)
+			                        ->check_child_node_done() &&
+			                    std::next(m_current_internal_node) ==
+			                        m_current_node->second.end() &&
+			                    std::next(param_pair) == m_current_param;
+		}
+
+		if (iterate_this_loop)
+		{
+			sg_any_dispatch(
+			    param_pair->second, sg_vector_typemap, shogun::None{},
+			    get_lambda);
+			sg_any_dispatch(
+			    param_pair->second, sg_vector_typemap, shogun::None{},
+			    increment_lambda);
+			// we know that nothing else can be iterated so just use a nested loop
+			// to avoid any further dynamic casting
+			for (; param_pair != m_param_mapping.end(); ++param_pair)
 			{
+				param = param_pair->first;
 				sg_any_dispatch(
 				    param_pair->second, sg_vector_typemap, shogun::None{},
 				    get_lambda);
-				sg_any_dispatch(
-				    param_pair->second, sg_vector_typemap, shogun::None{},
-				    increment_lambda);
-				std::dynamic_pointer_cast<GridParameters>(
-				    m_current_node->second)
-				    ->set_node_complete(false);
 			}
+			break;
+		}
+		else
+			sg_any_dispatch(
+			    param_pair->second, sg_vector_typemap, shogun::None{},
+			    get_lambda);
+	}
+
+	if (m_nodes.empty())
+	{
+		if (m_node_complete)
+			reset();
+	}
+	else if (m_current_node != m_nodes.end() && !m_nodes.empty())
+	{
+		// iterated over the parameter of this node so can set
+		// m_current_internal_node to false
+		SG_SPRINT(
+		    "DEBUG CHECK NODE IS DONE: %s\n",
+		    (*m_current_internal_node)->get_parent_name())
+		bool node_is_done = std::dynamic_pointer_cast<GridParameters>(
+		                        (*m_current_internal_node))
+		                        ->check_child_node_done();
+		std::dynamic_pointer_cast<GridParameters>(*m_current_internal_node)
+		    ->set_node_complete(false);
+		if (node_is_done)
+		{
+			SG_SPRINT(
+			    "DEBUG NODE IS DONE: %s\n",
+			    (*m_current_internal_node)->get_parent_name())
+			++m_current_internal_node;
+		}
+
+		if (m_current_internal_node == m_current_node->second.end())
+		{
+			if (std::next(m_current_node) != m_nodes.end())
+				++m_current_node;
 			else
-				sg_any_dispatch(
-				    param_pair->second, sg_vector_typemap, shogun::None{},
-				    get_lambda);
+				m_current_node = m_nodes.begin();
+			m_current_internal_node = m_current_node->second.begin();
+			SG_PRINT(
+			    "CURRENT NODE IS: %s \n",
+			    (*m_current_internal_node)->get_parent_name())
 		}
 	}
+
 	return tree;
 }
 
@@ -451,9 +546,19 @@ bool GridParameters::set_param_helper(
 	{
 		for (auto& node : m_nodes)
 		{
-			return std::dynamic_pointer_cast<GridParameters>(node.second)
-			    ->set_param_helper(
-			        param.substr(param_iter + delimiter.size()), value);
+			if (node.second.size() > 1)
+			{
+				SG_ERROR(
+				    "Ambiguous call! More than one ParameterNode found in "
+				    "%s::%s. To specify a parameter in this ParameterNode use "
+				    "the attach method of ParameterNode %s",
+				    get_parent_name(), param.c_str(), get_parent_name())
+				return false;
+			}
+			else
+				return std::dynamic_pointer_cast<GridParameters>(node.second[0])
+				    ->set_param_helper(
+				        param.substr(param_iter + delimiter.size()), value);
 		}
 	}
 	else
@@ -475,13 +580,23 @@ bool GridParameters::is_complete()
 	{
 		for (const auto& node : m_nodes)
 		{
-			if (!std::dynamic_pointer_cast<GridParameters>(node.second)
-			         ->check_child_node_done())
+			if (!is_inner_complete(node.first))
 				return false;
 		}
 	}
 	else
 		return false;
+	return true;
+}
+
+bool GridParameters::is_inner_complete(const std::string& node_name)
+{
+	for (const auto& inner_node : m_nodes[node_name])
+	{
+		if (!std::dynamic_pointer_cast<GridParameters>(inner_node)
+		         ->check_child_node_done())
+			return false;
+	}
 	return true;
 }
 
@@ -503,4 +618,17 @@ ParameterNode* GridParameters::get_current()
 		    param_pair.second, sg_vector_typemap, shogun::None{}, get_lambda);
 	}
 	return tree;
+}
+
+GridParameters*
+GridParameters::attach(const std::string& param, GridParameters* node)
+{
+	if (!ParameterNode::set_param_helper(
+	        param, std::make_shared<GridParameters>(*node)))
+		SG_SERROR("Could not attach %s", param.c_str());
+	// Updating node list (might) require resetting the node iterators
+	m_current_node = m_nodes.begin();
+	m_current_internal_node = m_current_node->second.begin();
+	SG_PRINT("NODE REPR %s\n", (*m_current_internal_node)->to_string().c_str())
+	return this;
 }

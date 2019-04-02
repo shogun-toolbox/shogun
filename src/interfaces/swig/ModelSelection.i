@@ -24,7 +24,6 @@
 %rename(ModelSelectionBase) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 %rename(ParameterCombination) CParameterCombination;
-%rename(ParameterNode) CParameterNode;
 
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>

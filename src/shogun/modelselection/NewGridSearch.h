@@ -16,12 +16,12 @@
 
 namespace shogun
 {
-	/*
+	/**
 	 * A type agnostic representation of parameter trees that uses a CSGObject
 	 * instance to generate parameter combinations.
 	 *
 	 */
-	class ParameterNode: public CSGObject
+	class ParameterNode : public CSGObject
 	{
 
 	public:
@@ -30,7 +30,7 @@ namespace shogun
 		 * @param model
 		 * @param param_properties
 		 */
-		ParameterNode(CSGObject& model);
+		explicit ParameterNode(CSGObject& model);
 
 		ParameterNode(CSGObject& model, ParameterProperties param_propeties);
 
@@ -39,14 +39,6 @@ namespace shogun
 		 * The default constructor
 		 */
 		ParameterNode() = default;
-
-		/**
-		 * Creates a node that mimics the CSGObject structure
-		 * and places it in the tree using the given name.
-		 * @param name
-		 * @param obj
-		 */
-		virtual void create_node(const std::string& name, CSGObject* obj);
 #endif
 
 		/**
@@ -58,6 +50,14 @@ namespace shogun
 		ParameterNode* attach(
 		    const std::string& param,
 		    const std::shared_ptr<ParameterNode>& node);
+
+		/**
+		 * Attach a new node at a given location in the tree
+		 * defined by the parameter name
+		 * @param name
+		 * @param node
+		 */
+		ParameterNode* attach(const std::string& param, ParameterNode* node);
 
 		/**
 		 * Attach a new value at a given location in the tree
@@ -100,7 +100,34 @@ namespace shogun
 
 		virtual std::string to_string() const;
 
+		/**
+		 * Replaces a node in a specific position of the tree node.
+		 * A tree node can contain several nodes which represent
+		 * different objects that can be used by the parent object.
+		 *
+		 * @param node_name
+		 * @param index
+		 * @param node
+		 */
+		void replace_node(
+		    const std::string& node_name, size_t index,
+		    const std::shared_ptr<ParameterNode>& node);
+
+		size_t n_nodes()
+		{
+			return m_nodes.size();
+		}
+
 	protected:
+		/**
+		 * Creates a node that mimics the CSGObject structure
+		 * and places it in the tree using the given name.
+		 * This is meant to be only used inside constructors,
+		 * as it doesn't check if the node should exist.
+		 * @param name
+		 * @param obj
+		 */
+		virtual void create_node(const std::string& name, CSGObject* obj);
 		/**
 		 * Internal method to set the value (with Any type) of a node
 		 *
@@ -138,7 +165,8 @@ namespace shogun
 		virtual ParameterNode* get_current();
 
 		/** vector of child nodes */
-		std::map<std::string, std::shared_ptr<ParameterNode>> m_nodes;
+		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>
+		    m_nodes;
 		/** pointer to object that is being mimicked */
 		std::shared_ptr<CSGObject> m_parent;
 		/** internal mapping of params */
@@ -171,18 +199,33 @@ namespace shogun
 		static CSGObject* to_object(const std::shared_ptr<ParameterNode>& tree);
 	};
 
+	/**
+	 * GridParameters represents each node in a ParameterNode
+	 * as a vector, and calculates the cartesian product of all
+	 * nodes in the tree.
+	 * Each combination is generated based on the previously generated tree
+	 * using recursive calls to nodes and iterating over the parameter
+	 * maps. The state of each node and parameter map is stored in the form
+	 * of an iterator.
+	 */
 	class GridParameters : public ParameterNode
 	{
 
 	public:
 		GridParameters(CSGObject& model);
 
-		virtual void create_node(const std::string& name, CSGObject* obj);
-
 		const char* get_name() const final
 		{
 			return "GridParameters";
 		}
+
+		/**
+		 * Attach a new node at a given location in the tree
+		 * defined by the parameter name
+		 * @param name
+		 * @param node
+		 */
+		GridParameters* attach(const std::string& param, GridParameters* node);
 
 		/**
 		 * Attach a new SGVector at a given location in the tree
@@ -204,45 +247,88 @@ namespace shogun
 		 */
 		void reset();
 
+		/**
+		 * Creates a new node based on a CSGObject
+		 * @param name
+		 * @param obj
+		 */
+		void create_node(const std::string& name, CSGObject* obj) override;
+
+		/**
+		 * Gets the next ParameterNode representation
+		 * of this instance
+		 * @return
+		 */
 		ParameterNode* get_next() final;
+
+		/**
+		 * Gets the current ParameterNode representation
+		 * of this instance
+		 * @return
+		 */
 		ParameterNode* get_current() final;
 
 		bool set_param_helper(const std::string& param, const Any& value) final;
 
-		bool check_child_node_done()
-		{
-			return m_node_complete;
-		}
-
+		/**
+		 * Checks if all nodes below this one have been completed.
+		 *
+		 * @return
+		 */
 		bool is_complete();
 
+		/**
+		 * Checks if all nested nodes in m_nodes have been completed.
+		 * @return
+		 */
+		bool is_inner_complete(const std::string&);
+
+		/**
+		 * Set node complete status. This is needed if a parent
+		 * needs to reset the complete status of a child node.
+		 *
+		 * @param flag
+		 */
 		void set_node_complete(bool flag)
 		{
 			m_node_complete = flag;
 		}
 
-	private:
-		bool first;
+		/**
+		 * Child node complete status getter.
+		 *
+		 * @return
+		 */
+		bool check_child_node_done()
+		{
+			return m_node_complete;
+		}
 
 	private:
-		/** tracks current node being held fixed */
-		std::map<std::string, std::shared_ptr<ParameterNode>>::iterator
-		    m_current_node;
+		/** if it is the first iteration of the node */
+		bool m_first;
+		/** tracks current node being iterated over. A node can have several
+		 * internal nodes */
+		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>::
+		    iterator m_current_node;
+		/** tracks current internal node being iterated over */
+		std::vector<std::shared_ptr<ParameterNode>>::iterator
+		    m_current_internal_node;
 		/** tracks current parameter being iterated over*/
 		std::map<std::string, Any>::iterator m_current_param;
 		/** current iterator of a given parameter */
 		std::unordered_map<std::string, Any> m_param_iter;
 		/** iterator begin of a given parameter */
 		std::unordered_map<std::string, Any> m_param_begin;
-		/** iterator end of a given parameter	 */
+		/** iterator end of a given parameter */
 		std::unordered_map<std::string, Any> m_param_end;
-
+		/** whether the node is complete, i.e. all parameter combinations have
+		 * been generated */
 		bool m_node_complete;
 	};
 
 	class GridSearch : public GridParameters
 	{
-		GridSearch() = default;
 
 		GridSearch(CSGObject& model) : GridParameters(model)
 		{
