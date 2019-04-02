@@ -992,6 +992,7 @@ protected:
 	/**
 	 * Get the current step for the observed values.
 	 */
+#ifndef SWIG
 	SG_FORCED_INLINE int64_t get_step()
 	{
 		int64_t step = -1;
@@ -1001,6 +1002,7 @@ protected:
 		}
 		return step;
 	}
+#endif
 
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
