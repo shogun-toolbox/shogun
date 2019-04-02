@@ -1087,7 +1087,6 @@ private:
 	SGSubscriber* m_subscriber_params;
 };
 
-<<<<<<< e0409a4aa51ef99bc61b40f84fbd8c1eac2e8637
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace sgo_details
@@ -1166,12 +1165,8 @@ CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 #endif //SWIG
 
-	template <class T>
-	class ObservedValueTemplated;
-=======
 template <class T>
 class ObservedValueTemplated;
->>>>>>> Fix code style.
 
 /**
  * Observed value which is emitted by algorithms.
