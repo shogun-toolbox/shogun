@@ -4,7 +4,6 @@
  * Authors: Gil Hoben
  */
 
-#include "NewGridSearch.h"
 #include <shogun/modelselection/NewGridSearch.h>
 
 using namespace shogun;
@@ -87,7 +86,7 @@ bool ParameterNode::set_param_helper(
 	return false;
 }
 
-std::string ParameterNode::to_string() const
+std::string ParameterNode::to_string() const noexcept
 {
 	std::stringstream ss;
 	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
@@ -158,7 +157,7 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 		{
 			if (node.second.size() > 1)
 			{
-				SG_ERROR(
+				SG_SERROR(
 				    "Ambiguous call! More than one ParameterNode found in "
 				    "%s::%s. To specify a parameter in this ParameterNode use "
 				    "the attach method of ParameterNode %s",
@@ -218,14 +217,14 @@ void ParameterNode::replace_node(
 			(*it).second[index] = node;
 		else
 		{
-			SG_ERROR(
+			SG_SERROR(
 			    "Index out of range for %s::%s", get_parent_name(),
 			    node_name.c_str())
 		}
 	}
 	else
 	{
-		SG_ERROR(
+		SG_SERROR(
 		    "Unable to find and replace %s::%s", get_parent_name(),
 		    node_name.c_str())
 	}
@@ -312,7 +311,7 @@ ParameterNode* GridParameters::get_next()
 				m_current_param = m_param_mapping.end();
 				SG_SPRINT(
 				    "updating m_current_param from %s::%s to %s::%s\n",
-				    get_parent_name(), param.c_str(), get_parent_name(),
+				    this->get_parent_name(), param.c_str(), this->get_parent_name(),
 				    m_current_param->first.c_str())
 			}
 			// find the next param to iterate over
@@ -346,8 +345,8 @@ ParameterNode* GridParameters::get_next()
 							SG_SPRINT(
 							    "updating m_current_param from %s::%s to "
 							    "%s::%s\n",
-							    get_parent_name(), param.c_str(),
-							    get_parent_name(),
+							    this->get_parent_name(), param.c_str(),
+							    this->get_parent_name(),
 							    m_current_param->first.c_str())
 							found_next_param = true;
 							m_node_complete = true;
@@ -381,7 +380,7 @@ ParameterNode* GridParameters::get_next()
 				SG_SPRINT(
 				    "node is done updating m_current_param to "
 				    "%s::%s\n",
-				    get_parent_name(), param.c_str(), get_parent_name(),
+				    this->get_parent_name(), param.c_str(), this->get_parent_name(),
 				    std::prev(m_current_param)->first.c_str())
 			}
 		}
@@ -392,7 +391,7 @@ ParameterNode* GridParameters::get_next()
 		}
 	};
 
-	SG_PRINT("FIRST 1: %s\n", tree->to_string().c_str());
+	SG_SPRINT("FIRST 1: %s\n", tree->to_string().c_str());
 
 	for (const auto& node : m_nodes)
 	{
@@ -410,7 +409,7 @@ ParameterNode* GridParameters::get_next()
 		{
 			// replace the node of the object with current parameter
 			// representation
-			SG_PRINT("INNER NODE %s\n", inner_node->get()->get_parent_name())
+			SG_SPRINT("INNER NODE %s\n", inner_node->get()->get_parent_name())
 			if (inner_node == m_current_internal_node)
 			{
 				this_node = std::shared_ptr<ParameterNode>(
@@ -428,7 +427,7 @@ ParameterNode* GridParameters::get_next()
 			tree->attach(node.first, this_node);
 	}
 
-	SG_PRINT("FIRST 2: %s\n", tree->to_string().c_str());
+	SG_SPRINT("FIRST 2: %s\n", tree->to_string().c_str());
 
 	if (m_first)
 	{
@@ -520,7 +519,7 @@ ParameterNode* GridParameters::get_next()
 			else
 				m_current_node = m_nodes.begin();
 			m_current_internal_node = m_current_node->second.begin();
-			SG_PRINT(
+			SG_SPRINT(
 			    "CURRENT NODE IS: %s \n",
 			    (*m_current_internal_node)->get_parent_name())
 		}
@@ -548,7 +547,7 @@ bool GridParameters::set_param_helper(
 		{
 			if (node.second.size() > 1)
 			{
-				SG_ERROR(
+				SG_SERROR(
 				    "Ambiguous call! More than one ParameterNode found in "
 				    "%s::%s. To specify a parameter in this ParameterNode use "
 				    "the attach method of ParameterNode %s",
@@ -629,6 +628,6 @@ GridParameters::attach(const std::string& param, GridParameters* node)
 	// Updating node list (might) require resetting the node iterators
 	m_current_node = m_nodes.begin();
 	m_current_internal_node = m_current_node->second.begin();
-	SG_PRINT("NODE REPR %s\n", (*m_current_internal_node)->to_string().c_str())
+	SG_SPRINT("NODE REPR %s\n", (*m_current_internal_node)->to_string().c_str())
 	return this;
 }

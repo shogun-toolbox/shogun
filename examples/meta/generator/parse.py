@@ -67,10 +67,12 @@ class FastParser:
         "RSQUARE",
         "COMMENT",
         "NEWLINE",
-        "IDENTIFIER"
+        "IDENTIFIER",
+        "MEMORYALLOC"
     )
 
     reserved = {
+        'new': 'MEMORYALLOC',
         'enum': 'ENUMKEYWORD',
         'print': 'PRINTKEYWORD',
         'True': 'BOOLLITERAL',
@@ -251,6 +253,10 @@ class FastParser:
         "enum : ENUMKEYWORD identifier DOT identifier"
         p[0] = {"Enum": [p[2], p[4]]}
 
+    def p_new(self, p):
+        "new : MEMORYALLOC identifier LPAREN argumentList RPAREN"
+        p[0] = {"HeapGlobalCall": [p[2], p[4]]}
+
     def p_string(self, p):
         "string : STRINGLITERAL"
         # Strip leading and trailing quotes
@@ -279,7 +285,8 @@ class FastParser:
 
     def p_expr(self, p):
         """
-        expr : enum
+        expr : new
+             | enum
              | methodCall
              | staticCall
              | globalCall
@@ -374,5 +381,4 @@ if __name__ == "__main__":
 
     # Parse input and print json output
     program = parse(programString, filePath, args.parser_files_dir)
-
     print(json.dumps(program, indent=indentWidth))

@@ -38,6 +38,8 @@
 
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
 %feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
+%feature("python:slot", "tp_str", functype="reprfunc") shogun::ParameterNode::to_string;
+%feature("python:slot", "tp_repr", functype="reprfunc") shogun::ParameterNode::to_string;
 /*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::CSGObject::myHashFunc;*/
 %feature("python:tp_print") shogun::CSGObject "print_sgobject";
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;

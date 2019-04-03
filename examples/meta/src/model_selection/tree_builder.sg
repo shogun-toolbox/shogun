@@ -1,0 +1,24 @@
+#![create_kernel]
+Kernel k1 = kernel("GaussianKernel")
+Kernel k2 = kernel("PolyKernel")
+#![create_kernel]
+
+#![create_machine]
+Machine svm = machine("LibSVM")
+#![create_machine]
+
+#![create_master_node]
+ParameterNode node = new ParameterNode(svm)
+#![create_master_node]
+
+#![create_child_nodes]
+ParameterNode k1_node = new ParameterNode(k1)
+ParameterNode k2_node = new ParameterNode(k2)
+#![create_child_nodes]
+
+#![attach_child_nodes]
+k2_node.attach("degree", 2)
+node.attach("kernel", k1_node)
+node.attach("kernel::log_width", 10)
+node.attach("kernel", k2_node)
+#![attach_child_nodes]

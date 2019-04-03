@@ -5,6 +5,7 @@
     "Init": {
         "Construct": "$name = Shogun::$typeName.new($arguments)$kwargs",
         "Copy": "$name = $expr$kwargs",
+        "CopyRaw": "$name = $expr$kwargs",
         "KeywordArguments": {
             "List": "\n$elements",
             "Element": "$name.put(\"$keyword\", $expr)",
@@ -64,6 +65,7 @@
         },
         "StaticCall": "Shogun::$typeName.$method($arguments)",
         "GlobalCall": "Shogun::$method($arguments)",
+        "HeapGlobalCall": "Shogun::$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"Shogun::$value"
     },

@@ -61,6 +61,11 @@ def getDependencies(program):
         identifier = list(globalCall[0].values())[0]
         globalFunctions.add(identifier)
 
+    # All global function calls
+    for heapGlobalCall in find("HeapGlobalCall", program):
+        identifier = list(heapGlobalCall[0].values())[0]
+        globalFunctions.add(identifier)
+
     # All enums used
     for enum in find("Enum", program):
         enumType = enum[0]["Identifier"]
@@ -513,7 +518,10 @@ class Translator:
 
         # python2/3 safe dictionary keys
         if list(initialisation.keys())[0] == "Expr":
-            template = Template(self.targetDict["Init"]["Copy"])
+            if not list(initialisation["Expr"])[0] == "HeapGlobalCall":
+                template = Template(self.targetDict["Init"]["Copy"])
+            else:
+                template = Template(self.targetDict["Init"]["CopyRaw"])
             result = self.translateExpr(
                 initialisation["Expr"], returnKwargs=True
             )
@@ -603,6 +611,9 @@ class Translator:
 
         elif key == "GlobalCall":
             return self.translateGlobalCall(expr[key], returnKwargs=returnKwargs)
+
+        elif key == "HeapGlobalCall":
+            return self.translateHeapGlobalCall(expr[key], returnKwargs=returnKwargs)
 
         elif key == "ElementAccess":
             return self.translateElementAccess(expr[key])
@@ -706,6 +717,41 @@ class Translator:
         normalArgs = [
             arg for arg in argsList["ArgumentList"]
                 if not "KeywordArgument" in arg
+        ]
+        kwargsString = self.translateKwargs(
+            kwargs, argsGtZero=len(normalArgs) > 0
+        )
+
+        translation = template.substitute(
+            typeName=type,method=method, arguments=translatedArgsList,
+            kwargs=kwargsString
+        )
+
+        if returnKwargs:
+            return translation, kwargs
+
+        return translation
+
+    def translateHeapGlobalCall(self, globalCall, returnKwargs):
+        """ Translates a global call expression to allocate an object in the heap
+        Args:
+            staticCall: object like [memoryAST, identifierAST, argumentListAST]
+        """
+        template = Template(self.targetDict["Expr"]["HeapGlobalCall"])
+        method = globalCall[0]["Identifier"]
+        argsList = None
+        try:
+            argsList = globalCall[1]
+        except IndexError:
+            pass
+
+        translatedArgsList, kwargs = self.translateArgumentList(
+            argsList, returnKwargs=True
+        )
+
+        normalArgs = [
+            arg for arg in argsList["ArgumentList"]
+            if not "KeywordArgument" in arg
         ]
         kwargsString = self.translateKwargs(
             kwargs, argsGtZero=len(normalArgs) > 0

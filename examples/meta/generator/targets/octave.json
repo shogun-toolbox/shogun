@@ -5,6 +5,7 @@
     "Init": {
         "Construct": "$name = $typeName($arguments)$kwargs",
         "Copy": "$name = $expr$kwargs",
+        "CopyRaw": "$name = $expr$kwargs",
         "KeywordArguments": {
             "List": ";\n$elements",
             "Element": "$name.put(\"$keyword\", $expr)",
@@ -59,6 +60,7 @@
         },
         "StaticCall": "$typeName.$method($arguments)",
         "GlobalCall": "$method($arguments)",
+        "HeapGlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

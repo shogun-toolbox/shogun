@@ -21,7 +21,7 @@ namespace shogun
 	 * instance to generate parameter combinations.
 	 *
 	 */
-	class ParameterNode : public CSGObject
+	class ParameterNode
 	{
 
 	public:
@@ -31,6 +31,11 @@ namespace shogun
 		 * @param param_properties
 		 */
 		explicit ParameterNode(CSGObject& model);
+
+		explicit ParameterNode(const Some<CSGObject>& model)
+		    : ParameterNode(*model.get())
+		{
+		}
 
 		ParameterNode(CSGObject& model, ParameterProperties param_propeties);
 
@@ -83,7 +88,7 @@ namespace shogun
 			return get_next();
 		}
 
-		virtual const char* get_name() const
+		virtual const char* get_name() const noexcept
 		{
 			return "ParameterNode";
 		}
@@ -98,7 +103,7 @@ namespace shogun
 			return m_parent->get_name();
 		}
 
-		virtual std::string to_string() const;
+		std::string to_string() const noexcept;
 
 		/**
 		 * Replaces a node in a specific position of the tree node.
@@ -214,7 +219,7 @@ namespace shogun
 	public:
 		GridParameters(CSGObject& model);
 
-		const char* get_name() const final
+		const char* get_name() const noexcept override
 		{
 			return "GridParameters";
 		}
@@ -332,6 +337,11 @@ namespace shogun
 
 		GridSearch(CSGObject& model) : GridParameters(model)
 		{
+		}
+
+		const char* get_name() const noexcept override
+		{
+			return "GridSearch";
 		}
 
 		void train()

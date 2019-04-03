@@ -12,6 +12,7 @@
     "Init": {
         "Construct": "auto $name = some<C$typeName>($arguments)$kwargs",
         "Copy": "auto $name = wrap($expr)$kwargs",
+        "CopyRaw": "auto $name = $expr$kwargs",
         "KeywordArguments": {
             "List": ";\n$elements",
             "Element": "$name->put(\"$keyword\", $expr)",
@@ -119,6 +120,7 @@
         },
         "StaticCall": "C$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",
+        "HeapGlobalCall": "std::make_shared<$method>($arguments)",
         "Identifier": "$identifier",
         "Enum":"(machine_int_t)$typeName::$value"
     },
