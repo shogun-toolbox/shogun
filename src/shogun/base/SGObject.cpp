@@ -779,7 +779,7 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	                        .subscribe(sub);
 }
 
-void CSGObject::observe(const Some<ObservedValue> value)
+void CSGObject::observe(const Some<ObservedValue> value) const
 {
 	m_subscriber_params->on_next(value);
 }
@@ -1114,7 +1114,7 @@ std::string CSGObject::string_enum_reverse_lookup(
 	return enum_map_it->first;
 }
 
-ObservedValue::ObservedValue(int64_t step, std::string name)
+ObservedValue::ObservedValue(const int64_t step, const std::string& name)
     : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
 {
 	SG_ADD(&m_step, "step", "Step");
