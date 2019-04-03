@@ -997,7 +997,7 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const Some<ObservedValue> value);
+	void observe(const Some<ObservedValue> value) const;
 
 	/**
 	 * Observe a parameter value given some information
@@ -1009,7 +1009,7 @@ protected:
 	 */
 	template <class T>
 	void
-	observe(int64_t step, std::string name, std::string description, T value);
+	observe(const int64_t step, const std::string name, const std::string description, const T value) const;
 
 	/**
 	 * Observe a registered tag.
@@ -1018,7 +1018,7 @@ protected:
 	 * @param name tag's name
 	 */
 	template <class T>
-	void observe(int64_t step, std::string name);
+	void observe(const int64_t step, const std::string name) const;
 
 	/**
 	 * Register which params this object can emit.
@@ -1032,8 +1032,7 @@ protected:
 	/**
 	 * Get the current step for the observed values.
 	 */
-#ifndef SWIG
-	SG_FORCED_INLINE int64_t get_step()
+	SG_FORCED_INLINE int64_t get_step() const
 	{
 		int64_t step = -1;
 		Tag<int64_t> tag("current_iteration");
@@ -1042,7 +1041,6 @@ protected:
 		}
 		return step;
 	}
-#endif
 
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
@@ -1181,7 +1179,7 @@ public:
 	 * @param step step
 	 * @param name name of the observed value
 	 */
-	ObservedValue(int64_t step, std::string name);
+	ObservedValue(const int64_t step, const std::string& name);
 
 	/**
 	 * Destructor
@@ -1193,7 +1191,7 @@ public:
 	* Return a any version of the stored type.
 	* @return the any value.
 	*/
-	virtual Any& get_any()
+	virtual Any get_any() const
 	{
 		return m_any_value;
 	}
@@ -1230,7 +1228,7 @@ public:
 	 * @param value the observed value
 	 */
 	ObservedValueTemplated(
-		int64_t step, std::string name, std::string description, T value)
+		const int64_t step, const std::string& name, const std::string& description, const T value)
 		: ObservedValue(step, name), m_observed_value(value)
 	{
 		this->watch_param(
@@ -1247,8 +1245,8 @@ public:
 	 * @param properties properties of that observed value
 	 */
 	ObservedValueTemplated(
-		int64_t step, std::string name, T value,
-		AnyParameterProperties properties)
+		const int64_t step, const std::string& name, const T value,
+		const AnyParameterProperties properties)
 		: ObservedValue(step, name), m_observed_value(value)
 	{
 		this->watch_param(name, &m_observed_value, properties);
@@ -1308,14 +1306,14 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(
 
 template <class T>
 void CSGObject::observe(
-	int64_t step, std::string name, std::string description, T value)
+	const int64_t step, const std::string& name, const std::string& description, const T value) const
 {
 	auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
 	this->observe(obs);
 }
 
 template <class T>
-void CSGObject::observe(int64_t step, std::string name)
+void CSGObject::observe(const int64_t step, const std::string& name) const
 {
 	auto param = this->get_parameter(BaseTag(name));
 	auto obs = some<ObservedValueTemplated<T>>(
