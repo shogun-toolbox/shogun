@@ -360,8 +360,7 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void
-	put(const Tag<T>& _tag, const T& value) noexcept(false);
+	void put(const Tag<T>& _tag, const T& value) noexcept(false);
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -372,8 +371,7 @@ public:
 	 */
 	template <typename T,
 		      typename std::enable_if_t<is_string<T>::value>* = nullptr>
-	void
-	put(const Tag<T>& _tag, const T& value) noexcept(false)
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 	    std::string val_string(value);
 
@@ -1008,8 +1006,9 @@ protected:
 	 * @param value observed value
 	 */
 	template <class T>
-	void
-	observe(const int64_t step, const std::string name, const std::string description, const T value) const;
+	void observe(
+		const int64_t step, const std::string& name,
+		const std::string& description, const T value) const;
 
 	/**
 	 * Observe a registered tag.
@@ -1018,7 +1017,7 @@ protected:
 	 * @param name tag's name
 	 */
 	template <class T>
-	void observe(const int64_t step, const std::string name) const;
+	void observe(const int64_t step, const std::string& name) const;
 
 	/**
 	 * Register which params this object can emit.
@@ -1032,15 +1031,18 @@ protected:
 	/**
 	 * Get the current step for the observed values.
 	 */
+#ifndef SWIG
 	SG_FORCED_INLINE int64_t get_step() const
 	{
 		int64_t step = -1;
 		Tag<int64_t> tag("current_iteration");
-		if (has(tag)) {
+		if (has(tag))
+		{
 			step = get(tag);
 		}
 		return step;
 	}
+#endif
 
 	/** mapping from strings to enum for SWIG interface */
 	stringToEnumMapType m_string_to_enum_map;
@@ -1228,7 +1230,8 @@ public:
 	 * @param value the observed value
 	 */
 	ObservedValueTemplated(
-		const int64_t step, const std::string& name, const std::string& description, const T value)
+		const int64_t step, const std::string& name,
+		const std::string& description, const T value)
 		: ObservedValue(step, name), m_observed_value(value)
 	{
 		this->watch_param(
@@ -1265,10 +1268,8 @@ private:
 	T m_observed_value;
 };
 
-template <typename T,
-	      typename std::enable_if_t<!is_string<T>::value>*>
-void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(
-	false)
+template <typename T, typename std::enable_if_t<!is_string<T>::value>*>
+void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
 {
 	if (has_parameter(_tag))
 	{
@@ -1306,7 +1307,8 @@ void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(
 
 template <class T>
 void CSGObject::observe(
-	const int64_t step, const std::string& name, const std::string& description, const T value) const
+	const int64_t step, const std::string& name, const std::string& description,
+	const T value) const
 {
 	auto obs = some<ObservedValueTemplated<T>>(step, name, description, value);
 	this->observe(obs);
