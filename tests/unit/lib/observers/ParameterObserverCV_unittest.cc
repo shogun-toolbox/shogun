@@ -128,8 +128,8 @@ TEST(ParameterObserverCV, get_observations_locked)
 		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get_fold(j);
-			EXPECT_EQ(fold->get<index_t>("current_run_index"), i);
-			EXPECT_EQ(fold->get<index_t>("current_fold_index"), j);
+			EXPECT_EQ(fold->get<index_t>("run_index"), i);
+			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("test_indices").size() != 0);
 			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
@@ -157,8 +157,8 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		for (int j = 0; j < run->get_num_folds(); j++)
 		{
 			auto fold = run->get_fold(j);
-			EXPECT_EQ(fold->get<index_t>("current_run_index"), i);
-			EXPECT_EQ(fold->get<index_t>("current_fold_index"), j);
+			EXPECT_EQ(fold->get<index_t>("run_index"), i);
+			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("test_indices").size() != 0);
 			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
