@@ -14,7 +14,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/observers/ParameterObserverScalar.h>
+#include <shogun/lib/observers/ParameterObserverLogger.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/ZeroMean.h>
@@ -572,7 +572,7 @@ TEST(SGObject, watch_method)
 TEST(SGObject, subscribe_observer)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverScalar>();
+	auto param_obs = some<ParameterObserverLogger>();
 	obj->subscribe_to_parameters(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
@@ -582,7 +582,7 @@ TEST(SGObject, subscribe_observer)
 TEST(SGObject, unsubscribe_observer)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverScalar>();
+	auto param_obs = some<ParameterObserverLogger>();
 	obj->subscribe_to_parameters(param_obs);
 	obj->unsubscribe(param_obs);
 
@@ -593,8 +593,8 @@ TEST(SGObject, unsubscribe_observer)
 TEST(SGObject, unsubscribe_observer_failure)
 {
 	auto obj = some<CMockObject>();
-	auto param_obs = some<ParameterObserverScalar>();
-	auto param_obs_not_in = some<ParameterObserverScalar>();
+	auto param_obs = some<ParameterObserverLogger>();
+	auto param_obs_not_in = some<ParameterObserverLogger>();
 
 	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }
