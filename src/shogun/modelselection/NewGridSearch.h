@@ -344,7 +344,7 @@ namespace shogun
 			return "GridSearch";
 		}
 
-		void train();
+		void train(CFeatures* data);
 
 	private:
 		SGVector<float64_t> m_scores;

@@ -12,14 +12,25 @@ const std::string ParameterNode::delimiter = "::";
 
 ParameterNode::ParameterNode(CSGObject* model)
 {
-	m_parent = model;
-	SG_REF(model)
-	for (auto const& param : model->get_params())
+	if (!model)
 	{
-		if (auto* value = m_parent->get(param.first, std::nothrow))
+		SG_SERROR("Model is empty!\n")
+	}
+	else
+	{
+		m_parent = model;
+		SG_REF(model)
+	}
+	for (auto const& param : m_parent->get_params())
+	{
+		// check the param is neither of type CLabels or CFeatures
+		if (!(std::type_index(param.second->get_value().type_info()) ==
+		      std::type_index(typeid(CLabels*))) &&
+		    !(std::type_index(param.second->get_value().type_info()) ==
+		      std::type_index(typeid(CFeatures*))))
 		{
-			SG_SPRINT("value=%s\n", value->to_string().c_str())
-			create_node(param.first, value);
+			if (auto* value = m_parent->get(param.first, std::nothrow))
+				create_node(param.first, value);
 		}
 	}
 }
@@ -235,22 +246,35 @@ void ParameterNode::replace_node(
 GridParameters::GridParameters(CSGObject* model)
     : m_first(true), m_node_complete(false)
 {
-	m_parent = model;
-	SG_REF(model)
+	if (!model)
+	{
+		SG_SERROR("Model is empty!\n")
+	}
+	else
+	{
+		m_parent = model;
+		SG_REF(model)
+	}
 
 	// TODO: once all hyperparameters are flagged properly replace getter with
 	//  get_params.model(ParameterProperties::HYPER)
 	for (auto const& param : model->get_params())
 	{
-		if (auto* value = m_parent->get(param.first, std::nothrow))
+		// check the param is neither of type CLabels or CFeatures
+		if (!(std::type_index(param.second->get_value().type_info()) ==
+		      std::type_index(typeid(CLabels*))) &&
+		    !(std::type_index(param.second->get_value().type_info()) ==
+		      std::type_index(typeid(CFeatures*))))
 		{
-			SG_SPRINT("value=%s\n", value->to_string().c_str())
-			create_node(param.first, value);
-			SG_UNREF(value)
-			SG_SPRINT("node=%s\n", m_nodes[param.first].back().get()->to_string().c_str())
+			if (auto* value = m_parent->get(param.first, std::nothrow))
+			{
+				create_node(param.first, value);
+				SG_UNREF(value)
+			}
 		}
 	}
-	SG_SPRINT("GridParameters() - m_parent: %s\n", m_parent->to_string().c_str())
+	SG_SPRINT(
+	    "GridParameters() - m_parent: %s\n", m_parent->to_string().c_str())
 	m_current_node = m_nodes.begin();
 	m_current_internal_node = m_current_node->second.begin();
 }
@@ -259,7 +283,7 @@ void GridParameters::reset()
 {
 	for (const auto& param_pair : m_param_mapping)
 		m_param_iter[param_pair.first] = m_param_begin[param_pair.first];
-	m_node_complete = true;
+	m_node_complete = false;
 	m_current_param = m_param_mapping.end();
 	m_first = true;
 }
@@ -271,8 +295,41 @@ void GridParameters::create_node(const std::string& name, CSGObject* obj)
 
 ParameterNode* GridParameters::get_next()
 {
-	SG_SPRINT("GridParameters::get_next() - %s\n", get_parent_name());
-	SG_SPRINT("GridParameters::get_next() - %s\n", m_parent->to_string().c_str())
+	if (is_complete())
+	{
+		reset();
+	}
+	if (m_current_node != m_nodes.end() && !m_nodes.empty())
+	{
+		// iterate over the parameter of this node so can set
+		// m_current_internal_node to false
+		SG_SPRINT(
+				"DEBUG CHECK NODE IS DONE: %s\n",
+				(*m_current_internal_node)->get_parent_name())
+		bool node_is_done = std::dynamic_pointer_cast<GridParameters>(
+				(*m_current_internal_node))
+				->check_child_node_done();
+		if (node_is_done)
+		{
+			SG_SPRINT(
+					"DEBUG NODE IS DONE: %s\n",
+					(*m_current_internal_node)->get_parent_name())
+			++m_current_internal_node;
+		}
+
+		if (m_current_internal_node == m_current_node->second.end())
+		{
+			if (std::next(m_current_node) != m_nodes.end())
+				++m_current_node;
+			else
+				m_current_node = m_nodes.begin();
+			m_current_internal_node = m_current_node->second.begin();
+			SG_SPRINT(
+					"CURRENT NODE IS: %s \n",
+					(*m_current_internal_node)->get_parent_name())
+		}
+	}
+
 	auto tree = new ParameterNode(m_parent);
 
 	std::string param;
@@ -496,44 +553,6 @@ ParameterNode* GridParameters::get_next()
 			    get_lambda);
 	}
 
-	if (m_nodes.empty())
-	{
-		if (m_node_complete)
-			reset();
-	}
-	else if (m_current_node != m_nodes.end() && !m_nodes.empty())
-	{
-		// iterated over the parameter of this node so can set
-		// m_current_internal_node to false
-		SG_SPRINT(
-		    "DEBUG CHECK NODE IS DONE: %s\n",
-		    (*m_current_internal_node)->get_parent_name())
-		bool node_is_done = std::dynamic_pointer_cast<GridParameters>(
-		                        (*m_current_internal_node))
-		                        ->check_child_node_done();
-		std::dynamic_pointer_cast<GridParameters>(*m_current_internal_node)
-		    ->set_node_complete(false);
-		if (node_is_done)
-		{
-			SG_SPRINT(
-			    "DEBUG NODE IS DONE: %s\n",
-			    (*m_current_internal_node)->get_parent_name())
-			++m_current_internal_node;
-		}
-
-		if (m_current_internal_node == m_current_node->second.end())
-		{
-			if (std::next(m_current_node) != m_nodes.end())
-				++m_current_node;
-			else
-				m_current_node = m_nodes.begin();
-			m_current_internal_node = m_current_node->second.begin();
-			SG_SPRINT(
-			    "CURRENT NODE IS: %s \n",
-			    (*m_current_internal_node)->get_parent_name())
-		}
-	}
-
 	return tree;
 }
 
@@ -640,15 +659,17 @@ GridParameters::attach(const std::string& param, GridParameters* node)
 	return this;
 }
 
-void GridSearch::train()
+void GridSearch::train(CFeatures* data)
 {
 	ASSERT(m_parent != nullptr)
+	ASSERT(data != nullptr)
+
 	while (!is_complete())
 	{
 		auto next = std::shared_ptr<ParameterNode>(get_next());
 		auto* machine = ParameterNode::to_object(next)->as<CMachine>();
 		SG_SPRINT("CURRENT MACHINE: %s", machine->to_string().c_str())
-		machine->train();
+		machine->train(data);
 		SG_UNREF(machine);
 	}
 }
