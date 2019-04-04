@@ -41,6 +41,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/observers/observers_utils.h>
+#include <shogun/util/converters.h>
 
 namespace shogun
 {
@@ -122,7 +123,7 @@ namespace shogun
 		 */
 		ObservedValue * get_observation(size_t i)
 		{
-			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound.", i);
+			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound (total observations %i)", i, this->get_num_observations());
 			return this->m_observations[i].get();
 		};
 
@@ -130,9 +131,9 @@ namespace shogun
 		 * Get the total number of observation received.
 		 * @return number of obsevation received.
 		 */
-		const size_t get_num_observations() const
+		const index_t get_num_observations() const
 		{
-			return m_observations.size();
+			return utils::safe_convert<index_t>(m_observations.size());
 		};
 
 		/**
