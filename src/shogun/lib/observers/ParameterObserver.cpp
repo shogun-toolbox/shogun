@@ -34,21 +34,24 @@
 */
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
-ParameterObserver::ParameterObserver() : m_parameters()
+ParameterObserver::ParameterObserver() : m_observed_parameters(), m_subscription_id(-1)
 {
+	SG_ADD(&m_subscription_id, "subscription_id", "Id of the subscription to an object.");
 }
 
 ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserver()
 {
+	m_observed_parameters = parameters;
 }
 
 ParameterObserver::ParameterObserver(
     const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserver(parameters)
 {
 }
 
@@ -59,10 +62,10 @@ ParameterObserver::~ParameterObserver()
 bool ParameterObserver::filter(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
-	if (m_parameters.size() == 0)
+	if (m_observed_parameters.size() == 0)
 		return true;
 
-	for (auto v : m_parameters)
+	for (auto v : m_observed_parameters)
 		if (v == param)
 			return true;
 	return false;
