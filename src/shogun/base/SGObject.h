@@ -1162,6 +1162,8 @@ CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& 
 		return result;
 	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
 		return result;
+	if (auto* result = get_if_possible<CMachine>(obj, name, how))
+		return result;
 
 	return nullptr;
 }
