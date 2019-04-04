@@ -768,7 +768,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
+void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -790,12 +790,15 @@ int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 					std::move(m_next_subscription_index),
 					std::move(subscription)));
 
-	m_total_subscriptions++;
+	obs->put("subscription_id", m_next_subscription_index);
 
-	return m_next_subscription_index++;
+	m_next_subscription_index++;
+	m_total_subscriptions++;
 }
 
-void CSGObject::unsubscribe(int64_t index) {
+void CSGObject::unsubscribe(ParameterObserver *obs) {
+
+	int64_t index = obs->get<int64_t>("subscription_id");
 
 	// Check if we have such subscription
 	auto it = m_subscriptions.find(index);
@@ -806,6 +809,8 @@ void CSGObject::unsubscribe(int64_t index) {
 	it->second.unsubscribe();
 	m_subscriptions.erase(index);
 	m_total_subscriptions--;
+
+	obs->put("subscription_id", -1);
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const
