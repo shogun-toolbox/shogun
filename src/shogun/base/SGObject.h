@@ -1057,6 +1057,7 @@ private:
 	/** List of subscription for this SGObject */
 	std::map<int64_t, rxcpp::subscription> m_subscriptions;
 	int64_t m_next_subscription_index;
+	int64_t m_total_subscriptions;
 };
 
 #ifndef SWIG
