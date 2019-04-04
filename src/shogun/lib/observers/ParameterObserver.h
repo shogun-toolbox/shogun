@@ -174,6 +174,7 @@ namespace shogun
 		}
 
 	protected:
+
 		/**
 		 * Implementation of the on_next method which will be needed
 		 * in order to process the observed value
@@ -184,12 +185,17 @@ namespace shogun
 		/**
 		 * List of parameter's names we want to monitor
 		 */
-		std::vector<std::string> m_parameters;
+		std::vector<std::string> m_observed_parameters;
 
 		/**
 		 * Observations recorded each time we compute on_next()
 		 */
 		std::vector<Some<ObservedValue>> m_observations;
+
+		/**
+		 * Subscription id set when I subscribe to a machine
+		 */
+		int64_t m_subscription_id;
 
 	};
 }
