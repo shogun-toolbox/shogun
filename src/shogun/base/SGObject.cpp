@@ -541,6 +541,11 @@ void CSGObject::init()
 	m_subject_params = new SGSubject();
 	m_observable_params = new SGObservable(m_subject_params->get_observable());
 	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
+	m_next_subscription_index = 0;
+	m_total_subscriptions = 0;
+
+	SG_ADD(&m_total_subscriptions, "total_subscriptions", "Total number of parameter observers subscribed to this object.");
+
 }
 
 void CSGObject::print_modsel_params()
@@ -785,6 +790,8 @@ int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 					std::move(m_next_subscription_index),
 					std::move(subscription)));
 
+	m_total_subscriptions++;
+
 	return m_next_subscription_index++;
 }
 
@@ -798,6 +805,7 @@ void CSGObject::unsubscribe(int64_t index) {
 
 	it->second.unsubscribe();
 	m_subscriptions.erase(index);
+	m_total_subscriptions--;
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const
