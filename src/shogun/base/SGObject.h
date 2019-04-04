@@ -665,7 +665,7 @@ public:
 	 * Detach an observer from the current SGObject.
 	 * @param subscription_index the index obtained by calling the subscribe procedure
 	 */
-	void unsubscribe(int64_t subscription_index);
+	void unsubscribe(int64_t index);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
