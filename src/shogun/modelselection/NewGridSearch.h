@@ -30,14 +30,14 @@ namespace shogun
 		 * @param model
 		 * @param param_properties
 		 */
-		explicit ParameterNode(CSGObject& model);
+		explicit ParameterNode(CSGObject* model);
 
-		explicit ParameterNode(const Some<CSGObject>& model)
-		    : ParameterNode(*model.get())
+		virtual ~ParameterNode()
 		{
+			SG_UNREF(m_parent)
 		}
 
-		ParameterNode(CSGObject& model, ParameterProperties param_propeties);
+		ParameterNode(CSGObject* model, ParameterProperties param_propeties);
 
 #ifndef SWIG
 		/**
@@ -173,7 +173,7 @@ namespace shogun
 		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>
 		    m_nodes;
 		/** pointer to object that is being mimicked */
-		std::shared_ptr<CSGObject> m_parent;
+		CSGObject* m_parent;
 		/** internal mapping of params */
 		std::map<std::string, Any> m_param_mapping;
 
@@ -217,7 +217,7 @@ namespace shogun
 	{
 
 	public:
-		GridParameters(CSGObject& model);
+		GridParameters(CSGObject* model);
 
 		const char* get_name() const noexcept override
 		{
@@ -334,8 +334,8 @@ namespace shogun
 
 	class GridSearch : public GridParameters
 	{
-
-		GridSearch(CSGObject& model) : GridParameters(model)
+	public:
+		explicit GridSearch(CSGObject* model) : GridParameters(model)
 		{
 		}
 
@@ -344,16 +344,7 @@ namespace shogun
 			return "GridSearch";
 		}
 
-		void train()
-		{
-			while (!is_complete())
-			{
-				auto next = std::shared_ptr<ParameterNode>(get_next());
-				auto* machine = ParameterNode::to_object(next)->as<CMachine>();
-				machine->train();
-				SG_UNREF(machine);
-			}
-		}
+		void train();
 
 	private:
 		SGVector<float64_t> m_scores;

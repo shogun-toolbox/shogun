@@ -10,15 +10,16 @@ using namespace shogun;
 
 const std::string ParameterNode::delimiter = "::";
 
-ParameterNode::ParameterNode(CSGObject& model)
+ParameterNode::ParameterNode(CSGObject* model)
 {
-	m_parent = std::shared_ptr<CSGObject>(model.clone());
-	for (auto const& param : model.get_params())
+	m_parent = model;
+	SG_REF(model)
+	for (auto const& param : model->get_params())
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
 		{
+			SG_SPRINT("value=%s\n", value->to_string().c_str())
 			create_node(param.first, value);
-			SG_UNREF(value);
 		}
 	}
 }
@@ -26,23 +27,23 @@ ParameterNode::ParameterNode(CSGObject& model)
 void ParameterNode::create_node(const std::string& name, CSGObject* obj)
 {
 	SG_SPRINT("ParameterNode::create_node\n")
-	m_nodes[name].emplace_back(new ParameterNode(*obj));
+	m_nodes[name].emplace_back(new ParameterNode(obj));
 }
 
 ParameterNode::ParameterNode(
-    CSGObject& model, ParameterProperties param_properties)
+    CSGObject* model, ParameterProperties param_properties)
 {
-	m_parent = std::shared_ptr<CSGObject>(model.clone());
-	for (auto const& param : model.get_params())
+	m_parent = model;
+	for (auto const& param : model->get_params())
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
 		{
-			m_nodes[param.first].emplace_back(new ParameterNode(*value));
+			m_nodes[param.first].emplace_back(new ParameterNode(value));
 			SG_UNREF(value);
 		}
 	}
 
-	for (auto const& param : model.get_params(param_properties))
+	for (auto const& param : model->get_params(param_properties))
 	{
 		m_param_mapping.insert(
 		    std::make_pair(param.first, param.second->get_value()));
@@ -183,7 +184,7 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 
 ParameterNode* ParameterNode::get_current()
 {
-	auto tree = new ParameterNode(*m_parent);
+	auto tree = new ParameterNode(m_parent);
 
 	std::string param;
 
@@ -201,8 +202,9 @@ ParameterNode* ParameterNode::get_current()
 CSGObject* ParameterNode::to_object(const std::shared_ptr<ParameterNode>& tree)
 {
 	// TODO: this is incomplete, but i dont want to see compiler warnings for
-	// this
-	return (tree->m_parent).get();
+	//  this
+	SG_REF(tree->m_parent)
+	return tree->m_parent;
 }
 
 void ParameterNode::replace_node(
@@ -230,20 +232,25 @@ void ParameterNode::replace_node(
 	}
 }
 
-GridParameters::GridParameters(CSGObject& model)
+GridParameters::GridParameters(CSGObject* model)
     : m_first(true), m_node_complete(false)
 {
-	m_parent = std::shared_ptr<CSGObject>(model.clone());
+	m_parent = model;
+	SG_REF(model)
+
 	// TODO: once all hyperparameters are flagged properly replace getter with
 	//  get_params.model(ParameterProperties::HYPER)
-	for (auto const& param : model.get_params())
+	for (auto const& param : model->get_params())
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
 		{
+			SG_SPRINT("value=%s\n", value->to_string().c_str())
 			create_node(param.first, value);
-			SG_UNREF(value);
+			SG_UNREF(value)
+			SG_SPRINT("node=%s\n", m_nodes[param.first].back().get()->to_string().c_str())
 		}
 	}
+	SG_SPRINT("GridParameters() - m_parent: %s\n", m_parent->to_string().c_str())
 	m_current_node = m_nodes.begin();
 	m_current_internal_node = m_current_node->second.begin();
 }
@@ -259,13 +266,14 @@ void GridParameters::reset()
 
 void GridParameters::create_node(const std::string& name, CSGObject* obj)
 {
-	m_nodes[name].emplace_back(new GridParameters(*obj));
+	m_nodes[name].emplace_back(new GridParameters(obj));
 }
 
 ParameterNode* GridParameters::get_next()
 {
 	SG_SPRINT("GridParameters::get_next() - %s\n", get_parent_name());
-	auto tree = new ParameterNode(*m_parent);
+	SG_SPRINT("GridParameters::get_next() - %s\n", m_parent->to_string().c_str())
+	auto tree = new ParameterNode(m_parent);
 
 	std::string param;
 
@@ -311,8 +319,8 @@ ParameterNode* GridParameters::get_next()
 				m_current_param = m_param_mapping.end();
 				SG_SPRINT(
 				    "updating m_current_param from %s::%s to %s::%s\n",
-				    this->get_parent_name(), param.c_str(), this->get_parent_name(),
-				    m_current_param->first.c_str())
+				    this->get_parent_name(), param.c_str(),
+				    this->get_parent_name(), m_current_param->first.c_str())
 			}
 			// find the next param to iterate over
 			else
@@ -380,7 +388,8 @@ ParameterNode* GridParameters::get_next()
 				SG_SPRINT(
 				    "node is done updating m_current_param to "
 				    "%s::%s\n",
-				    this->get_parent_name(), param.c_str(), this->get_parent_name(),
+				    this->get_parent_name(), param.c_str(),
+				    this->get_parent_name(),
 				    std::prev(m_current_param)->first.c_str())
 			}
 		}
@@ -470,8 +479,8 @@ ParameterNode* GridParameters::get_next()
 			sg_any_dispatch(
 			    param_pair->second, sg_vector_typemap, shogun::None{},
 			    increment_lambda);
-			// we know that nothing else can be iterated so just use a nested loop
-			// to avoid any further dynamic casting
+			// we know that nothing else can be iterated so just use a nested
+			// loop to avoid any further dynamic casting
 			for (; param_pair != m_param_mapping.end(); ++param_pair)
 			{
 				param = param_pair->first;
@@ -601,7 +610,7 @@ bool GridParameters::is_inner_complete(const std::string& node_name)
 
 ParameterNode* GridParameters::get_current()
 {
-	auto tree = new ParameterNode(*m_parent);
+	auto tree = new ParameterNode(m_parent);
 
 	std::string param;
 
@@ -628,6 +637,18 @@ GridParameters::attach(const std::string& param, GridParameters* node)
 	// Updating node list (might) require resetting the node iterators
 	m_current_node = m_nodes.begin();
 	m_current_internal_node = m_current_node->second.begin();
-	SG_SPRINT("NODE REPR %s\n", (*m_current_internal_node)->to_string().c_str())
 	return this;
+}
+
+void GridSearch::train()
+{
+	ASSERT(m_parent != nullptr)
+	while (!is_complete())
+	{
+		auto next = std::shared_ptr<ParameterNode>(get_next());
+		auto* machine = ParameterNode::to_object(next)->as<CMachine>();
+		SG_SPRINT("CURRENT MACHINE: %s", machine->to_string().c_str())
+		machine->train();
+		SG_UNREF(machine);
+	}
 }
