@@ -168,8 +168,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
-			fold->put("current_run_index", (index_t)index);
-			fold->put("current_fold_index", i);
+			fold->put("run_index", (index_t)index);
+			fold->put("fold_index", i);
 
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
@@ -250,8 +250,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			    (CEvaluation*)m_evaluation_criterion->clone();
 
 			/* evtl. update xvalidation output class */
-			fold->put("current_run_index", (index_t)index);
-			fold->put("current_fold_index", i);
+			fold->put("run_index", (index_t)index);
+			fold->put("fold_index", i);
 
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices =

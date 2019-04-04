@@ -794,7 +794,7 @@ void CSGObject::unsubscribe(int64_t index) {
 	auto it = m_subscriptions.find(index);
 	if (it == m_subscriptions.end())
 		SG_ERROR("The object %s does not have any registered parameter observer with index %i",
-		  this->get_name(), subscription_index);
+		  this->get_name(), index);
 
 	it->second.unsubscribe();
 	m_subscriptions.erase(index);
