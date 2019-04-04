@@ -50,10 +50,10 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CSGObject()
 	m_test_true_result = NULL;
 
 	SG_ADD(
-	    &m_current_run_index, "current_run_index",
+	    &m_current_run_index, "run_index",
 	    "The current run index of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_current_fold_index, "current_fold_index", "The current fold index",
+	    &m_current_fold_index, "fold_index", "The current fold index",
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_trained_machine, "trained_machine",
