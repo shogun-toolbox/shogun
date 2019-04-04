@@ -31,7 +31,7 @@ void ParameterObserverLogger::on_next_impl(const TimedObservedValue &value) {
 
 	auto name = value.first->get<std::string>("name");
 	auto any_val = value.first->get_any();
-	auto print_func = [](auto v){
+	auto print_func = [&](auto v){
 		SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
 				 name, v);
 	};
