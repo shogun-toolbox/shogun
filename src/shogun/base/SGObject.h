@@ -659,13 +659,13 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	int64_t subscribe_to_parameters(ParameterObserver* obs);
+	void subscribe_to_parameters(ParameterObserver* obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
 	 * @param subscription_index the index obtained by calling the subscribe procedure
 	 */
-	void unsubscribe(int64_t index);
+	void unsubscribe(ParameterObserver* obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
