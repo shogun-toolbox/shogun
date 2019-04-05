@@ -48,7 +48,7 @@ real stddev = result.get_real("std_dev")
 #![get_fold_machine]
 ObservedValue obs_v = mkl_obs.get_observation(0)
 CrossValidationStorage stor = obs_v.get_CV_storage("cross_validation_run")
-CrossValidationFoldStorage fold = stor.get_fold(0)
+CrossValidationFoldStorage fold = stor.get("folds", 0)
 Machine machine_mkl = as_machine(fold.get("trained_machine"))
 
 #![get_fold_machine]
