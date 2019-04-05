@@ -166,13 +166,6 @@ namespace shogun
 		CLabels* get_expose_labels() const;
 
 		/**
-		 * Get a specific fold result
-		 * @param fold the fold index
-		 * @return the CrossValidationFoldStorage object
-		 */
-		CrossValidationFoldStorage* get_fold(int fold) const;
-
-		/**
 		 * Operator == needed for Any comparison.
 		 * @param rhs other CrossValidationStorage
 		 * @return true if the objects are the same, false otherwise.
