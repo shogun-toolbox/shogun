@@ -21,8 +21,8 @@ ParameterNode::ParameterNode(CSGObject* model)
 	}
 	else
 	{
-		m_parent = model;
-		SG_REF(model)
+		m_parent = std::unique_ptr<CSGObject>(model->clone());
+		SG_SPRINT("%s refcount: %d\n", model->get_name(), m_parent->ref_count())
 	}
 	for (auto const& param : m_parent->get_params())
 	{
@@ -54,16 +54,19 @@ ParameterNode::ParameterNode(
 	}
 	else
 	{
-		m_parent = model;
-		SG_REF(model)
+		m_parent = std::unique_ptr<CSGObject>(model->clone());
 	}
 
-	for (auto const& param : model->get_params())
+	for (auto const& param : m_parent->get_params())
 	{
-		if (auto* value = m_parent->get(param.first, std::nothrow))
+		// check the param is neither of type CLabels or CFeatures
+		if ((std::type_index(param.second->get_value().type_info()) !=
+			 std::type_index(typeid(CLabels*))) &&
+			(std::type_index(param.second->get_value().type_info()) !=
+			 std::type_index(typeid(CFeatures*))))
 		{
-			m_nodes[param.first].emplace_back(new ParameterNode(value));
-			SG_UNREF(value);
+			if (auto* value = m_parent->get(param.first, std::nothrow))
+				create_node(param.first, value);
 		}
 	}
 
@@ -77,7 +80,7 @@ ParameterNode::ParameterNode(
 ParameterNode*
 ParameterNode::attach(const std::string& param, ParameterNode* node)
 {
-	if (!set_param_helper(param, std::make_shared<ParameterNode>(*node)))
+	if (!set_param_helper(param, std::shared_ptr<ParameterNode>(node)))
 		SG_SERROR("Could not attach %s", param.c_str());
 	return this;
 }
@@ -208,7 +211,7 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 
 ParameterNode* ParameterNode::get_current()
 {
-	auto tree = new ParameterNode(m_parent);
+	auto tree = new ParameterNode(m_parent.get());
 
 	std::string param;
 
@@ -223,36 +226,37 @@ ParameterNode* ParameterNode::get_current()
 	return tree;
 }
 
-CSGObject* ParameterNode::to_object(const std::shared_ptr<ParameterNode>& tree)
+CSGObject* ParameterNode::to_object(const ParameterNode& tree)
 {
-	auto* result = tree->m_parent->clone();
-	SG_SPRINT("ParameterNode::to_object %s\n", result->get_name())
+	auto* result = tree.m_parent->clone();
 	auto result_params = result->get_params();
-	for (const auto& node : tree->m_nodes)
+	for (const auto& node : tree.m_nodes)
 	{
-		SG_SPRINT("param %s\n", node.first.c_str())
 		auto node_i = node.second[0];
 		auto type_index_i =
 		    std::type_index(result_params[node.first]->get_value().type_info());
-		auto* obj = ParameterNode::to_object(node.second[0]);
-
+		auto* obj = ParameterNode::to_object(*node.second[0].get());
 		if (type_index_i == std::type_index(typeid(CKernel*)))
+		{
 			result->put(node.first, obj->as<CKernel>());
+		}
 		else if (type_index_i == std::type_index(typeid(CDistance*)))
+		{
 			result->put(node.first, obj->as<CDistance>());
+		}
 		else
 		{
 			SG_SERROR(
 			    "Unsupported type %s for parameter %s::%s\n",
 			    demangled_type(type_index_i.name()).c_str(), result->get_name(),
-			    obj->get_name())
+			    obj->get_name());
 		}
 	}
 	std::string param_name;
 	auto put_scalar_lambda = [&result, &param_name](const auto& val) {
 		result->put(param_name, val);
 	};
-	for (const auto& param : tree->m_param_mapping)
+	for (const auto& param : tree.m_param_mapping)
 	{
 		SG_SPRINT("param %s\n", param.first.c_str())
 		param_name = param.first;
@@ -295,8 +299,8 @@ GridParameters::GridParameters(CSGObject* model)
 	}
 	else
 	{
-		m_parent = model;
-		SG_REF(model)
+		m_parent = std::unique_ptr<CSGObject>(model->clone());
+		SG_SPRINT("%s refcount: %d\n", model->get_name(), m_parent->ref_count())
 	}
 
 	// TODO: once all hyperparameters are flagged properly replace getter with
@@ -373,7 +377,7 @@ ParameterNode* GridParameters::get_next()
 		}
 	}
 
-	auto tree = new ParameterNode(m_parent);
+	auto tree = new ParameterNode(m_parent.get());
 
 	std::string param;
 
@@ -672,7 +676,7 @@ bool GridParameters::is_inner_complete(const std::string& node_name)
 
 ParameterNode* GridParameters::get_current()
 {
-	auto tree = new ParameterNode(m_parent);
+	auto tree = new ParameterNode(m_parent.get());
 
 	std::string param;
 
@@ -710,17 +714,15 @@ GridParameters::attach(const std::string& param, const std::shared_ptr<Parameter
 	return this;
 }
 
-void GridSearch::train(CFeatures* data)
+void GridSearch::learn(CFeatures* data, CLabels* labels)
 {
-	ASSERT(data)
-
 	while (!is_complete())
 	{
-		auto next = std::shared_ptr<ParameterNode>(get_next());
+		auto next = std::unique_ptr<ParameterNode>(get_next());
 		SG_SPRINT("CURRENT NODE: %s\n", next->to_string().c_str())
-		auto* machine = ParameterNode::to_object(next)->as<CMachine>();
-		SG_SPRINT("CURRENT MACHINE: %s\n", machine->to_string().c_str())
+		auto machine = std::unique_ptr<CMachine>(ParameterNode::to_object(*next)->as<CMachine>());
+		machine->put("labels", labels);
+		SG_SPRINT("CURRENT MACHINE: %s, refcount: %d\n", machine->to_string().c_str(), machine->ref_count())
 		machine->train(data);
-		SG_UNREF(machine);
 	}
 }

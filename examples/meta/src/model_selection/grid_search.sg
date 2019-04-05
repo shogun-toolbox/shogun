@@ -16,7 +16,7 @@ Kernel k2 = kernel("PolyKernel")
 #![create_kernel]
 
 #![create_machine]
-Machine svm = machine("LibSVM", epsilon=0.001, labels=labels_train)
+Machine svm = machine("LibSVM", epsilon=0.001)
 #![create_machine]
 
 #![create_master_node]
@@ -54,5 +54,5 @@ node.attach("kernel", k2_node)
 #![attach_child_nodes]
 
 #![train_and_apply]
-node.train(features_train)
+node.learn(features_train, labels_train)
 #![train_and_apply]

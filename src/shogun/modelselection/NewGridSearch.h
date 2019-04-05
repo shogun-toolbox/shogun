@@ -34,7 +34,6 @@ namespace shogun
 
 		virtual ~ParameterNode()
 		{
-			SG_UNREF(m_parent)
 		}
 
 		ParameterNode(CSGObject* model, ParameterProperties param_propeties);
@@ -174,7 +173,7 @@ namespace shogun
 		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>
 		    m_nodes;
 		/** pointer to object that is being mimicked */
-		CSGObject* m_parent;
+		std::unique_ptr<CSGObject> m_parent;
 		/** internal mapping of params */
 		std::map<std::string, Any> m_param_mapping;
 
@@ -202,7 +201,7 @@ namespace shogun
 		 * @param tree
 		 * @return
 		 */
-		static CSGObject* to_object(const std::shared_ptr<ParameterNode>& tree);
+		static CSGObject* to_object(const ParameterNode& tree);
 	};
 
 	/**
@@ -348,12 +347,14 @@ namespace shogun
 		{
 		}
 
+		~GridSearch() {};
+
 		const char* get_name() const noexcept override
 		{
 			return "GridSearch";
 		}
 
-		void train(CFeatures* data);
+		void learn(CFeatures* data, CLabels* labels);
 
 	private:
 		SGVector<float64_t> m_scores;
