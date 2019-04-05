@@ -127,7 +127,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
 		for (int j = 0; j < 5; j++)
 		{
-			auto fold = run->get<CrossValidationFoldStorage*>("folds", j);
+			auto fold = run->get("folds", j);
 			EXPECT_EQ(fold->get<index_t>("run_index"), i);
 			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
@@ -156,7 +156,7 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
 		for (int j = 0; j < run->get_num_folds(); j++)
 		{
-			auto fold = run->get<CrossValidationFoldStorage*>("folds", j);
+			auto fold = run->get("folds", j);
 			EXPECT_EQ(fold->get<index_t>("run_index"), i);
 			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(fold->get<SGVector<index_t>>("train_indices").size() != 0);
