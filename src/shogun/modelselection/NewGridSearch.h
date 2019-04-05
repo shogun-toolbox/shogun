@@ -52,7 +52,7 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(
+		virtual ParameterNode* attach(
 		    const std::string& param,
 		    const std::shared_ptr<ParameterNode>& node);
 
@@ -62,7 +62,7 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(const std::string& param, ParameterNode* node);
+		virtual ParameterNode* attach(const std::string& param, ParameterNode* node);
 
 		/**
 		 * Attach a new value at a given location in the tree
@@ -152,6 +152,7 @@ namespace shogun
 		bool set_param_helper(
 		    const std::string& param,
 		    const std::shared_ptr<ParameterNode>& value);
+
 		/**
 		 * Internal method to get the next combination. In the base class
 		 * this is the current set, as it is the only parameter combination
@@ -230,7 +231,15 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		GridParameters* attach(const std::string& param, GridParameters* node);
+		ParameterNode* attach(const std::string& param, ParameterNode* node) final;
+
+		/**
+		 * Attach a new node at a given location in the tree
+		 * defined by the parameter name
+		 * @param name
+		 * @param node
+		 */
+		ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node) final;
 
 		/**
 		 * Attach a new SGVector at a given location in the tree
@@ -257,7 +266,7 @@ namespace shogun
 		 * @param name
 		 * @param obj
 		 */
-		void create_node(const std::string& name, CSGObject* obj) override;
+		void create_node(const std::string& name, CSGObject* obj) final;
 
 		/**
 		 * Gets the next ParameterNode representation

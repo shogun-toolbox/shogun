@@ -1,0 +1,58 @@
+File f_feats_train = csv_file("../../data/classifier_binary_2d_nonlinear_features_train.dat")
+File f_feats_test = csv_file("../../data/classifier_binary_2d_nonlinear_features_test.dat")
+File f_labels_train = csv_file("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
+File f_labels_test = csv_file("../../data/classifier_binary_2d_nonlinear_labels_test.dat")
+
+#![create_features]
+Features features_train = features(f_feats_train)
+Features features_test = features(f_feats_test)
+Labels labels_train = labels(f_labels_train)
+Labels labels_test = labels(f_labels_test)
+#![create_features]
+
+#![create_kernel]
+Kernel k1 = kernel("GaussianKernel")
+Kernel k2 = kernel("PolyKernel")
+#![create_kernel]
+
+#![create_machine]
+Machine svm = machine("LibSVM", epsilon=0.001, labels=labels_train)
+#![create_machine]
+
+#![create_master_node]
+GridSearch node = new GridSearch(svm)
+RealVector c1_param(3)
+c1_param[0] = 0.1
+c1_param[1] = 1
+c1_param[2] = 10
+RealVector c2_param(3)
+c2_param[0] = 0.1
+c2_param[1] = 1
+c2_param[2] = 10
+node.attach("C1", c1_param)
+node.attach("C2", c2_param)
+#![create_master_node]
+
+#![create_child_nodes]
+GridParameters k1_node = new GridParameters(k1)
+GridParameters k2_node = new GridParameters(k2)
+#![create_child_nodes]
+
+#![attach_child_nodes]
+IntVector degree_param(3)
+degree_param[0] = 1
+degree_param[1] = 2
+degree_param[2] = 3
+k2_node.attach("degree", degree_param)
+node.attach("kernel", k1_node)
+RealVector width_param(3)
+width_param[0] = 0.1
+width_param[1] = 1
+width_param[2] = 2
+node.attach("kernel::log_width", width_param)
+node.attach("kernel", k2_node)
+#![attach_child_nodes]
+
+#![train_and_apply]
+node.train(features_train)
+#![train_and_apply]

@@ -16,6 +16,7 @@ ParameterNode::ParameterNode(CSGObject* model)
 {
 	if (!model)
 	{
+		m_parent = nullptr;
 		SG_SERROR("Model is empty!\n")
 	}
 	else
@@ -46,7 +47,17 @@ void ParameterNode::create_node(const std::string& name, CSGObject* obj)
 ParameterNode::ParameterNode(
     CSGObject* model, ParameterProperties param_properties)
 {
-	m_parent = model;
+	if (!model)
+	{
+		m_parent = nullptr;
+		SG_SERROR("Model is empty!\n")
+	}
+	else
+	{
+		m_parent = model;
+		SG_REF(model)
+	}
+
 	for (auto const& param : model->get_params())
 	{
 		if (auto* value = m_parent->get(param.first, std::nothrow))
@@ -679,11 +690,19 @@ ParameterNode* GridParameters::get_current()
 	return tree;
 }
 
-GridParameters*
-GridParameters::attach(const std::string& param, GridParameters* node)
+ParameterNode*
+GridParameters::attach(const std::string& param, ParameterNode* node)
 {
-	if (!ParameterNode::set_param_helper(
-	        param, std::make_shared<GridParameters>(*node)))
+	return attach(param, std::shared_ptr<ParameterNode>(node));
+}
+
+ParameterNode*
+GridParameters::attach(const std::string& param, const std::shared_ptr<ParameterNode>& node)
+{
+	auto gp_node = std::dynamic_pointer_cast<GridParameters>(node);
+	if (!gp_node)
+		SG_SERROR("Need to pass an object of type GridParameters")
+	if (!ParameterNode::set_param_helper(param, node))
 		SG_SERROR("Could not attach %s", param.c_str());
 	// Updating node list (might) require resetting the node iterators
 	m_current_node = m_nodes.begin();
@@ -693,7 +712,7 @@ GridParameters::attach(const std::string& param, GridParameters* node)
 
 void GridSearch::train(CFeatures* data)
 {
-	ASSERT(data != nullptr)
+	ASSERT(data)
 
 	while (!is_complete())
 	{
