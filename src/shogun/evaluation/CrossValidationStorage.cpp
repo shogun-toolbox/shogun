@@ -84,17 +84,6 @@ void CrossValidationFoldStorage::post_update_results()
 {
 }
 
-CrossValidationFoldStorage* CrossValidationStorage::get_fold(int fold) const
-{
-	REQUIRE(
-	    fold < get_num_folds(), "The fold number must be less than %i",
-	    get_num_folds())
-
-	CrossValidationFoldStorage* fld = m_folds_results[fold];
-	SG_REF(fld);
-	return fld;
-}
-
 bool CrossValidationFoldStorage::
 operator==(const CrossValidationFoldStorage& rhs) const
 {
