@@ -131,9 +131,9 @@ namespace shogun
 		 * Get the total number of observation received.
 		 * @return number of obsevation received.
 		 */
-		const index_t get_num_observations() const
+		const size_t get_num_observations() const
 		{
-			return utils::safe_convert<index_t>(m_observations.size());
+			return utils::safe_convert<size_t>(m_observations.size());
 		};
 
 		/**

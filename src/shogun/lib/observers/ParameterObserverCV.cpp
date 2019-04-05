@@ -78,7 +78,7 @@ void CParameterObserverCV::print_observed_value(
 {
 	for (int i = 0; i < value->get_num_folds(); i++)
 	{
-		auto f = value->get_fold(i);
+		auto f = value->get("folds",i);
 		SG_PRINT("\n")
 		SG_PRINT("Current run index: %i\n", f->get<index_t>("current_run_index"))
 		SG_PRINT("Current fold index: %i\n", f->get<index_t>("current_fold_index"))
