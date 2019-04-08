@@ -39,6 +39,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <vector>
+#include "EvaluationResult.h"
 
 namespace shogun
 {
@@ -50,11 +51,15 @@ namespace shogun
 	/**
 	 * Store information about a single fold run.
 	 */
-	class CrossValidationFoldStorage : public CSGObject
+	class CrossValidationFoldStorage : public CEvaluationResult
 	{
 	public:
 		CrossValidationFoldStorage();
 		virtual ~CrossValidationFoldStorage();
+
+		virtual EEvaluationResultType get_result_type() const;
+
+		virtual void print_result();
 
 		/** post update test and true results
 		 */
@@ -105,7 +110,7 @@ namespace shogun
 	/**
 	 * This class store some information about CrossValidation runs.
 	 */
-	class CrossValidationStorage : public CSGObject
+	class CrossValidationStorage : public CEvaluationResult
 	{
 	public:
 		/** Constructor */
@@ -113,6 +118,10 @@ namespace shogun
 
 		/** Destructor */
 		virtual ~CrossValidationStorage();
+
+		virtual EEvaluationResultType get_result_type() const;
+
+		virtual void print_result();
 
 		/**
 		 * Class name (used for serialization)
@@ -183,7 +192,7 @@ namespace shogun
 		CLabels* m_expose_labels;
 
 		/** Vector with all the folds results */
-		std::vector<CrossValidationFoldStorage*> m_folds_results;
+		std::vector<CEvaluationResult*> m_folds_results;
 	};
 }
 
