@@ -12,7 +12,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/type_case.h>
 #include <shogun/machine/Machine.h>
-#include <unordered_set>
 
 namespace shogun
 {
@@ -32,9 +31,9 @@ namespace shogun
 		 */
 		explicit ParameterNode(CSGObject* model);
 
-		virtual ~ParameterNode()
-		{
-		}
+		ParameterNode(const ParameterNode& other);
+
+		virtual ~ParameterNode();
 
 		ParameterNode(CSGObject* model, ParameterProperties param_propeties);
 
@@ -51,9 +50,7 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		virtual ParameterNode* attach(
-		    const std::string& param,
-		    const std::shared_ptr<ParameterNode>& node);
+		virtual ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node);
 
 		/**
 		 * Attach a new node at a given location in the tree
@@ -114,8 +111,7 @@ namespace shogun
 		 * @param node
 		 */
 		void replace_node(
-		    const std::string& node_name, size_t index,
-		    const std::shared_ptr<ParameterNode>& node);
+		    const std::string& node_name, size_t index, ParameterNode* node);
 
 		size_t n_nodes()
 		{
@@ -148,9 +144,7 @@ namespace shogun
 		 * @param value
 		 * @return
 		 */
-		bool set_param_helper(
-		    const std::string& param,
-		    const std::shared_ptr<ParameterNode>& value);
+		bool set_param_helper(const std::string& param, ParameterNode* value);
 
 		/**
 		 * Internal method to get the next combination. In the base class
@@ -170,10 +164,10 @@ namespace shogun
 		virtual ParameterNode* get_current();
 
 		/** vector of child nodes */
-		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>
+		std::map<std::string, std::vector<std::unique_ptr<ParameterNode>>>
 		    m_nodes;
 		/** pointer to object that is being mimicked */
-		std::unique_ptr<CSGObject> m_parent;
+		CSGObject* m_parent;
 		/** internal mapping of params */
 		std::map<std::string, Any> m_param_mapping;
 
@@ -219,6 +213,8 @@ namespace shogun
 	public:
 		GridParameters(CSGObject* model);
 
+		GridParameters(const GridParameters& other);
+
 		const char* get_name() const noexcept override
 		{
 			return "GridParameters";
@@ -230,7 +226,7 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(const std::string& param, ParameterNode* node) final;
+		ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node) final;
 
 		/**
 		 * Attach a new node at a given location in the tree
@@ -238,7 +234,7 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node) final;
+		ParameterNode* attach(const std::string& param, ParameterNode* node) final;
 
 		/**
 		 * Attach a new SGVector at a given location in the tree
@@ -322,10 +318,10 @@ namespace shogun
 		bool m_first;
 		/** tracks current node being iterated over. A node can have several
 		 * internal nodes */
-		std::map<std::string, std::vector<std::shared_ptr<ParameterNode>>>::
+		std::map<std::string, std::vector<std::unique_ptr<ParameterNode>>>::
 		    iterator m_current_node;
 		/** tracks current internal node being iterated over */
-		std::vector<std::shared_ptr<ParameterNode>>::iterator
+		std::vector<std::unique_ptr<ParameterNode>>::iterator
 		    m_current_internal_node;
 		/** tracks current parameter being iterated over*/
 		std::map<std::string, Any>::iterator m_current_param;
@@ -346,8 +342,6 @@ namespace shogun
 		explicit GridSearch(CSGObject* model) : GridParameters(model)
 		{
 		}
-
-		~GridSearch() {};
 
 		const char* get_name() const noexcept override
 		{
