@@ -19,6 +19,7 @@ namespace shogun
 	class CECOCEncoder;
 	class CECOCDecoder;
 	class CEvaluation;
+	class CEvaluationResult;
 	class CMulticlassStrategy;
 	class CNeuralLayer;
 	class CSplittingStrategy;
@@ -52,7 +53,8 @@ namespace shogun
 	                    std::is_same<CLikelihoodModel, T>::value ||
 	                    std::is_same<CMeanFunction, T>::value ||
 	                    std::is_same<CLossFunction, T>::value ||
-	                    std::is_same<CTokenizer, T>::value>
+	                    std::is_same<CTokenizer, T>::value ||
+						std::is_same<CEvaluationResult, T>::value>
 	{
 	};
 
