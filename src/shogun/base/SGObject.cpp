@@ -39,6 +39,7 @@
 #include <utility>
 
 #include <shogun/distance/Distance.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
