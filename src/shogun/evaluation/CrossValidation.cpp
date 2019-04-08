@@ -204,8 +204,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			fold->put("test_indices", subset_indices);
 			fold->put("test_result", result_labels);
 			CLabels* true_labels = (CLabels*)m_labels->clone();
+			SG_REF(true_labels)
 			fold->put("test_true_result", true_labels);
-			SG_UNREF(true_labels)
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
 
@@ -217,6 +217,7 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* clean up */
 			SG_UNREF(result_labels);
+			SG_UNREF(true_labels)
 			SG_UNREF(fold);
 
 			SG_DEBUG("done locked evaluation\n", get_name())
@@ -317,8 +318,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			fold->put("test_indices", subset_indices);
 			fold->put("test_result", result_labels);
 			CLabels* true_labels = (CLabels*)labels->clone();
+			SG_REF(true_labels)
 			fold->put("test_true_result", true_labels);
-			SG_UNREF(true_labels)
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
 
@@ -331,7 +332,8 @@ float64_t CCrossValidation::evaluate_one_run(
 			SG_UNREF(labels);
 			SG_UNREF(evaluation_criterion);
 			SG_UNREF(result_labels);
-			SG_UNREF(fold)
+			SG_UNREF(true_labels);
+			SG_UNREF(fold);
 		}
 
 		SG_DEBUG("done unlocked evaluation\n", get_name())
