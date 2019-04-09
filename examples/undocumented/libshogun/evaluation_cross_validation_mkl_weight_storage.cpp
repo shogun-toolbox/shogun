@@ -54,11 +54,11 @@ SGMatrix<float64_t> calculate_weights(
 	for (int o = 0; o < obs.get_num_observations(); o++)
 	{
 		auto obs_storage = obs.get_observation(o);
-		for (int i = 0; i < obs_storage->get_num_folds(); i++)
+		for (int i = 0; i < obs_storage->get<index_t("num_folds"); i++)
 		{
-			auto fold = obs_storage->get_fold(i);
+			auto fold = obs_storage->get("folds", i);
 			CMKLClassification* machine =
-			    (CMKLClassification*)fold->get_trained_machine();
+			    (CMKLClassification*)fold->get("trained_machine");
 			SG_REF(machine)
 			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
 			auto w = k->get_subkernel_weights();
