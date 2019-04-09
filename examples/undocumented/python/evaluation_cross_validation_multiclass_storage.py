@@ -73,7 +73,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     result=cross_validation.evaluate()
 
     # get first observation and first fold
-    obs = multiclass_storage.get_observation(0).get_CV_storage("value")
+    obs = multiclass_storage.get_observation(0).get("value")
     fold = obs.get("folds", 0)
 
     # get fold ROC for first class
