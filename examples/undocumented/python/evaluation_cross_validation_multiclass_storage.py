@@ -74,13 +74,13 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     result=cross_validation.evaluate()
 
     # get first observation and first fold
-    obs = multiclass_storage.get_observation(0).get("value")
+    obs = multiclass_storage.get_observation(0).get("cross_validation_run")
     fold = obs.get("folds", 0)
 
     # get fold ROC for first class
     eval_ROC = ROCEvaluation()
-    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_result()).get_binary_for_class(0)
-    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_true_result()).get_binary_for_class(0)
+    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_result")).get_binary_for_class(0)
+    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_true_result").get_binary_for_class(0)
     eval_ROC.evaluate(pred_lab_binary, true_lab_binary)
     print eval_ROC.get_ROC()
 
