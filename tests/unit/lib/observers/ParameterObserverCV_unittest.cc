@@ -151,7 +151,7 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 	for (size_t i = 0; i < par->get_num_observations(); i++)
 	{
 		auto name = par->get_observation(i)->get<std::string>("name");
-		auto run = par->get_observation(i)->get<CrossValidationStorage*>(name);
+		auto run = par->get_observation(i)->get(name);
 		ASSERT(run)
 		SG_REF(run)
 		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
