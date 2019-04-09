@@ -829,7 +829,7 @@ void CSGObject::unsubscribe(ParameterObserver *obs) {
 	it->second.unsubscribe();
 	m_subscriptions.erase(index);
 
-	obs->put("subscription_id", -1);
+	obs->put("subscription_id", static_cast<int64_t>(-1));
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const
