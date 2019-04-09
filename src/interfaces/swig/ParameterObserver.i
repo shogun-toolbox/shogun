@@ -11,9 +11,3 @@
 
 %include <shogun/lib/parameter_observers/ObservedValue.h>
 %include <shogun/lib/parameter_observers/ParameterObserver.h>
-
-namespace shogun {
-
-%template(get_CV_storage) CSGObject::get<CrossValidationStorage*, void>;
-
-}

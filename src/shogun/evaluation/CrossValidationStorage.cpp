@@ -114,13 +114,13 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 	m_expose_labels = NULL;
 
 	SG_ADD(
-	    &m_num_runs, "m_num_runs", "The total number of cross-validation runs",
+	    &m_num_runs, "num_runs", "The total number of cross-validation runs",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_num_folds, "m_num_folds",
+	    &m_num_folds, "num_folds",
 	    "The total number of cross-validation folds", ParameterProperties::HYPER);
 	SG_ADD(
-	    (CSGObject**)&m_expose_labels, "m_expose_labels",
+		(CLabels**)&m_expose_labels, "expose_labels",
 	    "The labels used for this cross-validation", ParameterProperties::HYPER);
 	this->watch_param("folds", &m_folds_results, AnyParameterProperties("Fold results"));
 }
@@ -132,40 +132,8 @@ CrossValidationStorage::~CrossValidationStorage()
 		SG_UNREF(i)
 }
 
-void CrossValidationStorage::set_num_runs(index_t num_runs)
-{
-	m_num_runs = num_runs;
-}
-
-void CrossValidationStorage::set_num_folds(index_t num_folds)
-{
-	m_num_folds = num_folds;
-}
-
-void CrossValidationStorage::set_expose_labels(CLabels* labels)
-{
-	SG_REF(labels)
-	SG_UNREF(m_expose_labels)
-	m_expose_labels = labels;
-}
-
 void CrossValidationStorage::post_init()
 {
-}
-
-index_t CrossValidationStorage::get_num_runs() const
-{
-	return m_num_runs;
-}
-
-index_t CrossValidationStorage::get_num_folds() const
-{
-	return m_num_folds;
-}
-
-CLabels* CrossValidationStorage::get_expose_labels() const
-{
-	return m_expose_labels;
 }
 
 void CrossValidationStorage::append_fold_result(
