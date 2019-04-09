@@ -132,21 +132,6 @@ namespace shogun
 			return "CrossValidationStorage";
 		};
 
-		/** Set number of runs.
-		 * @param num_runs number of runs that will be performed
-		 */
-		virtual void set_num_runs(index_t num_runs);
-
-		/** Set number of folds.
-		 * @param num_folds number of folds that will be performed
-		 */
-		virtual void set_num_folds(index_t num_folds);
-
-		/** Set labels before usage.
-		 * @param labels labels to expose to CV output
-		 */
-		virtual void set_expose_labels(CLabels* labels);
-
 		/** Post init action. */
 		virtual void post_init();
 
@@ -155,24 +140,6 @@ namespace shogun
 		 * @param result the result of a fold
 		 */
 		virtual void append_fold_result(CrossValidationFoldStorage* result);
-
-		/**
-		 * Get number of Cross Validation runs.
-		 * @return Cross Validation's runs
-		 */
-		index_t get_num_runs() const;
-
-		/**
-		 * Get number of folds.
-		 * @return
-		 */
-		index_t get_num_folds() const;
-
-		/**
-		 * Get original labels.
-		 * @return labels
-		 */
-		CLabels* get_expose_labels() const;
 
 		/**
 		 * Operator == needed for Any comparison.
