@@ -5,9 +5,7 @@
  */
 
 %{
-    #include <shogun/lib/parameter_observers/ObservedValue.h>
-    #include <shogun/lib/parameter_observers/ParameterObserver.h>
+    #include <shogun/lib/observers/ParameterObserver.h>
 %}
 
-%include <shogun/lib/parameter_observers/ObservedValue.h>
-%include <shogun/lib/parameter_observers/ParameterObserver.h>
+%include <shogun/lib/observers/ParameterObserver.h>
