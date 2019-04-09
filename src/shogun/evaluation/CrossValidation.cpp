@@ -15,6 +15,7 @@
 #include <shogun/lib/List.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
@@ -97,9 +98,9 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		SG_DEBUG("Creating CrossValidationStorage.\n")
 		CrossValidationStorage* storage = new CrossValidationStorage();
 		SG_REF(storage)
-		storage->set_num_runs(m_num_runs);
-		storage->set_num_folds(m_splitting_strategy->get_num_subsets());
-		storage->set_expose_labels(m_labels);
+		storage->put("num_runs", utils::safe_convert<index_t>(m_num_runs));
+		storage->put("num_folds", utils::safe_convert<index_t>(m_splitting_strategy->get_num_subsets()));
+		storage->put("expose_labels", m_labels);
 		storage->post_init();
 		SG_DEBUG("Ending CrossValidationStorage initilization.\n")
 
@@ -108,8 +109,8 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
 		/* Emit the value */
-		observe(
-		    i, "cross_validation_run", "One run of CrossValidation", storage);
+		observe(i, "cross_validation_run", "One run of CrossValidation",
+				dynamic_cast<CEvaluationResult*>(storage));
 
 		SG_UNREF(storage)
 	}
