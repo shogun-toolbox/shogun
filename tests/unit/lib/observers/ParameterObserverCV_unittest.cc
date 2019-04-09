@@ -120,12 +120,12 @@ TEST(ParameterObserverCV, get_observations_locked)
 	for (size_t i = 0; i < par->get_num_observations(); i++)
 	{
 		auto name = par->get_observation(i)->get<std::string>("name");
-		auto run = par->get_observation(i)->get<CrossValidationStorage*>(name);
+		auto run = par->get_observation(i)->get(name);
 		ASSERT(run)
 		SG_REF(run)
-		EXPECT_EQ(run->get_num_runs(), 10);
-		EXPECT_EQ(run->get_num_folds(), 5);
-		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
+		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
+		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
+		EXPECT_TRUE(run->get("expose_labels")->equals(labels));
 		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get("folds", j);
@@ -154,10 +154,10 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		auto run = par->get_observation(i)->get<CrossValidationStorage*>(name);
 		ASSERT(run)
 		SG_REF(run)
-		EXPECT_EQ(run->get_num_runs(), 10);
-		EXPECT_EQ(run->get_num_folds(), 5);
-		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
-		for (int j = 0; j < run->get_num_folds(); j++)
+		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
+		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
+		EXPECT_TRUE(run->get("expose_labels")->equals(labels));
+		for (int j = 0; j < run->get<index_t>("num_folds"); j++)
 		{
 			auto fold = run->get("folds", j);
 			SG_REF(fold)
