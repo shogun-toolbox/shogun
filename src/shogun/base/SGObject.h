@@ -997,6 +997,16 @@ private:
 	Unique<ParameterObserverList> param_obs_list;
 
 protected:
+
+	/**
+	 * Return total subscriptions
+	 * @return total number of subscriptions
+	 */
+	size_t get_total_subscriptions() const
+	{
+		return m_subscriptions.size();
+	}
+
 	/**
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
@@ -1097,7 +1107,6 @@ private:
 	/** List of subscription for this SGObject */
 	std::map<int64_t, rxcpp::subscription> m_subscriptions;
 	int64_t m_next_subscription_index;
-	int64_t m_total_subscriptions;
 };
 
 #ifndef SWIG
