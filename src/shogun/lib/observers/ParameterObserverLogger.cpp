@@ -34,17 +34,17 @@ void ParameterObserverLogger::on_next_impl(const TimedObservedValue &value) {
 
 	auto pf_n = [&](auto v){
 		SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
-				 name, std::to_string(v));
+				 name.c_str(), std::to_string(v).c_str());
 	};
 
 	auto pf_sgvector = [&](auto v){
 		//SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
-		//		 name, v);
+		//		 name.c_str(), v);
 	};
 
 	auto pf_sgmatrix = [&](auto v){
 		//SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
-		//		 name, v);
+		//		 name.c_str(), v);
 	};
 
 	sg_any_dispatch(any_val, sg_all_typemap, pf_n, pf_sgvector, pf_sgmatrix);
