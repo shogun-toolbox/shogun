@@ -85,43 +85,12 @@ namespace shogun
 		virtual bool filter(const std::string& param);
 
 		/**
-		 * Get a vector with all the observations matching a certain name
-		 * and a certain name (not SG_REF).
-		 * @tparam T the type of the observations
-		 * @param name the name of the observations
-		 * @return vector with the observations casted to the requested type
-		 */
-		std::vector<ObservedValue*> get_observations(std::string name)
-		{
-			std::vector<Some<ObservedValue>> filter;
-			std::vector<ObservedValue*> result;
-
-			// Filter the observations by keeping only the one which matches the name
-			std::copy_if(m_observations.begin(), m_observations.end(), std::back_inserter(filter),
-						 [&name](Some<ObservedValue> v){
-							 return (v->get<std::string>("name") == name);
-						 });
-
-			// If we did not find anything, the warn the user about it
-			if (result.size() == 0)
-			{
-				SG_WARNING("%s was not found in the observation registered!", name.c_str());
-			}
-
-			// Copy the raw vectors from the observation array
-			std::transform(filter.begin(), filter.end(), result.begin(),
-						   [](Some<ObservedValue> x) { return x.get();});
-
-			return result;
-		}
-
-		/**
 		 * Return a single observation from the received ones (not SG_REF).
 		 * @tparam T the type of the observation
 		 * @param i the index
 		 * @return the observation casted to the requested type
 		 */
-		ObservedValue * get_observation(size_t i)
+		ObservedValue * get_observation(index_t i)
 		{
 			REQUIRE(i>=0 && i<this->get_num_observations(), "Observation index (%i) is out of bound (total observations %i)", i, this->get_num_observations());
 			return this->m_observations[i].get();
@@ -131,9 +100,9 @@ namespace shogun
 		 * Get the total number of observation received.
 		 * @return number of obsevation received.
 		 */
-		const size_t get_num_observations() const
+		const index_t get_num_observations() const
 		{
-			return utils::safe_convert<size_t>(m_observations.size());
+			return utils::safe_convert<index_t>(m_observations.size());
 		};
 
 		/**
