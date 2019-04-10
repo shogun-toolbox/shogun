@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Soeren Sonnenburg, Pan Deng, Bjoern Esser, 
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Pan Deng, Bjoern Esser,
  *          Sanuj Sharma
  */
 
@@ -110,7 +110,6 @@ void CShareBoost::compute_pred()
 {
 	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features);
 	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(fea, m_activeset);
-	SG_REF(subset_fea);
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
 		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_machines->get_element(i));
@@ -120,7 +119,6 @@ void CShareBoost::compute_pred()
 		SG_UNREF(machine);
 		SG_UNREF(lab);
 	}
-	SG_UNREF(subset_fea);
 }
 
 void CShareBoost::compute_pred(const float64_t *W)

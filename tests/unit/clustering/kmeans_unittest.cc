@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Heiko Strathmann, Viktor Gal, parijat, 
+ * Authors: Saurabh Mahindre, Heiko Strathmann, Viktor Gal, parijat,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -141,26 +141,20 @@ TEST(KMeans, minibatch_training_test)
 	initial_centers(0,0)=0;
 	initial_centers(1,0)=0;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
-	SG_REF(features);
-	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeansMiniBatch* clustering=new CKMeansMiniBatch(1, distance, initial_centers);
+	auto features = some<CDenseFeatures<float64_t>>(rect);
+	auto distance = some<CEuclideanDistance>(features, features);
+	auto clustering = some<CKMeansMiniBatch>(1, distance, initial_centers);
 
-	for (int32_t loop=0; loop<10; loop++)
+	for (int32_t loop=0; loop<10; ++loop)
 	{
 		clustering->set_mb_params(4,1000);
 		clustering->train(features);
-		CDenseFeatures<float64_t>* learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		auto learnt_centers=wrap(distance->get_lhs()->as<CDenseFeatures<float64_t>>());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 
 		EXPECT_NEAR(1, learnt_centers_matrix(0,0), 0.0001);
 		EXPECT_NEAR(500,learnt_centers_matrix(1,0), 0.0001);
-
-		SG_UNREF(learnt_centers);
 	}
-
-	SG_UNREF(clustering);
-	SG_UNREF(features);
 }
 
 TEST(KMeans, fixed_centers)

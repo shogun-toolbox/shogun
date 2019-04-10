@@ -79,8 +79,7 @@ void CGaussianKernel::cleanup()
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	cleanup();
-	CShiftInvariantKernel::init(l, r);
-	return init_normalizer();
+	return CShiftInvariantKernel::init(l, r);
 }
 
 void CGaussianKernel::set_width(float64_t w)
