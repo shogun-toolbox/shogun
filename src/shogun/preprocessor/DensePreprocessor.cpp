@@ -92,15 +92,11 @@ CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 			"has to be of C_DENSE (%d) class!\n",
 			features->get_feature_class(), C_DENSE);
 
-	SG_REF(features);
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
 	if (!inplace)
 		matrix = matrix.clone();
 	auto feat_matrix = apply_to_matrix(matrix);
-	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
-
-	SG_UNREF(features);
-	return preprocessed;
+	return new CDenseFeatures<ST>(feat_matrix);
 }
 
 template <class ST>
@@ -113,15 +109,11 @@ CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
 		"has to be of C_DENSE (%d) class!\n",
 		features->get_feature_class(), C_DENSE);
 
-	SG_REF(features);
 	auto matrix = features->as<CDenseFeatures<ST>>()->get_feature_matrix();
 	if (!inplace)
 		matrix = matrix.clone();
 	auto feat_matrix = inverse_apply_to_matrix(matrix);
-	auto preprocessed = new CDenseFeatures<ST>(feat_matrix);
-
-	SG_UNREF(features);
-	return preprocessed;
+	return new CDenseFeatures<ST>(feat_matrix);
 }
 
 template <class ST>

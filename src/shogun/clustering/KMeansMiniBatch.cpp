@@ -68,7 +68,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 
 	CDenseFeatures<float64_t>* lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(mus);
+	auto rhs_mus=some<CDenseFeatures<float64_t>>(mus);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
@@ -113,7 +113,6 @@ void CKMeansMiniBatch::minibatch_KMeans()
 	}
 	SG_UNREF(lhs);
 	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;
 }
 
 SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)

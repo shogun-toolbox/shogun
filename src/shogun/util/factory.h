@@ -88,9 +88,7 @@ namespace shogun
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
 	{
-		CFeatures* features = new CDenseFeatures<T>(mat);
-		SG_REF(features);
-		return features;
+		return new CDenseFeatures<T>(mat);
 	}
 
 	CFeatures* features(CFile* file, machine_int_t primitive_type = PT_FLOAT64)
@@ -119,8 +117,6 @@ namespace shogun
 			SG_SNOTIMPLEMENTED
 		}
 		result->load(file);
-
-		SG_REF(result);
 		return result;
 	}
 
@@ -129,19 +125,17 @@ namespace shogun
 	    machine_int_t primitive_type = PT_CHAR)
 	{
 		REQUIRE(file, "No file provided.\n");
-		CFeatures* result = nullptr;
 
 		switch (primitive_type)
 		{
 		case PT_CHAR:
-			result = new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
+			return new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
 			break;
 		default:
 			SG_SNOTIMPLEMENTED
 		}
 
-		SG_REF(result);
-		return result;
+		return nullptr;
 	}
 
 	/** Create embedded string features from string char features.
@@ -184,7 +178,6 @@ namespace shogun
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			REQUIRE(success, "Failed to obtain from string char features.\n");
-			SG_REF(result);
 			return result;
 		}
 		default:
@@ -200,29 +193,25 @@ namespace shogun
 	CFeatures* features_subset(CFeatures* base_features, SGVector<index_t> indices,
 			EPrimitiveType primitive_type = PT_FLOAT64)
 	{
-		CFeatures* result = nullptr;
 		REQUIRE(base_features, "No base features provided.\n");
 
 		switch (primitive_type)
 		{
 		case PT_FLOAT64:
-			result = new CDenseSubsetFeatures<float64_t>(base_features->as<CDenseFeatures<float64_t>>(), indices);
+			return new CDenseSubsetFeatures<float64_t>(base_features->as<CDenseFeatures<float64_t>>(), indices);
 			break;
 		default:
 			SG_SNOTIMPLEMENTED
 		}
 
-		SG_REF(result);
-		return result;
+		return nullptr;
 	}
 
 	template <typename T, typename T2 = typename std::enable_if_t<
 	                          std::is_floating_point<T>::value>>
 	CKernel* kernel(SGMatrix<T> kernel_matrix)
 	{
-		CKernel* result = new CCustomKernel(kernel_matrix);
-		SG_REF(result);
-		return result;
+		return new CCustomKernel(kernel_matrix);
 	}
 
 #ifndef SWIG // SWIG should skip this part
@@ -273,7 +262,6 @@ namespace shogun
 		    "Loaded labels from %s(\"%s\") as %s\n", file->get_name(),
 		    file->get_filename(), result->get_name())
 
-		SG_REF(result);
 		return result;
 	}
 
@@ -294,16 +282,12 @@ namespace shogun
 
 	CFile* csv_file(std::string fname, char rw = 'r')
 	{
-		CFile* result = new CCSVFile(fname.c_str(), rw);
-		SG_REF(result);
-		return result;
+		return new CCSVFile(fname.c_str(), rw);
 	}
 
 	CFile* libsvm_file(std::string fname, char rw = 'r')
 	{
-		CFile* result = new CLibSVMFile(fname.c_str(), rw);
-		SG_REF(result);
-		return result;
+		return new CLibSVMFile(fname.c_str(), rw);
 	}
 
 	/** Create a pipeline builder.
@@ -312,9 +296,7 @@ namespace shogun
 	 */
 	CPipelineBuilder* pipeline()
 	{
-		auto result = new CPipelineBuilder();
-		SG_REF(result);
-		return result;
+		return new CPipelineBuilder();
 	}
 }
 #endif // FACTORY_H_

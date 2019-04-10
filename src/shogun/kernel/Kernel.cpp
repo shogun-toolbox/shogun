@@ -90,10 +90,6 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
-	/* make sure that features are not deleted if same ones are used */
-	SG_REF(l);
-	SG_REF(r);
-
 	//make sure features were indeed supplied
 	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", l, r)
 	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l, r)
@@ -116,7 +112,6 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-	//increase reference counts
 	SG_REF(l);
 	if (l==r)
 		lhs_equals_rhs=true;
@@ -131,10 +126,6 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
-
-	/* unref "safety" refs from beginning */
-	SG_UNREF(r);
-	SG_UNREF(l);
 
 	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r)
 	return true;

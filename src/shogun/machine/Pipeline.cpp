@@ -130,24 +130,24 @@ namespace shogun
 		{
 			REQUIRE(m_labels, "No labels given.\n");
 		}
-
+		auto current_data = wrap(data);
 		for (auto&& stage : m_stages)
 		{
 			if (holds_alternative<CTransformer*>(stage.second))
 			{
 				auto transformer = shogun::get<CTransformer*>(stage.second);
 				transformer->train_require_labels()
-				    ? transformer->fit(data, m_labels)
-				    : transformer->fit(data);
+				    ? transformer->fit(current_data, m_labels)
+				    : transformer->fit(current_data);
 
-				data = transformer->transform(data);
+				current_data = wrap(transformer->transform(current_data));
 			}
 			else
 			{
 				auto machine = shogun::get<CMachine*>(stage.second);
 				if (machine->train_require_labels())
 					machine->set_labels(m_labels);
-				machine->train(data);
+				machine->train(current_data);
 			}
 		}
 		return true;
@@ -155,17 +155,18 @@ namespace shogun
 
 	CLabels* CPipeline::apply(CFeatures* data)
 	{
+		auto current_data = wrap(data);
 		for (auto&& stage : m_stages)
 		{
 			if (holds_alternative<CTransformer*>(stage.second))
 			{
 				auto transformer = shogun::get<CTransformer*>(stage.second);
-				data = transformer->transform(data);
+				current_data = wrap(transformer->transform(current_data));
 			}
 			else
 			{
 				auto machine = shogun::get<CMachine*>(stage.second);
-				return machine->apply(data);
+				return machine->apply(current_data);
 			}
 		}
 
