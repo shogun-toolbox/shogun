@@ -161,6 +161,20 @@ namespace shogun
 			return m_nodes.size();
 		}
 
+#ifndef SWIG
+		/**
+		 * Function that returns the CSGObject with the parameters
+		 * given by the tree.
+		 *
+		 * @param tree
+		 * @return
+		 */
+		static CSGObject* to_object(const std::unique_ptr<ParameterNode>& tree);
+
+		static void to_object_inplace(
+				const std::unique_ptr<ParameterNode>&, CSGObject& obj);
+#endif
+
 	protected:
 		/**
 		 * Creates a node that mimics the CSGObject structure
@@ -230,18 +244,6 @@ namespace shogun
 		void to_string_helper(
 		    std::stringstream& ss, std::unique_ptr<AnyVisitor>& visitor) const
 		    noexcept;
-
-		/**
-		 * Function that returns the CSGObject with the parameters
-		 * given by the tree.
-		 *
-		 * @param tree
-		 * @return
-		 */
-		static CSGObject* to_object(const std::unique_ptr<ParameterNode>& tree);
-
-		static void to_object_inplace(
-		    const std::unique_ptr<ParameterNode>&, CSGObject& obj);
 	};
 
 	/**

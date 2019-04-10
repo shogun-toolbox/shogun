@@ -247,11 +247,27 @@ CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)
 		auto* obj = ParameterNode::to_object(node.second[0]);
 		if (type_index_i == std::type_index(typeid(CKernel*)))
 		{
+			if (auto* tmp = result->get<CKernel*>(node.first))
+			{
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+				SG_UNREF(tmp)
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+			}
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result->put(node.first, obj->as<CKernel>());
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else if (type_index_i == std::type_index(typeid(CDistance*)))
 		{
+			if (auto* tmp = result->get<CDistance*>(node.first))
+			{
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+				SG_UNREF(tmp)
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+			}
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result->put(node.first, obj->as<CDistance>());
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else
 		{
@@ -286,11 +302,27 @@ void ParameterNode::to_object_inplace(
 		auto* obj = ParameterNode::to_object(node.second[0]);
 		if (type_index_i == std::type_index(typeid(CKernel*)))
 		{
+			if (auto* tmp = result.get<CKernel*>(node.first))
+			{
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+				SG_UNREF(tmp)
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+			}
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result.put(node.first, obj->as<CKernel>());
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else if (type_index_i == std::type_index(typeid(CDistance*)))
 		{
+			if (auto* tmp = result.get<CDistance*>(node.first))
+			{
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+				SG_UNREF(tmp)
+				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
+			}
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result.put(node.first, obj->as<CDistance>());
+			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else
 		{
