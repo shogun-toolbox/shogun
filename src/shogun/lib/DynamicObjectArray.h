@@ -198,13 +198,6 @@ class CDynamicObjectArray : public CSGObject
 			return elem;
 		}
 
-#ifndef SWIG
-		SG_FORCED_INLINE CSGObject* at(int32_t index) const
-		{
-			return get_element_safe(index);
-		}
-#endif
-
 		/** get array element at index
 		 *
 		 * @param idx1 index 1
@@ -242,6 +235,12 @@ class CDynamicObjectArray : public CSGObject
 			return e;
 		}
 
+#ifndef SWIG
+		SG_FORCED_INLINE CSGObject* at(int32_t index) const
+		{
+			return get_element_safe(index);
+		}
+#endif
 		/** set array element at index
 		 *
 		 * @param e element to set
