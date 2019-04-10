@@ -441,7 +441,7 @@ public:
 	/** Typed array getter for an object array class parameter of a Shogun base class
 	* type, identified by a name and an index.
 	*
-	* Raises an error if parameter does not exist.
+	* It does not throw any errors if it does not work.
 	*
 	* @param name name of the parameter array
 	* @param index index of the element in the array
@@ -449,7 +449,7 @@ public:
 	*/
 	template <class T,
 			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index) const
+	T* get(const std::string& name, index_t index, std::nothrow_t) const
 	{
 		CSGObject* result = nullptr;
 
@@ -463,11 +463,21 @@ public:
 			return result->as<T>();
 		}
 
-		SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
-				get_name(), name.c_str(), index, demangled_type<T>().c_str());
-
 		return nullptr;
 	}
+
+	template <class T,
+			class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index) const
+	{
+		auto result = this->get<T>(name, index, std::nothrow);
+		if (!result) {
+			SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
+					 get_name(), name.c_str(), index, demangled_type<T>().c_str());
+
+		}
+		return result;
+	};
 #endif
 
 	/** Untyped getter for an object class parameter, identified by a name.
@@ -1115,12 +1125,8 @@ template <typename T>
 CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
 {
 	CSGObject* result = nullptr;
-	try
-	{
-		// there is no "has" that checks for array types, so check implicitly
-		result = obj->get<T>(name, how.m_index);
-	}
-	catch (const std::exception&) {}
+	// there is no "has" that checks for array types, so check implicitly
+	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
 
