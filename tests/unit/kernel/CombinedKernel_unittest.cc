@@ -48,9 +48,9 @@ TEST(CombinedKernelTest, test_subset_mixed)
 	int n_runs = 10;
 
 	auto gen = new CMeanShiftDataGenerator(0, 2);
-	CFeatures* feats = gen->get_streamed_features(n_runs);
+	auto feats = wrap(gen->get_streamed_features(n_runs));
 
-	CCombinedFeatures* feats_combined = new CCombinedFeatures();
+	auto feats_combined = some<CCombinedFeatures>();
 
 	CCombinedKernel* combined = new CCombinedKernel();
 

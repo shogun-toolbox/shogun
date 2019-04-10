@@ -25,8 +25,8 @@ combined_kernel.init(features_train, features_train)
 #![create_combined_train]
 
 #![train_mkl]
-SVM binary_svm_solver = as_svm(machine("SVRLight"))
-Machine mkl = machine("MKLRegression", svm=binary_svm_solver, kernel=combined_kernel, labels=labels_train)
+Machine binary_svm_solver = machine("SVRLight")
+Machine mkl = machine("MKLRegression", svm=as_svm(binary_svm_solver), kernel=combined_kernel, labels=labels_train)
 mkl.train()
 #![train_mkl]
 

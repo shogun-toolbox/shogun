@@ -30,7 +30,7 @@
  *
  */
 
- 
+
 #include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
@@ -250,27 +250,27 @@ TEST(GaussianProcessRegression, get_mean_vector)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=some<CDenseFeatures<float64_t>>(X);
+	auto feat_test=some<CDenseFeatures<float64_t>>(X_test);
+	auto label_train=some<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=some<CGaussianKernel>(10, shogun_sigma);
+	auto mean=some<CZeroMean>();
+	auto lik=some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=some<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
 
 	// get mean value for each input feature
-	SGVector<float64_t> mean_vector=gpr->get_mean_vector(feat_test);
+	auto mean_vector=gpr->get_mean_vector(feat_test);
 
 	/* do some checks against gpml toolbox*/
 	// m =
@@ -280,8 +280,6 @@ TEST(GaussianProcessRegression, get_mean_vector)
 	EXPECT_LE(CMath::abs(mean_vector[0]-0.221198406887592), 10E-15);
 	EXPECT_LE(CMath::abs(mean_vector[1]-0.537437461176145), 10E-15);
 	EXPECT_LE(CMath::abs(mean_vector[2]-0.431605035301329), 10E-15);
-
-	SG_UNREF(gpr);
 }
 
 TEST(GaussianProcessRegression, get_variance_vector_1)
@@ -307,21 +305,21 @@ TEST(GaussianProcessRegression, get_variance_vector_1)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=some<CDenseFeatures<float64_t>>(X);
+	auto feat_test=some<CDenseFeatures<float64_t>>(X_test);
+	auto label_train=some<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=some<CGaussianKernel>(10, shogun_sigma);
+	auto mean=some<CZeroMean>();
+	auto lik=some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=some<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -337,8 +335,6 @@ TEST(GaussianProcessRegression, get_variance_vector_1)
 	EXPECT_LE(CMath::abs(variance_vector[0]-1.426104216614624), 10E-15);
 	EXPECT_LE(CMath::abs(variance_vector[1]-1.416896787316447), 10E-15);
 	EXPECT_LE(CMath::abs(variance_vector[2]-1.535464779087576), 10E-15);
-
-	SG_UNREF(gpr);
 }
 
 TEST(GaussianProcessRegression, get_variance_vector_2)
@@ -366,9 +362,9 @@ TEST(GaussianProcessRegression, get_variance_vector_2)
 		feat_test[i]=(float64_t)i/3.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train = some<CDenseFeatures<float64_t>>(feat_train);
+	auto features_test = some<CDenseFeatures<float64_t>>(feat_test);
+	auto labels_train = some<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
@@ -582,7 +578,7 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	//2.341819379690606
 	//0.670229188503544
 	//1.293072726669006
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-0.246280335053918, rel_tolerance);
 	EXPECT_NEAR(mean_vector[0],  -0.246280335053918,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.781735233521474, rel_tolerance);
@@ -600,7 +596,7 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	EXPECT_NEAR(var_vector[2],  0.670229188503544,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(1.293072726669006, rel_tolerance);
 	EXPECT_NEAR(var_vector[3],  1.293072726669006,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(gpr);
 	SG_UNREF(inducing_features_train);

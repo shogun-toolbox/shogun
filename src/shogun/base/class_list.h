@@ -60,8 +60,6 @@ namespace shogun {
 			delete_object(object);
 			throw e;
 		}
-
-		cast->ref();
 		return cast;
 	}
 

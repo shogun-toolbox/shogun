@@ -151,8 +151,6 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	else
 		feat=m_method->get_features();
 
-	SG_REF(data);
-
 	// get kernel and compute kernel matrix: K(data, data)*scale^2
 	CKernel* training_kernel=m_method->get_kernel();
 	CKernel* kernel = training_kernel->clone()->as<CKernel>();
@@ -179,7 +177,6 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	// cleanup
 	SG_UNREF(kernel);
 	SG_UNREF(feat);
-	SG_UNREF(data);
 
 	// get shogun representation of cholesky and create eigen representation
 	SGMatrix<float64_t> L=m_method->get_cholesky();

@@ -76,12 +76,12 @@ namespace shogun
 		    CDenseFeatures<T>* features, CMulticlassLabels* labels,
 		    float64_t gamma = 0.0)
 		{
+			SG_REF(features);
+			SG_REF(labels);
+
 			m_features = features;
 			m_labels = labels;
 			m_gamma = gamma;
-
-			SG_REF(m_features)
-			SG_REF(m_labels)
 
 			compute_means();
 			compute_within_cov();
@@ -89,8 +89,8 @@ namespace shogun
 
 		~LDASolver()
 		{
-			SG_UNREF(m_features)
-			SG_UNREF(m_labels)
+			SG_UNREF(m_features);
+			SG_UNREF(m_labels);
 		}
 
 		/** @return the vector of classes' mean */

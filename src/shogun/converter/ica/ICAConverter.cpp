@@ -72,18 +72,12 @@ void CICAConverter::fit(CFeatures* features)
 	    features->get_feature_type() == F_DREAL,
 	    "ICA converters only work with real features\n");
 
-	SG_REF(features);
-
 	fit_dense(static_cast<CDenseFeatures<float64_t>*>(features));
-
-	SG_UNREF(features);
 }
 
 CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 {
 	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
-
-	SG_REF(features);
 
 	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	if (!inplace)
@@ -97,17 +91,12 @@ CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 	// Unmix
 	EX = C.inverse() * EX;
 
-	auto processed = new CDenseFeatures<float64_t>(X);
-	SG_UNREF(features);
-
-	return processed;
+	return new CDenseFeatures<float64_t>(X);
 }
 
 CFeatures* CICAConverter::inverse_transform(CFeatures* features, bool inplace)
 {
 	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
-
-	SG_REF(features);
 
 	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	if (!inplace)
@@ -115,8 +104,5 @@ CFeatures* CICAConverter::inverse_transform(CFeatures* features, bool inplace)
 
 	linalg::matrix_prod(m_mixing_matrix, X, X);
 
-	auto processed = new CDenseFeatures<float64_t>(X);
-	SG_UNREF(features);
-
-	return processed;
+	return new CDenseFeatures<float64_t>(X);
 }

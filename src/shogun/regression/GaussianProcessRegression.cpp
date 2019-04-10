@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Roman Votyakov, Sergey Lisitsyn, Soeren Sonnenburg, 
+ * Authors: Jacob Walker, Roman Votyakov, Sergey Lisitsyn, Soeren Sonnenburg,
  *          Heiko Strathmann, Wu Lin
  */
 
@@ -110,10 +110,8 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
-	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-	SG_UNREF(data);
 
 	// evaluate mean
 	lik=m_method->get_model();
@@ -133,10 +131,8 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
 			"regression\n",	m_method->get_name(), lik->get_name())
 
-	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-	SG_UNREF(data);
 
 	// evaluate variance
 	s2=lik->get_predictive_variances(mu, s2);
