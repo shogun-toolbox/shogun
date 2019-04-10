@@ -125,7 +125,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 		SG_REF(run)
 		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
 		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
-		EXPECT_TRUE(run->get("expose_labels")->equals(labels));
+		EXPECT_TRUE(run->get("labels")->equals(labels));
 		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get("folds", j);
@@ -156,7 +156,7 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		SG_REF(run)
 		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
 		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
-		EXPECT_TRUE(run->get("expose_labels")->equals(labels));
+		EXPECT_TRUE(run->get("labels")->equals(labels));
 		for (int j = 0; j < run->get<index_t>("num_folds"); j++)
 		{
 			auto fold = run->get("folds", j);
