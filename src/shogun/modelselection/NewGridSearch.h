@@ -9,12 +9,41 @@
 
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/MachineEvaluation.h>
+#include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/type_case.h>
 #include <shogun/machine/Machine.h>
 
 namespace shogun
 {
+	class ParameterNode;
+
+	class ModelSelectionMachine
+	{
+	public:
+		explicit ModelSelectionMachine(
+		    CSplittingStrategy* strategy, CEvaluation* evaluation)
+		    : m_strategy(strategy), m_evaluation(evaluation)
+		{
+			SG_REF(strategy);
+			SG_REF(evaluation);
+		}
+
+		~ModelSelectionMachine()
+		{
+			SG_UNREF(m_strategy)
+			SG_UNREF(m_evaluation)
+		}
+
+		virtual ParameterNode*
+		train(CFeatures* data, CLabels* labels, bool verbose) = 0;
+
+	protected:
+		CSplittingStrategy* m_strategy;
+		CEvaluation* m_evaluation;
+	};
+
 	/**
 	 * A type agnostic representation of parameter trees that uses a CSGObject
 	 * instance to generate parameter combinations.
@@ -50,7 +79,9 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		virtual ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node);
+		virtual ParameterNode* attach(
+		    const std::string& param,
+		    const std::shared_ptr<ParameterNode>& node);
 
 		/**
 		 * Attach a new node at a given location in the tree
@@ -58,7 +89,19 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		virtual ParameterNode* attach(const std::string& param, ParameterNode* node);
+		virtual ParameterNode*
+		attach(const std::string& param, ParameterNode* node);
+
+#ifndef SWIG
+		/**
+		 * Attach a new node at a given location in the tree
+		 * defined by the parameter name WITHOUT COPY
+		 * @param name
+		 * @param node
+		 */
+		virtual ParameterNode*
+		attach(const std::string& param, ParameterNode&& node);
+#endif
 
 		/**
 		 * Attach a new value at a given location in the tree
@@ -127,7 +170,7 @@ namespace shogun
 		 * @param name
 		 * @param obj
 		 */
-		virtual void create_node(const std::string& name, CSGObject* obj);
+		void create_node(const std::string& name, ParameterNode* obj);
 		/**
 		 * Internal method to set the value (with Any type) of a node
 		 *
@@ -195,7 +238,10 @@ namespace shogun
 		 * @param tree
 		 * @return
 		 */
-		static CSGObject* to_object(const ParameterNode& tree);
+		static CSGObject* to_object(const std::unique_ptr<ParameterNode>& tree);
+
+		static void to_object_inplace(
+		    const std::unique_ptr<ParameterNode>&, CSGObject& obj);
 	};
 
 	/**
@@ -226,7 +272,9 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(const std::string& param, const std::shared_ptr<ParameterNode>& node) final;
+		ParameterNode* attach(
+		    const std::string& param,
+		    const std::shared_ptr<ParameterNode>& node) final;
 
 		/**
 		 * Attach a new node at a given location in the tree
@@ -234,7 +282,8 @@ namespace shogun
 		 * @param name
 		 * @param node
 		 */
-		ParameterNode* attach(const std::string& param, ParameterNode* node) final;
+		ParameterNode*
+		attach(const std::string& param, ParameterNode* node) final;
 
 		/**
 		 * Attach a new SGVector at a given location in the tree
@@ -255,13 +304,6 @@ namespace shogun
 		 * Resets the internal state of the node.
 		 */
 		void reset();
-
-		/**
-		 * Creates a new node based on a CSGObject
-		 * @param name
-		 * @param obj
-		 */
-		void create_node(const std::string& name, CSGObject* obj) final;
 
 		/**
 		 * Gets the next ParameterNode representation
@@ -336,10 +378,13 @@ namespace shogun
 		bool m_node_complete;
 	};
 
-	class GridSearch : public GridParameters
+	class GridSearch : public GridParameters, public ModelSelectionMachine
 	{
 	public:
-		explicit GridSearch(CSGObject* model) : GridParameters(model)
+		GridSearch(
+		    CSGObject* model, CSplittingStrategy* strategy,
+		    CEvaluation* evaluation)
+		    : GridParameters(model), ModelSelectionMachine(strategy, evaluation)
 		{
 		}
 
@@ -348,10 +393,8 @@ namespace shogun
 			return "GridSearch";
 		}
 
-		void learn(CFeatures* data, CLabels* labels);
-
-	private:
-		SGVector<float64_t> m_scores;
+		virtual ParameterNode*
+		train(CFeatures* data, CLabels* labels, bool verbose) final;
 	};
 } // namespace shogun
 
