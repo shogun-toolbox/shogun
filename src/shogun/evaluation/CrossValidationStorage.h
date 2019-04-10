@@ -57,8 +57,6 @@ namespace shogun
 		CrossValidationFoldStorage();
 		virtual ~CrossValidationFoldStorage();
 
-		virtual EEvaluationResultType get_result_type() const;
-
 		virtual void print_result();
 
 		/** post update test and true results
@@ -118,8 +116,6 @@ namespace shogun
 
 		/** Destructor */
 		virtual ~CrossValidationStorage();
-
-		virtual EEvaluationResultType get_result_type() const;
 
 		virtual void print_result();
 
