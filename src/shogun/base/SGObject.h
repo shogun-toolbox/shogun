@@ -441,7 +441,7 @@ public:
 	/** Typed array getter for an object array class parameter of a Shogun base class
 	* type, identified by a name and an index.
 	*
-	* It does not throw any errors if it does not work.
+	* Returns nullptr if parameter of desired type does not exist.
 	*
 	* @param name name of the parameter array
 	* @param index index of the element in the array
@@ -1012,9 +1012,9 @@ protected:
 	 * Return total subscriptions
 	 * @return total number of subscriptions
 	 */
-	size_t get_total_subscriptions() const
+	index_t get_total_subscriptions() const
 	{
-		return m_subscriptions.size();
+		return static_cast<index_t>(m_subscriptions.size());
 	}
 
 	/**
