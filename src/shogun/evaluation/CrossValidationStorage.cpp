@@ -97,10 +97,6 @@ operator==(const CrossValidationFoldStorage& rhs) const
 	       m_evaluation_result == rhs.m_evaluation_result;
 }
 
-EEvaluationResultType CrossValidationFoldStorage::get_result_type() const {
-	return CROSSVALIDATIONFOLDSTORAGE_RESULT;
-}
-
 void CrossValidationFoldStorage::print_result() {
 
 }
@@ -160,10 +156,6 @@ bool CrossValidationStorage::operator==(const CrossValidationStorage& rhs) const
 			return false;
 	}
 	return member_vars;
-}
-
-EEvaluationResultType CrossValidationStorage::get_result_type() const {
-	return CROSSVALIDATIONSTORAGE_RESULT;
 }
 
 void CrossValidationStorage::print_result() {
