@@ -59,10 +59,10 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
 	    &m_trained_machine, "trained_machine",
 	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_result, "test_result",
+	    &m_test_result, "predicted_labels",
 	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_true_result, "test_true_result",
+	    &m_test_true_result, "ground_truth_labels",
 	    "The true test result for this fold", ParameterProperties::HYPER);
 	SG_ADD(&m_train_indices, "train_indices",
 		   "Indices used for training", ParameterProperties::HYPER);
@@ -111,7 +111,7 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 {
 	m_num_runs = 0;
 	m_num_folds = 0;
-	m_expose_labels = NULL;
+	m_original_labels = NULL;
 
 	SG_ADD(
 	    &m_num_runs, "num_runs", "The total number of cross-validation runs",
@@ -120,14 +120,14 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 	    &m_num_folds, "num_folds",
 	    "The total number of cross-validation folds", ParameterProperties::HYPER);
 	SG_ADD(
-		(CLabels**)&m_expose_labels, "expose_labels",
+		(CLabels**)&m_original_labels, "labels",
 	    "The labels used for this cross-validation", ParameterProperties::HYPER);
 	this->watch_param("folds", &m_folds_results, AnyParameterProperties("Fold results"));
 }
 
 CrossValidationStorage::~CrossValidationStorage()
 {
-	SG_UNREF(m_expose_labels);
+	SG_UNREF(m_original_labels);
 	for (auto i : m_folds_results)
 		SG_UNREF(i)
 }
@@ -147,7 +147,7 @@ bool CrossValidationStorage::operator==(const CrossValidationStorage& rhs) const
 {
 	auto member_vars = m_num_runs == rhs.m_num_runs &&
 	                   m_num_folds == rhs.m_num_folds &&
-	                   m_expose_labels->equals(rhs.m_expose_labels);
+	                   m_original_labels->equals(rhs.m_original_labels);
 
 	if (!member_vars)
 		return member_vars;
