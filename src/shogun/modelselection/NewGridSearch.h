@@ -36,8 +36,8 @@ namespace shogun
 			SG_UNREF(m_evaluation)
 		}
 
-		virtual ParameterNode*
-		train(CFeatures* data, CLabels* labels, bool verbose) = 0;
+		virtual CSGObject*
+		train(CFeatures* features, CLabels* labels, bool verbose) = 0;
 
 	protected:
 		CSplittingStrategy* m_strategy;
@@ -170,9 +170,6 @@ namespace shogun
 		 * @return
 		 */
 		static CSGObject* to_object(const std::unique_ptr<ParameterNode>& tree);
-
-		static void to_object_inplace(
-				const std::unique_ptr<ParameterNode>&, CSGObject& obj);
 #endif
 
 	protected:
@@ -395,7 +392,7 @@ namespace shogun
 			return "GridSearch";
 		}
 
-		virtual ParameterNode*
+		virtual CSGObject*
 		train(CFeatures* data, CLabels* labels, bool verbose) final;
 	};
 } // namespace shogun

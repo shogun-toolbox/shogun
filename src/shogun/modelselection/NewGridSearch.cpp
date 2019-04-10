@@ -93,7 +93,6 @@ ParameterNode::attach(const std::string& param, ParameterNode&& node)
 	return this;
 }
 
-
 bool ParameterNode::set_param_helper(
     const std::string& param, ParameterNode* node)
 {
@@ -183,7 +182,10 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 
 	if (param_iter != std::string::npos)
 	{
-		SG_SDEBUG("ParameterNode::set_param_helper - Looking for param in nodes: %s\n", param.c_str())
+		SG_SDEBUG(
+		    "ParameterNode::set_param_helper - Looking for param in nodes: "
+		    "%s\n",
+		    param.c_str())
 		for (auto& node : m_nodes)
 		{
 			if (node.second.size() > 1)
@@ -199,7 +201,8 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 			{
 				SG_SDEBUG(
 				    "ParameterNode::set_param_helper - Looking for %s in %s\n",
-				    param.substr(param_iter + delimiter.size()).c_str(), node.first.c_str())
+				    param.substr(param_iter + delimiter.size()).c_str(),
+				    node.first.c_str())
 				return node.second[0]->set_param_helper(
 				    param.substr(param_iter + delimiter.size()), value);
 			}
@@ -207,7 +210,9 @@ bool ParameterNode::set_param_helper(const std::string& param, const Any& value)
 	}
 	else
 	{
-		SG_SDEBUG("ParameterNode::set_param_helper - Looking for %s in %s\n", param.c_str(), m_parent->get_name())
+		SG_SDEBUG(
+		    "ParameterNode::set_param_helper - Looking for %s in %s\n",
+		    param.c_str(), m_parent->get_name())
 		if (m_parent->has(param))
 		{
 			m_param_mapping.insert(std::make_pair(param, value));
@@ -236,9 +241,13 @@ ParameterNode* ParameterNode::get_current()
 
 CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)
 {
-	SG_SDEBUG("CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)\n")
-	SG_SDEBUG("REFCOUNT %s %d\n", tree->m_parent->get_name(), tree->m_parent->ref_count())
+	SG_SDEBUG("CSGObject* ParameterNode::to_object(const "
+	          "std::unique_ptr<ParameterNode>& tree)\n")
+	SG_SDEBUG(
+	    "REFCOUNT %s %d\n", tree->m_parent->get_name(),
+	    tree->m_parent->ref_count())
 	auto* result = tree->m_parent->clone();
+	SG_SDEBUG("%s: %d\n", result->get_name(), result->ref_count())
 	auto result_params = result->get_params();
 	for (const auto& node : tree->m_nodes)
 	{
@@ -247,27 +256,15 @@ CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)
 		auto* obj = ParameterNode::to_object(node.second[0]);
 		if (type_index_i == std::type_index(typeid(CKernel*)))
 		{
-			if (auto* tmp = result->get<CKernel*>(node.first))
-			{
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-				SG_UNREF(tmp)
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-			}
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
+			SG_SDEBUG(
+			    "REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result->put(node.first, obj->as<CKernel>());
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else if (type_index_i == std::type_index(typeid(CDistance*)))
 		{
-			if (auto* tmp = result->get<CDistance*>(node.first))
-			{
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-				SG_UNREF(tmp)
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-			}
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
+			SG_SDEBUG(
+			    "REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 			result->put(node.first, obj->as<CDistance>());
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 		}
 		else
 		{
@@ -276,6 +273,9 @@ CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)
 			    demangled_type(type_index_i.name()).c_str(), result->get_name(),
 			    obj->get_name());
 		}
+		// obj is not needed in this scope anymore
+		SG_UNREF(obj)
+		SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
 	}
 	std::string param_name;
 	auto put_scalar_lambda = [&result, &param_name](const auto& val) {
@@ -287,60 +287,6 @@ CSGObject* ParameterNode::to_object(const std::unique_ptr<ParameterNode>& tree)
 		sg_any_dispatch(param.second, sg_all_typemap, put_scalar_lambda);
 	}
 	return result;
-}
-
-void ParameterNode::to_object_inplace(
-    const std::unique_ptr<ParameterNode>& tree, CSGObject& result)
-{
-	SG_SDEBUG("void ParameterNode::to_object_inplace("
-			  "const std::unique_ptr<ParameterNode>& tree, CSGObject& result)\n")
-	auto result_params = result.get_params();
-	for (const auto& node : tree->m_nodes)
-	{
-		auto type_index_i =
-		    std::type_index(result_params[node.first]->get_value().type_info());
-		auto* obj = ParameterNode::to_object(node.second[0]);
-		if (type_index_i == std::type_index(typeid(CKernel*)))
-		{
-			if (auto* tmp = result.get<CKernel*>(node.first))
-			{
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-				SG_UNREF(tmp)
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-			}
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
-			result.put(node.first, obj->as<CKernel>());
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
-		}
-		else if (type_index_i == std::type_index(typeid(CDistance*)))
-		{
-			if (auto* tmp = result.get<CDistance*>(node.first))
-			{
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-				SG_UNREF(tmp)
-				SG_SDEBUG("REFCOUNT - tmp %s %d\n", tmp->get_name(), tmp->ref_count())
-			}
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
-			result.put(node.first, obj->as<CDistance>());
-			SG_SDEBUG("REFCOUNT - obj %s %d\n", obj->get_name(), obj->ref_count())
-		}
-		else
-		{
-			SG_SERROR(
-			    "Unsupported type %s for parameter %s::%s\n",
-			    demangled_type(type_index_i.name()).c_str(), result.get_name(),
-			    obj->get_name());
-		}
-	}
-	std::string param_name;
-	auto put_scalar_lambda = [&result, &param_name](const auto& val) {
-		result.put(param_name, val);
-	};
-	for (const auto& param : tree->m_param_mapping)
-	{
-		param_name = param.first;
-		sg_any_dispatch(param.second, sg_all_typemap, put_scalar_lambda);
-	}
 }
 
 void ParameterNode::replace_node(
@@ -367,13 +313,11 @@ void ParameterNode::replace_node(
 	}
 }
 
-ParameterNode::~ParameterNode()
-{
-	SG_SDEBUG("~%s\n", get_name())
-	SG_SDEBUG("REFCOUNT %s %d\n", m_parent->get_name(), m_parent->ref_count())
-	SG_UNREF(m_parent)
-	SG_SDEBUG("REFCOUNT %s %d\n", m_parent->get_name(), m_parent->ref_count())
-}
+ParameterNode::~ParameterNode(){
+    SG_SDEBUG("~%s\n", get_name()) SG_SDEBUG(
+        "REFCOUNT %s %d\n", m_parent->get_name(), m_parent->ref_count())
+        SG_UNREF(m_parent) SG_SDEBUG(
+            "REFCOUNT %s %d\n", m_parent->get_name(), m_parent->ref_count())}
 
 ParameterNode::ParameterNode(const ParameterNode& other)
 {
@@ -508,7 +452,10 @@ ParameterNode* GridParameters::get_next()
 		if (std::next(current) != end &&
 		    m_current_param != m_param_mapping.end())
 		{
-			SG_SDEBUG("GridParameters::get_next - not the end and not the last param: %s\n", param.c_str())
+			SG_SDEBUG(
+			    "GridParameters::get_next - not the end and not the last "
+			    "param: %s\n",
+			    param.c_str())
 			m_param_iter[param] = make_any(++beginning);
 			m_current_param = m_param_mapping.end();
 		}
@@ -518,9 +465,13 @@ ParameterNode* GridParameters::get_next()
 			if (m_current_param == m_param_mapping.begin())
 			{
 				m_param_iter[param] = make_any(beginning);
-				SG_SDEBUG("GridParameters::get_next - the end and the last param: %s\n", param.c_str())
+				SG_SDEBUG(
+				    "GridParameters::get_next - the end and the last param: "
+				    "%s\n",
+				    param.c_str())
 				m_current_param = m_param_mapping.end();
-				SG_SDEBUG("GridParameters::get_next - "
+				SG_SDEBUG(
+				    "GridParameters::get_next - "
 				    "updating m_current_param from %s::%s to %s::%s\n",
 				    this->get_parent_name(), param.c_str(),
 				    this->get_parent_name(), m_current_param->first.c_str())
@@ -540,7 +491,8 @@ ParameterNode* GridParameters::get_next()
 
 					if (std::next(inner_current) == inner_end)
 					{
-						SG_SDEBUG("GridParameters::get_next - "
+						SG_SDEBUG(
+						    "GridParameters::get_next - "
 						    "increment_neighbour - end of iteration param: "
 						    "%s\n",
 						    param.c_str())
@@ -549,11 +501,13 @@ ParameterNode* GridParameters::get_next()
 						if (std::prev(m_current_param) ==
 						    m_param_mapping.begin())
 						{
-							SG_SDEBUG("GridParameters::get_next - "
+							SG_SDEBUG(
+							    "GridParameters::get_next - "
 							    "the end and the last param: %s\n",
 							    param.c_str())
 							m_current_param = m_param_mapping.end();
-							SG_SDEBUG("GridParameters::get_next - "
+							SG_SDEBUG(
+							    "GridParameters::get_next - "
 							    "updating m_current_param from %s::%s to "
 							    "%s::%s\n",
 							    this->get_parent_name(), param.c_str(),
@@ -571,7 +525,8 @@ ParameterNode* GridParameters::get_next()
 					}
 					else
 					{
-						SG_SDEBUG("GridParameters::get_next - "
+						SG_SDEBUG(
+						    "GridParameters::get_next - "
 						    "increment_neighbour - not the end of iteration "
 						    "param: %s\n",
 						    param.c_str())
@@ -579,8 +534,10 @@ ParameterNode* GridParameters::get_next()
 						found_next_param = true;
 					}
 				};
-				SG_SDEBUG("GridParameters::get_next - "
-						"the end and not the last param: %s\n", param.c_str())
+				SG_SDEBUG(
+				    "GridParameters::get_next - "
+				    "the end and not the last param: %s\n",
+				    param.c_str())
 				m_current_param = m_param_mapping.end();
 				param = std::prev(m_current_param)->first;
 				while (!found_next_param)
@@ -589,7 +546,8 @@ ParameterNode* GridParameters::get_next()
 					    m_param_mapping[param], sg_vector_typemap,
 					    shogun::None{}, increment_neighbour);
 				}
-				SG_SDEBUG("GridParameters::get_next - "
+				SG_SDEBUG(
+				    "GridParameters::get_next - "
 				    "node is done updating m_current_param to "
 				    "%s::%s\n",
 				    this->get_parent_name(), param.c_str(),
@@ -599,14 +557,18 @@ ParameterNode* GridParameters::get_next()
 		}
 		else
 		{
-			SG_SDEBUG("GridParameters::get_next - "
-					"not the end: %s\n", param.c_str())
+			SG_SDEBUG(
+			    "GridParameters::get_next - "
+			    "not the end: %s\n",
+			    param.c_str())
 			m_param_iter[param] = make_any(++current);
 		}
 	};
 
-	SG_SDEBUG("GridParameters::get_next - "
-			"FIRST 1: %s\n", tree->to_string().c_str());
+	SG_SDEBUG(
+	    "GridParameters::get_next - "
+	    "FIRST 1: %s\n",
+	    tree->to_string().c_str());
 
 	for (const auto& node : m_nodes)
 	{
@@ -624,8 +586,10 @@ ParameterNode* GridParameters::get_next()
 		{
 			// replace the node of the object with current parameter
 			// representation
-			SG_SDEBUG("GridParameters::get_next - "
-					"INNER NODE %s\n", inner_node->get()->get_parent_name())
+			SG_SDEBUG(
+			    "GridParameters::get_next - "
+			    "INNER NODE %s\n",
+			    inner_node->get()->get_parent_name())
 			if (inner_node == m_current_internal_node)
 			{
 				this_node =
@@ -646,8 +610,10 @@ ParameterNode* GridParameters::get_next()
 		}
 	}
 
-	SG_SDEBUG("GridParameters::get_next - "
-			"FIRST 2: %s\n", tree->to_string().c_str());
+	SG_SDEBUG(
+	    "GridParameters::get_next - "
+	    "FIRST 2: %s\n",
+	    tree->to_string().c_str());
 
 	if (m_first)
 	{
@@ -822,19 +788,24 @@ ParameterNode* GridParameters::attach(
 	return attach(param, node.get());
 }
 
-ParameterNode* GridSearch::train(CFeatures* features, CLabels* labels, bool verbose)
+CSGObject* GridSearch::train(CFeatures* features, CLabels* labels, bool verbose)
 {
 	auto parameter_combination = std::unique_ptr<ParameterNode>(get_next());
-	SG_SDEBUG("GridSearch::train - "
-		   "CURRENT NODE: %s\n", parameter_combination->to_string().c_str())
-	auto* machine = ParameterNode::to_object(parameter_combination)->as<CMachine>();
+	SG_SDEBUG(
+	    "GridSearch::train - "
+	    "CURRENT NODE: %s\n",
+	    parameter_combination->to_string().c_str())
+	auto* machine =
+	    ParameterNode::to_object(parameter_combination)->as<CMachine>();
+	SG_SDEBUG("machine: %d\n", machine->ref_count())
 	m_strategy->put("labels", labels);
 	// TODO: add non lock option
-	auto* eval_machine = new CCrossValidation(
+	auto eval_machine = new CCrossValidation(
 	    machine, features, labels, m_strategy, m_evaluation, false);
-	eval_machine->evaluate();
+	SG_UNREF(machine)
 
-	std::unique_ptr<ParameterNode> best_combination = std::move(parameter_combination);
+	std::unique_ptr<ParameterNode> best_combination =
+	    std::move(parameter_combination);
 	auto* best_result = (CCrossValidationResult*)(eval_machine->evaluate());
 
 	// apply all combinations and search for best one
@@ -845,14 +816,30 @@ ParameterNode* GridSearch::train(CFeatures* features, CLabels* labels, bool verb
 		parameter_combination.reset(get_next());
 		SG_SDEBUG("GridSearch::train - GOT NEW COMBINATION\n")
 
-		ParameterNode::to_object_inplace(parameter_combination, *machine);
+		// the machine is returned with a ref_count of 1 because of clone
+		auto* tmp =
+		    ParameterNode::to_object(parameter_combination)->as<CMachine>();
+
+		// the old machine can now be unref'ed
+		auto* old = eval_machine->get<CMachine*>("machine");
+		SG_SDEBUG(
+		    "old %s: %d\n", eval_machine->get<CMachine*>("machine")->get_name(),
+		    eval_machine->get<CMachine*>("machine")->ref_count())
+		SG_UNREF(old)
+
+		eval_machine->put("machine", tmp);
+		// tmp should only be known by eval_machine
+		SG_UNREF(tmp)
+		SG_SDEBUG("tmp %s: %d\n", tmp->get_name(), tmp->ref_count())
 
 		if (verbose)
 		{
-			SG_SDEBUG("GridSearch::train - "
-					"trying combination: %s\n",
-					parameter_combination->to_string().c_str())
-			SG_SDEBUG("GridSearch::train - "
+			SG_SPRINT(
+			    "GridSearch::train - "
+			    "trying combination: %s\n",
+			    parameter_combination->to_string().c_str())
+			SG_SPRINT(
+			    "GridSearch::train - "
 			    "trying model: %s\n",
 			    eval_machine->get<CMachine*>("machine")->to_string().c_str())
 		}
@@ -878,7 +865,7 @@ ParameterNode* GridSearch::train(CFeatures* features, CLabels* labels, bool verb
 		if (lambda_compare(result->get_mean(), best_result->get_mean()))
 		{
 			SG_SDEBUG("GridSearch::train - "
-					"REPLACING BEST COMBINATION")
+			          "REPLACING BEST COMBINATION")
 			best_combination = std::move(parameter_combination);
 
 			SG_REF(result);
@@ -890,12 +877,15 @@ ParameterNode* GridSearch::train(CFeatures* features, CLabels* labels, bool verb
 
 	if (verbose)
 	{
-		SG_SDEBUG("GridSearch::train - "
-				"Best result: %f, Best parameter combination: %s\n", best_result->get_mean(),
-				best_combination->to_string().c_str())
+		SG_SPRINT(
+		    "GridSearch::train - "
+		    "Best result: %f, Best parameter combination: %s\n",
+		    best_result->get_mean(), best_combination->to_string().c_str())
 	}
-	SG_UNREF(best_result);
+	SG_UNREF(best_result)
+	SG_UNREF(eval_machine)
 
-	// transfer ownership of best combination to the user
-	return best_combination.release();
+	auto* best_model = ParameterNode::to_object(best_combination);
+	// return the SGObject with refcount = 1
+	return best_model;
 }
