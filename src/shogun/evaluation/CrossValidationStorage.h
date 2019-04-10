@@ -37,9 +37,9 @@
 #define SHOGUN_CROSSVALIDATIONSTORAGE_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/lib/SGVector.h>
 #include <vector>
-#include "EvaluationResult.h"
 
 namespace shogun
 {
@@ -156,7 +156,7 @@ namespace shogun
 		index_t m_num_folds;
 
 		/** Original labels */
-		CLabels* m_expose_labels;
+		CLabels* m_original_labels;
 
 		/** Vector with all the folds results */
 		std::vector<CEvaluationResult*> m_folds_results;
