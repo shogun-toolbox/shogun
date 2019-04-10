@@ -89,7 +89,6 @@ namespace shogun
 	CFeatures* features(SGMatrix<T> mat)
 	{
 		CFeatures* features = new CDenseFeatures<T>(mat);
-		SG_REF(features);
 		return features;
 	}
 
@@ -120,7 +119,6 @@ namespace shogun
 		}
 		result->load(file);
 
-		SG_REF(result);
 		return result;
 	}
 
@@ -140,7 +138,6 @@ namespace shogun
 			SG_SNOTIMPLEMENTED
 		}
 
-		SG_REF(result);
 		return result;
 	}
 
@@ -184,7 +181,6 @@ namespace shogun
 			bool success = result->obtain_from_char(
 			    string_features, start, p_order, gap, rev);
 			REQUIRE(success, "Failed to obtain from string char features.\n");
-			SG_REF(result);
 			return result;
 		}
 		default:
@@ -212,7 +208,6 @@ namespace shogun
 			SG_SNOTIMPLEMENTED
 		}
 
-		SG_REF(result);
 		return result;
 	}
 
@@ -221,7 +216,6 @@ namespace shogun
 	CKernel* kernel(SGMatrix<T> kernel_matrix)
 	{
 		CKernel* result = new CCustomKernel(kernel_matrix);
-		SG_REF(result);
 		return result;
 	}
 
@@ -273,7 +267,6 @@ namespace shogun
 		    "Loaded labels from %s(\"%s\") as %s\n", file->get_name(),
 		    file->get_filename(), result->get_name())
 
-		SG_REF(result);
 		return result;
 	}
 
@@ -295,14 +288,12 @@ namespace shogun
 	CFile* csv_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CCSVFile(fname.c_str(), rw);
-		SG_REF(result);
 		return result;
 	}
 
 	CFile* libsvm_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CLibSVMFile(fname.c_str(), rw);
-		SG_REF(result);
 		return result;
 	}
 
@@ -313,7 +304,6 @@ namespace shogun
 	CPipelineBuilder* pipeline()
 	{
 		auto result = new CPipelineBuilder();
-		SG_REF(result);
 		return result;
 	}
 }
