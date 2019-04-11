@@ -32,6 +32,18 @@
         "LongRealMatrix": "var $name = new double[$arguments]",
         "ComplexMatrix": "var $name = new Complex[$arguments]"
     },
+    "ListInit": {
+        "CharVector": "var $name = new char[] {$arguments}",
+        "ByteVector": "var $name = new byte[] {$arguments}",
+        "WordVector": "var $name = new ushort[] {$arguments}",
+        "IntVector": "var $name = new int[] {$arguments}",
+        "LongIntVector": "var $name = new long[] {$arguments}",
+        "ULongIntVector": "var $name = new ulongint[] {$arguments}",
+        "ShortRealVector": "var $name = new float[] {$arguments}",
+        "RealVector": "var $name = new double[] {$arguments}",
+        "LongRealVector": "var $name = new double[] {$arguments}",
+        "ComplexVector": "var $name = new Complex[] {$arguments}"
+    },
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",

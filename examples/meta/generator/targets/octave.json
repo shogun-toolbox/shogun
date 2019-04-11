@@ -11,7 +11,6 @@
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
-        "CharVector": "$name = zeros(1, $arguments, 'char')",
         "ByteVector": "$name = zeros(1, $arguments, 'int8')",
         "WordVector": "$name = zeros(1, $arguments, 'int16')",
         "IntVector": "$name = zeros(1, $arguments, 'int32')",
@@ -29,6 +28,16 @@
         "ShortRealMatrix": "$name = zeros($arguments, 'float64')",
         "RealMatrix": "$name = zeros($arguments, 'float64')",
         "LongRealMatrix": "$name = zeros($arguments, 'float64')"
+    },
+    "ListInit": {
+        "ByteVector": "$name = int8([$arguments])",
+        "WordVector": "$name = int16([$arguments])",
+        "IntVector": "$name = int32([$arguments])",
+        "LongIntVector": "$name = int64([$arguments])",
+        "ULongIntVector": "$name = uint64([$arguments])",
+        "ShortRealVector": "$name = single([$arguments])",
+        "RealVector": "$name = double([$arguments])",
+        "LongRealVector": "$name = double([$arguments])"
     },
     "Assign": "$identifier = $expr",
     "Type": {

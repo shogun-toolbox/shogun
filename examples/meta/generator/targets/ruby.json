@@ -32,6 +32,18 @@
         "LongRealMatrix": "$name = NMatrix.float($arguments)",
         "ComplexMatrix": "$name = NMatrix.scomplex($arguments)"
     },
+    "ListInit": {
+        "CharVector": "$name = NArray['byte', [$arguments])",
+        "ByteVector": "$name = NArray['byte', [$arguments])",
+        "WordVector": "$name = NArray['byte', [$arguments])",
+        "IntVector": "$name = NArray['sint', [$arguments])",
+        "LongIntVector": "$name = NArray['int', [$arguments])",
+        "ULongIntVector": "$name = NArray['int', [$arguments])",
+        "ShortRealVector": "$name = NArray['sfloat', [$arguments]))",
+        "RealVector": "$name = NArray['float', [$arguments])",
+        "LongRealVector": "$name = NArray['float', [$arguments])",
+        "ComplexVector": "NArray['scomplex', [$arguments])"
+    },
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"

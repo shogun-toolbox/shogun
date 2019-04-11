@@ -41,6 +41,18 @@
         "RealMatrix": "$name = np.zeros( ($arguments), dtype='float64')",
         "ComplexMatrix": "$name = np.zeros( ($arguments), dtype='complex128')"
     },
+    "ListInit": {
+        "BoolVector": "$name = np.array([$arguments], dtype='bool')",
+        "CharVector": "$name = np.array([$arguments], dtype='|S1')",
+        "ByteVector": "$name = np.array([$arguments], dtype='uint8')",
+        "WordVector": "$name = np.array([$arguments], dtype='uint16')",
+        "IntVector": "$name = np.array([$arguments], dtype='int32')",
+        "LongIntVector": "$name = np.array([$arguments], dtype='int64')",
+        "ULongIntVector": "$name = np.array([$arguments], dtype='uint64')",
+        "ShortRealVector": "$name = np.array([$arguments], dtype='float32')",
+        "RealVector": "$name = np.array([$arguments], dtype='float64')",
+        "ComplexVector": "$name = np.array([$arguments], dtype='complex128')"
+    },
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"

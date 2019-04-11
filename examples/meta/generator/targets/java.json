@@ -37,6 +37,17 @@
         "RealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "LongRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)"
     },
+    "ListInit": {
+        "CharVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "ByteVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "WordVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "IntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "LongIntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "ULongIntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "RealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "LongRealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})"
+    },
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",
