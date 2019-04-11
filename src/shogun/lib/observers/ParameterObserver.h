@@ -41,7 +41,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/observers/observers_utils.h>
-#include <shogun/util/converters.h>
 
 namespace shogun
 {
@@ -100,10 +99,7 @@ namespace shogun
 		 * Get the total number of observation received.
 		 * @return number of obsevation received.
 		 */
-		const index_t get_num_observations() const
-		{
-			return utils::safe_convert<index_t>(m_observations.size());
-		};
+		const index_t get_num_observations() const;
 
 		/**
 		 * Erase all observations registered so far by the observer.
