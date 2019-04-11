@@ -576,7 +576,7 @@ TEST(SGObject, subscribe_observer)
 	obj->subscribe_to_parameters(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
-	EXPECT_EQ(obj->get<size_t>("num_subscriptions"), 1);
+	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(1));
 }
 
 TEST(SGObject, unsubscribe_observer)
@@ -587,7 +587,7 @@ TEST(SGObject, unsubscribe_observer)
 	obj->unsubscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), -1);
-	EXPECT_EQ(obj->get<size_t>("num_subscriptions"), 0);
+	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(0));
 }
 
 TEST(SGObject, unsubscribe_observer_failure)
