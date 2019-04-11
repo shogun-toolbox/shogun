@@ -59,5 +59,13 @@ node.attach("kernel", k2_node)
 #![attach_child_nodes]
 
 #![train_and_apply]
-node.train(features_train, labels_train, True)
+Machine best_model = as_machine(node.train(features_train, labels_train, True))
+best_model.put("labels", labels_train)
+best_model.train(features_train)
+Labels labels_predict = best_model.apply(features_test)
 #![train_and_apply]
+
+#![evaluate_and_get_result]
+real acc = evaluation_criterion.evaluate(labels_predict, labels_test)
+RealVector output = labels_test.get_real_vector("labels")
+#![evaluate_and_get_result]
