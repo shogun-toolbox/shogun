@@ -12,6 +12,7 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/Evaluation.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/features/DenseFeatures.h>
@@ -87,6 +88,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
 	BASE_CLASS_FACTORY(CLossFunction, loss)
 	BASE_CLASS_FACTORY(ParameterObserver, parameter_observer)
+	BASE_CLASS_FACTORY(CEvaluationResult, evaluation_result)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
