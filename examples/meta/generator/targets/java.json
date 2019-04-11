@@ -39,6 +39,7 @@
         "LongRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)"
     },
     "ListInit": {
+        "BoolVector": "BoolVector $name = new BoolVector({$arguments})",
         "CharVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "ByteVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "WordVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",

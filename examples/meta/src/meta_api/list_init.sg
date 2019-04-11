@@ -1,5 +1,3 @@
-BoolVector bool_vector(1)
-
 BoolVector bool_vector([True, False])
 
 ByteVector byte_vector([1, 2])
