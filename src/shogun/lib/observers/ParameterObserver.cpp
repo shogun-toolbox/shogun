@@ -35,6 +35,7 @@
 #include <shogun/lib/RefCount.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
@@ -70,3 +71,8 @@ bool ParameterObserver::filter(const std::string& param)
 			return true;
 	return false;
 }
+
+const index_t ParameterObserver::get_num_observations() const
+{
+	return utils::safe_convert<index_t>(m_observations.size());
+};
