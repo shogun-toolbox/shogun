@@ -25,7 +25,7 @@ def features_string_file (directory, fname):
 	#or load fasta file
 	#f.load_fasta('fasta.fa')
 	#print(f.get_features())
-	return f.get_features(), f
+	return f.get_string_list(), f
 
 if __name__=='__main__':
 	print('StringWordFeatures')

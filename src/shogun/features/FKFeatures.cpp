@@ -35,7 +35,7 @@ CFKFeatures::~CFKFeatures()
 	SG_UNREF(neg);
 }
 
-float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension)
+float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension) const
 {
 	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
 	float64_t deriv=0.0 ;
@@ -141,7 +141,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 }
 
 float64_t* CFKFeatures::compute_feature_vector(
-	int32_t num, int32_t &len, float64_t* target)
+	int32_t num, int32_t &len, float64_t* target) const
 {
 	float64_t* featurevector=target;
 
@@ -161,7 +161,7 @@ float64_t* CFKFeatures::compute_feature_vector(
 }
 
 void CFKFeatures::compute_feature_vector(
-	float64_t* featurevector, int32_t num, int32_t& len)
+	float64_t* featurevector, int32_t num, int32_t& len) const
 {
 	int32_t i,j,p=0,x=num;
 

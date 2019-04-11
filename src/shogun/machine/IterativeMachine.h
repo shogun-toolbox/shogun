@@ -41,11 +41,9 @@ namespace shogun
 			    &m_max_iterations, "max_iterations",
 			    "Maximum number of Iterations", ParameterProperties::HYPER);
 			SG_ADD(
-			    &m_complete, "complete", "Convergence status",
-			    MS_NOT_AVAILABLE);
+			    &m_complete, "complete", "Convergence status");
 			SG_ADD(
-			    &m_continue_features, "continue_features", "Continue Features",
-			    MS_NOT_AVAILABLE);
+			    &m_continue_features, "continue_features", "Continue Features");
 		}
 		virtual ~CIterativeMachine()
 		{
@@ -96,6 +94,12 @@ namespace shogun
 	protected:
 		virtual bool train_machine(CFeatures* data = NULL)
 		{
+			if (data) 
+			{
+				SG_REF(data);
+				SG_UNREF(m_continue_features);
+				m_continue_features = data;
+			}
 			m_current_iteration = 0;
 			m_complete = false;
 			init_model(data);

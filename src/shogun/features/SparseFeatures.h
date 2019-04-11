@@ -111,7 +111,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return sum of features that match dimension index and 0 if none is found
 		 */
-		ST get_feature(int32_t num, int32_t index);
+		ST get_feature(int32_t num, int32_t index) const;
 
 		/** get the fully expanded dense feature vector num
 		  *
@@ -136,7 +136,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num index of feature vector
 		 * @return sparse feature vector
 		 */
-		SGSparseVector<ST> get_sparse_feature_vector(int32_t num);
+		SGSparseVector<ST> get_sparse_feature_vector(int32_t num) const;
 
 		/** compute the dot product between dense weights and a sparse feature vector
 		 * alpha * sparse^T * w + b
@@ -150,7 +150,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param b bias
 		 * @return dot product between dense weights and a sparse feature vector
 		 */
-		ST dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b);
+		ST dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b) const;
 
 		/** add a sparse feature vector onto a dense one
 		 * dense+=alpha*sparse
@@ -164,7 +164,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 @param abs_val if true, do dense+=alpha*abs(sparse)
 		 */
 		void add_to_dense_vec(float64_t alpha, int32_t num,
-				float64_t* vec, int32_t dim, bool abs_val=false);
+				float64_t* vec, int32_t dim, bool abs_val=false) const;
 
 		/** free sparse feature vector
 		 *
@@ -172,7 +172,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param num index of this vector in the cache
 		 */
-		void free_sparse_feature_vector(int32_t num);
+		void free_sparse_feature_vector(int32_t num) const;
 
 		/** get the pointer to the sparse feature matrix
 		 * num_feat,num_vectors are returned by reference
@@ -286,7 +286,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param num index of vector in cache
 		 */
-		void free_feature_vector(int32_t num);
+		void free_feature_vector(int32_t num) const;
 
 		/** get number of non-zero entries in sparse feature matrix
 		 *
@@ -381,7 +381,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -391,7 +391,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for sparse features */
@@ -470,7 +470,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param target target
 		 */
 		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num,
-			int32_t& len, SGSparseVectorEntry<ST>* target=NULL);
+			int32_t& len, SGSparseVectorEntry<ST>* target=NULL) const;
 
 	private:
 		void init();

@@ -48,19 +48,21 @@ CRandomFourierDotFeatures::~CRandomFourierDotFeatures()
 {
 }
 
-void CRandomFourierDotFeatures::init(KernelName kernel_name, SGVector<float64_t> params)
-{
-	kernel = kernel_name;
-	kernel_params = params;
+	void CRandomFourierDotFeatures::init(
+	    KernelName kernel_name, SGVector<float64_t> params)
+	{
+		kernel = kernel_name;
+		kernel_params = params;
 
-	constant = num_samples > 0 ? std::sqrt(2.0 / num_samples) : 1;
-	SG_ADD(
-		&kernel_params, "kernel_params",
-		"The parameters of the kernel to approximate");
-	SG_ADD((machine_int_t* ) &kernel, "kernel",
-			"The kernel to approximate");
-	SG_ADD(&constant, "constant", "A constant needed");
-}
+		constant = num_samples > 0 ? std::sqrt(2.0 / num_samples) : 1;
+		SG_ADD(
+		    &kernel_params, "kernel_params",
+		    "The parameters of the kernel to approximate");
+		SG_ADD(&constant, "constant", "A constant needed");
+		SG_ADD_OPTIONS(
+		    (machine_int_t*)&kernel, "kernel", "The kernel to approximate",
+		    ParameterProperties::NONE, SG_OPTIONS(GAUSSIAN, NOT_SPECIFIED));
+	}
 
 CFeatures* CRandomFourierDotFeatures::duplicate() const
 {
@@ -72,7 +74,7 @@ const char* CRandomFourierDotFeatures::get_name() const
 	return "RandomFourierDotFeatures";
 }
 
-float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx)
+float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
 	return std::cos(dot_result) * constant;

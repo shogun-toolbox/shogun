@@ -31,8 +31,6 @@
 #include <gtest/gtest.h>
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_CXX11
-
 #include <shogun/base/some.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/ShiftInvariantKernel.h>
@@ -125,4 +123,3 @@ TEST(ShiftInvariantKernel, precompute_distance_symmetric)
 			EXPECT_NEAR(kernel_1->get_distance(i, j), kernel_2->get_distance(i, j), 1E-6);
 	}
 }
-#endif // HAVE_CXX11

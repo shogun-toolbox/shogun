@@ -354,8 +354,8 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 void CKMeansBase::init()
 {
-	max_iter=10000;
-	k=3;
+	max_iter=300;
+	k=8;
 	dimensions=0;
 	fixed_centers=false;
 	use_kmeanspp=false;
@@ -363,6 +363,7 @@ void CKMeansBase::init()
 	SG_ADD(&k, "k", "k, the number of clusters", ParameterProperties::HYPER);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data");
 	SG_ADD(&R, "radiuses", "Cluster radiuses");
+	SG_ADD(&use_kmeanspp, "kmeanspp", "Whether use kmeans++", ParameterProperties::HYPER);
 
 	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
 }

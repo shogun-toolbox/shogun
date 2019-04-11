@@ -11,12 +11,13 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.2]]
 def kernel_linear_word (fm_train_word=traindat,fm_test_word=testdat,scale=1.2):
 
 	from shogun import LinearKernel, AvgDiagKernelNormalizer
-	from shogun import WordFeatures
+	import shogun as sg
 
-	feats_train=WordFeatures(fm_train_word)
-	feats_test=WordFeatures(fm_test_word)
+	feats_train=sg.features(fm_train_word)
+	feats_test=sg.features(fm_test_word)
 
-	kernel=LinearKernel(feats_train, feats_train)
+	kernel=sg.kernel("LinearKernel")
+	kernel.init(feats_train, feats_train)
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 

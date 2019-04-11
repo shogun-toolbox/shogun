@@ -140,42 +140,9 @@ public:
 		return m_children;
 	}
 
-	/** print function */
-	typedef void (*data_print_func_t) (const T&);
-
-	/** debug print the tree structure
-	 * @param data_print_func the function to print the data payload
-	 */
-	void debug_print(data_print_func_t data_print_func)
-	{
-		debug_print_impl(data_print_func, this, 0);
-	}
-
-protected:
-	/** implementation of printing the tree for debugging purpose
-	 * @param data_print_func function for printing data
-	 * @param node node data to print
-	 * @param depth depth of the node in the tree
-	 */
-	static void debug_print_impl(data_print_func_t data_print_func,
-				CTreeMachineNode<T>* node, int32_t depth)
-	{
-		for (int32_t i=0;i<depth;++i)
-			SG_SPRINT("  ");
-
-		data_print_func(node->data);
-
-		CDynamicObjectArray* children_vector=node->get_children();
-		for (int32_t j=0;j<children_vector->get_num_elements();j++)
-		{
-			CTreeMachineNode<T>* child=(CTreeMachineNode<T>*)
-						children_vector->get_element(j);
-			debug_print_impl(data_print_func,child,depth+1);
-			SG_UNREF(child);
-		}
-
-		SG_UNREF(children_vector);
-	}
+	// FIXME: not the best idea to make this public
+	// but at least then add a template for this...
+	using CSGObject::watch_param;
 
 private:
 	/** initialize parameters in constructor */
@@ -187,6 +154,7 @@ private:
 		SG_REF(m_children);
 		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node");
 		SG_ADD(&m_machine,"m_machine", "Index of associated machine");
+		register_params(data, this);
 	}
 
 public:
@@ -202,7 +170,6 @@ protected:
 
 	/** Dynamic array of pointers to children */
 	CDynamicObjectArray* m_children;
-
 };
 
 } /* namespace shogun */

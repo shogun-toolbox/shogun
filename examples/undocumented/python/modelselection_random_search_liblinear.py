@@ -17,15 +17,13 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_random_search_liblinear (traindat=traindat, label_traindat=label_traindat):
-    from shogun import CrossValidation, CrossValidationResult
+    from shogun import machine_evaluation
     from shogun import ContingencyTableEvaluation, ACCURACY
-    from shogun import StratifiedCrossValidationSplitting
+    from shogun import splitting_strategy
     from shogun import RandomSearchModelSelection
     from shogun import ModelSelectionParameters, R_EXP
     from shogun import ParameterCombination
     from shogun import BinaryLabels
-    from shogun import RealFeatures
-    from shogun import L2R_L2LOSS_SVC
     import shogun as sg
 
     # build parameter tree to select C1 and C2
@@ -39,26 +37,28 @@ def modelselection_random_search_liblinear (traindat=traindat, label_traindat=la
     c2.build_values(-2.0, 2.0, R_EXP);
 
     # training data
-    features=RealFeatures(traindat)
+    features=sg.features(traindat)
     labels=BinaryLabels(label_traindat)
 
     # classifier
-    classifier=sg.machine("LibLinear", liblinear_solver_type=L2R_L2LOSS_SVC)
+    classifier=sg.machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #classifier.print_modsel_params()
 
     # splitting strategy for cross-validation
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
+    splitting_strategy = splitting_strategy(
+        "StratifiedCrossValidationSplitting", labels=labels, num_subsets=10)
 
     # evaluation method
     evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
 
     # cross-validation instance
-    cross_validation=CrossValidation(classifier, features, labels,
-                                     splitting_strategy, evaluation_criterium)
-    cross_validation.set_autolock(False)
+    cross_validation = machine_evaluation(
+        "CrossValidation", machine=classifier, features=features,
+        labels=labels, splitting_strategy=splitting_strategy,
+        evaluation_criterion=evaluation_criterium, autolock=False)
 
     # model selection instance
     model_selection=RandomSearchModelSelection(cross_validation, param_tree_root, 0.5)

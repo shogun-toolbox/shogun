@@ -116,12 +116,12 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-    //increase reference counts
-    SG_REF(l);
-    if (l==r)
+	//increase reference counts
+	SG_REF(l);
+	if (l==r)
 		lhs_equals_rhs=true;
 	else // l!=r
-        SG_REF(r);
+		SG_REF(r);
 
 	lhs=l;
 	rhs=r;
@@ -917,26 +917,35 @@ void CKernel::save_serializable_post() throw (ShogunException)
 		rhs=lhs;
 }
 
-void CKernel::register_params()   {
-	SG_ADD(&cache_size, "cache_size",
-	    "Cache size in MB.");
-
+void CKernel::register_params()
+{
+	SG_ADD(&cache_size, "cache_size", "Cache size in MB.");
 	SG_ADD(
-	    &lhs, "lhs", "Feature vectors to occur on left hand side.");
+		&lhs, "lhs", "Feature vectors to occur on left hand side.",
+		ParameterProperties::READONLY);
 	SG_ADD(
-	    &rhs, "rhs", "Feature vectors to occur on right hand side.");
+		&rhs, "rhs", "Feature vectors to occur on right hand side.",
+		ParameterProperties::READONLY);
 	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",
-	    "If features on lhs are the same as on rhs.");
+		"If features on lhs are the same as on rhs.");
 	SG_ADD(&num_lhs, "num_lhs", "Number of feature vectors on left hand side.");
-	SG_ADD(&num_rhs, "num_rhs", "Number of feature vectors on right hand side.");
-	SG_ADD(&combined_kernel_weight, "combined_kernel_weight",
-			"Combined kernel weight.", ParameterProperties::HYPER);
-	SG_ADD(&optimization_initialized, "optimization_initialized",
-		  "Optimization is initialized.");
-	SG_ADD((machine_int_t*) &opt_type, "opt_type",
-		  "Optimization type.");
+	SG_ADD(
+	    &num_rhs, "num_rhs", "Number of feature vectors on right hand side.");
+	SG_ADD(
+	    &combined_kernel_weight, "combined_kernel_weight",
+	    "Combined kernel weight.", ParameterProperties::HYPER);
+	SG_ADD(
+	    &optimization_initialized, "optimization_initialized",
+	    "Optimization is initialized.");
 	SG_ADD(&properties, "properties", "Kernel properties.");
-	SG_ADD(&normalizer, "normalizer", "Normalize the kernel.", ParameterProperties::HYPER);
+	SG_ADD(
+	    &normalizer, "normalizer", "Normalize the kernel.",
+	    ParameterProperties::HYPER);
+
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&opt_type, "opt_type", "Optimization type.",
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(FASTBUTMEMHUNGRY, SLOWBUTMEMEFFICIENT));
 }
 
 

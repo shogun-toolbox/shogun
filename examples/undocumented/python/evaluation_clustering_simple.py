@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 parameter_list = [[1000,2,8],[1000,4,8]]
 
+import shogun as sg
 from numpy import *
 #from pylab import *
 
 def run_clustering(data, k):
 	from shogun import KMeans
 	from shogun import Math_init_random
-	from shogun import EuclideanDistance
-	from shogun import RealFeatures
 
-	fea = RealFeatures(data)
-	distance = EuclideanDistance(fea, fea)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(data, data)
 	kmeans=KMeans(k, distance)
 
 	#print("Running clustering...")
@@ -20,18 +19,17 @@ def run_clustering(data, k):
 	return kmeans.get_cluster_centers()
 
 def assign_labels(data, centroids, ncenters):
-	from shogun import EuclideanDistance
-	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLabels
 	from shogun import KNN
 	from numpy import arange
 
 	labels = MulticlassLabels(arange(0.,ncenters))
-	fea = RealFeatures(data)
-	fea_centroids = RealFeatures(centroids)
-	distance = EuclideanDistance(fea_centroids, fea_centroids)
+	fea_centroids = sg.features(centroids)
+	distance = sg.distance('EuclideanDistance')
+	distance.init(fea_centroids, fea_centroids)
 	knn = KNN(1, distance, labels)
 	knn.train()
-	return knn.apply(fea)
+	return knn.apply(data)
 
 def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	from shogun import ClusteringAccuracy, ClusteringMutualInformation
@@ -47,7 +45,7 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	angle=1
 	gen=GaussianBlobsDataGenerator(sqrt_num_blobs, distance, stretch, angle)
 	features=gen.get_streamed_features(n_data)
-	X=features.get_feature_matrix()
+	X=features.get("feature_matrix")
 
 	# compute approximate "ground truth" labels via taking the closest blob mean
 	coords=array(range(0,sqrt_num_blobs*distance,distance))

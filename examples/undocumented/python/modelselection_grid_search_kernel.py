@@ -9,13 +9,10 @@ from numpy import array
 from numpy import random
 import math
 
-from shogun import CrossValidation, CrossValidationResult
+from shogun import machine_evaluation
 from shogun import ContingencyTableEvaluation, ACCURACY
-from shogun import StratifiedCrossValidationSplitting
+from shogun import splitting_strategy
 from shogun import BinaryLabels
-from shogun import RealFeatures
-from shogun import PowerKernel
-from shogun import MinkowskiMetric
 from shogun import GridSearchModelSelection
 from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
 from shogun import ParameterCombination
@@ -45,7 +42,7 @@ def create_param_tree():
 	param_gaussian_kernel.append_child(gaussian_kernel_width)
 	root.append_child(param_gaussian_kernel)
 
-	power_kernel=PowerKernel()
+	power_kernel = sg.kernel('PowerKernel')
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
@@ -58,7 +55,7 @@ def create_param_tree():
 	param_power_kernel_degree.build_values(1.0, 2.0, R_LINEAR)
 	param_power_kernel.append_child(param_power_kernel_degree)
 
-	metric=MinkowskiMetric(10)
+	metric = sg.distance('MinkowskiMetric', k=10)
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
@@ -85,7 +82,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	matrix=random.rand(dim_vectors, num_vectors)
 
 	# create num_feautres 2-dimensional vectors
-	features=RealFeatures(matrix)
+	features=sg.features(matrix)
 
 	# create labels, two classes
 	labels=BinaryLabels(num_vectors)
@@ -96,14 +93,18 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	classifier=sg.machine("LibSVM")
 
 	# splitting strategy
-	splitting_strategy=StratifiedCrossValidationSplitting(labels, num_subsets)
+	splitting = splitting_strategy(
+		"StratifiedCrossValidationSplitting", labels=labels,
+		num_subsets=num_subsets)
 
 	# accuracy evaluation
 	evaluation_criterion=ContingencyTableEvaluation(ACCURACY)
 
 	# cross validation class for evaluation in model selection
-	cross=CrossValidation(classifier, features, labels, splitting_strategy, evaluation_criterion)
-	cross.set_num_runs(1)
+	cross = machine_evaluation(
+            "CrossValidation", machine=classifier, features=features,
+            labels=labels, splitting_strategy=splitting,
+            evaluation_criterion=evaluation_criterion, num_runs=1)
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
@@ -123,12 +124,11 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	best_combination.apply_to_machine(classifier)
 
 	# larger number of runs to have less variance
-	cross.set_num_runs(10)
+	cross.put("num_runs", 10)
 	result=cross.evaluate()
-	casted=CrossValidationResult.obtain_from_generic(result);
-	#print "result mean:", casted.mean
+	#print "result mean:", result.get("mean")
 
-	return classifier,result,casted.get_mean()
+	return classifier,result, result.get("mean")
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')

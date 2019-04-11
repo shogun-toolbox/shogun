@@ -38,7 +38,7 @@ public:
     virtual ~CECOCDiscriminantEncoder();
 
     /** set features */
-    void set_features(CDenseFeatures<float64_t> *features);
+    void set_features(CFeatures *features);
 
     /** set labels */
     void set_labels(CLabels *labels);

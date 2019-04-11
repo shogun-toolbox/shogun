@@ -21,8 +21,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from shogun import *
-from shogun import *
-from shogun import *
+import shogun as sg
 import util
 
 class Form(QMainWindow):
@@ -157,17 +156,16 @@ class Form(QMainWindow):
 
         crit = GradientCriterion();
 
-        grad=GradientEvaluation(gp, feat_train, labels, crit);
-
-        grad.set_function(inf);
+        grad = machine_evaluation(
+                machine=gp, features=feat_train, labels=labels,
+                evaluation_criterion=crit,
+                differentiable_function=inf, autolock=False)
 
         gp.print_modsel_params();
 
         root.print_tree();
 
         grad_search=GradientModelSelection(root, grad);
-
-        grad.set_autolock(0);
 
         best_combination=grad_search.select_model(1);
 
@@ -197,7 +195,8 @@ class Form(QMainWindow):
             gk = LinearKernel(feat_train, feat_train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "Polynomial":
-            gk = PolyKernel(feat_train, feat_train, degree, True)
+            gk = sg.kernel("PolyKernel", degree=degree)
+            gk.init(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "Gaussian":
             gk = GaussianKernel(feat_train, feat_train, width)

@@ -152,26 +152,26 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 	float64_t epsilon=0.00000000001;
 
 	// comparing projection outputs against Matlab 'CannonVar' implementation
-	EXPECT_NEAR(+51.3760082238439111, y(0,0), epsilon);
-	EXPECT_NEAR(-56.4869601858493127, y(0,1), epsilon);
-	EXPECT_NEAR(-63.3150724246548862, y(0,2), epsilon);
-	EXPECT_NEAR(+75.1693851132601338, y(0,3), epsilon);
-	EXPECT_NEAR( 0.00000000000000000, y(0,4), epsilon);
-	EXPECT_NEAR(+87.4243337392790067, y(0,5), epsilon);
-	EXPECT_NEAR(-114.092258182259556, y(0,6), epsilon);
-	EXPECT_NEAR(-94.010102920274619,  y(0,7), epsilon);
-	EXPECT_NEAR(-66.5754164410987244, y(0,8), epsilon);
-	EXPECT_NEAR(-109.483855254332568, y(0,9), epsilon);
-	EXPECT_NEAR(+27.5378037199449182, y(0,10), epsilon);
-	EXPECT_NEAR(-158.649815592855759, y(0,11), epsilon);
+	EXPECT_NEAR(51.3760082238439111, std::abs(y(0,0)), epsilon);
+	EXPECT_NEAR(56.4869601858493127, std::abs(y(0,1)), epsilon);
+	EXPECT_NEAR(63.3150724246548862, std::abs(y(0,2)), epsilon);
+	EXPECT_NEAR(75.1693851132601338, std::abs(y(0,3)), epsilon);
+	EXPECT_NEAR(0.00000000000000000, std::abs(y(0,4)), epsilon);
+	EXPECT_NEAR(87.4243337392790067, std::abs(y(0,5)), epsilon);
+	EXPECT_NEAR(114.092258182259556, std::abs(y(0,6)), epsilon);
+	EXPECT_NEAR(94.010102920274619,  std::abs(y(0,7)), epsilon);
+	EXPECT_NEAR(66.5754164410987244, std::abs(y(0,8)), epsilon);
+	EXPECT_NEAR(109.483855254332568, std::abs(y(0,9)), epsilon);
+	EXPECT_NEAR(27.5378037199449182, std::abs(y(0,10)), epsilon);
+	EXPECT_NEAR(158.649815592855759, std::abs(y(0,11)), epsilon);
 
 	// comparing eigenvectors from the transformation_matrix with that from the
 	// 'CannonVar' implementation.
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
 	EXPECT_NEAR(0.576749097670396393, std::abs(transformy[0]), epsilon);
 	EXPECT_NEAR(0.158373354160231516, std::abs(transformy[1]), epsilon);
-	EXPECT_NEAR(0.47693388209865617, std::abs(transformy[2]), epsilon);
-	EXPECT_NEAR(0.64405933820939687, std::abs(transformy[3]), epsilon);
+	EXPECT_NEAR(0.47693388209865617,  std::abs(transformy[2]), epsilon);
+	EXPECT_NEAR(0.64405933820939687,  std::abs(transformy[3]), epsilon);
 
 	SG_UNREF(dense_feat);
 	SG_UNREF(labels);

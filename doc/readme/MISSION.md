@@ -68,6 +68,6 @@ The original focus was on large-scale kernel methods and bioinformatics.
 Since then, Shogun has continuously been used for scientific research (a list of papers citing Shogun can be found [here](http://scholar.google.com/scholar?hl=en&q=shogun+toolbox&btnG=&as_sdt=1%2C33&as_sdtp=)) and massively expanded.
 Shogun joined [NumFocus](https://www.numfocus.org/) in early 2017.
 
-Currently, Shogun is developed by a diverse team of students, scientists and professionals, see the [website](http://shogun-toolbox.org/page/about/ourteam) and Shogun's [AUTHORS](https://github.com/shogun-toolbox/shogun/wiki/AUTHORS). 
+Currently, Shogun is developed by a diverse team of students, scientists and professionals, see Shogun's [AUTHORS](https://github.com/shogun-toolbox/shogun/wiki/AUTHORS). 
 None of their work would have been possible without the patches and bug reports by various contributors. 
 

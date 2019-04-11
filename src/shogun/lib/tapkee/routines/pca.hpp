@@ -67,6 +67,7 @@ DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, Rando
 		callback.vector(*iter,current_vector);
 		covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(current_vector,1.0);
 	}
+	covariance_matrix /= (end-begin);
 	covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(mean,-1.0);
 
 	return covariance_matrix;

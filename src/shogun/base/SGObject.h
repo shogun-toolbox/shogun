@@ -14,6 +14,7 @@
 #include <shogun/base/AnyParameter.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
+#include <shogun/base/macros.h>
 #include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -23,12 +24,12 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
-#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
+#include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <map>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -41,13 +42,27 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
+class ObservedValue;
 class CDynamicObjectArray;
+
+#ifndef SWIG
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+namespace sgo_details
+{
+template <typename T1, typename T2>
+bool dispatch_array_type(const CSGObject* obj, const std::string& name,
+		T2&& lambda);
+}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif // SWIG
 
 template <class T, class K> class CMap;
 
 struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
+
+using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
 
 /*******************************************************************************
  * define reference counter macros
@@ -61,25 +76,6 @@ template <class T> class SGStringList;
  * Macros for registering parameter properties
  ******************************************************************************/
 
-#ifdef _MSC_VER
-
-#define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
-#define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
-#define INTERNAL_EXPAND(x) x
-#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 4, 3, 2, 1, 0))
-#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, count, ...) count
-
-#else
-
-#define VA_NARGS_IMPL(_1, _2, _3, _4, N, ...) N
-#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 4, 3, 2, 1)
-
-#endif
-
-#define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
-#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
-#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
-
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
 		this->m_parameters->add(param, name, description);                     \
@@ -88,10 +84,29 @@ template <class T> class SGStringList;
 
 #define SG_ADD4(param, name, description, param_properties)                    \
 	{                                                                          \
+		static_assert(                                                         \
+		    !static_cast<bool>((param_properties)&ParameterProperties::AUTO),  \
+		    "Expected a lambda when passing param with "                       \
+		    "ParameterProperty::AUTO");                                        \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
 		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
+		if (pprop.get_model_selection())                                       \
+			this->m_model_selection_parameters->add(param, name, description); \
+		if (pprop.get_gradient())                                              \
+			this->m_gradient_parameters->add(param, name, description);        \
+	}
+
+#define SG_ADD5(param, name, description, param_properties, auto_init)         \
+	{                                                                          \
+		static_assert(                                                         \
+		    static_cast<bool>((param_properties)&ParameterProperties::AUTO),   \
+		    "Expected param to have ParameterProperty::AUTO");                 \
+		AnyParameterProperties pprop =                                         \
+		    AnyParameterProperties(description, param_properties);             \
+		this->m_parameters->add(param, name, description);                     \
+		this->watch_param(name, param, auto_init, pprop);                      \
 		if (pprop.get_model_selection())                                       \
 			this->m_model_selection_parameters->add(param, name, description); \
 		if (pprop.get_gradient())                                              \
@@ -120,14 +135,15 @@ class CSGObject
 {
 public:
 	/** Definition of observed subject */
-	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
 	/** Definition of observable */
-	typedef rxcpp::observable<ObservedValue,
-		                      rxcpp::dynamic_observable<ObservedValue>>
+	typedef rxcpp::observable<Some<ObservedValue>,
+		                      rxcpp::dynamic_observable<Some<ObservedValue>>>
 		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
+		Some<ObservedValue>,
+		rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */
@@ -335,14 +351,15 @@ public:
 		return value.has_type<T>();
 	}
 
+#ifndef SWIG
 	/** Setter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
-	template <typename T>
-	void put(const Tag<T>& _tag, const T& value) throw(ShogunException)
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
 	{
 		if (has_parameter(_tag))
 		{
@@ -376,6 +393,40 @@ public:
 		}
 	}
 
+	/** Setter for a class parameter that has values of type string,
+	 * identified by a Tag.
+	 * Throws an exception if the class does not have such a parameter.
+	 *
+	 * @param _tag name and type information of parameter
+	 * @param value value of the parameter
+	 */
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	void put(const Tag<T>& _tag, const T& value) noexcept(false)
+	{
+	    std::string val_string(value);
+
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			SG_ERROR(
+					"There are no options for parameter %s::%s", get_name(),
+					_tag.name().c_str());
+		}
+
+		auto string_to_enum = m_string_to_enum_map[_tag.name()];
+
+		if (string_to_enum.find(val_string) == string_to_enum.end())
+		{
+			SG_ERROR(
+					"Illegal option '%s' for parameter %s::%s",
+                    val_string.c_str(), get_name(), _tag.name().c_str());
+		}
+
+		machine_int_t enum_value = string_to_enum[val_string];
+
+		put(Tag<machine_int_t>(_tag.name()), enum_value);
+	}
+#endif
+
 	/** Typed setter for an object class parameter of a Shogun base class type,
 	 * identified by a name.
 	 *
@@ -391,8 +442,7 @@ public:
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
-	* type,
-	* identified by a name.
+	* type, identified by a name.
 	*
 	* @param name name of the parameter
 	* @param value value of the parameter
@@ -405,46 +455,79 @@ public:
 			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
 			name.c_str());
 
-		Tag<CDynamicObjectArray*> tag_array_sg(name);
-		if (has(tag_array_sg))
-		{
-			auto array = get(tag_array_sg);
-			if (!array)
-			{
-				SG_ERROR(
-					"Cannot add object %s to parameters %s::%s, array "
-					"is not instantiated.\n",
-					value->get_name(), get_name(), name.c_str());
-			}
-
-			push_back(array, value);
-			return;
-		}
-
-		Tag<std::vector<T*>> tag_vector(name);
-		if (has(tag_vector))
-		{
-			// TODO this needs test once we have std::vector parameters
-			SG_NOTIMPLEMENTED
-			auto array = get(tag_vector);
+		auto push_back_lambda = [&value](auto& array) {
 			array.push_back(value);
+		};
+		if (sgo_details::dispatch_array_type<T>(this, name, push_back_lambda))
 			return;
-		}
 
 		SG_ERROR(
-		    "Cannot add object %s to parameters %s::%s of type %s, there is no"
-		    " such array of parameters.\n",
+		    "Cannot add object %s to array parameter %s::%s of type %s.\n",
 		    value->get_name(), get_name(), name.c_str(),
 			demangled_type<T>().c_str());
 	}
 
+#ifndef SWIG
+	/** Typed array getter for an object array class parameter of a Shogun base class
+	* type, identified by a name and an index.
+	*
+	* Raises an error if parameter does not exist.
+	*
+	* @param name name of the parameter array
+	* @param index index of the element in the array
+	* @return desired element
+	*/
+	template <class T,
+			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index) const
+	{
+		CSGObject* result = nullptr;
+
+		auto get_lambda = [&index, &result](auto& array) {
+			result = array.at(index);
+		};
+		if (sgo_details::dispatch_array_type<T>(this, name, get_lambda))
+		{
+			ASSERT(result);
+			// guard against mixed types in the array
+			return result->as<T>();
+		}
+
+		SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
+				get_name(), name.c_str(), index, demangled_type<T>().c_str());
+
+		return nullptr;
+	}
+#endif
+
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Will attempt to get specified object of appropriate internal type.
+	 * If this is not possible it will raise a ShogunException.
 	 *
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name);
+	CSGObject* get(const std::string& name) const noexcept(false);
+
+	/** Untyped getter for an object class parameter, identified by a name.
+	 * Does not throw an error if class parameter object cannot be casted
+	 * to appropriate internal type.
+	 *
+	 * @param name name of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
+
+	/** Untyped getter for an object array class parameter, identified by a name
+	 * and an index.
+	 * Will attempt to get specified object of appropriate internal type.
+	 * If this is not possible it will raise a ShogunException.
+	 *
+	 * @param name name of the parameter
+	 * @index index of the parameter
+	 * @return object parameter
+	 */
+	CSGObject* get(const std::string& name, index_t index) const;
 
 #ifndef SWIG
 	/** Typed setter for an object class parameter of a Shogun base class type,
@@ -488,14 +571,15 @@ public:
 		put(Tag<T>(name), value);
 	}
 
+#ifndef SWIG
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T>
-	T get(const Tag<T>& _tag) const throw(ShogunException)
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
 		try
@@ -514,6 +598,30 @@ public:
 		return any_cast<T>(value);
 	}
 
+	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
+	T get(const Tag<T>& _tag) const noexcept(false)
+	{
+		if (m_string_to_enum_map.find(_tag.name()) == m_string_to_enum_map.end())
+		{
+			const Any value = get_parameter(_tag).get_value();
+			try
+			{
+				return any_cast<T>(value);
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+					"Cannot get parameter %s::%s of type %s, incompatible "
+					"requested type %s or there are no options for parameter "
+					"%s::%s.\n",
+					get_name(), _tag.name().c_str(), exc.actual().c_str(),
+					exc.expected().c_str(), get_name(), _tag.name().c_str());
+			}
+		}
+		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
+	}
+#endif
+
 	/** Getter for a class parameter, identified by a name.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
@@ -521,7 +629,7 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 	template <typename T, typename U = void>
-	T get(const std::string& name) const throw(ShogunException)
+	T get(const std::string& name) const noexcept(false)
 	{
 		Tag<T> tag(name);
 		return get(tag);
@@ -565,7 +673,7 @@ public:
 
 		SG_SERROR(
 			"Object of type %s cannot be converted to type %s.\n",
-			demangled_type<std::remove_pointer_t<decltype(this)>>().c_str(),
+			this->get_name(),
 			demangled_type<T>().c_str());
 		return nullptr;
 	}
@@ -584,22 +692,15 @@ public:
 	void subscribe_to_parameters(ParameterObserverInterface* obs);
 
 	/** Print to stdout a list of observable parameters */
-	void list_observable_parameters();
+	std::vector<std::string> observable_names();
 
-protected:
-	template <typename T>
-	CSGObject* get_sgobject_type_dispatcher(const std::string& name)
+	/** Get string to enum mapping */
+	stringToEnumMapType get_string_to_enum_map() const
 	{
-		if (has<T*>(name))
-		{
-			T* result = get<T*>(name);
-			SG_REF(result)
-			return (CSGObject*)result;
-		}
-
-		return nullptr;
+		return m_string_to_enum_map;
 	}
 
+protected:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -678,6 +779,25 @@ protected:
 	{
 		BaseTag tag(name);
 		create_parameter(tag, AnyParameter(make_any_ref(value), properties));
+	}
+
+	/** Puts a pointer to some parameter into the parameter map.
+	 * The parameter is expected to be initialised at runtime
+	 * using the provided lambda.
+	 *
+	 * @param name name of the parameter
+	 * @param value pointer to the parameter value
+	 * @param auto_init AutoInit object to initialise the value of the parameter
+	 * @param properties properties of the parameter (e.g. if model selection is supported)
+	 */
+	template <typename T>
+	void watch_param(
+			const std::string& name, T* value,
+			std::shared_ptr<params::AutoInit> auto_init,
+			AnyParameterProperties properties = AnyParameterProperties())
+	{
+		BaseTag tag(name);
+		create_parameter(tag, AnyParameter(make_any_ref(value), properties, std::move(auto_init)));
 	}
 
 	/** Puts a pointer to some parameter array into the parameter map.
@@ -763,7 +883,17 @@ public:
 	 * @return an identical copy of the given object, which is disjoint in memory.
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
-	virtual CSGObject* clone();
+	virtual CSGObject* clone() const;
+
+	/**
+	 * Looks up the option name of a parameter given the enum value.
+	 *
+	 * @param param the parameter name
+	 * @param value the enum value to query
+	 * @return the string representation of the enum (option name)
+	 */
+	std::string string_enum_reverse_lookup(
+			const std::string& param, machine_int_t value) const;
 
 protected:
 	/** Returns an empty instance of own type.
@@ -776,6 +906,9 @@ protected:
 	 * @return empty instance of own type
 	 */
 	virtual CSGObject* create_empty() const;
+
+	/** Initialises all parameters with ParameterProperties::AUTO flag */
+	void init_auto_params();
 
 private:
 	void set_global_objects();
@@ -852,7 +985,7 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const ObservedValue value);
+	void observe(const Some<ObservedValue> value);
 
 	/**
 	 * Register which params this object can emit.
@@ -860,12 +993,11 @@ protected:
 	 * @param type the param type
 	 * @param description a user oriented description
 	 */
-	void register_observable_param(
-		const std::string& name, const SG_OBS_VALUE_TYPE type,
-		const std::string& description);
+	void register_observable(
+		const std::string& name, const std::string& description);
 
-private:
-	void push_back(CDynamicObjectArray* array, CSGObject* value);
+	/** mapping from strings to enum for SWIG interface */
+	stringToEnumMapType m_string_to_enum_map;
 
 public:
 	/** io */
@@ -908,5 +1040,85 @@ private:
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
 };
+
+#ifndef SWIG
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+namespace sgo_details
+{
+template <typename T1, typename T2>
+bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lambda)
+{
+	Tag<CDynamicObjectArray*> tag_array_sg(name);
+	if (obj->has(tag_array_sg))
+	{
+		auto dispatched = obj->get(tag_array_sg);
+		lambda(*dispatched); // is stored as a pointer
+		return true;
+	}
+
+	Tag<std::vector<T1*>> tag_vector(name);
+	if (obj->has(tag_vector))
+	{
+		auto dispatched = obj->get(tag_vector);
+		lambda(dispatched);
+		return true;
+	}
+
+	return false;
+}
+
+struct GetByName
+{
+};
+
+struct GetByNameIndex
+{
+	GetByNameIndex(index_t index) : m_index(index) {}
+	index_t m_index;
+};
+
+template <typename T>
+CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByName)
+{
+	return obj->has<T*>(name) ? obj->get<T*>(name) : nullptr;
+}
+
+template <typename T>
+CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
+{
+	CSGObject* result = nullptr;
+	try
+	{
+		// there is no "has" that checks for array types, so check implicitly
+		result = obj->get<T>(name, how.m_index);
+	}
+	catch (const std::exception&) {}
+	return result;
+}
+
+template<typename T>
+CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& name,
+		T&& how)
+{
+	if (auto* result = get_if_possible<CKernel>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
+		return result;
+
+	return nullptr;
+}
+
+template<class T>
+CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
+		T&& how)
+{
+	REQUIRE(obj->has(name), "Parameter %s::%s does not exist.\n",
+			obj->get_name(), name.c_str());
+	return get_dispatch_all_base_types(obj, name, how);
+}
+}
+
+#endif //DOXYGEN_SHOULD_SKIP_THIS
+#endif //SWIG
 }
 #endif // __SGOBJECT_H__

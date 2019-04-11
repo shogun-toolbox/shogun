@@ -76,7 +76,8 @@ def getBasicTypesToStore():
 
 def getSGTypesToStore():
     """ Returns all SG* types which will be serialized """
-    return ("RealVector","RealMatrix","FloatVector","FloatMatrix")
+    return ("RealVector","RealMatrix","FloatVector","FloatMatrix",
+            "StringCharList", "StringWordList")
 
 def getSGTypeToStoreMethodName(sgType):
     """ Translates given SG* type into meta language type """
@@ -90,7 +91,10 @@ def getSGTypeToStoreMethodName(sgType):
         return "real_matrix"
     elif sgType=="FloatMatrix":
         return "float_matrix"
-
+    elif sgType=="StringCharList":
+        return "string_char_list"
+    elif sgType=="StringWordList":
+        return "string_word_list"
     else:
         raise RuntimeError("Given Shogun type \"%s\" cannot be translated to meta type", sgType)
 
@@ -341,6 +345,10 @@ class Translator:
             dependencies = dependencies.union(enums)
         if self.targetDict["Dependencies"].get("IncludeGlobalFunctions"):
             dependencies = dependencies.union(globalFunctions)
+
+        if "ExcludeImport" in self.targetDict["Dependencies"]:
+            for item in self.targetDict["Dependencies"].get("ExcludeImport"):
+                dependencies.discard(item)
 
         dependencies = list(dependencies)
 

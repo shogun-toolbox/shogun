@@ -56,12 +56,16 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 			feat=m_method->get_features();
 
 		result=new CRegressionLabels(get_mean_vector(feat));
+		if (m_compute_variance)
+			result->put("current_values", get_variance_vector(feat));
 
 		SG_UNREF(feat);
 	}
 	else
 	{
 		result=new CRegressionLabels(get_mean_vector(data));
+		if (m_compute_variance)
+			result->put("current_values", get_variance_vector(data));
 	}
 
 	return result;

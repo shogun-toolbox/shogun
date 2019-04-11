@@ -23,6 +23,7 @@ from matplotlib.figure import Figure
 from shogun import *
 from shogun import KernelMeanMatching
 from shogun import Math
+import shogun as sg
 import util
 
 class Form(QMainWindow):
@@ -126,7 +127,8 @@ class Form(QMainWindow):
             gk = LinearKernel(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "PolynomialKernel":
-            gk = PolyKernel(train, train, degree, 1.0)
+            gk = sg.kernel("PolyKernel", degree=degree, c=1.0)
+            gk.init(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
             gk = GaussianKernel(train, train, width)

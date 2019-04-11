@@ -38,7 +38,7 @@ namespace shogun
 			return empty;
 		}
 
-		virtual CSGObject* clone() override
+		virtual CSGObject* clone() const override
 		{
 			auto clone = CSGObject::clone();
 			auto casted = clone->template as<CCloneEqualsMockParameter>();

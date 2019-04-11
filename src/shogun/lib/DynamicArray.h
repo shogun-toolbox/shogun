@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, 
- *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann,
+ *          Sergey Lisitsyn, Leon Kuchenbecker, Yuyu Zhang, Thoralf Klein,
  *          Fernando Iglesias, Bjoern Esser
  */
 
@@ -602,7 +602,7 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual CSGObject* clone()
+		virtual CSGObject* clone() const
 		{
 			CDynamicArray * cloned = (CDynamicArray*) CSGObject::clone();
 			// Since the array vector is registered with

@@ -75,14 +75,14 @@ class CDotFeatures : public CFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)=0;
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const = 0;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2);
+		virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -90,7 +90,7 @@ class CDotFeatures : public CFeatures
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)=0;
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const = 0;
 
 		/** add vector 1 multiplied with alpha to dense vector2
 		 *
@@ -100,7 +100,7 @@ class CDotFeatures : public CFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false) const = 0;
 
 		/** Compute the dot product for a range of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b
@@ -115,7 +115,7 @@ class CDotFeatures : public CFeatures
 		 *
 		 * note that the result will be written to output[0...(stop-start-1)]
 		 */
-		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const;
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b
@@ -129,7 +129,7 @@ class CDotFeatures : public CFeatures
 		 * @param b bias
 		 */
 		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num,
-				float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+				float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const;
 
 		/** get number of non-zero features in vector
 		 *
@@ -198,7 +198,15 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @return mean returned
 		 */
-		virtual SGVector<float64_t> get_mean();
+		virtual SGVector<float64_t> get_mean() const;
+
+		/** get standard variance
+		 *
+		 * @param colwise if true calculates feature wise standard deviation,
+		 * otherwise calculates the matrix standard deviation.
+		 * @return Standard deviation of all feature vectors or of whole matrix
+		 */
+		virtual SGVector<float64_t> get_std(bool colwise = true) const;
 
 		/** get mean of two CDotFeature objects
 		 *

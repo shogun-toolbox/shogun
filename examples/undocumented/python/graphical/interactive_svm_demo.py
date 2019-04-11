@@ -17,6 +17,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from shogun import *
+import shogun as sg
 import util
 
 class Form(QMainWindow):
@@ -116,7 +117,8 @@ class Form(QMainWindow):
             gk = LinearKernel(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "PolynomialKernel":
-            gk = PolyKernel(train, train, degree, 1.0)
+            gk = sg.kernel("PolyKernel", degree=degree, c=1.0)
+            gk.init(train, train)
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
             gk = GaussianKernel(train, train, width)

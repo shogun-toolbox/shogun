@@ -1507,6 +1507,53 @@ namespace shogun
 			return infer_backend(a)->mean(a);
 		}
 
+		/** Method that updates moving mean vector with new datum point.
+		 *
+		 * @param cma the previous moving mean
+		 * @param datum new datum point
+		 * @param n number of previous data points including the new datum point
+		 */
+		template <typename T>
+		void update_mean(SGVector<T>& cma, const SGVector<T>& datum, int32_t n)
+		{
+			REQUIRE(n > 0, "Number of data points (%d) must be at least 1", n);
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;
+			add(datum, cma, cma, alpha, beta);
+		}
+
+		/** Method that updates moving mean scalar with new datum point.
+		 *
+		 * @param cma the previous moving mean
+		 * @param datum new datum point
+		 * @param n number of previous data points including the new datum point
+		 */
+		template <typename T>
+		void update_mean(T& cma, const T datum, int32_t n)
+		{
+			REQUIRE(n > 0, "Number of data points (%d) must be at least 1", n);
+			T alpha = (T)(1.0) / n;
+			T beta = 1 - alpha;
+			cma = alpha * datum + beta * cma;
+		}
+
+		/**
+		 * Method that computes the standard deviation of vectors or matrices
+		 * composed of real numbers.
+		 *
+		 * @param a SGVector or SGMatrix
+		 * @return The vector mean \f$\bar{a}_i\f$ or matrix mean
+		 * \f$\bar{m}_{i,j}\f$
+		 */
+		template <typename T>
+		typename std::enable_if<
+		    !std::is_same<T, complex128_t>::value, SGVector<float64_t>>::type
+		std_deviation(const SGMatrix<T>& mat, bool colwise = true)
+		{
+			REQUIRE(mat.size() > 0, "Vector/Matrix cannot be empty!\n");
+			return infer_backend(mat)->std_deviation(mat, colwise);
+		}
+
 		/**
 		 * Method that computes the euclidean norm of a vector.
 		 *
@@ -1873,7 +1920,7 @@ namespace shogun
 		{
 			infer_backend(a)->zero(a);
 		}
-	}
-}
+	} // namespace linalg
+} // namespace shogun
 
 #endif // LINALG_NAMESPACE_H_

@@ -1,18 +1,22 @@
 #!/usr/bin/env python
-traindat = '../data/fm_train_real.dat'
-testdat = '../data/fm_test_real.dat'
+import shogun as sg
+traindat = '../data/fm_train_sparsereal.dat'
+testdat = '../data/fm_test_sparsereal.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_sparseeuclidean (train_fname=traindat,test_fname=testdat):
-	from shogun import RealFeatures, SparseRealFeatures, SparseEuclideanDistance, CSVFile
+	from shogun import SparseRealFeatures
+	import shogun as sg
 
-	realfeat=RealFeatures(CSVFile(train_fname))
-	feats_train=SparseRealFeatures(realfeat)
-	realfeat=RealFeatures(CSVFile(test_fname))
-	feats_test=SparseRealFeatures(realfeat)
+	feats_train=SparseRealFeatures(sg.libsvm_file(train_fname))
+	feats_test=SparseRealFeatures(sg.libsvm_file(test_fname))
+	
+	print feats_train.get_num_features()
+	print feats_test.get_num_features()
 
-	distance=SparseEuclideanDistance(feats_train, feats_train)
+	distance = sg.distance('SparseEuclideanDistance')
+	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)

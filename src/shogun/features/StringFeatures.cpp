@@ -29,6 +29,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures() : CFeatures(0)
 {
 	init();
 	alphabet=new CAlphabet();
+	SG_REF(alphabet);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(EAlphabet alpha) : CFeatures(0)
@@ -72,6 +73,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
 
 	ASSERT(alpha)
 	SG_REF(alpha);
+	SG_UNREF(alphabet);
 	alphabet=alpha;
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;
@@ -180,7 +182,7 @@ template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() const 
 
 template<class ST> EFeatureType CStringFeatures<ST>::get_feature_type() const { return F_UNKNOWN; }
 
-template<class ST> CAlphabet* CStringFeatures<ST>::get_alphabet()
+template<class ST> CAlphabet* CStringFeatures<ST>::get_alphabet() const
 {
 	SG_REF(alphabet);
 	return alphabet;
@@ -983,7 +985,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 	return false;
 }
 
-template<class ST> SGStringList<ST> CStringFeatures<ST>::get_features()
+template<class ST> SGStringList<ST> CStringFeatures<ST>::get_string_list() const
 {
 	SGStringList<ST> sl(NULL,0,0,false);
 
@@ -991,7 +993,7 @@ template<class ST> SGStringList<ST> CStringFeatures<ST>::get_features()
 	return sl;
 }
 
-template<class ST> SGString<ST>* CStringFeatures<ST>::get_features(int32_t& num_str, int32_t& max_str_len)
+template<class ST> SGString<ST>* CStringFeatures<ST>::get_features(int32_t& num_str, int32_t& max_str_len) const
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("get features() is not possible on subset")
@@ -1695,6 +1697,8 @@ template<class ST> void CStringFeatures<ST>::init()
 
 	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
 	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);
+	watch_method("num_vectors", &CStringFeatures::get_num_vectors);
+	watch_method("string_list", &CStringFeatures::get_string_list);
 }
 
 /** get feature type the char feature can deal with

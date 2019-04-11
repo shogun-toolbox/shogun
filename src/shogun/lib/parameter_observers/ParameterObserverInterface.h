@@ -41,11 +41,6 @@
 #include <shogun/lib/any.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 
-/* Used to check if the observed value type */
-#define CHECK_OBSERVED_VALUE_TYPE(type)                                        \
-	if (type != m_type)                                                        \
-		return;
-
 namespace shogun
 {
 
@@ -113,11 +108,6 @@ namespace shogun
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_parameters;
-
-		/**
-		 * The type of params this observers accept
-		 */
-		SG_OBS_VALUE_TYPE m_type;
 	};
 }
 

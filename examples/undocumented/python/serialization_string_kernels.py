@@ -1,29 +1,22 @@
 #!/usr/bin/env python
 
-from shogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, CTaxonomy
-from shogun import CombinedKernel, WeightedDegreeRBFKernel
-from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
+import shogun as sg
+from shogun import StringCharFeatures, CombinedFeatures, StringWordFeatures
 from shogun import DNA, PROTEIN, Labels
 from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from shogun import MSG_DEBUG
-from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
-from shogun import WeightedDegreeStringKernel
+from shogun import BinaryLabels, DNA, Alphabet
 try:
 	from shogun import SVMLight
 except ImportError:
 	print("SVMLight is not available")
 	exit(0)
-from numpy import concatenate, ones
-from numpy.random import randn, seed
 import numpy
 import sys
-import types
 import random
 import bz2
 import pickle
-import inspect
 
 ###################################################
 #             Random Data
@@ -104,7 +97,7 @@ def get_spectrum_features(data, order=3, gap=0, reverse=True):
     charfeat = StringCharFeatures(data, DNA)
     feat = StringWordFeatures(charfeat.get_alphabet())
     feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
-    preproc = SortWordString()
+    preproc = sg.transformer("SortWordString")
     preproc.fit(feat)
     feat = preproc.transform(feat)
 

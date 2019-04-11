@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Jacob Walker, 
- *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Vladislav Horbatiuk, Jacob Walker,
+ *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Sergey Lisitsyn,
  *          Evangelos Anagnostopoulos, Heiko Strathmann
  */
 #include <shogun/features/SparsePolyFeatures.h>
@@ -105,7 +105,7 @@ void CSparsePolyFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -126,7 +126,7 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 	return result;
 }
 
-float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -175,7 +175,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	return result;
 }
 
-void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len!=m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)

@@ -17,7 +17,7 @@ def features_string_ulong (start=0,order=2,gap=0,rev=False):
     uf.set_feature_vector(array([1,2,3,4,5], dtype=uint64), 0)
 
 
-    return uf.get_features(),uf.get_feature_vector(2), uf.get_num_vectors()
+    return uf.get_string_list(),uf.get_feature_vector(2), uf.get_num_vectors()
 
 if __name__=='__main__':
     print('simple_longint')

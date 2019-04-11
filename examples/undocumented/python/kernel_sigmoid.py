@@ -5,12 +5,13 @@ testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat,10,1.2,1.3],[traindat,testdat,10,1.2,1.3]]
 
 def kernel_sigmoid (train_fname=traindat,test_fname=testdat,size_cache=10,gamma=1.2,coef0=1.3):
-	from shogun import RealFeatures, SigmoidKernel, CSVFile
+	import shogun as sg
 
-	feats_train=RealFeatures(CSVFile(train_fname))
-	feats_test=RealFeatures(CSVFile(test_fname))
+	feats_train=sg.features(sg.csv_file(train_fname))
+	feats_test=sg.features(sg.csv_file(test_fname))
 
-	kernel=SigmoidKernel(feats_train, feats_train, size_cache, gamma, coef0)
+	kernel=sg.kernel("SigmoidKernel", gamma=gamma, coef0=coef0)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

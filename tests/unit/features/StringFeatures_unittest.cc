@@ -78,28 +78,13 @@ TEST(StringFeaturesTest,copy_subset)
 	SG_UNREF(subset_copy);
 }
 
-TEST(StringFeaturesTest,clone)
+TEST(StringFeaturesTest,equals)
 {
 	SGStringList<char> strings = generateRandomStringData();
 
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
-	CStringFeatures<char>* f_clone = (CStringFeatures<char> *) f->clone();
-
-	for (index_t i=0; i<f->get_num_vectors(); ++i)
-	{
-		index_t a_len;
-		index_t b_len;
-		bool a_free;
-		bool b_free;
-
-		char * a_vec = f->get_feature_vector(i, a_len, a_free);
-		char * b_vec = f_clone->get_feature_vector(i, b_len, b_free);
-
-		EXPECT_EQ(a_len, b_len);
-		EXPECT_EQ(a_free, b_free);
-		for (index_t j = 0; j < a_len; ++j)
-			EXPECT_EQ(a_vec[j], b_vec[j]);
-	}
+	CStringFeatures<char>* f_clone = (CStringFeatures<char>*)f->clone();
+	EXPECT_EQ(f->equals(f_clone), true);
 
 	SG_UNREF(f);
 	SG_UNREF(f_clone);

@@ -848,89 +848,6 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 	}
 %enddef
 
-%typemap(out) shogun::CFeatures*
-{
-	int feats_class=$1->get_feature_class();
-	int feats_type=$1->get_feature_type();
-
-	switch (feats_class){
-	case C_DENSE:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CDenseFeatures, feats_type)
-		break;
-	}
-
-	case C_SPARSE:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CSparseFeatures, feats_type)
-		break;
-	}
-
-	case C_STRING:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CStringFeatures, feats_type)
-		break;
-	}
-
-	case C_COMBINED:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_COMBINED_DOT:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedDotFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_WD:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CWDFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_SPEC:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CExplicitSpecFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_WEIGHTEDSPEC:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CImplicitWeightedSpecFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_POLY:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CPolyFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_STREAMING_DENSE:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingDenseFeatures, feats_type)
-		break;
-	}
-
-	case C_STREAMING_SPARSE:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingSparseFeatures, feats_type)
-		break;
-	}
-
-	case C_STREAMING_STRING:
-	{
-		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingStringFeatures, feats_type)
-		break;
-	}
-	case C_STREAMING_VW:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CStreamingVwFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_BINNED_DOT:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CBinnedDotFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	case C_DIRECTOR_DOT:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CDirectorDotFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-
-	default:
-		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
-		break;
-	}
-}
-
 #ifdef PYTHON3
 %typemap(typecheck, precedence=SWIG_TYPECHECK_STRING) const char *
 {
@@ -1345,12 +1262,18 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %pythoncode %{
 import sys
 
+# only change the order if you know what you're doing!
+# by default add new getter method names to the end
+# of the list
 _GETTERS = ["get",
+            "get_option",
             "get_real",
             "get_int",
             "get_real_matrix",
             "get_real_vector",
-            "get_int_vector"
+            "get_int_vector",
+            "get_char_string_list",
+            "get_word_string_list"
    ]
 
 _FACTORIES = ["distance",
@@ -1363,7 +1286,13 @@ _FACTORIES = ["distance",
               "transformer",
               "layer",
               "splitting_strategy",
-              "machine_evaluation"
+              "machine_evaluation",
+              "features",
+              "differentiable",
+              "gp_inference",
+              "gp_mean",
+              "gp_likelihood",
+              "loss",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
@@ -1373,9 +1302,9 @@ def _internal_factory_wrapper(object_name, new_name, docstring=None):
     via .put
     """
     _obj = getattr(sys.modules[__name__], object_name)
-    def _internal_factory(name, **kwargs):
+    def _internal_factory(name, *args, **kwargs):
 
-        new_obj = _obj(name)
+        new_obj = _obj(name, *args)
         for k,v in kwargs.items():
             new_obj.put(k, v)
         return new_obj
@@ -1403,7 +1332,7 @@ for getter in _GETTERS:
     _rename_python_function(_shogun.SGObject, getter, _private_getter)
     _internal_getter_methods.append(_shogun.SGObject.__dict__[_private_getter])
 
-def _internal_get_param(self, name):
+def _internal_get_param(self, name, *args):
     """
     Returns the value of the given parameter.
     The return type depends on the parameter,
@@ -1413,7 +1342,7 @@ def _internal_get_param(self, name):
 
     for getter in _internal_getter_methods:
         try:
-            return getter(self, name)
+            return getter(self, name, *args)
         except SystemError:
             pass
         except Exception:

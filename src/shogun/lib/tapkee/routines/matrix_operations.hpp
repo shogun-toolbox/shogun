@@ -11,6 +11,13 @@
 #include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
+#ifdef TAPKEE_WITH_VIENNACL
+	#define VIENNACL_HAVE_EIGEN
+	#include <viennacl/matrix.hpp>
+	#include <viennacl/vector.hpp>
+	#include <viennacl/linalg/prod.hpp>
+#endif
+
 namespace tapkee
 {
 namespace tapkee_internal
@@ -30,16 +37,18 @@ struct SparseInverseMatrixOperation
 	}
 	/** Solves linear system with provided right-hand size
 	 */
-	inline DenseMatrix operator()(const DenseMatrix& operatee)
+	DenseMatrix operator()(const DenseMatrix& operatee)
 	{
 		return solver.solve(operatee);
 	}
 	SparseSolver solver;
-	static const char* ARPACK_CODE;
-	static const bool largest;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("SM");
+		return foo;
+	}
+	static const bool largest = false;
 };
-const char* SparseInverseMatrixOperation::ARPACK_CODE = "SM";
-const bool SparseInverseMatrixOperation::largest = false;
 
 //! Matrix-matrix operation used to
 //! compute smallest eigenvalues and
@@ -55,16 +64,18 @@ struct DenseInverseMatrixOperation
 	}
 	/** Solves linear system with provided right-hand size
 	 */
-	inline DenseMatrix operator()(const DenseMatrix& operatee)
+	DenseMatrix operator()(const DenseMatrix& operatee)
 	{
 		return solver.solve(operatee);
 	}
 	DenseSolver solver;
-	static const char* ARPACK_CODE;
-	static const bool largest;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("SM");
+		return foo;
+	}
+	static const bool largest = false;
 };
-const char* DenseInverseMatrixOperation::ARPACK_CODE = "SM";
-const bool DenseInverseMatrixOperation::largest = false;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
@@ -82,16 +93,18 @@ struct DenseMatrixOperation
 	//!
 	//! @param rhs right-hand size matrix
 	//!
-	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	DenseMatrix operator()(const DenseMatrix& rhs)
 	{
 		return _matrix.selfadjointView<Eigen::Upper>()*rhs;
 	}
 	const DenseMatrix& _matrix;
-	static const char* ARPACK_CODE;
-	static const bool largest;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("LA");
+		return foo;
+	}
+	static const bool largest = true;
 };
-const char* DenseMatrixOperation::ARPACK_CODE = "LM";
-const bool DenseMatrixOperation::largest = true;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
@@ -110,16 +123,18 @@ struct DenseImplicitSquareSymmetricMatrixOperation
 	//!
 	//! @param rhs right-hand side matrix
 	//!
-	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	DenseMatrix operator()(const DenseMatrix& rhs)
 	{
 		return _matrix.selfadjointView<Eigen::Upper>()*(_matrix.selfadjointView<Eigen::Upper>()*rhs);
 	}
 	const DenseMatrix& _matrix;
-	static const char* ARPACK_CODE;
-	static const bool largest;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("LA");
+		return foo;
+	}
+	static const bool largest = true;
 };
-const char* DenseImplicitSquareSymmetricMatrixOperation::ARPACK_CODE = "LM";
-const bool DenseImplicitSquareSymmetricMatrixOperation::largest = true;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
@@ -138,26 +153,27 @@ struct DenseImplicitSquareMatrixOperation
 	//!
 	//! @param rhs right-hand side matrix
 	//!
-	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	DenseMatrix operator()(const DenseMatrix& rhs)
 	{
 		return _matrix*(_matrix.transpose()*rhs);
 	}
 	const DenseMatrix& _matrix;
-	static const char* ARPACK_CODE;
-	static const bool largest;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("LA");
+		return foo;
+	}
+	static constexpr bool largest = true;
 };
-const char* DenseImplicitSquareMatrixOperation::ARPACK_CODE = "LM";
-const bool DenseImplicitSquareMatrixOperation::largest = true;
 
-#ifdef TAPKEE_GPU
+#ifdef TAPKEE_WITH_VIENNACL
 struct GPUDenseImplicitSquareMatrixOperation
 {
 	GPUDenseImplicitSquareMatrixOperation(const DenseMatrix& matrix)
 	{
-		timed_context c("Storing matrices");
 		mat = viennacl::matrix<ScalarType>(matrix.cols(),matrix.rows());
-		vec = viennacl::matrix<ScalarType>(matrix.cols(),1);
-		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
+		vec = viennacl::vector<ScalarType>(matrix.cols());
+		res = viennacl::vector<ScalarType>(matrix.cols());
 		viennacl::copy(matrix,mat);
 	}
 	//! Computes matrix product of the matrix and provided right-hand
@@ -165,33 +181,34 @@ struct GPUDenseImplicitSquareMatrixOperation
 	//!
 	//! @param rhs right-hand side matrix
 	//!
-	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	DenseVector operator()(const DenseVector& rhs)
 	{
-		timed_context c("Computing product");
 		viennacl::copy(rhs,vec);
 		res = viennacl::linalg::prod(mat, vec);
 		vec = res;
 		res = viennacl::linalg::prod(mat, vec);
-		DenseMatrix result(rhs);
+		DenseVector result(rhs);
 		viennacl::copy(res,result);
 		return result;
 	}
 	viennacl::matrix<ScalarType> mat;
-	viennacl::matrix<ScalarType> vec;
-	viennacl::matrix<ScalarType> res;
-	static const char* ARPACK_CODE;
-	static bool largest;
+	viennacl::vector<ScalarType> vec;
+	viennacl::vector<ScalarType> res;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("LA");
+		return foo;
+	}
+	static const bool largest = true;
 };
-const char* GPUDenseImplicitSquareMatrixOperation::ARPACK_CODE = "LM";
-const bool GPUDenseImplicitSquareMatrixOperation::largest = true;
 
 struct GPUDenseMatrixOperation
 {
 	GPUDenseMatrixOperation(const DenseMatrix& matrix)
 	{
 		mat = viennacl::matrix<ScalarType>(matrix.cols(),matrix.rows());
-		vec = viennacl::matrix<ScalarType>(matrix.cols(),1);
-		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
+		vec = viennacl::vector<ScalarType>(matrix.cols());
+		res = viennacl::vector<ScalarType>(matrix.cols());
 		viennacl::copy(matrix,mat);
 	}
 	//! Computes matrix product of the matrix and provided right-hand
@@ -199,22 +216,24 @@ struct GPUDenseMatrixOperation
 	//!
 	//! @param rhs right-hand side matrix
 	//!
-	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	DenseVector operator()(const DenseVector& rhs)
 	{
 		viennacl::copy(rhs,vec);
 		res = viennacl::linalg::prod(mat, vec);
-		DenseMatrix result(rhs);
+		DenseVector result(rhs);
 		viennacl::copy(res,result);
 		return result;
 	}
 	viennacl::matrix<ScalarType> mat;
-	viennacl::matrix<ScalarType> vec;
-	viennacl::matrix<ScalarType> res;
-	static const char* ARPACK_CODE;
-	static bool largest;
+	viennacl::vector<ScalarType> vec;
+	viennacl::vector<ScalarType> res;
+	static const std::string& ARPACK_CODE()
+	{
+		static std::string foo("LA");
+		return foo;
+	}
+	static const bool largest = true;
 };
-const char* GPUDenseMatrixOperation::ARPACK_CODE = "LM";
-const bool GPUDenseMatrixOperation::largest = true;
 #endif
 
 }

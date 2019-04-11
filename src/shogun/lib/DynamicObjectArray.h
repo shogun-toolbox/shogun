@@ -235,6 +235,12 @@ class CDynamicObjectArray : public CSGObject
 			return e;
 		}
 
+#ifndef SWIG
+		SG_FORCED_INLINE CSGObject* at(int32_t index) const
+		{
+			return get_element_safe(index);
+		}
+#endif
 		/** set array element at index
 		 *
 		 * @param e element to set
@@ -295,6 +301,13 @@ class CDynamicObjectArray : public CSGObject
 		inline bool append_element(SGMatrix<T> e, const char* name="")
 		{
 			auto serialized_element = new CMatrixSerializable<T>(e, name);
+			return append_element(serialized_element);
+		}
+
+		template <typename T>
+		inline bool append_element(SGStringList<T> e, const char* name="")
+		{
+			auto serialized_element = new CStringListSerializable<T>(e, name);
 			return append_element(serialized_element);
 		}
 
@@ -452,7 +465,7 @@ class CDynamicObjectArray : public CSGObject
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual CSGObject* clone()
+		virtual CSGObject* clone() const
 		{
 			CDynamicObjectArray* cloned = (CDynamicObjectArray*) CSGObject::clone();
 			// Since the array vector is registered with

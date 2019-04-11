@@ -73,8 +73,10 @@ public:
 	 */
 	virtual void set_kernel(CKernel* kernel);
 
+#ifndef SWIG
 	/** @return The kernel instance that is presently being used for performing the test */
 	CKernel* get_kernel() const;
+#endif //SWIG
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

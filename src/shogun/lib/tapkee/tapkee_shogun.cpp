@@ -74,7 +74,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
 	ShogunFeatureVectorCallback features_callback(parameters.features);
 
-	tapkee::DimensionReductionMethod method;
+	tapkee::DimensionReductionMethod method = tapkee::PCA;
 #ifdef HAVE_ARPACK
 	tapkee::EigenMethod eigen_method = tapkee::Arpack;
 #else
@@ -157,23 +157,23 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		indices[i] = i;
 
 	tapkee::ParametersSet parameters_set =
-		(tapkee::keywords::method=method,
-		 tapkee::keywords::eigen_method=eigen_method,
-		 tapkee::keywords::neighbors_method=neighbors_method,
-		 tapkee::keywords::num_neighbors=parameters.n_neighbors,
-		 tapkee::keywords::diffusion_map_timesteps = parameters.n_timesteps,
-		 tapkee::keywords::target_dimension = parameters.target_dimension,
-		 tapkee::keywords::spe_num_updates = parameters.spe_num_updates,
-		 tapkee::keywords::nullspace_shift = parameters.eigenshift,
-		 tapkee::keywords::landmark_ratio = parameters.landmark_ratio,
-		 tapkee::keywords::gaussian_kernel_width = parameters.gaussian_kernel_width,
-		 tapkee::keywords::spe_tolerance = parameters.spe_tolerance,
-		 tapkee::keywords::spe_global_strategy = parameters.spe_global_strategy,
-		 tapkee::keywords::max_iteration = parameters.max_iteration,
-		 tapkee::keywords::fa_epsilon = parameters.fa_epsilon,
-		 tapkee::keywords::sne_perplexity = parameters.sne_perplexity,
-		 tapkee::keywords::sne_theta = parameters.sne_theta,
-		 tapkee::keywords::squishing_rate = parameters.squishing_rate
+		(tapkee::method=method,
+		 tapkee::eigen_method=eigen_method,
+		 tapkee::neighbors_method=neighbors_method,
+		 tapkee::num_neighbors=parameters.n_neighbors,
+		 tapkee::diffusion_map_timesteps = parameters.n_timesteps,
+		 tapkee::target_dimension = parameters.target_dimension,
+		 tapkee::spe_num_updates = parameters.spe_num_updates,
+		 tapkee::nullspace_shift = parameters.eigenshift,
+		 tapkee::landmark_ratio = parameters.landmark_ratio,
+		 tapkee::gaussian_kernel_width = parameters.gaussian_kernel_width,
+		 tapkee::spe_tolerance = parameters.spe_tolerance,
+		 tapkee::spe_global_strategy = parameters.spe_global_strategy,
+		 tapkee::max_iteration = parameters.max_iteration,
+		 tapkee::fa_epsilon = parameters.fa_epsilon,
+		 tapkee::sne_perplexity = parameters.sne_perplexity,
+		 tapkee::sne_theta = parameters.sne_theta,
+		 tapkee::squishing_rate = parameters.squishing_rate
 		 );
 
 	tapkee::TapkeeOutput output = tapkee::embed(indices.begin(),indices.end(),

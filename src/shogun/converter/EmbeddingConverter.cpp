@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Evan Shelhamer, Thoralf Klein, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Evan Shelhamer, Thoralf Klein, Soeren Sonnenburg,
  *          Chiyuan Zhang
  */
 
@@ -18,7 +18,9 @@ CEmbeddingConverter::CEmbeddingConverter()
 {
 	m_target_dim = 1;
 	m_distance = new CEuclideanDistance();
+	SG_REF(m_distance);
 	m_kernel = new CLinearKernel();
+	SG_REF(m_kernel);
 
 	init();
 }

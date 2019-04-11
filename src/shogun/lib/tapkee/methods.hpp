@@ -11,7 +11,6 @@
 #include <shogun/lib/tapkee/utils/naming.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
-#include <shogun/lib/tapkee/utils/conditional_select.hpp>
 #include <shogun/lib/tapkee/utils/features.hpp>
 #include <shogun/lib/tapkee/parameters/defaults.hpp>
 #include <shogun/lib/tapkee/parameters/context.hpp>
@@ -37,6 +36,64 @@ namespace tapkee
 namespace tapkee_internal
 {
 
+template <typename T>
+struct Positivity
+{
+	inline bool operator()(T v) const
+	{
+		return v>0;
+	}
+	inline std::string failureMessage(const stichwort::Parameter& p) const
+	{
+		return formatting::format("Positivity check failed for {}, its value is {}", p.name(), p.repr());
+	}
+};
+
+template <typename T>
+struct NonNegativity
+{
+	inline bool operator()(T v) const
+	{
+		return v>=0;
+	}
+	inline std::string failureMessage(const stichwort::Parameter& p) const
+	{
+		return formatting::format("Non-negativity check failed for {}, its value is {}", p.name(), p.repr());
+	}
+};
+
+template <typename T>
+struct InRange
+{
+	InRange(T l, T u) : lower(l), upper(u) { }
+	inline bool operator()(T v) const
+	{
+		return (v>=lower) && (v<upper);
+	}
+	T lower;
+	T upper;
+	inline std::string failureMessage(const stichwort::Parameter& p) const
+	{
+		return formatting::format("[{}, {}) range check failed for {}, its value is {}", lower, upper, p.name(), p.repr());
+	}
+};
+
+template <typename T>
+struct InClosedRange
+{
+	InClosedRange(T l, T u) : lower(l), upper(u) { }
+	inline bool operator()(T v) const
+	{
+		return (v>=lower) && (v<=upper);
+	}
+	T lower;
+	T upper;
+	inline std::string failureMessage(const stichwort::Parameter& p) const
+	{
+		return formatting::format("[{}, {}] range check failed for {}, its value is {}", lower, upper, p.name(), p.repr());
+	}
+};
+
 template <class RandomAccessIterator, class KernelCallback,
           class DistanceCallback, class FeaturesCallback>
 class ImplementationBase
@@ -49,51 +106,49 @@ public:
 		parameters(pmap), context(ctx), kernel(k), distance(d), features(f),
 		plain_distance(PlainDistance<RandomAccessIterator,DistanceCallback>(distance)),
 		kernel_distance(KernelDistance<RandomAccessIterator,KernelCallback>(kernel)),
-		begin(b), end(e),
-		eigen_method(), neighbors_method(), eigenshift(), traceshift(),
-		check_connectivity(), n_neighbors(), width(), timesteps(),
-		ratio(), max_iteration(), tolerance(), n_updates(), perplexity(),
-		theta(), squishing_rate(), global_strategy(), epsilon(), target_dimension(),
+		begin(b), end(e), p_computation_strategy(),
+		p_eigen_method(), p_neighbors_method(), p_eigenshift(), p_traceshift(),
+		p_check_connectivity(), p_n_neighbors(), p_width(), p_timesteps(),
+		p_ratio(), p_max_iteration(), p_tolerance(), p_n_updates(), p_perplexity(),
+		p_theta(), p_squishing_rate(), p_global_strategy(), p_epsilon(), p_target_dimension(),
 		n_vectors(0), current_dimension(0)
 	{
 		n_vectors = (end-begin);
 
-		target_dimension = parameters(keywords::target_dimension);
-		n_neighbors = parameters(keywords::num_neighbors).checked().positive();
+		p_target_dimension = parameters[target_dimension];
+		p_n_neighbors = parameters[num_neighbors].checked().satisfies(Positivity<IndexType>());
 
 		if (n_vectors > 0)
 		{
-			target_dimension.checked()
-				.inRange(static_cast<IndexType>(1),static_cast<IndexType>(n_vectors));
-			n_neighbors.checked()
-				.inRange(static_cast<IndexType>(3),static_cast<IndexType>(n_vectors));
+			p_target_dimension.checked().satisfies(InRange<IndexType>(1,n_vectors));
+			p_n_neighbors.checked().satisfies(InRange<IndexType>(3,n_vectors));
 		}
+		if (n_vectors == 0)
+			throw no_data_error();
 
-		eigen_method = parameters(keywords::eigen_method);
-		neighbors_method = parameters(keywords::neighbors_method);
-		check_connectivity = parameters(keywords::check_connectivity);
-		width = parameters(keywords::gaussian_kernel_width).checked().positive();
-		timesteps = parameters(keywords::diffusion_map_timesteps).checked().positive();
-		eigenshift = parameters(keywords::nullspace_shift);
-		traceshift = parameters(keywords::klle_shift);
-		max_iteration = parameters(keywords::max_iteration);
-		tolerance = parameters(keywords::spe_tolerance).checked().positive();
-		n_updates = parameters(keywords::spe_num_updates).checked().positive();
-		theta = parameters(keywords::sne_theta).checked().nonNegative();
-		squishing_rate = parameters(keywords::squishing_rate);
-		global_strategy = parameters(keywords::spe_global_strategy);
-		epsilon = parameters(keywords::fa_epsilon).checked().nonNegative();
-		perplexity = parameters(keywords::sne_perplexity).checked().nonNegative();
-		ratio = parameters(keywords::landmark_ratio);
+
+		p_computation_strategy = parameters[computation_strategy];
+		p_eigen_method = parameters[eigen_method];
+		p_neighbors_method = parameters[neighbors_method];
+		p_check_connectivity = parameters[check_connectivity];
+		p_width = parameters[gaussian_kernel_width].checked().satisfies(Positivity<ScalarType>());
+		p_timesteps = parameters[diffusion_map_timesteps].checked().satisfies(Positivity<IndexType>());
+		p_eigenshift = parameters[nullspace_shift];
+		p_traceshift = parameters[klle_shift];
+		p_max_iteration = parameters[max_iteration];
+		p_tolerance = parameters[spe_tolerance].checked().satisfies(Positivity<ScalarType>());
+		p_n_updates = parameters[spe_num_updates].checked().satisfies(Positivity<IndexType>());
+		p_theta = parameters[sne_theta].checked().satisfies(NonNegativity<ScalarType>());
+		p_squishing_rate = parameters[squishing_rate];
+		p_global_strategy = parameters[spe_global_strategy];
+		p_epsilon = parameters[fa_epsilon].checked().satisfies(NonNegativity<ScalarType>());
+		p_perplexity = parameters[sne_perplexity].checked().satisfies(NonNegativity<ScalarType>());
+		p_ratio = parameters[landmark_ratio];
 
 		if (!is_dummy<FeaturesCallback>::value)
-		{
 			current_dimension = features.dimension();
-		}
 		else
-		{
 			current_dimension = 0;
-		}
 	}
 
 	TapkeeOutput embedUsing(DimensionReductionMethod method)
@@ -101,23 +156,21 @@ public:
 		if (context.is_cancelled())
 			throw cancelled_exception();
 
-		using std::mem_fun_ref_t;
-		using std::mem_fun_ref;
-		typedef std::mem_fun_ref_t<TapkeeOutput,ImplementationBase> ImplRef;
-
 #define tapkee_method_handle(X)																	\
 		case X:																					\
 		{																						\
 			timed_context tctx__("[+] embedding with " # X);									\
-			ImplRef ref = conditional_select<													\
+			if (																				\
 				((!MethodTraits<X>::needs_kernel)   || (!is_dummy<KernelCallback>::value))   &&	\
 				((!MethodTraits<X>::needs_distance) || (!is_dummy<DistanceCallback>::value)) &&	\
-				((!MethodTraits<X>::needs_features) || (!is_dummy<FeaturesCallback>::value)),	\
-					ImplRef>()(mem_fun_ref(&ImplementationBase::embed##X),						\
-					           mem_fun_ref(&ImplementationBase::embedEmpty));					\
-			return ref(*this);																	\
+				((!MethodTraits<X>::needs_features) || (!is_dummy<FeaturesCallback>::value))	\
+			) {																					\
+				return ImplementationBase::embed##X();											\
+			} else {																			\
+				return ImplementationBase::embedEmpty();										\
+			}																					\
 		}																						\
-		break																					\
+		break;																					\
 
 		switch (method)
 		{
@@ -148,9 +201,6 @@ public:
 
 private:
 
-	static const IndexType SkipOneEigenvalue = 1;
-	static const IndexType SkipNoEigenvalues = 0;
-
 	ParametersSet parameters;
 	Context context;
 	KernelCallback kernel;
@@ -162,24 +212,25 @@ private:
 	RandomAccessIterator begin;
 	RandomAccessIterator end;
 
-	Parameter eigen_method;
-	Parameter neighbors_method;
-	Parameter eigenshift;
-	Parameter traceshift;
-	Parameter check_connectivity;
-	Parameter n_neighbors;
-	Parameter width;
-	Parameter timesteps;
-	Parameter ratio;
-	Parameter max_iteration;
-	Parameter tolerance;
-	Parameter n_updates;
-	Parameter perplexity;
-	Parameter theta;
-	Parameter squishing_rate;
-	Parameter global_strategy;
-	Parameter epsilon;
-	Parameter target_dimension;
+	Parameter p_computation_strategy;
+	Parameter p_eigen_method;
+	Parameter p_neighbors_method;
+	Parameter p_eigenshift;
+	Parameter p_traceshift;
+	Parameter p_check_connectivity;
+	Parameter p_n_neighbors;
+	Parameter p_width;
+	Parameter p_timesteps;
+	Parameter p_ratio;
+	Parameter p_max_iteration;
+	Parameter p_tolerance;
+	Parameter p_n_updates;
+	Parameter p_perplexity;
+	Parameter p_theta;
+	Parameter p_squishing_rate;
+	Parameter p_global_strategy;
+	Parameter p_epsilon;
+	Parameter p_target_dimension;
 
 	IndexType n_vectors;
 	IndexType current_dimension;
@@ -187,7 +238,7 @@ private:
 	template<class Distance>
 	Neighbors findNeighborsWith(Distance d)
 	{
-		return find_neighbors(neighbors_method,begin,end,d,n_neighbors,check_connectivity);
+		return find_neighbors(p_neighbors_method,begin,end,d,p_n_neighbors,p_check_connectivity);
 	}
 
 	static tapkee::ProjectingFunction unimplementedProjectingFunction()
@@ -205,10 +256,10 @@ private:
 	{
 		Neighbors neighbors = findNeighborsWith(kernel_distance);
 		SparseWeightMatrix weight_matrix =
-			linear_weight_matrix(begin,end,neighbors,kernel,eigenshift,traceshift);
+			linear_weight_matrix(begin,end,neighbors,kernel,p_eigenshift,p_traceshift);
 		DenseMatrix embedding =
-			eigendecomposition<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-				weight_matrix,target_dimension,SkipOneEigenvalue).first;
+			eigendecomposition(p_eigen_method,p_computation_strategy,SmallestEigenvalues,
+					weight_matrix,p_target_dimension).first;
 
 		return TapkeeOutput(embedding, unimplementedProjectingFunction());
 	}
@@ -217,49 +268,42 @@ private:
 	{
 		Neighbors neighbors = findNeighborsWith(kernel_distance);
 		SparseWeightMatrix weight_matrix =
-			tangent_weight_matrix(begin,end,neighbors,kernel,target_dimension,eigenshift);
+			tangent_weight_matrix(begin,end,neighbors,kernel,p_target_dimension,p_eigenshift);
 		DenseMatrix embedding =
-			eigendecomposition<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-				weight_matrix,target_dimension,SkipOneEigenvalue).first;
+			eigendecomposition(p_eigen_method,p_computation_strategy,SmallestEigenvalues,
+					weight_matrix,p_target_dimension).first;
 
 		return TapkeeOutput(embedding, unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedDiffusionMap()
 	{
-		#ifdef TAPKEE_GPU
-			#define DM_MATRIX_OP GPUDenseImplicitSquareMatrixOperation
-		#else
-			#define DM_MATRIX_OP DenseImplicitSquareSymmetricMatrixOperation
-		#endif
-
+		IndexType target_dimension = static_cast<IndexType>(p_target_dimension);
+		Parameter target_dimension_add = Parameter::create("target_dimension", target_dimension + 1);
 		DenseSymmetricMatrix diffusion_matrix =
-			compute_diffusion_matrix(begin,end,distance,timesteps,width);
-		DenseMatrix embedding =
-			eigendecomposition<DenseSymmetricMatrix,DM_MATRIX_OP>(eigen_method,diffusion_matrix,
-				target_dimension,SkipNoEigenvalues).first;
-
+			compute_diffusion_matrix(begin,end,distance,p_width);
+		EigendecompositionResult decomposition_result = eigendecomposition(p_eigen_method,p_computation_strategy,
+							LargestEigenvalues,diffusion_matrix,target_dimension_add);
+		DenseMatrix embedding = (decomposition_result.first).leftCols(target_dimension);
+		// scaling with lambda_i^t
+		for (IndexType i=0; i<target_dimension; i++)
+			embedding.col(i).array() *= pow(decomposition_result.second(i), static_cast<IndexType>(p_timesteps));
+		// scaling by eigenvector to largest eigenvalue 1
+		for (IndexType i=0; i<target_dimension; i++)
+			embedding.col(i).array() /= decomposition_result.first.col(target_dimension).array();
 		return TapkeeOutput(embedding, unimplementedProjectingFunction());
-
-		#undef DM_MATRIX_OP
 	}
 
 	TapkeeOutput embedMultidimensionalScaling()
 	{
-		#ifdef TAPKEE_GPU
-			#define MDS_MATRIX_OP GPUDenseImplicitSquareMatrixOperation
-		#else
-			#define MDS_MATRIX_OP DenseMatrixOperation
-		#endif
-
 		DenseSymmetricMatrix distance_matrix = compute_distance_matrix(begin,end,distance);
 		centerMatrix(distance_matrix);
 		distance_matrix.array() *= -0.5;
 		EigendecompositionResult embedding =
-			eigendecomposition<DenseSymmetricMatrix,MDS_MATRIX_OP>(eigen_method,
-				distance_matrix,target_dimension,SkipNoEigenvalues);
+			eigendecomposition(p_eigen_method,p_computation_strategy,LargestEigenvalues,
+					distance_matrix,p_target_dimension);
 
-		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+		for (IndexType i=0; i<static_cast<IndexType>(p_target_dimension); i++)
 			embedding.first.col(i).array() *= sqrt(embedding.second(i));
 		return TapkeeOutput(embedding.first, unimplementedProjectingFunction());
 		#undef MDS_MATRIX_OP
@@ -267,24 +311,22 @@ private:
 
 	TapkeeOutput embedLandmarkMultidimensionalScaling()
 	{
-		ratio.checked()
-			.inClosedRange(static_cast<ScalarType>(3.0/n_vectors),
-			               static_cast<ScalarType>(1.0));
+		p_ratio.checked().satisfies(InClosedRange<ScalarType>(3.0/n_vectors,1.0));
 
 		Landmarks landmarks =
-			select_landmarks_random(begin,end,ratio);
+			select_landmarks_random(begin,end,p_ratio);
 		DenseSymmetricMatrix distance_matrix =
 			compute_distance_matrix(begin,end,landmarks,distance);
 		DenseVector landmark_distances_squared = distance_matrix.colwise().mean();
 		centerMatrix(distance_matrix);
 		distance_matrix.array() *= -0.5;
 		EigendecompositionResult landmarks_embedding =
-			eigendecomposition<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-				distance_matrix,target_dimension,SkipNoEigenvalues);
-		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+			eigendecomposition(p_eigen_method,p_computation_strategy,LargestEigenvalues,
+					distance_matrix,p_target_dimension);
+		for (IndexType i=0; i<static_cast<IndexType>(p_target_dimension); i++)
 			landmarks_embedding.first.col(i).array() *= sqrt(landmarks_embedding.second(i));
 		return TapkeeOutput(triangulate(begin,end,distance,landmarks,
-			landmark_distances_squared,landmarks_embedding,target_dimension), unimplementedProjectingFunction());
+			landmark_distances_squared,landmarks_embedding,p_target_dimension), unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedIsomap()
@@ -297,10 +339,10 @@ private:
 		shortest_distances_matrix.array() *= -0.5;
 
 		EigendecompositionResult embedding =
-			eigendecomposition<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-				shortest_distances_matrix,target_dimension,SkipNoEigenvalues);
+			eigendecomposition(p_eigen_method,p_computation_strategy,LargestEigenvalues,
+					shortest_distances_matrix,p_target_dimension);
 
-		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+		for (IndexType i=0; i<static_cast<IndexType>(p_target_dimension); i++)
 			embedding.first.col(i).array() *= sqrt(embedding.second(i));
 
 		return TapkeeOutput(embedding.first, unimplementedProjectingFunction());
@@ -308,13 +350,11 @@ private:
 
 	TapkeeOutput embedLandmarkIsomap()
 	{
-		ratio.checked()
-			.inClosedRange(static_cast<ScalarType>(3.0/n_vectors),
-			               static_cast<ScalarType>(1.0));
+		p_ratio.checked().satisfies(InClosedRange<ScalarType>(3.0/n_vectors,1.0));
 
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 		Landmarks landmarks =
-			select_landmarks_random(begin,end,ratio);
+			select_landmarks_random(begin,end,p_ratio);
 		DenseMatrix distance_matrix =
 			compute_shortest_distances_matrix(begin,end,landmarks,neighbors,distance);
 		distance_matrix = distance_matrix.array().square();
@@ -329,21 +369,21 @@ private:
 
 		EigendecompositionResult landmarks_embedding;
 
-		if (eigen_method.is(Dense))
+		if (p_eigen_method.is(Dense))
 		{
 			DenseMatrix distance_matrix_sym = distance_matrix*distance_matrix.transpose();
-			landmarks_embedding = eigendecomposition<DenseSymmetricMatrix,DenseImplicitSquareMatrixOperation>
-				(eigen_method,distance_matrix_sym,target_dimension,SkipNoEigenvalues);
+			landmarks_embedding = eigendecomposition(p_eigen_method,p_computation_strategy,
+					LargestEigenvalues,distance_matrix_sym,p_target_dimension);
 		}
 		else
 		{
-			landmarks_embedding = eigendecomposition<DenseSymmetricMatrix,DenseImplicitSquareMatrixOperation>
-				(eigen_method,distance_matrix,target_dimension,SkipNoEigenvalues);
+			landmarks_embedding = eigendecomposition(p_eigen_method,p_computation_strategy,
+					SquaredLargestEigenvalues,distance_matrix,p_target_dimension);
 		}
 
 		DenseMatrix embedding = distance_matrix.transpose()*landmarks_embedding.first;
 
-		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+		for (IndexType i=0; i<static_cast<IndexType>(p_target_dimension); i++)
 			embedding.col(i).array() /= sqrt(sqrt(landmarks_embedding.second(i)));
 		return TapkeeOutput(embedding,unimplementedProjectingFunction());
 	}
@@ -352,13 +392,13 @@ private:
 	{
 		Neighbors neighbors = findNeighborsWith(kernel_distance);
 		SparseWeightMatrix weight_matrix =
-			linear_weight_matrix(begin,end,neighbors,kernel,eigenshift,traceshift);
+			linear_weight_matrix(begin,end,neighbors,kernel,p_eigenshift,p_traceshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_neighborhood_preserving_eigenproblem(weight_matrix,begin,end,
 				features,current_dimension);
 		EigendecompositionResult projection_result =
-			generalized_eigendecomposition<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SkipNoEigenvalues);
+			generalized_eigendecomposition(p_eigen_method,p_computation_strategy,
+					SmallestEigenvalues,eig_matrices.first,eig_matrices.second,p_target_dimension);
 		DenseVector mean_vector =
 			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
@@ -369,31 +409,33 @@ private:
 	{
 		Neighbors neighbors = findNeighborsWith(kernel_distance);
 		SparseWeightMatrix weight_matrix =
-			hessian_weight_matrix(begin,end,neighbors,kernel,target_dimension);
-		return TapkeeOutput(eigendecomposition<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-			weight_matrix,target_dimension,SkipOneEigenvalue).first, unimplementedProjectingFunction());
+			hessian_weight_matrix(begin,end,neighbors,kernel,p_target_dimension);
+		return TapkeeOutput(eigendecomposition(p_eigen_method,p_computation_strategy,
+					SmallestEigenvalues,weight_matrix,p_target_dimension).first,
+				unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedLaplacianEigenmaps()
 	{
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 		Laplacian laplacian =
-			compute_laplacian(begin,end,neighbors,distance,width);
-		return TapkeeOutput(generalized_eigendecomposition<SparseWeightMatrix,DenseDiagonalMatrix,SparseInverseMatrixOperation>(
-			eigen_method,laplacian.first,laplacian.second,target_dimension,SkipOneEigenvalue).first, unimplementedProjectingFunction());
+			compute_laplacian(begin,end,neighbors,distance,p_width);
+		return TapkeeOutput(generalized_eigendecomposition(p_eigen_method,p_computation_strategy,
+					SmallestEigenvalues,laplacian.first,laplacian.second,p_target_dimension).first,
+				unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedLocalityPreservingProjections()
 	{
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 		Laplacian laplacian =
-			compute_laplacian(begin,end,neighbors,distance,width);
+			compute_laplacian(begin,end,neighbors,distance,p_width);
 		DenseSymmetricMatrixPair eigenproblem_matrices =
 			construct_locality_preserving_eigenproblem(laplacian.first,laplacian.second,begin,end,
 					features,current_dimension);
 		EigendecompositionResult projection_result =
-			generalized_eigendecomposition<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SkipNoEigenvalues);
+			generalized_eigendecomposition(p_eigen_method,p_computation_strategy,
+					SmallestEigenvalues,eigenproblem_matrices.first,eigenproblem_matrices.second,p_target_dimension);
 		DenseVector mean_vector =
 			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
@@ -407,7 +449,8 @@ private:
 		DenseSymmetricMatrix centered_covariance_matrix =
 			compute_covariance_matrix(begin,end,mean_vector,features,current_dimension);
 		EigendecompositionResult projection_result =
-			eigendecomposition<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SkipNoEigenvalues);
+			eigendecomposition(p_eigen_method,p_computation_strategy,
+					LargestEigenvalues,centered_covariance_matrix,p_target_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
 		return TapkeeOutput(project(projection_result.first,mean_vector,begin,end,features,current_dimension), projecting_function);
 	}
@@ -415,7 +458,7 @@ private:
 	TapkeeOutput embedRandomProjection()
 	{
 		DenseMatrix projection_matrix =
-			gaussian_projection_matrix(current_dimension, target_dimension);
+			gaussian_projection_matrix(current_dimension,p_target_dimension);
 		DenseVector mean_vector =
 			compute_mean(begin,end,features,current_dimension);
 
@@ -427,9 +470,9 @@ private:
 	{
 		DenseSymmetricMatrix centered_kernel_matrix =
 			compute_centered_kernel_matrix(begin,end,kernel);
-		EigendecompositionResult embedding = eigendecomposition<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-			centered_kernel_matrix,target_dimension,SkipNoEigenvalues);
-		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+		EigendecompositionResult embedding = eigendecomposition(p_eigen_method,p_computation_strategy,
+				LargestEigenvalues,centered_kernel_matrix,p_target_dimension);
+		for (IndexType i=0; i<static_cast<IndexType>(p_target_dimension); i++)
 			embedding.first.col(i).array() *= sqrt(embedding.second(i));
 		return TapkeeOutput(embedding.first, unimplementedProjectingFunction());
 	}
@@ -438,13 +481,13 @@ private:
 	{
 		Neighbors neighbors = findNeighborsWith(kernel_distance);
 		SparseWeightMatrix weight_matrix =
-			tangent_weight_matrix(begin,end,neighbors,kernel,target_dimension,eigenshift);
+			tangent_weight_matrix(begin,end,neighbors,kernel,p_target_dimension,p_eigenshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_lltsa_eigenproblem(weight_matrix,begin,end,
 				features,current_dimension);
 		EigendecompositionResult projection_result =
-			generalized_eigendecomposition<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SkipNoEigenvalues);
+			generalized_eigendecomposition(p_eigen_method,p_computation_strategy,SmallestEigenvalues,
+					eig_matrices.first,eig_matrices.second,p_target_dimension);
 		DenseVector mean_vector =
 			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
@@ -455,13 +498,13 @@ private:
 	TapkeeOutput embedStochasticProximityEmbedding()
 	{
 		Neighbors neighbors;
-		if (global_strategy.is(false))
+		if (p_global_strategy.is(false))
 		{
 			neighbors = findNeighborsWith(plain_distance);
 		}
 
 		return TapkeeOutput(spe_embedding(begin,end,distance,neighbors,
-				target_dimension,global_strategy,tolerance,n_updates,max_iteration), unimplementedProjectingFunction());
+				p_target_dimension,p_global_strategy,p_tolerance,p_n_updates,p_max_iteration), unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedPassThru()
@@ -474,38 +517,34 @@ private:
 	TapkeeOutput embedFactorAnalysis()
 	{
 		DenseVector mean_vector = compute_mean(begin,end,features,current_dimension);
-		return TapkeeOutput(project(begin,end,features,current_dimension,max_iteration,epsilon,
-									target_dimension, mean_vector), unimplementedProjectingFunction());
+		return TapkeeOutput(project(begin,end,features,current_dimension,p_max_iteration,p_epsilon,
+									p_target_dimension, mean_vector), unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedtDistributedStochasticNeighborEmbedding()
 	{
-		perplexity.checked()
-			.inClosedRange(static_cast<ScalarType>(0.0),
-			               static_cast<ScalarType>((n_vectors-1)/3.0));
+		p_perplexity.checked().satisfies(InClosedRange<ScalarType>(0.0,(n_vectors-1)/3.0));
 
 		DenseMatrix data =
 			dense_matrix_from_features(features, current_dimension, begin, end);
 
-		DenseMatrix embedding(static_cast<IndexType>(target_dimension),n_vectors);
+		DenseMatrix embedding(static_cast<IndexType>(p_target_dimension),n_vectors);
 		tsne::TSNE tsne;
-		tsne.run(data.data(),n_vectors,current_dimension,embedding.data(),target_dimension,perplexity,theta);
+		tsne.run(data,data.cols(),data.rows(),embedding.data(),p_target_dimension,p_perplexity,p_theta);
 
 		return TapkeeOutput(embedding.transpose(), unimplementedProjectingFunction());
 	}
 
 	TapkeeOutput embedManifoldSculpting()
 	{
-		squishing_rate.checked()
-			.inRange(static_cast<ScalarType>(0.0),
-			         static_cast<ScalarType>(1.0));
+		p_squishing_rate.checked().satisfies(InRange<ScalarType>(0.0,1.0));
 
 		DenseMatrix embedding =
 			dense_matrix_from_features(features, current_dimension, begin, end);
 
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 
-		manifold_sculpting_embed(begin, end, embedding, target_dimension, neighbors, distance, max_iteration, squishing_rate);
+		manifold_sculpting_embed(begin, end, embedding, p_target_dimension, neighbors, distance, p_max_iteration, p_squishing_rate);
 
 		return TapkeeOutput(embedding, tapkee::ProjectingFunction());
 	}
@@ -517,7 +556,7 @@ template <class RandomAccessIterator, class KernelCallback,
 ImplementationBase<RandomAccessIterator,KernelCallback,DistanceCallback,FeaturesCallback>
 	initialize(RandomAccessIterator begin, RandomAccessIterator end,
 	           KernelCallback kernel, DistanceCallback distance, FeaturesCallback features,
-	           ParametersSet& pmap, const Context& ctx)
+	           stichwort::ParametersSet& pmap, const Context& ctx)
 {
 	return ImplementationBase<RandomAccessIterator,KernelCallback,DistanceCallback,FeaturesCallback>(
 			begin,end,kernel,distance,features,pmap,ctx);

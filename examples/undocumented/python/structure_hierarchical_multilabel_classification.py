@@ -8,9 +8,9 @@ multi-label classification. The data used:
 """
 
 from shogun import MultilabelSOLabels, HierarchicalMultilabelModel
-from shogun import RealFeatures
 from shogun import StochasticSOSVM
 from shogun import StructuredAccuracy
+import shogun as sg
 import numpy as np
 import time
 
@@ -79,7 +79,7 @@ def get_data(data, shogun_labels):
             features = feats
         labels.set_sparse_label(i, labs)
 
-    return RealFeatures(features), labels
+    return sg.features(features), labels
 
 
 def get_features_labels(input_file):

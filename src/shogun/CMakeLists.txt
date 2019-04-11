@@ -263,10 +263,10 @@ if (NOT MSVC)
   else()
     message(STATUS "Using system's malloc")
     include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-faligned-new" HAS_ALIGNED_NEW)
-    if (HAS_ALIGNED_NEW)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-new")
-    endif()
+
+    # FIXME: add support for aligned new
+    # this is c++17
+    #CHECK_CXX_COMPILER_FLAG("-faligned-new" HAVE_ALIGNED_NEW)
     check_function_exists("aligned_alloc" HAVE_STD_ALIGNED_ALLOC)
 
     if (NOT HAVE_STD_ALIGNED_ALLOC)
@@ -278,6 +278,8 @@ if (NOT MSVC)
           SET(HAVE_ALIGNED_MALLOC 1)
         endif()
       endif()
+    else()
+      SET(HAVE_ALIGNED_MALLOC 1)
     endif()
   endif()
 endif()
@@ -588,6 +590,7 @@ IF (BUILD_BENCHMARKS)
   ADD_SHOGUN_BENCHMARK(lib/RefCount_benchmark)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/BasicOps_benchmark)
   ADD_SHOGUN_BENCHMARK(mathematics/linalg/backend/eigen/Misc_benchmark)
+  ADD_SHOGUN_BENCHMARK(lib/SGMatrix_benchmark)
 ENDIF()
 
 #############################################

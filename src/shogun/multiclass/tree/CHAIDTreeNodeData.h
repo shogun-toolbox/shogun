@@ -71,20 +71,19 @@ struct CHAIDTreeNodeData
 		total_weight=0.;
 		weight_minus_node=0.;
 	}
-
-	/** print data
-	 * @param data the data to be printed
-	 */
-	static void print_data(const CHAIDTreeNodeData &data)
-	{
-		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
-		data.distinct_features.display_vector(data.distinct_features.vector,data.distinct_features.vlen, "distinct feature values");
-		data.feature_class.display_vector(data.feature_class.vector,data.feature_class.vlen, "categories of features");
-		SG_SPRINT("total weight=%f\n", data.total_weight);
-		SG_SPRINT("errored weight of node=%f\n", data.weight_minus_node);
-	}
 };
 
+template<class T>
+constexpr void register_params(CHAIDTreeNodeData& n, T* o)
+{
+	o->watch_param("attribute_id", &n.attribute_id, AnyParameterProperties("classifying feature index"));
+	o->watch_param("distinct_features", &n.distinct_features, AnyParameterProperties("distinct feature values possible for attribute_id"));
+	o->watch_param("feature_class", &n.feature_class, AnyParameterProperties("class to which each distinct feature type is assigned"));
+	o->watch_param("node_label", &n.node_label, AnyParameterProperties("node label"));
+	o->watch_param("total_weight", &n.total_weight, AnyParameterProperties("total weight"));
+	o->watch_param("weight_minus_node", &n.weight_minus_node,
+		AnyParameterProperties("total weight of misclassified samples in node"));
+}
 
 } /* shogun */
 

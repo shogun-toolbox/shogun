@@ -74,7 +74,7 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 }
 
 float64_t* CRealFileFeatures::compute_feature_vector(
-	int32_t num, int32_t &len, float64_t* target)
+	int32_t num, int32_t &len, float64_t* target) const
 {
 	ASSERT(num<num_vectors)
 	len=num_features;

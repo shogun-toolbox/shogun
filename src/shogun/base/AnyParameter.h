@@ -7,10 +7,12 @@
 #ifndef __ANYPARAMETER_H__
 #define __ANYPARAMETER_H__
 
+#include <shogun/lib/abstract_auto_init.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/bitmask_operators.h>
 
-#include <string>
+#include <memory>
+#include <list>
 
 namespace shogun
 {
@@ -35,8 +37,18 @@ namespace shogun
 		NONE = 0,
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
-		MODEL = 1u << 2
+		MODEL = 1u << 2,
+		AUTO = 1u << 10,
+		READONLY = 1u << 11
 	};
+
+	static const std::list<std::pair<ParameterProperties, std::string>> kParameterPropNames = {
+		{ParameterProperties::NONE, "NONE"},
+		{ParameterProperties::HYPER, "HYPER"},
+		{ParameterProperties::GRADIENT, "GRADIENT"},
+		{ParameterProperties::MODEL, "MODEL"},
+		{ParameterProperties::AUTO, "AUTO"},
+		{ParameterProperties::READONLY, "READONLY"}};
 
 	enableEnumClassBitmask(ParameterProperties);
 
@@ -52,8 +64,8 @@ namespace shogun
 		 */
 		AnyParameterProperties()
 		    : m_description("No description given"),
-			  m_model_selection(MS_NOT_AVAILABLE),
-			  m_gradient(GRADIENT_NOT_AVAILABLE),
+		      m_model_selection(MS_NOT_AVAILABLE),
+		      m_gradient(GRADIENT_NOT_AVAILABLE),
 		      m_attribute_mask(ParameterProperties::NONE)
 		{
 		}
@@ -67,7 +79,7 @@ namespace shogun
 		 * weights and bias
 		 * */
 		AnyParameterProperties(
-		    std::string description,
+		    const std::string& description,
 		    EModelSelectionAvailability hyperparameter = MS_NOT_AVAILABLE,
 		    EGradientAvailability gradient = GRADIENT_NOT_AVAILABLE,
 		    bool model = false)
@@ -87,10 +99,9 @@ namespace shogun
 		 * @param attribute_mask mask encoding parameter properties
 		 * */
 		AnyParameterProperties(
-		    std::string description, ParameterProperties attribute_mask)
-		    : m_description(description)
+		    const std::string& description, ParameterProperties attribute_mask)
+		    : m_description(description), m_attribute_mask(attribute_mask)
 		{
-			m_attribute_mask = attribute_mask;
 		}
 		/** Copy contructor */
 		AnyParameterProperties(const AnyParameterProperties& other)
@@ -121,13 +132,33 @@ namespace shogun
 			return static_cast<bool>(
 			    m_attribute_mask & ParameterProperties::MODEL);
 		}
-		bool has_property(ParameterProperties other) const
+		bool has_property(const ParameterProperties other) const
 		{
 			return static_cast<bool>(m_attribute_mask & other);
 		}
-		bool compare_mask(ParameterProperties other) const
+		bool compare_mask(const ParameterProperties other) const
 		{
 			return m_attribute_mask == other;
+		}
+		void remove_property(const ParameterProperties other)
+		{
+			m_attribute_mask &= ~other;
+		}
+		std::string to_string() const
+		{
+			std::stringstream ss;
+			ss << "Description: "<< m_description << " with attributes: [";
+			bool first_attrib = true;
+			for (const auto& it: kParameterPropNames)
+			{
+				if (has_property(it.first))
+				{
+					ss << (first_attrib ? "": " | ") << it.second;
+					first_attrib = false;
+				}
+			}
+			ss << "]";
+			return ss.str();
 		}
 
 	private:
@@ -150,8 +181,16 @@ namespace shogun
 		    : m_value(value), m_properties(properties)
 		{
 		}
+		AnyParameter(
+		    const Any& value, AnyParameterProperties properties,
+		    std::shared_ptr<params::AutoInit> auto_init)
+		    : m_value(value), m_properties(properties),
+		      m_init_function(std::move(auto_init))
+		{
+		}
 		AnyParameter(const AnyParameter& other)
-		    : m_value(other.m_value), m_properties(other.m_properties)
+		    : m_value(other.m_value), m_properties(other.m_properties),
+		      m_init_function(other.m_init_function)
 		{
 		}
 
@@ -165,9 +204,19 @@ namespace shogun
 			m_value = value;
 		}
 
-		AnyParameterProperties get_properties() const
+		AnyParameterProperties& get_properties()
 		{
 			return m_properties;
+		}
+
+		const AnyParameterProperties& get_properties() const
+		{
+			return m_properties;
+		}
+
+		std::shared_ptr<params::AutoInit> get_init_function() const
+		{
+			return m_init_function;
 		}
 
 		/** Equality operator which compares value but not properties.
@@ -186,6 +235,7 @@ namespace shogun
 	private:
 		Any m_value;
 		AnyParameterProperties m_properties;
+		std::shared_ptr<params::AutoInit> m_init_function;
 	};
 } // namespace shogun
 

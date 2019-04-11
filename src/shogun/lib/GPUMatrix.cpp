@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
-#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUMatrix.h>
 #include <viennacl/matrix.hpp>
@@ -206,5 +205,4 @@ template class CGPUMatrix<float32_t>;
 template class CGPUMatrix<float64_t>;
 }
 
-#endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

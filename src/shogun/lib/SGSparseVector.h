@@ -40,6 +40,12 @@ template <class T> struct SGSparseVectorEntry
 template <class T> class SGSparseVector : public SGReferencedData
 {
 public:
+	using value_type = SGSparseVectorEntry<T>;
+	using reference = value_type&;
+	using const_reference = const value_type&;
+	using pointer = SGSparseVectorEntry<T>*;
+	using size_type = index_t;
+
 	/** default constructor */
 	SGSparseVector();
 
@@ -49,11 +55,11 @@ public:
 	 * @param num_entries number of elements in feats vector
 	 * @param ref_counting use reference counting
 	 */
-	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
+	SGSparseVector(pointer feats, size_type num_entries,
 			bool ref_counting=true);
 
 	/** constructor to create new vector in memory */
-	SGSparseVector(index_t num_entries, bool ref_counting=true);
+	SGSparseVector(size_type num_entries, bool ref_counting=true);
 
 	/** copy constructor */
 	SGSparseVector(const SGSparseVector& orig);
@@ -181,6 +187,11 @@ public:
 	 */
 	void add_to_dense(T alpha, T * vec, int32_t dim, bool abs_val = false);
 
+	/**
+	 * String represenation
+	 */
+	std::string to_string() const;
+
 	/** display vector
 	 *
 	 * @param name   vector name in output
@@ -216,10 +227,10 @@ protected:
 
 public:
 	/** number of feature entries */
-	index_t num_feat_entries;
+	size_type num_feat_entries;
 
 	/** features */
-	SGSparseVectorEntry<T>* features;
+	pointer features;
 
 };
 

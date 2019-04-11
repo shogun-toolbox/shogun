@@ -1,23 +1,23 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
-from numpy import where
+import numpy as np
 lm=LoadMatrix()
 
 traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
 label_traindat = lm.load_labels('../data/label_train_dna.dat')
 
-fm_hmm_pos=[traindat[i] for i in where([label_traindat==1])[1] ]
-fm_hmm_neg=[traindat[i] for i in where([label_traindat==-1])[1] ]
+fm_hmm_pos=[traindat[i] for i in np.where([label_traindat==1])[1] ]
+fm_hmm_neg=[traindat[i] for i in np.where([label_traindat==-1])[1] ]
 
-parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True]], \
-[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True] ]]
+parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,1], \
+[traindat,testdat,label_traindat,1e-1,1,0,False,1 ]]
 
 def kernel_top (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,pseudo=1e-1,
-	order=1,gap=0,reverse=False,kargs=[1, False, True]):
+	order=1,gap=0,reverse=False,c=1):
 	from shogun import StringCharFeatures, StringWordFeatures, TOPFeatures, DNA
-	from shogun import PolyKernel
 	from shogun import HMM, BW_NORMAL
+	import shogun as sg
 
 	N=1 # toy HMM with 1 state
 	M=4 # 4 observations -> DNA
@@ -51,7 +51,8 @@ def kernel_top (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_
 	pos.set_observations(wordfeats_train)
 	neg.set_observations(wordfeats_train)
 	feats_train=TOPFeatures(10, pos, neg, False, False)
-	kernel=PolyKernel(feats_train, feats_train, *kargs)
+	kernel=sg.kernel("PolyKernel", c=c)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	# get kernel on testing data

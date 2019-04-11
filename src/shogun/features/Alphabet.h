@@ -198,7 +198,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @return histogram
 		 */
-		SGVector<int64_t> get_histogram();
+		SGVector<int64_t> get_histogram() const;
 
 		/** check whether symbols in histogram are valid in alphabet
 		 * e.g. for DNA if only letters ACGT appear
@@ -302,7 +302,7 @@ class CAlphabet : public CSGObject
 		template <class ST>
 		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-		CSGObject * clone();
+		virtual CSGObject* clone() const;
 
 	private:
 		/** Do basic initialisations like default settings
@@ -317,7 +317,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param src alphabet to copy histogram from
 		 */
-		void copy_histogram(CAlphabet* src);
+		void copy_histogram(const CAlphabet* src);
 
 	public:
 		/** B_A */

@@ -4,22 +4,24 @@
  * Authors: Soeren Sonnenburg, Heiko Strathmann, Kyle McQuisten
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/auto_initialiser.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 using namespace shogun;
 
 CPolyKernel::CPolyKernel() : CDotKernel(0)
 {
 	init();
-
 }
 
-CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma) : CDotKernel(size)
+CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
+    : CDotKernel(size)
 {
 	REQUIRE(c >= 0.0, "c parameter must be positive!");
 	init();
@@ -29,7 +31,8 @@ CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma) 
 }
 
 CPolyKernel::CPolyKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t d, float64_t c, float64_t gamma, int32_t size)
+    CDotFeatures* l, CDotFeatures* r, int32_t d, float64_t c, float64_t gamma,
+    int32_t size)
     : CDotKernel(size)
 {
 	REQUIRE(c >= 0.0, "c parameter must be positive!");
@@ -37,9 +40,8 @@ CPolyKernel::CPolyKernel(
 
 	degree = d;
 	m_c = c;
+	init(l, r);
 	m_gamma = gamma;
-
-	init(l,r);
 }
 
 CPolyKernel::~CPolyKernel()
@@ -49,7 +51,7 @@ CPolyKernel::~CPolyKernel()
 
 bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	CDotKernel::init(l,r);
+	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 
@@ -69,10 +71,15 @@ void CPolyKernel::init()
 	degree = 0;
 	m_c = 0.0;
 	m_gamma = 1.0;
-
 	set_normalizer(new CSqrtDiagKernelNormalizer());
-	SG_ADD(&degree, "degree", "Degree of polynomial kernel", ParameterProperties::HYPER);
-	SG_ADD(&m_c, "c", "The kernel is inhomogeneous if the value is higher than 0", ParameterProperties::HYPER);
-	SG_ADD(&m_gamma, "gamma", "Scaler for the dot product", ParameterProperties::HYPER);
+	SG_ADD(
+	    &degree, "degree", "Degree of polynomial kernel",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &m_c, "c", "The kernel is inhomogeneous if the value is higher than 0",
+	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &m_gamma, "gamma", "Scaler for the dot product",
+	    ParameterProperties::HYPER | ParameterProperties::AUTO,
+	    std::make_shared<params::GammaFeatureNumberInit>(this));
 }
-

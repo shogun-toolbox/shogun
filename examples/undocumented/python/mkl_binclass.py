@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-from shogun import CombinedFeatures, RealFeatures, BinaryLabels
-from shogun import CombinedKernel, PolyKernel, CustomKernel
+from shogun import CombinedFeatures, BinaryLabels
+from shogun import CombinedKernel, CustomKernel
 from shogun import MKLClassification
+import shogun as sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -27,23 +28,24 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     # set up and train
 
     # create some poly train/test matrix
-    tfeats = RealFeatures(fm_train_real)
-    tkernel = PolyKernel(10,3)
+    tfeats = sg.features(fm_train_real)
+    tkernel = sg.kernel("PolyKernel", cache_size=10, degree=3)
     tkernel.init(tfeats, tfeats)
     K_train = tkernel.get_kernel_matrix()
 
-    pfeats = RealFeatures(fm_test_real)
+    pfeats = sg.features(fm_test_real)
     tkernel.init(tfeats, pfeats)
     K_test = tkernel.get_kernel_matrix()
 
     # create combined train features
     feats_train = CombinedFeatures()
-    feats_train.append_feature_obj(RealFeatures(fm_train_real))
+    feats_train.append_feature_obj(sg.features(fm_train_real))
 
     # and corresponding combined kernel
     kernel = CombinedKernel()
     kernel.append_kernel(CustomKernel(K_train))
-    kernel.append_kernel(PolyKernel(10,2))
+    kernel.append_kernel(sg.kernel("PolyKernel", cache_size=10,
+                                   degree=2))
     kernel.init(feats_train, feats_train)
 
     # train mkl
@@ -71,12 +73,12 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
 
     # create combined test features
     feats_pred = CombinedFeatures()
-    feats_pred.append_feature_obj(RealFeatures(fm_test_real))
+    feats_pred.append_feature_obj(sg.features(fm_test_real))
 
     # and corresponding combined kernel
     kernel = CombinedKernel()
     kernel.append_kernel(CustomKernel(K_test))
-    kernel.append_kernel(PolyKernel(10, 2))
+    kernel.append_kernel(sg.kernel("PolyKernel", cache_size=10, degree=2))
     kernel.init(feats_train, feats_pred)
 
     # and classify

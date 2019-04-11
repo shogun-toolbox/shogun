@@ -63,7 +63,7 @@ TEST(Factory, string_features_from_file)
 
 	EXPECT_TRUE(obj.get() != nullptr);
 	auto cast = obj->as<CStringFeatures<char>>();
-	auto loaded_string_list = cast->get_features();
+	auto loaded_string_list = cast->get_string_list();
 
 	EXPECT_EQ(loaded_string_list.num_strings, string_list.num_strings);
 	for (auto i : range(loaded_string_list.num_strings))

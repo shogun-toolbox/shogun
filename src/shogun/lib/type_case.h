@@ -145,7 +145,7 @@ namespace shogun
 #undef SG_ADD_SGVECTOR_TYPE
 #undef SG_ADD_SGMATRIX_TYPE
 
-		std::string print_map(const typemap& map)
+		SG_FORCED_INLINE static std::string print_map(const typemap& map)
 		{
 			auto msg = std::string("<");
 			for (auto it : map)
@@ -158,7 +158,8 @@ namespace shogun
 			return msg;
 		}
 
-		TYPE get_type(const Any& any, const typemap& map)
+		SG_FORCED_INLINE static TYPE
+		get_type(const Any& any, const typemap& map)
 		{
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
@@ -242,8 +243,7 @@ namespace shogun
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 		template <typename T, typename FunctorT>
-		auto final_function_execute(const Any& any, FunctorT func)
-			-> decltype(func(any_cast<T>(any)))
+		void final_function_execute(const Any& any, FunctorT func)
 		{
 			func(any_cast<T>(any));
 		}

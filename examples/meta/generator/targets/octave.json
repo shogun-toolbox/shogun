@@ -1,5 +1,5 @@
 {
-    "Program": "shogun\n\n$program",
+    "Program": "shogun;\n\n$program",
     "Statement": "$statement;\n",
     "Comment": "%$comment\n",
     "Init": {
@@ -11,6 +11,7 @@
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
+        "string": "$name = $arguments",
         "ByteVector": "$name = zeros(1, $arguments, 'int8')",
         "WordVector": "$name = zeros(1, $arguments, 'int16')",
         "IntVector": "$name = zeros(1, $arguments, 'int32')",

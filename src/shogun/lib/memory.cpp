@@ -14,7 +14,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef USE_JEMALLOC
 #include <jemalloc/jemalloc.h>
@@ -141,7 +141,7 @@ void operator delete[](void *p) throw()
 	::operator delete(p);
 }
 
-#ifdef HAVE_STD_ALIGNED_ALLOC
+#ifdef HAVE_ALIGNED_NEW
 void* operator new(size_t size, std::align_val_t al)
 {
 	std::size_t align = (std::size_t)al;
@@ -151,7 +151,7 @@ void* operator new(size_t size, std::align_val_t al)
 #if defined(USE_TCMALLOC)
 	void *p = tc_new_aligned_nothrow(size, align);
 #else
-	void *p = std::aligned_alloc(size, align);
+	void *p = aligned_alloc(size, align);
 #endif
 
 #ifdef TRACE_MEMORY_ALLOCS
@@ -178,7 +178,7 @@ void operator delete[](void *p, std::align_val_t al)
 {
 	::operator delete(p);
 }
-#endif // HAVE_STD_ALIGNED_ALLOC
+#endif // HAVE_ALIGNED_NEW
 
 #endif // USE_JEMALLOC
 
@@ -220,7 +220,7 @@ void* sg_aligned_malloc(size_t size, size_t al)
 #else
 
 #ifdef HAVE_STD_ALIGNED_ALLOC
-	void* p = std::aligned_alloc(al, size);
+	void* p = aligned_alloc(al, size);
 #else
 
 #ifdef _MSC_VER

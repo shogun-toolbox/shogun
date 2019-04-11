@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Vladislav Horbatiuk, 
- *          Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Vladislav Horbatiuk,
+ *          Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, Bjoern Esser,
  *          Sergey Lisitsyn
  */
 #ifndef _SPARSEPOLYFEATURES__H__
@@ -85,7 +85,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -154,7 +154,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const;
 
 		/** compute alpha*x+vec2
 		 *
@@ -164,7 +164,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
 
 	protected:
 		/** store the norm of each training example */

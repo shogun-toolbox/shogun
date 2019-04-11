@@ -13,15 +13,21 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/io/CSVFile.h>
+#include <shogun/io/LibSVMFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/Pipeline.h>
+#include <shogun/machine/gp/Inference.h>
+#include <shogun/machine/gp/MeanFunction.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
@@ -43,6 +49,12 @@ namespace shogun
 	CSplittingStrategy* splitting_strategy(const std::string& name);
 	CMachineEvaluation* machine_evaluation(const std::string& name);
 	CSVM* svm(const std::string& name);
+	CFeatures* features(const std::string& name);
+	CLikelihoodModel* gp_likelihood(const std::string& name);
+	CMeanFunction* gp_mean(const std::string& name);
+	CDifferentiableFunction* differentiable(const std::string& name);
+	CInference* gp_inference(const std::string& name);
+	CLossFunction* loss(const std::string& name);
 
 #define BASE_CLASS_FACTORY(T, factory_name)                                    \
 	T* factory_name(const std::string& name)                                   \
@@ -66,6 +78,12 @@ namespace shogun
 	BASE_CLASS_FACTORY(CSplittingStrategy, splitting_strategy)
 	BASE_CLASS_FACTORY(CMachineEvaluation, machine_evaluation)
 	BASE_CLASS_FACTORY(CSVM, svm)
+	BASE_CLASS_FACTORY(CFeatures, features)
+	BASE_CLASS_FACTORY(CLikelihoodModel, gp_likelihood)
+	BASE_CLASS_FACTORY(CMeanFunction, gp_mean)
+	BASE_CLASS_FACTORY(CInference, gp_inference)
+	BASE_CLASS_FACTORY(CDifferentiableFunction, differentiable)
+	BASE_CLASS_FACTORY(CLossFunction, loss)
 
 	template <class T>
 	CFeatures* features(SGMatrix<T> mat)
@@ -80,34 +98,35 @@ namespace shogun
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
 
-		if (dynamic_cast<CCSVFile*>(file))
+		switch (primitive_type)
 		{
-			switch (primitive_type)
-			{
-			case PT_FLOAT64:
-				result = new CDenseFeatures<float64_t>();
-				break;
-			case PT_FLOAT32:
-				result = new CDenseFeatures<float32_t>();
-				break;
-			case PT_FLOATMAX:
-				result = new CDenseFeatures<floatmax_t>();
-				break;
-			default:
-				SG_SNOTIMPLEMENTED
-			}
-			result->load(file);
+		case PT_FLOAT64:
+			result = new CDenseFeatures<float64_t>();
+			break;
+		case PT_FLOAT32:
+			result = new CDenseFeatures<float32_t>();
+			break;
+		case PT_FLOATMAX:
+			result = new CDenseFeatures<floatmax_t>();
+			break;
+		case PT_UINT8:
+			result = new CDenseFeatures<uint8_t>();
+			break;
+		case PT_UINT16:
+			result = new CDenseFeatures<uint16_t>();
+			break;
+		default:
+			SG_SNOTIMPLEMENTED
 		}
-		else
-			SG_SERROR("Cannot load features from %s.\n", file->get_name());
+		result->load(file);
 
 		SG_REF(result);
 		return result;
 	}
 
 	CFeatures* string_features(
-	    CFile* file, EAlphabet alpha = DNA,
-	    EPrimitiveType primitive_type = PT_CHAR)
+	    CFile* file, machine_int_t alphabet_type = DNA,
+	    machine_int_t primitive_type = PT_CHAR)
 	{
 		REQUIRE(file, "No file provided.\n");
 		CFeatures* result = nullptr;
@@ -115,7 +134,7 @@ namespace shogun
 		switch (primitive_type)
 		{
 		case PT_CHAR:
-			result = new CStringFeatures<char>(file, alpha);
+			result = new CStringFeatures<char>(file, static_cast<EAlphabet>(alphabet_type));
 			break;
 		default:
 			SG_SNOTIMPLEMENTED
@@ -140,17 +159,19 @@ namespace shogun
 	 */
 	CFeatures* string_features(
 	    CFeatures* features, int32_t start, int32_t p_order, int32_t gap,
-	    bool rev, EPrimitiveType primitive_type)
+	    bool rev, machine_int_t primitive_type)
 	{
 
 		REQUIRE_E(features, std::invalid_argument, "No features provided.\n");
 		REQUIRE_E(
 		    features->get_feature_class() == C_STRING &&
 		        features->get_feature_type() == F_CHAR,
-		    std::invalid_argument, "Only StringCharFeatures are supported, "
-		                           "provided feature class (%d), feature type "
-		                           "(%d).\n",
-		    features->get_feature_class(), features->get_feature_type());
+		    std::invalid_argument, "Given features must be char-based StringFeatures, "
+		                           "provided (%s) have feature class (%d), feature type "
+		                           "(%d) and class name.\n",
+		                           features->get_name(),
+								   features->get_feature_class(),
+								   features->get_feature_type());
 
 		auto string_features = features->as<CStringFeatures<char>>();
 
@@ -274,6 +295,13 @@ namespace shogun
 	CFile* csv_file(std::string fname, char rw = 'r')
 	{
 		CFile* result = new CCSVFile(fname.c_str(), rw);
+		SG_REF(result);
+		return result;
+	}
+
+	CFile* libsvm_file(std::string fname, char rw = 'r')
+	{
+		CFile* result = new CLibSVMFile(fname.c_str(), rw);
 		SG_REF(result);
 		return result;
 	}

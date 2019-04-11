@@ -286,7 +286,9 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD(&m_num_maps, "num_maps", "Number of maps");
 	SG_ADD(&m_input_width, "input_width", "Input Width");
 	SG_ADD(&m_input_height, "input_height", "Input Height");
-	SG_ADD(&m_input_num_channels, "input_num_channels", "Input's number of channels");
+	SG_ADD(
+	    &m_input_num_channels, "input_num_channels",
+	    "Input's number of channels");
 	SG_ADD(&m_radius_x, "radius_x", "X Radius");
 	SG_ADD(&m_radius_y, "radius_y", "Y Radius");
 	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width");
@@ -294,14 +296,18 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD(&m_stride_x, "stride_x", "X Stride");
 	SG_ADD(&m_stride_y, "stride_y", "Y Stride");
 
-	SG_ADD((machine_int_t*) &m_initialization_mode, "initialization_mode", "Initialization Mode");
-	
-	SG_ADD((machine_int_t*) &m_activation_function, "activation_function", 
-		"Activation Function");
+	SG_ADD(&m_convolution_output, "convolution_output", "Convolution Output");
 
-	SG_ADD(&m_convolution_output, "convolution_output",
-		"Convolution Output");
+	SG_ADD(
+	    &m_convolution_output_gradients, "convolution_output_gradients",
+	    "Convolution Output Gradients");
 
-	SG_ADD(&m_convolution_output_gradients, "convolution_output_gradients",
-		"Convolution Output Gradients");
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_initialization_mode, "initialization_mode",
+	    "Initialization Mode", ParameterProperties::NONE,
+	    SG_OPTIONS(NORMAL, RE_NORMAL));
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&m_activation_function, "activation_function",
+	    "Activation Function", ParameterProperties::NONE,
+	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR))
 }

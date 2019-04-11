@@ -151,7 +151,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return alphabet
 		 */
-		CAlphabet* get_alphabet();
+		CAlphabet* get_alphabet() const;
 
 		/** duplicate feature object
 		 *
@@ -419,10 +419,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length);
 
-		/** get_features
-		 * @return features
+		/** get_string_list
+		 * @return string_list
 		 */
-        SGStringList<ST> get_features();
+        SGStringList<ST> get_string_list() const;
 
 		/** get_features
 		 *
@@ -432,7 +432,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual SGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len);
+		virtual SGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len) const;
 
 		/** copy_features
 		 *

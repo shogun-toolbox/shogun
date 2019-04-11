@@ -70,7 +70,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @return the distance M
 		 */
-		CCustomMahalanobisDistance* get_distance() const;
+		CDistance* get_distance() const;
 
 		/** get the number of target neighbours per example
 		 *

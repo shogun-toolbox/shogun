@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Weijie Lin, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Weijie Lin, Bjoern Esser,
  *          Evangelos Anagnostopoulos, Leon Kuchenbecker, Saurabh Goyal
  */
 
@@ -606,9 +606,9 @@ void CAlphabet::print_histogram()
 	}
 }
 
-SGVector<int64_t> CAlphabet::get_histogram()
+SGVector<int64_t> CAlphabet::get_histogram() const
 {
-	return SGVector<int64_t>(&histogram[0], 1 << (sizeof(uint8_t)*8), false);
+	return SGVector<int64_t>(const_cast<int64_t*>(&histogram[0]), 1 << (sizeof(uint8_t)*8), false);
 }
 
 bool CAlphabet::check_alphabet(bool print_error)
@@ -650,7 +650,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 
 }
 
-void CAlphabet::copy_histogram(CAlphabet* a)
+void CAlphabet::copy_histogram(const CAlphabet* a)
 {
 	SGVector<int64_t> h=a->get_histogram();
 
@@ -826,7 +826,7 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
-CSGObject * CAlphabet::clone()
+CSGObject * CAlphabet::clone() const
 {
 	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone();
 	alph_clone->init_map_table();

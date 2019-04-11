@@ -1,7 +1,7 @@
 Running Shogun from the interfaces
 ==================================
 
-We assume that installation (including the interfaces) was successful and all dependencies are installed. See [INSTALL.md](INSTALL.md) and our website.
+We assume that installation (including the interfaces) was successful and all dependencies are installed. See [INSTALL.md][installation-page].
 
 Note that setting some of the environmental variables should not be necessary in case you installed Shogun to the default folder or installed it from a binary package.
 
@@ -10,11 +10,11 @@ All interfaces require the Shogun library to be visible to your system.
 You can prepend the *folder* (!=full filename) of `libshogun.*` to an environmental variable.
 On Linux, this is done with
 
-    export LD_LIBRARY_PATH="path/to/libshogun.so:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="path/to/directory-with-libshogun.so:$LD_LIBRARY_PATH"
 
 On MacOS
 
-    export DYLD_LIBRARY_PATH="path/to/libshogun.dylib:$DYLD_LIBRARY_PATH"
+    export DYLD_LIBRARY_PATH="path/to/directory-with-libshogun.dylib:$DYLD_LIBRARY_PATH"
 
 Note that `libshogun.*` was copied to `path/to/shogun-install/lib/` when running `make install`.
 You can also make it point to the build directory `path/to/build/src/shogun/` to make it available after a successful `make`.
@@ -54,7 +54,7 @@ This needs `shogun.oct` to be visible, which is either in `path/to/build/src/int
 
 Running an example:
 
-    python path/to/octave_example.py
+    octave path/to/octave_example.m
 
 ### Ruby
 This needs `shogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
@@ -111,7 +111,7 @@ Running it again requires the above class path and some more options
     java -Xmx1024m -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -Djava.library.path=/path/to/shogun.jar java_example
 
 ### Provided Examples
-Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, see [INSTALL.md](INSTALL.md).
+Stand-alone, executable code for all interface examples on our website (and more) can be generated locally, [see INSTALL.md][installation-page].
 As the examples load data files, they requires the `shogun-data` submodule to be checked out.
 
 All examples should be run in the respective folder they are located in, for example (assuming that all described variables are set)
@@ -123,3 +123,5 @@ Or, for a compiled language with a manually compiled, not yet installed Shogun, 
 
     cd /path/to/shogun-source/build/examples/meta/csharp/regression/
     mono linear_ridge_regression.cs
+
+[installation-page]: docs/INSTALL.md

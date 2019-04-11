@@ -101,6 +101,24 @@ SGStringList<T> SGStringList<T>::clone() const
 	return SGStringList<T>(strings, num_strings, max_string_length);
 }
 
+template <class T>
+bool SGStringList<T>::equals(const SGStringList<T>& other) const
+{
+	if (this->num_strings!=other.num_strings)
+		return false;
+
+	if (this->max_string_length!=other.max_string_length)
+		return false;
+
+	for (auto i : range(num_strings))
+	{
+		if (!this->strings[i].equals(other.strings[i]))
+			return false;
+	}
+
+	return true;
+}
+
 template class SGStringList<bool>;
 template class SGStringList<char>;
 template class SGStringList<int8_t>;

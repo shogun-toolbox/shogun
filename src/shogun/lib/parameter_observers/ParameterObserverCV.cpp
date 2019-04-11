@@ -40,13 +40,13 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
 CParameterObserverCV::CParameterObserverCV(bool verbose)
     : ParameterObserverInterface(), m_verbose(verbose)
 {
-	m_type = CROSSVALIDATION;
 }
 
 CParameterObserverCV::~CParameterObserverCV()
@@ -57,27 +57,15 @@ CParameterObserverCV::~CParameterObserverCV()
 
 void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
-	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type());
+	CrossValidationStorage* recalled_value =
+	    value.first->get<CrossValidationStorage*>("value");
+	SG_REF(recalled_value);
 
-	if (value.first.get_value().type_info().hash_code() ==
-	    typeid(CrossValidationStorage*).hash_code())
-	{
-		CrossValidationStorage* recalled_value =
-		    any_cast<CrossValidationStorage*>(value.first.get_value());
-		SG_REF(recalled_value);
+	/* Print information on screen if enabled*/
+	if (m_verbose)
+		print_observed_value(recalled_value);
 
-		/* Print information on screen if enabled*/
-		if (m_verbose)
-			print_observed_value(recalled_value);
-
-		m_observations.push_back(recalled_value);
-	}
-	else
-	{
-		SG_SERROR(
-		    "ParameterObserverCV: The observed value received is not of "
-		    "type CrossValidationStorage\n");
-	}
+	m_observations.push_back(recalled_value);
 }
 
 void CParameterObserverCV::on_error(std::exception_ptr ptr)
@@ -103,16 +91,16 @@ void CParameterObserverCV::print_observed_value(
 	for (int i = 0; i < value->get_num_folds(); i++)
 	{
 		auto f = value->get_fold(i);
-		SG_SPRINT("\n")
-		SG_SPRINT("Current run index: %i\n", f->get_current_run_index())
-		SG_SPRINT("Current fold index: %i\n", f->get_current_fold_index())
+		SG_PRINT("\n")
+		SG_PRINT("Current run index: %i\n", f->get_current_run_index())
+		SG_PRINT("Current fold index: %i\n", f->get_current_fold_index())
 		f->get_train_indices().display_vector("Train Indices ");
 		f->get_test_indices().display_vector("Test Indices ");
 		print_machine_information(f->get_trained_machine());
 		f->get_test_result()->get_values().display_vector("Test Labels ");
 		f->get_test_true_result()->get_values().display_vector(
 		    "Test True Label ");
-		SG_SPRINT("Evaluation result: %f\n", f->get_evaluation_result());
+		SG_PRINT("Evaluation result: %f\n", f->get_evaluation_result());
 		SG_UNREF(f)
 	}
 }
@@ -123,14 +111,14 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 	{
 		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("Learned Weights = ");
-		SG_SPRINT("Learned Bias = %f\n", linear_machine->get_bias())
+		SG_PRINT("Learned Bias = %f\n", linear_machine->get_bias())
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
 		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
-		SG_SPRINT("Learned Bias = %f\n", kernel_machine->get_bias())
+		SG_PRINT("Learned Bias = %f\n", kernel_machine->get_bias())
 	}
 
 	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||
@@ -177,7 +165,17 @@ CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 	return obs;
 }
 
-const int CParameterObserverCV::get_num_observations() const
+const int32_t CParameterObserverCV::get_num_observations() const
 {
-	return m_observations.size();
+	try
+	{
+		return shogun::utils::safe_convert<int32_t>(m_observations.size());
+	}
+	catch (std::overflow_error e)
+	{
+		SG_WARNING(
+		    "Exception occurred while calling %s::get_num_observations(): %s\n",
+		    e.what());
+	}
+	return -1;
 }

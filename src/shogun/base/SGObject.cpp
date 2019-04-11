@@ -7,9 +7,9 @@
  *          Leon Kuchenbecker, Sanuj Sharma, Wu Lin
  */
 
+#include <shogun/lib/RefCount.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
-#include <shogun/lib/RefCount.h>
 
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
@@ -33,27 +33,24 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <algorithm>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
-#include <shogun/machine/Machine.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/machine/Machine.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {
 
 	typedef std::map<BaseTag, AnyParameter> ParametersMap;
-	typedef std::unordered_map<std::string,
-	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
-	    ObsParamsList;
+	typedef std::unordered_map<std::string, std::string> ObsParamsList;
 
 	class CSGObject::Self
 	{
@@ -88,6 +85,17 @@ namespace shogun
 		bool has(const BaseTag& tag) const
 		{
 			return map.find(tag) != map.end();
+		}
+
+		ParametersMap filter(ParameterProperties pprop) const
+		{
+			ParametersMap result;
+			std::copy_if(
+			    map.cbegin(), map.cend(), std::inserter(result, result.end()),
+			    [&pprop](const std::pair<BaseTag, AnyParameter>& each) {
+				    return each.second.get_properties().has_property(pprop);
+			    });
+			return result;
 		}
 
 		ParametersMap map;
@@ -678,7 +686,7 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-CSGObject* CSGObject::clone()
+CSGObject* CSGObject::clone() const
 {
 	SG_DEBUG("Starting to clone %s at %p.\n", get_name(), this);
 	SG_DEBUG("Constructing an empty instance of %s.\n", get_name());
@@ -693,7 +701,7 @@ CSGObject* CSGObject::clone()
 	          "CSGObject::create_empty() overridden.\n",
 	    get_name());
 
-	for (const auto it : self->map)
+	for (const auto &it : self->map)
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
@@ -725,7 +733,16 @@ void CSGObject::create_parameter(
 
 void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 {
-	self->update(_tag, value);
+	if (!self->map[_tag].get_properties().has_property(
+	        ParameterProperties::READONLY))
+		self->update(_tag, value);
+	else
+	{
+		SG_ERROR(
+		    "%s::%s is marked as read-only and cannot be modified", get_name(),
+		    _tag.name().c_str());
+	}
+	self->map[_tag].get_properties().remove_property(ParameterProperties::AUTO);
 }
 
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
@@ -755,14 +772,14 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
 	auto subscription = m_observable_params
-	                        ->filter([obs](ObservedValue v) {
-		                        return obs->filter(v.get_name());
+	                        ->filter([obs](Some<ObservedValue> v) {
+		                        return obs->filter(v->get<std::string>("name"));
 		                    })
 	                        .timestamp()
 	                        .subscribe(sub);
 }
 
-void CSGObject::observe(const ObservedValue value)
+void CSGObject::observe(const Some<ObservedValue> value)
 {
 	m_subscriber_params->on_next(value);
 }
@@ -770,29 +787,9 @@ void CSGObject::observe(const ObservedValue value)
 class CSGObject::ParameterObserverList
 {
 public:
-	void register_param(
-	    const std::string& name, const SG_OBS_VALUE_TYPE type,
-	    const std::string& description)
+	void register_param(const std::string& name, const std::string& description)
 	{
-		m_list_obs_params[name] = std::make_pair(type, description);
-	}
-
-	std::string type_name(SG_OBS_VALUE_TYPE type)
-	{
-		std::string value;
-		switch (type)
-		{
-		case TENSORBOARD:
-			value = std::string("Tensorboard");
-			break;
-		case CROSSVALIDATION:
-			value = std::string("CrossValidation");
-			break;
-		default:
-			value = std::string("Unknown");
-			break;
-		}
-		return value;
+		m_list_obs_params[name] = description;
 	}
 
 	ObsParamsList get_list() const
@@ -805,24 +802,19 @@ private:
 	ObsParamsList m_list_obs_params;
 };
 
-void CSGObject::register_observable_param(
-    const std::string& name, const SG_OBS_VALUE_TYPE type,
-    const std::string& description)
+void CSGObject::register_observable(
+    const std::string& name, const std::string& description)
 {
-	param_obs_list->register_param(name, type, description);
+	param_obs_list->register_param(name, description);
 }
 
-void CSGObject::list_observable_parameters()
+std::vector<std::string> CSGObject::observable_names()
 {
-	SG_INFO("List of observable parameters of object %s\n", get_name());
-	SG_PRINT("------");
-	for (auto const& x : param_obs_list->get_list())
-	{
-		SG_PRINT(
-		    "%s [%s]: %s\n", x.first.c_str(),
-		    param_obs_list->type_name(x.second.first).c_str(),
-		    x.second.second.c_str());
-	}
+	std::vector<std::string> list;
+	std::transform(
+	    param_obs_list->get_list().begin(), param_obs_list->get_list().end(),
+	    list.begin(), [](auto const& x) { return x.first; });
+	return list;
 }
 
 bool CSGObject::has(const std::string& name) const
@@ -958,7 +950,12 @@ std::string CSGObject::to_string() const
 	{
 		ss << it->first.name() << "=";
 		auto value = it->second.get_value();
-		if (value.visitable())
+		if (m_string_to_enum_map.find(it->first.name()) !=
+		    m_string_to_enum_map.end())
+		{
+			ss << string_enum_reverse_lookup(it->first.name(), any_cast<machine_int_t>(value));
+		}
+		else if (value.visitable())
 		{
 			value.visit(visitor.get());
 		}
@@ -1007,7 +1004,7 @@ bool CSGObject::equals(const CSGObject* other) const
 	}
 
 	/* Assumption: objects of same type have same set of tags. */
-	for (const auto it : self->map)
+	for (const auto &it : self->map)
 	{
 		const BaseTag& tag = it.first;
 		const Any& own = it.second.get_value();
@@ -1059,35 +1056,57 @@ CSGObject* CSGObject::create_empty() const
 	return object;
 }
 
-CSGObject* CSGObject::get(const std::string& name)
+void CSGObject::init_auto_params()
 {
-	if (auto* result = get_sgobject_type_dispatcher<CDistance>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CKernel>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CFeatures>(name))
-		return result;
-	if (auto* result = get_sgobject_type_dispatcher<CLabels>(name))
-		return result;
-
-	if (self->map.find(BaseTag(name)) != self->map.end())
+	auto params = self->filter(ParameterProperties::AUTO);
+	for (const auto& param : params)
 	{
-		SG_ERROR(
-		    "Cannot get parameter %s::%s of type %s as object, not a shogun "
-		    "object base type.\n",
-		    get_name(), name.c_str(),
-		    self->map[BaseTag(name)].get_value().type().c_str());
+		update_parameter(param.first, param.second.get_init_function()->operator()());
 	}
-	else
-	{
-		SG_ERROR(
-		    "There is no parameter '%s' in %s.\n", name.c_str(), get_name());
-	}
-	return nullptr;
 }
 
-void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)
+CSGObject* CSGObject::get(const std::string& name, index_t index) const
 {
-	ASSERT(array);
-	array->push_back(value);
+	auto* result = sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByNameIndex(index)));
+	if (!result && has(name))
+	{
+		SG_ERROR(
+			"Cannot get array parameter %s::%s[%d] of type %s as object.\n",
+			get_name(), name.c_str(), index,
+			self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	return result;
+}
+
+CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
+    noexcept
+{
+	return sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByName()));
+}
+
+CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
+{
+	auto* result = get(name, std::nothrow);
+	if (!result && has(name))
+	{
+		SG_ERROR(
+			"Cannot get parameter %s::%s of type %s as object.\n",
+			get_name(), name.c_str(),
+			self->map[BaseTag(name)].get_value().type().c_str());
+	}
+	return result;
+}
+
+std::string CSGObject::string_enum_reverse_lookup(
+    const std::string& param, machine_int_t value) const
+{
+	auto param_enum_map = m_string_to_enum_map.at(param);
+	auto enum_value = value;
+	auto enum_map_it = std::find_if(
+	    param_enum_map.begin(), param_enum_map.end(),
+	    [&enum_value](const std::pair<std::string, machine_int_t>& p) {
+		    return p.second == enum_value;
+	    });
+	return enum_map_it->first;
+
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
+import shogun as sg
 
 traindat = '../../../data/uci/housing/fm_housing.dat'
 label_traindat = '../../../data/uci/housing/housing_label.dat'
@@ -11,13 +12,13 @@ parameter_list = [[traindat,label_traindat,feat_types]]
 
 def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 	try:
-		from shogun import RealFeatures, RegressionLabels, CSVFile, CARTree, StochasticGBMachine, SquaredLoss
+		from shogun import RegressionLabels, CSVFile, CARTree, StochasticGBMachine
 	except ImportError:
 		print("Could not import Shogun modules")
 		return
 
 	# wrap features and labels into Shogun objects
-	feats=RealFeatures(CSVFile(train))
+	feats=sg.features(CSVFile(train))
 	labels=RegressionLabels(CSVFile(train_labels))
 
 	# divide into training (90%) and test dataset (10%)
@@ -27,7 +28,7 @@ def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types
 	cart=CARTree()
 	cart.set_feature_types(ft)
 	cart.set_max_depth(1)
-	loss=SquaredLoss()
+	loss = sg.loss('SquaredLoss')
 	s=StochasticGBMachine(cart,loss,500,0.01,0.6)
 
 	# train

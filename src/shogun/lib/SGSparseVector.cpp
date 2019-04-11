@@ -20,7 +20,7 @@ SGSparseVector<T>::SGSparseVector() : SGReferencedData()
 }
 
 template <class T>
-SGSparseVector<T>::SGSparseVector(SGSparseVectorEntry<T> * feats, index_t num_entries,
+SGSparseVector<T>::SGSparseVector(pointer feats, size_type num_entries,
                                   bool ref_counting) :
 	SGReferencedData(ref_counting),
 	num_feat_entries(num_entries), features(feats)
@@ -28,11 +28,11 @@ SGSparseVector<T>::SGSparseVector(SGSparseVectorEntry<T> * feats, index_t num_en
 }
 
 template <class T>
-SGSparseVector<T>::SGSparseVector(index_t num_entries, bool ref_counting) :
+SGSparseVector<T>::SGSparseVector(size_type num_entries, bool ref_counting) :
 	SGReferencedData(ref_counting),
 	num_feat_entries(num_entries)
 {
-	features = SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+	features = SG_MALLOC(value_type, num_feat_entries);
 }
 
 template <class T>
@@ -133,7 +133,7 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T> &a, const SGSparseVector
 	}
 
 	T dot_prod = 0;
-	index_t a_idx = 0, b_idx = 0;
+	size_type a_idx = 0, b_idx = 0;
 
 	while (a_idx < a.num_feat_entries && b_idx < b.num_feat_entries)
 	{
@@ -167,7 +167,7 @@ int32_t SGSparseVector<T>::get_num_dimensions()
 
 	int32_t dimensions = -1;
 
-	for (index_t i = 0; i < num_feat_entries; i++)
+	for (size_type i = 0; i < num_feat_entries; i++)
 	{
 		if (features[i].feat_index > dimensions)
 		{
@@ -187,11 +187,11 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	}
 
 	// remember old pointer to enforce quarantee
-	const SGSparseVectorEntry<T> * old_features_ptr = features;
+	const pointer old_features_ptr = features;
 
 	int32_t * feat_idx = SG_MALLOC(int32_t, num_feat_entries);
 
-	for (index_t j = 0; j < num_feat_entries; j++)
+	for (size_type j = 0; j < num_feat_entries; j++)
 	{
 		feat_idx[j] = features[j].feat_index;
 	}
@@ -199,7 +199,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	CMath::qsort_index(feat_idx, features, num_feat_entries);
 	SG_FREE(feat_idx);
 
-	for (index_t j = 1; j < num_feat_entries; j++)
+	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		REQUIRE(features[j - 1].feat_index <= features[j].feat_index,
 		        "sort_features(): failed sanity check %d <= %d after sorting (comparing indices features[%d] <= features[%d], features=%d)\n",
@@ -209,7 +209,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	// compression: removing zero-entries and merging features with same index
 	int32_t last_index = 0;
 
-	for (index_t j = 1; j < num_feat_entries; j++)
+	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		// always true, but kept for future changes
 		REQUIRE(last_index < j,
@@ -248,12 +248,12 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 	if (!stable_pointer)
 	{
 		SG_SINFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
-		features = SG_REALLOC(SGSparseVectorEntry<T>, features, num_feat_entries, new_feat_count);
+		features = SG_REALLOC(value_type, features, num_feat_entries, new_feat_count);
 	}
 
 	num_feat_entries = new_feat_count;
 
-	for (index_t j = 1; j < num_feat_entries; j++)
+	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		REQUIRE(features[j - 1].feat_index < features[j].feat_index,
 		        "sort_features(): failed sanity check %d < %d after sorting (comparing indices features[%d] < features[%d], features=%d)\n",
@@ -277,7 +277,7 @@ bool SGSparseVector<T>::is_sorted() const
 		return true;
 	}
 
-	for (index_t j = 1; j < num_feat_entries; j++)
+	for (size_type j = 1; j < num_feat_entries; j++)
 	{
 		if (features[j - 1].feat_index >= features[j].feat_index)
 		{
@@ -295,7 +295,7 @@ T SGSparseVector<T>::get_feature(int32_t index)
 
 	if (features)
 	{
-		for (index_t i = 0; i < num_feat_entries; i++)
+		for (size_type i = 0; i < num_feat_entries; i++)
 			if (features[i].feat_index == index)
 			{
 				ret += features[i].entry ;
@@ -315,7 +315,7 @@ SGVector<T> SGSparseVector<T>::get_dense()
 		dense.resize_vector(get_num_dimensions());
 		dense.zero();
 
-		for (index_t i = 0; i < num_feat_entries; i++)
+		for (size_type i = 0; i < num_feat_entries; i++)
 		{
 			dense.vector[features[i].feat_index] += features[i].entry;
 		}
@@ -335,7 +335,7 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 		REQUIRE(get_num_dimensions() <= dimension, "get_dense(dimension=%d): sparse dimension %d exceeds requested dimension\n",
 		        dimension, get_num_dimensions());
 
-		for (index_t i = 0; i < num_feat_entries; i++)
+		for (size_type i = 0; i < num_feat_entries; i++)
 		{
 			dense.vector[features[i].feat_index] += features[i].entry;
 		}
@@ -347,8 +347,8 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 template<class T>
 SGSparseVector<T> SGSparseVector<T>::clone() const
 {
-	SGSparseVectorEntry <T> * copy = SG_MALLOC(SGSparseVectorEntry <T>, num_feat_entries);
-	sg_memcpy(copy, features, num_feat_entries * sizeof(SGSparseVectorEntry <T>));
+	pointer copy = SG_MALLOC(value_type, num_feat_entries);
+	sg_memcpy(copy, features, num_feat_entries * sizeof(value_type));
 	return SGSparseVector<T>(copy, num_feat_entries);
 }
 
@@ -447,11 +447,11 @@ T SGSparseVector<T>::dot_prod_expensive_unsorted(const SGSparseVector<T> &a, con
 
 	T dot_prod = 0;
 
-	for (index_t b_idx = 0; b_idx < b.num_feat_entries; ++b_idx)
+	for (size_type b_idx = 0; b_idx < b.num_feat_entries; ++b_idx)
 	{
 		const T tmp = b.features[b_idx].entry;
 
-		for (index_t a_idx = 0; a_idx < a.num_feat_entries; ++a_idx)
+		for (size_type a_idx = 0; a_idx < a.num_feat_entries; ++a_idx)
 		{
 			if (a.features[a_idx].feat_index == b.features[b_idx].feat_index)
 			{
@@ -463,185 +463,27 @@ T SGSparseVector<T>::dot_prod_expensive_unsorted(const SGSparseVector<T> &a, con
 	return dot_prod;
 }
 
-template <>
-void SGSparseVector<bool>::display_vector(const char * name, const char * prefix)
+template <class T>
+std::string SGSparseVector<T>::to_string() const
 {
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
+	std::stringstream ss;
+	ss << "[";
+	if (num_feat_entries > 0)
 	{
-		SG_SPRINT("%s%s%d:%d", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry ? 1 : 0);
+		pointer begin = features;
+		pointer end = features+num_feat_entries;
+		ss << std::boolalpha << begin->feat_index << ":" << begin->entry;
+		std::for_each(++begin, end, [&ss](const_reference _v)
+				{ ss << " " << _v.feat_index << ":" << _v.entry; });
 	}
-
-	SG_SPRINT("%s]\n", prefix);
+	ss << "]";
+	return ss.str();
 }
 
-template <>
-void SGSparseVector<char>::display_vector(const char * name, const char * prefix)
+template <class T>
+void SGSparseVector<T>::display_vector(const char * name, const char * prefix)
 {
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%c", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<int8_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%d", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<uint8_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%u", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<int16_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%d", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<uint16_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%u", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<int32_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%d", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<uint32_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%u", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<int64_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%lld", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<uint64_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%llu ", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<float32_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%g", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<float64_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%.18g", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<floatmax_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-	{
-		SG_SPRINT("%s%s%d:%.36Lg", prefix, i == 0 ? "" : " ", features[i].feat_index, features[i].entry);
-	}
-
-	SG_SPRINT("%s]\n", prefix);
-}
-
-template <>
-void SGSparseVector<complex128_t>::display_vector(const char * name, const char * prefix)
-{
-	SG_SPRINT("%s%s=[", prefix, name);
-
-	for (int32_t i = 0; i < num_feat_entries; i++)
-		SG_SPRINT("%s%s%d:(%.18lg+i%.18lg)", prefix, i == 0 ? "" : " ", features[i].feat_index,
-		          features[i].entry.real(), features[i].entry.imag());
-
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s%s=%s\n", prefix, name, to_string().c_str());
 }
 
 template <class T>

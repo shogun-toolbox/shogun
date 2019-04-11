@@ -4,14 +4,14 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_hessianlocallylinearembedding (data_fname,k):
 	try:
-		from shogun import RealFeatures, CSVFile
+		import shogun as sg
 		try:
 			from shogun import HessianLocallyLinearEmbedding
 		except ImportError:
 			print("HessianLocallyLinearEmbedding not available")
 			exit(0)
 
-		features = RealFeatures(CSVFile(data))
+		features = sg.features(sg.csv_file(data))
 
 		converter = HessianLocallyLinearEmbedding()
 		converter.set_target_dim(1)

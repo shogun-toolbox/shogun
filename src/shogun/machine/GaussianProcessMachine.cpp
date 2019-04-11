@@ -60,9 +60,11 @@ CGaussianProcessMachine::CGaussianProcessMachine(CInference* method)
 void CGaussianProcessMachine::init()
 {
 	m_method=NULL;
+	m_compute_variance = false;
 
-	SG_ADD((CSGObject**) &m_method, "inference_method", "Inference method",
+	SG_ADD(&m_method, "inference_method", "Inference method",
 	    ParameterProperties::HYPER);
+	SG_ADD(&m_compute_variance, "compute_variance", "Whether predictive variance is computed in predictions");
 }
 
 CGaussianProcessMachine::~CGaussianProcessMachine()

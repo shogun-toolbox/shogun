@@ -95,6 +95,12 @@ class CChi2Kernel: public CDotKernel
 		 */
 		virtual const char* get_name() const { return "Chi2Kernel"; }
 
+		/** set width
+		 *
+		 *@param w width int32_t(greater than 0)
+		 */
+		void set_width(int32_t w);
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

@@ -43,7 +43,6 @@
 #include <shogun/kernel/string/MatchWordStringKernel.h>
 #include <shogun/kernel/MultiquadricKernel.h>
 #include <shogun/kernel/string/OligoStringKernel.h>
-#include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/string/PolyMatchStringKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/kernel/LogKernel.h>

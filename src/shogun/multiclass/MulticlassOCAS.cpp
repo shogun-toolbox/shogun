@@ -38,8 +38,8 @@ CMulticlassOCAS::CMulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLabels* train_labels) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), train_features, NULL, train_labels), m_C(C)
+CMulticlassOCAS::CMulticlassOCAS(float64_t C, CFeatures* train_features, CLabels* train_labels) :
+	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), train_features->as<CDotFeatures>(), NULL, train_labels), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);

@@ -19,18 +19,16 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 
 def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
-    from shogun import CrossValidation, CrossValidationResult
+    from shogun import machine_evaluation, splitting_strategy
     from shogun import MeanSquaredError
-    from shogun import CrossValidationSplitting
     from shogun import RegressionLabels
-    from shogun import RealFeatures
     from shogun import GridSearchModelSelection
     from shogun import ModelSelectionParameters
     import shogun as sg
 
     # training data
-    features_train=RealFeatures(traindat)
-    features_test=RealFeatures(testdat)
+    features_train=sg.features(traindat)
+    features_test=sg.features(testdat)
     labels=RegressionLabels(label_traindat)
 
     # labels
@@ -42,17 +40,17 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy=CrossValidationSplitting(labels, 5)
+    splitting_strategy = splitting_strategy(
+        "CrossValidationSplitting", labels=labels, num_subsets=5)
 
     # evaluation method
     evaluation_criterium=MeanSquaredError()
 
     # cross-validation instance
-    cross_validation=CrossValidation(predictor, features_train, labels,
-	    splitting_strategy, evaluation_criterium)
-
-    # (optional) repeat x-val (set larger to get better estimates)
-    cross_validation.set_num_runs(2)
+    cross_validation = machine_evaluation(
+        "CrossValidation", machine=predictor, features=features_train,
+        labels=labels, splitting_strategy=splitting_strategy,
+        evaluation_criterion=evaluation_criterium, num_runs=2)
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
@@ -88,7 +86,6 @@ def modelselection_grid_search_krr (fm_train=traindat,fm_test=testdat,label_trai
 def create_param_tree():
     from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun import ParameterCombination
-    from shogun import PolyKernel
     import math
     import shogun as sg
     root=ModelSelectionParameters()
@@ -118,7 +115,7 @@ def create_param_tree():
     root.append_child(param_gaussian_kernel)
 
     # polynomial kernel with degree
-    poly_kernel=PolyKernel()
+    poly_kernel=sg.kernel("PolyKernel")
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal, 
- *          Fernando Iglesias, Giovanni De Toni, Evan Shelhamer, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal,
+ *          Fernando Iglesias, Giovanni De Toni, Evan Shelhamer, Bjoern Esser,
  *          Evangelos Anagnostopoulos, Leon Kuchenbecker, Saurabh Goyal
  */
 
@@ -291,7 +291,7 @@ void CMKL::register_params()
 	// Missing: self (3rd party specific, handled in clone())
 }
 
-CSGObject* CMKL::clone()
+CSGObject* CMKL::clone() const
 {
 	CMKL* cloned = (CMKL*) CSGObject::clone();
 #ifdef USE_GLPK
