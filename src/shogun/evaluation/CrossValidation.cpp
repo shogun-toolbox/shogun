@@ -203,10 +203,10 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
-			fold->put("test_result", result_labels);
+			fold->put("predicted_labels", result_labels);
 			CLabels* true_labels = (CLabels*)m_labels->clone();
 			SG_REF(true_labels)
-			fold->put("test_true_result", true_labels);
+			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
 
@@ -317,10 +317,10 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
-			fold->put("test_result", result_labels);
+			fold->put("predicted_labels", result_labels);
 			CLabels* true_labels = (CLabels*)labels->clone();
 			SG_REF(true_labels)
-			fold->put("test_true_result", true_labels);
+			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
 
