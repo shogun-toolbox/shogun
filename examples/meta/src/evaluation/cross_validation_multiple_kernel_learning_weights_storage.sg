@@ -21,8 +21,8 @@ combined_kernel.add("kernel_array", k_3)
 #![create_kernels]
 
 #![create_classifier]
-SVM libsvm = as_svm(machine("LibSVM"))
-Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_optimization=False, svm=libsvm)
+Machine libsvm = machine("LibSVM")
+Machine svm = machine("MKLClassification", kernel=combined_kernel, interleaved_optimization=False, svm=as_svm(libsvm))
 #![create_classifier]
 
 #![create_cross_validation]
