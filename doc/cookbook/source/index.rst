@@ -122,7 +122,7 @@ Neural Networks
 .. toctree::
    :maxdepth: 1
    :glob:
-   :caption: Neural Netwroks
+   :caption: Neural Networks
 
    examples/neural_nets/**
 
