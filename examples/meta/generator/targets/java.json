@@ -25,7 +25,7 @@
         "IntVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "LongIntVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "ULongIntVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
-        "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
+        "ShortRealVector": "FloatMatrix $name = new FloatMatrix(1, $arguments)",
         "RealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "LongRealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "CharMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
@@ -34,7 +34,7 @@
         "IntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "LongIntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "ULongIntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
-        "ShortRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ShortRealMatrix": "FloatMatrix $name = new FloatMatrix($arguments)",
         "RealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "LongRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)"
     },
@@ -46,7 +46,7 @@
         "IntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "LongIntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "ULongIntVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
-        "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
+        "ShortRealVector": "FloatMatrix $name = new FloatMatrix(new float [][] {{$arguments}})",
         "RealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})",
         "LongRealVector": "DoubleMatrix $name = new DoubleMatrix(new double [][] {{$arguments}})"
     },
