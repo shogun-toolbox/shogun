@@ -7,6 +7,7 @@
 #include <shogun/io/serialization/BitseryVisitor.h>
 #include <shogun/io/ShogunErrc.h>
 #include <shogun/util/converters.h>
+#include <shogun/util/system.h>
 
 #include <bitsery/bitsery.h>
 #include <bitsery/traits/string.h>
@@ -29,11 +30,36 @@ public:
 		writer.value8b(v->imag());
 	}
 
+	void on_floatmax(Writer& writer, floatmax_t* v)
+	{
+		SG_SDEBUG("writing floatmax_t with value %Lf\n", *v);
+		uint64_t msb, lsb;
+		uint64_t *array = reinterpret_cast<uint64_t*>(v);
+		auto array_size = sizeof(floatmax_t)/sizeof(uint64_t);
+		if (array_size == 2)
+		{
+			msb = utils::is_big_endian() ? array[1] : array[0];
+			lsb = utils::is_big_endian() ? array[0] : array[1];
+		}
+		if (array_size < 2)
+		{
+			msb = array[0];
+			lsb = array[0];
+		}
+		else
+		{
+			std::overflow_error("Could not represent floatmax_t with with 2 uint64_t!");
+		}
+		// write in little endian format
+		writer.value8b(msb);
+		writer.value8b(lsb);
+	}
+
 	void on_object(Writer& writer, CSGObject** v)
 	{
 		if (*v)
 		{
-			SG_SDEBUG("writing SGObject\n");
+			SG_SDEBUG("writing SGObject: %s\n", (*v)->get_name());
 			SG_REF(*v);
 			write_object(writer, this, wrap<CSGObject>(*v));
 		}

@@ -17,64 +17,35 @@
 
 %typemap(javaimports) shogun::CSGObject
 %{
-import org.shogun.SerializableFile;
-import org.shogun.SerializableAsciiFile;
+import org.shogun.JsonSerializer;
+import org.shogun.ByteArrayOutputStream;
+import org.shogun.ByteArrayInputStream;
+import java.util.List;
+import java.util.ArrayList;
 import org.jblas.*;
 %}
 %typemap(javacode) shogun::CSGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
-        java.util.Random randomGenerator = new java.util.Random();
-        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-        java.io.File file = null;
-        java.io.FileInputStream in = null;
-        int ch;
-        try {
-                file = new java.io.File(tmpFileName);
-                file.createNewFile();
-                SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName, 'w');
-                this.save_serializable(tmpFile);
-                tmpFile.close();
-                in = new java.io.FileInputStream(file);
-                // TODO bufferize
-                while((ch=in.read()) != -1) {
-                        out.write(ch);
-                }
-                file.delete();
-        } catch (java.io.IOException ex) {
-        } finally {
-                try {
-                        in.close();
-                } catch (java.io.IOException ex) {
-                }
-        }
+    ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+    JsonSerializer jsonSerializer = new JsonSerializer();
+    json.attach(byteArrayOS);
+    json.write(this);
+
+    List<char> obj_serialized = byteArrayOS.content();
+    out.write(obj_serialized.toArray());
 }
 
 public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
-        java.util.Random randomGenerator = new java.util.Random();
-        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-        java.io.File file = null;
-        java.io.FileOutputStream out = null;
-        int ch;
-        try {
-                file = new java.io.File(tmpFileName);
-                file.createNewFile();
-                out = new java.io.FileOutputStream(file);
-                while ((ch=in.read()) != -1) {
-                        out.write(ch);
-                }
-                out.close();
-                SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName,'r');
-                this.load_serializable(tmpFile);
-                tmpFile.close();
-                file.delete();
-        } catch (java.io.IOException ex) {
-        } finally {
-                try {
-                        out.close();
-                } catch (java.io.IOException ex) {
-                }
-        }
+    List<byte> buffer = new ArrayList<>();
+    int ch;
+    while ((ch=in.read()) != -1) {
+        buffer.add(ch);
+    }
+    ByteArrayInputStream bis = ByteArrayInputStream(buffer.toArray(), buffer.length);
+    JsonDeserializer jsonDeserializer = new JsonDeserializer();
+    jsonDeserializer.attach(bis);
+    this.deserialize(jsonDeserializer);
 }
     %}
 #endif
@@ -127,8 +98,12 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 #ifdef SWIGPYTHON
 
- #include <shogun/io/SerializableFile.h>
- #include <shogun/io/SerializableAsciiFile.h>
+ #include <shogun/io/serialization/BitserySerializer.h>
+ #include <shogun/io/serialization/BitseryDeserializer.h>
+ #include <shogun/io/serialization/JsonSerializer.h>
+ #include <shogun/io/serialization/JsonDeserializer.h>
+ #include <shogun/io/stream/ByteArrayInputStream.h>
+ #include <shogun/io/stream/ByteArrayOutputStream.h>
 
  static int pickle_ascii;
 #endif
@@ -447,31 +422,27 @@ namespace shogun
 
         PyObject* __getstate__()
         {
-            char* fname=tmpnam(NULL);
-            FILE* tmpf=fopen(fname, "w");
-            CSerializableFile* fstream=NULL;
-            fstream = new CSerializableAsciiFile(fname, 'w');
-            $self->save_serializable(fstream);
-            fstream->close();
-            delete fstream;
+            io::CSerializer* serializer = nullptr;
+            if (pickle_ascii)
+                serializer = new io::CJsonSerializer();
+            else
+                serializer = new io::CBitserySerializer();
+            auto byte_stream = some<io::CByteArrayOutputStream>();
+            serializer->attach(byte_stream);
+            serializer->write(wrap($self));
 
-            size_t len=0;
-            char* result=CFile::read_whole_file(fname, len);
-            unlink(fname);
-
+            auto serialized_obj = byte_stream->content();
+            SG_UNREF(serializer);
 #ifdef PYTHON3
-            PyObject* str=PyBytes_FromStringAndSize(result, len);
+            PyObject* str=PyBytes_FromStringAndSize(serialized_obj.data(), serialized_obj.size());
 #else
-            PyObject* str=PyString_FromStringAndSize(result, len);
+            PyObject* str=PyString_FromStringAndSize(serialized_obj.data(), serialized_obj.size());
 #endif
-            SG_FREE(result);
-
             PyObject* tuple=PyTuple_New(2);
             PyTuple_SetItem(tuple, 0, PyBool_FromLong(pickle_ascii));
             PyTuple_SetItem(tuple, 1, str);
             return tuple;
         }
-
 
         void __setstate__(PyObject* state)
         {
@@ -486,29 +457,16 @@ namespace shogun
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
 #endif
+            io::CDeserializer* deser = nullptr;
+            if (pickle_ascii)
+                deser = new io::CJsonDeserializer();
+            else
+                deser = new io::CBitseryDeserializer();
 
-            char* fname=tmpnam(NULL);
-            FILE* tmpf=fopen(fname, "w");;
-            size_t total = fwrite(str, (size_t) 1, (size_t) len, tmpf);
-            fclose(tmpf);
-            ASSERT(total==len);
-
-            CSerializableFile* fstream=NULL;
-            try
-            {
-                fstream = new CSerializableAsciiFile(fname, 'r');
-            }
-            catch (ShogunException& e)
-            {
-                    SG_SERROR("File contains an HDF5 stream but " \
-                            "Shogun was not compiled with HDF5" \
-                            " support! -  cannot load file %s." \
-                            " (exception was %s)", e.what());
-            }
-            $self->load_serializable(fstream);
-            fstream->close();
-            delete fstream;
-            unlink(fname);
+            auto byte_input_stream = some<io::CByteArrayInputStream>(str, len);
+            deser->attach(byte_input_stream);
+            $self->deserialize(deser);
+            SG_UNREF(deser);
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/

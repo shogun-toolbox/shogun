@@ -261,6 +261,22 @@ namespace shogun {
 		}
 
 		template<typename T>
+		void on(SGString<T>* _v)
+		{
+			auto size = _v->slen;
+			enter_vector(std::addressof(size));
+			if (size != _v->slen)
+			{
+				if (_v->string)
+					_v->destroy_string();
+				_v->string = SG_MALLOC(T, size);
+				_v->slen = size;
+			}
+			for (index_t i = 0; i < size; ++i)
+				on(std::addressof(_v->string[i]));
+		}
+
+		template<typename T>
 		void on(SGSparseVector<T>* _v)
 		{
 			auto size = _v->num_feat_entries*2;

@@ -75,7 +75,7 @@ namespace shogun
 			std::error_condition get_paths(const std::string& pattern,
 				std::vector<std::string>* results) const;
 
-			uint64_t get_file_size(const std::string& fname) const;
+			int64_t get_file_size(const std::string& fname) const;
 
 		private:
 			FileSystemRegistry() {}

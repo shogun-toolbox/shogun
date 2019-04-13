@@ -4,6 +4,9 @@
  */
 
 #include <shogun/io/serialization/Serializer.h>
+#include <shogun/io/ShogunErrc.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/stream/FileOutputStream.h>
 
 using namespace shogun;
 using namespace shogun::io;
@@ -25,4 +28,17 @@ Some<COutputStream> CSerializer::stream() const
 {
 	REQUIRE(m_stream, "Serializer has no stream, attach() it to a stream");
 	return m_stream;
+}
+
+void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer)
+{
+	auto fs = io::FileSystemRegistry::instance();
+	std::error_condition ec;
+	std::unique_ptr<io::WritableFile> file;
+	if ((ec = fs->new_writable_file(_path, &file)))
+		throw to_system_error(ec);
+
+	auto fos = some<io::CFileOutputStream>(file.get());
+	_serializer->attach(fos);
+	_serializer->write(wrap(_obj));
 }

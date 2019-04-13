@@ -15,10 +15,11 @@ namespace shogun
 		{
 		public:
 			CBitseryDeserializer();
-			virtual ~CBitseryDeserializer();
-			virtual Some<CSGObject> read();
+			~CBitseryDeserializer() override;
+			Some<CSGObject> read_object() override;
+			void read(CSGObject* _this) override;
 
-			virtual const char* get_name() const
+			const char* get_name() const override
 			{
 				return "BitseryDeserializer";
 			}

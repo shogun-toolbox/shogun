@@ -337,19 +337,12 @@ class CDynamicObjectArray : public CSGObject
 			auto last = m_array.end();
 			DiffType n = last - first;
 			for (DiffType i = n-1; i > 0; --i)
-			{
-				using std::swap;
-				swap(first[i], first[rand->random(DiffType(0), i)]);
-			}
+				std::swap(first[i], first[rand->random(DiffType(0), i)]);
 		}
 
 		/** @return object name */
 		virtual const char* get_name() const
 		{ return "DynamicObjectArray"; }
-
-		// without this definition R interface is missing these inherited functions
-		using CSGObject::save_serializable;
-		using CSGObject::load_serializable;
 
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at

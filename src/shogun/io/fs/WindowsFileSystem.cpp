@@ -11,13 +11,18 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include <limits>
 #include <system_error>
 
 #include <shogun/io/fs/WindowsFileSystem.h>
-#include <shogun/io/fs/ShogunErrc.h>
+#include <shogun/io/ShogunErrc.h>
 
 using namespace shogun;
+using namespace shogun::io;
 using namespace std;
+
+const auto CloseHandleFunc = [](HANDLE h) { ::CloseHandle(h); };
+typedef std::unique_ptr<void, decltype(CloseHandleFunc)> UniqueCloseHandlePtr;
 
 SG_FORCED_INLINE wstring utf8_to_wchar(const string& utf8str)
 {
@@ -28,6 +33,18 @@ SG_FORCED_INLINE wstring utf8_to_wchar(const string& utf8str)
 	MultiByteToWideChar(CP_UTF8, 0, utf8str.c_str(), (int)utf8str.size(),
 		&ws_translated_str[0], size_required);
 	return ws_translated_str;
+}
+
+inline string wchar_to_utf8(const std::wstring& wstr)
+{
+	if (wstr.empty())
+		return std::string();
+	int size_required = WideCharToMultiByte(
+		CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), NULL, 0, NULL, NULL);
+	string utf8_translated_str(size_required, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(),
+		&utf8_translated_str[0], size_required, NULL, NULL);
+	return utf8_translated_str;
 }
 
 SSIZE_T pread(HANDLE hfile, char* src, size_t num_bytes, uint64_t offset)
@@ -178,15 +195,15 @@ public:
 
 private:
 	string m_filename;
-	HANDLE* m_hfile;
+	HANDLE m_hfile;
 };
 
 error_condition WindowsFileSystem::new_random_access_file(
- 	const string& fname, unique_ptr<RandomAccessFile>* file)
+	const string& fname, unique_ptr<RandomAccessFile>* file) const
 {
 	auto translated_fname = translate_name(fname);
 	auto ws_translated_fname = utf8_to_wchar(translated_fname);
-	file->reset();
+	file->reset(nullptr);
 
 	DWORD file_flags = FILE_ATTRIBUTE_READONLY | FILE_FLAG_OVERLAPPED;
 	DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
@@ -203,11 +220,11 @@ error_condition WindowsFileSystem::new_random_access_file(
 }
 
 error_condition WindowsFileSystem::new_writable_file(
-	const string& fname, unique_ptr<WritableFile>* file)
+	const string& fname, unique_ptr<WritableFile>* file) const
 {
 	auto translated_fname = translate_name(fname);
 	auto ws_translated_fname = utf8_to_wchar(translated_fname);
-	file->reset();
+	file->reset(nullptr);
 
 	DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 	HANDLE hfile =
@@ -222,11 +239,11 @@ error_condition WindowsFileSystem::new_writable_file(
 }
 
 error_condition WindowsFileSystem::new_appendable_file(
-	const string& fname, unique_ptr<WritableFile>* file)
+	const string& fname, unique_ptr<WritableFile>* file) const
 {
 	auto translated_fname = translate_name(fname);
 	auto ws_translated_fname = utf8_to_wchar(translated_fname);
-	file->reset();
+	file->reset(nullptr);
 
 	DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 	HANDLE hfile =
@@ -248,17 +265,17 @@ error_condition WindowsFileSystem::new_appendable_file(
 	return {};
 }
 
-error_condition WindowsFileSystem::file_exists(const string& fname)
+error_condition WindowsFileSystem::file_exists(const string& fname) const
 {
 	constexpr int kOk = 0;
 	auto ws_translated_fname = utf8_to_wchar(translate_name(fname));
 	if (_waccess(ws_translated_fname.c_str(), kOk) == 0)
 		return {};
 
-	return errors::NotFound(fname, " not found");
+	return generic_category().default_error_condition(errno);
 }
 
-error_condition WindowsFileSystem::delete_file(const string& fname)
+error_condition WindowsFileSystem::delete_file(const string& fname) const
 {
 	auto file_name = utf8_to_wchar(fname);
 	if (_wunlink(file_name.c_str()) != 0)
@@ -266,7 +283,7 @@ error_condition WindowsFileSystem::delete_file(const string& fname)
 	return {};
 }
 
-error_condition WindowsFileSystem::create_dir(const string& name)
+error_condition WindowsFileSystem::create_dir(const string& name) const
 {
 	auto ws_name = utf8_to_wchar(name);
 	if (_wmkdir(ws_name.c_str()) != 0)
@@ -275,16 +292,16 @@ error_condition WindowsFileSystem::create_dir(const string& name)
 	return {};
 }
 
-error_condition WindowsFileSystem::delete_dir(const string& name)
+error_condition WindowsFileSystem::delete_dir(const string& dirname) const
 {
-	auto ws_name = utf8_to_wchar(name);
+	auto ws_name = utf8_to_wchar(dirname);
 	if (_wrmdir(ws_name.c_str()) != 0)
 		return generic_category().default_error_condition(errno);
 
 	return {};
 }
 
-error_condition WindowsFileSystem::rename_file(const string& src, const string& target)
+error_condition WindowsFileSystem::rename_file(const string& src, const string& target) const
 {
 	auto ws_translated_src = utf8_to_wchar(translate_name(src));
 	auto ws_translated_target = utf8_to_wchar(translate_name(target));
@@ -295,7 +312,7 @@ error_condition WindowsFileSystem::rename_file(const string& src, const string& 
 	return {};
 }
 
-uint64_t WindowsFileSystem::get_file_size(const string& name)
+int64_t WindowsFileSystem::get_file_size(const string& name) const
 {
 	auto translated_fname = translate_name(name);
 	auto ws_translated_dir = utf8_to_wchar(translated_fname);
@@ -310,11 +327,11 @@ uint64_t WindowsFileSystem::get_file_size(const string& name)
 	}
 	else
 	{
-		return generic_category().default_error_condition(::GetLastError());
+		return -1; //generic_category().default_error_condition(::GetLastError());
 	}
 }
 
-error_condition WindowsFileSystem::is_directory(const string& name)
+error_condition WindowsFileSystem::is_directory(const string& name) const
 {
 	auto ws_translated_dir = utf8_to_wchar(translate_name(name));
 	if (PathIsDirectoryW(ws_translated_dir.c_str()))
@@ -323,9 +340,9 @@ error_condition WindowsFileSystem::is_directory(const string& name)
 }
 
 error_condition WindowsFileSystem::get_children(const string& dir,
-	vector<string>* result)
+	vector<string>* result) const
 {
-	auto translated_fname = translate_name(fname);
+	auto translated_fname = translate_name(dir);
 	auto ws_translated_dir = utf8_to_wchar(translated_fname);
 	result->clear();
 
@@ -342,7 +359,7 @@ error_condition WindowsFileSystem::get_children(const string& dir,
 
 	do
 	{
-		auto file_name = WideCharToUtf8(find_data.cFileName);
+		auto file_name = wchar_to_utf8(find_data.cFileName);
 		const string_view basename = file_name;
 		if (basename != "." && basename != "..")
 			result->push_back(file_name);
@@ -354,9 +371,11 @@ error_condition WindowsFileSystem::get_children(const string& dir,
 	return {};
 }
 
-error_condition WindowsFileSystem::get_paths(const string& name)
-{
 
+error_condition WindowsFileSystem::get_paths(const string& pattern,
+				vector<std::string>* results) const
+{
+	//FIXME
 }
 
 REGISTER_FILE_SYSTEM("", WindowsFileSystem);

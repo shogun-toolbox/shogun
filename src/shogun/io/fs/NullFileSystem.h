@@ -53,7 +53,7 @@ namespace shogun
 				throw ShogunNotImplementedException("delete_dir unimplemented");
 			}
 
-			uint64_t get_file_size(const std::string& fname) override
+			int64_t get_file_size(const std::string& fname) override
 			{
 				throw ShogunNotImplementedException("get_file_size unimplemented");
 			}

@@ -12,15 +12,20 @@
 %rename(CSVFile) CCSVFile;
 %rename(LibSVMFile) CLibSVMFile;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
+%rename(BitserySerializer) CBitserySerializer;
+%rename(BitseryDeserializer) CBitseryDeserializer;
+%newobject BitseryDeserializer::read;
+%rename(JsonSerializer) CJsonSerializer;
+%rename(JsonDeserializer) CJsonDeserializer;
+%newobject JsonDeserializer::read;
+%rename(ByteArrayInputStream) CByteArrayInputStream;
+%rename(ByteArrayOutputStream) CByteArrayOutputStream;
 
 %rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 %rename(BinaryFile) CBinaryFile;
 %rename(HDF5File) CHDF5File;
-%rename(SerializableFile) CSerializableFile;
-%rename(SerializableAsciiFile) CSerializableAsciiFile;
 %rename(SimpleFile) CSimpleFile;
 %rename(MemoryMappedFile) CMemoryMappedFile;
-
 
 %include <shogun/io/File.h>
 %include <shogun/io/streaming/StreamingFile.h>
@@ -113,11 +118,17 @@ namespace shogun
 %include <shogun/io/CSVFile.h>
 %include <shogun/io/LibSVMFile.h>
 %include <shogun/io/streaming/StreamingAsciiFile.h>
+%include <shogun/io/serialization/Serializer.h>
+%include <shogun/io/serialization/Deserializer.h>
+%include <shogun/io/serialization/BitserySerializer.h>
+%include <shogun/io/serialization/BitseryDeserializer.h>
+%include <shogun/io/serialization/JsonSerializer.h>
+%include <shogun/io/serialization/JsonDeserializer.h>
+%include <shogun/io/stream/ByteArrayInputStream.h>
+%include <shogun/io/stream/ByteArrayOutputStream.h>
 
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
-%include <shogun/io/SerializableFile.h>
-%include <shogun/io/SerializableAsciiFile.h>
 
 %include <shogun/io/SimpleFile.h>
 %include <shogun/io/MemoryMappedFile.h>

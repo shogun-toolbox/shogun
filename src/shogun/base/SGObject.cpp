@@ -18,6 +18,8 @@
 #include <shogun/base/class_list.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/io/visitors/ToStringVisitor.h>
+#include <shogun/io/serialization/Serializer.h>
+#include <shogun/io/serialization/Deserializer.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGMatrix.h>
@@ -185,6 +187,23 @@ namespace shogun
 		m_generic = PT_COMPLEX128;
 	}
 
+	class CSGObject::ParameterObserverList
+	{
+	public:
+		void register_param(const std::string& name, const std::string& description)
+		{
+			m_list_obs_params[name] = description;
+		}
+
+		ObsParamsList get_list() const
+		{
+			return m_list_obs_params;
+		}
+
+	private:
+		/** List of observable parameters (name, description) */
+		ObsParamsList m_list_obs_params;
+	};
 } /* namespace shogun  */
 
 using namespace shogun;
@@ -369,14 +388,7 @@ void CSGObject::unset_generic()
 	m_generic = PT_NOT_GENERIC;
 }
 
-void CSGObject::print_serializable(const char* prefix)
-{
-	SG_PRINT("\n%s\n================================================================================\n", get_name())
-	m_parameters->print(prefix);
-}
-
-bool CSGObject::save_serializable(CSerializableFile* file,
-		const char* prefix)
+bool CSGObject::serialize(io::CSerializer* ser)
 {
 	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name())
 	try
@@ -385,21 +397,20 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::save_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(), e.what());
+		SG_SWARNING("%s::save_serializable_pre(): ShogunException: "
+			"%s\n", get_name(), e.what());
 		return false;
 	}
 
 	if (!m_save_pre_called)
 	{
-		SG_SWARNING("%s%s::save_serializable_pre(): Implementation "
-				   "error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
-				   "called!\n", prefix, get_name());
+		SG_SWARNING("%s::save_serializable_pre(): Implementation "
+			"error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
+			"called!\n", get_name());
 		return false;
 	}
 
-	if (!m_parameters->save(file, prefix))
-		return false;
+	ser->write(wrap(this));
 
 	try
 	{
@@ -407,31 +418,27 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::save_serializable_post(): ShogunException: "
-				   "%s\n", prefix, get_name(), e.what());
+		SG_SWARNING("%s::save_serializable_post(): ShogunException: "
+			"%s\n", get_name(), e.what());
 		return false;
 	}
 
 	if (!m_save_post_called)
 	{
 		SG_SWARNING("%s%s::save_serializable_post(): Implementation "
-				   "error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
-				   "called!\n", prefix, get_name());
+			"error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
+			"called!\n", get_name());
 		return false;
 	}
-
-	if (prefix == NULL || *prefix == '\0')
-		file->close();
 
 	SG_DEBUG("DONE SAVING CSGObject '%s' (%p)\n", get_name(), this)
 
 	return true;
 }
 
-bool CSGObject::load_serializable(CSerializableFile* file,
-		const char* prefix)
+bool CSGObject::deserialize(io::CDeserializer* deser)
 {
-	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
+	REQUIRE(deser != nullptr, "Serializable file object should be non-null\n");
 
 	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name())
 	try
@@ -440,20 +447,20 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::load_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(), e.what());
-		return false;
-	}
-	if (!m_load_pre_called)
-	{
-		SG_SWARNING("%s%s::load_serializable_pre(): Implementation "
-				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
-				   "called!\n", prefix, get_name());
+		SG_SWARNING("%s::load_serializable_pre(): ShogunException: "
+			"%s\n", get_name(), e.what());
 		return false;
 	}
 
-	if (!m_parameters->load(file, prefix))
+	if (!m_load_pre_called)
+	{
+		SG_SWARNING("%s::load_serializable_pre(): Implementation "
+			"error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
+			"called!\n", get_name());
 		return false;
+	}
+
+	deser->read(this);
 
 	try
 	{
@@ -461,20 +468,19 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
-		            "%s\n", prefix, get_name(), e.what());
+		SG_SWARNING("%s::load_serializable_post(): ShogunException: "
+			"%s\n", get_name(), e.what());
 		return false;
 	}
 
 	if (!m_load_post_called)
 	{
-		SG_SWARNING("%s%s::load_serializable_post(): Implementation "
-		            "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
-		            "called!\n", prefix, get_name());
+		SG_SWARNING("%s::load_serializable_post(): Implementation "
+			"error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+			"called!\n", get_name());
 		return false;
 	}
 	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this)
-
 	return true;
 }
 

@@ -25,7 +25,7 @@ static Some<CSGObject> load_object(const string& fname)
 	auto fis = some<io::CFileInputStream>(f.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(fis);
-	return deserializer->read();
+	return deserializer->read_object();
 }
 
 int main(int argc, const char *argv[])

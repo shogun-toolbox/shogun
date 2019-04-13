@@ -114,7 +114,7 @@ error_condition FileSystemRegistry::is_directory(const string& fname) const
 	return get_file_system_for_file(fname)->is_directory(fname);
 }
 
-uint64_t FileSystemRegistry::get_file_size(const string& fname) const
+int64_t FileSystemRegistry::get_file_size(const string& fname) const
 {
 	return get_file_system_for_file(fname)->get_file_size(fname);
 }

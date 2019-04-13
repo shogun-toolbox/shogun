@@ -24,6 +24,8 @@ namespace shogun
 		private:
 			Some<COutputStream> m_stream;
 		};
+
+		void serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer);
 	}
 }
 

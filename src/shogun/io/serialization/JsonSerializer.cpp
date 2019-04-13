@@ -166,7 +166,7 @@ public:
 	{
 		if (*v)
 		{
-			SG_SDEBUG("writing SGObject\n");
+			SG_SDEBUG("writing SGObject: %s\n", (*v)->get_name());
 			write_object(m_json_writer, this, wrap<CSGObject>(*v));
 		}
 		else

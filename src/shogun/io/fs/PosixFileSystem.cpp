@@ -205,10 +205,12 @@ error_condition PosixFileSystem::is_directory(const string& fname) const
 	if (stat(translate_name(fname).c_str(), &sbuf) != 0)
 		return generic_category().default_error_condition(errno);
 
-	return {};
+	if (S_ISDIR(sbuf.st_mode))
+		return {};
+	return generic_category().default_error_condition(ENOTDIR);
 }
 
-uint64_t PosixFileSystem::get_file_size(const string& fname) const
+int64_t PosixFileSystem::get_file_size(const string& fname) const
 {
 	struct stat sbuf;
 	if (stat(translate_name(fname).c_str(), &sbuf) != 0)

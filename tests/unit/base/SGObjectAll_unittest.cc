@@ -112,7 +112,7 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 		auto fis = some<io::CFileInputStream>(raf.get());
 		auto deserializer = some<io::CJsonDeserializer>();
 		deserializer->attach(fis);
-		auto loaded = deserializer->read();
+		auto loaded = deserializer->read_object();
 
 		// set accuracy to tolerate lossy formats
 		set_global_fequals_epsilon(1e-14);

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Jacob Walker,
  *          Thoralf Klein, Soumyajit De, Yuyu Zhang, Evan Shelhamer
  */
 #ifndef __PARAMETER_H__
@@ -17,7 +17,6 @@ namespace shogun
 {
 
 class CSGObject;
-class CSerializableFile;
 template <class ST> class SGString;
 template <class T> class SGMatrix;
 template <class T> class SGSparseMatrix;
@@ -38,23 +37,6 @@ struct TParameter
 
 	/** destructor */
 	~TParameter();
-
-	/** print with prefix
-	 * @param prefix prefix to print
-	 */
-	void print(const char* prefix);
-
-	/** save to serializable file
-	 * @param file destination file
-	 * @param prefix prefix
-	 */
-	bool save(CSerializableFile* file, const char* prefix="");
-
-	/** load from serializable file
-	 * @param file source file
-	 * @param prefix prefix
-	 */
-	bool load(CSerializableFile* file, const char* prefix="");
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
@@ -97,15 +79,6 @@ private:
 	bool new_sgserial(CSGObject** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);
-	bool save_ptype(CSerializableFile* file, const void* param,
-					const char* prefix);
-	bool load_ptype(CSerializableFile* file, void* param,
-					const char* prefix);
-	bool save_stype(CSerializableFile* file, const void* param,
-					const char* prefix);
-	bool load_stype(CSerializableFile* file, void* param,
-					const char* prefix);
-
 };
 
 /** @brief Parameter class
@@ -120,23 +93,6 @@ public:
 	explicit Parameter();
 	/** destructor */
 	virtual ~Parameter();
-
-	/** print
-	 * @param prefix prefix
-	 */
-	virtual void print(const char* prefix="");
-
-	/** save to serializable file
-	 * @param file destination file
-	 * @param prefix prefix
-	 */
-	virtual bool save(CSerializableFile* file, const char* prefix="");
-
-	/** load from serializable file
-	 * @param file source file
-	 * @param prefix prefix
-	 * */
-	virtual bool load(CSerializableFile* file, const char* prefix="");
 
 	/** getter for number of parameters
 	 * @return number of parameters

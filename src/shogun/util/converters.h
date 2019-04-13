@@ -6,6 +6,7 @@
 #ifndef __UTIL_CONVERTERS_H__
 #define __UTIL_CONVERTERS_H__
 
+#include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <type_traits>

@@ -141,7 +141,7 @@ TYPED_TEST(SerializationTest, serialize)
 	auto deserializer = some<typename TypeParam::second_type>();
 	auto istream = some<CDummyInputStream>(stream->buffer());
 	deserializer->attach(istream);
-	auto deser_obj = deserializer->read();
+	auto deser_obj = deserializer->read_object();
 
 	ASSERT_TRUE(obj->equals(deser_obj));
 }
