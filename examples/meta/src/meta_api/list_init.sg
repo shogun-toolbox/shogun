@@ -1,5 +1,3 @@
-BoolVector bool_vector([True, False])
-
 ByteVector byte_vector([1, 2])
 
 WordVector word_vector([5, 6])
