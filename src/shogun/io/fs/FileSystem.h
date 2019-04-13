@@ -120,7 +120,7 @@ namespace shogun
 			virtual std::error_condition get_paths(const std::string& pattern,
 				std::vector<std::string>* results) const = 0;
 
-			virtual uint64_t get_file_size(const std::string& fname) const = 0;
+			virtual int64_t get_file_size(const std::string& fname) const = 0;
 		};
 
 		/**

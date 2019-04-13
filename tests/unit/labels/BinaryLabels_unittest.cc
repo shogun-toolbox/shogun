@@ -67,7 +67,7 @@ TEST_F(BinaryLabels, serialization)
 	auto fis = some<io::CFileInputStream>(raf.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(fis);
-	auto deser_obj = deserializer->read();
+	auto deser_obj = deserializer->read_object();
 	ASSERT_TRUE(!fs->delete_file(filename));
 
 	auto new_labels = static_cast<CBinaryLabels*>(deser_obj.get());

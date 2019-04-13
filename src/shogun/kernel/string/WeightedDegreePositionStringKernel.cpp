@@ -127,9 +127,6 @@ CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 	weights_degree=0;
 	weights_length=0;
 
-	SG_FREE(block_weights);
-	block_weights=NULL;
-
 	SG_FREE(position_weights);
 	position_weights=NULL;
 
@@ -227,8 +224,7 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization\n")
 	delete_optimization();
 
-	SG_FREE(block_weights);
-	block_weights=NULL;
+	block_weights = SGVector<float64_t>(0);
 
 	tries.destroy();
 	poim_tries.destroy();
@@ -994,10 +990,9 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
+	block_weights=SGVector<float64_t>(std::max(seq_length,degree));
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		int32_t k;
 		float64_t d=degree; // use float to evade rounding errors below
@@ -1009,16 +1004,15 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 			block_weights[k]=(-d+3*k+4)/3;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights)
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
+	block_weights=SGVector<float64_t>(std::max(seq_length,degree));
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		int32_t i=0;
 		block_weights[0]=weights[0];
@@ -1037,43 +1031,40 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 		}
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_const()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<seq_length+1 ; i++)
 			block_weights[i-1]=1.0/seq_length;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<seq_length+1 ; i++)
 			block_weights[i-1]=degree*i;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
 			block_weights[i-1]=((float64_t) i)*i;
@@ -1082,15 +1073,14 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 			block_weights[i-1]=i;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
 			block_weights[i-1]=((float64_t) i)*i*i;
@@ -1099,15 +1089,14 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 			block_weights[i-1]=i;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
 			block_weights[i-1]=exp(((float64_t) i/10.0));
@@ -1116,15 +1105,14 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 			block_weights[i-1]=i;
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 {
-	SG_FREE(block_weights);
-	block_weights=SG_MALLOC(float64_t, seq_length);
+	block_weights=SGVector<float64_t>(seq_length);
 
-	if (block_weights)
+	if (block_weights.vlen)
 	{
 		for (int32_t i=1; i<degree+1 ; i++)
 			block_weights[i - 1] = CMath::pow(std::log((float64_t)i), 2);
@@ -1134,7 +1122,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 			    i - degree + 1 + CMath::pow(std::log(degree + 1.0), 2);
 	}
 
-	return (block_weights!=NULL);
+	return (block_weights.vlen > 0);
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights()
@@ -1899,7 +1887,7 @@ void CWeightedDegreePositionStringKernel::init()
 	shift = NULL;
 	shift_len = 0;
 
-	block_weights = NULL;
+	block_weights = SGVector<float64_t>(0);
 	block_computation = true;
 	type = E_EXTERNAL;
 	which_degree = -1;

@@ -44,35 +44,23 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(EAlphabet alpha) : CFeat
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_list, EAlphabet alpha)
-: CFeatures(0)
+: CStringFeatures(alpha)
 {
-	init();
-
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
-	num_symbols=alphabet->get_num_symbols();
-	original_num_symbols=num_symbols;
 	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
-: CFeatures(0)
+: CStringFeatures(alpha)
 {
-	init();
-
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
-	num_symbols=alphabet->get_num_symbols();
-	original_num_symbols=num_symbols;
 	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
 : CFeatures(0)
 {
+	ASSERT(alpha)
 	init();
 
-	ASSERT(alpha)
 	SG_REF(alpha);
 	SG_UNREF(alphabet);
 	alphabet=alpha;
@@ -81,23 +69,8 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
-: CFeatures()
+: CStringFeatures(alpha)
 {
-	init();
-
-	num_vectors=0;
-	features=NULL;
-	single_string=NULL;
-	length_of_single_string=0;
-	max_string_length=0;
-	order=0;
-	preprocess_on_get=false;
-	feature_cache=NULL;
-
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
-	num_symbols=alphabet->get_num_symbols();
-	original_num_symbols=num_symbols;
 	load(loader);
 }
 
@@ -785,43 +758,51 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 	{
 		int32_t num=0;
 		int32_t max_len=-1;
+		int64_t max_buffer_size = -1;
 
 		//usually n==num_vec, but it might not in race conditions
 		//(file perms modified, file erased)
 		SGString<ST>* strings = SG_MALLOC(SGString<ST>, children.size());
+		std::string buffer;
 		for (auto v: children)
 		{
 			auto fname = io::join_path(dirname, v);
 
-			if (fs_registry->file_exists(fname))
+			if (fs_registry->is_directory(fname))
 			{
-				auto filesize = fs_registry->get_file_size(fname);
+				int64_t filesize = fs_registry->get_file_size(fname);
 
 				std::unique_ptr<io::RandomAccessFile> file;
-				if (fs_registry->new_random_access_file(fname, &file))
+				if (!fs_registry->new_random_access_file(fname, &file))
 				{
-					//FIXME!
-					ST* str = SG_MALLOC(ST, filesize);
-					SG_DEBUG("%s:%ld\n", fname.c_str(), (int64_t) filesize)
+					SG_DEBUG("%s:%" PRId64 "\n", fname.c_str(), filesize);
 					std::string_view result;
-					std::string buffer;
-					buffer.resize(filesize);
+					buffer.clear();
+					if (max_buffer_size < filesize)
+					{
+						buffer.resize(filesize);
+						max_buffer_size = filesize;
+					}
 					if (file->read(0, filesize, &result, &(buffer[0])))
 						SG_ERROR("failed to read file\n")
-					strings[num].string = str;
-					strings[num].slen = filesize;
-					max_len=std::max(max_len, strings[num].slen);
 
+					int64_t sg_string_len = filesize/(int64_t)sizeof(ST);
+					strings[num].string = SG_MALLOC(ST, sg_string_len);
+					strings[num].slen = sg_string_len;
+					sg_memcpy(const_cast<char*>(result.data()), strings[num].string, filesize);
+					max_len=std::max(max_len, strings[num].slen);
 					++num;
 				}
 			}
 			else
-				SG_ERROR("The provided file does not exist: \'%s\'\n", fname.c_str());
+				SG_DEBUG("Skipping %s as it's a directory\n", fname.c_str());
 		}
 
 		if (num>0 && strings)
 		{
 			set_features(strings, num, max_len);
+			//TODO remove if copying in set_features is dropped
+			SG_FREE(strings);
 			return true;
 		}
 

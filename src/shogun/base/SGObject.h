@@ -41,13 +41,18 @@ class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
-class CSerializableFile;
+class ParameterObserverInterface;
 class ObservedValue;
 class ParameterObserver;
 class CDynamicObjectArray;
 
 template <class T>
 class ObservedValueTemplated;
+	namespace io
+	{
+		class CDeserializer;
+		class CSerializer;
+	}
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -223,33 +228,22 @@ public:
 	 */
 	void unset_generic();
 
-	/** prints registered parameters out
-	 *
-	 *	@param prefix prefix for members
-	 */
-	virtual void print_serializable(const char* prefix="");
-
 	/** Save this object to file.
 	 *
-	 * @param file where to save the object; will be closed during
-	 * returning if PREFIX is an empty string.
-	 * @param prefix prefix for members
+	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool save_serializable(CSerializableFile* file,
-			const char* prefix="");
+	virtual bool serialize(io::CSerializer* ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
 	 *  be used!
 	 *
-	 *  @param file where to load from
-	 *  @param prefix prefix for members
+	 *  @param deser where to load from
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool load_serializable(CSerializableFile* file,
-			const char* prefix="");
+	virtual bool deserialize(io::CDeserializer* deser);
 
 	/** set the io object
 	 *

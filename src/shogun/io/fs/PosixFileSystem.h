@@ -12,7 +12,7 @@ namespace shogun
 		class PosixFileSystem : public FileSystem
 		{
 		public:
-			PosixFileSystem() {}
+			PosixFileSystem(): FileSystem() {}
 
 			~PosixFileSystem() override {}
 
@@ -35,7 +35,7 @@ namespace shogun
 
 			std::error_condition rename_file(const std::string& src, const std::string& target) const override;
 
-			uint64_t get_file_size(const std::string& fname) const override;
+			int64_t get_file_size(const std::string& fname) const override;
 
 			std::error_condition is_directory(const std::string& fname) const override;
 

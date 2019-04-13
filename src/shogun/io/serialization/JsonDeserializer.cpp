@@ -112,7 +112,7 @@ public:
 		array[utils::is_big_endian() ? 0 : 1] = floatmax_pair[1].GetUint64();
 		m_value_stack.pop();
 
-		v = reinterpret_cast<floatmax_t*>(array);
+		*v = *reinterpret_cast<floatmax_t*>(array);
 		SG_SDEBUG("read floatmax_t with value %Lf\n", *v);
 	}
 	void on(complex128_t* v) override
@@ -301,7 +301,7 @@ private:
 };
 
 template<typename V>
-CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor)
+CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _this = nullptr)
 {
 	const V& value = *v;
 	REQUIRE(v != nullptr, "Value should be set!");
@@ -313,7 +313,17 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor)
 	string obj_name(value[kNameKey].GetString());
 	REQUIRE(value.HasMember(kGenericKey), "Not a valid serialized SGObject, it does not have a 'generic'!")
 	EPrimitiveType primitive_type((EPrimitiveType) value[kGenericKey].GetInt());
-	auto obj = create(obj_name.c_str(), primitive_type);
+	CSGObject* obj = nullptr;
+	if (_this)
+	{
+		REQUIRE(_this->get_name() == obj_name, "");
+		REQUIRE(_this->get_generic() == primitive_type, "");
+		obj = _this;
+	}
+	else
+	{
+		obj = create(obj_name.c_str(), primitive_type);
+	}
 	REQUIRE(obj != nullptr, "Could not create '%s' class", obj_name.c_str())
 	REQUIRE(value.HasMember(kParametersKey), "Not a valid serialized SGObject, it does not have 'parameters!")
 	REQUIRE(value[kParametersKey].IsObject(), "Not a valid serialized SGObject!")
@@ -334,7 +344,7 @@ CJsonDeserializer::~CJsonDeserializer()
 {
 }
 
-Some<CSGObject> CJsonDeserializer::read()
+Some<CSGObject> CJsonDeserializer::read_object()
 {
 	CIStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
@@ -346,4 +356,16 @@ Some<CSGObject> CJsonDeserializer::read()
 		dynamic_cast<Document::ValueType*>(&reader),
 		reader_visitor.get())
 	);
+}
+
+void CJsonDeserializer::read(CSGObject* _this)
+{
+	CIStreamAdapter is(stream());
+	// FIXME: use SAX parser interface!
+	Document reader;
+	reader.ParseStream<kParseNanAndInfFlag>(is);
+	auto reader_visitor =
+		make_unique<JSONReaderVisitor<Document::ValueType>>();
+	object_reader(dynamic_cast<Document::ValueType*>(&reader),
+		reader_visitor.get(), _this);
 }

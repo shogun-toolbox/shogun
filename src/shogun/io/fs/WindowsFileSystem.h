@@ -2,6 +2,7 @@
 #define __WINDOWS_FILE_SYSTEM_H__
 
 #include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/fs/Path.h>
 
 namespace shogun
 {
@@ -11,9 +12,9 @@ namespace shogun
 		class WindowsFileSystem : public FileSystem
 		{
 		public:
-			WindowsFileSystem() {}
+			WindowsFileSystem(): FileSystem() {}
 
-			~WindowsFileSystem() {}
+			~WindowsFileSystem() override {}
 
 			std::error_condition new_random_access_file(
 				const std::string& filename, std::unique_ptr<RandomAccessFile>* file) const override;
@@ -34,7 +35,7 @@ namespace shogun
 
 			std::error_condition rename_file(const std::string& src, const std::string& target) const override;
 
-			uint64_t get_file_size(const std::string& fname) const override;
+			int64_t get_file_size(const std::string& fname) const override;
 
 			std::error_condition is_directory(const std::string& fname) const override;
 

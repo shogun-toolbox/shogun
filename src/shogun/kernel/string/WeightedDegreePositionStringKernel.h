@@ -742,7 +742,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		bool block_computation;
 
 		/** (internal) block weights */
-		float64_t* block_weights;
+		SGVector<float64_t> block_weights;
 		/** WeightedDegree kernel type */
 		EWDKernType type;
 		/** which degree */

@@ -142,7 +142,7 @@ protected:
 		auto fis = some<io::CFileInputStream>(raf.get());
 		auto deserializer = some<io::CBitseryDeserializer>();
 		deserializer->attach(fis);
-		auto deser_obj = deserializer->read();
+		auto deser_obj = deserializer->read_object();
 		bool delete_success = !fs->delete_file(filename);
 
 		deserialized_machine = dynamic_cast<T*>(deser_obj.get());

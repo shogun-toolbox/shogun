@@ -18,12 +18,15 @@ namespace shogun
 			CDeserializer();
 			virtual ~CDeserializer();
 			virtual void attach(Some<CInputStream> stream);
-			virtual Some<CSGObject> read() = 0;
+			virtual Some<CSGObject> read_object() = 0;
+			virtual void read(CSGObject* _this) = 0;
 			Some<CInputStream> stream() const;
 
 		private:
 			Some<CInputStream> m_stream;
 		};
+
+		CSGObject* deserialize(const std::string& _path, CDeserializer* _deser);
 	}
 }
 

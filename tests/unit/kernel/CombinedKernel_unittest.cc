@@ -227,7 +227,7 @@ TEST(CombinedKernelTest,serialization)
 	auto bis = some<io::CBufferedInputStream>(fis.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(bis);
-	auto deser_obj = deserializer->read();
+	auto deser_obj = deserializer->read_object();
 	auto combined_read = static_cast<CCombinedKernel*>(deser_obj.get());
 	ASSERT_FALSE(fs->delete_file(filename));
 

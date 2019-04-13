@@ -50,7 +50,7 @@ TEST(SparseFeaturesTest,serialization)
 	auto fis = some<io::CFileInputStream>(raf.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(fis);
-	auto sparse_features_loaded = deserializer->read();
+	auto sparse_features_loaded = deserializer->read_object();
 
 	ASSERT_FALSE(fs->delete_file(filename));
 

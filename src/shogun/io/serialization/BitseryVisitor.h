@@ -73,8 +73,7 @@ namespace shogun
 				}
 				void on(floatmax_t* v) override
 				{
-					// FIXME
-					m_s.value8b(*v);
+					static_cast<T*>(this)->on_floatmax(m_s, v);
 				}
 				void on(complex128_t* v) override
 				{

@@ -368,13 +368,13 @@ TEST(SGObject,equals_complex_equal)
 	auto bis = some<io::CBufferedInputStream>(fis.get());
 	auto deserializer = some<io::CJsonDeserializer>();
 	deserializer->attach(bis);
-	auto gpr_copy = deserializer->read();
+	auto gpr_copy = deserializer->read_object();
 
 	ASSERT_FALSE(fs->new_random_access_file(filename_predictions, &raf));
 	fis = some<io::CFileInputStream>(raf.get());
 	bis = some<io::CBufferedInputStream>(fis.get());
 	deserializer->attach(bis);
-	auto predictions_copy = deserializer->read();
+	auto predictions_copy = deserializer->read_object();
 
 	/* now compare */
 	set_global_fequals_epsilon(1e-10);

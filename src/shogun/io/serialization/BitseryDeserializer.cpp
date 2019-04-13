@@ -8,6 +8,7 @@
 #include <shogun/io/ShogunErrc.h>
 #include <shogun/util/converters.h>
 #include <shogun/base/class_list.h>
+#include <shogun/util/system.h>
 
 #include <bitsery/bitsery.h>
 #include <bitsery/traits/string.h>
@@ -33,12 +34,27 @@ public:
 		v->imag(imag);
 	}
 
+	void on_floatmax(S& s, floatmax_t* v)
+	{
+		uint64_t msb, lsb;
+		s.value8b(msb);
+		s.value8b(lsb);
+
+		// FIXME: check array[0] == array[1]
+		uint64_t array[2];
+		array[utils::is_big_endian() ? 1 : 0] = msb;
+		array[utils::is_big_endian() ? 0 : 1] = lsb;
+
+		*v = *reinterpret_cast<floatmax_t*>(array);
+		SG_SDEBUG("read floatmax_t with value %Lf\n", *v);
+	}
+
 	void on_object(S& s, CSGObject** v)
 	{
 		SG_SDEBUG("reading SGObject: ");
 		if (*v != nullptr)
 			SG_UNREF(*v);
-		*v = read_object(s, this);
+		*v = object_reader(s, this);
 		if (*v != nullptr)
 			SG_REF(*v);
 	}
@@ -84,7 +100,7 @@ struct InputStreamAdapter
 };
 
 template<typename Reader>
-CSGObject* read_object(Reader& reader, BitseryReaderVisitor<Reader>* visitor)
+CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, CSGObject* _this = nullptr)
 {
 	size_t obj_magic;
 	reader.value8b(obj_magic);
@@ -95,7 +111,17 @@ CSGObject* read_object(Reader& reader, BitseryReaderVisitor<Reader>* visitor)
 	reader.text1b(obj_name, 64);
 	uint16_t primitive_type;
 	reader.value2b(primitive_type);
-	auto obj = create(obj_name.c_str(), static_cast<EPrimitiveType>(primitive_type));
+	CSGObject* obj = nullptr;
+	if (_this)
+	{
+		REQUIRE(_this->get_name() == obj_name, "");
+		REQUIRE(_this->get_generic() == static_cast<EPrimitiveType>(primitive_type), "");
+		obj = _this;
+	}
+	else
+	{
+		obj = create(obj_name.c_str(), static_cast<EPrimitiveType>(primitive_type));
+	}
 	if (obj == nullptr)
 		throw runtime_error("Trying to deserializer and unknown object!");
 
@@ -121,10 +147,18 @@ CBitseryDeserializer::~CBitseryDeserializer()
 {
 }
 
-Some<CSGObject> CBitseryDeserializer::read()
+Some<CSGObject> CBitseryDeserializer::read_object()
 {
 	InputStreamAdapter adapter{ .m_stream = stream() };
 	BitseryDeserializer deser {std::move(adapter)};
 	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
-	return wrap<CSGObject>(read_object(deser, addressof(reader_visitor)));
+	return wrap<CSGObject>(object_reader(deser, addressof(reader_visitor)));
+}
+
+void CBitseryDeserializer::read(CSGObject* _this)
+{
+	InputStreamAdapter adapter{ .m_stream = stream() };
+	BitseryDeserializer deser {std::move(adapter)};
+	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
+	object_reader(deser, addressof(reader_visitor), _this);
 }
