@@ -865,13 +865,15 @@ protected:
 		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Dynamic parameter",
-			ParameterProperties::NONE);
+			ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<const S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));
 	}
 
 	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
+	 * The bound function can modify the class members and can only be
+	 * invoked using CSGObject::run(name).
 	 *
 	 * @param name name of the parameter
 	 * @param method pointer to the method
@@ -882,7 +884,7 @@ protected:
 		BaseTag tag(name);
 		AnyParameterProperties properties(
 			"Non-const function",
-				ParameterProperties::RUNFUNCTION);
+			ParameterProperties::RUNFUNCTION | ParameterProperties::READONLY);
 		std::function<T()> bind_method =
 			std::bind(method, dynamic_cast<S*>(this));
 		create_parameter(tag, AnyParameter(make_any(bind_method), properties));

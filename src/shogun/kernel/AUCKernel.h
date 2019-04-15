@@ -9,27 +9,29 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/DotKernel.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
 	class CLabels;
-	template <class T> class CDenseFeatures;
+	template <class T>
+	class CDenseFeatures;
 
-/** @brief The AUC kernel can be used to maximize the area under the receiver operator
- * characteristic curve (AUC) instead of margin in SVM training.
- *
- * It takes as argument a sub-kernel and Labels based on which number of
- * positive labels times number of negative labels many ``virtual'' examples
- * are created that ensure that all positive examples get a higher score than
- * all negative examples in training.
- */
-class CAUCKernel: public CDotKernel
-{
-	void init();
+	/** @brief The AUC kernel can be used to maximize the area under the
+	 * receiver operator characteristic curve (AUC) instead of margin in SVM
+	 * training.
+	 *
+	 * It takes as argument a sub-kernel and Labels based on which number of
+	 * positive labels times number of negative labels many ``virtual'' examples
+	 * are created that ensure that all positive examples get a higher score
+	 * than all negative examples in training.
+	 */
+	class CAUCKernel : public CDotKernel
+	{
+		void init();
 
 	public:
 		/** default constructor  */
@@ -51,7 +53,7 @@ class CAUCKernel: public CDotKernel
 		 * @param labels - current labeling
 		 * @return whether new labels with AUC maximisation have been learnt
 		 */
-        bool setup_auc_maximization();
+		bool setup_auc_maximization();
 
 		/** initialize kernel
 		 *
@@ -65,25 +67,37 @@ class CAUCKernel: public CDotKernel
 		 *
 		 * @return kernel type AUC
 		 */
-		virtual EKernelType get_kernel_type() { return K_AUC; }
+		virtual EKernelType get_kernel_type()
+		{
+			return K_AUC;
+		}
 
 		/** return the kernel's name
 		 *
 		 * @return name AUC
 		 */
-		virtual const char* get_name() const { return "AUCKernel" ; }
+		virtual const char* get_name() const
+		{
+			return "AUCKernel";
+		}
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		virtual EFeatureClass get_feature_class()
+		{
+			return C_DENSE;
+		}
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return word feature type
 		 */
-		virtual EFeatureType get_feature_type() { return F_WORD; }
+		virtual EFeatureType get_feature_type()
+		{
+			return F_WORD;
+		}
 
 	protected:
 		/** compute kernel function for features a and b
@@ -101,6 +115,6 @@ class CAUCKernel: public CDotKernel
 		CKernel* subkernel;
 		/** the labels */
 		CLabels* labels;
-};
-}
+	};
+} // namespace shogun
 #endif /* _AUCKERNEL_H__ */

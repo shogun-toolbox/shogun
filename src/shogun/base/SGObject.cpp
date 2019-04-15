@@ -1089,7 +1089,7 @@ void CSGObject::init_auto_params()
 
 CSGObject* CSGObject::get(const std::string& name, index_t index) const
 {
-	auto* result = sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByNameIndex(index)));
+	auto* result = sgo_details::get_by_tag(this, name, sgo_details::GetByNameIndex(index));
 	if (!result && has(name))
 	{
 		SG_ERROR(
@@ -1103,7 +1103,7 @@ CSGObject* CSGObject::get(const std::string& name, index_t index) const
 CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
     noexcept
 {
-	return sgo_details::get_by_tag(this, name, std::move(sgo_details::GetByName()));
+	return sgo_details::get_by_tag(this, name, sgo_details::GetByName());
 }
 
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
@@ -1130,5 +1130,4 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
-
 }
