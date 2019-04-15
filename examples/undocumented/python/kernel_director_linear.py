@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import numpy as np
-from shogun import RealFeatures, MSG_DEBUG
-import shogun as sg
 
 traindat = np.random.random_sample((10,10))
 testdat = np.random.random_sample((10,10))

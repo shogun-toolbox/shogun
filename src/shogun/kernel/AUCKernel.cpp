@@ -16,32 +16,34 @@ using namespace shogun;
 void
 CAUCKernel::init()
 {
-	SG_ADD((CKernel**) &subkernel, "subkernel", "The subkernel.",
+	SG_ADD(&subkernel, "subkernel", "The subkernel.",
 	    ParameterProperties::HYPER);
-	SG_ADD((CLabels**) &labels, "labels", "The labels.");
+	SG_ADD(&labels, "labels", "The labels.");
 	watch_method("setup_auc_maximization", &CAUCKernel::setup_auc_maximization);
 }
 
 CAUCKernel::CAUCKernel()
-: CDotKernel(0), subkernel(NULL)
+: CDotKernel(0), subkernel(nullptr), labels(nullptr)
 {
 	init();
 }
 
-CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
-: CDotKernel(size), subkernel(s)
+CAUCKernel::CAUCKernel(int32_t size, CKernel* s, CLabels* l)
+: CDotKernel(size), subkernel(s), labels(l)
 {
 	init();
 	SG_REF(subkernel);
+	SG_REF(labels)
 }
 
 CAUCKernel::~CAUCKernel()
 {
 	SG_UNREF(subkernel);
+	SG_UNREF(labels)
 	cleanup();
 }
 
-int32_t CAUCKernel::setup_auc_maximization()
+bool CAUCKernel::setup_auc_maximization()
 {
 	SG_INFO("setting up AUC maximization\n")
 	ASSERT(labels)
@@ -69,7 +71,7 @@ int32_t CAUCKernel::setup_auc_maximization()
 	SG_INFO("num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc)
 
 	SGMatrix<uint16_t> features_auc(2,num_auc);
-	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
+	auto* labels_auc = SG_MALLOC(int32_t, num_auc);
 	int32_t n=0 ;
 
 	for (int32_t i=0; i<int_labels.vlen; i++)
@@ -102,7 +104,7 @@ int32_t CAUCKernel::setup_auc_maximization()
 	}
 
 	// create label object and attach it to svm
-	CBinaryLabels* lab_auc = new CBinaryLabels(num_auc);
+	auto* lab_auc = new CBinaryLabels(num_auc);
 	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc, false));
 	SG_REF(lab_auc);
 
@@ -114,7 +116,7 @@ int32_t CAUCKernel::setup_auc_maximization()
 
 	SG_FREE(labels_auc);
 
-	return 1;
+	return true;
 }
 
 

@@ -39,8 +39,9 @@ class CAUCKernel: public CDotKernel
 		 *
 		 * @param size cache size
 		 * @param subkernel the subkernel
+		 * @param labels the labels for AUC maximization
 		 */
-		CAUCKernel(int32_t size, CKernel* subkernel);
+		CAUCKernel(int32_t size, CKernel* subkernel, CLabels* labels);
 
 		/** destructor */
 		virtual ~CAUCKernel();
@@ -48,10 +49,9 @@ class CAUCKernel: public CDotKernel
 		/** initialize kernel based on current labeling and subkernel
 		 *
 		 * @param labels - current labeling
-		 * @return new label object to be used together with this kernel in SVM
-		 * training for AUC maximization
+		 * @return whether new labels with AUC maximisation have been learnt
 		 */
-        int32_t setup_auc_maximization();
+        bool setup_auc_maximization();
 
 		/** initialize kernel
 		 *

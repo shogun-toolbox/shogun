@@ -11,9 +11,6 @@ def distance_sparseeuclidean (train_fname=traindat,test_fname=testdat):
 
 	feats_train=SparseRealFeatures(sg.libsvm_file(train_fname))
 	feats_test=SparseRealFeatures(sg.libsvm_file(test_fname))
-	
-	print feats_train.get_num_features()
-	print feats_test.get_num_features()
 
 	distance = sg.distance('SparseEuclideanDistance')
 	distance.init(feats_train, feats_train)

@@ -748,11 +748,33 @@ void CSGObject::update_parameter(const BaseTag& _tag, const Any& value)
 AnyParameter CSGObject::get_parameter(const BaseTag& _tag) const
 {
 	const auto& parameter = self->get(_tag);
+	if (parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	{
+		SG_ERROR("The parameter %s::%s is registered as a function, "
+		   "use the run method instead", get_name(), _tag.name().c_str())
+	}
 	if (parameter.get_value().empty())
 	{
 		SG_ERROR(
 		    "There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
 		    get_name());
+	}
+	return parameter;
+}
+
+AnyParameter CSGObject::get_function(const BaseTag& _tag) const
+{
+	const auto& parameter = self->get(_tag);
+	if (!parameter.get_properties().has_property(ParameterProperties::RUNFUNCTION))
+	{
+		SG_ERROR("The parameter %s::%s is not registered as a function, "
+				 "use the get method instead", get_name(), _tag.name().c_str())
+	}
+	if (parameter.get_value().empty())
+	{
+		SG_ERROR(
+				"There is no parameter called \"%s\" in %s\n", _tag.name().c_str(),
+				get_name());
 	}
 	return parameter;
 }

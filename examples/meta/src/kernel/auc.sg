@@ -7,7 +7,7 @@ Kernel subkernel = kernel("GaussianKernel", log_width=1.7)
 subkernel.init(feats_train, feats_train)
 
 Kernel auc = kernel("AUCKernel", subkernel=subkernel, labels=labels_train)
-auc.get_int("setup_auc_maximization")
+auc.run("setup_auc_maximization")
 
 RealMatrix km_train = auc.get_kernel_matrix()
 

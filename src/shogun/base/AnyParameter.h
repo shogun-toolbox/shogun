@@ -39,7 +39,8 @@ namespace shogun
 		GRADIENT = 1u << 1,
 		MODEL = 1u << 2,
 		AUTO = 1u << 10,
-		READONLY = 1u << 11
+		READONLY = 1u << 11,
+		RUNFUNCTION = 1u << 12
 	};
 
 	static const std::list<std::pair<ParameterProperties, std::string>> kParameterPropNames = {
