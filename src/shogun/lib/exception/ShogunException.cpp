@@ -23,16 +23,7 @@ ShogunException::ShogunException(const char* what_arg)
 {
 }
 
-ShogunException::ShogunException(const ShogunException& orig)
-{
-	msg = orig.msg;
-}
-
-ShogunException::~ShogunException()
-{
-}
-
 const char* ShogunException::what() const noexcept
 {
-	return msg.c_str();
+	return msg.what();
 }
