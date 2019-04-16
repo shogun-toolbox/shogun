@@ -1086,15 +1086,19 @@ CSGObject* CSGObject::get(const std::string& name, std::nothrow_t) const
 
 CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 {
-	auto* result = get(name, std::nothrow);
-	if (!result && has(name))
+	if (!has(name))
 	{
-		SG_ERROR(
+		SG_ERROR("Parameter %s::%s does not exist.\n", get_name(), name.c_str())
+	}
+	if (auto* result = get(name, std::nothrow))
+	{
+		return result;
+	}
+	SG_ERROR(
 			"Cannot get parameter %s::%s of type %s as object.\n",
 			get_name(), name.c_str(),
 			self->map[BaseTag(name)].get_value().type().c_str());
-	}
-	return result;
+	return nullptr;
 }
 
 std::string CSGObject::string_enum_reverse_lookup(
