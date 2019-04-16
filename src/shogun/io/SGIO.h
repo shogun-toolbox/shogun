@@ -600,6 +600,8 @@ void SGIO::message(EMessageType prio, Args&&... args) const
 template <typename ExceptionType, typename... Args>
 void SGIO::error(EMessageType prio, Args&&... args) const
 {
+	static_assert(std::is_nothrow_copy_constructible<ExceptionType>::value,
+			  "ExceptionType must be nothrow copy constructible");
 	const auto& msg = format(prio, std::forward<Args>(args)...);
 	print(prio, msg);
 	throw ExceptionType(msg);
