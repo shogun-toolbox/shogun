@@ -342,7 +342,7 @@ public:
 	 * @return true if the parameter exists with the input name and type
 	 */
 	template <typename T, typename U = void>
-	bool has(const std::string& name) const throw(ShogunException)
+	bool has(const std::string& name) const noexcept(true)
 	{
 		BaseTag tag(name);
 		if (!has_parameter(tag))
@@ -1112,8 +1112,6 @@ template<class T>
 CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
 		T&& how)
 {
-	REQUIRE(obj->has(name), "Parameter %s::%s does not exist.\n",
-			obj->get_name(), name.c_str());
 	return get_dispatch_all_base_types(obj, name, how);
 }
 }
