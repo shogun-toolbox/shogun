@@ -17,7 +17,7 @@ namespace shogun
 	/** @brief Class ShogunException defines an exception which is thrown
 	 * whenever an error inside of shogun occurs.
 	 */
-	class ShogunException : public std::exception
+	class ShogunException : public std::runtime_error
 	{
 	public:
 		/** constructor
@@ -31,12 +31,6 @@ namespace shogun
 		 * @param str exception string
 		 */
 		explicit ShogunException(const char* what_arg);
-
-		const char* what() const noexcept override;
-
-	private:
-		/** exception object */
-		std::runtime_error msg;
 	};
 } // namespace shogun
 #endif // _SHOGUN_EXCEPTION_H_

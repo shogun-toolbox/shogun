@@ -14,16 +14,11 @@
 using namespace shogun;
 
 ShogunException::ShogunException(const std::string& what_arg)
-    : std::exception(), msg(what_arg)
+    : std::runtime_error(what_arg)
 {
 }
 
 ShogunException::ShogunException(const char* what_arg)
-    : std::exception(), msg(what_arg)
+	: std::runtime_error(what_arg)
 {
-}
-
-const char* ShogunException::what() const noexcept
-{
-	return msg.what();
 }
