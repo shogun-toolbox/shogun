@@ -64,13 +64,6 @@ namespace shogun
 		virtual void post_update_results();
 
 		/**
-		 * Operator == needed for Any comparison
-		 * @param rhs other CrossValidationFoldStorage
-		 * @return true if the objects are the same, false otherwise.
-		 */
-		bool operator==(const CrossValidationFoldStorage& rhs) const;
-
-		/**
 		 * Class name (used for serialization)
 		 * @return class name
 		 */
@@ -136,13 +129,6 @@ namespace shogun
 		 * @param result the result of a fold
 		 */
 		virtual void append_fold_result(CrossValidationFoldStorage* result);
-
-		/**
-		 * Operator == needed for Any comparison.
-		 * @param rhs other CrossValidationStorage
-		 * @return true if the objects are the same, false otherwise.
-		 */
-		bool operator==(const CrossValidationStorage& rhs) const;
 
 	protected:
 		/** number of runs is initialised here */
