@@ -26,14 +26,8 @@ Evaluation evaluation_criterion = evaluation("AccuracyMeasure")
 
 #![create_master_node]
 GridSearch node = new GridSearch(svm, splitting, evaluation_criterion)
-RealVector c1_param(3)
-c1_param[0] = 0.1
-c1_param[1] = 1
-c1_param[2] = 10
-RealVector c2_param(3)
-c2_param[0] = 0.1
-c2_param[1] = 1
-c2_param[2] = 10
+RealVector c1_param([0.1, 1.0, 10.0])
+RealVector c2_param([0.1, 1.0, 10.0])
 node.attach("C1", c1_param)
 node.attach("C2", c2_param)
 #![create_master_node]
@@ -44,16 +38,10 @@ GridParameters k2_node = new GridParameters(k2)
 #![create_child_nodes]
 
 #![attach_child_nodes]
-IntVector degree_param(3)
-degree_param[0] = 1
-degree_param[1] = 2
-degree_param[2] = 3
+IntVector degree_param([1, 2, 3])
 k2_node.attach("degree", degree_param)
 node.attach("kernel", k1_node)
-RealVector width_param(3)
-width_param[0] = 0.1
-width_param[1] = 1
-width_param[2] = 2
+RealVector width_param([0.1, 1.0, 2.0])
 node.attach("kernel::log_width", width_param)
 node.attach("kernel", k2_node)
 #![attach_child_nodes]
