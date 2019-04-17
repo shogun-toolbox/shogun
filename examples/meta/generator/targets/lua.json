@@ -12,6 +12,7 @@
             "InitialSeperatorWhenArgs>0": false
         }
     },
+    "ListInit" : {},
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"

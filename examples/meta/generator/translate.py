@@ -110,6 +110,7 @@ def getVarsToStore(program):
 
         appendStore = False
         if "ShogunSGType" in init[0]:
+
             if init[0]["ShogunSGType"] in getSGTypesToStore():
                 appendStore = True
 
@@ -445,6 +446,8 @@ class Translator:
         translation = None
         if type == "Init":
             translation = self.translateInit(statement["Init"])
+        elif type == "ListInit":
+            translation = self.translateListInit(statement["ListInit"])
         elif type == "Assign":
             translation = self.translateAssign(statement["Assign"])
         elif type == "Expr":
@@ -457,6 +460,42 @@ class Translator:
 
         template = Template(self.targetDict["Statement"])
         return template.substitute(statement=translation)
+
+    def translateListInit(self, init):
+        """ Translate initialisation statement AST
+        Args:
+            listinit: [typeAST, identifierAST, argumentListAST]
+        """
+        typeDict = init[0]
+        typeString = self.translateType(typeDict)
+        nameString = init[1]["Identifier"]
+        initialisation = init[2]
+        typeKey = list(typeDict.keys())[0]
+
+        self.variableTypes[nameString] = typeDict
+
+        if list(initialisation.keys())[0] == "ArgumentList":
+            template = Template(self.targetDict["Init"]["Construct"])
+            # custom SGType construction
+            if typeKey == "ShogunSGType"\
+                and init[0][typeKey] in self.targetDict["ListInit"]:
+                template = Template(self.targetDict["ListInit"][init[0][typeKey]])
+
+            argsString, kwargs = self.translateArgumentList(
+                initialisation, returnKwargs=True)
+
+            normalArgs = [
+                arg for arg in initialisation["ArgumentList"]
+                    if not "KeywordArgument" in arg
+            ]
+            kwargsString = self.translateKwargs(
+                kwargs, nameString, typeString,
+                argsGtZero=len(normalArgs) > 0
+            )
+            return template.substitute(name=nameString,
+                                       typeName=typeString,
+                                       arguments=argsString,
+                                       kwargs=kwargsString)
 
     def translateInit(self, init):
         """ Translate initialisation statement AST
@@ -491,11 +530,11 @@ class Translator:
                                        expr=exprString,
                                        kwargs=kwargsString)
         elif list(initialisation.keys())[0] == "ArgumentList":
+
             template = Template(self.targetDict["Init"]["Construct"])
 
             # Optional custom SGType construction
-            if typeKey == "ShogunSGType"\
-               and init[0][typeKey] in self.targetDict["Init"]:
+            if typeKey == "ShogunSGType" and init[0][typeKey] in self.targetDict["Init"]:
                 template = Template(self.targetDict["Init"][init[0][typeKey]])
 
             argsString, kwargs = self.translateArgumentList(
