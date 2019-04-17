@@ -20,6 +20,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
+#include <shogun/util/converters.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

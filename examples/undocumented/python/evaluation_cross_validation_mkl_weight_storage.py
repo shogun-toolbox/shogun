@@ -24,7 +24,6 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from shogun import BinaryLabels
     from shogun import CombinedFeatures
     from shogun import MKLClassification
-    from shogun import as_kernel, as_machine
     import shogun as sg
     import numpy as np
 
@@ -75,8 +74,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
         obs = mkl_storage.get_observation(obs_index).get("cross_validation_run")
         for fold_index in range(obs.get("num_folds")):
             fold = obs.get("folds", fold_index)
-            machine = as_machine(fold.get("trained_machine"))
-            w = as_kernel(machine.get("kernel")).get_subkernel_weights()
+            w = fold.get("trained_machine").get("kernel").get_real("combined_kernel_weight")
             weights.append(w)
 
     print("mkl weights during cross--validation")
