@@ -238,9 +238,7 @@ namespace shogun
 		 * @param ss
 		 * @param visitor
 		 */
-		void to_string_helper(
-		    std::stringstream& ss, std::unique_ptr<AnyVisitor>& visitor) const
-		    noexcept;
+		void to_string_helper(std::stringstream& ss) const noexcept;
 	};
 
 	/**

@@ -117,14 +117,19 @@ bool ParameterNode::set_param_helper(
 std::string ParameterNode::to_string() const noexcept
 {
 	std::stringstream ss;
-	std::unique_ptr<AnyVisitor> visitor(new ToStringVisitor(&ss));
 	ss << get_name() << "(" << get_parent_name() << "(";
+
+	auto scalar_stringify = [&ss](const auto& val) { ss << val; };
+
+	auto vector_stringify = [&ss](const auto& val) { ss << val.to_string(); };
 
 	for (auto param_pair = m_param_mapping.begin();
 	     param_pair != m_param_mapping.end(); ++param_pair)
 	{
 		ss << param_pair->first.c_str() << "=";
-		param_pair->second.visit(visitor.get());
+		sg_any_dispatch(
+		    param_pair->second, sg_all_typemap, scalar_stringify,
+		    vector_stringify);
 		if (std::next(param_pair) != m_param_mapping.end())
 			ss << ", ";
 	}
@@ -144,7 +149,7 @@ std::string ParameterNode::to_string() const noexcept
 			for (auto inner_node = node->second.begin();
 			     inner_node != node->second.end(); ++inner_node)
 			{
-				(*inner_node)->to_string_helper(ss, visitor);
+				(*inner_node)->to_string_helper(ss);
 				if (std::next(inner_node) != node->second.end())
 					ss << ", ";
 			}
@@ -160,15 +165,19 @@ std::string ParameterNode::to_string() const noexcept
 	return ss.str();
 }
 
-void ParameterNode::to_string_helper(
-    std::stringstream& ss, std::unique_ptr<AnyVisitor>& visitor) const noexcept
+void ParameterNode::to_string_helper(std::stringstream& ss) const noexcept
 {
+	auto scalar_stringify = [&ss](const auto& val) { ss << val; };
+	auto vector_stringify = [&ss](const auto& val) { ss << val.to_string(); };
+
 	ss << get_parent_name() << "(";
 	for (auto param_pair = m_param_mapping.begin();
 	     param_pair != m_param_mapping.end(); ++param_pair)
 	{
 		ss << param_pair->first.c_str() << "=";
-		param_pair->second.visit(visitor.get());
+		sg_any_dispatch(
+		    param_pair->second, sg_all_typemap, scalar_stringify,
+		    vector_stringify);
 		if (std::next(param_pair) != m_param_mapping.end())
 			ss << ", ";
 	}
