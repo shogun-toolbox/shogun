@@ -84,19 +84,6 @@ void CrossValidationFoldStorage::post_update_results()
 {
 }
 
-bool CrossValidationFoldStorage::
-operator==(const CrossValidationFoldStorage& rhs) const
-{
-	return m_current_run_index == rhs.m_current_run_index &&
-	       m_current_fold_index == rhs.m_current_fold_index &&
-	       // m_train_indices.equals(rhs.m_train_indices) &&
-	       // m_test_indices.equals(rhs.m_test_indices) &&
-	       m_trained_machine->equals(rhs.m_trained_machine) &&
-	       m_test_result->equals(rhs.m_test_result) &&
-	       m_test_true_result->equals(rhs.m_test_true_result) &&
-	       m_evaluation_result == rhs.m_evaluation_result;
-}
-
 void CrossValidationFoldStorage::print_result() {
 
 }
@@ -137,25 +124,6 @@ void CrossValidationStorage::append_fold_result(
 {
 	SG_REF(result);
 	m_folds_results.push_back(result);
-}
-
-bool CrossValidationStorage::operator==(const CrossValidationStorage& rhs) const
-{
-	auto member_vars = m_num_runs == rhs.m_num_runs &&
-	                   m_num_folds == rhs.m_num_folds &&
-	                   m_original_labels->equals(rhs.m_original_labels);
-
-	if (!member_vars)
-		return member_vars;
-
-	if (rhs.m_folds_results.size() != m_folds_results.size())
-		return false;
-	for (auto i : range(m_folds_results.size()))
-	{
-		if (!(m_folds_results[i] == rhs.m_folds_results[i]))
-			return false;
-	}
-	return member_vars;
 }
 
 void CrossValidationStorage::print_result() {
