@@ -308,6 +308,12 @@ class FastParser:
         """
         p[0] = {"Init": [p[1], p[2], p[4]]}
 
+    def p_listInitialisation(self, p):
+        """
+        listInitialisation : type identifier LPAREN LSQUARE argumentList RSQUARE RPAREN 
+        """
+        p[0] = {"ListInit": [p[1], p[2], p[5]]}  
+
     def p_output(self, p):
         "output : PRINTKEYWORD expr"
         p[0] = {"Print": p[2]}
@@ -315,6 +321,7 @@ class FastParser:
     def p_statement(self, p):
         """
         statement : initialisation NEWLINE
+                  | listInitialisation NEWLINE
                   | assignment NEWLINE
                   | expr NEWLINE
                   | output NEWLINE

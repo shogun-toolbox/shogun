@@ -1,0 +1,11 @@
+ByteVector byte_vector([1, 2])
+
+WordVector word_vector([5, 6])
+
+IntVector int_vector([10, 20])
+
+LongIntVector long_int_vector([99, 99])
+
+ShortRealVector short_real_vector([1.2f, 2.1f])
+
+RealVector real_vector([1.2, 2.5])
