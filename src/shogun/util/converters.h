@@ -12,6 +12,15 @@
 
 #include <shogun/lib/common.h>
 
+#ifdef _MSC_VER
+#include <cfloat>
+// TODO: microsoft should really start supporting c++11
+#define IS_FINITE(x) _isfinite(x)
+#else
+#include <cmath>
+#define IS_FINITE(x) std::isfinite(x)
+#endif
+
 namespace shogun
 {
 	namespace utils
@@ -29,7 +38,7 @@ namespace shogun
 		    std::is_signed<I>::value && std::is_signed<J>::value, I>
 		safe_convert(J value)
 		{
-			if (std::isfinite(value) &&
+			if (IS_FINITE(value) &&
 			    (value < std::numeric_limits<I>::lowest() ||
 			     value > std::numeric_limits<I>::max()))
 				throw std::overflow_error(
