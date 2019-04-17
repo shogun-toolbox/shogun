@@ -75,7 +75,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
         obs = mkl_storage.get_observation(obs_index).get("cross_validation_run")
         for fold_index in range(obs.get("num_folds")):
             fold = obs.get("folds", fold_index)
-            w = fold.get("trained_machine").get("kernel").get_real("combined_kernel_weight")
+            w = fold.get("trained_machine").get("kernel").get("combined_kernel_weight")
             weights.append(w)
 
     print("mkl weights during cross--validation")
