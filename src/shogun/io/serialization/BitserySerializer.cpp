@@ -99,8 +99,9 @@ struct OutputStreamAdapter
 
 // cannot use context because of circular dependency :(
 template<typename Writer>
-void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CSGObject> o)
+void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CSGObject> o) noexcept(false)
 {
+	pre_serialize(o.get());
 	writer.value8b(sizeof(o.get()));
 	string name(o->get_name());
 	writer.text1b(name, 64);
@@ -119,6 +120,7 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CS
 		writer.text1b(p.first, 64);
 		p.second->get_value().visit(visitor);
 	}
+	post_serialize(o.get());
 }
 
 using OutputAdapter = AdapterWriter<OutputStreamAdapter, bitsery::DefaultConfig>;
@@ -132,9 +134,9 @@ CBitserySerializer::~CBitserySerializer()
 {
 }
 
-void CBitserySerializer::write(Some<CSGObject> object)
+void CBitserySerializer::write(Some<CSGObject> object) noexcept(false)
 {
-	OutputStreamAdapter adapter{ .m_stream = stream() };
+	OutputStreamAdapter adapter { stream() };
  	BitserySerializer serializer {std::move(adapter)};
  	BitseryWriterVisitor<BitserySerializer> writer_visitor(serializer);
  	write_object(serializer, addressof(writer_visitor), object);

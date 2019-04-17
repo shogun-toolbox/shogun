@@ -335,7 +335,6 @@ class CAlphabet : public CSGObject
 		/** alphabet names */
 		static const char* alphabet_names[18];
 
-	protected:
 		/** Can (optionally) be overridden to post-initialize some
 		 *  member variables which are not PARAMETER::ADD'ed.  Make
 		 *  sure that at first the overridden method

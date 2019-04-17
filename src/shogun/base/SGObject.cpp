@@ -16,7 +16,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/class_list.h>
-#include <shogun/io/SerializableFile.h>
 #include <shogun/io/visitors/ToStringVisitor.h>
 #include <shogun/io/serialization/Serializer.h>
 #include <shogun/io/serialization/Deserializer.h>
@@ -40,6 +39,7 @@
 #include <unordered_map>
 
 #include <shogun/distance/Distance.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
@@ -186,7 +186,6 @@ namespace shogun
 	{
 		m_generic = PT_COMPLEX128;
 	}
-
 	class CSGObject::ParameterObserverList
 	{
 	public:
@@ -201,7 +200,6 @@ namespace shogun
 		}
 
 	private:
-		/** List of observable parameters (name, description) */
 		ObsParamsList m_list_obs_params;
 	};
 } /* namespace shogun  */
@@ -390,97 +388,15 @@ void CSGObject::unset_generic()
 
 bool CSGObject::serialize(io::CSerializer* ser)
 {
-	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name())
-	try
-	{
-		save_serializable_pre();
-	}
-	catch (ShogunException& e)
-	{
-		SG_SWARNING("%s::save_serializable_pre(): ShogunException: "
-			"%s\n", get_name(), e.what());
-		return false;
-	}
-
-	if (!m_save_pre_called)
-	{
-		SG_SWARNING("%s::save_serializable_pre(): Implementation "
-			"error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
-			"called!\n", get_name());
-		return false;
-	}
-
+	REQUIRE(ser != nullptr, "Serializer format object should be non-null\n");
 	ser->write(wrap(this));
-
-	try
-	{
-		save_serializable_post();
-	}
-	catch (ShogunException& e)
-	{
-		SG_SWARNING("%s::save_serializable_post(): ShogunException: "
-			"%s\n", get_name(), e.what());
-		return false;
-	}
-
-	if (!m_save_post_called)
-	{
-		SG_SWARNING("%s%s::save_serializable_post(): Implementation "
-			"error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
-			"called!\n", get_name());
-		return false;
-	}
-
-	SG_DEBUG("DONE SAVING CSGObject '%s' (%p)\n", get_name(), this)
-
 	return true;
 }
 
 bool CSGObject::deserialize(io::CDeserializer* deser)
 {
-	REQUIRE(deser != nullptr, "Serializable file object should be non-null\n");
-
-	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name())
-	try
-	{
-		load_serializable_pre();
-	}
-	catch (ShogunException& e)
-	{
-		SG_SWARNING("%s::load_serializable_pre(): ShogunException: "
-			"%s\n", get_name(), e.what());
-		return false;
-	}
-
-	if (!m_load_pre_called)
-	{
-		SG_SWARNING("%s::load_serializable_pre(): Implementation "
-			"error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
-			"called!\n", get_name());
-		return false;
-	}
-
+	REQUIRE(deser != nullptr, "Deserializer format object should be non-null\n");
 	deser->read(this);
-
-	try
-	{
-		load_serializable_post();
-	}
-	catch (ShogunException& e)
-	{
-		SG_SWARNING("%s::load_serializable_post(): ShogunException: "
-			"%s\n", get_name(), e.what());
-		return false;
-	}
-
-	if (!m_load_post_called)
-	{
-		SG_SWARNING("%s::load_serializable_post(): Implementation "
-			"error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
-			"called!\n", get_name());
-		return false;
-	}
-	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this)
 	return true;
 }
 
@@ -841,24 +757,6 @@ void CSGObject::observe(ObservedValue* value) const
 	auto somed_value = Some<ObservedValue>::from_raw(value);
 	m_subscriber_params->on_next(somed_value);
 }
-
-class CSGObject::ParameterObserverList
-{
-public:
-	void register_param(const std::string& name, const std::string& description)
-	{
-		m_list_obs_params[name] = description;
-	}
-
-	ObsParamsList get_list() const
-	{
-		return m_list_obs_params;
-	}
-
-private:
-	/** List of observable parameters (name, description) */
-	ObsParamsList m_list_obs_params;
-};
 
 void CSGObject::register_observable(
     const std::string& name, const std::string& description)

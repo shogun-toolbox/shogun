@@ -18,10 +18,10 @@
 %typemap(javaimports) shogun::CSGObject
 %{
 import org.shogun.JsonSerializer;
+import org.shogun.JsonDeserializer;
 import org.shogun.ByteArrayOutputStream;
 import org.shogun.ByteArrayInputStream;
-import java.util.List;
-import java.util.ArrayList;
+import java.lang.StringBuffer;
 import org.jblas.*;
 %}
 %typemap(javacode) shogun::CSGObject
@@ -29,20 +29,20 @@ import org.jblas.*;
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
     ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
     JsonSerializer jsonSerializer = new JsonSerializer();
-    json.attach(byteArrayOS);
-    json.write(this);
+    jsonSerializer.attach(byteArrayOS);
+    jsonSerializer.write(this);
 
-    List<char> obj_serialized = byteArrayOS.content();
-    out.write(obj_serialized.toArray());
+    String obj_serialized = byteArrayOS.as_string();
+    out.write(obj_serialized.getBytes());
 }
 
 public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
-    List<byte> buffer = new ArrayList<>();
+    StringBuffer sb = new StringBuffer();
     int ch;
     while ((ch=in.read()) != -1) {
-        buffer.add(ch);
+        sb.append((char)ch);
     }
-    ByteArrayInputStream bis = ByteArrayInputStream(buffer.toArray(), buffer.length);
+    ByteArrayInputStream bis = new ByteArrayInputStream(sb.toString());
     JsonDeserializer jsonDeserializer = new JsonDeserializer();
     jsonDeserializer.attach(bis);
     this.deserialize(jsonDeserializer);

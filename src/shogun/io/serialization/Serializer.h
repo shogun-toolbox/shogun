@@ -18,7 +18,7 @@ namespace shogun
 			CSerializer();
 			virtual ~CSerializer();
 			virtual void attach(Some<COutputStream> stream);
-			virtual void write(Some<CSGObject> object) = 0;
+			virtual void write(Some<CSGObject> object) noexcept(false) = 0;
 			Some<COutputStream> stream() const;
 
 		private:
@@ -26,6 +26,8 @@ namespace shogun
 		};
 
 		void serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer);
+		void pre_serialize(CSGObject* obj) noexcept(false);
+		void post_serialize(CSGObject* obj) noexcept(false);
 	}
 }
 

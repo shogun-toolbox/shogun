@@ -158,7 +158,7 @@ if (LIBSHOGUN_BUILD_STATIC)
   ENDIF()
 
   if(MSVC)
-    target_link_libraries(shogun-static PUBLIC winmm.lib)
+    target_link_libraries(shogun-static PUBLIC winmm.lib Shlwapi.lib)
   endif()
 ENDIF()
 
@@ -171,8 +171,8 @@ IF(MSVC)
     )
   ENDIF()
 
-  target_link_libraries(shogun PUBLIC winmm)
-  target_link_libraries(shogun_deps INTERFACE winmm)
+  target_link_libraries(shogun PUBLIC winmm Shlwapi)
+  target_link_libraries(shogun_deps INTERFACE winmm Shlwapi)
 ENDIF()
 
 ########################### compiler capabilities

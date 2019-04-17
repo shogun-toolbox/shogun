@@ -16,9 +16,9 @@ namespace shogun
 		public:
 			CJsonSerializer();
 			~CJsonSerializer() override;
-			void write(Some<CSGObject> object) override;
+			virtual void write(Some<CSGObject> object) noexcept(false);
 
-			const char* get_name() const override
+			virtual const char* get_name() const
 			{
 				return "JsonSerializer";
 			}

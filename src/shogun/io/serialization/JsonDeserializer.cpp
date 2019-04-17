@@ -189,6 +189,13 @@ public:
 	{
 		m_value_stack.emplace(v);
 	}
+
+	void enter_matrix_row(index_t *rows, index_t *cols) override {}
+	void exit_matrix_row(index_t *rows, index_t *cols) override {}
+	void exit_matrix(index_t* rows, index_t* cols) override {}
+	void exit_vector(index_t* size) override {}
+	void exit_std_vector(size_t* size) override {}
+	void exit_map(size_t* size) override {}
 private:
 	template<typename T, typename Fn>
 	T next_element(Fn f)
@@ -328,11 +335,27 @@ CSGObject* object_reader(const V* v, JSONReaderVisitor<V>* visitor, CSGObject* _
 	REQUIRE(value.HasMember(kParametersKey), "Not a valid serialized SGObject, it does not have 'parameters!")
 	REQUIRE(value[kParametersKey].IsObject(), "Not a valid serialized SGObject!")
 	auto obj_params = value[kParametersKey].GetObject();
-	for_each(obj_params.MemberBegin(), obj_params.MemberEnd(),
-		[&obj, &visitor](const auto& member) {
-			visitor->push(addressof(member.value));
-			obj->visit_parameter(BaseTag(member.name.GetString()), visitor);
-		});
+
+	try
+	{
+		pre_deserialize(obj);
+
+		for_each(obj_params.MemberBegin(), obj_params.MemberEnd(),
+			[&obj, &visitor](const auto& member) {
+				visitor->push(addressof(member.value));
+				obj->visit_parameter(BaseTag(member.name.GetString()), visitor);
+			});
+
+		post_deserialize(obj);
+	}
+	catch(ShogunException& e)
+	{
+		SG_SWARNING("Error while deserializeing %s: ShogunException: "
+			"%s\n", obj_name.c_str(), e.what());
+		SG_UNREF(obj);
+		return nullptr;
+	}
+
 	return obj;
 }
 

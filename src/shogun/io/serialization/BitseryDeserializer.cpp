@@ -125,14 +125,29 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	if (obj == nullptr)
 		throw runtime_error("Trying to deserializer and unknown object!");
 
-	size_t num_params;
-	reader.value8b(num_params);
-	for (size_t i = 0; i < num_params; ++i)
+	try
 	{
-		string param_name;
-		reader.text1b(param_name, 64);
-		obj->visit_parameter(BaseTag(param_name), visitor);
+		pre_deserialize(obj);
+
+		size_t num_params;
+		reader.value8b(num_params);
+		for (size_t i = 0; i < num_params; ++i)
+		{
+			string param_name;
+			reader.text1b(param_name, 64);
+			obj->visit_parameter(BaseTag(param_name), visitor);
+		}
+
+		post_deserialize(obj);
 	}
+	catch(ShogunException& e)
+	{
+		SG_SWARNING("Error while deserializeing %s: ShogunException: "
+			"%s\n", obj_name.c_str(), e.what());
+		SG_UNREF(obj);
+		return nullptr;
+	}
+
 	return obj;
 }
 
@@ -149,7 +164,7 @@ CBitseryDeserializer::~CBitseryDeserializer()
 
 Some<CSGObject> CBitseryDeserializer::read_object()
 {
-	InputStreamAdapter adapter{ .m_stream = stream() };
+	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};
 	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
 	return wrap<CSGObject>(object_reader(deser, addressof(reader_visitor)));
@@ -157,7 +172,7 @@ Some<CSGObject> CBitseryDeserializer::read_object()
 
 void CBitseryDeserializer::read(CSGObject* _this)
 {
-	InputStreamAdapter adapter{ .m_stream = stream() };
+	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};
 	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
 	object_reader(deser, addressof(reader_visitor), _this);
