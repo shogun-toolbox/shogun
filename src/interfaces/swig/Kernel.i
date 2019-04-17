@@ -31,7 +31,6 @@
 
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 %rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
-%rename(CombinedKernel) CCombinedKernel;
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
 %rename(CommWordStringKernel) CCommWordStringKernel;
 

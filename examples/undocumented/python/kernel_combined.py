@@ -10,11 +10,11 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,traindna,testdna],[traindat,testdat,traindna,testdna]]
 def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
-	from shogun import CombinedKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
+	from shogun import FixedDegreeStringKernel, LocalAlignmentStringKernel
 	from shogun import StringCharFeatures, CombinedFeatures, DNA
 	import shogun as sg
 
-	kernel=sg.CombinedKernel()
+	kernel=sg.kernel("CombinedKernel")
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
@@ -23,7 +23,7 @@ def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=tr
 	subkernel=sg.kernel("GaussianKernel", log_width=1.1)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
-	kernel.append_kernel(subkernel)
+	kernel.add("kernel_array", subkernel)
 
 	subkfeats_train=StringCharFeatures(fm_train_dna, DNA)
 	subkfeats_test=StringCharFeatures(fm_test_dna, DNA)
@@ -31,14 +31,14 @@ def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=tr
 	subkernel=FixedDegreeStringKernel(10, degree)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
-	kernel.append_kernel(subkernel)
+	kernel.add("kernel_array", subkernel)
 
 	subkfeats_train=StringCharFeatures(fm_train_dna, DNA)
 	subkfeats_test=StringCharFeatures(fm_test_dna, DNA)
 	subkernel=LocalAlignmentStringKernel(10)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
-	kernel.append_kernel(subkernel)
+	kernel.add("kernel_array", subkernel)
 
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

@@ -17,8 +17,8 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 		def __init__(self):
 			DirectorKernel.__init__(self, True)
 		def kernel_function(self, idx_a, idx_b):
-			seq1 = self.get_lhs().get_feature_vector(idx_a)
-			seq2 = self.get_rhs().get_feature_vector(idx_b)
+			seq1 = self.get_lhs().get("feature_matrix")[idx_a]
+			seq2 = self.get_rhs().get("feature_matrix")[idx_b]
 			return np.dot(seq1, seq2)
 
 
@@ -26,7 +26,7 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 	from shogun import Time
 
 	feats_train=sg.features(fm_train_real)
-	#feats_train.io.set_loglevel(MSG_DEBUG)
+	#feats_train.io.set_loglevel(0)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=sg.features(fm_test_real)
 

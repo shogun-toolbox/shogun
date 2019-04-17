@@ -6,7 +6,6 @@
 #include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
 #include <shogun/kernel/string/CommUlongStringKernel.h>
 #include <shogun/kernel/string/CommWordStringKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/kernel/string/DistantSegmentsKernel.h>

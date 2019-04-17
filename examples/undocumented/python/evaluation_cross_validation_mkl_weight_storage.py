@@ -23,7 +23,6 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from shogun import splitting_strategy
     from shogun import BinaryLabels
     from shogun import CombinedFeatures
-    from shogun import CombinedKernel
     from shogun import MKLClassification
     import shogun as sg
     import numpy as np
@@ -37,10 +36,10 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     labels=BinaryLabels(label_traindat)
 
     # kernel, different Gaussians combined
-    kernel=CombinedKernel()
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(0.1)))
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(1)))
-    kernel.append_kernel(sg.kernel("GaussianKernel", log_width=np.log(2)))
+    kernel=sg.kernel("CombinedKernel")
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(0.1)))
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(1)))
+    kernel.add("kernel_array", sg.kernel("GaussianKernel", log_width=np.log(2)))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
     svm = sg.machine("MKLClassification", svm=sg.as_svm(sg.machine("LibSVM")),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from shogun import CombinedFeatures, BinaryLabels
-from shogun import CombinedKernel, CustomKernel
+from shogun import CustomKernel
 from shogun import MKLClassification
 import shogun as sg
 from tools.load import LoadMatrix
@@ -42,9 +42,9 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     feats_train.append_feature_obj(sg.features(fm_train_real))
 
     # and corresponding combined kernel
-    kernel = CombinedKernel()
-    kernel.append_kernel(CustomKernel(K_train))
-    kernel.append_kernel(sg.kernel("PolyKernel", cache_size=10,
+    kernel = sg.kernel("CombinedKernel")
+    kernel.add("kernel_array", CustomKernel(K_train))
+    kernel.add("kernel_array", sg.kernel("PolyKernel", cache_size=10,
                                    degree=2))
     kernel.init(feats_train, feats_train)
 
@@ -76,9 +76,9 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     feats_pred.append_feature_obj(sg.features(fm_test_real))
 
     # and corresponding combined kernel
-    kernel = CombinedKernel()
-    kernel.append_kernel(CustomKernel(K_test))
-    kernel.append_kernel(sg.kernel("PolyKernel", cache_size=10, degree=2))
+    kernel = sg.kernel("CombinedKernel")
+    kernel.add("kernel_array", CustomKernel(K_test))
+    kernel.add("kernel_array", sg.kernel("PolyKernel", cache_size=10, degree=2))
     kernel.init(feats_train, feats_pred)
 
     # and classify
