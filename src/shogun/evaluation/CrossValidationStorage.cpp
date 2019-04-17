@@ -116,7 +116,7 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 	    &m_num_folds, "num_folds",
 	    "The total number of cross-validation folds", ParameterProperties::HYPER);
 	SG_ADD(
-		(CLabels**)&m_original_labels, "labels",
+		&m_original_labels, "labels",
 	    "The labels used for this cross-validation", ParameterProperties::HYPER);
 	this->watch_param("folds", &m_folds_results, AnyParameterProperties("Fold results"));
 }
