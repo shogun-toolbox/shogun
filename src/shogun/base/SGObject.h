@@ -1012,7 +1012,7 @@ protected:
 	 * Return total subscriptions
 	 * @return total number of subscriptions
 	 */
-	index_t get_total_subscriptions() const
+	index_t get_num_subscriptions() const
 	{
 		return static_cast<index_t>(m_subscriptions.size());
 	}
@@ -1165,7 +1165,6 @@ template <typename T>
 CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
 {
 	CSGObject* result = nullptr;
-	// there is no "has" that checks for array types, so check implicitly
 	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
