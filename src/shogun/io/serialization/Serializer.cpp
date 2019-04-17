@@ -30,6 +30,30 @@ Some<COutputStream> CSerializer::stream() const
 	return m_stream;
 }
 
+void shogun::io::pre_serialize(CSGObject* obj) noexcept(false)
+{
+	obj->save_serializable_pre();
+
+	if (!obj->get_save_serializable_pre())
+	{
+		SG_SERROR("%s::save_serializable_pre(): Implementation "
+			"error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
+			"called!", obj->get_name());
+	}
+}
+
+void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
+{
+	obj->save_serializable_post();
+
+	if (!obj->get_save_serializable_post())
+	{
+		SG_SERROR("%s::save_serializable_post(): Implementation "
+			"error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
+			"called!", obj->get_name());
+	}
+}
+
 void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer)
 {
 	auto fs = io::FileSystemRegistry::instance();

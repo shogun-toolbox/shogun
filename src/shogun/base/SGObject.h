@@ -737,7 +737,7 @@ public:
 		return m_string_to_enum_map;
 	}
 
-protected:
+public:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
@@ -774,6 +774,27 @@ protected:
 	 */
 	virtual void save_serializable_post() noexcept(false);
 
+	inline bool get_load_serializable_pre() const
+	{
+		return m_load_pre_called;
+	}
+
+	inline bool get_load_serializable_post() const
+	{
+		return m_load_post_called;
+	}
+
+	inline bool get_save_serializable_pre() const
+	{
+		return m_save_pre_called;
+	}
+
+	inline bool get_save_serializable_post() const
+	{
+		return m_save_post_called;
+	}
+
+protected:
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by put() and retrieved by
 	 * get().

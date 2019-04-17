@@ -101,6 +101,13 @@ namespace shogun
 					static_cast<T*>(this)->on_object(m_s, v);
 				}
 
+				void enter_matrix_row(index_t *rows, index_t *cols) override {}
+				void exit_matrix_row(index_t *rows, index_t *cols) override {}
+				void exit_matrix(index_t* rows, index_t* cols) override {}
+				void exit_vector(index_t* size) override {}
+				void exit_std_vector(size_t* size) override {}
+				void exit_map(size_t* size) override {}
+
 			private:
 				S& m_s;
 				SG_DELETE_COPY_AND_ASSIGN(BitseryVisitor);

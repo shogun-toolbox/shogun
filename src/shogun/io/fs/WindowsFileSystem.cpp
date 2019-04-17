@@ -1,5 +1,7 @@
 #ifdef _MSC_VER
 #include <Shlwapi.h>
+// remove min and max macros (see numeric_limits<T>::max())
+#define NOMINMAX
 #include <Windows.h>
 #include <direct.h>
 #include <errno.h>
@@ -22,7 +24,7 @@ using namespace shogun::io;
 using namespace std;
 
 const auto CloseHandleFunc = [](HANDLE h) { ::CloseHandle(h); };
-typedef std::unique_ptr<void, decltype(CloseHandleFunc)> UniqueCloseHandlePtr;
+typedef unique_ptr<void, decltype(CloseHandleFunc)> UniqueCloseHandlePtr;
 
 SG_FORCED_INLINE wstring utf8_to_wchar(const string& utf8str)
 {
@@ -35,10 +37,10 @@ SG_FORCED_INLINE wstring utf8_to_wchar(const string& utf8str)
 	return ws_translated_str;
 }
 
-inline string wchar_to_utf8(const std::wstring& wstr)
+inline string wchar_to_utf8(const wstring& wstr)
 {
 	if (wstr.empty())
-		return std::string();
+		return string();
 	int size_required = WideCharToMultiByte(
 		CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), NULL, 0, NULL, NULL);
 	string utf8_translated_str(size_required, 0);
@@ -49,7 +51,7 @@ inline string wchar_to_utf8(const std::wstring& wstr)
 
 SSIZE_T pread(HANDLE hfile, char* src, size_t num_bytes, uint64_t offset)
 {
-	assert(num_bytes <= std::numeric_limits<DWORD>::max());
+	assert(num_bytes <= (numeric_limits<DWORD>::max)());
 	OVERLAPPED overlapped = {0};
 	ULARGE_INTEGER offset_union;
 	offset_union.QuadPart = offset;
@@ -107,7 +109,7 @@ public:
 			::CloseHandle(m_hfile);
 	}
 
-	std::error_condition read(uint64_t offset, size_t n, string_view* result, char* scratch) const override
+	error_condition read(uint64_t offset, size_t n, string_view* result, char* scratch) const override
 	{
 		char* dst = scratch;
 		error_condition ec {};
@@ -153,7 +155,7 @@ public:
       		WindowsWritableFile::close();
 	}
 
-	std::error_condition append(string_view data) override
+	error_condition append(string_view data) override
 	{
 		DWORD bytes_written = 0;
 		DWORD data_size = static_cast<DWORD>(data.size());
@@ -166,7 +168,7 @@ public:
 		return {};
 	}
 
-	std::error_condition close() override
+	error_condition close() override
 	{
 		assert(INVALID_HANDLE_VALUE != m_hfile);
 
@@ -181,14 +183,14 @@ public:
 		return {};
 	}
 
-	std::error_condition flush() override
+	error_condition flush() override
 	{
 		if (FALSE == ::FlushFileBuffers(m_hfile))
 			return generic_category().default_error_condition(::GetLastError());
 		return {};
 	}
 
-	std::error_condition sync() override
+	error_condition sync() override
 	{
 		return flush();
 	}
@@ -373,9 +375,10 @@ error_condition WindowsFileSystem::get_children(const string& dir,
 
 
 error_condition WindowsFileSystem::get_paths(const string& pattern,
-				vector<std::string>* results) const
+				vector<string>* results) const
 {
 	//FIXME
+	return {};
 }
 
 REGISTER_FILE_SYSTEM("", WindowsFileSystem);

@@ -346,21 +346,6 @@ class CDynamicObjectArray : public CSGObject
 
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
-		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
-		 *  is called.
-		 *
-		 *  @exception ShogunException Will be thrown if an error
-		 *                             occurres.
-		 */
-		virtual void load_serializable_pre() noexcept(false)
-		{
-			CSGObject::load_serializable_pre();
-
-			m_array.resize_array(m_array.get_num_elements(), true);
-		}
-
-		/** Can (optionally) be overridden to pre-initialize some member
-		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 		 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
 		 *  is called.
 		 *

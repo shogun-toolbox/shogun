@@ -46,6 +46,11 @@ namespace shogun
 				return m_byte_array;
 			}
 
+			std::string as_string() const
+			{
+				return std::string(m_byte_array.begin(), m_byte_array.end());
+			}
+
 			const char* get_name() const override { return "ByteArrayOutputStream"; }
 
 		private:

@@ -27,6 +27,9 @@ namespace shogun
 		};
 
 		CSGObject* deserialize(const std::string& _path, CDeserializer* _deser);
+		void pre_deserialize(CSGObject* obj) noexcept(false);
+		void post_deserialize(CSGObject* obj) noexcept(false);
+
 	}
 }
 

@@ -234,6 +234,12 @@ public:
 		m_remaining.pop();
 	}
 
+	void enter_matrix_row(index_t *rows, index_t *cols) override {}
+	void exit_matrix_row(index_t *rows, index_t *cols) override {}
+	void exit_matrix(index_t* rows, index_t* cols) override {}
+	void exit_vector(index_t* size) override {}
+	void exit_std_vector(size_t* size) override {}
+	void exit_map(size_t* size) override {}
 private:
 	inline void close_container()
 	{
@@ -273,8 +279,10 @@ private:
 };
 
 template<typename Writer>
-void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGObject> object)
+void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGObject> object) noexcept(false)
 {
+	pre_serialize(object.get());
+
 	visitor->start_object();
 	writer.StartObject();
 	writer.Key(kNameKey);
@@ -282,7 +290,6 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGOb
 	writer.Key(kGenericKey);
 	writer.Int(object->get_generic());
 	auto params = object->get_params();
-
 	writer.Key(kParametersKey);
 	writer.StartObject();
 	for (const auto& p: params)
@@ -296,7 +303,9 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, Some<CSGOb
 	writer.EndObject();
 
 	writer.EndObject();
+
 	visitor->end_object();
+	post_serialize(object.get());
 }
 
 using JsonWriter = Writer<COutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
@@ -309,9 +318,9 @@ CJsonSerializer::~CJsonSerializer()
 {
 }
 
-void CJsonSerializer::write(Some<CSGObject> object)
+void CJsonSerializer::write(Some<CSGObject> object) noexcept(false)
 {
-	COutputStreamAdapter adapter{ .m_stream = stream() };
+	COutputStreamAdapter adapter { stream() };
 	JsonWriter writer(adapter);
 	auto writer_visitor =
 		make_unique<JSONWriterVisitor<JsonWriter>>(writer);
