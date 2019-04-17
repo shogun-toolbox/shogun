@@ -544,7 +544,7 @@ void CSGObject::init()
 	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
 	m_next_subscription_index = 0;
 
-	watch_method("num_subscriptions", &CSGObject::get_total_subscriptions);
+	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
 }
 
 void CSGObject::print_modsel_params()
