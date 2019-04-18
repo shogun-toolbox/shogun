@@ -128,7 +128,7 @@ void test_mkl_cross_validation()
 
 	/* add print output listener and mkl storage listener */
 	CParameterObserverCV mkl_obs{true};
-	cross->subscribe_to_parameters(&mkl_obs);
+	cross->subscribe(&mkl_obs);
 
 	/* perform cross-validation, this will print loads of information */
 	CEvaluationResult* result=cross->evaluate();
