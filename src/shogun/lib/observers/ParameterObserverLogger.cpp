@@ -10,24 +10,24 @@
 
 using namespace shogun;
 
-ParameterObserverLogger::ParameterObserverLogger() {}
+CParameterObserverLogger::CParameterObserverLogger() {}
 
-ParameterObserverLogger::ParameterObserverLogger(std::vector<std::string> &parameters) : ParameterObserver(
+CParameterObserverLogger::CParameterObserverLogger(std::vector<std::string> &parameters) : ParameterObserver(
 		parameters) {}
 
-ParameterObserverLogger::~ParameterObserverLogger() {
+CParameterObserverLogger::~CParameterObserverLogger() {
 
 }
 
-void ParameterObserverLogger::on_error(std::exception_ptr ptr) {
+void CParameterObserverLogger::on_error(std::exception_ptr ptr) {
 
 }
 
-void ParameterObserverLogger::on_complete() {
+void CParameterObserverLogger::on_complete() {
 
 }
 
-void ParameterObserverLogger::on_next_impl(const TimedObservedValue &value) {
+void CParameterObserverLogger::on_next_impl(const TimedObservedValue &value) {
 
 	auto name = value.first->get<std::string>("name");
 	auto any_val = value.first->get_any();
