@@ -47,15 +47,15 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * scalar values, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverScalar : public ParameterObserverTensorBoard
+	class CParameterObserverScalar : public ParameterObserverTensorBoard
 	{
 
 	public:
-		ParameterObserverScalar();
-		ParameterObserverScalar(std::vector<std::string>& parameters);
-		ParameterObserverScalar(
+		CParameterObserverScalar();
+		CParameterObserverScalar(std::vector<std::string>& parameters);
+		CParameterObserverScalar(
 		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverScalar();
+		~CParameterObserverScalar();
 
 		virtual void on_error(std::exception_ptr);
 		virtual void on_complete();
