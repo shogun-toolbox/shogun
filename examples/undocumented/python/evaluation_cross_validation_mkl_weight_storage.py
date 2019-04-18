@@ -63,7 +63,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
 
     # append cross vlaidation output classes
     mkl_storage=parameter_observer("ParameterObserverCV")
-    cross_validation.subscribe_to_parameters(mkl_storage)
+    cross_validation.subscribe(mkl_storage)
 
     # perform cross-validation
     result=cross_validation.evaluate()
