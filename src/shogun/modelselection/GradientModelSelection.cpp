@@ -173,8 +173,8 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	// evaluate the machine
 	CEvaluationResult* evaluation_result=m_machine_eval->evaluate();
-	CGradientResult* gradient_result=CGradientResult::obtain_from_generic(
-			evaluation_result);
+	CGradientResult* gradient_result=evaluation_result->as<CGradientResult>();
+	SG_REF(gradient_result);
 	SG_UNREF(evaluation_result);
 
 	if (print_state)

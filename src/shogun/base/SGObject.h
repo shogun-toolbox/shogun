@@ -41,8 +41,8 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
-class ParameterObserverInterface;
 class ObservedValue;
+class ParameterObserver;
 class CDynamicObjectArray;
 
 #ifndef SWIG
@@ -441,7 +441,7 @@ public:
 	/** Typed array getter for an object array class parameter of a Shogun base class
 	* type, identified by a name and an index.
 	*
-	* Raises an error if parameter does not exist.
+	* Returns nullptr if parameter of desired type does not exist.
 	*
 	* @param name name of the parameter array
 	* @param index index of the element in the array
@@ -449,7 +449,7 @@ public:
 	*/
 	template <class T,
 			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index) const
+	T* get(const std::string& name, index_t index, std::nothrow_t) const
 	{
 		CSGObject* result = nullptr;
 
@@ -463,11 +463,21 @@ public:
 			return result->as<T>();
 		}
 
-		SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
-				get_name(), name.c_str(), index, demangled_type<T>().c_str());
-
 		return nullptr;
 	}
+
+	template <class T,
+			class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	T* get(const std::string& name, index_t index) const
+	{
+		auto result = this->get<T>(name, index, std::nothrow);
+		if (!result) {
+			SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
+					 get_name(), name.c_str(), index, demangled_type<T>().c_str());
+
+		}
+		return result;
+	};
 #endif
 
 	/** Untyped getter for an object class parameter, identified by a name.
@@ -659,7 +669,13 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe_to_parameters(ParameterObserverInterface* obs);
+	void subscribe_to_parameters(ParameterObserver* obs);
+
+	/**
+	 * Detach an observer from the current SGObject.
+	 * @param subscription_index the index obtained by calling the subscribe procedure
+	 */
+	void unsubscribe(ParameterObserver* obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
@@ -951,6 +967,16 @@ private:
 	Unique<ParameterObserverList> param_obs_list;
 
 protected:
+
+	/**
+	 * Return total subscriptions
+	 * @return total number of subscriptions
+	 */
+	index_t get_num_subscriptions() const
+	{
+		return static_cast<index_t>(m_subscriptions.size());
+	}
+
 	/**
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
@@ -1047,6 +1073,10 @@ private:
 
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
+
+	/** List of subscription for this SGObject */
+	std::map<int64_t, rxcpp::subscription> m_subscriptions;
+	int64_t m_next_subscription_index;
 };
 
 #ifndef SWIG
@@ -1095,12 +1125,7 @@ template <typename T>
 CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
 {
 	CSGObject* result = nullptr;
-	try
-	{
-		// there is no "has" that checks for array types, so check implicitly
-		result = obj->get<T>(name, how.m_index);
-	}
-	catch (const std::exception&) {}
+	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
 
@@ -1111,6 +1136,12 @@ CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& 
 	if (auto* result = get_if_possible<CKernel>(obj, name, how))
 		return result;
 	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CMachine>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CLabels>(obj, name, how))
+		return result;
+	if (auto* result = get_if_possible<CEvaluationResult>(obj, name, how))
 		return result;
 
 	return nullptr;

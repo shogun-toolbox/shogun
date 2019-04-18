@@ -45,28 +45,24 @@
 using namespace shogun;
 
 CParameterObserverCV::CParameterObserverCV(bool verbose)
-    : ParameterObserverInterface(), m_verbose(verbose)
+    : ParameterObserver(), m_verbose(verbose)
 {
 }
 
 CParameterObserverCV::~CParameterObserverCV()
 {
-	for (auto i : m_observations)
-		SG_UNREF(i)
 }
 
-void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
+void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 {
 	CrossValidationStorage* recalled_value =
-	    value.first->get<CrossValidationStorage*>(
-	        value.first->get<std::string>("name"));
+	    dynamic_cast<CrossValidationStorage*>(value.first->get(
+	        value.first->get<std::string>("name")));
 	SG_REF(recalled_value);
 
 	/* Print information on screen if enabled*/
 	if (m_verbose)
 		print_observed_value(recalled_value);
-
-	m_observations.push_back(recalled_value);
 }
 
 void CParameterObserverCV::on_error(std::exception_ptr ptr)
@@ -77,31 +73,22 @@ void CParameterObserverCV::on_complete()
 {
 }
 
-void CParameterObserverCV::clear()
-{
-	for (auto i : m_observations)
-	{
-		SG_UNREF(i)
-	}
-	m_observations.clear();
-}
-
 void CParameterObserverCV::print_observed_value(
     CrossValidationStorage* value) const
 {
-	for (int i = 0; i < value->get_num_folds(); i++)
+	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
 	{
-		auto f = value->get_fold(i);
+		auto f = value->get("folds",i);
 		SG_PRINT("\n")
-		SG_PRINT("Current run index: %i\n", f->get_current_run_index())
-		SG_PRINT("Current fold index: %i\n", f->get_current_fold_index())
-		f->get_train_indices().display_vector("Train Indices ");
-		f->get_test_indices().display_vector("Test Indices ");
-		print_machine_information(f->get_trained_machine());
-		f->get_test_result()->get_values().display_vector("Test Labels ");
-		f->get_test_true_result()->get_values().display_vector(
+		SG_PRINT("Current run index: %i\n", f->get<index_t>("current_run_index"))
+		SG_PRINT("Current fold index: %i\n", f->get<index_t>("current_fold_index"))
+		f->get<SGVector<index_t>>("train_indices").display_vector("Train Indices ");
+		f->get<SGVector<index_t>>("test_indices").display_vector("Test Indices ");
+		print_machine_information(f->get<CMachine*>("trained_machine"));
+		f->get<CLabels*>("test_result")->get_values().display_vector("Test Labels ");
+		f->get<CLabels*>("test_true_result")->get_values().display_vector(
 		    "Test True Label ");
-		SG_PRINT("Evaluation result: %f\n", f->get_evaluation_result());
+		SG_PRINT("Evaluation result: %f\n", f->get<float64_t>("evaluation_result"));
 		SG_UNREF(f)
 	}
 }
@@ -153,30 +140,4 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 		    "MKL sub-kernel weights =");
 		SG_UNREF(kernel);
 	}
-}
-
-CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
-{
-	REQUIRE(
-	    run < get_num_observations(), "The run number must be less than %i",
-	    get_num_observations())
-
-	CrossValidationStorage* obs = m_observations[run];
-	SG_REF(obs)
-	return obs;
-}
-
-const int32_t CParameterObserverCV::get_num_observations() const
-{
-	try
-	{
-		return shogun::utils::safe_convert<int32_t>(m_observations.size());
-	}
-	catch (std::overflow_error e)
-	{
-		SG_WARNING(
-		    "Exception occurred while calling %s::get_num_observations(): %s\n",
-		    e.what());
-	}
-	return -1;
 }

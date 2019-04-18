@@ -18,7 +18,7 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun import machine_evaluation
-    from shogun import ParameterObserverCV
+    from shogun import parameter_observer
     from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import splitting_strategy
     from shogun import BinaryLabels
@@ -63,7 +63,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
         evaluation_criterion=evaluation_criterium, autolock=False, num_runs=3)
 
     # append cross vlaidation output classes
-    mkl_storage=ParameterObserverCV()
+    mkl_storage=parameter_observer("ParameterObserverCV")
     cross_validation.subscribe_to_parameters(mkl_storage)
 
     # perform cross-validation
@@ -72,11 +72,10 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     # print mkl weights
     weights = []
     for obs_index in range(mkl_storage.get_num_observations()):
-        obs = mkl_storage.get_observation(obs_index)
-        for fold_index in range(obs.get_num_folds()):
-            fold = obs.get_fold(fold_index)
-            machine = MKLClassification.obtain_from_generic(fold.get_trained_machine())
-            w = machine.get_kernel().get_subkernel_weights()
+        obs = mkl_storage.get_observation(obs_index).get("cross_validation_run")
+        for fold_index in range(obs.get("num_folds")):
+            fold = obs.get("folds", fold_index)
+            w = fold.get("trained_machine").get("kernel").get("combined_kernel_weight")
             weights.append(w)
 
     print("mkl weights during cross--validation")

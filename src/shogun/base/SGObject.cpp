@@ -21,8 +21,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/observers/ParameterObserverInterface.h>
-
+#include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/base/class_list.h>
 
 #include <stdio.h>
@@ -31,12 +30,15 @@
 
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
+#include <rxcpp/rx-subscription.hpp>
 
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include <shogun/distance/Distance.h>
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
@@ -540,6 +542,9 @@ void CSGObject::init()
 	m_subject_params = new SGSubject();
 	m_observable_params = new SGObservable(m_subject_params->get_observable());
 	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
+	m_next_subscription_index = 0;
+
+	watch_method("num_subscriptions", &CSGObject::get_num_subscriptions);
 }
 
 void CSGObject::print_modsel_params()
@@ -762,7 +767,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
+void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -771,12 +776,38 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
-	auto subscription = m_observable_params
+	rxcpp::subscription subscription = m_observable_params
 	                        ->filter([obs](Some<ObservedValue> v) {
 		                        return obs->filter(v->get<std::string>("name"));
 		                    })
 	                        .timestamp()
 	                        .subscribe(sub);
+
+	// Insert the subscription in the list
+	m_subscriptions.insert(
+			std::make_pair<int64_t, rxcpp::subscription>(
+					std::move(m_next_subscription_index),
+					std::move(subscription)));
+
+	obs->put("subscription_id", m_next_subscription_index);
+
+	m_next_subscription_index++;
+}
+
+void CSGObject::unsubscribe(ParameterObserver *obs) {
+
+	int64_t index = obs->get<int64_t>("subscription_id");
+
+	// Check if we have such subscription
+	auto it = m_subscriptions.find(index);
+	if (it == m_subscriptions.end())
+		SG_ERROR("The object %s does not have any registered parameter observer with index %i",
+		  this->get_name(), index);
+
+	it->second.unsubscribe();
+	m_subscriptions.erase(index);
+
+	obs->put("subscription_id", static_cast<int64_t>(-1));
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const

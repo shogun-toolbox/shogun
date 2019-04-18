@@ -5,6 +5,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/base/range.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
@@ -51,14 +52,14 @@ SGMatrix<float64_t> calculate_weights(
 {
 	int32_t column = 0;
 	SGMatrix<float64_t> weights(len, folds * run);
-	for (int o = 0; o < obs.get_num_observations(); o++)
+	for (auto o : range(obs.get_num_observations()))
 	{
 		auto obs_storage = obs.get_observation(o);
-		for (int i = 0; i < obs_storage->get_num_folds(); i++)
+		for (auto i : range(obs_storage->get<index_t("num_folds")))
 		{
-			auto fold = obs_storage->get_fold(i);
+			auto fold = obs_storage->get("folds", i);
 			CMKLClassification* machine =
-			    (CMKLClassification*)fold->get_trained_machine();
+			    (CMKLClassification*)fold->get("trained_machine");
 			SG_REF(machine)
 			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
 			auto w = k->get_subkernel_weights();

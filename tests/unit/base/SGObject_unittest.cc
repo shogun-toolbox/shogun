@@ -14,11 +14,13 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/observers/ParameterObserverLogger.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
+#include <shogun/util/converters.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -566,4 +568,34 @@ TEST(SGObject, watch_method)
 	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
 	EXPECT_THROW(obj->put<int>("some_method", 0), ShogunException);
 	EXPECT_NO_THROW(obj->to_string());
+}
+
+TEST(SGObject, subscribe_observer)
+{
+	auto obj = some<CMockObject>();
+	auto param_obs = some<ParameterObserverLogger>();
+	obj->subscribe_to_parameters(param_obs);
+
+	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
+	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(1));
+}
+
+TEST(SGObject, unsubscribe_observer)
+{
+	auto obj = some<CMockObject>();
+	auto param_obs = some<ParameterObserverLogger>();
+	obj->subscribe_to_parameters(param_obs);
+	obj->unsubscribe(param_obs);
+
+	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), -1);
+	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(0));
+}
+
+TEST(SGObject, unsubscribe_observer_failure)
+{
+	auto obj = some<CMockObject>();
+	auto param_obs = some<ParameterObserverLogger>();
+	auto param_obs_not_in = some<ParameterObserverLogger>();
+
+	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }

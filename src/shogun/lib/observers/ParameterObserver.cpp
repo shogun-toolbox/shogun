@@ -33,38 +33,46 @@
 *
 */
 #include <shogun/lib/RefCount.h>
-#include <shogun/lib/observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/util/converters.h>
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+ParameterObserver::ParameterObserver() : m_observed_parameters(), m_subscription_id(-1)
 {
+	SG_ADD(&m_subscription_id, "subscription_id", "Id of the subscription to an object.");
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
-    std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
+    : ParameterObserver()
 {
+	m_observed_parameters = parameters;
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+ParameterObserver::ParameterObserver(
     const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserver(parameters)
 {
 }
 
-ParameterObserverInterface::~ParameterObserverInterface()
+ParameterObserver::~ParameterObserver()
 {
 }
 
-bool ParameterObserverInterface::filter(const std::string& param)
+bool ParameterObserver::filter(const std::string& param)
 {
 	// If there are no specified parameters, then watch everything
-	if (m_parameters.size() == 0)
+	if (m_observed_parameters.size() == 0)
 		return true;
 
-	for (auto v : m_parameters)
+	for (auto v : m_observed_parameters)
 		if (v == param)
 			return true;
 	return false;
 }
+
+const index_t ParameterObserver::get_num_observations() const
+{
+	return utils::safe_convert<index_t>(m_observations.size());
+};
