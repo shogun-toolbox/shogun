@@ -15,7 +15,7 @@
 #ifdef _MSC_VER
 #include <cfloat>
 // TODO: microsoft should really start supporting c++11
-#define IS_FINITE(x) _isfinite(x)
+#define IS_FINITE(x) _finite(x)
 #else
 #include <cmath>
 #define IS_FINITE(x) std::isfinite(x)
