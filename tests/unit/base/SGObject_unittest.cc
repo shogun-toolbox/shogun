@@ -574,7 +574,7 @@ TEST(SGObject, subscribe_observer)
 {
 	auto obj = some<CMockObject>();
 	auto param_obs = some<ParameterObserverLogger>();
-	obj->subscribe_to_parameters(param_obs);
+	obj->subscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
 	EXPECT_EQ(obj->get<index_t>("num_subscriptions"), utils::safe_convert<index_t>(1));
@@ -584,7 +584,7 @@ TEST(SGObject, unsubscribe_observer)
 {
 	auto obj = some<CMockObject>();
 	auto param_obs = some<ParameterObserverLogger>();
-	obj->subscribe_to_parameters(param_obs);
+	obj->subscribe(param_obs);
 	obj->unsubscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), -1);
