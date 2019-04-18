@@ -100,7 +100,7 @@ CParameterObserverCV* generate(bool locked = true)
 
 	/* Create the parameter observer */
 	CParameterObserverCV* par = new CParameterObserverCV();
-	cross->subscribe_to_parameters(par);
+	cross->subscribe(par);
 
 	/* actual evaluation */
 	CCrossValidationResult* result = (CCrossValidationResult*)cross->evaluate();

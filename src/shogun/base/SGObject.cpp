@@ -790,7 +790,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
+void CSGObject::subscribe(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
