@@ -33,20 +33,26 @@ void CParameterObserverLogger::on_next_impl(const TimedObservedValue &value) {
 	auto any_val = value.first->get_any();
 
 	auto pf_n = [&](auto v){
-		SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
+		SG_PRINT("[%lu] Received a value called \"%s\" which contains: %s\n", convert_to_millis(value.second),
 				 name.c_str(), std::to_string(v).c_str());
 	};
 
 	auto pf_sgvector = [&](auto v){
-		//SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
-		//		 name.c_str(), v.to_string().c_str());
+		SG_PRINT("[%lu] Received a vector called \"%s\" which contains: %s\n", convert_to_millis(value.second),
+				 name.c_str(), v.to_string().c_str());
 	};
 
 	auto pf_sgmatrix = [&](auto v){
-		//SG_PRINT("[%l] Received a value called %s which contains: %s", convert_to_millis(value.second),
-		//		 name.c_str(), v.to_string().c_str());
+		SG_PRINT("[%lu] Received a matrix called \"%s\" which contains: %s\n", convert_to_millis(value.second),
+				 name.c_str(), v.to_string().c_str());
 	};
 
-	sg_any_dispatch(any_val, sg_all_typemap, pf_n, pf_sgvector, pf_sgmatrix);
-
+	try {
+		sg_any_dispatch(any_val, sg_all_typemap, pf_n, pf_sgvector, pf_sgmatrix);
+	} catch (ShogunException e)
+	{
+			SG_PRINT("[%lu] Received a value called \"%s\" which contains: %s\n",
+					 convert_to_millis(value.second), name.c_str(), value.first->to_string().c_str()
+			)
+	}
 }
