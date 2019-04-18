@@ -684,7 +684,7 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe_to_parameters(ParameterObserver* obs);
+	void subscribe(ParameterObserver* obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
