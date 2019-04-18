@@ -40,28 +40,28 @@
 
 using namespace shogun;
 
-ParameterObserverScalar::ParameterObserverScalar()
+CParameterObserverScalar::CParameterObserverScalar()
     : ParameterObserverTensorBoard()
 {
 }
 
-ParameterObserverScalar::ParameterObserverScalar(
+CParameterObserverScalar::CParameterObserverScalar(
     std::vector<std::string>& parameters)
     : ParameterObserverTensorBoard(parameters)
 {
 }
 
-ParameterObserverScalar::ParameterObserverScalar(
+CParameterObserverScalar::CParameterObserverScalar(
     const std::string& filename, std::vector<std::string>& parameters)
     : ParameterObserverTensorBoard(filename, parameters)
 {
 }
 
-ParameterObserverScalar::~ParameterObserverScalar()
+CParameterObserverScalar::~CParameterObserverScalar()
 {
 }
 
-void ParameterObserverScalar::on_next_impl(const TimedObservedValue& value)
+void CParameterObserverScalar::on_next_impl(const TimedObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
@@ -69,11 +69,11 @@ void ParameterObserverScalar::on_next_impl(const TimedObservedValue& value)
 	m_writer.writeEvent(event_value);
 }
 
-void ParameterObserverScalar::on_error(std::exception_ptr)
+void CParameterObserverScalar::on_error(std::exception_ptr)
 {
 }
 
-void ParameterObserverScalar::on_complete()
+void CParameterObserverScalar::on_complete()
 {
 }
 
