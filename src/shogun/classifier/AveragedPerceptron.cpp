@@ -89,7 +89,12 @@ void CAveragedPerceptron::iteration()
 		}
 		linalg::update_mean(w, cached_w, num_prev_weights);
 		linalg::update_mean(bias, cached_bias, num_prev_weights);
+
+		observe<SGVector<float64_t>>(m_current_iteration, "w");
+		observe<float64_t>(m_current_iteration, "bias");
+
 		num_prev_weights++;
 	}
+
 	m_complete = converged;
 }
