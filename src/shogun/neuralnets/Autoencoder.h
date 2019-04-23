@@ -40,8 +40,8 @@
 
 namespace shogun
 {
-template <class T> class CDenseFeatures;
-class CNeuralConvolutionalLayer;
+template <class T> class DenseFeatures;
+class NeuralConvolutionalLayer;
 
 /** @brief Determines the noise type for denoising autoencoders */
 enum EAENoiseType
@@ -79,29 +79,29 @@ enum EAENoiseType
  *
  * [Convolutional autoencoders](http://www.idsia.ch/~ciresan/data/icann2011.pdf)
  * [J Masci, 2011] are also supported. Simply build the autoencoder
- * using CNeuralConvolutionalLayer objects.
+ * using NeuralConvolutionalLayer objects.
  *
  * NOTE: Contractive convolutional autoencoders are not supported.
  */
-class CAutoencoder : public CNeuralNetwork
+class Autoencoder : public NeuralNetwork
 {
 public:
 	/** default constructor */
-	CAutoencoder();
+	Autoencoder();
 
 	/** Constructor
 	 *
 	 * @param num_inputs Number of inputs
-	 * @param hidden_layer Hidden layer. Can be any CNeuralLayer based object
+	 * @param hidden_layer Hidden layer. Can be any NeuralLayer based object
 	 * that supports being used as a hidden layer
 	 * @param decoding_layer Decoding layer. Must have the same number of neurons
-	 * as num_inputs. Can be any CNeuralLayer based object that supports being
-	 * used as an output layer. If NULL, a CNeuralLinearLayer is used.
+	 * as num_inputs. Can be any NeuralLayer based object that supports being
+	 * used as an output layer. If NULL, a NeuralLinearLayer is used.
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * parameters
 	 */
-	CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
-		CNeuralLayer* decoding_layer=NULL, float64_t sigma = 0.01);
+	Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden_layer,
+		std::shared_ptr<NeuralLayer> decoding_layer=NULL, float64_t sigma = 0.01);
 
 	/** Constructor for convolutional autoencoders
 	 *
@@ -114,9 +114,9 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * parameters
 	 */
-	CAutoencoder(int32_t input_width, int32_t input_height, int32_t input_num_channels,
-		CNeuralConvolutionalLayer* hidden_layer,
-		CNeuralConvolutionalLayer* decoding_layer, float64_t sigma = 0.01);
+	Autoencoder(int32_t input_width, int32_t input_height, int32_t input_num_channels,
+		std::shared_ptr<NeuralConvolutionalLayer> hidden_layer,
+		std::shared_ptr<NeuralConvolutionalLayer> decoding_layer, float64_t sigma = 0.01);
 
 	/** Trains the autoencoder
 	 *
@@ -124,7 +124,7 @@ public:
 	 *
 	 * @return True if training succeeded, false otherwise
 	 */
-	virtual bool train(CFeatures* data);
+	virtual bool train(std::shared_ptr<Features> data);
 
 	/** Computes the activation of the hidden layer given the input data
 	 *
@@ -132,8 +132,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<DenseFeatures< float64_t >> transform(
+		std::shared_ptr<DenseFeatures< float64_t >> data);
 
 	/** Reconstructs the input data
 	 *
@@ -141,8 +141,8 @@ public:
 	 *
 	 * @return Reconstructed features
 	 */
-	virtual CDenseFeatures<float64_t>* reconstruct(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<DenseFeatures< float64_t >> reconstruct(
+		std::shared_ptr<DenseFeatures< float64_t >> data);
 
 	/** Sets the contraction coefficient
 	 *
@@ -161,7 +161,7 @@ public:
 		get_layer(1)->contraction_coefficient = coeff;
 	}
 
-	virtual ~CAutoencoder() {}
+	virtual ~Autoencoder() {}
 
 	virtual const char* get_name() const { return "Autoencoder"; }
 

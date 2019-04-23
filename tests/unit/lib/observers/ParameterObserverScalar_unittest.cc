@@ -46,13 +46,13 @@ using namespace shogun;
 
 TEST(ParameterObserverScalar, filter_empty)
 {
-	CParameterObserverScalar tmp;
+	ParameterObserverScalar tmp;
 	EXPECT_TRUE(tmp.filter("a"));
 }
 
 TEST(ParameterObserverScalar, filter_found)
 {
-	CParameterObserverScalar tmp{test_params};
+	ParameterObserverScalar tmp{test_params};
 	EXPECT_TRUE(tmp.filter("a"));
 	EXPECT_TRUE(tmp.filter("b"));
 	EXPECT_TRUE(tmp.filter("c"));
@@ -61,7 +61,7 @@ TEST(ParameterObserverScalar, filter_found)
 
 TEST(ParameterObserverScalar, filter_not_found)
 {
-	CParameterObserverScalar tmp{test_params};
+	ParameterObserverScalar tmp{test_params};
 	EXPECT_FALSE(tmp.filter("k"));
 }
 

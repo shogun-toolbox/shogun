@@ -13,7 +13,7 @@ TEST(MulticlassStrategy,rescale_ova_norm)
 	for (int32_t i=0; i<3; i++)
 		scores[i] = (i+1)*0.1;
 
-	CMulticlassOneVsRestStrategy ova(OVA_NORM);
+	MulticlassOneVsRestStrategy ova(OVA_NORM);
 	ova.set_num_classes(3);
 	ova.rescale_outputs(scores);
 
@@ -39,7 +39,7 @@ TEST(MulticlassStrategy,rescale_ova_softmax)
 	for (int32_t i=0; i<3; i++)
 		As[i] = (i+1)*0.1;
 
-	CMulticlassOneVsRestStrategy ova(OVA_SOFTMAX);
+	MulticlassOneVsRestStrategy ova(OVA_SOFTMAX);
 	ova.set_num_classes(3);
 	ova.rescale_outputs(scores,As,Bs);
 
@@ -60,7 +60,7 @@ TEST(MulticlassStrategy,rescale_ova_price)
 	SGVector<float64_t> scores(3);
 	SGVector<float64_t>::fill_vector(scores.vector,scores.vlen,0.5);
 
-	CMulticlassOneVsOneStrategy ovo(OVO_PRICE);
+	MulticlassOneVsOneStrategy ovo(OVO_PRICE);
 	ovo.set_num_classes(3);
 	ovo.rescale_outputs(scores);
 
@@ -78,18 +78,18 @@ TEST(MulticlassStrategy,rescale_ova_price)
 
 TEST(MulticlassStrategy,rescale_ova_hastie)
 {
-	CMulticlassOneVsOneStrategy ovo(OVO_HASTIE);
+	MulticlassOneVsOneStrategy ovo(OVO_HASTIE);
 	ovo.set_num_classes(3);
 
 	// training simulation
 	SGVector<float64_t> labels(3);
 	labels.range_fill(0);
 
-	CMulticlassLabels *orig_labels = new CMulticlassLabels(labels);
-	SG_REF(orig_labels);
+	auto orig_labels = std::make_shared<MulticlassLabels>(labels);
 
-	CBinaryLabels *train_labels = new CBinaryLabels(2);
-	SG_REF(train_labels);
+
+	auto train_labels = std::make_shared<BinaryLabels>(2);
+
 
 	ovo.train_start(orig_labels, train_labels);
 	for (int32_t i=0; i<3; i++)
@@ -109,8 +109,8 @@ TEST(MulticlassStrategy,rescale_ova_hastie)
 	EXPECT_NEAR(scores[1],0.3333333333333333,1E-5);
 	EXPECT_NEAR(scores[2],0.3333333333333333,1E-5);
 
-	SG_UNREF(orig_labels);
-	SG_UNREF(train_labels);
+
+
 }
 
 TEST(MulticlassStrategy,rescale_ova_hamamura)
@@ -118,7 +118,7 @@ TEST(MulticlassStrategy,rescale_ova_hamamura)
 	SGVector<float64_t> scores(3);
 	SGVector<float64_t>::fill_vector(scores.vector,scores.vlen,0.5);
 
-	CMulticlassOneVsOneStrategy ovo(OVO_HAMAMURA);
+	MulticlassOneVsOneStrategy ovo(OVO_HAMAMURA);
 	ovo.set_num_classes(3);
 	ovo.rescale_outputs(scores);
 

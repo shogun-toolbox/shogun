@@ -18,48 +18,48 @@
 namespace shogun
 {
 
-class CInference;
-class CFeatures;
-class CLabels;
+class Inference;
+class Features;
+class Labels;
 
 /** @brief Class GaussianProcessRegression implements regression based on
  * Gaussian Processes.
  */
-class CGaussianProcessRegression : public CGaussianProcessMachine
+class GaussianProcessRegression : public GaussianProcessMachine
 {
 public:
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 	/** default constructor */
-	CGaussianProcessRegression();
+	GaussianProcessRegression();
 
 	/** constructor
 	 *
 	 * @param method chosen inference method
 	 */
-	CGaussianProcessRegression(CInference* method);
+	GaussianProcessRegression(std::shared_ptr<Inference> method);
 
-	virtual ~CGaussianProcessRegression();
+	virtual ~GaussianProcessRegression();
 
 	/** apply regression to data
 	 *
 	 * @param data (test)data to be classified
 	 * @return classified labels
 	 */
-	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 	/** get predicted mean vector
 	 *
 	 * @return predicted mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(CFeatures* data);
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<Features> data);
 
 	/** get variance vector
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(CFeatures* data);
+	SGVector<float64_t> get_variance_vector(std::shared_ptr<Features> data);
 
 	/** get classifier type
 	 *
@@ -83,7 +83,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	/** check whether training labels are valid for regression
 	 *
@@ -91,7 +91,7 @@ protected:
 	 *
 	 * @return whether training labels are valid for regression
 	 */
-	virtual bool is_label_valid(CLabels *lab) const
+	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const
 	{
 		return lab->get_label_type()==LT_REGRESSION;
 	}

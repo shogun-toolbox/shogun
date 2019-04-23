@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
+ExplicitSpecFeatures::ExplicitSpecFeatures() :DotFeatures()
 {
 	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures()",
 				"\n");
@@ -26,7 +26,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 }
 
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
+ExplicitSpecFeatures::ExplicitSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize) : DotFeatures()
 {
 	ASSERT(str)
 
@@ -39,7 +39,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings)
 }
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),
+ExplicitSpecFeatures::ExplicitSpecFeatures(const ExplicitSpecFeatures& orig) : DotFeatures(orig),
 	num_strings(orig.num_strings), alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
@@ -47,22 +47,22 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) 
 		k_spectrum[i]=SGVector<float64_t>::clone_vector(k_spectrum[i], spec_size);
 }
 
-CExplicitSpecFeatures::~CExplicitSpecFeatures()
+ExplicitSpecFeatures::~ExplicitSpecFeatures()
 {
 	delete_kmer_spectrum();
 }
 
-int32_t CExplicitSpecFeatures::get_dim_feature_space() const
+int32_t ExplicitSpecFeatures::get_dim_feature_space() const
 {
 	return spec_size;
 }
 
-float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t ExplicitSpecFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CExplicitSpecFeatures* sf = (CExplicitSpecFeatures*) df;
+	auto sf = std::static_pointer_cast<ExplicitSpecFeatures>(df);
 
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->num_strings)
@@ -72,7 +72,7 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	return linalg::dot(vec1, vec2);
 }
 
-float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t ExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
@@ -85,7 +85,7 @@ float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	return result;
 }
 
-void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void ExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
@@ -94,7 +94,7 @@ void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, 
 	if (abs_val)
 	{
 		for (int32_t i=0; i<spec_size; i++)
-			vec2[i]+=alpha*CMath::abs(vec1[i]);
+			vec2[i]+=alpha*Math::abs(vec1[i]);
 	}
 	else
 	{
@@ -103,7 +103,7 @@ void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, 
 	}
 }
 
-void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
+void ExplicitSpecFeatures::obtain_kmer_spectrum(std::shared_ptr<StringFeatures<uint16_t>> str)
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 
@@ -125,7 +125,7 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 		{
 			float64_t n=0;
 			for (int32_t j=0; j<spec_size; j++)
-				n+=CMath::sq(k_spectrum[i][j]);
+				n+=Math::sq(k_spectrum[i][j]);
 
 			n = std::sqrt(n);
 
@@ -135,7 +135,7 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 	}
 }
 
-void CExplicitSpecFeatures::delete_kmer_spectrum()
+void ExplicitSpecFeatures::delete_kmer_spectrum()
 {
 	for (int32_t i=0; i<num_strings; i++)
 		SG_FREE(k_spectrum[i]);
@@ -144,47 +144,47 @@ void CExplicitSpecFeatures::delete_kmer_spectrum()
 	k_spectrum=NULL;
 }
 
-CFeatures* CExplicitSpecFeatures::duplicate() const
+std::shared_ptr<Features> ExplicitSpecFeatures::duplicate() const
 {
-	return new CExplicitSpecFeatures(*this);
+	return std::make_shared<ExplicitSpecFeatures>(*this);
 }
 
 
 
-void* CExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
+void* ExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool ExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
+void ExplicitSpecFeatures::free_feature_iterator(void* iterator)
 {
 	SG_NOTIMPLEMENTED
 }
 
-int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t ExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	SG_NOTIMPLEMENTED
 	return 0;
 }
 
-EFeatureType CExplicitSpecFeatures::get_feature_type() const
+EFeatureType ExplicitSpecFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CExplicitSpecFeatures::get_feature_class() const
+EFeatureClass ExplicitSpecFeatures::get_feature_class() const
 {
 	return C_SPEC;
 }
 
-int32_t CExplicitSpecFeatures::get_num_vectors() const
+int32_t ExplicitSpecFeatures::get_num_vectors() const
 {
 	return num_strings;
 }

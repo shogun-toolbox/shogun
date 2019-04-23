@@ -124,7 +124,6 @@ TEST(SGVectorTest,add)
 TEST(SGVectorTest,norm)
 {
 	std::mt19937_64 prng(17);
-
 	SGVector<float64_t> a(10);
 	random::fill_array(a, -50.0, 1024.0, prng);
 
@@ -136,7 +135,7 @@ TEST(SGVectorTest,norm)
 
 	float64_t l1_norm = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
-		l1_norm += CMath::abs(a[i]);
+		l1_norm += Math::abs(a[i]);
 	EXPECT_EQ(l1_norm, SGVector<float64_t>::onenorm(a.vector, a.vlen));
 
 	SGVector<float64_t> b(10);
@@ -149,7 +148,6 @@ TEST(SGVectorTest,norm)
 TEST(SGVectorTest,misc)
 {
 	std::mt19937_64 prng(17);
-
 	SGVector<float64_t> a(10);
 	random::fill_array(a, -1024.0, 1024.0, prng);
 
@@ -158,7 +156,7 @@ TEST(SGVectorTest,misc)
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
-		sum_abs += CMath::abs(a[i]);
+		sum_abs += Math::abs(a[i]);
 	}
 
 	EXPECT_EQ(sum, SGVector<float64_t>::sum(a.vector,a.vlen));

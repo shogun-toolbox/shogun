@@ -11,7 +11,7 @@ using namespace shogun;
 
 TEST(ObservedValue, set_correct)
 {
-	auto obs = some<ObservedValueTemplated<int32_t>>(
+	auto obs = std::make_shared<ObservedValueTemplated<int32_t>>(
 	    1, "test", "test description", 42);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
@@ -23,7 +23,7 @@ TEST(ObservedValue, set_correct_parameter)
 	int32_t p = 42;
 	AnyParameterProperties prop("test description", ParameterProperties::MODEL);
 
-	auto obs = some<ObservedValueTemplated<int32_t>>(1, "test", p, prop);
+	auto obs = std::make_shared<ObservedValueTemplated<int32_t>>(1, "test", p, prop);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("test"), 42);

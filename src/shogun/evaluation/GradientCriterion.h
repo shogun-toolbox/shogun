@@ -19,13 +19,13 @@ namespace shogun
  *
  * Does not provide any label evaluation measure, however.
  */
-class CGradientCriterion : public CEvaluation
+class GradientCriterion : public Evaluation
 {
 public:
 	/** default constructor */
-	CGradientCriterion() : CEvaluation() { m_direction=ED_MINIMIZE; }
+	GradientCriterion() : Evaluation() { m_direction=ED_MINIMIZE; }
 
-	virtual ~CGradientCriterion() { }
+	virtual ~GradientCriterion() { }
 
 	/** evaluate labels (not really used in this class).
 	 *
@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 	{
 		return 0.0;
 	}

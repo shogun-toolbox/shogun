@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Evan Shelhamer
  */
 
@@ -16,8 +16,8 @@
 
 using namespace shogun;
 
-CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
-: CMachine(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
+PluginEstimate::PluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
+: Machine(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
 	pos_model(NULL), neg_model(NULL), features(NULL)
 {
 	SG_ADD(
@@ -31,15 +31,15 @@ CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 	SG_ADD(&features, "features", "String Features.");
 }
 
-CPluginEstimate::~CPluginEstimate()
+PluginEstimate::~PluginEstimate()
 {
-	SG_UNREF(pos_model);
-	SG_UNREF(neg_model);
 
-	SG_UNREF(features);
+
+
+
 }
 
-bool CPluginEstimate::train_machine(CFeatures* data)
+bool PluginEstimate::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
@@ -51,30 +51,31 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 			SG_ERROR("Features not of class string type word\n")
 		}
 
-		set_features((CStringFeatures<uint16_t>*) data);
+		set_features(std::static_pointer_cast<StringFeatures<uint16_t>>(data));
 	}
 	ASSERT(features)
 
-	SG_UNREF(pos_model);
-	SG_UNREF(neg_model);
 
-	pos_model=new CLinearHMM(features);
-	neg_model=new CLinearHMM(features);
 
-	SG_REF(pos_model);
-	SG_REF(neg_model);
 
-	int32_t* pos_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
-	int32_t* neg_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
+	pos_model=std::make_shared<LinearHMM>(features);
+	neg_model=std::make_shared<LinearHMM>(features);
+
+
+
+
+	int32_t* pos_indizes=SG_MALLOC(int32_t, std::static_pointer_cast<StringFeatures<uint16_t>>(features)->get_num_vectors());
+	int32_t* neg_indizes=SG_MALLOC(int32_t, std::static_pointer_cast<StringFeatures<uint16_t>>(features)->get_num_vectors());
 
 	ASSERT(m_labels->get_num_labels()==features->get_num_vectors())
 
 	int32_t pos_idx=0;
 	int32_t neg_idx=0;
 
+	auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 	for (int32_t i=0; i<m_labels->get_num_labels(); i++)
 	{
-		if (((CBinaryLabels*) m_labels)->get_label(i) > 0)
+		if (binary_labels->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;
 		else
 			neg_indizes[neg_idx++]=i;
@@ -90,7 +91,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 	return true;
 }
 
-CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
+std::shared_ptr<BinaryLabels> PluginEstimate::apply_binary(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -100,7 +101,7 @@ CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
 			SG_ERROR("Features not of class string type word\n")
 		}
 
-		set_features((CStringFeatures<uint16_t>*) data);
+		set_features(std::static_pointer_cast<StringFeatures<uint16_t>>(data));
 	}
 
 	ASSERT(features)
@@ -109,10 +110,10 @@ CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
 		result[vec] = apply_one(vec);
 
-	return new CBinaryLabels(result);
+	return std::make_shared<BinaryLabels>(result);
 }
 
-float64_t CPluginEstimate::apply_one(int32_t vec_idx)
+float64_t PluginEstimate::apply_one(int32_t vec_idx)
 {
 	ASSERT(features)
 

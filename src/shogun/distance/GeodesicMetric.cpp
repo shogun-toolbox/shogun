@@ -12,41 +12,41 @@
 
 using namespace shogun;
 
-CGeodesicMetric::CGeodesicMetric() : CDenseDistance<float64_t>()
+GeodesicMetric::GeodesicMetric() : DenseDistance<float64_t>()
 {
 }
 
-CGeodesicMetric::CGeodesicMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CDenseDistance<float64_t>()
+GeodesicMetric::GeodesicMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+: DenseDistance<float64_t>()
 {
 	init(l, r);
 }
 
-CGeodesicMetric::~CGeodesicMetric()
+GeodesicMetric::~GeodesicMetric()
 {
 	cleanup();
 }
 
-bool CGeodesicMetric::init(CFeatures* l, CFeatures* r)
+bool GeodesicMetric::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result=CDenseDistance<float64_t>::init(l,r);
+	bool result=DenseDistance<float64_t>::init(l,r);
 
 	return result;
 }
 
-void CGeodesicMetric::cleanup()
+void GeodesicMetric::cleanup()
 {
 }
 
-float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
+float64_t GeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		lhs->as<DenseFeatures<float64_t>>()->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		rhs->as<DenseFeatures<float64_t>>()->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen)
 
@@ -64,8 +64,8 @@ float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 		}
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	lhs->as<DenseFeatures<float64_t>>()->free_feature_vector(avec, idx_a, afree);
+	rhs->as<DenseFeatures<float64_t>>()->free_feature_vector(bvec, idx_b, bfree);
 
 
 	// trap division by zero
@@ -75,8 +75,8 @@ float64_t CGeodesicMetric::compute(int32_t idx_a, int32_t idx_b)
 	d /= std::sqrt(nx * ny);
 
 	// can only happen due to numerical problems
-	if (CMath::abs(d)>1.0)
-		d=CMath::sign(d);
+	if (Math::abs(d)>1.0)
+		d=Math::sign(d);
 
 	return acos(d);
 }

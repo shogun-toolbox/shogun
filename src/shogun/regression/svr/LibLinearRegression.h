@@ -28,7 +28,7 @@ namespace shogun
 
 /** @brief This class provides an interface to the LibLinear library for large-
  * scale linear learning focusing on SVM [1]. This is the regression interface. For
- * classification, see CLibLinear.
+ * classification, see LibLinear.
  *
  * LIBLINEAR is a linear SVM solver for data with millions of instances and
  * features. It supports (for regression)
@@ -40,23 +40,23 @@ namespace shogun
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
-class CLibLinearRegression : public RandomMixin<CLinearMachine>
+class LibLinearRegression : public RandomMixin<LinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION)
 
 		/** default constructor  */
-		CLibLinearRegression();
+		LibLinearRegression();
 
 		/** standard constructor
 		 * @param C C regularization constant value
 		 * @param features features
 		 * @param labs labels
 		 */
-		CLibLinearRegression(float64_t C, CDotFeatures* features, CLabels* labs);
+		LibLinearRegression(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~CLibLinearRegression();
+		virtual ~LibLinearRegression();
 
 		/** returns regression type */
 		inline LIBLINEAR_REGRESSION_TYPE get_liblinear_regression_type()
@@ -148,7 +148,7 @@ class CLibLinearRegression : public RandomMixin<CLinearMachine>
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 		/** solve svr with l1 or l2 loss */

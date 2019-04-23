@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 namespace internal
 {
@@ -63,7 +63,7 @@ private:
 	 * @param index The index of the block.
 	 * @param size The size of the block (number of feature vectors).
 	 */
-	Block(CFeatures* feats, index_t index, index_t size);
+	Block(std::shared_ptr<Features> feats, index_t index, index_t size);
 public:
 	/**
 	 * Copy constructor. Every time a block is copied or assigned, the underlying
@@ -89,22 +89,22 @@ public:
 	 * @param num_blocks The number of blocks to be formed.
 	 * @param size The size of the block (number of feature vectors).
 	 */
-	static std::vector<Block> create_blocks(CFeatures* feats, index_t num_blocks, index_t size);
+	static std::vector<Block> create_blocks(std::shared_ptr<Features> feats, index_t num_blocks, index_t size);
 
 	/**
 	 * Operator overloading for getting the block object as a naked ptr (non-const, unsafe).
 	 */
-	inline operator CFeatures*()
+	inline operator std::shared_ptr<Features>()
 	{
 		return m_block;
 	}
 
 private:
 	/** Shallow copy representing the block */
-	CFeatures* m_block;
+	std::shared_ptr<Features> m_block;
 
 	/** Underlying feature object */
-	CFeatures* m_feats;
+	std::shared_ptr<Features> m_feats;
 };
 
 }

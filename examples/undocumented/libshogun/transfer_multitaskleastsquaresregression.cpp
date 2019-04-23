@@ -26,10 +26,10 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i<2*4; i++)
 		matrix.matrix[i]=i;
 
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CRegressionLabels* labels=new CRegressionLabels(4);
+	RegressionLabels* labels=new RegressionLabels(4);
 	labels->set_label(0, -1.4);
 	labels->set_label(1, +1.5);
 	labels->set_label(2, -1.2);
@@ -47,7 +47,6 @@ int main(int argc, char** argv)
 
 	regressor->set_current_task(0);
 	regressor->get_w().display_vector();
-	SG_UNREF(regressor);
 	exit_shogun();
 	return 0;
 }

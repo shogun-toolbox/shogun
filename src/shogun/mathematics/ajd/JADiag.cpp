@@ -12,7 +12,7 @@ using namespace Eigen;
 void jadiagw(float64_t c[], float64_t w[], int *ptn, int *ptm, float64_t a[],
 	         float64_t *logdet, float64_t *decr, float64_t *result);
 
-SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> JADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int d = C.dims[0];

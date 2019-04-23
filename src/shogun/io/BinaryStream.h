@@ -21,15 +21,15 @@ namespace shogun
 {
 /** @brief memory mapped emulation via binary streams (files)
 *
-* Implements memory mapped file emulation (\sa CMemoryMappedFile) via standard
+* Implements memory mapped file emulation (\sa MemoryMappedFile) via standard
 * file operations like fseek, fread etc
 */
-template <class T> class CBinaryStream : public CSGObject
+template <class T> class BinaryStream : public SGObject
 {
 public:
 	/** default constructor
 	 */
-	CBinaryStream() : CSGObject()
+	BinaryStream() : SGObject()
 	{
 		rw = NULL;
 		m_fname = NULL;
@@ -46,8 +46,8 @@ public:
 	 * @param fname name of file, zero terminated string
 	 * @param flag determines read or read write mode (currently only 'r' is supported)
 	 */
-	CBinaryStream(const char * fname, const char * flag = "r")
-		: CSGObject()
+	BinaryStream(const char * fname, const char * flag = "r")
+		: SGObject()
 	{
 		/* open_stream(bs.m_fname, bs.rw); */
 		SG_NOTIMPLEMENTED
@@ -59,7 +59,7 @@ public:
 	 *
 	 * @param bs binary stream to copy from
 	 */
-	CBinaryStream(const CBinaryStream &bs)
+	BinaryStream(const BinaryStream &bs)
 	{
 		open_stream(bs.m_fname, bs.rw);
 		ASSERT(length == bs.length)
@@ -68,7 +68,7 @@ public:
 
 
 	/** destructor */
-	virtual ~CBinaryStream()
+	virtual ~BinaryStream()
 	{
 		close_stream();
 	}

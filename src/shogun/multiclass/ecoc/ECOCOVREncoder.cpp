@@ -8,7 +8,7 @@
 
 using namespace shogun;
 
-SGMatrix<int32_t> CECOCOVREncoder::create_codebook(int32_t num_classes)
+SGMatrix<int32_t> ECOCOVREncoder::create_codebook(int32_t num_classes)
 {
     SGMatrix<int32_t> code_book(num_classes, num_classes, true);
     code_book.set_const(-1);

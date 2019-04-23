@@ -23,10 +23,10 @@ TEST(DirectEigenSolver, compute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t>* A=new CDenseMatrixOperator<float64_t>(m);
-	SG_REF(A);
+	auto A=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
-	CDirectEigenSolver eig_solver(A);
+
+	DirectEigenSolver eig_solver(A);
 	eig_solver.compute();
 
 	float64_t min_eigval=eig_solver.get_min_eigenvalue();
@@ -35,5 +35,5 @@ TEST(DirectEigenSolver, compute)
 	EXPECT_NEAR(min_eigval, 1.38196601125010509747, 1E-15);
 	EXPECT_NEAR(max_eigval, 3.61803398874989445844, 1E-15);
 
-	SG_UNREF(A);
+
 }

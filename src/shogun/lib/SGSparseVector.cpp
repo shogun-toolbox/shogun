@@ -77,7 +77,7 @@ void SGSparseVector<T>::add_to_dense(T alpha, T * vec, int32_t dim, bool abs_val
 	{
 		for (int32_t i = 0; i < num_feat_entries; i++)
 		{
-			vec[features[i].feat_index] += alpha*CMath::abs(features[i].entry);
+			vec[features[i].feat_index] += alpha*Math::abs(features[i].entry);
 		}
 	}
 	else
@@ -196,7 +196,7 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 		feat_idx[j] = features[j].feat_index;
 	}
 
-	CMath::qsort_index(feat_idx, features, num_feat_entries);
+	Math::qsort_index(feat_idx, features, num_feat_entries);
 	SG_FREE(feat_idx);
 
 	for (size_type j = 1; j < num_feat_entries; j++)
@@ -387,7 +387,7 @@ bool SGSparseVector<T>::equals(const SGSparseVector<T>& other) const
 	return std::equal(features, features + num_feat_entries, other.features);
 }
 
-template<class T> void SGSparseVector<T>::load(CFile * loader)
+template<class T> void SGSparseVector<T>::load(File * loader)
 {
 	ASSERT(loader)
 	unref();
@@ -397,7 +397,7 @@ template<class T> void SGSparseVector<T>::load(CFile * loader)
 	SG_RESET_LOCALE;
 }
 
-template<class T> void SGSparseVector<T>::save(CFile * saver)
+template<class T> void SGSparseVector<T>::save(File * saver)
 {
 	ASSERT(saver)
 
@@ -407,13 +407,13 @@ template<class T> void SGSparseVector<T>::save(CFile * saver)
 }
 
 template <>
-void SGSparseVector<complex128_t>::load(CFile * loader)
+void SGSparseVector<complex128_t>::load(File * loader)
 {
 	SG_SERROR("SGSparseVector::load():: Not supported for complex128_t\n");
 }
 
 template <>
-void SGSparseVector<complex128_t>::save(CFile * saver)
+void SGSparseVector<complex128_t>::save(File * saver)
 {
 	SG_SERROR("SGSparseVector::save():: Not supported for complex128_t\n");
 }
@@ -505,7 +505,7 @@ operator==(const SGSparseVectorEntry<T>& other) const
 		if (feat_index != other.feat_index)                                    \
 			return false;                                                      \
                                                                                \
-		return CMath::fequals<real_t>(                                         \
+		return Math::fequals<real_t>(                                         \
 		    entry, other.entry, std::numeric_limits<real_t>::epsilon());       \
 	}
 
@@ -522,9 +522,9 @@ operator==(const SGSparseVectorEntry<complex128_t>& other) const
 	if (feat_index != other.feat_index)
 		return false;
 
-	return CMath::fequals<float64_t>(
+	return Math::fequals<float64_t>(
 		       entry.real(), other.entry.real(), LDBL_EPSILON) &&
-		   CMath::fequals<float64_t>(
+		   Math::fequals<float64_t>(
 		       entry.imag(), other.entry.imag(), LDBL_EPSILON);
 }
 

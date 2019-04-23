@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Evan Shelhamer
  */
 
@@ -12,33 +12,32 @@
 
 using namespace shogun;
 
-CLinearLocalTangentSpaceAlignment::CLinearLocalTangentSpaceAlignment() :
-		CLocalTangentSpaceAlignment()
+LinearLocalTangentSpaceAlignment::LinearLocalTangentSpaceAlignment() :
+		LocalTangentSpaceAlignment()
 {
 }
 
-CLinearLocalTangentSpaceAlignment::~CLinearLocalTangentSpaceAlignment()
+LinearLocalTangentSpaceAlignment::~LinearLocalTangentSpaceAlignment()
 {
 }
 
-const char* CLinearLocalTangentSpaceAlignment::get_name() const
+const char* LinearLocalTangentSpaceAlignment::get_name() const
 {
 	return "LinearLocalTangentSpaceAlignment";
 }
 
-CFeatures*
-CLinearLocalTangentSpaceAlignment::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+LinearLocalTangentSpaceAlignment::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	auto kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT;
 	parameters.target_dimension = m_target_dim;
-	parameters.kernel = kernel;
-	parameters.features = (CDotFeatures*)features;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	SG_UNREF(kernel);
-	return embedding;
+	parameters.kernel = kernel.get();
+	parameters.features = (DotFeatures*)features.get();
+	return tapkee_embed(parameters);
 }
 

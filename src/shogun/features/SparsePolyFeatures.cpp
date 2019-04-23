@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-CSparsePolyFeatures::CSparsePolyFeatures()
+SparsePolyFeatures::SparsePolyFeatures(): DotFeatures()
 {
 	SG_UNSTABLE("CSparsePolyFeatures::CSparsePolyFeatures()",
 				"\n");
@@ -25,13 +25,13 @@ CSparsePolyFeatures::CSparsePolyFeatures()
 	m_hash_bits = 0;
 }
 
-CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits)
-	: CDotFeatures(), m_normalization_values(NULL)
+SparsePolyFeatures::SparsePolyFeatures(std::shared_ptr<SparseFeatures<float64_t>> feat, int32_t degree, bool normalize, int32_t hash_bits)
+	: DotFeatures(), m_normalization_values(NULL)
 {
 	ASSERT(feat)
 
 	m_feat = feat;
-	SG_REF(m_feat);
+
 	m_degree=degree;
 	m_normalize=normalize;
 	m_hash_bits=hash_bits;
@@ -43,24 +43,24 @@ CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32
 		store_normalization_values();
 }
 
-CSparsePolyFeatures::~CSparsePolyFeatures()
+SparsePolyFeatures::~SparsePolyFeatures()
 {
 	SG_FREE(m_normalization_values);
-	SG_UNREF(m_feat);
+
 }
 
-CSparsePolyFeatures::CSparsePolyFeatures(const CSparsePolyFeatures & orig)
+SparsePolyFeatures::SparsePolyFeatures(const SparsePolyFeatures & orig)
 {
 	SG_PRINT("CSparsePolyFeatures:\n")
 	SG_NOTIMPLEMENTED
 }
 
-int32_t CSparsePolyFeatures::get_dim_feature_space() const
+int32_t SparsePolyFeatures::get_dim_feature_space() const
 {
 	return m_output_dimensions;
 }
 
-int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t SparsePolyFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen;
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(num);
@@ -69,17 +69,17 @@ int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num) const
 	return vlen*(vlen+1)/2;
 }
 
-EFeatureType CSparsePolyFeatures::get_feature_type() const
+EFeatureType SparsePolyFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CSparsePolyFeatures::get_feature_class() const
+EFeatureClass SparsePolyFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
 
-int32_t CSparsePolyFeatures::get_num_vectors() const
+int32_t SparsePolyFeatures::get_num_vectors() const
 {
 	if (m_feat)
 		return m_feat->get_num_vectors();
@@ -88,37 +88,37 @@ int32_t CSparsePolyFeatures::get_num_vectors() const
 
 }
 
-void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
+void* SparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool SparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-void CSparsePolyFeatures::free_feature_iterator(void* iterator)
+void SparsePolyFeatures::free_feature_iterator(void* iterator)
 {
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t SparsePolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 
-	CSparsePolyFeatures* pf=(CSparsePolyFeatures*) df;
+	auto pf=std::static_pointer_cast<SparsePolyFeatures>(df);
 
 	SGSparseVector<float64_t> vec1=m_feat->get_sparse_feature_vector(vec_idx1);
 	SGSparseVector<float64_t> vec2=pf->m_feat->get_sparse_feature_vector(
 			vec_idx2);
 
 	float64_t result=SGSparseVector<float64_t>::sparse_dot(vec1, vec2);
-	result=CMath::pow(result, m_degree);
+	result=Math::pow(result, m_degree);
 
 	m_feat->free_feature_vector(vec_idx1);
 	pf->m_feat->free_feature_vector(vec_idx2);
@@ -126,7 +126,7 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 	return result;
 }
 
-float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t SparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -143,14 +143,14 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 			for (int32_t i=0; i<vec.num_feat_entries; i++)
 			{
 				float64_t v1=vec.features[i].entry;
-				uint32_t seed=CHash::MurmurHash3(
+				uint32_t seed=Hash::MurmurHash3(
 						(uint8_t*)&(vec.features[i].feat_index),
 						sizeof(int32_t), 0xDEADBEAF);
 
 				for (int32_t j=i; j<vec.num_feat_entries; j++)
 				{
 					float64_t v2=vec.features[j].entry;
-					uint32_t h=CHash::MurmurHash3(
+					uint32_t h=Hash::MurmurHash3(
 							(uint8_t*)&(vec.features[j].feat_index),
 							sizeof(int32_t), seed)&mask;
 					float64_t v;
@@ -175,7 +175,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	return result;
 }
 
-void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void SparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len!=m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -193,14 +193,14 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		for (int32_t i=0; i<vec.num_feat_entries; i++)
 		{
 			float64_t v1=vec.features[i].entry;
-			uint32_t seed=CHash::MurmurHash3(
+			uint32_t seed=Hash::MurmurHash3(
 					(uint8_t*)&(vec.features[i].feat_index), sizeof(int32_t),
 					0xDEADBEAF);
 
 			for (int32_t j=i; j<vec.num_feat_entries; j++)
 			{
 				float64_t v2=vec.features[j].entry;
-				uint32_t h=CHash::MurmurHash3(
+				uint32_t h=Hash::MurmurHash3(
 						(uint8_t*)&(vec.features[j].feat_index),
 						sizeof(int32_t), seed)&mask;
 				float64_t v;
@@ -211,7 +211,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 					v = alpha * std::sqrt(2.0) * v1 * v2;
 
 				if (abs_val)
-					vec2[h]+=CMath::abs(v);
+					vec2[h]+=Math::abs(v);
 				else
 					vec2[h]+=v;
 			}
@@ -223,7 +223,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	m_feat->free_feature_vector(vec_idx1);
 }
 
-void CSparsePolyFeatures::store_normalization_values()
+void SparsePolyFeatures::store_normalization_values()
 {
 	SG_FREE(m_normalization_values);
 
@@ -232,7 +232,8 @@ void CSparsePolyFeatures::store_normalization_values()
 	m_normalization_values=SG_MALLOC(float64_t, m_normalization_values_len);
 	for (int i=0; i<m_normalization_values_len; i++)
 	{
-		float64_t val = std::sqrt(dot(i, this, i));
+		float64_t val = std::sqrt(dot(i,
+			std::dynamic_pointer_cast<std::remove_pointer_t<decltype(this)>>(shared_from_this()), i));
 		if (val==0)
 			// trap division by zero
 			m_normalization_values[i]=1.0;
@@ -242,12 +243,12 @@ void CSparsePolyFeatures::store_normalization_values()
 
 }
 
-CFeatures* CSparsePolyFeatures::duplicate() const
+std::shared_ptr<Features> SparsePolyFeatures::duplicate() const
 {
-	return new CSparsePolyFeatures(*this);
+	return std::make_shared<SparsePolyFeatures>(*this);
 }
 
-void CSparsePolyFeatures::init()
+void SparsePolyFeatures::init()
 {
 	SG_ADD(
 	    &m_feat, "features", "Features in original space.");
@@ -262,8 +263,8 @@ void CSparsePolyFeatures::init()
 	    "Dimensions of the feature space of the polynomial kernel.");
 
 	m_normalization_values_len = get_num_vectors();
-	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
-			"m_normalization_values", "Norm of each training example");
+	/*m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
+			"m_normalization_values", "Norm of each training example");*/
 	watch_param(
 	    "m_normalization_values", &m_normalization_values,
 	    &m_normalization_values_len);

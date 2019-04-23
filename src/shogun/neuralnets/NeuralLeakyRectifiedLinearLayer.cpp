@@ -37,26 +37,26 @@
 
 using namespace shogun;
 
-CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer() : CNeuralRectifiedLinearLayer()
+NeuralLeakyRectifiedLinearLayer::NeuralLeakyRectifiedLinearLayer() : NeuralRectifiedLinearLayer()
 {
 	m_alpha=0.01;
 }
 
-CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer(int32_t num_neurons):
-CNeuralRectifiedLinearLayer(num_neurons)
+NeuralLeakyRectifiedLinearLayer::NeuralLeakyRectifiedLinearLayer(int32_t num_neurons):
+NeuralRectifiedLinearLayer(num_neurons)
 {
 	m_alpha=0.01;
 }
 
-void CNeuralLeakyRectifiedLinearLayer::compute_activations(
+void NeuralLeakyRectifiedLinearLayer::compute_activations(
 	SGVector<float64_t> parameters,
-	CDynamicObjectArray* layers)
+	std::shared_ptr<DynamicObjectArray> layers)
 {
-	CNeuralLinearLayer::compute_activations(parameters, layers);
+	NeuralLinearLayer::compute_activations(parameters, layers);
 
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<len; i++)
 	{
-		m_activations[i] = CMath::max<float64_t>(m_alpha*m_activations[i], m_activations[i]);
+		m_activations[i] = Math::max<float64_t>(m_alpha*m_activations[i], m_activations[i]);
 	}
 }

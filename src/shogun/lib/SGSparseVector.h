@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-	class CFile;
+	class File;
 
 /** @brief template class SGSparseVectorEntry */
 template <class T> struct SGSparseVectorEntry
@@ -169,13 +169,13 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	void load(CFile* loader);
+	void load(File* loader);
 
 	/** save vector to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	void save(CFile* saver);
+	void save(File* saver);
 
 	/** add a sparse feature vector onto a dense one
 	 * dense += alpha*sparse

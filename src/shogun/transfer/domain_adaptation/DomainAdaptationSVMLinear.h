@@ -19,13 +19,13 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 /** @brief class DomainAdaptationSVMLinear */
-class CDomainAdaptationSVMLinear : public CLibLinear
+class DomainAdaptationSVMLinear : public LibLinear
 {
 
 	public:
 
 		/** default constructor */
-		CDomainAdaptationSVMLinear();
+		DomainAdaptationSVMLinear();
 
 
 		/** constructor
@@ -36,11 +36,11 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearMachine* presvm, float64_t B);
+		DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> presvm, float64_t B);
 
 
 		/** destructor */
-		virtual ~CDomainAdaptationSVMLinear();
+		virtual ~DomainAdaptationSVMLinear();
 
 
 		/** init SVM
@@ -48,7 +48,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 * */
-		void init(CLinearMachine* presvm, float64_t B);
+		void init(std::shared_ptr<LinearMachine> presvm, float64_t B);
 
 		/** get classifier type
 		 *
@@ -62,14 +62,14 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 
 
 		/** returns SVM that is used as prior information
 		 *
 		 * @return presvm
 		 */
-		virtual CLinearMachine* get_presvm();
+		virtual std::shared_ptr<LinearMachine> get_presvm();
 
 
 		/** getter for regularization parameter B
@@ -126,12 +126,12 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	protected:
 
 		/** SVM to regularize against */
-		CLinearMachine* presvm;
+		std::shared_ptr<LinearMachine> presvm;
 
 
 		/** regularization parameter B */

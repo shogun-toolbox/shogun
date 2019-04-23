@@ -9,9 +9,9 @@
 
 using namespace shogun;
 
-CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
+HashedWDFeatures::HashedWDFeatures() :DotFeatures()
 {
-	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures()", "\n")
+	SG_UNSTABLE("HashedWDFeatures::HashedWDFeatures()", "\n")
 
 	strings = NULL;
 
@@ -30,9 +30,9 @@ CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
 	normalization_const = 0.0;
 }
 
-CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
+HashedWDFeatures::HashedWDFeatures(std::shared_ptr<StringFeatures<uint8_t>> str,
 		int32_t start_order, int32_t order, int32_t from_order,
-		int32_t hash_bits) : CDotFeatures()
+		int32_t hash_bits) : DotFeatures()
 {
 	ASSERT(start_order>=0)
 	ASSERT(start_order<order)
@@ -40,14 +40,13 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 	ASSERT(hash_bits>0)
 	ASSERT(str)
 	ASSERT(str->have_same_length())
-	SG_REF(str);
+
 
 	strings=str;
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
-	CAlphabet* alpha=str->get_alphabet();
+	auto alpha=str->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
 	degree=order;
 	start_degree=start_order;
@@ -57,22 +56,21 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 	set_normalization_const();
 }
 
-CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings),
+HashedWDFeatures::HashedWDFeatures(const HashedWDFeatures& orig)
+	: DotFeatures(orig), strings(orig.strings),
 	degree(orig.degree), start_degree(orig.start_degree),
 	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
 	normalization_const(orig.normalization_const)
 {
 
 
-	SG_REF(strings);
+
 	if (strings)
 	{
 		string_length=strings->get_max_vector_length();
 		num_strings=strings->get_num_vectors();
-		CAlphabet* alpha=strings->get_alphabet();
+		auto alpha=strings->get_alphabet();
 		alphabet_size=alpha->get_num_symbols();
-		SG_UNREF(alpha);
 	}
 	else
 	{
@@ -85,18 +83,18 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 		set_wd_weights();
 }
 
-CHashedWDFeatures::~CHashedWDFeatures()
+HashedWDFeatures::~HashedWDFeatures()
 {
-	SG_UNREF(strings);
+
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t HashedWDFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CHashedWDFeatures* wdf = (CHashedWDFeatures*) df;
+	auto wdf = std::static_pointer_cast<HashedWDFeatures>(df);
 
 	int32_t len1, len2;
 	bool free_vec1, free_vec2;
@@ -120,16 +118,16 @@ float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec
 	}
 	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
 	wdf->strings->free_feature_vector(vec2, vec_idx2, free_vec2);
-	return sum/CMath::sq(normalization_const);
+	return sum/Math::sq(normalization_const);
 }
 
-float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t HashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	float64_t sum=0;
-	int32_t lim=CMath::min(degree, string_length);
+	int32_t lim=Math::min(degree, string_length);
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
@@ -141,7 +139,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	{
 		// compute hash for strings of length start_degree-1
 		for (int32_t i=0; i+start_degree < len; i++)
-			val[i]=CHash::MurmurHash3(&vec[i], start_degree, 0xDEADBEAF);
+			val[i]=Hash::MurmurHash3(&vec[i], start_degree, 0xDEADBEAF);
 	}
 	else
 		SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
@@ -157,9 +155,9 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 		for (int32_t i=0; i+k < len; i++)
 		{
 			chunk++;
-			CHash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
+			Hash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
 			uint32_t h =
-					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
+					Hash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o)
 #endif
@@ -168,7 +166,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 			o+=partial_w_dim;
 		}
 		val[len-k-1] =
-				CHash::FinalizeIncrementalMurmurHash3(val[len-k-1], carry, chunk);
+				Hash::FinalizeIncrementalMurmurHash3(val[len-k-1], carry, chunk);
 		offs+=partial_w_dim*len;
 	}
 	SG_FREE(val);
@@ -177,12 +175,12 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	return sum/normalization_const;
 }
 
-void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void HashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
-	int32_t lim=CMath::min(degree, string_length);
+	int32_t lim=Math::min(degree, string_length);
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
@@ -194,7 +192,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	{
 		// compute hash for strings of length start_degree-1
 		for (int32_t i=0; i+start_degree < len; i++)
-			val[i]=CHash::MurmurHash3(&vec[i], start_degree, 0xDEADBEAF);
+			val[i]=Hash::MurmurHash3(&vec[i], start_degree, 0xDEADBEAF);
 	}
 	else
 		SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
@@ -204,7 +202,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		float64_t wd = alpha*wd_weights[k]/normalization_const;
 
 		if (abs_val)
-			wd=CMath::abs(wd);
+			wd=Math::abs(wd);
 
 		uint32_t o=offs;
 		uint32_t carry = 0;
@@ -213,8 +211,8 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		for (int32_t i=0; i+k < len; i++)
 		{
 			chunk++;
-			CHash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
-			uint32_t h = CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
+			Hash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
+			uint32_t h = Hash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h)
@@ -225,7 +223,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 			o+=partial_w_dim;
 		}
 		val[len-k-1] =
-				CHash::FinalizeIncrementalMurmurHash3(val[len-k-1], carry, chunk);
+				Hash::FinalizeIncrementalMurmurHash3(val[len-k-1], carry, chunk);
 
 		offs+=partial_w_dim*len;
 	}
@@ -234,7 +232,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
-void CHashedWDFeatures::set_wd_weights()
+void HashedWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0)
 
@@ -254,7 +252,7 @@ void CHashedWDFeatures::set_wd_weights()
 }
 
 
-void CHashedWDFeatures::set_normalization_const(float64_t n)
+void HashedWDFeatures::set_normalization_const(float64_t n)
 {
 	if (n==0)
 	{
@@ -270,13 +268,13 @@ void CHashedWDFeatures::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
-CFeatures* CHashedWDFeatures::duplicate() const
+std::shared_ptr<Features> HashedWDFeatures::duplicate() const
 {
-	return new CHashedWDFeatures(*this);
+	return std::make_shared<HashedWDFeatures>(*this);
 }
 
 
-int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t HashedWDFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t vlen=-1;
 	bool free_vec;
@@ -285,20 +283,20 @@ int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num) const
 	return degree*vlen;
 }
 
-void* CHashedWDFeatures::get_feature_iterator(int32_t vector_index)
+void* HashedWDFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CHashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
+bool HashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
 		void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-void CHashedWDFeatures::free_feature_iterator(void* iterator)
+void HashedWDFeatures::free_feature_iterator(void* iterator)
 {
 	SG_NOTIMPLEMENTED
 }

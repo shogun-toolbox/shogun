@@ -30,7 +30,6 @@ void load_data(const char * file_name,
 {
 	CLibSVMFile * file = new CLibSVMFile(file_name);
 	ASSERT(file != NULL);
-	SG_REF(file);
 
 	SGSparseVector<float64_t> * feats;
 	SGVector<float64_t> * labels;
@@ -63,12 +62,11 @@ void load_data(const char * file_name,
 		for (index_t j = 0; j < label_sample.vlen; j++)
 			multilabel_sample[j] = label_sample[j];
 
-		CMath::qsort(multilabel_sample);
+		Math::qsort(multilabel_sample);
 
 		multilabels[i] = multilabel_sample;
 	}
 
-	SG_UNREF(file);
 	SG_FREE(feats);
 	SG_FREE(labels);
 }
@@ -104,28 +102,21 @@ int main(int argc, char ** argv)
 
 	CMultilabelSOLabels * mlabels = new CMultilabelSOLabels(num_samples,
 	                num_classes);
-	SG_REF(mlabels);
 	mlabels->set_sparse_labels(multilabels);
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(
+	SparseFeatures<float64_t> * features = new SparseFeatures<float64_t>(
 	        feats_matrix);
-	SG_REF(features);
 
-	CMultilabelModel * model = new CMultilabelModel(features, mlabels);
-	SG_REF(model);
+	MultilabelModel * model = new MultilabelModel(features, mlabels);
 
 	CStochasticSOSVM * sgd = new CStochasticSOSVM(model, mlabels);
-	SG_REF(sgd);
 
 	CDualLibQPBMSOSVM * bundle = new CDualLibQPBMSOSVM(model, mlabels, 100);
 	bundle->set_verbose(false);
-	SG_REF(bundle);
 
 	CPrimalMosekSOSVM * sosvm = new CPrimalMosekSOSVM(model, mlabels);
-	SG_REF(sosvm);
 
-	CTime * start = new CTime();
-	SG_REF(start);
+	Time * start = new Time();
 	sgd->train();
 	float64_t t1 = start->cur_time_diff(false);
 	bundle->train();
@@ -151,25 +142,22 @@ int main(int argc, char ** argv)
 	        test_multilabels,
 	        num_classes);
 
-	CSparseFeatures<float64_t> * test_features = new CSparseFeatures<float64_t>(
+	SparseFeatures<float64_t> * test_features = new SparseFeatures<float64_t>(
 	        test_feats_matrix);
-	SG_REF(test_features);
 
 	CMultilabelSOLabels * test_labels = new CMultilabelSOLabels(num_samples,
 	                num_classes);
-	SG_REF(test_labels);
 	test_labels->set_sparse_labels(test_multilabels);
 
-	CStructuredLabels* out = sgd->apply(test_features)->as<CStructuredLabels>();
+	StructuredLabels* out = sgd->apply(test_features)->as<StructuredLabels>();
 
-	CStructuredLabels* bout =
-	    bundle->apply(test_features)->as<CStructuredLabels>();
+	StructuredLabels* bout =
+	    bundle->apply(test_features)->as<StructuredLabels>();
 
-	CStructuredLabels* sout =
-	    sosvm->apply(test_features)->as<CStructuredLabels>();
+	StructuredLabels* sout =
+	    sosvm->apply(test_features)->as<StructuredLabels>();
 
-	CStructuredAccuracy * evaluator = new CStructuredAccuracy();
-	SG_REF(evaluator);
+	StructuredAccuracy * evaluator = new StructuredAccuracy();
 	SG_SPRINT(">>> Accuracy of multilabel classification using %s = %f\n",
 	          sgd->get_name(), evaluator->evaluate(out, test_labels));
 
@@ -179,19 +167,6 @@ int main(int argc, char ** argv)
 	SG_SPRINT(">>> Accuracy of multilabel classification using %s = %f\n",
 	          sosvm->get_name(), evaluator->evaluate(sout, test_labels));
 
-	SG_UNREF(bout);
-	SG_UNREF(bundle);
-	SG_UNREF(evaluator);
-	SG_UNREF(features);
-	SG_UNREF(mlabels);
-	SG_UNREF(model);
-	SG_UNREF(out);
-	SG_UNREF(sgd);
-	SG_UNREF(sosvm);
-	SG_UNREF(sout);
-	SG_UNREF(start);
-	SG_UNREF(test_features);
-	SG_UNREF(test_labels);
 	SG_FREE(multilabels);
 	SG_FREE(test_multilabels);
 

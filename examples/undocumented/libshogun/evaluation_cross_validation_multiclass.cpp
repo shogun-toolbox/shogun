@@ -25,42 +25,37 @@ const char fname_labels[] = "../data/label_train_multiclass.dat";
 void test_cross_validation()
 {
 	/* dense features from matrix */
-	CCSVFile* feature_file = new CCSVFile(fname_feats);
+	auto feature_file = std::make_shared<CSVFile>(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
-	SG_UNREF(feature_file);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(mat);
 
 	/* labels from vector */
-	CCSVFile* label_file = new CCSVFile(fname_labels);
+	auto label_file = std::make_shared<CSVFile>(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
-	SG_UNREF(label_file);
 
-	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
-	SG_REF(labels);
+	auto labels=std::make_shared<MulticlassLabels>(label_vec);
 
 	/* create svm via libsvm */
 	float64_t svm_C=10;
 	float64_t svm_eps=0.0001;
-	CMulticlassLibLinear* svm=new CMulticlassLibLinear(svm_C, features, labels);
+	auto svm=std::make_shared<MulticlassLibLinear>(svm_C, features, labels);
 	svm->set_epsilon(svm_eps);
 
 	/* train and output */
 	svm->train(features);
-	CMulticlassLabels* output = svm->apply(features)->as<CMulticlassLabels>();
+	auto output = svm->apply(features)->as<MulticlassLabels>();
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
-	CMulticlassAccuracy* eval_crit = new CMulticlassAccuracy ();
+	auto eval_crit = std::make_shared<MulticlassAccuracy>();
 
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
 	SG_SPRINT("training accuracy: %f\n", eval_result);
-	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
@@ -69,29 +64,25 @@ void test_cross_validation()
 
 	/* splitting strategy */
 	index_t n_folds=5;
-	CStratifiedCrossValidationSplitting* splitting=
-			new CStratifiedCrossValidationSplitting(labels, n_folds);
+	auto splitting=
+			std::make_shared<StratifiedCrossValidationSplitting>(labels, n_folds);
 
 	/* cross validation instance, 10 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
+	auto cross=std::make_shared<CrossValidation>(svm, features, labels,
 			splitting, eval_crit);
 
 	cross->set_num_runs(1);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	auto result=cross->evaluate()->as<CrossValidationResult>();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	result->print_result();
 
 	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(cross);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 }
 
 int main(int argc, char **argv)

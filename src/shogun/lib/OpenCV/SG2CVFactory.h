@@ -66,7 +66,7 @@ class SG2CVFactory
 		 * @return Mat object of the specified data type
 		 */
 		template <typename SG_T> static cv::Mat get_cvMat_from_features
-			(CDenseFeatures<SG_T>* sgDense, int cv_type);
+			(DenseFeatures<SG_T>* sgDense, int cv_type);
 
 	private:
 		template <typename SG_T, typename CV_T> static cv::Mat get_cvMat
@@ -124,7 +124,7 @@ template <typename SG_T> cv::Mat SG2CVFactory::get_cvMat
 }
 
 template <typename SG_T> cv::Mat SG2CVFactory::get_cvMat_from_features
-	(CDenseFeatures<SG_T>* sgDense, int cv_type)
+	(DenseFeatures<SG_T>* sgDense, int cv_type)
 {
 	SGMatrix<SG_T> sgMat=sgDense->get_feature_matrix();
 	cv::Mat cvMat=SG2CVFactory::get_cvMat<SG_T>(sgMat, cv_type);

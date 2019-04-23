@@ -15,9 +15,9 @@ using namespace shogun;
 #define MAX_LINE_LENGTH 4096
 #define HOG_SIZE 1488
 
-struct CBoundingBox : public CData
+struct CBoundingBox : public Data
 {
-	CBoundingBox(int32_t x, int32_t y) : CData(), x_pos(x), y_pos(y) {};
+	CBoundingBox(int32_t x, int32_t y) : Data(), x_pos(x), y_pos(y) {};
 
 	int32_t x_pos, y_pos;
 
@@ -25,9 +25,9 @@ struct CBoundingBox : public CData
 	virtual const char* get_name() const { return "BoundingBox"; }
 };
 
-struct CHOGFeatures : public CData
+struct CHOGFeatures : public Data
 {
-	CHOGFeatures(int32_t w, int32_t h) : CData(), width(w), height(h) {};
+	CHOGFeatures(int32_t w, int32_t h) : Data(), width(w), height(h) {};
 
 	int32_t width, height;
 	float64_t ***hog;
@@ -36,17 +36,17 @@ struct CHOGFeatures : public CData
 	virtual const char* get_name() const { return "HOGFeatures"; }
 };
 
-class CObjectDetector: public CLatentModel
+class CObjectDetector: public LatentModel
 {
 	public:
 		CObjectDetector() {}
-		CObjectDetector(CLatentFeatures* feat, CLatentLabels* labels) : CLatentModel(feat, labels) {}
+		CObjectDetector(LatentFeatures* feat, CLatentLabels* labels) : LatentModel(feat, labels) {}
 
 		virtual ~CObjectDetector() {}
 
 		virtual int32_t get_dim() const { return HOG_SIZE; }
 
-		virtual CDotFeatures* get_psi_feature_vectors()
+		virtual DotFeatures* get_psi_feature_vectors()
 		{
 			int32_t num_examples = this->get_num_vectors();
 			int32_t dim = this->get_dim();
@@ -58,21 +58,21 @@ class CObjectDetector: public CLatentModel
 				memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
 			}
 
-			CDenseFeatures<float64_t>* psi_feats = new CDenseFeatures<float64_t>(psi_m);
+			DenseFeatures<float64_t>* psi_feats = new DenseFeatures<float64_t>(psi_m);
 			return psi_feats;
 		}
 
-		virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+		virtual Data* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
 		{
 			int32_t pos_x = 0, pos_y = 0;
-			float64_t max_score = -CMath::INFTY;
+			float64_t max_score = -Math::INFTY;
 
 			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
 			for (int i = 0; i < hf->width; ++i)
 			{
 				for (int j = 0; j < hf->height; ++j)
 				{
-					float64_t score = CMath::dot(w.vector, hf->hog[i][j], w.vlen);
+					float64_t score = Math::dot(w.vector, hf->hog[i][j], w.vlen);
 
 					if (score > max_score)
 					{
@@ -84,14 +84,13 @@ class CObjectDetector: public CLatentModel
 			}
 			SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
 			CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
-			SG_REF(h);
 
 			return h;
 		}
 
 };
 
-static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& labels)
+static void read_dataset(char* fname, LatentFeatures*& feats, CLatentLabels*& labels)
 {
 	FILE* fd = fopen(fname, "r");
 	char line[MAX_LINE_LENGTH];
@@ -107,15 +106,13 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	num_examples = atoi(line);
 
 	labels = new CLatentLabels(num_examples);
-	SG_REF(labels);
 
-	CBinaryLabels* ys = new CBinaryLabels(num_examples);
+	BinaryLabels* ys = new BinaryLabels(num_examples);
 
-	feats = new CLatentFeatures(num_examples);
-	SG_REF(feats);
+	feats = new LatentFeatures(num_examples);
 
 	auto pb = progress(range(num_examples));
-	CMath::init_random();
+	Math::init_random();
 	for (int i = 0; (!feof(fd)) && (i < num_examples); ++i)
 	{
 		fgets(line, MAX_LINE_LENGTH, fd);
@@ -147,8 +144,8 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 		height = atoi(last_pchar);
 
 		/* create latent label */
-		int x = CMath::random(0, width-1);
-		int y = CMath::random(0, height-1);
+		int x = Math::random(0, width-1);
+		int y = Math::random(0, height-1);
 		CBoundingBox* bb = new CBoundingBox(x,y);
 		labels->add_latent_label(bb);
 
@@ -192,7 +189,7 @@ int main(int argc, char** argv)
 		SG_SERROR("not enough arguements given\n");
 	}
 
-	CLatentFeatures* train_feats = NULL;
+	LatentFeatures* train_feats = NULL;
 	CLatentLabels* train_labels = NULL;
 	/* read train data set */
 	read_dataset(argv[1], train_feats, train_labels);
@@ -201,10 +198,10 @@ int main(int argc, char** argv)
 	float64_t C = 10.0;
 
 	CObjectDetector* od = new CObjectDetector(train_feats, train_labels);
-	CLatentSVM llm(od, C);
+	LatentSVM llm(od, C);
 	llm.train();
 
-	//  CLatentFeatures* test_feats = NULL;
+	//  LatentFeatures* test_feats = NULL;
 	//  CLatentLabels* test_labels = NULL;
 	//  read_dataset(argv[2], test_feats, test_labels);
 

@@ -23,11 +23,11 @@ namespace shogun
  * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
  */
-class CSigmoidKernel: public CDotKernel
+class SigmoidKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CSigmoidKernel();
+		SigmoidKernel();
 
 		/** constructor
 		 *
@@ -35,7 +35,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(int32_t size, float64_t gamma, float64_t coef0);
+		SigmoidKernel(int32_t size, float64_t gamma, float64_t coef0);
 
 		/** constructor
 		 *
@@ -45,10 +45,10 @@ class CSigmoidKernel: public CDotKernel
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(CDotFeatures* l, CDotFeatures* r, int32_t size,
+		SigmoidKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
-		virtual ~CSigmoidKernel();
+		virtual ~SigmoidKernel();
 
 		/** initialize kernel
 		 *
@@ -56,7 +56,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -84,7 +84,7 @@ class CSigmoidKernel: public CDotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			return tanh(gamma*CDotKernel::compute(idx_a,idx_b)+coef0);
+			return tanh(gamma*DotKernel::compute(idx_a,idx_b)+coef0);
 		}
 
 	private:

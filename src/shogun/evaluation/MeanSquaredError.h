@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Class MeanSquaredError
  * used to compute an error of regression model.
@@ -29,21 +29,21 @@ class CLabels;
  * \f]
  *
  */
-class CMeanSquaredError: public CEvaluation
+class MeanSquaredError: public Evaluation
 {
 public:
 	/** constructor */
-	CMeanSquaredError() : CEvaluation() {};
+	MeanSquaredError() : Evaluation() {};
 
 	/** destructor */
-	virtual ~CMeanSquaredError() {};
+	virtual ~MeanSquaredError() {};
 
 	/** evaluate mean squared error
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean squared error
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

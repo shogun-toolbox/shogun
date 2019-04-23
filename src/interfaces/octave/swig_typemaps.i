@@ -305,7 +305,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
                 strings[i].string[j]='\0';
-                max_len=CMath::max(max_len, len);
+                max_len=Math::max(max_len, len);
             }
             else
             {

@@ -17,16 +17,16 @@
 using namespace shogun;
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM()
-: CLinearStructuredOutputMachine(),
+: LinearStructuredOutputMachine(),
 	po_value(0.0)
 {
 	init();
 }
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM(
-		CStructuredModel*  model,
-		CStructuredLabels* labs)
-: CLinearStructuredOutputMachine(model, labs),
+		StructuredModel*  model,
+		StructuredLabels* labs)
+: LinearStructuredOutputMachine(model, labs),
 	po_value(0.0)
 {
 	init();
@@ -49,13 +49,13 @@ CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 {
 }
 
-bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
+bool CPrimalMosekSOSVM::train_machine(Features* data)
 {
 	SG_DEBUG("Entering CPrimalMosekSOSVM::train_machine.\n");
 	if (data)
 		set_features(data);
 
-	CFeatures* model_features = get_features();
+	Features* model_features = get_features();
 	// Initialize the model for training
 	m_model->init_training();
 	// Check that the scenary is correct to start with training
@@ -109,13 +109,13 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_slacks.zero();
 
 	// Initialize the list of constraints
-	// Each element in results is a list of CResultSet with the constraints
+	// Each element in results is a list of ResultSet with the constraints
 	// associated to each training example
-	CDynamicObjectArray* results = new CDynamicObjectArray(N);
+	DynamicObjectArray* results = new DynamicObjectArray(N);
 	SG_REF(results);
 	for ( int32_t i = 0 ; i < N ; ++i )
 	{
-		CList* list = new CList(true);
+		List* list = new List(true);
 		results->push_back(list);
 	}
 
@@ -140,26 +140,26 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		for ( int32_t i = 0 ; i < N ; ++i )
 		{
 			// Predict the result of the ith training example (loss-aug)
-			CResultSet* result = m_model->argmax(m_w, i);
+			ResultSet* result = m_model->argmax(m_w, i);
 
 			// Compute the loss associated with the prediction (surrogate loss, max(0, \tilde{H}))
 			float64_t slack = CHingeLoss().loss( compute_loss_arg(result) );
-			CList* cur_list = (CList*) results->get_element(i);
+			List* cur_list = (List*) results->get_element(i);
 
 			// Update the list of constraints
 			if ( cur_list->get_num_elements() > 0 )
 			{
 				// Find the maximum loss within the elements of
 				// the list of constraints
-				CResultSet* cur_res = (CResultSet*) cur_list->get_first_element();
-				float64_t max_slack = -CMath::INFTY;
+				ResultSet* cur_res = (ResultSet*) cur_list->get_first_element();
+				float64_t max_slack = -Math::INFTY;
 
 				while ( cur_res != NULL )
 				{
-					max_slack = CMath::max(max_slack, CHingeLoss().loss( compute_loss_arg(cur_res) ));
+					max_slack = Math::max(max_slack, CHingeLoss().loss( compute_loss_arg(cur_res) ));
 
 					SG_UNREF(cur_res);
-					cur_res = (CResultSet*) cur_list->get_next_element();
+					cur_res = (ResultSet*) cur_list->get_next_element();
 				}
 
 				if ( slack > max_slack + m_epsilon )
@@ -222,7 +222,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
+float64_t CPrimalMosekSOSVM::compute_loss_arg(ResultSet* result) const
 {
 	// Dimensionality of the joint feature space
 	int32_t M = m_w.vlen;
@@ -247,7 +247,7 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	}
 }
 
-bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) const
+bool CPrimalMosekSOSVM::insert_result(List* result_list, ResultSet* result) const
 {
 	bool succeed = result_list->insert_element(result);
 
@@ -262,7 +262,7 @@ bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) co
 
 bool CPrimalMosekSOSVM::add_constraint(
 		CMosek* mosek,
-		CResultSet* result,
+		ResultSet* result,
 		index_t con_idx,
 		index_t train_idx) const
 {

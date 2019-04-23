@@ -21,9 +21,9 @@ template <class T> class DynArray;
 
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
- * The object must be initialized like a CCSVFile.
+ * The object must be initialized like a CSVFile.
  */
-class CStreamingAsciiFile: public CStreamingFile
+class StreamingAsciiFile: public StreamingFile
 {
 
 public:
@@ -31,7 +31,7 @@ public:
 	 * Default constructor
 	 *
 	 */
-	CStreamingAsciiFile();
+	StreamingAsciiFile();
 
 	/**
 	 * Constructor taking file name argument
@@ -39,12 +39,12 @@ public:
 	 * @param fname file name
 	 * @param rw read/write mode
 	 */
-	CStreamingAsciiFile(const char* fname, char rw='r');
+	StreamingAsciiFile(const char* fname, char rw='r');
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingAsciiFile();
+	virtual ~StreamingAsciiFile();
 
 	/** set delimiting character
 	 *

@@ -19,7 +19,7 @@
 
 namespace shogun
 {
-class CKMeansBase;
+class KMeansBase;
 
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
  *
@@ -33,19 +33,19 @@ class CKMeansBase;
  *
  * Beware that this algorithm obtains only a <em>local</em> optimum.
  *
- * To use mini-batch based training was see CKMeansMiniBatch 
+ * To use mini-batch based training was see KMeansMiniBatch 
  *
  * cf. http://en.wikipedia.org/wiki/K-means_algorithm
  * cf. http://en.wikipedia.org/wiki/Lloyd's_algorithm
  *
  *
  */
-class CKMeans : public CKMeansBase
+class KMeans : public KMeansBase
 {
 	public:
 	
 		/** default constructor */
-		CKMeans();
+		KMeans();
 
 		/** constructor
 		 *
@@ -53,16 +53,16 @@ class CKMeans : public CKMeansBase
 		 * @param d distance
 		 * @param kmeanspp Set to true for using KMeans++ (default false)
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
+		KMeans(int32_t k, std::shared_ptr<Distance> d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		 */
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
+		KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 
-		virtual ~CKMeans();
+		virtual ~KMeans();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KMeans"; }		
@@ -77,7 +77,7 @@ class CKMeans : public CKMeansBase
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** Lloyd's KMeans training method
 		 */

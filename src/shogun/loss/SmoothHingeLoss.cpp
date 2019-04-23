@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CSmoothHingeLoss::loss(float64_t z)
+float64_t SmoothHingeLoss::loss(float64_t z)
 {
 	if (z < 0)
 		return 0.5 - z;
@@ -19,7 +19,7 @@ float64_t CSmoothHingeLoss::loss(float64_t z)
 	return 0;
 }
 
-float64_t CSmoothHingeLoss::first_derivative(float64_t z)
+float64_t SmoothHingeLoss::first_derivative(float64_t z)
 {
 	if (z < 0)
 		return -1;
@@ -28,7 +28,7 @@ float64_t CSmoothHingeLoss::first_derivative(float64_t z)
 	return 0;
 }
 
-float64_t CSmoothHingeLoss::second_derivative(float64_t z)
+float64_t SmoothHingeLoss::second_derivative(float64_t z)
 {
 	if (z < 0)
 		return 0;
@@ -37,13 +37,13 @@ float64_t CSmoothHingeLoss::second_derivative(float64_t z)
 	return 0;
 }
 
-float64_t CSmoothHingeLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t SmoothHingeLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
 	SG_NOTIMPLEMENTED
 	return -1;
 }
 
-float64_t CSmoothHingeLoss::get_square_grad(float64_t prediction, float64_t label)
+float64_t SmoothHingeLoss::get_square_grad(float64_t prediction, float64_t label)
 {
 	SG_NOTIMPLEMENTED
 	return -1;

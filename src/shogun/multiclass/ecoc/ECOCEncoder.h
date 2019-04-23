@@ -31,14 +31,14 @@ namespace shogun
  * - -1: negative class
  * - 0: ignore this class
  */
-class CECOCEncoder: public CSGObject
+class ECOCEncoder: public SGObject
 {
 public:
     /** constructor */
-    CECOCEncoder() {}
+    ECOCEncoder() {}
 
     /** destructor */
-    virtual ~CECOCEncoder() {}
+    virtual ~ECOCEncoder() {}
 
     /** get name */
     virtual const char* get_name() const

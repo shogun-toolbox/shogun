@@ -4,24 +4,18 @@
  * Authors: Sergey Lisitsyn
  */
 
-/* These functions return new Objects */
-%newobject shogun::CTwoDistributionTest::compute_distance(CDistance*);
-%newobject shogun::CTwoDistributionTest::compute_joint_distance(CDistance*);
-%newobject shogun::CQuadraticTimeMMD::get_p_and_q();
-
-/* Remove C Prefix */
-%rename(HypothesisTest) CHypothesisTest;
-%rename(OneDistributionTest) COneDistributionTest;
-%rename(TwoDistributionTest) CTwoDistributionTest;
-%rename(IndependenceTest) CIndependenceTest;
-%rename(TwoSampleTest) CTwoSampleTest;
-%rename(MMD) CMMD;
-%rename(StreamingMMD) CStreamingMMD;
-%rename(LinearTimeMMD) CLinearTimeMMD;
-%rename(BTestMMD) CBTestMMD;
-%rename(QuadraticTimeMMD) CQuadraticTimeMMD;
-%rename(MultiKernelQuadraticTimeMMD) CMultiKernelQuadraticTimeMMD;
-%rename(KernelSelectionStrategy) CKernelSelectionStrategy;
+%shared_ptr(shogun::HypothesisTest)
+%shared_ptr(shogun::OneDistributionTest)
+%shared_ptr(shogun::TwoDistributionTest)
+%shared_ptr(shogun::IndependenceTest)
+%shared_ptr(shogun::TwoSampleTest)
+%shared_ptr(shogun::MMD)
+%shared_ptr(shogun::StreamingMMD)
+%shared_ptr(shogun::LinearTimeMMD)
+%shared_ptr(shogun::BTestMMD)
+%shared_ptr(shogun::QuadraticTimeMMD)
+%shared_ptr(shogun::MultiKernelQuadraticTimeMMD)
+%shared_ptr(shogun::KernelSelectionStrategy)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/statistical_testing/TestEnums.h>

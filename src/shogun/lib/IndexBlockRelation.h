@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-class CList;
+class List;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EIndexBlockRelationType
@@ -27,17 +27,17 @@ enum EIndexBlockRelationType
 /** @brief class IndexBlockRelation
  *
  */
-class CIndexBlockRelation : public CSGObject
+class IndexBlockRelation : public SGObject
 {
 public:
 
 	/** default constructor */
-	CIndexBlockRelation()
+	IndexBlockRelation()
 	{
 	}
 
 	/** destructor */
-	virtual ~CIndexBlockRelation()
+	virtual ~IndexBlockRelation()
 	{
 	}
 
@@ -50,7 +50,7 @@ public:
 protected:
 
 	/** check list of blocks */
-	bool check_blocks_list(CList* blocks);
+	bool check_blocks_list(std::shared_ptr<List> blocks);
 
 };
 

@@ -36,7 +36,7 @@ namespace shogun
  *
  * \sa CLPBoost
  */
-class CLPM : public CLinearMachine
+class CLPM : public LinearMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
@@ -53,13 +53,13 @@ class CLPM : public CLinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(CDotFeatures* feat)
+		virtual void set_features(DotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_SPARSE ||
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("LPM requires SPARSE REAL valued features\n")
 
-			CLinearMachine::set_features(feat);
+			LinearMachine::set_features(feat);
 		}
 
 		/** set C
@@ -91,7 +91,7 @@ class CLPM : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(Features* data=NULL);
 
 	protected:
 		float64_t C1;

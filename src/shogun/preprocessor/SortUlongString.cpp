@@ -12,22 +12,22 @@
 
 using namespace shogun;
 
-CSortUlongString::CSortUlongString()
-: CStringPreprocessor<uint64_t>()
+SortUlongString::SortUlongString()
+: StringPreprocessor<uint64_t>()
 {
 }
 
-CSortUlongString::~CSortUlongString()
+SortUlongString::~SortUlongString()
 {
 }
 
 /// clean up allocated memory
-void CSortUlongString::cleanup()
+void SortUlongString::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CSortUlongString::load(FILE* f)
+bool SortUlongString::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -35,14 +35,14 @@ bool CSortUlongString::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CSortUlongString::save(FILE* f)
+bool SortUlongString::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-void CSortUlongString::apply_to_string_list(SGStringList<uint64_t> string_list)
+void SortUlongString::apply_to_string_list(SGStringList<uint64_t> string_list)
 {
 	for (auto i : range(string_list.num_strings))
 	{
@@ -50,20 +50,20 @@ void CSortUlongString::apply_to_string_list(SGStringList<uint64_t> string_list)
 
 		SG_DEBUG("sorting string of length %i\n", vec.slen);
 
-		//CMath::qsort(vec, len);
-		CMath::radix_sort(vec.string, vec.slen);
+		//Math::qsort(vec, len);
+		Math::radix_sort(vec.string, vec.slen);
 	}
 }
 
 /// apply preproc on single feature vector
-uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
+uint64_t* SortUlongString::apply_to_string(uint64_t* f, int32_t& len)
 {
 	uint64_t* vec=SG_MALLOC(uint64_t, len);
 
 	std::copy(f, f + len, vec);
 
-	//CMath::qsort(vec, len);
-	CMath::radix_sort(vec, len);
+	//Math::qsort(vec, len);
+	Math::radix_sort(vec, len);
 
 	return vec;
 }

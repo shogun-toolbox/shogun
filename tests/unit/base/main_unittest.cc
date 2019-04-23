@@ -86,6 +86,7 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 
 	int ret = RUN_ALL_TESTS();
+
 	exit_shogun();
 
 	return ret;

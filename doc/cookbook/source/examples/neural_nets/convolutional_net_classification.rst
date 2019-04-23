@@ -17,17 +17,17 @@ See chapter 9 in :cite:`Goodfellow-et-al-2016-Book` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: convolutional_net_classification.sg:create_features
 
-We create a :sgclass:`CNeuralNetwork` instance and randomly initialize the network parameters by sampling from a gaussian distribution. We also set appropriate parameters like regularization coefficient, dropout probabilities, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`CNeuralNetwork`.
+We create a :sgclass:`NeuralNetwork` instance and randomly initialize the network parameters by sampling from a gaussian distribution. We also set appropriate parameters like regularization coefficient, dropout probabilities, learning rate, etc. as shown below. More parameters can be found in the documentation of :sgclass:`NeuralNetwork`.
 
 .. sgexample:: convolutional_net_classification.sg:set_parameters
 
 .. sgexample:: convolutional_net_classification.sg:create_instance
 
-We create instances of :sgclass:`CNeuralInputLayer`, :sgclass:`CNeuralConvolutionalLayer` and :sgclass:`NeuralSoftmaxLayer` which are building blocks of :sgclass:`CNeuralNetwork`
+We create instances of :sgclass:`NeuralInputLayer`, :sgclass:`NeuralConvolutionalLayer` and :sgclass:`NeuralSoftmaxLayer` which are building blocks of :sgclass:`NeuralNetwork`
 
 .. sgexample:: convolutional_net_classification.sg:add_layers
 

@@ -18,12 +18,12 @@ using namespace Eigen;
 
 namespace { MatrixXd cor(MatrixXd x, int tau = 0, bool mean_flag = true); };
 
-CJediSep::CJediSep() : CICAConverter()
+JediSep::JediSep() : ICAConverter()
 {
 	init();
 }
 
-void CJediSep::init()
+void JediSep::init()
 {
 	m_tau = SGVector<float64_t>(4);
 	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
@@ -33,26 +33,26 @@ void CJediSep::init()
 	SG_ADD(&m_tau, "tau", "tau vector", ParameterProperties::HYPER);
 }
 
-CJediSep::~CJediSep()
+JediSep::~JediSep()
 {
 }
 
-void CJediSep::set_tau(SGVector<float64_t> tau)
+void JediSep::set_tau(SGVector<float64_t> tau)
 {
 	m_tau = tau;
 }
 
-SGVector<float64_t> CJediSep::get_tau() const
+SGVector<float64_t> JediSep::get_tau() const
 {
 	return m_tau;
 }
 
-SGNDArray<float64_t> CJediSep::get_covs() const
+SGNDArray<float64_t> JediSep::get_covs() const
 {
 	return m_covs;
 }
 
-void CJediSep::fit_dense(CDenseFeatures<float64_t>* features)
+void JediSep::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 
@@ -76,7 +76,7 @@ void CJediSep::fit_dense(CDenseFeatures<float64_t>* features)
 	}
 
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJediDiag::diagonalize(m_covs, m_mixing_matrix, tol, max_iter);
+	SGMatrix<float64_t> Q = JediDiag::diagonalize(m_covs, m_mixing_matrix, tol, max_iter);
 	Map<MatrixXd> EQ(Q.matrix,n,n);
 
 	// Compute Mixing Matrix

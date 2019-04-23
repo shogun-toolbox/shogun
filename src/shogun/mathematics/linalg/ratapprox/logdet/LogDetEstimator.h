@@ -14,21 +14,21 @@
 
 namespace shogun
 {
-class CTraceSampler;
-template<class T> class COperatorFunction;
+class TraceSampler;
+template<class T> class OperatorFunction;
 template<class T> class SGVector;
 template<class T> class SGMatrix;
 
 /** @brief Class to create unbiased estimators of \f$log(\left|C\right|)=
  * trace(log(C))\f$. For each estimate, it samples trace vectors (one by one)
- * and calls solve of COperatorFunction, stores the resulting in
+ * and calls solve of OperatorFunction, stores the resulting in
  * a vector, then simply computes running averages over the estimates
  */
-class CLogDetEstimator : public CSGObject
+class LogDetEstimator : public SGObject
 {
 public:
 	/** Default constructor */
-	CLogDetEstimator();
+	LogDetEstimator();
 
 #ifdef HAVE_LAPACK
 	/**
@@ -36,16 +36,16 @@ public:
 	 * Eigen3 and LAPACK libraries are available.
 	 *
 	 * Uses the default configuration:
-	 * - CLanczosEigenSolver,
+	 * - LanczosEigenSolver,
 	 * - CLogRationalApproximationCGM with 1E-5 accuracy
-	 * - CCGMShiftedFamilySolver,
+	 * - CGMShiftedFamilySolver,
 	 * when COLPACK package is available then CProbingsampler with power = 1,
 	 * EOrderingVariant NATURAL, EColoringVariant DISTANCE_TWO is used,
 	 * Otherwise CNormalsampler is used.
 	 *
 	 * @param sparse_mat the input sparse matrix
 	 */
-	CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
+	LogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
 #endif
 
 	/**
@@ -54,12 +54,12 @@ public:
 	 * @param trace_sampler the trace sampler
 	 * @param operator_log the operator function
 	 */
-	CLogDetEstimator(
-		CTraceSampler* trace_sampler,
-		COperatorFunction<float64_t>* operator_log);
+	LogDetEstimator(
+		std::shared_ptr<TraceSampler> trace_sampler,
+		std::shared_ptr<OperatorFunction<float64_t>> operator_log);
 
 	/** Destructor */
-	virtual ~CLogDetEstimator();
+	virtual ~LogDetEstimator();
 
 	/**
 	 * Method that gives num_estimates number of log-det estimates with running
@@ -86,17 +86,17 @@ public:
 	}
 
 	/** @return trace sampler */
-	CTraceSampler* get_trace_sampler(void) const;
+	std::shared_ptr<TraceSampler> get_trace_sampler(void) const;
 
 	/** @return operator function */
-	COperatorFunction<float64_t>* get_operator_function(void) const;
+	std::shared_ptr<OperatorFunction<float64_t>> get_operator_function(void) const;
 
 private:
 	/** the trace sampler */
-	CTraceSampler* m_trace_sampler;
+	std::shared_ptr<TraceSampler> m_trace_sampler;
 
 	/** the linear operator function, which is log in this case */
-	COperatorFunction<float64_t>* m_operator_log;
+	std::shared_ptr<OperatorFunction<float64_t>> m_operator_log;
 
 	/** initialize with default values and register params */
 	void init();

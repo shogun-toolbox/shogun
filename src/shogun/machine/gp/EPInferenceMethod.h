@@ -50,11 +50,11 @@ namespace shogun
  * Approximate Bayesian Inference. PhD thesis, Massachusetts Institute of
  * Technology
  */
-class CEPInferenceMethod : public RandomMixin<CInference>
+class EPInferenceMethod : public RandomMixin<Inference>
 {
 public:
 	/** default constructor */
-	CEPInferenceMethod();
+	EPInferenceMethod();
 
 	/** constructor
 	 *
@@ -64,10 +64,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CEPInferenceMethod(CKernel* kernel, CFeatures* features, CMeanFunction* mean,
-			CLabels* labels, CLikelihoodModel* model);
+	EPInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features, std::shared_ptr<MeanFunction> mean,
+			std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CEPInferenceMethod();
+	virtual ~EPInferenceMethod();
 
 	/** return what type of inference we are
 	 *
@@ -84,9 +84,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CEPInferenceMethod object
+	 * @return casted EPInferenceMethod object
 	 */
-	static CEPInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<EPInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *
@@ -250,7 +250,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 	/** Specify behavious when EP does not converge: failure or warning
 	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning

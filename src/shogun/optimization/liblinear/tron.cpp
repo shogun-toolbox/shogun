@@ -58,19 +58,19 @@ void tron_daxpy(const int N, const double alpha, const double *X, const int incX
 #endif
 }
 
-CTron::CTron(const function *f, float64_t e, int32_t it)
-: CSGObject()
+Tron::Tron(const function *f, float64_t e, int32_t it)
+: SGObject()
 {
 	this->fun_obj=const_cast<function *>(f);
 	this->eps=e;
 	this->max_iter=it;
 }
 
-CTron::~CTron()
+Tron::~Tron()
 {
 }
 
-void CTron::tron(float64_t *w, float64_t max_train_time)
+void Tron::tron(float64_t *w, float64_t max_train_time)
 {
 	// Parameters for updating the iterates.
 	float64_t eta0 = 1e-4, eta1 = 0.25, eta2 = 0.75;
@@ -104,11 +104,11 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	iter = 1;
 
-	CTime start_time;
+	Time start_time;
 	auto pb = SG_PROGRESS(range(10));
 
 	// TODO: replace with new signal
-	// while (iter <= max_iter && search && (!CSignal::cancel_computations()))
+	// while (iter <= max_iter && search && (!Signal::cancel_computations()))
 	while (iter <= max_iter && search)
 	{
 		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
@@ -129,23 +129,23 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		// On the first iteration, adjust the initial step bound.
 		snorm = tron_dnrm2(n, s, inc);
 		if (iter == 1)
-			delta = CMath::min(delta, snorm);
+			delta = Math::min(delta, snorm);
 
 		// Compute prediction alpha*snorm of the step.
 		if (fnew - f - gs <= 0)
 			alpha = sigma3;
 		else
-			alpha = CMath::max(sigma1, -0.5*(gs/(fnew - f - gs)));
+			alpha = Math::max(sigma1, -0.5*(gs/(fnew - f - gs)));
 
 		// Update the trust region bound according to the ratio of actual to predicted reduction.
 		if (actred < eta0*prered)
-			delta = CMath::min(CMath::max(alpha, sigma1)*snorm, sigma2*delta);
+			delta = Math::min(Math::max(alpha, sigma1)*snorm, sigma2*delta);
 		else if (actred < eta1*prered)
-			delta = CMath::max(sigma1*delta, CMath::min(alpha*snorm, sigma2*delta));
+			delta = Math::max(sigma1*delta, Math::min(alpha*snorm, sigma2*delta));
 		else if (actred < eta2*prered)
-			delta = CMath::max(sigma1*delta, CMath::min(alpha*snorm, sigma3*delta));
+			delta = Math::max(sigma1*delta, Math::min(alpha*snorm, sigma3*delta));
 		else
-			delta = CMath::max(delta, CMath::min(alpha*snorm, sigma3*delta));
+			delta = Math::max(delta, Math::min(alpha*snorm, sigma3*delta));
 
 		SG_INFO("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d\n", iter, actred, prered, delta, f, gnorm, cg_iter)
 
@@ -160,21 +160,21 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 			if (gnorm < eps*gnorm1)
 				break;
 			pb.print_absolute(
-			    gnorm, -CMath::log10(gnorm), -CMath::log10(1),
-			    -CMath::log10(eps * gnorm1));
+			    gnorm, -Math::log10(gnorm), -Math::log10(1),
+			    -Math::log10(eps * gnorm1));
 		}
 		if (f < -1.0e+32)
 		{
 			SG_WARNING("f < -1.0e+32\n")
 			break;
 		}
-		if (CMath::abs(actred) <= 0 && CMath::abs(prered) <= 0)
+		if (Math::abs(actred) <= 0 && Math::abs(prered) <= 0)
 		{
 			SG_WARNING("actred and prered <= 0\n")
 			break;
 		}
-		if (CMath::abs(actred) <= 1.0e-12*CMath::abs(f) &&
-		    CMath::abs(prered) <= 1.0e-12*CMath::abs(f))
+		if (Math::abs(actred) <= 1.0e-12*Math::abs(f) &&
+		    Math::abs(prered) <= 1.0e-12*Math::abs(f))
 		{
 			SG_WARNING("actred and prered too small\n")
 			break;
@@ -189,7 +189,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 	SG_FREE(s);
 }
 
-int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
+int32_t Tron::trcg(float64_t delta, double* g, double* s, double* r)
 {
 	/* calling external lib */
 	int i, cg_iter;
@@ -254,11 +254,11 @@ int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 	return(cg_iter);
 }
 
-float64_t CTron::norm_inf(int32_t n, float64_t *x)
+float64_t Tron::norm_inf(int32_t n, float64_t *x)
 {
-	float64_t dmax = CMath::abs(x[0]);
+	float64_t dmax = Math::abs(x[0]);
 	for (int32_t i=1; i<n; i++)
-		if (CMath::abs(x[i]) >= dmax)
-			dmax = CMath::abs(x[i]);
+		if (Math::abs(x[i]) >= dmax)
+			dmax = Math::abs(x[i]);
 	return(dmax);
 }

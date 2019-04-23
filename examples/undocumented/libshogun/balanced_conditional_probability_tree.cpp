@@ -19,13 +19,11 @@ int main(int argc, char **argv)
 
 	const char* train_file_name = "../data/7class_example4_train.dense";
 	const char* test_file_name = "../data/7class_example4_test.dense";
-	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
-	SG_REF(train_file);
+	auto train_file = std::make_shared<StreamingAsciiFile>(train_file_name);
 
-	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
-	SG_REF(train_features);
+	auto train_features = std::make_shared<StreamingDenseFeatures<float32_t>>(train_file, true, 1024);
 
-	CBalancedConditionalProbabilityTree *cpt = new CBalancedConditionalProbabilityTree();
+	auto cpt = std::make_shared<BalancedConditionalProbabilityTree>();
 	cpt->set_num_passes(1);
 	cpt->set_features(train_features);
 
@@ -38,26 +36,18 @@ int main(int argc, char **argv)
 	}
 
 	cpt->train();
-	cpt->print_tree();
 
-	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
-	CStreamingDenseFeatures<float32_t>* test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
-	SG_REF(test_features);
+	auto test_file = std::make_shared<StreamingAsciiFile>(test_file_name);
+	auto test_features = std::make_shared<StreamingDenseFeatures<float32_t>>(test_file, true, 1024);
 
-	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
+	auto pred = cpt->apply_multiclass(test_features);
 	test_features->reset_stream();
 	SG_SPRINT("num_labels = %d\n", pred->get_num_labels());
 
-	SG_UNREF(test_features);
-	SG_UNREF(test_file);
-	test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
-	test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
-	SG_REF(test_features);
+	test_file = std::make_shared<StreamingAsciiFile>(test_file_name);
+	test_features = std::make_shared<StreamingDenseFeatures<float32_t>>(test_file, true, 1024);
 
-	CMulticlassLabels *gnd = new CMulticlassLabels(pred->get_num_labels());
-	SG_REF(gnd);
+	auto gnd = std::make_shared<MulticlassLabels>(pred->get_num_labels());
 	test_features->start_parser();
 	for (int32_t i=0; i < pred->get_num_labels(); ++i)
 	{
@@ -77,14 +67,6 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n");
 
 	SG_SPRINT("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
-
-	SG_UNREF(gnd);
-	SG_UNREF(train_features);
-	SG_UNREF(test_features);
-	SG_UNREF(train_file);
-	SG_UNREF(test_file);
-	SG_UNREF(cpt);
-	SG_UNREF(pred);
 
 	exit_shogun();
 

@@ -31,7 +31,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
@@ -50,7 +49,7 @@
 namespace shogun
 {
 
-class CTwoDistributionTestMock : public CTwoDistributionTest
+class TwoDistributionTestMock : public TwoDistributionTest
 {
 public:
 	MOCK_METHOD0(compute_statistic, float64_t());
@@ -74,23 +73,23 @@ TEST(MultiKernelMMD, biased_full)
 	const index_t num_kernels=10;
 	const EStatisticType stype=ST_BIASED_FULL;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto test=some<CTwoDistributionTestMock>();
+	auto test=std::make_shared<TwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
 	KernelManager kernel_mgr(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+		kernel_mgr.kernel_at(i)=std::make_shared<GaussianKernel>(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	auto precomputed_distance=test->compute_joint_distance(distance);
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	SG_UNREF(distance);
+
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -98,20 +97,20 @@ TEST(MultiKernelMMD, biased_full)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
-	SG_UNREF(precomputed_distance);
 
-	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
-	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
+
+	auto data_p=feats_p->as<DenseFeatures<float64_t>>()->get_feature_matrix();
+	auto data_q=feats_q->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=new CDenseFeatures<float64_t>(data_p_and_q);
-	SG_REF(feats_p_and_q);
+	auto feats_p_and_q=std::make_shared<DenseFeatures<float64_t>>(data_p_and_q);
+
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(i);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
 		SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 		Map<MatrixXd> map(km.data(), km.num_rows, km.num_cols);
@@ -124,7 +123,7 @@ TEST(MultiKernelMMD, biased_full)
 		ref[i]=term_0+term_1-2*term_2;
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(feats_p_and_q);
+
 
 	ASSERT_EQ(ref.size(), values.size());
 	for (auto i=0; i<ref.size(); ++i)
@@ -142,23 +141,23 @@ TEST(MultiKernelMMD, unbiased_full)
 	const index_t num_kernels=10;
 	const EStatisticType stype=ST_UNBIASED_FULL;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto test=some<CTwoDistributionTestMock>();
+	auto test=std::make_shared<TwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
 	KernelManager kernel_mgr(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+		kernel_mgr.kernel_at(i)=std::make_shared<GaussianKernel>(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	auto precomputed_distance=test->compute_joint_distance(distance);
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	SG_UNREF(distance);
+
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -166,20 +165,20 @@ TEST(MultiKernelMMD, unbiased_full)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
-	SG_UNREF(precomputed_distance);
 
-	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
-	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
+
+	auto data_p=feats_p->as<DenseFeatures<float64_t>>()->get_feature_matrix();
+	auto data_q=feats_q->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=new CDenseFeatures<float64_t>(data_p_and_q);
-	SG_REF(feats_p_and_q);
+	auto feats_p_and_q=std::make_shared<DenseFeatures<float64_t>>(data_p_and_q);
+
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(i);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
 		SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 		Map<MatrixXd> map(km.data(), km.num_rows, km.num_cols);
@@ -192,7 +191,7 @@ TEST(MultiKernelMMD, unbiased_full)
 		ref[i]=term_0+term_1-2*term_2;
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(feats_p_and_q);
+
 
 	ASSERT_EQ(ref.size(), values.size());
 	for (auto i=0; i<ref.size(); ++i)
@@ -210,23 +209,23 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	const index_t num_kernels=10;
 	const EStatisticType stype=ST_UNBIASED_INCOMPLETE;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto test=some<CTwoDistributionTestMock>();
+	auto test=std::make_shared<TwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
 	KernelManager kernel_mgr(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+		kernel_mgr.kernel_at(i)=std::make_shared<GaussianKernel>(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	auto precomputed_distance=test->compute_joint_distance(distance);
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
-	SG_UNREF(distance);
+
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -234,20 +233,20 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
-	SG_UNREF(precomputed_distance);
 
-	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
-	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
+
+	auto data_p=feats_p->as<DenseFeatures<float64_t>>()->get_feature_matrix();
+	auto data_q=feats_q->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=new CDenseFeatures<float64_t>(data_p_and_q);
-	SG_REF(feats_p_and_q);
+	auto feats_p_and_q=std::make_shared<DenseFeatures<float64_t>>(data_p_and_q);
+
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
 	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(i);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
 		SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 		Map<MatrixXd> map(km.data(), km.num_rows, km.num_cols);
@@ -260,7 +259,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 		ref[i]=term_0+term_1-2*term_2;
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(feats_p_and_q);
+
 
 	ASSERT_EQ(ref.size(), values.size());
 	for (auto i=0; i<ref.size(); ++i)

@@ -36,8 +36,8 @@ public:
 	SGVector<float64_t>* W;
 	SGVector<float64_t>* f;
 	SGVector<float64_t>* m;
-	CLikelihoodModel* lik;
-	CLabels* lab;
+	std::shared_ptr<LikelihoodModel> lik;
+	std::shared_ptr<Labels> lab;
 
 	virtual double operator() (double x)
 	{
@@ -65,16 +65,16 @@ public:
 
 class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
-public: 
+public:
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CSingleLaplaceInferenceMethod *obj)
+	virtual ~SingleLaplaceInferenceMethodCostFunction() {  }
+	void set_target(std::shared_ptr<SingleLaplaceInferenceMethod >obj)
 	{
 		REQUIRE(obj, "Obj must set\n");
 		if(m_obj != obj)
 		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+
+
 			m_obj=obj;
 		}
 	}
@@ -82,14 +82,6 @@ public:
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		return m_obj->get_psi_wrt_alpha();
-	}
-	void unset_target(bool is_unref)
-	{
-		if(is_unref)
-		{
-			SG_UNREF(m_obj);
-		}
-		m_obj=NULL;
 	}
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
@@ -111,39 +103,39 @@ private:
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "SingleLaplaceInferenceMethodCostFunction__m_derivatives",
 			"derivatives in SingleLaplaceInferenceMethodCostFunction");
-		SG_ADD((CSGObject **)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<SGObject>*)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
 			"obj in SingleLaplaceInferenceMethodCostFunction");
 
 	}
 
 	SGVector<float64_t> m_derivatives;
-	CSingleLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<SingleLaplaceInferenceMethod >m_obj;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 
-void CSingleLaplaceNewtonOptimizer::set_target(CSingleLaplaceInferenceMethod *obj)
+void SingleLaplaceNewtonOptimizer::set_target(std::shared_ptr<SingleLaplaceInferenceMethod >obj)
 {
 	REQUIRE(obj, "Obj must set\n");
 	if(m_obj != obj)
 	{
-		SG_REF(obj);
-		SG_UNREF(m_obj);
+
+
 		m_obj=obj;
 	}
 }
 
-void CSingleLaplaceNewtonOptimizer::unset_target(bool is_unref)
+void SingleLaplaceNewtonOptimizer::unset_target(bool is_unref)
 {
 	if(is_unref)
 	{
-		SG_UNREF(m_obj);
+
 	}
 	m_obj=NULL;
 
 }
 
-void CSingleLaplaceNewtonOptimizer::init()
+void SingleLaplaceNewtonOptimizer::init()
 {
 	m_obj=NULL;
 	m_iter=20;
@@ -151,7 +143,7 @@ void CSingleLaplaceNewtonOptimizer::init()
 	m_opt_tolerance=1e-6;
 	m_opt_max=10;
 
-	SG_ADD((CSGObject **)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
 		"obj in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_iter, "CSingleLaplaceNewtonOptimizer__m_iter",
 		"iter in CSingleLaplaceNewtonOptimizer");
@@ -163,10 +155,10 @@ void CSingleLaplaceNewtonOptimizer::init()
 		"opt_max in CSingleLaplaceNewtonOptimizer");
 }
 
-float64_t CSingleLaplaceNewtonOptimizer::minimize()
+float64_t SingleLaplaceNewtonOptimizer::minimize()
 {
 	REQUIRE(m_obj,"Object not set\n");
-	float64_t Psi_Old=CMath::INFTY;
+	float64_t Psi_Old=Math::INFTY;
 	float64_t Psi_New=m_obj->m_Psi;
 
 	// get mean vector and create eigen representation of it
@@ -209,7 +201,7 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 
 			if (m_obj->m_model->get_model_type()==LT_STUDENTST)
 			{
-				CStudentsTLikelihood* lik = m_obj->m_model->as<CStudentsTLikelihood>();
+				auto lik = m_obj->m_model->as<StudentsTLikelihood>();
 				df=lik->get_degrees_freedom();
 			}
 			else
@@ -268,29 +260,29 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 	return Psi_New;
 }
 
-CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod() : CLaplaceInference()
+SingleLaplaceInferenceMethod::SingleLaplaceInferenceMethod() : LaplaceInference()
 {
 	init();
 }
 
-CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CLaplaceInference(kern, feat, m, lab, mod)
+SingleLaplaceInferenceMethod::SingleLaplaceInferenceMethod(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: LaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CSingleLaplaceInferenceMethod::init()
+void SingleLaplaceInferenceMethod::init()
 {
 	m_Psi=0;
 	SG_ADD(&m_Psi, "Psi", "posterior log likelihood without constant terms");
 	SG_ADD(&m_sW, "sW", "square root of W");
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location");
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location");
-	register_minimizer(new CSingleLaplaceNewtonOptimizer());
+	register_minimizer(std::make_shared<SingleLaplaceNewtonOptimizer>());
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -298,24 +290,24 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-CSingleLaplaceInferenceMethod* CSingleLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<SingleLaplaceInferenceMethod> SingleLaplaceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACE_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleLaplaceInferenceMethod\n")
+		SG_SERROR("Provided inference is not of type SingleLaplaceInferenceMethod\n")
 
-	SG_REF(inference);
-	return (CSingleLaplaceInferenceMethod*)inference;
+
+	return inference->as<SingleLaplaceInferenceMethod>();
 }
 
-CSingleLaplaceInferenceMethod::~CSingleLaplaceInferenceMethod()
+SingleLaplaceInferenceMethod::~SingleLaplaceInferenceMethod()
 {
 }
 
-float64_t CSingleLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t SingleLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -357,7 +349,7 @@ float64_t CSingleLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 	return result;
 }
 
-void CSingleLaplaceInferenceMethod::update_approx_cov()
+void SingleLaplaceInferenceMethod::update_approx_cov()
 {
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -378,7 +370,7 @@ void CSingleLaplaceInferenceMethod::update_approx_cov()
 		eigen_K * std::exp(m_log_scale * 2.0) - eigen_V.adjoint() * eigen_V;
 }
 
-void CSingleLaplaceInferenceMethod::update_chol()
+void SingleLaplaceInferenceMethod::update_chol()
 {
 	// get log probability derivatives
 	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
@@ -431,11 +423,11 @@ void CSingleLaplaceInferenceMethod::update_chol()
 	}
 }
 
-void CSingleLaplaceInferenceMethod::update()
+void SingleLaplaceInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInference::update();
+	Inference::update();
 	update_init();
 	update_alpha();
 	update_chol();
@@ -446,7 +438,7 @@ void CSingleLaplaceInferenceMethod::update()
 }
 
 
-void CSingleLaplaceInferenceMethod::update_init()
+void SingleLaplaceInferenceMethod::update_init()
 {
 	float64_t Psi_New;
 	float64_t Psi_Def;
@@ -498,43 +490,37 @@ void CSingleLaplaceInferenceMethod::update_init()
 }
 
 
-void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
+void SingleLaplaceInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	if (!dynamic_cast<CSingleLaplaceNewtonOptimizer*>(minimizer))
+	if (!std::dynamic_pointer_cast<SingleLaplaceNewtonOptimizer>(minimizer))
 	{
-		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+		auto opt= std::dynamic_pointer_cast<FirstOrderMinimizer>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
 	}
-	CInference::register_minimizer(minimizer);
+	Inference::register_minimizer(minimizer);
 }
 
-void CSingleLaplaceInferenceMethod::update_alpha()
+void SingleLaplaceInferenceMethod::update_alpha()
 {
-	CSingleLaplaceNewtonOptimizer *opt=dynamic_cast<CSingleLaplaceNewtonOptimizer*>(m_minimizer);
+	auto opt=std::dynamic_pointer_cast<SingleLaplaceNewtonOptimizer>(m_minimizer);
 	bool cleanup=false;
 	if (opt)
 	{
-		opt->set_target(this);
-		if(this->ref_count()>1)
-			cleanup=true;
+		opt->set_target(shared_from_this()->as<SingleLaplaceInferenceMethod>());
 		opt->minimize();
-		opt->unset_target(cleanup);
 	}
 	else
 	{
-		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+		auto minimizer= std::dynamic_pointer_cast<FirstOrderMinimizer>(m_minimizer);
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
 #ifdef USE_GPL_SHOGUN
-		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
-		cost_fun->set_target(this);
-		if(this->ref_count()>1)
-			cleanup=true;
+		auto cost_fun=std::make_shared<SingleLaplaceInferenceMethodCostFunction>();
+		cost_fun->set_target(shared_from_this()->as<SingleLaplaceInferenceMethod>());
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function(false);
-		cost_fun->unset_target(cleanup);
-		SG_UNREF(cost_fun);
+
 #else
 		SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -554,7 +540,7 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 		eigen_ktrtr * std::exp(m_log_scale * 2.0) * eigen_alpha + eigen_mean;
 }
 
-void CSingleLaplaceInferenceMethod::update_deriv()
+void SingleLaplaceInferenceMethod::update_deriv()
 {
 	// create eigen representation of W, sW, dlp, d3lp, K, alpha and L
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
@@ -615,7 +601,7 @@ void CSingleLaplaceInferenceMethod::update_deriv()
 	eigen_dfhat=eigen_g.cwiseProduct(eigen_d3lp);
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_inference_method(
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
@@ -648,7 +634,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_inference_
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, g and dfhat
@@ -683,7 +669,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_likelihood
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
@@ -727,7 +713,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
@@ -763,7 +749,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplaceInferenceMethod::get_posterior_mean()
+SGVector<float64_t> SingleLaplaceInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 
@@ -779,7 +765,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_posterior_mean()
 }
 
 
-float64_t CSingleLaplaceInferenceMethod::get_psi_wrt_alpha()
+float64_t SingleLaplaceInferenceMethod::get_psi_wrt_alpha()
 {
 	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	SGVector<float64_t> f(m_alpha.vlen);
@@ -799,7 +785,7 @@ float64_t CSingleLaplaceInferenceMethod::get_psi_wrt_alpha()
 	return psi;
 }
 
-void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
+void SingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
@@ -820,7 +806,7 @@ void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> g
 		kernel * ((eigen_alpha)*std::exp(m_log_scale * 2.0)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
-		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 

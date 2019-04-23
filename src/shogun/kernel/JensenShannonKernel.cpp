@@ -11,44 +11,44 @@
 
 using namespace shogun;
 
-CJensenShannonKernel::CJensenShannonKernel()
-: CDotKernel(0)
+JensenShannonKernel::JensenShannonKernel()
+: DotKernel(0)
 {
 }
 
-CJensenShannonKernel::CJensenShannonKernel(int32_t size)
-: CDotKernel(size)
+JensenShannonKernel::JensenShannonKernel(int32_t size)
+: DotKernel(size)
 {
 }
 
-CJensenShannonKernel::CJensenShannonKernel(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t size)
-: CDotKernel(size)
+JensenShannonKernel::JensenShannonKernel(
+	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t size)
+: DotKernel(size)
 {
 	init(l,r);
 }
 
-CJensenShannonKernel::~CJensenShannonKernel()
+JensenShannonKernel::~JensenShannonKernel()
 {
 	cleanup();
 }
 
-bool CJensenShannonKernel::init(CFeatures* l, CFeatures* r)
+bool JensenShannonKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result=CDotKernel::init(l,r);
+	bool result=DotKernel::init(l,r);
 	init_normalizer();
 	return result;
 }
 
-float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t JensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result=0;
@@ -58,15 +58,15 @@ float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 		float64_t a_i = 0, b_i = 0;
 		float64_t ab = avec[i]+bvec[i];
 		if (avec[i] != 0)
-			a_i = avec[i] * CMath::log2(ab/avec[i]);
+			a_i = avec[i] * Math::log2(ab/avec[i]);
 		if (bvec[i] != 0)
-			b_i = bvec[i] * CMath::log2(ab/bvec[i]);
+			b_i = bvec[i] * Math::log2(ab/bvec[i]);
 
 		result += 0.5*(a_i + b_i);
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

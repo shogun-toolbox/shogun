@@ -571,7 +571,7 @@ namespace shogun
 		void
 		add_diag(SGMatrix<T>& A, const SGVector<T>& b, T alpha = 1, T beta = 1)
 		{
-			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
+			auto diagonal_len = Math::min(A.num_cols, A.num_rows);
 			REQUIRE(
 			    diagonal_len == b.vlen, "Length of main diagonal of matrix A "
 			                            "(%d) doesn't match length of vector b "
@@ -593,7 +593,7 @@ namespace shogun
 		template <typename T>
 		void add_ridge(SGMatrix<T>& A, T beta)
 		{
-			auto diagonal_len = CMath::min(A.num_cols, A.num_rows);
+			auto diagonal_len = Math::min(A.num_cols, A.num_rows);
 			REQUIRE(diagonal_len > 0, "Matrix can't be empty.\n");
 			infer_backend(A)->add_ridge(A, beta);
 		}
@@ -1870,7 +1870,7 @@ namespace shogun
 		    bool thin_U = true,
 		    SVDAlgorithm alg = SVDAlgorithm::BidiagonalDivideConquer)
 		{
-			auto r = CMath::min(A.num_cols, A.num_rows);
+			auto r = Math::min(A.num_cols, A.num_rows);
 			REQUIRE(
 			    (A.num_rows == U.num_rows),
 			    "Number of rows of matrix A (%d) must match matrix U (%d).\n",

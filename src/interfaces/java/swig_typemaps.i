@@ -653,7 +653,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	for (i = 0; i < size; i++) {
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
 		len = JCALL1(GetArrayLength, jenv, jarr);
-		max_len = shogun::CMath::max(len, max_len);
+		max_len = shogun::Math::max(len, max_len);
 
 		strings[i].slen=len;
 		strings[i].string=NULL;
@@ -745,7 +745,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "[D")
 		jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
 
 		len = JCALL1(GetStringUTFLength, jenv, jstr);
-		max_len = shogun::CMath::max(len, max_len);
+		max_len = shogun::Math::max(len, max_len);
 		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
 
 		strings[i].slen = len;

@@ -70,7 +70,7 @@ public:
 	 *
 	 * @param correction the type of descend correction
 	 */
-	virtual void set_descend_correction(DescendCorrection* correction);
+	virtual void set_descend_correction(std::shared_ptr<DescendCorrection> correction);
 
 	/** Do we enable descend correction?
 	 *
@@ -96,7 +96,7 @@ protected:
 		float64_t raw_negative_descend_direction, index_t idx, float64_t learning_rate)=0;
 
 	/** descend correction object */
-	DescendCorrection* m_correction;
+	std::shared_ptr<DescendCorrection> m_correction;
 
 private:
 	/**  Init */

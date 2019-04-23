@@ -38,43 +38,43 @@
 using namespace shogun;
 using namespace internal;
 
-struct CHypothesisTest::Self
+struct HypothesisTest::Self
 {
 	explicit Self(index_t num_distributions);
 	DataManager data_mgr;
 };
 
-CHypothesisTest::Self::Self(index_t num_distributions) : data_mgr(num_distributions)
+HypothesisTest::Self::Self(index_t num_distributions) : data_mgr(num_distributions)
 {
 }
 
-CHypothesisTest::CHypothesisTest()
+HypothesisTest::HypothesisTest()
 {
 	SG_WARNING("An empty instance of this class should not be used! If you are seeing \
 			this error, please contact Shogun developers!\n");
 }
 
-CHypothesisTest::CHypothesisTest(index_t num_distributions) : CSGObject()
+HypothesisTest::HypothesisTest(index_t num_distributions) : SGObject()
 {
-	self=std::unique_ptr<Self>(new CHypothesisTest::Self(num_distributions));
+	self=std::unique_ptr<Self>(new HypothesisTest::Self(num_distributions));
 }
 
-CHypothesisTest::~CHypothesisTest()
+HypothesisTest::~HypothesisTest()
 {
 }
 
-void CHypothesisTest::set_train_test_mode(bool on)
+void HypothesisTest::set_train_test_mode(bool on)
 {
 	self->data_mgr.set_train_test_mode(on);
 }
 
-void CHypothesisTest::set_train_test_ratio(float64_t ratio)
+void HypothesisTest::set_train_test_ratio(float64_t ratio)
 {
 	self->data_mgr.set_train_test_ratio(ratio);
 	self->data_mgr.reset();
 }
 
-float64_t CHypothesisTest::compute_p_value(float64_t statistic)
+float64_t HypothesisTest::compute_p_value(float64_t statistic)
 {
 	SGVector<float64_t> values=sample_null();
 	std::sort(values.vector, values.vector + values.vlen);
@@ -82,31 +82,31 @@ float64_t CHypothesisTest::compute_p_value(float64_t statistic)
 	return 1.0-i/values.vlen;
 }
 
-float64_t CHypothesisTest::compute_threshold(float64_t alpha)
+float64_t HypothesisTest::compute_threshold(float64_t alpha)
 {
 	SGVector<float64_t> values=sample_null();
 	std::sort(values.vector, values.vector + values.vlen);
-	return values[index_t(CMath::floor(values.vlen*(1-alpha)))];
+	return values[index_t(Math::floor(values.vlen*(1-alpha)))];
 }
 
-bool CHypothesisTest::perform_test(float64_t alpha)
+bool HypothesisTest::perform_test(float64_t alpha)
 {
 	auto statistic=compute_statistic();
 	auto p_value=compute_p_value(statistic);
 	return p_value<alpha;
 }
 
-const char* CHypothesisTest::get_name() const
+const char* HypothesisTest::get_name() const
 {
 	return "HypothesisTest";
 }
 
-DataManager& CHypothesisTest::get_data_mgr()
+DataManager& HypothesisTest::get_data_mgr()
 {
 	return self->data_mgr;
 }
 
-const DataManager& CHypothesisTest::get_data_mgr() const
+const DataManager& HypothesisTest::get_data_mgr() const
 {
 	return self->data_mgr;
 }

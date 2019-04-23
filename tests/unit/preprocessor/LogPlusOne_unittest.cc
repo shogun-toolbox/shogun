@@ -18,11 +18,11 @@ TEST(LogPlusOne, transform)
 	SGMatrix<float64_t> orig(data, num_features, num_vectors, false);
 	SGMatrix<float64_t> m = orig.clone();
 
-	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
-	CLogPlusOne* preproc = new CLogPlusOne();
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(m);
+	auto preproc = std::make_shared<LogPlusOne>();
 	preproc->fit(feats);
 
-	feats = preproc->transform(feats)->as<CDenseFeatures<float64_t>>();
+	feats = preproc->transform(feats)->as<DenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{
@@ -34,5 +34,5 @@ TEST(LogPlusOne, transform)
 		}
 	}
 
-	SG_UNREF(feats);
+
 }

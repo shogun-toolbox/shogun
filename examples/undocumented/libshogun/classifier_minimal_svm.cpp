@@ -24,20 +24,20 @@ int main(int argc, char** argv)
 
 	// create three 2-dimensional vectors
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	auto features= std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// create three labels
-	CBinaryLabels* labels=new CBinaryLabels(3);
+	auto labels=std::make_shared<BinaryLabels>(3);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
 
 	// create gaussian kernel with cache 10MB, width 0.5
-	CGaussianKernel* kernel = new CGaussianKernel(10, 0.5);
+	auto kernel = std::make_shared<GaussianKernel>(10, 0.5);
 	kernel->init(features, features);
 
 	// create libsvm with C=10 and train
-	CLibSVM* svm = new CLibSVM(10, kernel, labels);
+	auto svm = std::make_shared<LibSVM>(10, kernel, labels);
 	svm->train();
 
 	// classify on training examples
@@ -45,7 +45,6 @@ int main(int argc, char** argv)
 		SG_SPRINT("output[%d]=%f\n", i, svm->apply_one(i));
 
 	// free up memory
-	SG_UNREF(svm);
 
 	exit_shogun();
 	return 0;

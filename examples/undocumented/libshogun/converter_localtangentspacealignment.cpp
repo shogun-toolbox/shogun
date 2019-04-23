@@ -23,16 +23,12 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
+	DenseFeatures<double>* features = new DenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	CLocalTangentSpaceAlignment* ltsa = new CLocalTangentSpaceAlignment();
 	ltsa->set_target_dim(2);
 	ltsa->set_k(4);
 	ltsa->parallel->set_num_threads(4);
 	auto embedding = ltsa->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(ltsa);
-	SG_UNREF(features);
 	exit_shogun();
 	return 0;
 }

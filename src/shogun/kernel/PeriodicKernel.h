@@ -35,7 +35,7 @@
 
 namespace shogun
 {
-	class CDotFeatures;
+	class DotFeatures;
 
 /** @brief The periodic kernel as described in <i>The Kernel Cookbook</i>
  * by David Duvenaud: http://people.seas.harvard.edu/~dduvenaud/cookbook/
@@ -50,11 +50,11 @@ namespace shogun
  * of the kernel.
  */
 
-class CPeriodicKernel: public CDotKernel
+class PeriodicKernel: public DotKernel
 {
 	public:
 		/** default constructor */
-		CPeriodicKernel();
+		PeriodicKernel();
 
 		/** constructor
 		 *
@@ -62,7 +62,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param period period
 		 * @param size cache size. Default value: 10
 		 */
-		CPeriodicKernel(float64_t length_scale, float64_t period, int32_t size=10);
+		PeriodicKernel(float64_t length_scale, float64_t period, int32_t size=10);
 
 		/** constructor
 		 *
@@ -72,10 +72,10 @@ class CPeriodicKernel: public CDotKernel
 		 * @param period period
 		 * @param size cache size. Default value: 10
 		 */
-		CPeriodicKernel(CDotFeatures* l, CDotFeatures* r,
+		PeriodicKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
 			float64_t length_scale, float64_t period, int32_t size=10);
 
-		virtual ~CPeriodicKernel() { };
+		virtual ~PeriodicKernel() { };
 
 		/** initialize kernel
 		 *
@@ -83,7 +83,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *
@@ -152,9 +152,9 @@ class CPeriodicKernel: public CDotKernel
 		 * @return computed the distance
 		 *
 		 * Note that this function is very similar the distance function in
-		 * CGaussianKernel. However, this function computes the standard
+		 * GaussianKernel. However, this function computes the standard
 		 * euclidean distance without any factors or squaring, unlike the one
-		 * in CGaussianKernel.
+		 * in GaussianKernel.
 		 */
 		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 	private:
@@ -169,7 +169,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param buf buffer to store squared terms
 		 * @param df dot feature object based on which k(i,i) is computed
 		 * */
-		void precompute_squared_helper(SGVector<float64_t>& buf, CDotFeatures* df);
+		void precompute_squared_helper(SGVector<float64_t>& buf, std::shared_ptr<DotFeatures> df);
 
 		void init();
 

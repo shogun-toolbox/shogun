@@ -12,33 +12,33 @@
 
 using namespace shogun;
 
-CSparseSpatialSampleStringKernel::CSparseSpatialSampleStringKernel()
-: CStringKernel<char>(0), t(2), d(5)
+SparseSpatialSampleStringKernel::SparseSpatialSampleStringKernel()
+: StringKernel<char>(0), t(2), d(5)
 {
 }
 
-CSparseSpatialSampleStringKernel::CSparseSpatialSampleStringKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r) : CStringKernel<char>(0), t(2), d(5)
+SparseSpatialSampleStringKernel::SparseSpatialSampleStringKernel(std::shared_ptr<StringFeatures<char>> l,
+		std::shared_ptr<StringFeatures<char>> r) : StringKernel<char>(0), t(2), d(5)
 {
 	init(l, r);
 }
 
-bool CSparseSpatialSampleStringKernel::init(CFeatures* l, CFeatures* r)
+bool SparseSpatialSampleStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CSparseSpatialSampleStringKernel::cleanup()
+void SparseSpatialSampleStringKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-CSparseSpatialSampleStringKernel::~CSparseSpatialSampleStringKernel()
+SparseSpatialSampleStringKernel::~SparseSpatialSampleStringKernel()
 {
 }
 
-SSKFeatures *CSparseSpatialSampleStringKernel::extractTriple(int **S, int *len, int nStr, int d1, int d2)
+SSKFeatures *SparseSpatialSampleStringKernel::extractTriple(int **S, int *len, int nStr, int d1, int d2)
 {
 	int i, j;
 	int n, nfeat;
@@ -76,7 +76,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractTriple(int **S, int *len, 
 }
 
 
-SSKFeatures *CSparseSpatialSampleStringKernel::extractDouble(int **S, int *len, int nStr, int d1)
+SSKFeatures *SparseSpatialSampleStringKernel::extractDouble(int **S, int *len, int nStr, int d1)
 {
 	int i, j;
 	int n, nfeat;
@@ -114,7 +114,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractDouble(int **S, int *len, 
 }
 
 
-void CSparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx_b)
+void SparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx_b)
 {
 	int d1;
 	SSKFeatures *features;
@@ -179,7 +179,7 @@ void CSparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx
 	}
 }
 
-void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx_b)
+void SparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx_b)
 {
 	int d1, d2;
 	SSKFeatures *features;
@@ -255,7 +255,7 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 	}
 }
 
-void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g, int k, int r, int nStr)
+void SparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g, int k, int r, int nStr)
 {
 	char same;
 	int i, j;
@@ -324,7 +324,7 @@ void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g
 	SG_FREE(curfeat);
 }
 
-int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
+int *SparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 {
 	int *sxc, *bc, *sxl, *cc, *regroup;
 	int i, j;
@@ -359,7 +359,7 @@ int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 	return regroup;
 }
 
-float64_t CSparseSpatialSampleStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t SparseSpatialSampleStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	if (t==2)
 		compute_double(idx_a, idx_b);

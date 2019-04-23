@@ -18,12 +18,12 @@ using namespace Eigen;
 
 namespace { MatrixXd cor(MatrixXd x, int tau = 0, bool mean_flag = true); };
 
-CSOBI::CSOBI() : CICAConverter()
+SOBI::SOBI() : ICAConverter()
 {
 	init();
 }
 
-void CSOBI::init()
+void SOBI::init()
 {
 	m_tau = SGVector<float64_t>(4);
 	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
@@ -33,26 +33,26 @@ void CSOBI::init()
 	SG_ADD(&m_tau, "tau", "tau vector", ParameterProperties::HYPER);
 }
 
-CSOBI::~CSOBI()
+SOBI::~SOBI()
 {
 }
 
-void CSOBI::set_tau(SGVector<float64_t> tau)
+void SOBI::set_tau(SGVector<float64_t> tau)
 {
 	m_tau = tau;
 }
 
-SGVector<float64_t> CSOBI::get_tau() const
+SGVector<float64_t> SOBI::get_tau() const
 {
 	return m_tau;
 }
 
-SGNDArray<float64_t> CSOBI::get_covs() const
+SGNDArray<float64_t> SOBI::get_covs() const
 {
 	return m_covs;
 }
 
-void CSOBI::fit_dense(CDenseFeatures<float64_t>* features)
+void SOBI::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 
@@ -86,7 +86,7 @@ void CSOBI::fit_dense(CDenseFeatures<float64_t>* features)
 	}
 
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(m_covs);
+	SGMatrix<float64_t> Q = JADiagOrth::diagonalize(m_covs);
 	Map<MatrixXd> EQ(Q.matrix,n,n);
 
 	// Compute Mixing Matrix

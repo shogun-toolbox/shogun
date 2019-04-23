@@ -110,7 +110,7 @@ Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 	head = (head_t *)SG_CALLOC(head_t, l);	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = CMath::max(size, (int64_t) 2*l);	// cache must be large enough for two columns
+	size = Math::max(size, (int64_t) 2*l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -159,7 +159,7 @@ int32_t Cache::get_data(const int32_t index, Qfloat **data, int32_t len)
 		// allocate new space
 		h->data = SG_REALLOC(Qfloat, h->data, h->len, len);
 		size -= more;
-		CMath::swap(h->len,len);
+		Math::swap(h->len,len);
 	}
 
 	lru_insert(h);
@@ -173,18 +173,18 @@ void Cache::swap_index(int32_t i, int32_t j)
 
 	if(head[i].len) lru_delete(&head[i]);
 	if(head[j].len) lru_delete(&head[j]);
-	CMath::swap(head[i].data,head[j].data);
-	CMath::swap(head[i].len,head[j].len);
+	Math::swap(head[i].data,head[j].data);
+	Math::swap(head[i].len,head[j].len);
 	if(head[i].len) lru_insert(&head[i]);
 	if(head[j].len) lru_insert(&head[j]);
 
-	if(i>j) CMath::swap(i,j);
+	if(i>j) Math::swap(i,j);
 	for(head_t *h = lru_head.next; h!=&lru_head; h=h->next)
 	{
 		if(h->len > i)
 		{
 			if(h->len > j)
-				CMath::swap(h->data[i],h->data[j]);
+				Math::swap(h->data[i],h->data[j]);
 			else
 			{
 				// give up
@@ -228,8 +228,8 @@ public:
 	virtual Qfloat *get_QD() const = 0;
 	virtual void swap_index(int32_t i, int32_t j) const	// no so const...
 	{
-		CMath::swap(x[i],x[j]);
-		if(x_square) CMath::swap(x_square[i],x_square[j]);
+		Math::swap(x[i],x[j]);
+		if(x_square) Math::swap(x_square[i],x_square[j]);
 	}
 
 	void compute_Q_parallel(Qfloat* data, float64_t* lab, int32_t i, int32_t start, int32_t len) const
@@ -254,7 +254,7 @@ public:
 	}
 
 private:
-	CKernel* kernel;
+	Kernel* kernel;
 	const svm_node **x;
 	float64_t *x_square;
 };
@@ -395,13 +395,13 @@ void Solver::reset_computation_variables()
 void Solver::swap_index(int32_t i, int32_t j)
 {
 	Q->swap_index(i,j);
-	CMath::swap(y[i],y[j]);
-	CMath::swap(G[i],G[j]);
-	CMath::swap(alpha_status[i],alpha_status[j]);
-	CMath::swap(alpha[i],alpha[j]);
-	CMath::swap(p[i],p[j]);
-	CMath::swap(active_set[i],active_set[j]);
-	CMath::swap(G_bar[i],G_bar[j]);
+	Math::swap(y[i],y[j]);
+	Math::swap(G[i],G[j]);
+	Math::swap(alpha_status[i],alpha_status[j]);
+	Math::swap(alpha[i],alpha[j]);
+	Math::swap(p[i],p[j]);
+	Math::swap(active_set[i],active_set[j]);
+	Math::swap(G_bar[i],G_bar[j]);
 }
 
 void Solver::reconstruct_gradient()
@@ -477,7 +477,7 @@ void Solver::Solve(
 	}
 
 	// initialize gradient
-	CTime start_time;
+	Time start_time;
 	{
 		auto pb = SG_SPROGRESS(range(l));
 		G = SG_MALLOC(float64_t, l);
@@ -489,7 +489,7 @@ void Solver::Solve(
 			G_bar[i] = 0;
 		}
 		SG_SINFO("Computing gradient for initial set of non-zero alphas\n")
-		//CMath::display_vector(alpha, l, "alphas");
+		//Math::display_vector(alpha, l, "alphas");
 		for (i = 0; i < l && !cancel_computation(); i++)
 		{
 			if(!is_lower_bound(i))
@@ -511,7 +511,7 @@ void Solver::Solve(
 	// optimization step
 
 	int32_t iter = 0;
-	int32_t counter = CMath::min(l,1000)+1;
+	int32_t counter = Math::min(l,1000)+1;
 	auto pb = SG_SPROGRESS(range(10));
 	while (!cancel_computation())
 	{
@@ -522,7 +522,7 @@ void Solver::Solve(
 
 		if(--counter == 0)
 		{
-			counter = CMath::min(l,1000);
+			counter = Math::min(l,1000);
 			if(shrinking) do_shrinking();
 			//SG_SINFO(".")
 		}
@@ -543,7 +543,7 @@ void Solver::Solve(
 		}
 
 		pb.print_absolute(
-			gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
+			gap, -Math::log10(gap), -Math::log10(1), -Math::log10(eps));
 
 		++iter;
 
@@ -564,14 +564,14 @@ void Solver::Solve(
 			double pj=G[j]-Q_i[j]*alpha[i]-Q_j[j]*alpha[j];
 			double det=Q_i[i]*Q_j[j]-Q_i[j]*Q_i[j];
 			double alpha_i=-(Q_j[j]*pi-Q_i[j]*pj)/det;
-			alpha_i=CMath::min(C_i,CMath::max(0.0,alpha_i));
+			alpha_i=Math::min(C_i,Math::max(0.0,alpha_i));
 			double alpha_j=-(-Q_i[j]*pi+Q_i[i]*pj)/det;
-			alpha_j=CMath::min(C_j,CMath::max(0.0,alpha_j));
+			alpha_j=Math::min(C_j,Math::max(0.0,alpha_j));
 
 			if (alpha_i==0 || alpha_i == C_i)
-				alpha_j=CMath::min(C_j,CMath::max(0.0,-(pj+Q_i[j]*alpha_i)/Q_j[j]));
+				alpha_j=Math::min(C_j,Math::max(0.0,-(pj+Q_i[j]*alpha_i)/Q_j[j]));
 			if (alpha_j==0 || alpha_j == C_j)
-				alpha_i=CMath::min(C_i,CMath::max(0.0,-(pi+Q_i[j]*alpha_j)/Q_i[i]));
+				alpha_i=Math::min(C_i,Math::max(0.0,-(pi+Q_i[j]*alpha_j)/Q_i[i]));
 
 			alpha[i]=alpha_i; alpha[j]=alpha_j;
 		}
@@ -958,16 +958,16 @@ float64_t Solver::calculate_rho()
 		if(is_upper_bound(i))
 		{
 			if(y[i]==-1)
-				ub = CMath::min(ub,yG);
+				ub = Math::min(ub,yG);
 			else
-				lb = CMath::max(lb,yG);
+				lb = Math::max(lb,yG);
 		}
 		else if(is_lower_bound(i))
 		{
 			if(y[i]==+1)
-				ub = CMath::min(ub,yG);
+				ub = Math::min(ub,yG);
 			else
-				lb = CMath::max(lb,yG);
+				lb = Math::max(lb,yG);
 		}
 		else
 		{
@@ -1143,7 +1143,7 @@ int32_t Solver_NU::select_working_set(
 		}
 	}
 
-	gap=CMath::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
+	gap=Math::max(Gmaxp+Gmaxp2,Gmaxn+Gmaxn2);
 	if(gap < eps)
 		return 1;
 
@@ -1207,7 +1207,7 @@ void Solver_NU::do_shrinking()
 		}
 	}
 
-	if(unshrink == false && CMath::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
+	if(unshrink == false && Math::max(Gmax1+Gmax2,Gmax3+Gmax4) <= eps*10)
 	{
 		unshrink = true;
 		reconstruct_gradient();
@@ -1242,9 +1242,9 @@ float64_t Solver_NU::calculate_rho()
 		if(y[i]==+1)
 		{
 			if(is_upper_bound(i))
-				lb1 = CMath::max(lb1,G[i]);
+				lb1 = Math::max(lb1,G[i]);
 			else if(is_lower_bound(i))
-				ub1 = CMath::min(ub1,G[i]);
+				ub1 = Math::min(ub1,G[i]);
 			else
 			{
 				++nr_free1;
@@ -1254,9 +1254,9 @@ float64_t Solver_NU::calculate_rho()
 		else
 		{
 			if(is_upper_bound(i))
-				lb2 = CMath::max(lb2,G[i]);
+				lb2 = Math::max(lb2,G[i]);
 			else if(is_lower_bound(i))
-				ub2 = CMath::min(ub2,G[i]);
+				ub2 = Math::min(ub2,G[i]);
 			else
 			{
 				++nr_free2;
@@ -1333,8 +1333,8 @@ public:
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
-		CMath::swap(y[i],y[j]);
-		CMath::swap(QD[i],QD[j]);
+		Math::swap(y[i],y[j]);
+		Math::swap(QD[i],QD[j]);
 	}
 
 	~SVC_QMC()
@@ -1414,7 +1414,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 			class_count[(int32_t) y[i]]++;
 	}
 
-	//CMath::display_vector(class_count, nr_class, "class_count");
+	//Math::display_vector(class_count, nr_class, "class_count");
 
 	float64_t mu=((float64_t) nr_class)/(nu*l);
 	//SG_SPRINT("nr_class=%d, l=%d, active_size=%d, nu=%f, mu=%f\n", nr_class, l, active_size, nu, mu)
@@ -1478,7 +1478,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 		if (class_count[i] == 0.0)
 			rho+=zero_counts[i];
 
-		normwcw[i]+=normwc_const/CMath::sq(nr_class);
+		normwcw[i]+=normwc_const/Math::sq(nr_class);
 		normwcw[i] = std::sqrt(normwcw[i]);
 	}
 
@@ -1509,7 +1509,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 	biases[0]=rho;
 
-	//CMath::display_vector(outputs, l, "outputs");
+	//Math::display_vector(outputs, l, "outputs");
 
 
 	float64_t xi=0;
@@ -1694,8 +1694,8 @@ public:
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
-		CMath::swap(y[i],y[j]);
-		CMath::swap(QD[i],QD[j]);
+		Math::swap(y[i],y[j]);
+		Math::swap(QD[i],QD[j]);
 	}
 
 	~SVC_Q()
@@ -1742,7 +1742,7 @@ public:
 	{
 		cache->swap_index(i,j);
 		LibSVMKernel::swap_index(i,j);
-		CMath::swap(QD[i],QD[j]);
+		Math::swap(QD[i],QD[j]);
 	}
 
 	~ONE_CLASS_Q()
@@ -1782,9 +1782,9 @@ public:
 
 	void swap_index(int32_t i, int32_t j) const
 	{
-		CMath::swap(sign[i],sign[j]);
-		CMath::swap(index[i],index[j]);
-		CMath::swap(QD[i],QD[j]);
+		Math::swap(sign[i],sign[j]);
+		Math::swap(index[i],index[j]);
+		Math::swap(QD[i],QD[j]);
 	}
 
 	Qfloat *get_Q(int32_t i, int32_t len) const
@@ -1922,12 +1922,12 @@ static void solve_nu_svc(
 	for(i=0;i<l;i++)
 		if(y[i] == +1)
 		{
-			alpha[i] = CMath::min(1.0,sum_pos);
+			alpha[i] = Math::min(1.0,sum_pos);
 			sum_pos -= alpha[i];
 		}
 		else
 		{
-			alpha[i] = CMath::min(1.0,sum_neg);
+			alpha[i] = Math::min(1.0,sum_neg);
 			sum_neg -= alpha[i];
 		}
 
@@ -1978,7 +1978,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	for(int32_t i=0;i<l;i++)
 	{
-		alpha[i] = CMath::min(1.0,sum_class[int32_t(y[i])]);
+		alpha[i] = Math::min(1.0,sum_class[int32_t(y[i])]);
 		sum_class[int32_t(y[i])] -= alpha[i];
 	}
 	SG_FREE(sum_class);
@@ -1990,7 +1990,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		zeros[i] = 0;
 
 	Solver_NUMC s(nr_class, nu);
-	SVC_QMC Q(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l));
+	SVC_QMC Q(*prob,*param,y, nr_class, ((float64_t) nr_class)/Math::sq(nu*l));
 
 	s.Solve(l, Q, zeros, y,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
@@ -2003,7 +2003,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	for (int32_t i=0; i<l; i++)
 	{
-		if (CMath::abs(alpha[i]) > 0)
+		if (Math::abs(alpha[i]) > 0)
 			class_sv_count[(int32_t) y[i]]++;
 	}
 
@@ -2137,7 +2137,7 @@ static void solve_nu_svr(
 	float64_t sum = C * param->nu * l / 2;
 	for(i=0;i<l;i++)
 	{
-		alpha2[i] = alpha2[i+l] = CMath::min(sum,C);
+		alpha2[i] = alpha2[i+l] = Math::min(sum,C);
 		sum -= alpha2[i];
 
 		linear_term[i] = - prob->y[i];
@@ -2654,7 +2654,7 @@ const char *svm_check_parameter(
 			for(int32_t j=i+1;j<nr_class;j++)
 			{
 				int32_t n2 = count[j];
-				if(param->nu*(n1+n2)/2 > CMath::min(n1,n2))
+				if(param->nu*(n1+n2)/2 > Math::min(n1,n2))
 				{
 					SG_FREE(label);
 					SG_FREE(count);

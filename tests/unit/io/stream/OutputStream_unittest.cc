@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
-#include <shogun/base/some.h>
 #include <shogun/io/stream/FileOutputStream.h>
 
 using namespace shogun;
@@ -18,7 +17,7 @@ TEST(FileOutputStream, write)
 	unique_ptr<io::WritableFile> file;
 	r = fs_registry->new_writable_file(fname, &file);
 	ASSERT_FALSE(r);
-	auto fos = some<io::CFileOutputStream>(file.get());
+	auto fos = std::make_unique<io::FileOutputStream>(file.get());
 	r = fos->write(test_str.data(), test_str.size());
 	ASSERT_FALSE(r);
 	r = fos->close();

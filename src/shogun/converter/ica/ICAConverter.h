@@ -16,48 +16,48 @@ namespace shogun
 {
 
 	template <class T>
-	class CDenseFeatures;
+	class DenseFeatures;
 
 	/** @brief class ICAConverter
-	 * Base class for ICA algorithms that apply to CDenseFeatures<float64_t>
+	 * Base class for ICA algorithms that apply to DenseFeatures<float64_t>
 	 */
-	class CICAConverter : public CConverter
+	class ICAConverter : public Converter
 	{
 	public:
 
 		/** constructor */
-		CICAConverter();
+		ICAConverter();
 
 		/** destructor */
-		virtual ~CICAConverter();
+		virtual ~ICAConverter();
 
 		/** Fit the ICA converter to features
 		 * Subclasses should implement this method to calculate the mixing
 		 * matrix
 		 * @param features the training features, should be an instance of
-		 * CDenseFeatures<float64_t>
+		 * DenseFeatures<float64_t>
 		 */
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/** Apply the ICA converter to features by multiplying the feature
 		 * matrix by the unmixing matirx.
 		 * @param features the features to transformed, should be an instance of
-		 * CDenseFeatures<float64_t>
+		 * DenseFeatures<float64_t>
 		 * @param inplace transform in place
 		 * @return the result feature object after applying the ICA converter
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** Inverse apply the ICA converter to features by multiplying the
 		 * feature matrix by the mixing matirx.
 		 * @param features the features to transformed, should be an instance of
-		 * CDenseFeatures<float64_t>
+		 * DenseFeatures<float64_t>
 		 * @param inplace transform in place
 		 * @return the result feature object after inverse applying the ICA
 		 * converter
 		 */
-		virtual CFeatures*
-		inverse_transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features>
+		inverse_transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** setter for mixing matrix, if the mixing matrix is set it will be
 		 * used as an initial guess if supported by the algorithm
@@ -98,7 +98,7 @@ namespace shogun
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features) = 0;
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) = 0;
 
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;

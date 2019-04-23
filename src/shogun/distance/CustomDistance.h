@@ -25,23 +25,23 @@ namespace shogun
  * representation. Also note that values are stored as 32bit floats.
  *
  */
-class CCustomDistance: public CDistance
+class CustomDistance: public Distance
 {
 	public:
 		/** default constructor */
-		CCustomDistance();
+		CustomDistance();
 
 		/** constructor
 		 *
 		 * compute custom distance from given distance matrix
 		 * @param d distance matrix
 		 */
-		CCustomDistance(CDistance* d);
+		CustomDistance(std::shared_ptr<Distance> d);
 
 		/** constructor
 		 * @param distance_matrix distance matrix
 		 */
-		CCustomDistance(const SGMatrix<float64_t> distance_matrix);
+		CustomDistance(const SGMatrix<float64_t> distance_matrix);
 
 		/** constructor
 		 *
@@ -53,7 +53,7 @@ class CCustomDistance: public CDistance
 		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
-		CCustomDistance(
+		CustomDistance(
 			const float64_t* dm, int32_t rows, int32_t cols);
 
 		/** constructor
@@ -66,10 +66,10 @@ class CCustomDistance: public CDistance
 		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
-		CCustomDistance(
+		CustomDistance(
 			const float32_t* dm, int32_t rows, int32_t cols);
 
-		virtual ~CCustomDistance();
+		virtual ~CustomDistance();
 
 		/** initialize distance with dummy features
 		 *
@@ -89,7 +89,7 @@ class CCustomDistance: public CDistance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up distance */
 		virtual void cleanup();

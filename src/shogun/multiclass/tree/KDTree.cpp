@@ -32,29 +32,29 @@
 
 using namespace shogun;
 
-CKDTree::CKDTree(int32_t leaf_size, EDistanceType d)
+KDTree::KDTree(int32_t leaf_size, EDistanceType d)
 : CNbodyTree(leaf_size,d)
 {
 }
 
-CKDTree::~CKDTree()
+KDTree::~KDTree()
 {
 }
 
-float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t KDTree::min_dist(std::shared_ptr<bnode_t> node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	for (int32_t i=0;i<dim;i++)
 	{
-		float64_t dim_dist=(node->data.bbox_lower[i]-feat[i])+CMath::abs(feat[i]-node->data.bbox_lower[i]);
-		dim_dist+=(feat[i]-node->data.bbox_upper[i])+CMath::abs(feat[i]-node->data.bbox_upper[i]);
+		float64_t dim_dist=(node->data.bbox_lower[i]-feat[i])+Math::abs(feat[i]-node->data.bbox_lower[i]);
+		dim_dist+=(feat[i]-node->data.bbox_upper[i])+Math::abs(feat[i]-node->data.bbox_upper[i]);
 		dist+=add_dim_dist(0.5*dim_dist);
 	}
 
 	return actual_dists(dist);
 }
 
-float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t KDTree::min_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
@@ -65,13 +65,13 @@ float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	{
 		float64_t d1=nodeq_lower[i]-noder_upper[i];
 		float64_t d2=noder_lower[i]-nodeq_upper[i];
-		dist+=add_dim_dist(0.5*(d1+CMath::abs(d1)+d2+CMath::abs(d2)));
+		dist+=add_dim_dist(0.5*(d1+Math::abs(d1)+d2+Math::abs(d2)));
 	}
 
 	return actual_dists(dist);
 }
 
-float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t KDTree::max_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
@@ -80,15 +80,15 @@ float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	float64_t dist=0;
 	for(int32_t i=0;i<noder_lower.vlen;i++)
 	{
-		float64_t d1=CMath::abs(nodeq_lower[i]-noder_upper[i]);
-		float64_t d2=CMath::abs(noder_lower[i]-nodeq_upper[i]);
-		dist+=add_dim_dist(CMath::max(d1,d2));
+		float64_t d1=Math::abs(nodeq_lower[i]-noder_upper[i]);
+		float64_t d2=Math::abs(noder_lower[i]-nodeq_upper[i]);
+		dist+=add_dim_dist(Math::max(d1,d2));
 	}
 
 	return actual_dists(dist);
 }
 
-void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+void KDTree::min_max_dist(float64_t* pt, std::shared_ptr<bnode_t> node, float64_t &lower,float64_t &upper, int32_t dim)
 {
 	lower=0;
 	upper=0;
@@ -96,15 +96,15 @@ void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float6
 	{
 		float64_t low_dist=node->data.bbox_lower[i]-pt[i];
 		float64_t high_dist=pt[i]-node->data.bbox_upper[i];
-		lower+=add_dim_dist(0.5*(low_dist+CMath::abs(low_dist)+high_dist+CMath::abs(high_dist)));
-		upper+=add_dim_dist(CMath::max(CMath::abs(low_dist),CMath::abs(high_dist)));
+		lower+=add_dim_dist(0.5*(low_dist+Math::abs(low_dist)+high_dist+Math::abs(high_dist)));
+		upper+=add_dim_dist(Math::max(Math::abs(low_dist),Math::abs(high_dist)));
 	}
 
 	lower=actual_dists(lower);
 	upper=actual_dists(upper);
 }
 
-void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
+void KDTree::init_node(std::shared_ptr<bnode_t> node, index_t start, index_t end)
 {
 	SGVector<float64_t> upper_bounds(m_data.num_rows);
 	SGVector<float64_t> lower_bounds(m_data.num_rows);
@@ -115,14 +115,14 @@ void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
 		lower_bounds[i]=m_data(i,m_vec_id[start]);
 		for (int32_t j=start+1;j<=end;j++)
 		{
-			upper_bounds[i]=CMath::max(upper_bounds[i],m_data(i,m_vec_id[j]));
-			lower_bounds[i]=CMath::min(lower_bounds[i],m_data(i,m_vec_id[j]));
+			upper_bounds[i]=Math::max(upper_bounds[i],m_data(i,m_vec_id[j]));
+			lower_bounds[i]=Math::min(lower_bounds[i],m_data(i,m_vec_id[j]));
 		}
 	}
 
 	float64_t radius=0;
 	for (int32_t i=0;i<m_data.num_rows;i++)
-		radius=CMath::max(radius,upper_bounds[i]-lower_bounds[i]);
+		radius=Math::max(radius,upper_bounds[i]-lower_bounds[i]);
 
 	node->data.bbox_upper=upper_bounds;
 	node->data.bbox_lower=lower_bounds;

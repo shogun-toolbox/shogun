@@ -6,15 +6,15 @@
 
 namespace shogun {
 
-	class MockCMachine : public CMachine {
+	class MockMachine : public Machine {
 		public:
-			MOCK_METHOD1(apply, CLabels*(CFeatures*));
+			MOCK_METHOD1(apply, std::shared_ptr<Labels>(std::shared_ptr<Features>));
 			MOCK_METHOD1(train_locked, bool(SGVector<index_t>));
-			MOCK_METHOD1(train_machine, bool(CFeatures*));
+			MOCK_METHOD1(train_machine, bool(std::shared_ptr<Features>));
 			MOCK_METHOD0(store_model_features, void());
-			MOCK_CONST_METHOD0(clone, CSGObject*());
+			MOCK_CONST_METHOD0(clone, std::shared_ptr<SGObject>());
 
-			virtual const char* get_name() const { return "MockCMachine"; }
+			virtual const char* get_name() const { return "MockMachine"; }
 	};
 
 }  // namespace shogun

@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Circular kernel
  *
@@ -30,11 +30,11 @@ class CDistance;
  *
  */
 
-class CCircularKernel: public CKernel
+class CircularKernel: public Kernel
 {
 	public:
 	/** default constructor */
-	CCircularKernel();
+	CircularKernel();
 
 	/** constructor
 	 *
@@ -42,7 +42,7 @@ class CCircularKernel: public CKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CCircularKernel(int32_t size, float64_t sigma, CDistance* dist);
+	CircularKernel(int32_t size, float64_t sigma, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 *
@@ -51,7 +51,7 @@ class CCircularKernel: public CKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CCircularKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
+	CircularKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 *
@@ -59,7 +59,7 @@ class CCircularKernel: public CKernel
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -99,7 +99,7 @@ class CCircularKernel: public CKernel
 		return sigma;
 	}
 
-	virtual ~CCircularKernel();
+	virtual ~CircularKernel();
 
 	/** Can (optionally) be overridden to post-initialize some
 	 *  member variables which are not PARAMETER::ADD'ed.  Make
@@ -128,7 +128,7 @@ private:
 protected:
 
 	/** distance */
-	CDistance* distance;
+	std::shared_ptr<Distance> distance;
 
 	/** width */
 	float64_t sigma;

@@ -3,22 +3,22 @@
 
 using namespace shogun;
 
-CMKLOneClass::CMKLOneClass(CSVM* s) : CMKL(s)
+MKLOneClass::MKLOneClass(std::shared_ptr<SVM> s) : MKL(s)
 {
 	if (!s)
-		set_svm(new CLibSVMOneClass());
+		set_svm(std::make_shared<LibSVMOneClass>());
 }
 
-CMKLOneClass::~CMKLOneClass()
+MKLOneClass::~MKLOneClass()
 {
 }
 
-float64_t CMKLOneClass::compute_sum_alpha()
+float64_t MKLOneClass::compute_sum_alpha()
 {
 	return 0.0;
 }
 
-void CMKLOneClass::init_training()
+void MKLOneClass::init_training()
 {
 	ASSERT(svm)
 	ASSERT(svm->get_classifier_type() == CT_LIBSVMONECLASS)

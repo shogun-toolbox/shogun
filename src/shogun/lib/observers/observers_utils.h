@@ -12,7 +12,6 @@
 #include <utility>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/some.h>
 
 /**
  * Definitions of basic object with are needed by the Parameter
@@ -26,7 +25,7 @@ namespace shogun
 	/**
 	 * Observed value with a timestamp
 	 */
-	typedef std::pair<Some<ObservedValue>, time_point> TimedObservedValue;
+	typedef std::pair<std::shared_ptr<ObservedValue>, time_point> TimedObservedValue;
 
 	/**
 	 * Helper method to convert a time_point to milliseconds

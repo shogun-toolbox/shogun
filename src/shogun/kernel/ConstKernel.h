@@ -22,17 +22,17 @@ namespace shogun
  * \f$k({\bf x}, {\bf x'})= c\f$
  *
  */
-class CConstKernel: public CKernel
+class ConstKernel: public Kernel
 {
 	public:
 		/** default constructor  */
-		CConstKernel();
+		ConstKernel();
 
 		/** constructor
 		 *
 		 * @param c constant c
 		 */
-		CConstKernel(float64_t c);
+		ConstKernel(float64_t c);
 
 		/** constructor
 		 *
@@ -40,9 +40,9 @@ class CConstKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @param c constant c
 		 */
-		CConstKernel(CFeatures* l, CFeatures *r, float64_t c);
+		ConstKernel(std::shared_ptr<Features> l, std::shared_ptr<Features >r, float64_t c);
 
-		virtual ~CConstKernel();
+		virtual ~ConstKernel();
 
 		/** initialize kernel
 		 *
@@ -50,7 +50,7 @@ class CConstKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

@@ -1,7 +1,6 @@
 #include "sg_gtest_utilities.h"
 
 #include "utils/Utils.h"
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/machine/FeatureDispatchCRTP.h>
@@ -11,11 +10,11 @@
 using namespace shogun;
 
 class CDenseRealMockMachine
-    : public CDenseRealDispatch<CDenseRealMockMachine, CMachine>
+    : public DenseRealDispatch<CDenseRealMockMachine, Machine>
 {
 public:
 	CDenseRealMockMachine(EFeatureType f)
-	    : CDenseRealDispatch<CDenseRealMockMachine, CMachine>()
+	    : DenseRealDispatch<CDenseRealMockMachine, Machine>()
 	{
 		m_expected_feature_type = f;
 	}
@@ -23,7 +22,7 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(CDenseFeatures<T>* data)
+	bool train_machine_templated(std::shared_ptr<DenseFeatures<T>> data)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;
@@ -38,11 +37,11 @@ public:
 };
 
 class CStringMockMachine
-    : public CStringFeaturesDispatch<CStringMockMachine, CMachine>
+    : public CStringFeaturesDispatch<CStringMockMachine, Machine>
 {
 public:
 	CStringMockMachine(EFeatureType f)
-	    : CStringFeaturesDispatch<CStringMockMachine, CMachine>()
+	    : CStringFeaturesDispatch<CStringMockMachine, Machine>()
 	{
 		m_expected_feature_type = f;
 	}
@@ -50,7 +49,7 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(CStringFeatures<T>* data)
+	bool train_machine_templated(std::shared_ptr<StringFeatures<T>> data)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;
@@ -76,12 +75,12 @@ TYPED_TEST(DenseDispatchCRTP, train_with_dense)
 {
 	auto feats = SGMatrix<TypeParam>(2, 2);
 	feats.set_const(1);
-	auto features = some<CDenseFeatures<TypeParam>>(feats);
+	auto features = std::make_shared<DenseFeatures<TypeParam>>(feats);
 	auto labels = SGVector<float64_t>({1, -1});
 
 	auto mock_machine =
-	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
+	    std::make_shared<CDenseRealMockMachine>(features->get_feature_type());
+	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
 
 	EXPECT_TRUE(mock_machine->train(features));
 }
@@ -98,12 +97,12 @@ TYPED_TEST_CASE(StringDispatchCRTP, SGCharTypes);
 TYPED_TEST(StringDispatchCRTP, train_with_string)
 {
 	auto strings = generateRandomStringData<TypeParam>(2);
-	auto features = some<CStringFeatures<TypeParam>>(strings, ALPHANUM);
+	auto features = std::make_shared<StringFeatures<TypeParam>>(strings, ALPHANUM);
 
 	auto labels = SGVector<float64_t>({1, -1});
 
-	auto mock_machine = some<CStringMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
+	auto mock_machine = std::make_shared<CStringMockMachine>(features->get_feature_type());
+	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
 
 	EXPECT_TRUE(mock_machine->train(features));
 }
@@ -112,12 +111,12 @@ TEST(TrainDense, train_dense_with_wrong_feature_type)
 {
 	auto feats = SGMatrix<int16_t>(2, 2);
 	feats.set_const(1);
-	auto features = some<CDenseFeatures<int16_t>>(feats);
+	auto features = std::make_shared<DenseFeatures<int16_t>>(feats);
 	auto labels = SGVector<float64_t>({1, -1});
 
 	auto mock_machine =
-	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
+	    std::make_shared<CDenseRealMockMachine>(features->get_feature_type());
+	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
 
 	EXPECT_THROW(mock_machine->train(features), ShogunException);
 }
@@ -125,12 +124,12 @@ TEST(TrainDense, train_dense_with_wrong_feature_type)
 TEST(TrainDense, train_dense_with_wrong_feature_class)
 {
 	auto strings = generateRandomStringData(2);
-	auto features = some<CStringFeatures<char>>(strings, ALPHANUM);
+	auto features = std::make_shared<StringFeatures<char>>(strings, ALPHANUM);
 
 	auto labels = SGVector<float64_t>({1, -1});
 
 	auto mock_machine =
-	    some<CDenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(some<CBinaryLabels>(labels));
+	    std::make_shared<CDenseRealMockMachine>(features->get_feature_type());
+	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
 	EXPECT_THROW(mock_machine->train(features), ShogunException);
 }

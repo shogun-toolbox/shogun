@@ -70,11 +70,11 @@ namespace shogun
  * Note that "Diagonal" means a variational diagonal co-variance matrix
  * is used in inference.
  */
-class CKLDiagonalInferenceMethod: public CKLLowerTriangularInference
+class KLDiagonalInferenceMethod: public KLLowerTriangularInference
 {
 public:
 	/** default constructor */
-	CKLDiagonalInferenceMethod();
+	KLDiagonalInferenceMethod();
 
 	/** constructor
 	 *
@@ -84,10 +84,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLDiagonalInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLDiagonalInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLDiagonalInferenceMethod();
+	virtual ~KLDiagonalInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -104,9 +104,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CKLDiagonalInferenceMethod object
+	 * @return casted KLDiagonalInferenceMethod object
 	 */
-	static CKLDiagonalInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<KLDiagonalInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get alpha vector
 	 *

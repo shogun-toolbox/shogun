@@ -23,32 +23,32 @@
 using namespace shogun;
 
 
-CDotFeatures::CDotFeatures(int32_t size)
-	:CFeatures(size)
+DotFeatures::DotFeatures(int32_t size)
+	:Features(size)
 {
 	init();
 }
 
 
-CDotFeatures::CDotFeatures(const CDotFeatures & orig)
-	:CFeatures(orig)
+DotFeatures::DotFeatures(const DotFeatures & orig)
+	:Features(orig)
 {
 	init();
 }
 
 
-CDotFeatures::CDotFeatures(CFile* loader)
-	:CFeatures(loader)
+DotFeatures::DotFeatures(std::shared_ptr<File> loader)
+	:Features(loader)
 {
 	init();
 }
 
-float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> vec2) const
+float64_t DotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> vec2) const
 {
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
-void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void DotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(output)
 	ASSERT(start>=0)
@@ -85,7 +85,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #else
 		// TODO: replace with the new signal
 		// for (int32_t i=t_start; i<t_stop &&
-		//		!CSignal::cancel_computations(); i++)
+		//		!Signal::cancel_computations(); i++)
 		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
@@ -99,7 +99,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	pb.complete();
 }
 
-void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void DotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(sub_index)
 	ASSERT(output)
@@ -131,7 +131,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 #else
 		// TODO: replace with the new signal
 		// for (int32_t i=t_start; i<t_stop &&
-		//		!CSignal::cancel_computations(); i++)
+		//		!Signal::cancel_computations(); i++)
 		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
@@ -145,7 +145,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	pb.complete();
 }
 
-SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix() const
+SGMatrix<float64_t> DotFeatures::get_computed_dot_feature_matrix() const
 {
 
 	int64_t offs=0;
@@ -166,7 +166,7 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix() const
 	return m;
 }
 
-SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num) const
+SGVector<float64_t> DotFeatures::get_computed_dot_feature_vector(int32_t num) const
 {
 
 	int32_t dim=get_dim_feature_space();
@@ -179,7 +179,7 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num) c
 	return v;
 }
 
-SGVector<float64_t> CDotFeatures::get_mean() const
+SGVector<float64_t> DotFeatures::get_mean() const
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -197,7 +197,7 @@ SGVector<float64_t> CDotFeatures::get_mean() const
 	return mean;
 }
 
-SGVector<float64_t> CDotFeatures::get_std(bool colwise) const
+SGVector<float64_t> DotFeatures::get_std(bool colwise) const
 {
 	auto num=get_num_vectors();
 	auto dim=get_dim_feature_space();
@@ -236,7 +236,7 @@ SGVector<float64_t> CDotFeatures::get_std(bool colwise) const
 }
 
 SGVector<float64_t>
-CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
+DotFeatures::compute_mean(std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs)
 {
 	ASSERT(lhs && rhs)
 	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space())
@@ -262,7 +262,7 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	return mean;
 }
 
-SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed) const
+SGMatrix<float64_t> DotFeatures::get_cov(bool copy_data_for_speed) const
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -306,10 +306,10 @@ SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed) const
 	return cov;
 }
 
-SGMatrix<float64_t> CDotFeatures::compute_cov(
-    CDotFeatures* lhs, CDotFeatures* rhs, bool copy_data_for_speed)
+SGMatrix<float64_t> DotFeatures::compute_cov(
+    std::shared_ptr<DotFeatures> lhs, std::shared_ptr<DotFeatures> rhs, bool copy_data_for_speed)
 {
-	CDotFeatures* feats[2];
+	std::shared_ptr<DotFeatures> feats[2];
 	feats[0]=lhs;
 	feats[1]=rhs;
 
@@ -372,7 +372,7 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(
 	return cov;
 }
 
-void CDotFeatures::init()
+void DotFeatures::init()
 {
 	set_property(FP_DOT);
 }

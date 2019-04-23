@@ -72,12 +72,12 @@ namespace shogun
  * "Approximations for Binary Gaussian Process Classification."
  * Journal of Machine Learning Research 9.10 (2008).
  */
-class CKLInference: public CInference
+class KLInference: public Inference
 {
 friend class KLInferenceCostFunction;
 public:
 	/** default constructor */
-	CKLInference();
+	KLInference();
 
 	/** constructor
 	 *
@@ -87,10 +87,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLInference();
+	virtual ~KLInference();
 
 	/** return what type of inference we are
 	 */
@@ -172,7 +172,7 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	virtual void set_model(CLikelihoodModel* mod);
+	virtual void set_model(std::shared_ptr<LikelihoodModel> mod);
 
 	/** update all matrices except gradients */
 	virtual void update();
@@ -190,7 +190,7 @@ public:
 	 *
 	 * Note that in some sub class L is not the Cholesky decomposition
 	 * In this case, L will still be used to compute required matrix for prediction
-	 * see CGaussianProcessMachine::get_posterior_variances()
+	 * see GaussianProcessMachine::get_posterior_variances()
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
@@ -231,7 +231,7 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 
 	/** update gradients */
@@ -263,14 +263,14 @@ protected:
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to variational likelihood model.
 	 */
-	virtual CVariationalGaussianLikelihood* get_variational_likelihood() const;
+	virtual std::shared_ptr<VariationalGaussianLikelihood> get_variational_likelihood() const;
 
 	/**check the provided likelihood model supports variational inference
 	 * @param mod the provided likelihood model
 	 *
 	 * @return whether the provided likelihood model supports variational inference or not
 	 */
-	virtual void check_variational_likelihood(CLikelihoodModel* mod) const;
+	virtual void check_variational_likelihood(std::shared_ptr<LikelihoodModel> mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;

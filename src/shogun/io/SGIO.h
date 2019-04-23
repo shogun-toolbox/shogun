@@ -14,6 +14,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 
+#include <memory>
 #include <string.h>
 #include <locale.h>
 #include <sys/types.h>
@@ -27,7 +28,7 @@ namespace shogun
 	class RefCount;
 	class SGIO;
 	/** shogun IO */
-	extern SGIO* sg_io;
+	extern std::shared_ptr<SGIO> sg_io;
 }
 
 
@@ -84,7 +85,7 @@ enum EMessageLocation
 #endif
 
 // printf like functions (with additional severity level)
-// for object derived from CSGObject
+// for object derived from SGObject
 #define SG_GCDEBUG(...) {											\
 	if (SG_UNLIKELY(io->loglevel_above(MSG_GCDEBUG)))				\
 		io->message(MSG_GCDEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
@@ -396,8 +397,8 @@ class SGIO
 		{
 			show_progress=true;
 
-			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-			if (sg_io!=this)
+			// static functions like SVM::classify_example_helper call SG_PROGRESS
+			if (sg_io.get()!=this)
 				sg_io->enable_progress();
 		}
 
@@ -406,8 +407,8 @@ class SGIO
 		{
 			show_progress=false;
 
-			// static functions like CSVM::classify_example_helper call SG_PROGRESS
-			if (sg_io!=this)
+			// static functions like SVM::classify_example_helper call SG_PROGRESS
+			if (sg_io.get()!=this)
 				sg_io->disable_progress();
 		}
 
@@ -420,7 +421,7 @@ class SGIO
 		{
 			location_info = location;
 
-			if (sg_io!=this)
+			if (sg_io.get()!=this)
 				sg_io->set_location_info(location);
 		}
 
@@ -429,7 +430,7 @@ class SGIO
 		{
 			syntax_highlight=true;
 
-			if (sg_io!=this)
+			if (sg_io.get()!=this)
 				sg_io->enable_syntax_highlighting();
 		}
 
@@ -438,7 +439,7 @@ class SGIO
 		{
 			syntax_highlight=false;
 
-			if (sg_io!=this)
+			if (sg_io.get()!=this)
 				sg_io->disable_syntax_highlighting();
 		}
 

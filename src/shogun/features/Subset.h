@@ -18,22 +18,22 @@
 namespace shogun
 {
 /** @brief Wrapper class for an index subset which is used by SubsetStack. */
-class CSubset: public CSGObject
+class Subset: public SGObject
 {
-	friend class CSubsetStack;
+	friend class SubsetStack;
 
 public:
 	/** default constructor, do not use */
-	CSubset();
+	Subset();
 
 	/** constructor
 	 *
 	 * @param subset_idx vector of subset indices.
 	 */
-	CSubset(const SGVector<index_t>& subset_idx);
+	Subset(const SGVector<index_t>& subset_idx);
 
 	/** destructor */
-	virtual ~CSubset();
+	virtual ~Subset();
 
 	/** @return size of subset index array */
 	index_t get_size() const { return m_subset_idx.vlen; }

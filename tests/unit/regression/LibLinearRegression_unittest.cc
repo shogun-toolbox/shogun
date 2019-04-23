@@ -24,21 +24,21 @@ TEST(LibLinearRegression, lr_with_bias)
 	std::shared_ptr<LinearRegressionDataGenerator> mockData =
 			linear_test_env->get_one_dimensional_regression_data(use_bias);
 
-	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
-	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
+	auto train_feats = mockData->get_features_train();
+	auto test_feats = mockData->get_features_test();
 
-	CRegressionLabels* labels_test = mockData->get_labels_test();
-	CRegressionLabels* labels_train = mockData->get_labels_train();
+	auto labels_test = mockData->get_labels_test();
+	auto labels_train = mockData->get_labels_train();
 
-	CLibLinearRegression* lr =
-		new CLibLinearRegression(1., train_feats, labels_train);
+	auto lr =
+		std::make_shared<LibLinearRegression>(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
 	lr->train();
 
-	CRegressionLabels* predicted_labels =
-		lr->apply(test_feats)->as<CRegressionLabels>();
+	auto predicted_labels =
+		lr->apply(test_feats)->as<RegressionLabels>();
 
 	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
 	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);
@@ -47,8 +47,8 @@ TEST(LibLinearRegression, lr_with_bias)
 		EXPECT_NEAR(predicted_labels->get_label(i), labels_test->get_label(i), 1E-5);
 
 	/* clean up */
-	SG_UNREF(predicted_labels);
-	SG_UNREF(lr);
+
+
 }
 
 TEST(LibLinearRegression, lr_without_bias)
@@ -60,21 +60,21 @@ TEST(LibLinearRegression, lr_without_bias)
 	std::shared_ptr<LinearRegressionDataGenerator> mockData =
 			linear_test_env->get_one_dimensional_regression_data(use_bias);
 
-	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
-	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
+	auto train_feats = mockData->get_features_train();
+	auto test_feats = mockData->get_features_test();
 
-	CRegressionLabels* labels_test = mockData->get_labels_test();
-	CRegressionLabels* labels_train = mockData->get_labels_train();
+	auto labels_test = mockData->get_labels_test();
+	auto labels_train = mockData->get_labels_train();
 
-	CLibLinearRegression* lr =
-			new CLibLinearRegression(1., train_feats, labels_train);
+	auto lr =
+			std::make_shared<LibLinearRegression>(1., train_feats, labels_train);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
 	lr->train();
 
-	CRegressionLabels* predicted_labels =
-			lr->apply(test_feats)->as<CRegressionLabels>();
+	auto predicted_labels =
+			lr->apply(test_feats)->as<RegressionLabels>();
 
 	EXPECT_NEAR(lr->get_w()[0], mockData->get_coefficient(0), 1E-5);
 	EXPECT_NEAR(lr->get_bias(), mockData->get_bias(), 1E-5);
@@ -83,6 +83,6 @@ TEST(LibLinearRegression, lr_without_bias)
 		EXPECT_NEAR(predicted_labels->get_label(i), labels_test->get_label(i), 1E-5);
 
 	/* clean up */
-	SG_UNREF(predicted_labels);
-	SG_UNREF(lr);
+
+
 }

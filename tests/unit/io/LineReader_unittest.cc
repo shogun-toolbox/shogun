@@ -18,20 +18,14 @@ const int max_num_lines = 100;
 
 TEST(LineReaderTest, constructor)
 {
-	CLineReader* reader;
-	CDelimiterTokenizer* tokenizer;
-
 	FILE* fin=fopen(__FILE__, "r");
 
-	tokenizer=new CDelimiterTokenizer();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters['\n']=1;
-	SG_REF(tokenizer);
 
-	reader=new CLineReader(fin, tokenizer);
+
+	auto reader=std::make_shared<LineReader>(fin, tokenizer);
 	EXPECT_TRUE(reader->has_next());
-
-	SG_UNREF(reader);
-	SG_UNREF(tokenizer);
 
 	fclose(fin);
 }
@@ -42,16 +36,14 @@ TEST(LineReaderTest, read_yourself)
 	SGVector<char> temp_string(max_line_length);
 	int lines_count=0;
 
-	CLineReader* reader;
-	CDelimiterTokenizer* tokenizer;
 
 	FILE* fin=fopen(__FILE__, "r");
 
-	tokenizer=new CDelimiterTokenizer();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters['\n']=1;
-	SG_REF(tokenizer);
 
-	reader=new CLineReader(max_line_length, fin, tokenizer);
+
+	auto reader=std::make_shared<LineReader>(max_line_length, fin, tokenizer);
 	EXPECT_TRUE(reader->has_next());
 
 	// read all strings from source code using LineReader
@@ -74,9 +66,6 @@ TEST(LineReaderTest, read_yourself)
 		lines_count++;
 		temp_string=SGVector<char>(max_line_length);
 	}
-
-	SG_UNREF(reader);
-	SG_UNREF(tokenizer);
 
 	fclose(fin);
 }

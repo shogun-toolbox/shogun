@@ -10,56 +10,56 @@
 
 using namespace shogun;
 
-CBesselKernel::CBesselKernel():CDistanceKernel(),order(0.0),degree(0)
+BesselKernel::BesselKernel():DistanceKernel(),order(0.0),degree(0)
 {
 	init();
 }
 
-CBesselKernel::CBesselKernel(int32_t size, float64_t v, float64_t w,
-		int32_t n, CDistance* dist) :
-	CDistanceKernel(size,w,dist), order(v), degree(n)
+BesselKernel::BesselKernel(int32_t size, float64_t v, float64_t w,
+		int32_t n, std::shared_ptr<Distance> dist) :
+	DistanceKernel(size,w,dist), order(v), degree(n)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init();
 }
 
-CBesselKernel::CBesselKernel(CFeatures* l, CFeatures* r, float64_t v,
-		float64_t w, int32_t n, CDistance* dist, int32_t size) :
-	CDistanceKernel(size,w,dist), order(v), degree(n)
+BesselKernel::BesselKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t v,
+		float64_t w, int32_t n, std::shared_ptr<Distance> dist, int32_t size) :
+	DistanceKernel(size,w,dist), order(v), degree(n)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l,r);
 }
 
-CBesselKernel::~CBesselKernel()
+BesselKernel::~BesselKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-void CBesselKernel::cleanup()
+void BesselKernel::cleanup()
 {
 }
 
-bool CBesselKernel::init(CFeatures* l, CFeatures* r)
+bool BesselKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(distance)
-	CDistanceKernel::init(l,r);
+	DistanceKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();
 }
 
-void CBesselKernel::init()
+void BesselKernel::init()
 {
 	SG_ADD(&order, "order", "Kernel order.", ParameterProperties::HYPER);
 	SG_ADD(&degree, "degree", "Kernel degree.", ParameterProperties::HYPER);
 }
 
-float64_t CBesselKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t BesselKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
-	return jn(order,dist/width)/CMath::pow(dist,-degree*order);
+	return jn(order,dist/width)/Math::pow(dist,-degree*order);
 }

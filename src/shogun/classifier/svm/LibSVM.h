@@ -24,17 +24,17 @@ enum LIBSVM_SOLVER_TYPE
 };
 #endif
 /** @brief LibSVM */
-class CLibSVM : public CSVM
+class LibSVM : public SVM
 {
 	public:
 		/** Default constructor, create a C-SVC svm */
-		CLibSVM();
+		LibSVM();
 
 		/** Constructor
 		 *
 		 * @param st solver type C or NU SVC
 		 */
-		CLibSVM(LIBSVM_SOLVER_TYPE st);
+		LibSVM(LIBSVM_SOLVER_TYPE st);
 
 		/** constructor
 		 *
@@ -43,10 +43,10 @@ class CLibSVM : public CSVM
 		 * @param lab labels
 		 * @param st solver type to use, C-SVC or nu-SVC
 		 */
-		CLibSVM(float64_t C, CKernel* k, CLabels* lab,
+		LibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab,
 				LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
-		virtual ~CLibSVM();
+		virtual ~LibSVM();
 
 		/** get classifier type
 		 *
@@ -69,7 +69,7 @@ class CLibSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	protected:
 		/** solver type */

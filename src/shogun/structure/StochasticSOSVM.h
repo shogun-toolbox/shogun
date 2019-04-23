@@ -27,11 +27,11 @@ namespace shogun
  * [3] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CStochasticSOSVM : public RandomMixin<CLinearStructuredOutputMachine>
+class StochasticSOSVM : public RandomMixin<LinearStructuredOutputMachine>
 {
 public:
 	/** default constructor */
-	CStochasticSOSVM();
+	StochasticSOSVM();
 
 	/** standard constructor
 	 *
@@ -40,11 +40,11 @@ public:
 	 * @param do_weighted_averaging whether mix w with previous average weights
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	CStochasticSOSVM(CStructuredModel* model, CStructuredLabels* labs,
+	StochasticSOSVM(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs,
 		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */
-	~CStochasticSOSVM();
+	~StochasticSOSVM();
 
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "StochasticSOSVM"; }
@@ -88,7 +88,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	virtual bool train_machine(CFeatures* data = NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 	/** register and initialize parameters */

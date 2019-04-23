@@ -16,7 +16,7 @@
 using namespace shogun;
 using namespace std;
 
-int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	int32_t match_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
@@ -28,22 +28,22 @@ int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1
 	return match_count;
 }
 
-int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
 
-void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
+void ClusteringEvaluation::best_map(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 
-	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
-	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
+	SGVector<float64_t> label_p=multiclass_labels(predicted)->get_unique_labels();
+	SGVector<float64_t> label_g=multiclass_labels(ground_truth)->get_unique_labels();
 
-	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
-	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();
+	SGVector<int32_t> predicted_ilabels=multiclass_labels(predicted)->get_int_labels();
+	SGVector<int32_t> groundtruth_ilabels=multiclass_labels(ground_truth)->get_int_labels();
 
 	int32_t n_class=max(label_p.vlen, label_g.vlen);
 	SGMatrix<float64_t> G(n_class, n_class);
@@ -75,6 +75,7 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 		}
 	}
 
+	auto mc = multiclass_labels(predicted);
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
-		((CMulticlassLabels*) predicted)->set_int_label(i, label_map[predicted_ilabels[i]]);
+		mc->set_int_label(i, label_map[predicted_ilabels[i]]);
 }

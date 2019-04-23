@@ -23,13 +23,13 @@ struct substring;
  * crc32, md5 and murmur.
  *
  */
-class CHash : public CSGObject
+class Hash : public SGObject
 {
 	public:
 		/** default constructor */
-		CHash() {}
+		Hash() {}
 		/** default destructor */
-		virtual ~CHash() {}
+		virtual ~Hash() {}
 
 		/** crc32 checksumming
 		 *

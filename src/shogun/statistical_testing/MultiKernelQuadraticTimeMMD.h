@@ -39,9 +39,9 @@
 namespace shogun
 {
 
-class CFeatures;
-class CQuadraticTimeMMD;
-class CShiftInvariantKernel;
+class Features;
+class QuadraticTimeMMD;
+class ShiftInvariantKernel;
 template <typename> class SGVector;
 
 namespace internal
@@ -54,41 +54,41 @@ class MaxTestPower;
 /**
  * @brief Class that performs quadratic time MMD test optimized for multiple
  * shift-invariant kernels. If the kernels are not shift-invariant, then the
- * class CQuadraticTimeMMD should be used multiple times instead of this one.
+ * class QuadraticTimeMMD should be used multiple times instead of this one.
  *
  * If the features are updated, then (if any) existing precomputed distance
- * instance has to be invalidated by the owner (CQuadraticTimeMMD instance).
+ * instance has to be invalidated by the owner (QuadraticTimeMMD instance).
  * This is already taken care of internally. A separate instance of this class
  * should never be created by invoking the constructor. One should always
- * call the CQuadraticTimeMMD::multikernel() method to get an instance of this
+ * call the QuadraticTimeMMD::multikernel() method to get an instance of this
  * class.
  */
-class CMultiKernelQuadraticTimeMMD : public RandomMixin<CSGObject>
+class MultiKernelQuadraticTimeMMD : public RandomMixin<SGObject>
 {
-	friend class CQuadraticTimeMMD;
+	friend class QuadraticTimeMMD;
 	friend class internal::MaxMeasure;
 	friend class internal::MaxTestPower;
 private:
-	CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner);
+	MultiKernelQuadraticTimeMMD(QuadraticTimeMMD* owner);
 public:
 	/**
 	 * Default constructor. Should never be invoked by the user. Please use
-	 * CQuadraticTimeMMD::multikernel() to obtain an instance of this class.
+	 * QuadraticTimeMMD::multikernel() to obtain an instance of this class.
 	 */
-	CMultiKernelQuadraticTimeMMD();
+	MultiKernelQuadraticTimeMMD();
 
 	/** Destructor */
-	virtual ~CMultiKernelQuadraticTimeMMD();
+	virtual ~MultiKernelQuadraticTimeMMD();
 
 	/**
-	 * Method that adds instances of shift-invariant kernels (e.g. CGaussianKernel).
+	 * Method that adds instances of shift-invariant kernels (e.g. GaussianKernel).
 	 * Invoke multiple times to add desired number of kernels. All the estimators
 	 * obtianed from the computation will be in the same order the kernels were
 	 * added.
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	void add_kernel(CKernel *kernel);
+	void add_kernel(std::shared_ptr<Kernel> kernel);
 
 	/**
 	 * Method that does internal cleanups (essentially releases memory from the
@@ -141,7 +141,7 @@ public:
 
 	/**
 	 * Method that computes the p-values for all the kernels. The API is different
-	 * here than CQuadraticTimeMMD since the test-statistics for the kernels are computed
+	 * here than QuadraticTimeMMD since the test-statistics for the kernels are computed
 	 * internally on the fly. This method uses permutation as the null-approximation
 	 * technique.
 	 *

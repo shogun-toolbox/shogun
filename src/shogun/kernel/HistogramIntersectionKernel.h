@@ -26,17 +26,17 @@ namespace shogun
  * \f]
  * with \f$\beta=1\f$ by default
  * */
-class CHistogramIntersectionKernel: public CDotKernel
+class HistogramIntersectionKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CHistogramIntersectionKernel();
+		HistogramIntersectionKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CHistogramIntersectionKernel(int32_t size);
+		HistogramIntersectionKernel(int32_t size);
 
 		/** constructor
 		 *
@@ -45,11 +45,11 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @param beta kernel parameter
 		 * @param size cache size
 		 */
-		CHistogramIntersectionKernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		HistogramIntersectionKernel(
+			std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 			float64_t beta=1.0, int32_t size=10);
 
-		virtual ~CHistogramIntersectionKernel();
+		virtual ~HistogramIntersectionKernel();
 
 		/** initialize kernel
 		 *
@@ -57,7 +57,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 		/* register the parameters
 		 */
 		virtual void register_params();

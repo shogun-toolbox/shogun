@@ -69,18 +69,18 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
+	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -98,63 +98,63 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_t_likelihood)
 
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
-	abs_tolerance = CMath::get_abs_tolerance(1.407423685644243, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.407423685644243, rel_tolerance);
 	EXPECT_NEAR(L(0,0),  1.407423685644243,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.515497460024622, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.515497460024622, rel_tolerance);
 	EXPECT_NEAR(L(0,1),  0.515497460024622,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.443065894253950, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.443065894253950, rel_tolerance);
 	EXPECT_NEAR(L(0,2),  0.443065894253950,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.319410344939164, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.319410344939164, rel_tolerance);
 	EXPECT_NEAR(L(0,3),  0.319410344939164,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.016180892181750, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.016180892181750, rel_tolerance);
 	EXPECT_NEAR(L(0,4),  0.016180892181750,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(1,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.355918485894513, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.355918485894513, rel_tolerance);
 	EXPECT_NEAR(L(1,1),  1.355918485894513,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.619918738844402, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.619918738844402, rel_tolerance);
 	EXPECT_NEAR(L(1,2),  0.619918738844402,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.588106670839222, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.588106670839222, rel_tolerance);
 	EXPECT_NEAR(L(1,3),  0.588106670839222,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.115276398753254, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.115276398753254, rel_tolerance);
 	EXPECT_NEAR(L(1,4),  0.115276398753254,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.214360350469977, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.214360350469977, rel_tolerance);
 	EXPECT_NEAR(L(2,2),  1.214360350469977,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.394486954116069, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.394486954116069, rel_tolerance);
 	EXPECT_NEAR(L(2,3),  0.394486954116069,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.104931348884614, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.104931348884614, rel_tolerance);
 	EXPECT_NEAR(L(2,4),  0.104931348884614,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.175209056259849, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.175209056259849, rel_tolerance);
 	EXPECT_NEAR(L(3,3),  1.175209056259849,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.157509505562212, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.157509505562212, rel_tolerance);
 	EXPECT_NEAR(L(3,4),  0.157509505562212,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.288734252271706, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.288734252271706, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.288734252271706,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_cholesky_logit_likelihood)
@@ -185,18 +185,18 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -215,63 +215,63 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_logit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(1.101033636127231, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.101033636127231, rel_tolerance);
 	EXPECT_NEAR(L(0,0),  1.101033636127231,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.031935435514485, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.031935435514485, rel_tolerance);
 	EXPECT_NEAR(L(0,1),  0.031935435514485,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.038838470404416, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.038838470404416, rel_tolerance);
 	EXPECT_NEAR(L(0,2),  0.038838470404416,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.080505388829644, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.080505388829644, rel_tolerance);
 	EXPECT_NEAR(L(0,3),  0.080505388829644,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.067456404131013, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.067456404131013, rel_tolerance);
 	EXPECT_NEAR(L(0,4),  0.067456404131013,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(1,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.093577781758797, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.093577781758797, rel_tolerance);
 	EXPECT_NEAR(L(1,1),  1.093577781758797,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.034349943478487, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.034349943478487, rel_tolerance);
 	EXPECT_NEAR(L(1,2),  0.034349943478487,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.142357943078213, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.142357943078213, rel_tolerance);
 	EXPECT_NEAR(L(1,3),  0.142357943078213,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.133350176799401, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.133350176799401, rel_tolerance);
 	EXPECT_NEAR(L(1,4),  0.133350176799401,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.099289233197989, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.099289233197989, rel_tolerance);
 	EXPECT_NEAR(L(2,2),  1.099289233197989,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.080619635381560, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.080619635381560, rel_tolerance);
 	EXPECT_NEAR(L(2,3),  0.080619635381560,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.013257570410259, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.013257570410259, rel_tolerance);
 	EXPECT_NEAR(L(2,4),  0.013257570410259,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.084046011513489, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.084046011513489, rel_tolerance);
 	EXPECT_NEAR(L(3,3),  1.084046011513489,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.103671309031576, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.103671309031576, rel_tolerance);
 	EXPECT_NEAR(L(3,4),  0.103671309031576,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.080493372046284, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.080493372046284, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.080493372046284,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_cholesky_probit_likelihood)
@@ -301,18 +301,18 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -331,63 +331,63 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_probit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(1.216420672271186, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.216420672271186, rel_tolerance);
 	EXPECT_NEAR(L(0,0),  1.216420672271186,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000401780554, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000401780554, rel_tolerance);
 	EXPECT_NEAR(L(0,1),  0.000000401780554,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004054670173, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004054670173, rel_tolerance);
 	EXPECT_NEAR(L(0,2),  0.000004054670173,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000949334832622, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000949334832622, rel_tolerance);
 	EXPECT_NEAR(L(0,3),  0.000949334832622,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000022647889665, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000022647889665, rel_tolerance);
 	EXPECT_NEAR(L(0,4),  0.000022647889665,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(1,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.215717061852584, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.215717061852584, rel_tolerance);
 	EXPECT_NEAR(L(1,1),  1.215717061852584,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000003300, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000003300, rel_tolerance);
 	EXPECT_NEAR(L(1,2),  0.000000000003300,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.006432557084865, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.006432557084865, rel_tolerance);
 	EXPECT_NEAR(L(1,3),  0.006432557084865,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000001816526618, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000001816526618, rel_tolerance);
 	EXPECT_NEAR(L(1,4),  0.000001816526618,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(2,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.216327485101524, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.216327485101524, rel_tolerance);
 	EXPECT_NEAR(L(2,2),  1.216327485101524,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000048851822686, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000048851822686, rel_tolerance);
 	EXPECT_NEAR(L(2,3),  0.000048851822686,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000000075498, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000000075498, rel_tolerance);
 	EXPECT_NEAR(L(2,4),  -0.000000000075498,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(3,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.215786494210340, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.215786494210340, rel_tolerance);
 	EXPECT_NEAR(L(3,3),  1.215786494210340,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000009487969, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000009487969, rel_tolerance);
 	EXPECT_NEAR(L(3,4),  0.000000009487969,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,0),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,1),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,2),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0, rel_tolerance);
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.216329768018010, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.216329768018010, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.216329768018010,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_mean_t_likelihood)
@@ -412,18 +412,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
+	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -441,19 +441,19 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_t_likelihood)
 
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
-	abs_tolerance = CMath::get_abs_tolerance(0.489965084229748, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.489965084229748, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[0],  0.489965084229748,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.847314396373669, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.847314396373669, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[1],  0.847314396373669,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.889161956923399, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.889161956923399, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[2],  0.889161956923399,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.946680542914168, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.946680542914168, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[3],  0.946680542914168,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.814125447090175, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.814125447090175, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[4],  0.814125447090175,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_covariance_t_likelihood)
@@ -478,18 +478,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero covariance function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* covariance=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto covariance=std::make_shared<ZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
+	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	covariance, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -507,63 +507,63 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_t_likelihood)
 
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
-	abs_tolerance = CMath::get_abs_tolerance(0.414373949946085, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.414373949946085, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,0),  0.414373949946085,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.143666705039313, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.143666705039313, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,1),  0.143666705039313,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.094429636121475, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.094429636121475, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,2),  0.094429636121475,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.017776032079365, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.017776032079365, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,3),  0.017776032079365,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.025310137089717, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.025310137089717, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,4),  -0.025310137089717,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.143666705039313, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.143666705039313, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,0),  0.143666705039313,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.231294061589554, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.231294061589554, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,1),  0.231294061589554,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.224883475133982, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.224883475133982, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,2),  0.224883475133982,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.197483047433658, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.197483047433658, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,3),  0.197483047433658,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.004953399924042, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004953399924042, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,4),  0.004953399924042,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.094429636121475, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.094429636121475, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,0),  0.094429636121475,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.224883475133982, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.224883475133982, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,1),  0.224883475133982,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.231567407777062, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.231567407777062, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,2),  0.231567407777062,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.227352640803712, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.227352640803712, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,3),  0.227352640803712,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.029816060215331, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.029816060215331, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,4),  0.029816060215331,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.017776032079365, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.017776032079365, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,0),  0.017776032079365,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.197483047433658, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.197483047433658, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,1),  0.197483047433658,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.227352640803712, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.227352640803712, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,2),  0.227352640803712,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.269271328474079, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.269271328474079, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,3),  0.269271328474079,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.096502018273666, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.096502018273666, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,4),  0.096502018273666,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.025310137089717, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.025310137089717, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,0),  -0.025310137089717,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.004953399924042, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004953399924042, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,1),  0.004953399924042,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.029816060215331, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.029816060215331, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,2),  0.029816060215331,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.096502018273666, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.096502018273666, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,3),  0.096502018273666,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.560250726200816, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.560250726200816, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,4),  0.560250726200816,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_mean_logit_likelihood)
@@ -594,18 +594,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -622,19 +622,19 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_logit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(0.195075001254701, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.195075001254701, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[0],  0.195075001254701,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.752239725258407, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.752239725258407, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[1],  -0.752239725258407,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.254676683453462, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.254676683453462, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[2],  0.254676683453462,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.503016798305133, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.503016798305133, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[3],  -0.503016798305133,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.666267998053423, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.666267998053423, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[4],  -0.666267998053423,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_covariance_logit_likelihood)
@@ -665,18 +665,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -695,63 +695,63 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_logit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(0.788613922080216, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.788613922080216, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,0),  0.788613922080216,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.055365603952762, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.055365603952762, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,1),  0.055365603952762,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.113585701478720, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.113585701478720, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,2),  0.113585701478720,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.250515288102739, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.250515288102739, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,3),  0.250515288102739,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.211318414874201, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.211318414874201, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,4),  0.211318414874201,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.055365603952762, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.055365603952762, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,0),  0.055365603952762,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.705059022635855, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.705059022635855, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,1),  0.705059022635855,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.086020351983001, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.086020351983001, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,2),  0.086020351983001,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.492913876934693, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.492913876934693, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,3),  0.492913876934693,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.471026718609916, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.471026718609916, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,4),  0.471026718609916,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.113585701478720, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.113585701478720, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,0),  0.113585701478720,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.086020351983001, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.086020351983001, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,1),  0.086020351983001,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.795196757855660, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.795196757855660, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,2),  0.795196757855660,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.295546558157168, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.295546558157168, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,3),  0.295546558157168,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.020998235505635, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.020998235505635, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,4),  0.020998235505635,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.250515288102739, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.250515288102739, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,0),  0.250515288102739,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.492913876934693, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.492913876934693, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,1),  0.492913876934693,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.295546558157168, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.295546558157168, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,2),  0.295546558157168,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.677608447921106, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.677608447921106, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,3),  0.677608447921106,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.400514239283206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.400514239283206, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,4),  0.400514239283206,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.211318414874201, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.211318414874201, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,0),  0.211318414874201,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.471026718609916, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.471026718609916, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,1),  0.471026718609916,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.020998235505635, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.020998235505635, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,2),  0.020998235505635,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.400514239283206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.400514239283206, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,3),  0.400514239283206,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.714639675393856, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.714639675393856, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,4),  0.714639675393856,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_mean_probit_likelihood)
@@ -781,18 +781,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -812,19 +812,19 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_probit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.562633450485667, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.562633450485667, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[0],  -0.562633450485667,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.569793845834907, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.569793845834907, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[1],  0.569793845834907,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.563581584765779, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.563581584765779, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[2],  0.563581584765779,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.568910892345396, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.568910892345396, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[3],  0.568910892345396,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.563558402061117, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.563558402061117, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[4],  -0.563558402061117,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_posterior_covariance_probit_likelihood)
@@ -854,18 +854,18 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -884,63 +884,63 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(0.675821281453662, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.675821281453662, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,0),  0.675821281453662,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000005367710037, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000005367710037, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,1),  -0.000005367710037,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004653883433, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004653883433, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,2),  0.000004653883433,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001102425357803, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001102425357803, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,3),  0.001102425357803,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000026241600793, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000026241600793, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(0,4),  0.000026241600793,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.000005367710037, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000005367710037, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,0),  -0.000005367710037,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.676565020447684, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.676565020447684, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,1),  0.676565020447684,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000300323282, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000300323282, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,2),  -0.000000300323282,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.007487585977222, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.007487585977222, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,3),  0.007487585977222,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000002109695855, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000002109695855, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(1,4),  0.000002109695855,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.000004653883433, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004653883433, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,0),  0.000004653883433,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000300323282, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000300323282, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,1),  -0.000000300323282,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.675925696916253, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.675925696916253, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,2),  0.675925696916253,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000056747602632, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000056747602632, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,3),  0.000056747602632,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000000087947, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000000087947, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(2,4),  -0.000000000087947,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.001102425357803, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001102425357803, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,0),  0.001102425357803,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.007487585977222, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.007487585977222, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,1),  0.007487585977222,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000056747602632, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000056747602632, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,2),  0.000056747602632,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.676467549296978, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.676467549296978, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,3),  0.676467549296978,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000011016475, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000011016475, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(3,4),  0.000000011016475,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.000026241600793, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000026241600793, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,0),  0.000026241600793,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000002109695855, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000002109695855, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,1),  0.000002109695855,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000000087947, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000000087947, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,2),  -0.000000000087947,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000011016475, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000011016475, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,3),  0.000000011016475,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.675923161214598, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.675923161214598, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,4),  0.675923161214598,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
@@ -965,18 +965,18 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
+	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -989,11 +989,11 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(7.38335326307118311462, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(7.38335326307118311462, rel_tolerance);
 	EXPECT_NEAR(nml, 7.38335326307118311462, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
@@ -1024,18 +1024,18 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_logit_likeliho
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1048,11 +1048,11 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_logit_likeliho
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(3.359093542091840, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.359093542091840, rel_tolerance);
 	EXPECT_NEAR(nml, 3.359093542091840, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
@@ -1082,18 +1082,18 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_probit_likelih
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1106,11 +1106,11 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_probit_likelih
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(3.468786292404183, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.468786292404183, rel_tolerance);
 	EXPECT_NEAR(nml, 3.468786292404183, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
@@ -1134,28 +1134,28 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*ell*ell);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Student's-T likelihood with sigma = 0.25, df = 3
-	CStudentsTVGLikelihood* lik=new CStudentsTVGLikelihood(0.25, 3);
+	auto lik=std::make_shared<StudentsTVGLikelihood>(0.25, 3);
 
 	// specify GP regression with exact inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1183,20 +1183,20 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.208254635605496, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.208254635605496, rel_tolerance);
 	EXPECT_NEAR(dnlZ_df, -0.208254635605496, abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.024939622917056, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.024939622917056, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sigma, 0.024939622917056, abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.80584941351205596760, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.80584941351205596760, rel_tolerance);
 	EXPECT_NEAR(dnlZ_ell, -0.80584941351205596760, abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.41852168768504860452, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.41852168768504860452, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.41852168768504860452, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+	
+	
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
@@ -1227,26 +1227,26 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1267,15 +1267,15 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(0.275308215764774, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.275308215764774, rel_tolerance);
 	EXPECT_NEAR(dnlZ_ell, 0.275308215764774, abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.138232606081787, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.138232606081787, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, -0.138232606081787, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+	
+	
+	
 }
 
 TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -1305,26 +1305,26 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCovarianceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1345,14 +1345,14 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.034304800769586, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.034304800769586, rel_tolerance);
 	EXPECT_NEAR(dnlZ_ell, -0.034304800769586, abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.028091203761949, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.028091203761949, rel_tolerance);
 	EXPECT_NEAR(dnlZ_sf2, 0.028091203761949, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+	
+	
+	
 }
 #endif //USE_GPL_SHOGUN

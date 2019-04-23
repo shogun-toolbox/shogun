@@ -39,7 +39,7 @@ namespace shogun
 /** @brief structure to store data of a node of
  * N-Body tree. This can be used as a template type in
  * TreeMachineNode class. N-Body tree building algorithm uses nodes
- * of type CBinaryTreeMachineNode<NbodyTreeNodeData>
+ * of type BinaryTreeMachineNode<NbodyTreeNodeData>
  */
 struct NbodyTreeNodeData
 {

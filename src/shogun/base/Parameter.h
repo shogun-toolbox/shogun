@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CSGObject;
+class SGObject;
 template <class ST> class SGString;
 template <class T> class SGMatrix;
 template <class T> class SGSparseMatrix;
@@ -76,14 +76,14 @@ private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();
 	void new_cont(SGVector<index_t> dims);
-	bool new_sgserial(CSGObject** param, EPrimitiveType generic,
+	bool new_sgserial(SGObject** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);
 };
 
 /** @brief Parameter class
  *
- * Must not be an CSGObject to prevent a recursive call of
+ * Must not be an SGObject to prevent a recursive call of
  * constructors.
  */
 class Parameter
@@ -104,9 +104,9 @@ public:
 
 	/** Takes another Parameter instance and sets all parameters of this
 	 * instance (with equal name) to the values of the provided one.
-	 * (Note that if CSGObjects are replaced, the old ones are SG_UNREFed
+	 * (Note that if SGObjects are replaced, the old ones are SG_UNREFed
 	 * and the new ones are SG_REFed)
-	 * Currently only works for any float64_t and CSGObject type.
+	 * Currently only works for any float64_t and SGObject type.
 	 *
 	 * @param params another Parameter instance
 	 */
@@ -262,15 +262,15 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(CSGObject** param,
+	void add(SGObject** param,
 			 const char* name, const char* description="");
 
-	template <typename T, std::enable_if_t<std::is_base_of<CSGObject, T>::value,
+	template <typename T, std::enable_if_t<std::is_base_of<SGObject, T>::value,
 		                                   T>* = nullptr>
 	void add(T** param, const char* name, const char* description = "")
 	{
 		TSGDataType type(CT_SCALAR, ST_NONE, PT_SGOBJECT);
-		add_type(&type, (CSGObject**)param, name, description);
+		add_type(&type, (SGObject**)param, name, description);
 	}
 
 	/** add param
@@ -584,7 +584,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_vector(CSGObject*** param, index_t* length,
+	void add_vector(SGObject*** param, index_t* length,
 					const char* name, const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -907,7 +907,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGVector<CSGObject*>* param, const char* name,
+	void add(SGVector<SGObject*>* param, const char* name,
 					const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -1249,7 +1249,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_matrix(CSGObject*** param,
+	void add_matrix(SGObject*** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 	/** add matrix param
@@ -1625,7 +1625,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGMatrix<CSGObject*>* param, const char* name,
+	void add(SGMatrix<SGObject*>* param, const char* name,
 					const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
@@ -1920,7 +1920,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGSparseMatrix<CSGObject*>* param,
+	void add(SGSparseMatrix<SGObject*>* param,
 					const char* name, const char* description="");
 protected:
 

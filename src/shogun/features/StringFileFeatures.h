@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal,
  *          Evan Shelhamer, Bjoern Esser
  */
 
@@ -18,8 +18,8 @@
 
 namespace shogun
 {
-class CAlphabet;
-template <class T> class CMemoryMappedFile;
+class Alphabet;
+template <class T> class MemoryMappedFile;
 
 /** @brief File based string features.
  *
@@ -30,26 +30,26 @@ template <class T> class CMemoryMappedFile;
  * Supported file format contains one string per line, lines of variable length
  * are supported and must be separated by '\n'.
  */
-template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
+template <class ST> class StringFileFeatures : public StringFeatures<ST>
 {
 	public:
 
 	/** default constructor
 	 *
 	 */
-	CStringFileFeatures();
+	StringFileFeatures();
 
 	/** constructor
 	 *
 	 * @param fname filename of the file containing line based features
 	 * @param alpha alphabet (type) to use for string features
 	 */
-	CStringFileFeatures(const char* fname, EAlphabet alpha);
+	StringFileFeatures(const char* fname, EAlphabet alpha);
 
 	/** default destructor
 	 *
 	 */
-	virtual ~CStringFileFeatures();
+	virtual ~StringFileFeatures();
 
 	/** Returns the name of the SGSerializable instance.
 	 *
@@ -88,7 +88,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 
 	protected:
 	/** memory mapped file*/
-	CMemoryMappedFile<ST>* file;
+	std::shared_ptr<MemoryMappedFile<ST>> file;
 };
 }
 #endif // _CSTRINGFILEFEATURES__H__

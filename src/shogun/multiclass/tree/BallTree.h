@@ -42,7 +42,7 @@ namespace shogun
 /** @brief This class implements Ball tree. The ball tree is contructed using the top-down approach.
  * cf. ftp://ftp.icsi.berkeley.edu/pub/techreports/1989/tr-89-063.pdf
  */
-class CBallTree : public CNbodyTree
+class BallTree : public CNbodyTree
 {
 public:
 	/** constructor
@@ -50,10 +50,10 @@ public:
 	 * @param leaf_size min number of samples in any node
 	 * @param d distance type
 	 */
-	CBallTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
+	BallTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 
 	/** Destructor */
-	virtual ~CBallTree() { };
+	virtual ~BallTree() { };
 
 	/** get name
 	 * @return class of the tree
@@ -68,7 +68,7 @@ private:
 	 * @param dim dimensions of query vector
 	 * @return min distance
 	 */
-	float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim);
+	float64_t min_dist(std::shared_ptr<bnode_t> node,float64_t* feat, int32_t dim);
 
 	/** find minimum distance between 2 nodes
 	 *
@@ -76,7 +76,7 @@ private:
 	 * @param noder node containing active training vectors
 	 * @return min distance between 2 nodes
 	 */
-	virtual float64_t min_dist_dual(bnode_t* nodeq, bnode_t* noder);
+	virtual float64_t min_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder);
 
 	/** find max distance between 2 nodes
 	 *
@@ -84,7 +84,7 @@ private:
 	 * @param noder node containing active training vectors
 	 * @return max distance between 2 nodes
 	 */
-	virtual float64_t max_dist_dual(bnode_t* nodeq, bnode_t* noder);
+	virtual float64_t max_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder);
 
 	/** get min as well as max distance of a node from a point
 	 *
@@ -94,7 +94,7 @@ private:
 	 * @param upper upper bound of distance
 	 * @param dim dimension of point vector
 	 */
-	void min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim);
+	void min_max_dist(float64_t* pt, std::shared_ptr<bnode_t> node, float64_t &lower,float64_t &upper, int32_t dim);
 
 	/** initialize node
 	 *
@@ -102,7 +102,7 @@ private:
 	 * @param start start index of index vector
 	 * @param end end index of index vector
 	 */
-	void init_node(bnode_t* node, index_t start, index_t end);
+	void init_node(std::shared_ptr<bnode_t> node, index_t start, index_t end);
 
 };
 } /* namespace shogun */

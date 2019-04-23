@@ -38,18 +38,18 @@
 
 using namespace shogun;
 
-CNeuralConvolutionalLayer::CNeuralConvolutionalLayer() : CNeuralLayer()
+NeuralConvolutionalLayer::NeuralConvolutionalLayer() : NeuralLayer()
 {
 	init();
 }
 
-CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
+NeuralConvolutionalLayer::NeuralConvolutionalLayer(
 		EConvMapActivationFunction function,
 		int32_t num_maps,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width, int32_t pooling_height,
 		int32_t stride_x, int32_t stride_y,
-		EInitializationMode initialization_mode) : CNeuralLayer()
+		EInitializationMode initialization_mode) : NeuralLayer()
 {
 	init();
 	m_num_maps = num_maps;
@@ -62,9 +62,9 @@ CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
 	m_initialization_mode = initialization_mode;
 }
 
-void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
+void NeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 {
-	CNeuralLayer::set_batch_size(batch_size);
+	NeuralLayer::set_batch_size(batch_size);
 
 	if (autoencoder_position==NLAP_NONE)
 		m_convolution_output = SGMatrix<float64_t>(m_num_maps*
@@ -80,16 +80,16 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 }
 
 
-void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* layers,
+void NeuralConvolutionalLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
-	CNeuralLayer* first_input_layer =
-		(CNeuralLayer*)layers->get_element(input_indices[0]);
+	auto first_input_layer =
+		layers->get_element<NeuralLayer>(input_indices[0]);
 
 	m_input_width = first_input_layer->get_width();
 	m_input_height = first_input_layer->get_height();
 
-	SG_UNREF(first_input_layer);
+
 
 	if (autoencoder_position==NLAP_NONE)
 	{
@@ -104,17 +104,17 @@ void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* lay
 
 	m_num_neurons = m_width*m_height*m_num_maps;
 
-	CNeuralLayer::initialize_neural_layer(layers, input_indices);
+	NeuralLayer::initialize_neural_layer(layers, input_indices);
 
 	m_input_num_channels = 0;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(input_indices[l]);
+		auto layer =
+			layers->get_element<NeuralLayer>(input_indices[l]);
 
 		m_input_num_channels += layer->get_num_neurons()/(m_input_height*m_input_width);
 
-		SG_UNREF(layer);
+
 	}
 
 	// one bias for each map and one weight matrix between each map in this
@@ -123,7 +123,7 @@ void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* lay
 		m_num_maps*(1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1));
 }
 
-void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parameters,
+void NeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
@@ -159,9 +159,9 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 	}
 }
 
-void CNeuralConvolutionalLayer::compute_activations(
+void NeuralConvolutionalLayer::compute_activations(
 		SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<DynamicObjectArray> layers)
 {
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
@@ -184,10 +184,10 @@ void CNeuralConvolutionalLayer::compute_activations(
 	}
 }
 
-void CNeuralConvolutionalLayer::compute_gradients(
+void NeuralConvolutionalLayer::compute_gradients(
 		SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		CDynamicObjectArray* layers,
+		std::shared_ptr<DynamicObjectArray> layers,
 		SGVector<float64_t> parameter_gradients)
 {
 	if (targets.num_rows != 0)
@@ -237,7 +237,7 @@ void CNeuralConvolutionalLayer::compute_gradients(
 	}
 }
 
-float64_t CNeuralConvolutionalLayer::compute_error(SGMatrix<float64_t> targets)
+float64_t NeuralConvolutionalLayer::compute_error(SGMatrix<float64_t> targets)
 {
 	// error = 0.5*(sum(targets-activations)^2)/batch_size
 	float64_t sum = 0;
@@ -248,7 +248,7 @@ float64_t CNeuralConvolutionalLayer::compute_error(SGMatrix<float64_t> targets)
 	return sum;
 }
 
-void CNeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters,
+void NeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters,
 		float64_t max_norm)
 {
 	int32_t num_weights = (2*m_radius_x+1)*(2*m_radius_y+1);
@@ -271,7 +271,7 @@ void CNeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters,
 	}
 }
 
-void CNeuralConvolutionalLayer::init()
+void NeuralConvolutionalLayer::init()
 {
 	m_num_maps = 1;
 	m_input_width = 0;
@@ -312,5 +312,5 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_activation_function, "activation_function",
 	    "Activation Function", ParameterProperties::NONE,
-	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR))
+	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR));
 }

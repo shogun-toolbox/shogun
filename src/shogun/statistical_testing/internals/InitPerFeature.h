@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 namespace internal
 {
@@ -52,8 +52,8 @@ private:
 	explicit InitPerFeature(std::unique_ptr<DataFetcher>& fetcher);
 public:
 	~InitPerFeature();
-	InitPerFeature& operator=(CFeatures* feats);
-	operator const CFeatures*() const;
+	InitPerFeature& operator=(std::shared_ptr<Features> feats);
+	operator const std::shared_ptr<Features>() const;
 private:
 	std::unique_ptr<DataFetcher>& m_fetcher;
 };

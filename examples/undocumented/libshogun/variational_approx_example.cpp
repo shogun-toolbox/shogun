@@ -56,10 +56,9 @@ using namespace shogun;
 SGMatrix<float64_t> init_piecewise_bound(const char * fname)
 {
 	SGMatrix<float64_t> bound;
-	CCSVFile* bound_file = new CCSVFile(fname);
+	CSVFile* bound_file = new CSVFile(fname);
 	bound_file->set_delimiter('\t');
 	bound.load(bound_file);
-	SG_UNREF(bound_file);
 	return bound;
 }
 
@@ -68,10 +67,9 @@ SGMatrix<float64_t> init_piecewise_bound(const char * fname)
 SGVector<float64_t> load_m_from_matlab(const char * fname)
 {
 	SGVector<float64_t> m_from_matlab;
-	CCSVFile* m_file = new CCSVFile(fname);
+	CSVFile* m_file = new CSVFile(fname);
 	m_file->set_delimiter('\t');
 	m_from_matlab.load(m_file);
-	SG_UNREF(m_file);
 	return m_from_matlab;
 }
 
@@ -80,10 +78,9 @@ SGVector<float64_t> load_m_from_matlab(const char * fname)
 float64_t load_loglik_from_matlab(const char * fname)
 {
 	SGVector<float64_t> f_from_matlab;
-	CCSVFile* f_file = new CCSVFile(fname);
+	CSVFile* f_file = new CSVFile(fname);
 	f_file->set_delimiter('\t');
 	f_from_matlab.load(f_file);
-	SG_UNREF(f_file);
 	REQUIRE(f_from_matlab.vlen == 1, "logLik is a scalar");
 	return f_from_matlab[0];
 }
@@ -103,9 +100,9 @@ SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample,
 		for(index_t j = 0; j < num_dim; j++)
 		{
 			if (i < num_sample/2)
-				X(i, j) = CMath::random(0,1)*5.0;
+				X(i, j) = Math::random(0,1)*5.0;
 			else
-				X(i, j) = CMath::random(0,1)*-5.0;
+				X(i, j) = Math::random(0,1)*-5.0;
 		}
 	}
 	*/
@@ -113,10 +110,9 @@ SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample,
 	//The following pre-init value is used to verify the correctness
 	//The following code will be removed.
 	SGMatrix<float64_t> X;
-	CCSVFile* X_file = new CCSVFile(fname);
+	CSVFile* X_file = new CSVFile(fname);
 	X_file->set_delimiter('\t');
 	X.load(X_file);
-	SG_UNREF(X_file);
 	return X;
 }
 
@@ -135,7 +131,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 	Eigen::Map<Eigen::MatrixXd> eigen_sigma(sigma.matrix, sigma.num_rows, sigma.num_cols);
 
 	//y = mvnrnd(mu, Sigma, 1);
-	CProbabilityDistribution * dist = new CGaussianDistribution(mu, sigma);
+	ProbabilityDistribution * dist = new GaussianDistribution(mu, sigma);
 	y = dist->sample();
 	//y = (y(:)>0);
 	//Note that Shogun uses -1 and 1 as labels
@@ -146,17 +142,15 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 		else
 			y[i] = -1;
 	}
-	SG_UNREF(dist);
 	*/
 
 	//The following pre-init value is used to verify the correctness
 	//The following code will be removed.
 	//Note that Shogun uses -1 and 1 as labels
 	SGVector<float64_t> y;
-	CCSVFile* y_file = new CCSVFile(fname);
+	CSVFile* y_file = new CSVFile(fname);
 	y_file->set_delimiter('\t');
 	y.load(y_file);
-	SG_UNREF(y_file);
 
 	for(index_t i = 0; i < y.vlen; i++)
 	{
@@ -174,7 +168,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 //The following struct is used to pass information when using the build-in L-BFGS component
 struct Shared
 {
-	CLogitVGPiecewiseBoundLikelihood *lik;
+	LogitVGPiecewiseBoundLikelihood *lik;
 	SGVector<float64_t> y;
 	SGVector<float64_t> mu;
 	lbfgs_parameter_t lbfgs_param;
@@ -215,7 +209,7 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 {
 	Shared * obj_prt = static_cast<Shared *>(obj);
 
-	CBinaryLabels lab(obj_prt->y);
+	BinaryLabels lab(obj_prt->y);
 	obj_prt->lik->set_variational_distribution(obj_prt->m0, obj_prt->v, &lab);
 	Eigen::Map<Eigen::VectorXd> eigen_mu(obj_prt->mu.vector, obj_prt->mu.vlen);
 	Eigen::Map<Eigen::VectorXd> eigen_m(obj_prt->m0.vector, obj_prt->m0.vlen);
@@ -303,7 +297,7 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 
 	//load('llp.mat');
 	obj.bound = init_piecewise_bound(bound_file);
-	obj.lik = new CLogitVGPiecewiseBoundLikelihood();
+	obj.lik = new LogitVGPiecewiseBoundLikelihood();
 	obj.lik->set_variational_bound(obj.bound);
 
 	//m0 = mu; % initial value all zero
@@ -340,15 +334,14 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 		float64_t relative_diff;
 
 		if (m_from_matlab[i] != 0.0)
-			relative_diff = CMath::abs(obj.m0[i]/m_from_matlab[i] - 1);
+			relative_diff = Math::abs(obj.m0[i]/m_from_matlab[i] - 1);
 		else
-			relative_diff = CMath::abs(obj.m0[i]);
+			relative_diff = Math::abs(obj.m0[i]);
 
 		SG_SPRINT("m[%d] from Shogun =%.10f from Matlab = %.10f relative_diff = %.10f\n", i+1,
 			obj.m0[i], m_from_matlab[i], relative_diff);
 	}
 
-	SG_UNREF(obj.lik);
 }
 
 void test_datasets()

@@ -29,13 +29,13 @@ namespace shogun
 *
 * Implements a memory mapped file for super fast file access.
 */
-template <class T> class CMemoryMappedFile : public CSGObject
+template <class T> class MemoryMappedFile : public SGObject
 {
 	public:
 		/** default constructor  */
-		CMemoryMappedFile() :CSGObject()
+		MemoryMappedFile() :SGObject()
 		{
-			SG_UNSTABLE("CMemoryMappedFile::CMemoryMappedFile()",
+			SG_UNSTABLE("MemoryMappedFile::MemoryMappedFile()",
 						"\n");
 
 			fd = 0;
@@ -60,8 +60,8 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 *   before closing the file.
 		 *
 		 */
-		CMemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
-		: CSGObject()
+		MemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
+		: SGObject()
 		{
 			REQUIRE(flag=='w' || flag=='r', "Only 'r' and 'w' flags are allowed")
 
@@ -139,7 +139,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		}
 
 		/** destructor */
-		virtual ~CMemoryMappedFile()
+		virtual ~MemoryMappedFile()
 		{
 #ifdef _MSC_VER
 			UnmapViewOfFile(address);
@@ -255,7 +255,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** set file size
 		 *
 		 * When the file is opened for read/write mode, it will be truncated
-		 * upon destruction of the CMemoryMappedFile object. This is
+		 * upon destruction of the MemoryMappedFile object. This is
 		 * automagically determined when writing lines, but might have to be
 		 * set manually for other data types, which is what this function is for.
 		 *

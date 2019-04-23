@@ -22,31 +22,31 @@ template<class T> class SGMatrix;
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
+template<class T> class DenseMatrixOperator : public MatrixOperator<T>
 {
 /** this class has support for complex128_t */
 typedef bool supports_complex128_t;
 
 public:
 	/** default constructor */
-	CDenseMatrixOperator();
+	DenseMatrixOperator();
 
 	/**
 	 * constructor
 	 *
 	 * @param op the dense matrix to be used as the linear operator
 	 */
-	explicit CDenseMatrixOperator(SGMatrix<T> op);
+	explicit DenseMatrixOperator(SGMatrix<T> op);
 
 	/**
 	 * copy constructor that creates a deep copy
 	 *
 	 * @param orig the original dense matrix operator
 	 */
-	CDenseMatrixOperator(const CDenseMatrixOperator<T>& orig);
+	DenseMatrixOperator(const DenseMatrixOperator<T>& orig);
 
 	/** destructor */
-	~CDenseMatrixOperator();
+	~DenseMatrixOperator();
 
 	/**
 	 * method that applies the dense-matrix linear operator to a vector
@@ -77,7 +77,7 @@ public:
 	 * create a new dense matrix operator of Scalar type
 	 */
 	template<class Scalar>
-	inline operator CDenseMatrixOperator<Scalar>*() const
+	inline operator DenseMatrixOperator<Scalar>*() const
 	{
 		REQUIRE(m_operator.matrix, "Matrix is not initialized!\n");
 
@@ -88,7 +88,7 @@ public:
 				casted_m(j,i)=static_cast<Scalar>(m_operator(j,i));
 		}
 
-		return new CDenseMatrixOperator<Scalar>(casted_m);
+		return new DenseMatrixOperator<Scalar>(casted_m);
 	}
 
 	/** @return object name */

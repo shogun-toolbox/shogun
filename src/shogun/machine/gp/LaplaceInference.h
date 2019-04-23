@@ -48,11 +48,11 @@ namespace shogun
  * function.
  *
  */
-class CLaplaceInference: public CInference
+class LaplaceInference: public Inference
 {
 public:
 	/** default constructor */
-	CLaplaceInference();
+	LaplaceInference();
 
 	/** constructor
 	 *
@@ -62,10 +62,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CLaplaceInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	LaplaceInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CLaplaceInference();
+	virtual ~LaplaceInference();
 
 	/** return what type of inference we are
 	 *

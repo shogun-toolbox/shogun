@@ -15,15 +15,15 @@
 namespace shogun
 {
 /** @brief class IntronList */
-class CIntronList : public CSGObject
+class IntronList : public SGObject
 {
 	public:
 
 		/** constructor
 		 */
-		CIntronList();
+		IntronList();
 
-		virtual ~CIntronList();
+		virtual ~IntronList();
 
 		/** initialize all arrays with the number of candidate positions
 		 *

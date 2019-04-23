@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn,
  *          Chiyuan Zhang
  */
 
@@ -28,24 +28,24 @@ namespace shogun
  *
  * special cases:
  * -# \f$\displaystyle L_{1} \f$ norm: Manhattan distance @see CManhattanMetric
- * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see CEuclideanDistance
+ * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see EuclideanDistance
  *
  * Note that the Minkowski distance tends to the Chebyshew distance for
  * increasing \f$k\f$.
  *
  * @see <a href="http://en.wikipedia.org/wiki/Distance">Wikipedia: Distance</a>
  */
-class CMinkowskiMetric: public CDenseDistance<float64_t>
+class MinkowskiMetric: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor  */
-		CMinkowskiMetric();
+		MinkowskiMetric();
 
 		/** constructor
 		 *
 		 * @param k parameter k
 		 */
-		CMinkowskiMetric(float64_t k);
+		MinkowskiMetric(float64_t k);
 
 		/** constructor
 		 *
@@ -53,15 +53,15 @@ class CMinkowskiMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @param k parameter k
 		 */
-		CMinkowskiMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t k);
-		virtual ~CMinkowskiMetric();
+		MinkowskiMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, float64_t k);
+		virtual ~MinkowskiMetric();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

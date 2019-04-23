@@ -14,7 +14,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-class CFile;
+class File;
 
 /** @brief shogun string */
 template<class T> class SGString
@@ -64,13 +64,13 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	void load(CFile* loader);
+	void load(File* loader);
 
 	/** save string to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	void save(CFile* saver);
+	void save(File* saver);
 
 public:
 	/** string  */

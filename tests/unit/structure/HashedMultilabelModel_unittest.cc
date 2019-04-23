@@ -31,12 +31,12 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 	feats[4] = 5;
 	feats[5] = 6;
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_EXAMPLES,
+
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_EXAMPLES,
 	                NUM_CLASSES);
-	SG_REF(labels);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
 	SGVector<int32_t> lab_2(3);
@@ -46,14 +46,14 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_2);
 
-	CHashedMultilabelModel * model = new CHashedMultilabelModel(features,
+	auto model = std::make_shared<HashedMultilabelModel>(features,
 	                labels, HASH_DIMS);
-	SG_REF(model);
 
-	CSparseMultilabel * slabel_1 = new CSparseMultilabel(lab_1);
-	SG_REF(slabel_1);
-	CSparseMultilabel * slabel_2 = new CSparseMultilabel(lab_2);
-	SG_REF(slabel_2);
+
+	auto slabel_1 = std::make_shared<SparseMultilabel>(lab_1);
+
+	auto slabel_2 = std::make_shared<SparseMultilabel>(lab_2);
+
 	SGSparseVector<float64_t> psi_1 = model->get_sparse_joint_feature_vector(0,
 	                                  slabel_1);
 	SGSparseVector<float64_t> psi_2 = model->get_sparse_joint_feature_vector(1,
@@ -70,7 +70,7 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 
 		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3(
+			uint32_t hash = Hash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
 			expected_psi_1.features[k].feat_index = (hash >> 1) % HASH_DIMS;
@@ -90,11 +90,11 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 		            1E-7);
 	}
 
-	SG_UNREF(slabel_1);
-	SG_UNREF(slabel_2);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
+
 }
 
 TEST(HashedMultilabelModel, delta_loss)
@@ -102,15 +102,15 @@ TEST(HashedMultilabelModel, delta_loss)
 	SGMatrix<float64_t> feats(DIMS, NUM_EXAMPLES);
 	feats.zero();
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(2, 3);
-	SG_REF(labels);
 
-	CHashedMultilabelModel * model = new CHashedMultilabelModel(features,
+	auto labels = std::make_shared<MultilabelSOLabels>(2, 3);
+
+
+	auto model = std::make_shared<HashedMultilabelModel>(features,
 	                labels, HASH_DIMS);
-	SG_REF(model);
+
 
 	SGVector<int32_t> lab_3(3);
 	lab_3[0] = 0;
@@ -121,15 +121,15 @@ TEST(HashedMultilabelModel, delta_loss)
 	lab_4[1] = 1;
 	lab_4[2] = 2;
 
-	CSparseMultilabel * slabel_3 = new CSparseMultilabel(lab_3);
-	SG_REF(slabel_3);
-	CSparseMultilabel * slabel_4 = new CSparseMultilabel(lab_4);
-	SG_REF(slabel_4);
+	auto slabel_3 = std::make_shared<SparseMultilabel>(lab_3);
+
+	auto slabel_4 = std::make_shared<SparseMultilabel>(lab_4);
+
 	float64_t delta_loss_1 = model->delta_loss(slabel_3, slabel_4);
 	EXPECT_EQ(delta_loss_1, 0);
 
-	SG_UNREF(slabel_3);
-	SG_UNREF(slabel_4);
+
+
 
 	float64_t false_pos = 1;
 	float64_t false_neg = 2;
@@ -143,21 +143,21 @@ TEST(HashedMultilabelModel, delta_loss)
 	lab_6[0] = 0;
 	lab_6[1] = 1;
 
-	CSparseMultilabel * slabel_5 = new CSparseMultilabel(lab_5);
-	SG_REF(slabel_5);
-	CSparseMultilabel * slabel_6 = new CSparseMultilabel(lab_6);
-	SG_REF(slabel_6);
+	auto slabel_5 = std::make_shared<SparseMultilabel>(lab_5);
+
+	auto slabel_6 = std::make_shared<SparseMultilabel>(lab_6);
+
 	float64_t delta_loss_2 = model->delta_loss(slabel_5, slabel_6);
 	EXPECT_EQ(delta_loss_2, false_neg);
 
 	float64_t delta_loss_3 = model->delta_loss(slabel_6, slabel_5);
 	EXPECT_EQ(delta_loss_3, false_pos);
 
-	SG_UNREF(slabel_5);
-	SG_UNREF(slabel_6);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
+
 }
 
 TEST(HashedMultilabelModel, argmax)
@@ -170,11 +170,11 @@ TEST(HashedMultilabelModel, argmax)
 	feats[4] = 5;
 	feats[5] = 4;
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(2, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<MultilabelSOLabels>(2, 3);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 2;
 	SGVector<int32_t> lab_2(2);
@@ -183,17 +183,17 @@ TEST(HashedMultilabelModel, argmax)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_2);
 
-	CHashedMultilabelModel * model = new CHashedMultilabelModel(features,
+	auto model = std::make_shared<HashedMultilabelModel>(features,
 	                labels, HASH_DIMS);
-	SG_REF(model);
+
 
 	SGVector<float64_t> w(model->get_dim());
 	w[0] = 1;
 	w[1] = -1;
 
-	CResultSet * ret_1 = model->argmax(w, 0, true);
+	auto ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
+	auto y_1 = ret_1->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 
@@ -206,7 +206,7 @@ TEST(HashedMultilabelModel, argmax)
 
 		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3(
+			uint32_t hash = Hash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
 			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS;
@@ -226,9 +226,9 @@ TEST(HashedMultilabelModel, argmax)
 		EXPECT_GT(score, 0);
 	}
 
-	CResultSet * ret_2 = model->argmax(w, 0, false);
+	auto ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
+	auto y_2 = ret_2->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
@@ -238,7 +238,7 @@ TEST(HashedMultilabelModel, argmax)
 
 		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3(
+			uint32_t hash = Hash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
 			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS;
@@ -253,12 +253,5 @@ TEST(HashedMultilabelModel, argmax)
 		EXPECT_GT(score, 0);
 	}
 
-
-	SG_UNREF(ret_1);
-	SG_UNREF(ret_2);
-
-	SG_UNREF(features);
-	SG_UNREF(labels);
-	SG_UNREF(model);
 }
 

@@ -22,7 +22,7 @@ enum ENormalizerType
 	N_MULTITASK = 1
 };
 
-class CKernel;
+class Kernel;
 /** @brief The class Kernel Normalizer defines a function to post-process kernel values.
  *
  * Formally it defines f(.,.,.)
@@ -46,24 +46,24 @@ class CKernel;
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
  * \f]
  */
-class CKernelNormalizer : public CSGObject
+class KernelNormalizer : public SGObject
 {
 	public:
 
 		/** default constructor
 		 */
-		CKernelNormalizer() : CSGObject()
+		KernelNormalizer() : SGObject()
 		{
 			register_params();
 			m_type = N_REGULAR;
 		}
 
 		/** default destructor */
-		virtual ~CKernelNormalizer() { }
+		virtual ~KernelNormalizer() { }
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)=0;
+		virtual bool init(Kernel* k)=0;
 
 		/** normalize the kernel value
 		 * @param value kernel value

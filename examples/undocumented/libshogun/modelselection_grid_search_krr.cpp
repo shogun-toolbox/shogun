@@ -25,24 +25,24 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-CModelSelectionParameters* create_param_tree()
+ModelSelectionParameters* create_param_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* tau=new CModelSelectionParameters("tau");
+	ModelSelectionParameters* tau=new ModelSelectionParameters("tau");
 	root->append_child(tau);
 	tau->build_values(-1.0, 1.0, R_EXP);
 
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+	GaussianKernel* gaussian_kernel=new GaussianKernel();
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	gaussian_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters("kernel", gaussian_kernel);
-	CModelSelectionParameters* gaussian_kernel_width=
-			new CModelSelectionParameters("width");
+	ModelSelectionParameters* param_gaussian_kernel=
+			new ModelSelectionParameters("kernel", gaussian_kernel);
+	ModelSelectionParameters* gaussian_kernel_width=
+			new ModelSelectionParameters("width");
 	gaussian_kernel_width->build_values(5.0, 8.0, R_EXP, 1.0, 2.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
@@ -53,13 +53,13 @@ CModelSelectionParameters* create_param_tree()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	poly_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_poly_kernel=
-	new CModelSelectionParameters("kernel", poly_kernel);
+	ModelSelectionParameters* param_poly_kernel=
+	new ModelSelectionParameters("kernel", poly_kernel);
 
 	root->append_child(param_poly_kernel);
 
-	CModelSelectionParameters* param_poly_kernel_degree=
-			new CModelSelectionParameters("degree");
+	ModelSelectionParameters* param_poly_kernel_degree=
+			new ModelSelectionParameters("degree");
 	param_poly_kernel_degree->build_values(2, 3, R_LINEAR);
 	param_poly_kernel->append_child(param_poly_kernel_degree);
 
@@ -77,36 +77,35 @@ void test_cross_validation()
 
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
-	CMath::range_fill_vector(train_dat.matrix, num_vectors);
+	Math::range_fill_vector(train_dat.matrix, num_vectors);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i]=i+CMath::normal_random(0, 1.0);
+		lab.vector[i]=i+Math::normal_random(0, 1.0);
 
 	}
 
 	/* training features */
-	CDenseFeatures<float64_t>* features=
-			new CDenseFeatures<float64_t>(train_dat);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=
+			new DenseFeatures<float64_t>(train_dat);
 
 	/* training labels */
-	CLabels* labels=new CLabels(lab);
+	Labels* labels=new Labels(lab);
 
 	/* kernel ridge regression, only set labels for now, rest does not matter */
-	CKernelRidgeRegression* krr=new CKernelRidgeRegression(0, NULL, labels);
+	KernelRidgeRegression* krr=new KernelRidgeRegression(0, NULL, labels);
 
 	/* evaluation criterion */
-	CMeanSquaredError* eval_crit=
-			new CMeanSquaredError();
+	MeanSquaredError* eval_crit=
+			new MeanSquaredError();
 
 	/* splitting strategy */
 	index_t n_folds=5;
-	CCrossValidationSplitting* splitting=
-			new CCrossValidationSplitting(labels, n_folds);
+	CrossValidationSplitting* splitting=
+			new CrossValidationSplitting(labels, n_folds);
 
 	/* cross validation instance, 10 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(krr, features, labels,
+	CrossValidation* cross=new CrossValidation(krr, features, labels,
 			splitting, eval_crit);
 
 	cross->set_num_runs(3);
@@ -116,8 +115,7 @@ void test_cross_validation()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	krr->print_modsel_params();
 
-	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
-	CModelSelectionParameters* param_tree=create_param_tree();
+	ModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
 
 	/* handles all of the above structures in memory */
@@ -136,19 +134,15 @@ void test_cross_validation()
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 //	cross->set_conf_int_alpha(0.01);
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	SG_SPRINT("result: ");
 	result->print_result();
 
 	/* clean up */
-	SG_UNREF(features);
-	SG_UNREF(best_combination);
-	SG_UNREF(result);
-	SG_UNREF(grid_search);
 }
 
 int main(int argc, char **argv)

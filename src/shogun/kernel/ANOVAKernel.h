@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Evan Shelhamer, Bjoern Esser
  */
 
@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief ANOVA (ANalysis Of VAriances) kernel
  *
@@ -31,17 +31,17 @@ class CDistance;
  * this function is computed recusively
  */
 
-class CANOVAKernel: public CDotKernel
+class ANOVAKernel: public DotKernel
 {
 public:
 	/** default constructor */
-	CANOVAKernel();
+	ANOVAKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param d kernel parameter cardinality
 	 */
-	CANOVAKernel(int32_t cache, int32_t d);
+	ANOVAKernel(int32_t cache, int32_t d);
 
 	/** constructor
 	 * @param l features left-side
@@ -49,17 +49,17 @@ public:
 	 * @param d kernel parameter cardinality
 	 * @param cache cache size
 	 */
-	CANOVAKernel(
-		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache);
+	ANOVAKernel(
+		std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t d, int32_t cache);
 
-	virtual ~CANOVAKernel();
+	virtual ~ANOVAKernel();
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -109,7 +109,7 @@ public:
 	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
 	 * @return casted CANOVAKernel object, NULL if input was NULL
 	 */
-	static CANOVAKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<ANOVAKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
 protected:
 
 	/**

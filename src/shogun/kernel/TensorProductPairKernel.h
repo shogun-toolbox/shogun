@@ -32,18 +32,18 @@ namespace shogun
  *
  * It is often used in bioinformatics, e.g., to predict protein-protein interactions.
  */
-class CTensorProductPairKernel: public CDotKernel
+class TensorProductPairKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CTensorProductPairKernel();
+		TensorProductPairKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(int32_t size, CKernel* subkernel);
+		TensorProductPairKernel(int32_t size, std::shared_ptr<Kernel> subkernel);
 
 		/** constructor
 		 *
@@ -51,9 +51,9 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(CDenseFeatures<int32_t> *l, CDenseFeatures<int32_t> *r, CKernel* subkernel);
+		TensorProductPairKernel(std::shared_ptr<DenseFeatures<int32_t>> l, std::shared_ptr<DenseFeatures<int32_t>> r, std::shared_ptr<Kernel> subkernel);
 
-		virtual ~CTensorProductPairKernel();
+		virtual ~TensorProductPairKernel();
 
 		/** initialize kernel
 		 *
@@ -61,7 +61,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *
@@ -104,7 +104,7 @@ class CTensorProductPairKernel: public CDotKernel
 
 	protected:
 		/** the subkernel */
-		CKernel* subkernel;
+		std::shared_ptr<Kernel> subkernel;
 };
 }
 #endif /* _TPPKKERNEL_H__ */

@@ -20,7 +20,7 @@
 using namespace shogun;
 
 CLPBoost::CLPBoost()
-: CLinearMachine(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+: LinearMachine(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 	u=NULL;
 	dim=NULL;
@@ -41,9 +41,9 @@ bool CLPBoost::init(int32_t num_vec)
 	for (int32_t i=0; i<num_vec; i++)
 		u[i]=1.0/num_vec;
 
-	dim=new CDynamicArray<int32_t>(100000);
+	dim=new DynamicArray<int32_t>(100000);
 
-	sfeat= ((CSparseFeatures<float64_t>*) features)->get_transposed(num_sfeat, num_svec);
+	sfeat= ((SparseFeatures<float64_t>*) features)->get_transposed(num_sfeat, num_svec);
 
 	if (sfeat)
 		return true;
@@ -56,7 +56,7 @@ void CLPBoost::cleanup()
 	SG_FREE(u);
 	u=NULL;
 
-	((CSparseFeatures<float64_t>*) features)->clean_tsparse(sfeat, num_svec);
+	((SparseFeatures<float64_t>*) features)->clean_tsparse(sfeat, num_svec);
 	sfeat=NULL;
 
 	delete dim;
@@ -76,7 +76,7 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
 			int32_t idx=sfeat[i].features[j].feat_index;
-			float64_t v=u[idx]*((CBinaryLabels*)m_labels)->get_confidence(idx)*sfeat[i].features[j].entry;
+			float64_t v=u[idx]*((BinaryLabels*)m_labels)->get_confidence(idx)*sfeat[i].features[j].entry;
 			valplus+=v;
 			valminus-=v;
 		}
@@ -98,7 +98,7 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 	return max_val;
 }
 
-bool CLPBoost::train_machine(CFeatures* data)
+bool CLPBoost::train_machine(Features* data)
 {
 	ASSERT(m_labels)
 	ASSERT(features)
@@ -120,7 +120,7 @@ bool CLPBoost::train_machine(CFeatures* data)
 	ASSERT(result)
 
 	int32_t num_hypothesis=0;
-	CTime time;
+	Time time;
 
 	while (get_max_train_time() <= 0 ||
 	       time.cur_time_diff() <= get_max_train_time())
@@ -146,13 +146,13 @@ bool CLPBoost::train_machine(CFeatures* data)
 		int32_t len=sfeat[max_dim].num_feat_entries;
 		solver.add_lpboost_constraint(factor, h, len, num_vec, m_labels);
 		solver.optimize(u);
-		//CMath::display_vector(u, num_vec, "u");
+		//Math::display_vector(u, num_vec, "u");
 		num_hypothesis++;
 	}
 	float64_t* lambda=SG_MALLOC(float64_t, num_hypothesis);
 	solver.optimize(u, lambda);
 
-	//CMath::display_vector(lambda, num_hypothesis, "lambda");
+	//Math::display_vector(lambda, num_hypothesis, "lambda");
 	for (int32_t i=0; i<num_hypothesis; i++)
 	{
 		int32_t d=dim->get_element(i);

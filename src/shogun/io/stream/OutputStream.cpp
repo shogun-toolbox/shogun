@@ -7,10 +7,10 @@
 
 using namespace shogun::io;
 
-COutputStream::COutputStream() : CSGObject()
+OutputStream::OutputStream() : SGObject()
 {
 }
 
-COutputStream::~COutputStream()
+OutputStream::~OutputStream()
 {
 }

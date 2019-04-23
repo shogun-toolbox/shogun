@@ -43,15 +43,15 @@ namespace shogun
  *     (http://www.mendeley.com/catalog/general-intelligence-objectively-determined-measured/)
  *
  */
-class CFactorAnalysis : public CEmbeddingConverter
+class FactorAnalysis : public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CFactorAnalysis();
+	FactorAnalysis();
 
 	/** destructor */
-	virtual ~CFactorAnalysis();
+	virtual ~FactorAnalysis();
 
 	/** get name */
 	virtual const char* get_name() const;
@@ -60,7 +60,7 @@ public:
 	 *
 	 * @param features features to embed
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** setter for the maximum number of iterations
 	 *
@@ -99,7 +99,7 @@ private:
 	/** convergence parameter */
 	float64_t m_epsilon;
 
-}; /* class CFactorAnalysis */
+}; /* class FactorAnalysis */
 
 } /* namespace shogun */
 

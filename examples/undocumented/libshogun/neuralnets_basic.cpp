@@ -48,10 +48,10 @@ int main(int, char*[])
 {
 	init_shogun_with_defaults();
 
-#ifdef HAVE_LAPACK // for CDataGenerator::generate_gaussian()
+#ifdef HAVE_LAPACK // for DataGenerator::generate_gaussian()
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	// Prepare the training data
 	const int num_classes = 4;
@@ -62,7 +62,7 @@ int main(int, char*[])
 	SGVector<float64_t> Y;
 	try
 	{
-		X = CDataGenerator::generate_gaussians(
+		X = DataGenerator::generate_gaussians(
 			num_examples_per_class,num_classes,num_features);
 		Y = SGVector<float64_t>(num_classes*num_examples_per_class);
 	}
@@ -77,13 +77,13 @@ int main(int, char*[])
 		for (int32_t j = 0; j < num_examples_per_class; j++)
 			Y[i*num_examples_per_class + j] = i;
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
-	CMulticlassLabels* labels = new CMulticlassLabels(Y);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(X);
+	auto labels = std::make_shared<MulticlassLabels>(Y);
 
 	// Create a small network single hidden layer network
-	CNeuralLayers* layers = new CNeuralLayers();
+	auto layers = std::make_shared<NeuralLayers>();
 	layers->input(num_features)->rectified_linear(10)->softmax(num_classes);
-	CNeuralNetwork* network = new CNeuralNetwork(layers->done());
+	auto network = std::make_shared<NeuralNetwork>(layers->done());
 
 	// initialize the network
 	network->quick_connect();
@@ -97,18 +97,13 @@ int main(int, char*[])
 	network->train(features);
 
 	// evaluate
-	CMulticlassLabels* predictions = network->apply_multiclass(features);
-	CMulticlassAccuracy* evaluator = new CMulticlassAccuracy();
+	auto predictions = network->apply_multiclass(features);
+	auto evaluator = std::make_shared<MulticlassAccuracy>();
 	float64_t accuracy = evaluator->evaluate(predictions, labels);
 
 	SG_SINFO("Accuracy = %f %\n", accuracy*100);
 
 	// Clean up
-	SG_UNREF(network);
-	SG_UNREF(layers);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
-	SG_UNREF(evaluator);
 #endif
 
 	exit_shogun();

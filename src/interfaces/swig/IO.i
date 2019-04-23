@@ -5,29 +5,77 @@
  */
 
 /* Remove C Prefix */
-%rename(IOBuffer) CIOBuffer;
+%shared_ptr(shogun::IOBuffer)
 
-%rename(File) CFile;
-%rename(StreamingFile) CStreamingFile;
-%rename(CSVFile) CCSVFile;
-%rename(LibSVMFile) CLibSVMFile;
-%rename(Serializer) CSerializer;
-%rename(Deserializer) CDeserializer;
-%rename(StreamingAsciiFile) CStreamingAsciiFile;
-%rename(BitserySerializer) CBitserySerializer;
-%rename(BitseryDeserializer) CBitseryDeserializer;
-%newobject BitseryDeserializer::read;
-%rename(JsonSerializer) CJsonSerializer;
-%rename(JsonDeserializer) CJsonDeserializer;
-%newobject JsonDeserializer::read;
-%rename(ByteArrayInputStream) CByteArrayInputStream;
-%rename(ByteArrayOutputStream) CByteArrayOutputStream;
+%shared_ptr(shogun::File)
+%shared_ptr(shogun::StreamingFile)
+%shared_ptr(shogun::CSVFile)
+%shared_ptr(shogun::LibSVMFile)
+%shared_ptr(shogun::StreamingAsciiFile)
+%shared_ptr(shogun::io::Serializer)
+%shared_ptr(shogun::io::Deserializer)
+%shared_ptr(shogun::io::BitserySerializer)
+%shared_ptr(shogun::io::BitseryDeserializer)
+%shared_ptr(shogun::io::JsonSerializer)
+%shared_ptr(shogun::io::JsonDeserializer)
+%shared_ptr(shogun::io::ByteArrayInputStream)
+%shared_ptr(shogun::io::ByteArrayOutputStream)
 
-%rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
-%rename(BinaryFile) CBinaryFile;
-%rename(HDF5File) CHDF5File;
-%rename(SimpleFile) CSimpleFile;
-%rename(MemoryMappedFile) CMemoryMappedFile;
+%shared_ptr(shogun::StreamingFileFromFeatures)
+%shared_ptr(shogun::BinaryFile)
+%shared_ptr(shogun::HDF5File)
+%shared_ptr(shogun::SimpleFile)
+%shared_ptr(shogun::MemoryMappedFile)
+%shared_ptr(shogun::Compressor)
+
+#ifdef USE_BOOL
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<bool>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<bool>)
+#endif
+#ifdef USE_CHAR
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<char>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<char>)
+#endif
+#ifdef USE_UINT8
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<uint8_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<uint8_t>)
+#endif
+#ifdef USE_INT16
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<int16_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<int16_t>)
+#endif
+#ifdef USE_UINT16
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<uint16_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<uint16_t>)
+#endif
+#ifdef USE_INT32
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<int32_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<int32_t>)
+#endif
+#ifdef USE_UINT32
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<uint32_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<uint32_t>)
+#endif
+#ifdef USE_INT64
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<int64_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<int64_t>)
+#endif
+#ifdef USE_UINT64
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<uint64_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<uint64_t>)
+#endif
+#ifdef USE_FLOAT32
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<float32_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<float32_t>)
+#endif
+#ifdef USE_FLOAT64
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<float64_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<float64_t>)
+#endif
+#ifdef USE_FLOATMAX
+%shared_ptr(shogun::StreamingFileFromSparseFeatures<floatmax_t>)
+%shared_ptr(shogun::StreamingFileFromDenseFeatures<floatmax_t>)
+#endif
 
 %include <shogun/io/File.h>
 %include <shogun/io/streaming/StreamingFile.h>
@@ -38,40 +86,40 @@
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StreamingFileFromSparseBoolFeatures) CStreamingFileFromSparseFeatures<bool>;
+    %template(StreamingFileFromSparseBoolFeatures) StreamingFileFromSparseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingFileFromSparseCharFeatures) CStreamingFileFromSparseFeatures<char>;
+    %template(StreamingFileFromSparseCharFeatures) StreamingFileFromSparseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingFileFromSparseByteFeatures) CStreamingFileFromSparseFeatures<uint8_t>;
+    %template(StreamingFileFromSparseByteFeatures) StreamingFileFromSparseFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingFileFromSparseShortFeatures) CStreamingFileFromSparseFeatures<int16_t>;
+    %template(StreamingFileFromSparseShortFeatures) StreamingFileFromSparseFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingFileFromSparseWordFeatures) CStreamingFileFromSparseFeatures<uint16_t>;
+    %template(StreamingFileFromSparseWordFeatures) StreamingFileFromSparseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingFileFromSparseIntFeatures) CStreamingFileFromSparseFeatures<int32_t>;
+    %template(StreamingFileFromSparseIntFeatures) StreamingFileFromSparseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingFileFromSparseUIntFeatures) CStreamingFileFromSparseFeatures<uint32_t>;
+    %template(StreamingFileFromSparseUIntFeatures) StreamingFileFromSparseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingFileFromSparseLongFeatures) CStreamingFileFromSparseFeatures<int64_t>;
+    %template(StreamingFileFromSparseLongFeatures) StreamingFileFromSparseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingFileFromSparseUlongFeatures) CStreamingFileFromSparseFeatures<uint64_t>;
+    %template(StreamingFileFromSparseUlongFeatures) StreamingFileFromSparseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingFileFromSparseShortRealFeatures) CStreamingFileFromSparseFeatures<float32_t>;
+    %template(StreamingFileFromSparseShortRealFeatures) StreamingFileFromSparseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingFileFromSparseRealFeatures) CStreamingFileFromSparseFeatures<float64_t>;
+    %template(StreamingFileFromSparseRealFeatures) StreamingFileFromSparseFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingFileFromSparseLongRealFeatures) CStreamingFileFromSparseFeatures<floatmax_t>;
+    %template(StreamingFileFromSparseLongRealFeatures) StreamingFileFromSparseFeatures<floatmax_t>;
 #endif
 }
 
@@ -80,40 +128,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StreamingFileFromBoolFeatures) CStreamingFileFromDenseFeatures<bool>;
+    %template(StreamingFileFromBoolFeatures) StreamingFileFromDenseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingFileFromCharFeatures) CStreamingFileFromDenseFeatures<char>;
+    %template(StreamingFileFromCharFeatures) StreamingFileFromDenseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingFileFromByteFeatures) CStreamingFileFromDenseFeatures<uint8_t>;
+    %template(StreamingFileFromByteFeatures) StreamingFileFromDenseFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingFileFromShortFeatures) CStreamingFileFromDenseFeatures<int16_t>;
+    %template(StreamingFileFromShortFeatures) StreamingFileFromDenseFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingFileFromWordFeatures) CStreamingFileFromDenseFeatures<uint16_t>;
+    %template(StreamingFileFromWordFeatures) StreamingFileFromDenseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingFileFromIntFeatures) CStreamingFileFromDenseFeatures<int32_t>;
+    %template(StreamingFileFromIntFeatures) StreamingFileFromDenseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingFileFromUIntFeatures) CStreamingFileFromDenseFeatures<uint32_t>;
+    %template(StreamingFileFromUIntFeatures) StreamingFileFromDenseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingFileFromLongFeatures) CStreamingFileFromDenseFeatures<int64_t>;
+    %template(StreamingFileFromLongFeatures) StreamingFileFromDenseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingFileFromUlongFeatures) CStreamingFileFromDenseFeatures<uint64_t>;
+    %template(StreamingFileFromUlongFeatures) StreamingFileFromDenseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingFileFromShortRealFeatures) CStreamingFileFromDenseFeatures<float32_t>;
+    %template(StreamingFileFromShortRealFeatures) StreamingFileFromDenseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingFileFromRealFeatures) CStreamingFileFromDenseFeatures<float64_t>;
+    %template(StreamingFileFromRealFeatures) StreamingFileFromDenseFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingFileFromLongRealFeatures) CStreamingFileFromDenseFeatures<floatmax_t>;
+    %template(StreamingFileFromLongRealFeatures) StreamingFileFromDenseFeatures<floatmax_t>;
 #endif
 }
 

@@ -23,10 +23,10 @@ int main(int argc, char** argv)
 
 	// create three 2-dimensional vectors
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
 	// create gaussian kernel with cache 10MB, width 0.5
-	CGaussianKernel* kernel = new CGaussianKernel(features, features, 0.5, 10);
+	GaussianKernel* kernel = new GaussianKernel(features, features, 0.5, 10);
 
 	// print kernel matrix
 	for (int32_t i=0; i<3; i++)
@@ -39,7 +39,6 @@ int main(int argc, char** argv)
 	}
 
 	// free up memory
-	SG_UNREF(kernel);
 
 	exit_shogun();
 	return 0;

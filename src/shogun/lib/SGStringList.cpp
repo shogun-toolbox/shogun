@@ -42,7 +42,7 @@ SGStringList<T>::~SGStringList()
 	unref();
 }
 
-template<class T> void SGStringList<T>::load(CFile* loader)
+template<class T> void SGStringList<T>::load(File* loader)
 {
 	ASSERT(loader)
 	unref();
@@ -52,7 +52,7 @@ template<class T> void SGStringList<T>::load(CFile* loader)
 	SG_RESET_LOCALE;
 }
 
-template<class T> void SGStringList<T>::save(CFile* saver)
+template<class T> void SGStringList<T>::save(File* saver)
 {
 	ASSERT(saver)
 

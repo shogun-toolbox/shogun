@@ -16,8 +16,8 @@
 
 namespace shogun
 {
-	class CKernelMachine;
-	class CDotFeatures;
+	class KernelMachine;
+	class DotFeatures;
 
 /** @brief Computes the Spline Kernel function which is the cubic polynomial
  *
@@ -30,21 +30,21 @@ namespace shogun
  * \frac{ \mbox{min}(\bf x, \bf x')^3}{3}
  * \f]
  */
-class CSplineKernel: public CDotKernel
+class SplineKernel: public DotKernel
 {
 	public:
 		/** constructor
 		 */
-		CSplineKernel();
+		SplineKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSplineKernel(CDotFeatures* l, CDotFeatures* r);
+		SplineKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r);
 
-		virtual ~CSplineKernel();
+		virtual ~SplineKernel();
 
 		/** initialize kernel
 		 *
@@ -52,7 +52,7 @@ class CSplineKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

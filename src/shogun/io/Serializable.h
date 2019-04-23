@@ -59,20 +59,20 @@ struct extract_value_type<X<T, Args...>>
  * This only works with classes derived of SGReferencedData (SGVector, SGMatrix,
  * SGStringList, etc) and fundamental types.
  */
-template<class T> class CSerializable: public CSGObject
+template<class T> class Serializable: public SGObject
 {
 public:
 	/** Default constructor. Do not use. */
-	CSerializable() : CSGObject()
+	Serializable() : SGObject()
 	{
 		init();
 	}
 
 	/** Constructor.
-	 * @param value Value to serialize as CSGObject.
+	 * @param value Value to serialize as SGObject.
 	 * @param value_name Name under which value is registered.
 	*/
-	CSerializable(T value, const char* value_name=""): CSGObject(), m_name(value_name)
+	Serializable(T value, const char* value_name=""): SGObject(), m_name(value_name)
 	{
 		init();
 		m_value = value;
@@ -85,7 +85,7 @@ public:
 	 */
 	virtual T get_value() const { return m_value; }
 
-	/** @return name of the CSGObject, without C prefix */
+	/** @return name of the SGObject, without C prefix */
 	virtual const char* get_name() const { return "Serializable"; }
 
 private:
@@ -104,42 +104,42 @@ protected:
 };
 
 // FIXME: once the class factory is refactored this should be dropped and
-// CSerializable should be use directly
-template<class T> class CVectorSerializable: public CSerializable<SGVector<T>>
+// Serializable should be use directly
+template<class T> class VectorSerializable: public Serializable<SGVector<T>>
 {
 public:
-	CVectorSerializable() : CSerializable<SGVector<T>>() {}
-	CVectorSerializable(SGVector<T> value, const char* value_name=""): CSerializable<SGVector<T>>(value, value_name) {}
-	virtual ~CVectorSerializable() {}
+	VectorSerializable() : Serializable<SGVector<T>>() {}
+	VectorSerializable(SGVector<T> value, const char* value_name=""): Serializable<SGVector<T>>(value, value_name) {}
+	virtual ~VectorSerializable() {}
 
-	/** @return name of the CSGObject, without C prefix */
+	/** @return name of the SGObject, without C prefix */
 	virtual const char* get_name() const { return "VectorSerializable"; }
 };
 
-template<class T> class CMatrixSerializable: public CSerializable<SGMatrix<T>>
+template<class T> class MatrixSerializable: public Serializable<SGMatrix<T>>
 {
 public:
-	CMatrixSerializable() : CSerializable<SGMatrix<T>>() {}
-	CMatrixSerializable(SGMatrix<T> value, const char* value_name=""): CSerializable<SGMatrix<T>>(value, value_name) {}
-	virtual ~CMatrixSerializable() {}
+	MatrixSerializable() : Serializable<SGMatrix<T>>() {}
+	MatrixSerializable(SGMatrix<T> value, const char* value_name=""): Serializable<SGMatrix<T>>(value, value_name) {}
+	virtual ~MatrixSerializable() {}
 
-	/** @return name of the CSGObject, without C prefix */
+	/** @return name of the SGObject, without C prefix */
 	virtual const char* get_name() const { return "MatrixSerializable"; }
 };
 
 // FIXME: there is no SG_ADD for SGStringList so need to do that manually.
 // can be dropped once SG_ADD works with SGStringList
-// Note: cannot inherit from CSerializable as need to overload/change init()
-template<class T> class CStringListSerializable: public CSGObject
+// Note: cannot inherit from Serializable as need to overload/change init()
+template<class T> class StringListSerializable: public SGObject
 {
 public:
-	CStringListSerializable() : CSGObject() { init(); }
-	CStringListSerializable(SGStringList<T> value, const char* value_name="") : CSGObject()
+	StringListSerializable() : SGObject() { init(); }
+	StringListSerializable(SGStringList<T> value, const char* value_name="") : SGObject()
 	{
 		init();
 		m_value = value;
 	}
-	virtual ~CStringListSerializable() {}
+	virtual ~StringListSerializable() {}
 	virtual const char* get_name() const { return "StringListSerializable"; }
 
 protected:

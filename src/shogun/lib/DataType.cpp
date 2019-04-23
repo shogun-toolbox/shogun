@@ -228,7 +228,7 @@ TSGDataType::sizeof_ptype(EPrimitiveType ptype)
 	case PT_FLOAT64: return sizeof (float64_t);
 	case PT_FLOATMAX: return sizeof (floatmax_t);
 	case PT_COMPLEX128: return sizeof (complex128_t);
-	case PT_SGOBJECT: return sizeof (CSGObject*);
+	case PT_SGOBJECT: return sizeof (SGObject*);
 	case PT_UNDEFINED: default:
 		SG_SERROR("Implementation error: undefined primitive type\n");
 		break;

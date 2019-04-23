@@ -26,19 +26,19 @@ namespace shogun
  * \f]
  *
  */
-class CPNorm : public CDensePreprocessor<float64_t>
+class PNorm : public DensePreprocessor<float64_t>
 {
 	public:
 		/** default PNorm Constructor */
-		CPNorm ();
+		PNorm ();
 
     /** constructor
      * @param p the norm to calculate. NOTE: has to be greater or equal than 1.0
      */
-		CPNorm (double p);
+		PNorm (double p);
 
 		/** destructor */
-		virtual ~CPNorm ();
+		virtual ~PNorm ();
 
 		/// cleanup
 		virtual void cleanup ();

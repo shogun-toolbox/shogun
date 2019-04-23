@@ -16,7 +16,7 @@ void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
 void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 			float64_t *s_max, float64_t *sh_max, float64_t *A);
 
-SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> JediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int d = C.dims[0];

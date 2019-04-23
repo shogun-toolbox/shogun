@@ -24,25 +24,25 @@ namespace shogun
  * to use this restriction. Allow feature vectors with different number of
  * features by setting num_features equal to zero (default behaviour).
  */
-template< class ST > class CMatrixFeatures : public CFeatures
+template< class ST > class MatrixFeatures : public Features
 {
 	public:
 		/** default constructor */
-		CMatrixFeatures();
+		MatrixFeatures();
 
 		/** standard constructor
 		 *
 		 * @param num_vecs number of vectors
 		 * @param num_feats number of features per vector
 		 */
-		CMatrixFeatures(int32_t num_vecs, int32_t num_feats = 0);
+		MatrixFeatures(int32_t num_vecs, int32_t num_feats = 0);
 
 		/** constructor
 		 *
 		 * @param feats list of feature matrices
 		 * @param num_feats number of features per vector
 		 */
-		CMatrixFeatures(SGMatrixList< ST > feats, int32_t num_feats = 0);
+		MatrixFeatures(SGMatrixList< ST > feats, int32_t num_feats = 0);
 
 		/**
 		 * constructor using the data of all the features concatenated
@@ -55,16 +55,16 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 * @param feat_length length of each feature
 		 * @param num_vecs number of feature vectors
 		 */
-		CMatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs);
+		MatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs);
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** destructor */
-		virtual ~CMatrixFeatures();
+		virtual ~MatrixFeatures();
 
 		/** get feature type
 		 *
@@ -131,7 +131,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		/** helper method used to specialize a base class instance
 		 *
 		 */
-		static CMatrixFeatures* obtain_from_generic(CFeatures* const base_features);
+		static std::shared_ptr<MatrixFeatures<ST>> obtain_from_generic(std::shared_ptr<Features> base_features);
 
 	private:
 		/** internal initialization */

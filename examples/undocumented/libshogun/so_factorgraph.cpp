@@ -35,13 +35,11 @@ void create_tree_graph(int hh, int ww)
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	TableFactorType* factortype = new TableFactorType(tid, card, w);
 
 	SGVector<int32_t> vc(hh*ww);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	CFactorGraph* fg = new CFactorGraph(vc);
-	SG_REF(fg);
+	FactorGraph* fg = new FactorGraph(vc);
 
 	// Add factors
 	for (int32_t x = 0; x < ww; x++)
@@ -54,7 +52,7 @@ void create_tree_graph(int hh, int ww)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y,ww);
 				var_index[1] = grid_to_index(x-1,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				Factor* fac1 = new Factor(factortype, var_index, data);
 				fg->add_factor(fac1);
 			}
 
@@ -64,12 +62,11 @@ void create_tree_graph(int hh, int ww)
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x,y-1,ww);
 				var_index[1] = grid_to_index(x,y,ww);
-				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				Factor* fac1 = new Factor(factortype, var_index, data);
 				fg->add_factor(fac1);
 			}
 		}
 	}
-	SG_UNREF(factortype);
 
 	fg->connect_components();
 
@@ -80,16 +77,14 @@ void create_tree_graph(int hh, int ww)
 
 	fg->compute_energies();
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);
+	MAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
-	SG_UNREF(fg_observ);
 
 	assignment.display_vector();
 
-	SG_UNREF(fg);
 }
 
 int main(int argc, char** argv)

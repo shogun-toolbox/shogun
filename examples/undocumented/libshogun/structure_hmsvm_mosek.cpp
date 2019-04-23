@@ -14,18 +14,17 @@ int main(int argc, char ** argv)
 	int32_t example_length = 250;
 	int32_t num_features = 10;
 	int32_t num_noise_features = 2;
-	CHMSVMModel* model = CTwoStateModel::simulate_data(num_examples, example_length, num_features, num_noise_features);
+	CHMSVMModel* model = TwoStateModel::simulate_data(num_examples, example_length, num_features, num_noise_features);
 
-	CStructuredLabels* labels = model->get_labels();
-	CFeatures* features = model->get_features();
+	StructuredLabels* labels = model->get_labels();
+	Features* features = model->get_features();
 
 	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
-	SG_REF(sosvm);
 
 	sosvm->train();
 //	sosvm->get_w().display_vector("w");
 
-	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
+	StructuredLabels* out = sosvm->apply()->as<StructuredLabels>();
 
 	ASSERT( out->get_num_labels() == labels->get_num_labels() );
 
@@ -33,14 +32,8 @@ int main(int argc, char ** argv)
 	{
 		CSequence* pred_seq = CSequence::obtain_from_generic( out->get_label(i) );
 		CSequence* true_seq = CSequence::obtain_from_generic( labels->get_label(i) );
-		SG_UNREF(pred_seq);
-		SG_UNREF(true_seq);
 	}
 
-	SG_UNREF(out);
-	SG_UNREF(features); // because model->get_features() increased the count
-	SG_UNREF(labels);   // because model->get_labels() increased the count
-	SG_UNREF(sosvm);
 
 #endif /* USE_MOSEK */
 	exit_shogun();

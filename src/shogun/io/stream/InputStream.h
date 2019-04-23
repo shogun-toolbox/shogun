@@ -13,11 +13,11 @@ namespace shogun
 {
 	namespace io
 	{
-		class CInputStream : public CSGObject
+		class InputStream : public SGObject
 		{
 		public:
-			CInputStream();
-			virtual ~CInputStream();
+			InputStream();
+			virtual ~InputStream();
 
 			virtual std::error_condition read(std::string* buffer, int64_t size) = 0;
 			virtual std::error_condition skip(int64_t bytes) = 0;

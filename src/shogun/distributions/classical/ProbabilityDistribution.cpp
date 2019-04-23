@@ -11,13 +11,13 @@
 
 using namespace shogun;
 
-CProbabilityDistribution::CProbabilityDistribution() : CSGObject()
+ProbabilityDistribution::ProbabilityDistribution() : SGObject()
 {
 	init();
 }
 
-CProbabilityDistribution::CProbabilityDistribution(int32_t dimension) :
-		CSGObject()
+ProbabilityDistribution::ProbabilityDistribution(int32_t dimension) :
+		SGObject()
 {
 	init();
 
@@ -28,19 +28,19 @@ CProbabilityDistribution::CProbabilityDistribution(int32_t dimension) :
 }
 
 
-CProbabilityDistribution::~CProbabilityDistribution()
+ProbabilityDistribution::~ProbabilityDistribution()
 {
 
 }
 
-SGMatrix<float64_t> CProbabilityDistribution::sample(int32_t num_samples,
+SGMatrix<float64_t> ProbabilityDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
 	SG_ERROR("Not implemented in sub-class\n");
 	return SGMatrix<float64_t>();
 }
 
-SGVector<float64_t> CProbabilityDistribution::sample() const
+SGVector<float64_t> ProbabilityDistribution::sample() const
 {
 	SGMatrix<float64_t> s=sample(1);
 	SGVector<float64_t> result(m_dimension);
@@ -48,14 +48,14 @@ SGVector<float64_t> CProbabilityDistribution::sample() const
 	return result;
 }
 
-SGVector<float64_t> CProbabilityDistribution::log_pdf_multiple(
+SGVector<float64_t> ProbabilityDistribution::log_pdf_multiple(
 		SGMatrix<float64_t> samples) const
 {
 	SG_ERROR("Not implemented in sub-class\n");
 	return SGVector<float64_t>();
 }
 
-float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) const
+float64_t ProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) const
 {
 	REQUIRE(sample_vec.vlen==m_dimension, "Sample dimension (%d) does not "
 			"match dimension of distribution (%d)\n", sample_vec.vlen,
@@ -66,7 +66,7 @@ float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) cons
 	return log_pdf_multiple(s)[0];
 }
 
-void CProbabilityDistribution::init()
+void ProbabilityDistribution::init()
 {
 	m_dimension=0;
 

@@ -44,29 +44,26 @@ void test_custom_kernel_index_subsets()
 	index_t num_sub_row=3;
 	index_t num_sub_col=2;
 
-	CFeatures* features=
-			new CDenseFeatures<float64_t>(CDataGenerator::generate_mean_data(
+	Features* features=
+			new DenseFeatures<float64_t>(DataGenerator::generate_mean_data(
 			m, 2, 1));
-	SG_REF(features);
 
 	/* create a custom kernel */
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel(2,10);
+	GaussianKernel* gaussian_kernel=new GaussianKernel(2,10);
 	gaussian_kernel->init(features, features);
-	CCustomKernel* custom_kernel=new CCustomKernel(gaussian_kernel);
+	CustomKernel* custom_kernel=new CustomKernel(gaussian_kernel);
 
 	/* create random permutations */
 	SGVector<index_t> row_subset(num_sub_row);
 	SGVector<index_t> col_subset(num_sub_col);
 	row_subset.range_fill();
-	CMath::permute(row_subset);
+	Math::permute(row_subset);
 	col_subset.range_fill();
-	CMath::permute(col_subset);
+	Math::permute(col_subset);
 
 	/* create index features */
-	CIndexFeatures* row_idx_feat=new CIndexFeatures(row_subset);
-	CIndexFeatures* col_idx_feat=new CIndexFeatures(col_subset);
-	SG_REF(row_idx_feat);
-	SG_REF(col_idx_feat);
+	IndexFeatures* row_idx_feat=new IndexFeatures(row_subset);
+	IndexFeatures* col_idx_feat=new IndexFeatures(col_subset);
 
 	custom_kernel->init(row_idx_feat, col_idx_feat);
 
@@ -78,11 +75,6 @@ void test_custom_kernel_index_subsets()
 
 	custom_kernel_matrix.display_matrix("subset");
 
-	SG_UNREF(gaussian_kernel);
-	SG_UNREF(custom_kernel);
-	SG_UNREF(row_idx_feat);
-	SG_UNREF(col_idx_feat);
-	SG_UNREF(features);
 }
 
 int main(int argc, char** argv)

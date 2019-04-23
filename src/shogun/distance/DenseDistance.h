@@ -17,11 +17,11 @@
 namespace shogun
 {
 /** @brief template class DenseDistance */
-template <class ST> class CDenseDistance : public CDistance
+template <class ST> class DenseDistance : public Distance
 {
 	public:
 		/** default constructor */
-		CDenseDistance() : CDistance() {}
+		DenseDistance() : Distance() {}
 
 		/** init distance
 		 *
@@ -29,7 +29,7 @@ template <class ST> class CDenseDistance : public CDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** get feature class the distance can deal with
 		 *

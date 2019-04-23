@@ -14,25 +14,25 @@
 
 namespace shogun
 {
-	template <class ST> class CStringFeatures;
+	template <class ST> class StringFeatures;
 
 /** @brief Class Histogram computes a histogram over all 16bit unsigned
  * integers in the features.
  *
  * Values in histogram are absolute counts (logarithmic)
  */
-class CHistogram : public CDistribution
+class Histogram : public Distribution
 {
 	public:
 		/** default constructor */
-		CHistogram();
+		Histogram();
 
 		/** constructor
 		 *
 		 * @param f histogram's features
 		 */
-		CHistogram(CStringFeatures<uint16_t>* f);
-		virtual ~CHistogram();
+		Histogram(std::shared_ptr<StringFeatures<uint16_t>> f);
+		virtual ~Histogram();
 
 		/** learn distribution
 		 *
@@ -42,7 +42,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** get number of model parameters
 		 *

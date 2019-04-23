@@ -22,8 +22,8 @@ namespace std
 
 namespace shogun
 {
-class CFeatures;
-class CDynamicObjectArray;
+class Features;
+class DynamicObjectArray;
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
@@ -43,17 +43,17 @@ class CDynamicObjectArray;
  *   \f[{\bf z'} = \alpha {\bf x} + {\bf z}\f]
  *
  */
-class CCombinedDotFeatures : public CDotFeatures
+class CombinedDotFeatures : public DotFeatures
 {
 	public:
 		/** constructor */
-		CCombinedDotFeatures();
+		CombinedDotFeatures();
 
 		/** copy constructor */
-		CCombinedDotFeatures(const CCombinedDotFeatures & orig);
+		CombinedDotFeatures(const CombinedDotFeatures & orig);
 
 		/** destructor */
-		virtual ~CCombinedDotFeatures();
+		virtual ~CombinedDotFeatures();
 
 		/** get the number of vectors
 		 *
@@ -80,7 +80,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -161,7 +161,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		struct combined_feature_iterator
 		{
 			/** pointer to current feature object */
-			CDotFeatures* f;
+			std::shared_ptr<DotFeatures> f;
 			/** pointer to combined feature iterator */
 			void* iterator;
 			/// idx for iterator
@@ -205,7 +205,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** list feature objects */
 		void list_feature_objs();
@@ -215,7 +215,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param idx the index of the feature to return
 		 * @return next feature object
 		 */
-		CDotFeatures* get_feature_obj(int32_t idx) const;
+		std::shared_ptr<DotFeatures> get_feature_obj(int32_t idx) const;
 
 		/** insert feature object at position idx
 		 *  idx must be < get_num_feature_obj()
@@ -224,14 +224,14 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param idx position where to insert the feature obj
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CDotFeatures* obj, int32_t idx);
+		bool insert_feature_obj(std::shared_ptr<DotFeatures> obj, int32_t idx);
 
 		/** append feature object
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		bool append_feature_obj(CDotFeatures* obj);
+		bool append_feature_obj(std::shared_ptr<DotFeatures> obj);
 
 		/** delete feature object at position idx
 		 *
@@ -283,7 +283,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 	protected:
 		/** feature array */
-		CDynamicObjectArray* feature_array;
+		std::shared_ptr<DynamicObjectArray> feature_array;
 		std::vector<float64_t> feature_weights;
 		static const float64_t initial_weight;
 		/// total number of vectors

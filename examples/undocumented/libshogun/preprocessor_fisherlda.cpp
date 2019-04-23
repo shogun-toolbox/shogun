@@ -24,32 +24,26 @@ void test()
 	SGVector<float64_t> lab(CLASSES*NUM);
 	SGMatrix<float64_t> feat(DIMS, CLASSES*NUM);
 
-	feat=CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
+	feat=DataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
 	for(int i=0; i<CLASSES; ++i)
 		for(int j=0; j<NUM; ++j)
 			lab[i*NUM+j]=double(i);
 
 	// Create train labels
-	CMulticlassLabels* labels=new CMulticlassLabels(lab);
-	SG_REF(labels)
+	MulticlassLabels* labels=new MulticlassLabels(lab);
 
 	// Create train features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
-	SG_REF(features)
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(feat);
 
 	// Initiate the FisherLDA class
 	CFisherLDA* fisherlda=new CFisherLDA(AUTO_FLDA);
-	SG_REF(fisherlda)
 	fisherlda->fit(features, labels, 1);
 	SGMatrix<float64_t> y = fisherlda->transform(features)
-	                            ->as<CDenseFeatures<float64_t>>()
+	                            ->as<DenseFeatures<float64_t>>()
 	                            ->get_feature_matrix();
 
 	// display output
 	y.display_matrix();
-	SG_UNREF(fisherlda)
-	SG_UNREF(features)
-	SG_UNREF(labels)
 }
 
 int main(int argc, char ** argv)

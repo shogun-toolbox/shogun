@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser,
  *          Sergey Lisitsyn, Viktor Gal
  */
 
@@ -11,24 +11,24 @@
 
 using namespace shogun;
 
-CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(CStreamingFile* file,
-	bool is_labelled, int32_t size,	CTokenizer* tzer, int32_t bits)
-: CStreamingDotFeatures()
+StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures(std::shared_ptr<StreamingFile> file,
+	bool is_labelled, int32_t size,	std::shared_ptr<Tokenizer> tzer, int32_t bits)
+: StreamingDotFeatures()
 {
 	init(file, is_labelled, size, tzer, bits, true, 1, 0);
 }
 
-CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures() : CStreamingDotFeatures()
+StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures() : StreamingDotFeatures()
 {
 	init(NULL, false, 0, NULL, 0, false, 1, 0);
 }
 
-CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
-	CStringFeatures<char>* dot_features, CTokenizer* tzer, int32_t bits, float64_t* lab)
-: CStreamingDotFeatures()
+StreamingHashedDocDotFeatures::StreamingHashedDocDotFeatures(
+	std::shared_ptr<StringFeatures<char>> dot_features, std::shared_ptr<Tokenizer> tzer, int32_t bits, float64_t* lab)
+: StreamingDotFeatures()
 {
-	CStreamingFileFromStringFeatures<char>* file =
-		new CStreamingFileFromStringFeatures<char>(dot_features, lab);
+	auto file =
+		std::make_shared<StreamingFileFromStringFeatures<char>>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size=1024;
 
@@ -37,28 +37,28 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
 	parser.set_free_vectors_on_destruct(false);
 	seekable= true;
 }
-void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, CTokenizer* tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
+void StreamingHashedDocDotFeatures::init(std::shared_ptr<StreamingFile> file, bool is_labelled,
+	int32_t size, std::shared_ptr<Tokenizer> tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = bits;
 	tokenizer = tzer;
 	if (tokenizer)
 	{
-		SG_REF(tokenizer);
-		converter = new CHashedDocConverter(tzer, bits, normalize, n_grams, skips);
+
+		converter = std::make_shared<HashedDocConverter>(tzer, bits, normalize, n_grams, skips);
 	}
 	else
 		converter=NULL;
 
 	SG_ADD(&num_bits, "num_bits", "Number of bits for hash");
-	SG_ADD((CSGObject** ) &tokenizer, "tokenizer", "The tokenizer used on the documents");
-	SG_ADD((CSGObject** ) &converter, "converter", "Converter");
+	SG_ADD((std::shared_ptr<SGObject>* ) &tokenizer, "tokenizer", "The tokenizer used on the documents");
+	SG_ADD((std::shared_ptr<SGObject>* ) &converter, "converter", "Converter");
 
 	has_labels = is_labelled;
 	if (file)
 	{
 		working_file = file;
-		SG_REF(working_file);
+
 		parser.init(file, is_labelled, size);
 		seekable = false;
 	}
@@ -69,28 +69,28 @@ void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled
 	parser.set_free_vector_after_release(false);
 }
 
-CStreamingHashedDocDotFeatures::~CStreamingHashedDocDotFeatures()
+StreamingHashedDocDotFeatures::~StreamingHashedDocDotFeatures()
 {
 	if (parser.is_running())
 		parser.end_parser();
-	SG_UNREF(working_file);
-	SG_UNREF(tokenizer);
-	SG_UNREF(converter);
+
+
+
 }
 
-float32_t CStreamingHashedDocDotFeatures::dot(CStreamingDotFeatures* df)
+float32_t StreamingHashedDocDotFeatures::dot(std::shared_ptr<StreamingDotFeatures> df)
 {
 	ASSERT(df)
 	ASSERT(df->get_name() == get_name())
 
-	CStreamingHashedDocDotFeatures* cdf = (CStreamingHashedDocDotFeatures* ) df;
+	auto cdf = std::static_pointer_cast<StreamingHashedDocDotFeatures>(df);
 	float32_t result = current_vector.sparse_dot(cdf->current_vector);
 	return result;
 }
 
-float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32_t vec2_len)
+float32_t StreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == CMath::pow(2, num_bits))
+	ASSERT(vec2_len == Math::pow(2, num_bits))
 
 	float32_t result = 0;
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
@@ -101,47 +101,47 @@ float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32
 	return result;
 }
 
-void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2,
+void StreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2,
 			int32_t vec2_len, bool abs_val)
 {
-	float32_t value = abs_val ? CMath::abs(alpha) : alpha;
+	float32_t value = abs_val ? Math::abs(alpha) : alpha;
 
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 		vec2[current_vector.features[i].feat_index] += value * current_vector.features[i].entry;
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_dim_feature_space() const
+int32_t StreamingHashedDocDotFeatures::get_dim_feature_space() const
 {
-	return CMath::pow(2, num_bits);
+	return Math::pow(2, num_bits);
 }
 
-const char* CStreamingHashedDocDotFeatures::get_name() const
+const char* StreamingHashedDocDotFeatures::get_name() const
 {
 	return "StreamingHashedDocDotFeatures";
 }
 
-EFeatureType CStreamingHashedDocDotFeatures::get_feature_type() const
+EFeatureType StreamingHashedDocDotFeatures::get_feature_type() const
 {
 	return F_UINT;
 }
 
-EFeatureClass CStreamingHashedDocDotFeatures::get_feature_class() const
+EFeatureClass StreamingHashedDocDotFeatures::get_feature_class() const
 {
 	return C_STREAMING_SPARSE;
 }
 
-void CStreamingHashedDocDotFeatures::start_parser()
+void StreamingHashedDocDotFeatures::start_parser()
 {
 	if (!parser.is_running())
 		parser.start_parser();
 }
 
-void CStreamingHashedDocDotFeatures::end_parser()
+void StreamingHashedDocDotFeatures::end_parser()
 {
 	parser.end_parser();
 }
 
-bool CStreamingHashedDocDotFeatures::get_next_example()
+bool StreamingHashedDocDotFeatures::get_next_example()
 {
 	SGVector<char> tmp;
 	if (parser.get_next_example(tmp.vector,
@@ -155,47 +155,47 @@ bool CStreamingHashedDocDotFeatures::get_next_example()
 	return false;
 }
 
-void CStreamingHashedDocDotFeatures::release_example()
+void StreamingHashedDocDotFeatures::release_example()
 {
 	parser.finalize_example();
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_num_features()
+int32_t StreamingHashedDocDotFeatures::get_num_features()
 {
-	return (int32_t) CMath::pow(2, num_bits);
+	return (int32_t) Math::pow(2, num_bits);
 }
 
-float64_t CStreamingHashedDocDotFeatures::get_label()
+float64_t StreamingHashedDocDotFeatures::get_label()
 {
 	return current_label;
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_num_vectors() const
+int32_t StreamingHashedDocDotFeatures::get_num_vectors() const
 {
 	return 1;
 }
 
-void CStreamingHashedDocDotFeatures::set_vector_reader()
+void StreamingHashedDocDotFeatures::set_vector_reader()
 {
-	parser.set_read_vector(&CStreamingFile::get_string);
+	parser.set_read_vector(&StreamingFile::get_string);
 }
 
-void CStreamingHashedDocDotFeatures::set_vector_and_label_reader()
+void StreamingHashedDocDotFeatures::set_vector_and_label_reader()
 {
-	parser.set_read_vector_and_label(&CStreamingFile::get_string_and_label);
+	parser.set_read_vector_and_label(&StreamingFile::get_string_and_label);
 }
 
-SGSparseVector<float64_t> CStreamingHashedDocDotFeatures::get_vector()
+SGSparseVector<float64_t> StreamingHashedDocDotFeatures::get_vector()
 {
 	return current_vector;
 }
 
-void CStreamingHashedDocDotFeatures::set_normalization(bool normalize)
+void StreamingHashedDocDotFeatures::set_normalization(bool normalize)
 {
 	converter->set_normalization(normalize);
 }
 
-void CStreamingHashedDocDotFeatures::set_k_skip_n_grams(int32_t k, int32_t n)
+void StreamingHashedDocDotFeatures::set_k_skip_n_grams(int32_t k, int32_t n)
 {
 	converter->set_k_skip_n_grams(k, n);
 }

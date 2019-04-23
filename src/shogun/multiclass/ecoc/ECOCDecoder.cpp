@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-SGVector<float64_t> CECOCDecoder::binarize(const SGVector<float64_t> query)
+SGVector<float64_t> ECOCDecoder::binarize(const SGVector<float64_t> query)
 {
     SGVector<float64_t> bquery(query.vlen);
     for (int32_t i=0; i < query.vlen; ++i)

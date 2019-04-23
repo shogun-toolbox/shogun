@@ -37,34 +37,30 @@ void test_cross_validation()
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i]=i+CMath::normal_random(0, 1.0);
+		lab.vector[i]=i+Math::normal_random(0, 1.0);
 
 	}
 
 	/* training features */
-	CDenseFeatures<float64_t>* features=
-			new CDenseFeatures<float64_t>(train_dat);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* training labels */
-	CRegressionLabels* labels=new CRegressionLabels(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	/* kernel */
-	CLinearKernel* kernel=new CLinearKernel();
+	auto kernel=std::make_shared<LinearKernel>();
 	kernel->init(features, features);
 
 	/* kernel ridge regression*/
 	float64_t tau=0.0001;
-	CKernelRidgeRegression* krr=new CKernelRidgeRegression(tau, kernel, labels);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel, labels);
 
 	/* evaluation criterion */
-	CMeanSquaredError* eval_crit=
-			new CMeanSquaredError();
+	auto eval_crit=std::make_shared<MeanSquaredError>();
 
 	/* train and output */
 	krr->train(features);
-	CRegressionLabels* output = krr->apply()->as<CRegressionLabels>();
-	SG_REF(output);
+	auto output = krr->apply()->as<RegressionLabels>();
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		SG_SPRINT("x=%f, train=%f, predict=%f\n", train_dat.matrix[i],
@@ -74,7 +70,6 @@ void test_cross_validation()
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
 	SG_SPRINT("training error: %f\n", eval_result);
-	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
@@ -83,21 +78,21 @@ void test_cross_validation()
 
 	/* splitting strategy */
 	index_t n_folds=5;
-	CCrossValidationSplitting* splitting=
-			new CCrossValidationSplitting(labels, n_folds);
+	auto splitting=
+		std::make_shared<CrossValidationSplitting>(labels, n_folds);
 
 	/* cross validation instance, 10 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(krr, features, labels,
+	auto cross=std::make_shared<CrossValidation>(krr, features, labels,
 			splitting, eval_crit);
 
 	cross->set_num_runs(100);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	auto result=cross->evaluate()->as<CrossValidationResult>();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	SG_SPRINT("cross_validation estimate:\n");
 	result->print_result();
@@ -105,10 +100,6 @@ void test_cross_validation()
 	/* same crude assertion as for above evaluation */
 	ASSERT(result->get_mean() < 2);
 
-	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(cross);
-	SG_UNREF(features);
 #endif /* HAVE_LAPACK */
 }
 

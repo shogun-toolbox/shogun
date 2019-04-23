@@ -28,7 +28,7 @@ inline T check_eigenvector_eq(
     const SGVector<T>& a, const SGVector<T>& b, float64_t epsilon = 10E-8)
 {
 	T sign = linalg::dot(a, b);
-	EXPECT_NEAR(1.0, CMath::abs(sign), epsilon);
+	EXPECT_NEAR(1.0, Math::abs(sign), epsilon);
 	return (sign < 0.0) ? -1.0 : 1.0;
 }
 
@@ -51,14 +51,14 @@ TEST(PCA, PCA_N_greater_D_EVD)
 	data(2,3)=-0.823586525156853;
 	data(2,4)=0.281984063670556;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(EVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(EVD);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -114,14 +114,14 @@ TEST(PCA, PCA_N_equals_D_EVD)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(EVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(EVD);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -177,14 +177,14 @@ TEST(PCA, PCA_N_less_D_EVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(EVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(EVD);
 	pca->set_target_dim(2);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -237,14 +237,14 @@ TEST(PCA, PCA_N_greater_D_SVD)
 	data(2,3)=-0.823586525156853;
 	data(2,4)=0.281984063670556;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(SVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(SVD);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -296,14 +296,14 @@ TEST(PCA, PCA_N_equals_D_SVD)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(SVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(SVD);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -354,14 +354,14 @@ TEST(PCA, PCA_N_less_D_SVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(SVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(SVD);
 	pca->set_target_dim(2);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -405,14 +405,14 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 	data(2,1)=-0.272469409250187;
 	data(2,2)=0.701541458163284;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(AUTO, false, MEM_IN_PLACE);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(AUTO, false, MEM_IN_PLACE);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -470,8 +470,8 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	inputVector[3] = 0.350179410603312;
 	inputVector[4] = -0.299066030332982;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(SVD);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(SVD);
 	pca->set_target_dim(2);
 	pca->fit(features);
 
@@ -502,14 +502,14 @@ TEST(PCA, PCA_WHITEN_SVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(SVD, true);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(SVD, true);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto transmat = pca->get_transformation_matrix();
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 	auto eigvec = pca->get_eigenvalues();
 
@@ -580,13 +580,13 @@ TEST(PCA, PCA_WHITEN_EVD)
 	data(4,1)=-0.831366511567624;
 	data(4,2)=0.964229422631627;
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto pca = some<CPCA>(EVD, true);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto pca = std::make_shared<PCA>(EVD, true);
 	pca->set_target_dim(3);
 	pca->fit(features);
 
 	auto finalmat = pca->transform(features)
-	                    ->as<CDenseFeatures<float64_t>>()
+	                    ->as<DenseFeatures<float64_t>>()
 	                    ->get_feature_matrix();
 
 	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);

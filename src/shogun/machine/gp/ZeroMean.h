@@ -43,13 +43,13 @@ namespace shogun
  *
  * Simple mean function that assumes a mean of zero.
  */
-class CZeroMean : public CMeanFunction
+class ZeroMean : public MeanFunction
 {
 public:
 	/** constructor */
-	CZeroMean();
+	ZeroMean();
 
-	virtual ~CZeroMean();
+	virtual ~ZeroMean();
 
 	/** returns name of the mean function
 	 *
@@ -64,7 +64,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const;
+	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const;
 };
 }
 #endif /* CZEROMEAN_H_ */

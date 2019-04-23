@@ -129,7 +129,7 @@ Parameter::add(complex128_t* param, const char* name,
 }
 
 void
-Parameter::add(CSGObject** param,
+Parameter::add(SGObject** param,
 			   const char* name, const char* description) {
 	TSGDataType type(CT_SCALAR, ST_NONE, PT_SGOBJECT);
 	add_type(&type, param, name, description);
@@ -440,7 +440,7 @@ Parameter::add_vector(
 }
 
 void
-Parameter::add_vector(CSGObject*** param, index_t* length,
+Parameter::add_vector(SGObject*** param, index_t* length,
 					   const char* name, const char* description) {
 	TSGDataType type(CT_VECTOR, ST_NONE, PT_SGOBJECT,
 					 length);
@@ -737,7 +737,7 @@ void Parameter::add(SGVector<complex128_t>* param, const char* name,
 	add_type(&type, &param->vector, name, description);
 }
 
-void Parameter::add(SGVector<CSGObject*>* param, const char* name,
+void Parameter::add(SGVector<SGObject*>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_SGOBJECT, &param->vlen);
@@ -1064,7 +1064,7 @@ Parameter::add_matrix(
 
 void
 Parameter::add_matrix(
-	CSGObject*** param, index_t* length_y, index_t* length_x,
+	SGObject*** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, ST_NONE, PT_SGOBJECT,
 					 length_y, length_x);
@@ -1429,7 +1429,7 @@ void Parameter::add(SGMatrix<complex128_t>* param, const char* name,
 	add_type(&type, &param->matrix, name, description);
 }
 
-void Parameter::add(SGMatrix<CSGObject*>* param, const char* name,
+void Parameter::add(SGMatrix<SGObject*>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_SGOBJECT, &param->num_rows,
@@ -1765,7 +1765,7 @@ void Parameter::add(SGSparseMatrix<complex128_t>* param,
 	add_type(&type, &param->sparse_matrix, name, description);
 }
 
-void Parameter::add(SGSparseMatrix<CSGObject*>* param,
+void Parameter::add(SGSparseMatrix<SGObject*>* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_SGOBJECT, &param->num_vectors,
@@ -1851,12 +1851,13 @@ TParameter::delete_cont()
 				SG_FREE(*(complex128_t**) m_parameter); break;
 			case PT_SGOBJECT:
 			{
-				CSGObject** buf = *(CSGObject***) m_parameter;
+				SGObject** buf = *(SGObject***) m_parameter;
 
-				for (index_t i=0; i<old_length; i++)
-					SG_UNREF(buf[i]);
+				//FIXME:
+				//for (index_t i=0; i<old_length; i++)
+				//	SG_UNREF(buf[i]);
 
-				SG_FREE(buf);
+				//SG_FREE(buf);
 				break;
 			}
 			case PT_UNDEFINED: default:
@@ -2029,8 +2030,8 @@ TParameter::new_cont(SGVector<index_t> dims)
 			*(complex128_t**) m_parameter
 				= SG_MALLOC(complex128_t, new_length); break;
 		case PT_SGOBJECT:
-			*(CSGObject***) m_parameter
-				= SG_CALLOC(CSGObject*, new_length);
+			*(SGObject***) m_parameter
+				= SG_CALLOC(SGObject*, new_length);
 			break;
 		case PT_UNDEFINED: default:
 			SG_SERROR("Implementation error: undefined primitive type\n");
@@ -2163,12 +2164,13 @@ TParameter::new_cont(SGVector<index_t> dims)
 }
 
 bool
-TParameter::new_sgserial(CSGObject** param,
+TParameter::new_sgserial(SGObject** param,
 						 EPrimitiveType generic,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	if (*param != NULL)
+	//FIXME
+/*	if (*param != NULL)
 		SG_UNREF(*param);
 
 	*param = create(sgserializable_name, generic);
@@ -2192,6 +2194,7 @@ TParameter::new_sgserial(CSGObject** param,
 	}
 
 	SG_REF(*param);
+	*/
 	return true;
 }
 
@@ -2209,7 +2212,7 @@ void TParameter::get_incremental_hash(
 	    uint8_t* data = ((uint8_t*) m_parameter);
 		uint32_t size = m_datatype.sizeof_stype();
 		total_length += size;
-		CHash::IncrementalMurmurHash3(
+		Hash::IncrementalMurmurHash3(
 				&hash, &carry, data, size);
 		break;
 	}
@@ -2268,7 +2271,7 @@ void TParameter::get_incremental_hash(
 
 	        uint8_t* data = (*(uint8_t**) m_parameter);
 
-		CHash::IncrementalMurmurHash3(
+		Hash::IncrementalMurmurHash3(
 				&hash, &carry, data, size);
 		break;
 	}
@@ -2290,15 +2293,13 @@ TParameter::is_valid()
  */
 Parameter::Parameter() : m_params(1)
 {
-	SG_REF(sg_io);
+
 }
 
 Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);
-
-	SG_UNREF(sg_io);
 }
 
 void
@@ -2382,28 +2383,30 @@ void Parameter::set_from_parameters(Parameter* params)
 			{
 				if (own->m_datatype.m_ctype==CT_SCALAR)
 				{
-					CSGObject** to_unref=(CSGObject**) own->m_parameter;
-					CSGObject** to_ref=(CSGObject**) current->m_parameter;
+					SGObject** to_unref=(SGObject**) own->m_parameter;
+					SGObject** to_ref=(SGObject**) current->m_parameter;
 
 					if ((*to_ref)!=(*to_unref))
 					{
-						SG_REF((*to_ref));
-						SG_UNREF((*to_unref));
+						//FIXME
+						//SG_REF((*to_ref));
+						//SG_UNREF((*to_unref));
 					}
 
 				}
 				else
 				{
 					/* unref all SGObjects and reference the new ones */
-					CSGObject*** to_unref=(CSGObject***) own->m_parameter;
-					CSGObject*** to_ref=(CSGObject***) current->m_parameter;
+					SGObject*** to_unref=(SGObject***) own->m_parameter;
+					SGObject*** to_ref=(SGObject***) current->m_parameter;
 
 					for (index_t j=0; j<own->m_datatype.get_num_elements(); ++j)
 					{
 						if ((*to_ref)[j]!=(*to_unref)[j])
 						{
-							SG_REF(((*to_ref)[j]));
-							SG_UNREF(((*to_unref)[j]));
+							//FIXME
+							//SG_REF(((*to_ref)[j]));
+							//SG_UNREF(((*to_unref)[j]));
 						}
 					}
 				}
@@ -2422,12 +2425,12 @@ void Parameter::set_from_parameters(Parameter* params)
 			dest=own->m_parameter;
 			source=current->m_parameter;
 
-			/* in case of CSGObject, pointers are not equal if CSGObjects are
+			/* in case of SGObject, pointers are not equal if SGObjects are
 			 * equal, so check. For other values, the pointers are equal and
 			 * the not-copying is handled below before the memcpy call */
 			if (own->m_datatype.m_ptype==PT_SGOBJECT)
 			{
-				if (*((CSGObject**)dest) == *((CSGObject**)source))
+				if (*((SGObject**)dest) == *((SGObject**)source))
 				{
 					dest=NULL;
 					source=NULL;
@@ -2447,8 +2450,8 @@ void Parameter::set_from_parameters(Parameter* params)
 				source=*((float64_t**) current->m_parameter);
 				break;
 			case PT_SGOBJECT:
-				dest=*((CSGObject**) own->m_parameter);
-				source=*((CSGObject**) current->m_parameter);
+				dest=*((SGObject**) own->m_parameter);
+				source=*((SGObject**) current->m_parameter);
 				break;
 			default:
 				SG_SNOTIMPLEMENTED

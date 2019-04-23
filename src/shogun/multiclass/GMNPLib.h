@@ -53,11 +53,11 @@ namespace shogun
  *   Methods. Research report. CTU-CMP-2005-22. CTU FEL Prague. 2005.
  *   ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .
 */
-class CGMNPLib: public CSGObject
+class GMNPLib: public SGObject
 {
 	public:
 		/** default constructor  */
-		CGMNPLib();
+		GMNPLib();
 
 		/** constructor
 		 *
@@ -68,11 +68,11 @@ class CGMNPLib: public CSGObject
 		 * @param num_classes number of classes
 		 * @param reg_const reg const
 		 */
-		CGMNPLib(
-			float64_t* vector_y, CKernel* kernel, int32_t num_data,
+		GMNPLib(
+			float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data,
 			int32_t num_virtual_data, int32_t num_classes, float64_t reg_const);
 
-		virtual ~CGMNPLib();
+		virtual ~GMNPLib();
 
 		/** --------------------------------------------------------------
 		  GMNP solver based on improved MDM algorithm 1.
@@ -147,7 +147,7 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** vectory */
 		float64_t* m_vector_y;
 		/** kernel */
-		CKernel* m_kernel;
+		std::shared_ptr<Kernel> m_kernel;
 
 		/** index of first used column */
 		int32_t first_virt_inx;

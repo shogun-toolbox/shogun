@@ -13,15 +13,15 @@
 
 using namespace shogun;
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel()
-: CStringKernel<char>()
+SimpleLocalityImprovedStringKernel::SimpleLocalityImprovedStringKernel()
+: StringKernel<char>()
 {
 	init();
 }
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
+SimpleLocalityImprovedStringKernel::SimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
-: CStringKernel<char>(size)
+: StringKernel<char>(size)
 {
 	init();
 
@@ -30,10 +30,10 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	outer_degree=od;
 }
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r,
+SimpleLocalityImprovedStringKernel::SimpleLocalityImprovedStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 	int32_t len, int32_t id, int32_t od)
-: CStringKernel<char>()
+: StringKernel<char>()
 {
 	init();
 
@@ -44,18 +44,18 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	init(l, r);
 }
 
-CSimpleLocalityImprovedStringKernel::~CSimpleLocalityImprovedStringKernel()
+SimpleLocalityImprovedStringKernel::~SimpleLocalityImprovedStringKernel()
 {
 	cleanup();
 }
 
-bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
+bool SimpleLocalityImprovedStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result = CStringKernel<char>::init(l,r);
+	bool result = StringKernel<char>::init(l,r);
 
 	if (!result)
 		return false;
-	const int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	const int32_t num_features = std::static_pointer_cast<StringFeatures<char>>(l)->get_max_vector_length();
 	const int32_t PYRAL = 2 * length - 1; // total window length
 	const int32_t pyra_len  = num_features-PYRAL+1;
 	const int32_t pyra_len2 = (int32_t) pyra_len/2;
@@ -99,13 +99,13 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CSimpleLocalityImprovedStringKernel::cleanup()
+void SimpleLocalityImprovedStringKernel::cleanup()
 {
 	pyramid_weights = SGVector<float64_t>();
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
+float64_t SimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	     const char* const x2, const int32_t NOF_NTS, const int32_t NTWIDTH,
 	     const int32_t DEGREE1, const int32_t DEGREE2, float64_t *pyra)
 {
@@ -167,14 +167,14 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	return pot;
 }
 
-float64_t CSimpleLocalityImprovedStringKernel::compute(
+float64_t SimpleLocalityImprovedStringKernel::compute(
 	int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
@@ -184,14 +184,14 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
 	dpt = dpt / pow((float64_t) alen, (float64_t) outer_degree);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return (float64_t) dpt;
 }
 
-void CSimpleLocalityImprovedStringKernel::init()
+void SimpleLocalityImprovedStringKernel::init()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
 	length = 3;
 	inner_degree = 3;

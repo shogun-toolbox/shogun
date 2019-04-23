@@ -51,7 +51,7 @@ namespace shogun
 	 * Convert an std::pair<std::string, Any> to a tensorflow::Event,
 	 * which can be written to file and used with tools like Tensorboard.
 	 */
-	class TBOutputFormat : public CSGObject
+	class TBOutputFormat : public SGObject
 	{
 
 	public:

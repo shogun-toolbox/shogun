@@ -47,8 +47,8 @@ namespace shogun
 	class LDASolver
 	{
 	protected:
-		CDenseFeatures<T>* m_features;
-		CMulticlassLabels* m_labels;
+		std::shared_ptr<DenseFeatures<T>> m_features;
+		std::shared_ptr<MulticlassLabels> m_labels;
 		// Regularization parameter
 		float64_t m_gamma;
 		// Vector that holds the mean of each class
@@ -73,11 +73,9 @@ namespace shogun
 
 	public:
 		LDASolver(
-		    CDenseFeatures<T>* features, CMulticlassLabels* labels,
+		    std::shared_ptr<DenseFeatures<T>> features, std::shared_ptr<MulticlassLabels> labels,
 		    float64_t gamma = 0.0)
 		{
-			SG_REF(features);
-			SG_REF(labels);
 
 			m_features = features;
 			m_labels = labels;
@@ -89,8 +87,6 @@ namespace shogun
 
 		~LDASolver()
 		{
-			SG_UNREF(m_features);
-			SG_UNREF(m_labels);
 		}
 
 		/** @return the vector of classes' mean */

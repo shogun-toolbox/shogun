@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CCPLEXSVM::CCPLEXSVM()
-: CSVM()
+: SVM()
 {
 }
 
@@ -25,7 +25,7 @@ CCPLEXSVM::~CCPLEXSVM()
 {
 }
 
-bool CCPLEXSVM::train_machine(CFeatures* data)
+bool CCPLEXSVM::train_machine(Features* data)
 {
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
@@ -48,7 +48,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	{
 		int32_t n,m;
 		int32_t num_label=0;
-		SGVector<float64_t> y=((CBinaryLabels*)m_labels)->get_labels();
+		SGVector<float64_t> y=((BinaryLabels*)m_labels)->get_labels();
 		SGMatrix<float64_t> H=kernel->get_kernel_matrix();
 		m=H.num_rows;
 		n=H.num_cols;
@@ -76,7 +76,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			if (alphas[i]>0)
 			{
 				//set_alpha(j, alphas[i]*labels->get_label(i)/etas[1]);
-				set_alpha(j, alphas[i]*((CBinaryLabels*) m_labels)->get_int_label(i));
+				set_alpha(j, alphas[i]*((BinaryLabels*) m_labels)->get_int_label(i));
 				set_support_vector(j, i);
 				j++;
 			}

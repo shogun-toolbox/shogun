@@ -9,13 +9,13 @@
 #endif
 
 /* Remove C Prefix */
-%rename(LatentModel) CLatentModel;
+%shared_ptr(shogun::LatentModel)
 
-%rename(LinearLatentMachine) CLinearLatentMachine;
+%shared_ptr(shogun::LinearLatentMachine)
 
-%rename(LatentSVM) CLatentSVM;
+%shared_ptr(shogun::LatentSVM)
 
-%rename(DirectorLatentModel) CDirectorLatentModel;
+%shared_ptr(shogun::DirectorLatentModel)
 
 
 /* Include Class Headers to make them visible from within the target language */

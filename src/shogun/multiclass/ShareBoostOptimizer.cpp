@@ -29,11 +29,11 @@ void ShareBoostOptimizer::optimize()
 	int32_t w_len = m_sb->m_activeset.vlen;
 	for (int32_t i=0; i < m_sb->m_multiclass_strategy->get_num_classes(); ++i)
 	{
-		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_sb->m_machines->get_element(i));
+		auto machine = m_sb->m_machines.at(i)->as<LinearMachine>();
 		SGVector<float64_t> w(w_len);
 		std::copy(W + i*w_len, W + (i+1)*w_len, w.vector);
 		machine->set_w(w);
-		SG_UNREF(machine);
+
 	}
 
 	SG_FREE(W);

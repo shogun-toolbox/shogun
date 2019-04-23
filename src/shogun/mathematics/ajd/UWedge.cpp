@@ -9,7 +9,7 @@
 using namespace shogun;
 using namespace Eigen;
 
-SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> UWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 					double eps, int itermax)
 {
 	int d = C.dims[0];
@@ -108,7 +108,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 			crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();
 		}
 
-		improve = CMath::abs(crit.back() - crit[iter]);
+		improve = Math::abs(crit.back() - crit[iter]);
 		iter++;
 	}
 

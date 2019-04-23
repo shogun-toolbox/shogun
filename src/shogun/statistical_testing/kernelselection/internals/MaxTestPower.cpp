@@ -42,7 +42,7 @@
 using namespace shogun;
 using namespace internal;
 
-MaxTestPower::MaxTestPower(KernelManager& km, CMMD* est) : MaxMeasure(km, est), lambda(1E-5)
+MaxTestPower::MaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, est), lambda(1E-5)
 {
 }
 
@@ -58,7 +58,7 @@ void MaxTestPower::compute_measures()
 	const auto n=estimator->get_num_samples_q();
 	auto existing_kernel=estimator->get_kernel();
 	const auto num_kernels=kernel_mgr.num_kernels();
-	auto streaming_mmd=dynamic_cast<CStreamingMMD*>(estimator);
+	auto streaming_mmd=std::dynamic_pointer_cast<StreamingMMD>(estimator);
 	if (streaming_mmd)
 	{
 		for (auto i=0; i<num_kernels; ++i)
@@ -74,7 +74,7 @@ void MaxTestPower::compute_measures()
 	}
 	else
 	{
-		auto quadratictime_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+		auto quadratictime_mmd=std::dynamic_pointer_cast<QuadraticTimeMMD>(estimator);
 		ASSERT(quadratictime_mmd);
 		measures=quadratictime_mmd->multikernel()->test_power(kernel_mgr);
 	}

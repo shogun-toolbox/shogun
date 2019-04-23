@@ -49,7 +49,7 @@ public:
 	/** Constructor
 	 * @param fun stochastic cost function
 	 */
-	SMDMinimizer(FirstOrderStochasticCostFunction *fun);
+	SMDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun);
 
 	/** Destructor */
 	virtual ~SMDMinimizer();
@@ -69,14 +69,14 @@ public:
 	/** Set projection function
 	 * @param mapping_fun mapping/projection function
 	 */
-	virtual void set_mapping_function(MappingFunction* mapping_fun);
+	virtual void set_mapping_function(std::shared_ptr<MappingFunction> mapping_fun);
 
 protected:
 	/**  init the minimization process */
 	virtual void init_minimization();
 
 	/** mapping function */
-	MappingFunction* m_mapping_fun;
+	std::shared_ptr<MappingFunction> m_mapping_fun;
 private:
 	  /* Init */
 	void init();

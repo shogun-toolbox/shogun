@@ -150,7 +150,7 @@ template <class Trie> class CTrie;
  * may save a lot of memory on higher degree tries.
  *
  */
-IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
+IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 {
 	public:
 		/** default constructor  */
@@ -656,7 +656,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 };
 	template <class Trie>
 	CTrie<Trie>::CTrie()
-	: CSGObject(), degree(0), position_weights(NULL),
+	: SGObject(), degree(0), position_weights(NULL),
 		use_compact_terminal_nodes(false),
 		weights_in_tree(true)
 	{
@@ -673,7 +673,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 
 	template <class Trie>
 	CTrie<Trie>::CTrie(int32_t d, bool p_use_compact_terminal_nodes)
-	: CSGObject(), degree(d), position_weights(NULL),
+	: SGObject(), degree(d), position_weights(NULL),
 		use_compact_terminal_nodes(p_use_compact_terminal_nodes),
 		weights_in_tree(true)
 	{
@@ -689,7 +689,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 
 	template <class Trie>
 	CTrie<Trie>::CTrie(const CTrie & to_copy)
-	: CSGObject(to_copy), degree(to_copy.degree), position_weights(NULL),
+	: SGObject(to_copy), degree(to_copy.degree), position_weights(NULL),
 		use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
 	{
 		if (to_copy.position_weights!=NULL)
@@ -1506,7 +1506,7 @@ void CTrie<Trie>::add_to_trie(
 	if (weights_in_tree)
 	{
 		for (int32_t j=0; (j<degree) && (i+j<length); j++)
-			if (CMath::abs(weights_column[j]*alpha)>0)
+			if (Math::abs(weights_column[j]*alpha)>0)
 				max_depth = j+1 ;
 	}
 	else

@@ -15,7 +15,7 @@ namespace shogun
 {
 
 /** A helper class for some ECOC related procedures. */
-class CECOCUtil
+class ECOCUtil
 {
 public:
     /** compute hamming distance.
@@ -28,7 +28,7 @@ public:
         {
             int32_t dist = 0;
             for (int32_t i=0; i < len; ++i)
-                dist += static_cast<int32_t>(CMath::abs((c1[i]-c2[i])));
+                dist += static_cast<int32_t>(Math::abs((c1[i]-c2[i])));
             return dist/2;
         }
 };

@@ -16,9 +16,9 @@
 
 namespace shogun {
 
-class CLabels;
-class CDotFeatures;
-class CFeatures;
+class Labels;
+class DotFeatures;
+class Features;
 
 /** @brief Class GaussianNaiveBayes, a Gaussian Naive Bayes classifier
  *
@@ -31,7 +31,7 @@ class CFeatures;
  * \f]
  *
  */
-class CGaussianNaiveBayes : public CNativeMulticlassMachine
+class GaussianNaiveBayes : public NativeMulticlassMachine
 {
 
 public:
@@ -40,34 +40,34 @@ public:
 	/** default constructor
 	 *
 	 */
-	CGaussianNaiveBayes();
+	GaussianNaiveBayes();
 
 	/** constructor
 	 * @param train_examples train examples
 	 * @param train_labels labels corresponding to train_examples
 	 */
-	CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels);
+	GaussianNaiveBayes(std::shared_ptr<Features> train_examples, std::shared_ptr<Labels> train_labels);
 
 	/** destructor
 	 *
 	 */
-	virtual ~CGaussianNaiveBayes();
+	virtual ~GaussianNaiveBayes();
 
 	/** set features for classify
 	 * @param features features to be set
 	 */
-	virtual void set_features(CFeatures* features);
+	virtual void set_features(std::shared_ptr<Features> features);
 
 	/** get features for classify
 	 * @return current features
 	 */
-	virtual CFeatures* get_features();
+	virtual std::shared_ptr<Features> get_features();
 
 	/** classify specified examples
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** classifiy specified example
 	 * @param idx example index
@@ -91,7 +91,7 @@ protected:
 	 * @param data train examples
 	 * @return true if successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 private:
 	void init();
@@ -99,7 +99,7 @@ private:
 protected:
 
 	/// features for training or classifying
-	CDotFeatures* m_features;
+	std::shared_ptr<DotFeatures> m_features;
 
 	/// minimal label
 	int32_t m_min_label;

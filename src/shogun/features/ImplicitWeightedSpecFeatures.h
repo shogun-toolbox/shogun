@@ -19,36 +19,36 @@
 namespace shogun
 {
 
-template <class ST> class CStringFeatures;
+template <class ST> class StringFeatures;
 
 /** @brief Features that compute the Weighted Spectrum Kernel feature space
  * explicitly.
  *
  * \sa CWeightedCommWordStringKernel
  */
-class CImplicitWeightedSpecFeatures : public CDotFeatures
+class ImplicitWeightedSpecFeatures : public DotFeatures
 {
 	public:
 		/** default constructor  */
-		CImplicitWeightedSpecFeatures();
+		ImplicitWeightedSpecFeatures();
 
 		/** constructor
 		 *
 		 * @param str stringfeatures (of words)
 		 * @param normalize whether to use sqrtdiag normalization
 		 */
-		CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize=true);
+		ImplicitWeightedSpecFeatures(std::shared_ptr<StringFeatures<uint16_t>> str, bool normalize=true);
 
 		/** copy constructor */
-		CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures & orig);
+		ImplicitWeightedSpecFeatures(const ImplicitWeightedSpecFeatures & orig);
 
-		virtual ~CImplicitWeightedSpecFeatures();
+		virtual ~ImplicitWeightedSpecFeatures();
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -66,7 +66,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -194,7 +194,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 
 	protected:
 		/** reference to strings */
-		CStringFeatures<uint16_t>* strings;
+		std::shared_ptr<StringFeatures<uint16_t>> strings;
 
 		/** use sqrtdiag normalization */
 		float64_t* normalization_factors;

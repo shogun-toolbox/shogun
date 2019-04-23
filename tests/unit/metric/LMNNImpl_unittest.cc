@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin,
  *          Viktor Gal
  */
 #include <gtest/gtest.h>
@@ -30,7 +30,7 @@ TEST(LMNNImpl,find_target_nn)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -40,11 +40,11 @@ TEST(LMNNImpl,find_target_nn)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because LMNN works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// find target neighbors
 	int32_t k=1;	// number of target neighbors per example
-	SGMatrix<index_t> target_nn=CLMNNImpl::find_target_nn(features,labels,k);
+	SGMatrix<index_t> target_nn=LMNNImpl::find_target_nn(features,labels,k);
 
 	// check output dimensions
 	EXPECT_EQ(target_nn.num_rows, k);
@@ -55,8 +55,8 @@ TEST(LMNNImpl,find_target_nn)
 	EXPECT_EQ(target_nn(0,2), 3);
 	EXPECT_EQ(target_nn(0,3), 2);
 
-	SG_UNREF(features)
-	SG_UNREF(labels)
+
+
 }
 
 TEST(LMNNImpl,sum_outer_products)
@@ -80,7 +80,7 @@ TEST(LMNNImpl,sum_outer_products)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// matrix of target neighbors
 	SGMatrix<index_t> target_nn(1,n);
@@ -90,7 +90,7 @@ TEST(LMNNImpl,sum_outer_products)
 	target_nn(0,3)=2;
 
 	// compute the sum of outer products of vector differences given by target_nn
-	auto sop = CLMNNImpl::sum_outer_products(features, target_nn);
+	auto sop = LMNNImpl::sum_outer_products(features, target_nn);
 
 	// check output dimensions
 	EXPECT_EQ(sop.num_rows, d);
@@ -105,7 +105,7 @@ TEST(LMNNImpl,sum_outer_products)
 	// target neighbors matrix)
 	target_nn=SGMatrix<index_t>(1,1);
 	target_nn(0,0)=0;
-	sop=CLMNNImpl::sum_outer_products(features,target_nn);
+	sop=LMNNImpl::sum_outer_products(features,target_nn);
 
 	// check output dimensions
 	EXPECT_EQ(sop.num_rows, d);
@@ -116,7 +116,7 @@ TEST(LMNNImpl,sum_outer_products)
 			EXPECT_EQ(sop(i,j), 0);
 
 	// input an empty matrix of target neighbors
-	sop=CLMNNImpl::sum_outer_products(features,SGMatrix<index_t>(0,0));
+	sop=LMNNImpl::sum_outer_products(features,SGMatrix<index_t>(0,0));
 
 	// check output dimensions
 	EXPECT_EQ(sop.num_rows, d);
@@ -126,7 +126,7 @@ TEST(LMNNImpl,sum_outer_products)
 		for (int32_t j=0; j<d; j++)
 			EXPECT_EQ(sop(i,j), 0);
 
-	SG_UNREF(features);
+
 }
 
 TEST(LMNNImpl,find_impostors_exact)
@@ -146,7 +146,7 @@ TEST(LMNNImpl,find_impostors_exact)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 	// shorthand for the number of features
 	int32_t d=features->get_num_features();
 
@@ -158,17 +158,17 @@ TEST(LMNNImpl,find_impostors_exact)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because LMNN works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// find target neighbors
 	int32_t k=1;	// number of target neighbors per example
-	SGMatrix<index_t> target_nn=CLMNNImpl::find_target_nn(features,labels,k);
+	SGMatrix<index_t> target_nn=LMNNImpl::find_target_nn(features,labels,k);
 
 	// find impostors with exact search (force exact search by setting correction=1)
 	SGMatrix<float64_t> L(d, d);
 	linalg::identity(L);
 	ImpostorsSetType impostors =
-	    CLMNNImpl::find_impostors(features, labels, L, target_nn, 0, 1);
+	    LMNNImpl::find_impostors(features, labels, L, target_nn, 0, 1);
 
 	// impostors ground truth computed externally
 	index_t impostors_arr[] = {0,1,2, 0,1,3, 2,3,0, 2,3,1, 3,2,0, 3,2,1};
@@ -186,6 +186,6 @@ TEST(LMNNImpl,find_impostors_exact)
 		EXPECT_EQ(impostors_gt(2,i), it->impostor);
 	}
 
-	SG_UNREF(features)
-	SG_UNREF(labels)
+
+
 }

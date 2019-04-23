@@ -42,16 +42,15 @@ void test()
 		for (index_t j=0; j<num_features; ++j)
 		{
 			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
-			train_dat.matrix[i*num_features+j]=CMath::normal_random(mean, sigma);
+			train_dat.matrix[i*num_features+j]=Math::normal_random(mean, sigma);
 		}
 	}
 
 	SGMatrix<float64_t>::display_matrix(train_dat.matrix, train_dat.num_rows, train_dat.num_cols, "training data");
 
 	/* training features */
-	CDenseFeatures<float64_t>* features=
-			new CDenseFeatures<float64_t>(train_dat);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=
+			new DenseFeatures<float64_t>(train_dat);
 
 	/* training labels +/- 1 for each cluster */
 	SGVector<float64_t> lab(num_vectors);
@@ -60,14 +59,13 @@ void test()
 
 	SGVector<float64_t>::display_vector(lab.vector, lab.vlen, "training labels");
 
-	CBinaryLabels* labels=new CBinaryLabels(lab);
-	SG_REF(labels);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	/* evaluation instance */
-	CContingencyTableEvaluation* eval=new CContingencyTableEvaluation(ACCURACY);
+	auto eval=std::make_shared<ContingencyTableEvaluation>(ACCURACY);
 
 	/* kernel */
-	CKernel* kernel=new CLinearKernel();
+	Kernel* kernel=new LinearKernel();
 	kernel->init(features, features);
 
 	/* create svm via libsvm */
@@ -89,13 +87,11 @@ void test()
 	indices.vector[4]=5;
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	CBinaryLabels* output = svm->apply()->as<CBinaryLabels>();
-	SG_REF(output);
+	BinaryLabels* output = svm->apply()->as<BinaryLabels>();
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
-	SG_UNREF(output);
 
 	SG_SPRINT("\n\n");
 	indices=SGVector<index_t>(3);
@@ -103,42 +99,32 @@ void test()
 	indices.vector[1]=2;
 	indices.vector[2]=3;
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
-	output = svm->apply()->as<CBinaryLabels>();
-	SG_REF(output);
+	output = svm->apply()->as<BinaryLabels>();
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
-	SG_UNREF(output);
 
 	SG_SPRINT("\n\n");
 	indices=SGVector<index_t>(4);
 	indices.range_fill();
 	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	output = svm->apply()->as<CBinaryLabels>();
-	SG_REF(output);
+	output = svm->apply()->as<BinaryLabels>();
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
-	SG_UNREF(output);
 
 	SG_SPRINT("normal train\n");
 	svm->data_unlock();
 	svm->train();
-	output = svm->apply()->as<CBinaryLabels>();
-	SG_REF(output);
+	output = svm->apply()->as<BinaryLabels>();
 	ASSERT(eval->evaluate(output, labels)==1);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
 	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
-	SG_UNREF(output);
 
 	/* clean up */
-	SG_UNREF(svm);
-	SG_UNREF(features);
-	SG_UNREF(eval);
-	SG_UNREF(labels);
 }
 
 int main(int argc, char **argv)

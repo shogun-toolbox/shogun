@@ -92,7 +92,7 @@ namespace shogun
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(mode), m_columns_num(0), m_rows_num(0),
 		      m_last_progress(0), m_last_progress_time(0),
-		      m_progress_start_time(CTime::get_curtime()),
+		      m_progress_start_time(Time::get_curtime()),
 		      m_current_value(min_value)
 		{
 		}
@@ -199,7 +199,7 @@ namespace shogun
 			//    "Not enough terminal space to show the progress bar!\n")
 
 			char str[1000];
-			float64_t runtime = CTime::get_curtime();
+			float64_t runtime = Time::get_curtime();
 
 			if (difference > 0.0)
 				v = 100 * (m_current_value.load() - m_min_value) /
@@ -300,7 +300,7 @@ namespace shogun
 			//    "Not enough terminal space to show the progress bar!\n")
 
 			char str[1000];
-			float64_t runtime = CTime::get_curtime();
+			float64_t runtime = Time::get_curtime();
 
 			if (difference > 0.0)
 				v = 100 * (val - min_value) / (max_value - min_value);

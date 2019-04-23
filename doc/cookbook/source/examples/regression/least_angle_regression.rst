@@ -19,7 +19,7 @@ Pre-processing of :math:`X` and :math:`y` are needed to ensure the correctness o
 Example
 -------
 
-Imagine we have files with training and test data. We create `CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` as
+Imagine we have files with training and test data. We create `DenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` as
 
 .. sgexample:: least_angle_regression.sg:create_features
 
@@ -27,11 +27,11 @@ To normalize and center the features, we create an instance of preprocessors :sg
 
 .. sgexample:: least_angle_regression:preprocess_features
 
-We create an instance of :sgclass:`CLeastAngleRegression` by selecting to disable the LASSO solution, setting the penalty :math:`\lambda` for l1 norm and setting training data and labels.
+We create an instance of :sgclass:`LeastAngleRegression` by selecting to disable the LASSO solution, setting the penalty :math:`\lambda` for l1 norm and setting training data and labels.
 
 .. sgexample:: least_angle_regression:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels` .
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`RegressionLabels` .
 
 .. sgexample:: linear_ridge_regression.sg:train_and_apply
 
@@ -39,7 +39,7 @@ After training, we can extract :math:`{\bf w}`.
 
 .. sgexample:: linear_ridge_regression.sg:extract_w
 
-Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
+Finally, we can evaluate the :sgclass:`MeanSquaredError`.
 
 .. sgexample:: linear_ridge_regression.sg:evaluate_error
 

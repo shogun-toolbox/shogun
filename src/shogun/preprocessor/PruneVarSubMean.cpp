@@ -14,25 +14,25 @@
 
 using namespace shogun;
 
-CPruneVarSubMean::CPruneVarSubMean(bool divide)
-: CDensePreprocessor<float64_t>()
+PruneVarSubMean::PruneVarSubMean(bool divide)
+: DensePreprocessor<float64_t>()
 {
 	init();
 	register_parameters();
 	m_divide_by_std = divide;
 }
 
-CPruneVarSubMean::~CPruneVarSubMean()
+PruneVarSubMean::~PruneVarSubMean()
 {
 	cleanup();
 }
 
-void CPruneVarSubMean::fit(CFeatures* features)
+void PruneVarSubMean::fit(std::shared_ptr<Features> features)
 {
 	if (m_fitted)
 		cleanup();
 
-	auto simple_features = features->as<CDenseFeatures<float64_t>>();
+	auto simple_features = features->as<DenseFeatures<float64_t>>();
 	auto num_examples = simple_features->get_num_vectors();
 	auto num_features = simple_features->get_num_features();
 
@@ -91,7 +91,7 @@ void CPruneVarSubMean::fit(CFeatures* features)
 }
 
 /// clean up allocated memory
-void CPruneVarSubMean::cleanup()
+void PruneVarSubMean::cleanup()
 {
 	m_idx=SGVector<int32_t>();
 	m_mean=SGVector<float64_t>();
@@ -100,7 +100,7 @@ void CPruneVarSubMean::cleanup()
 }
 
 SGMatrix<float64_t>
-CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
+PruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	assert_fitted();
 
@@ -130,7 +130,7 @@ CPruneVarSubMean::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> PruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	assert_fitted();
 
@@ -146,7 +146,7 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 	return out;
 }
 
-void CPruneVarSubMean::init()
+void PruneVarSubMean::init()
 {
 	m_fitted = false;
 	m_divide_by_std = false;
@@ -156,7 +156,7 @@ void CPruneVarSubMean::init()
 	m_std = SGVector<float64_t>();
 }
 
-void CPruneVarSubMean::register_parameters()
+void PruneVarSubMean::register_parameters()
 {
 	SG_ADD(&m_divide_by_std, "divide_by_std", "Divide by standard deviation", ParameterProperties::HYPER);
 	SG_ADD(&m_num_idx, "num_idx", "Number of elements in idx_vec");

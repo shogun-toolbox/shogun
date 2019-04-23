@@ -22,18 +22,18 @@ namespace shogun
  * See http://graphmod.ics.uci.edu/uai08/FileFormat for more
  * details.
  */
-class CUAIFile : public CFile
+class UAIFile : public File
 {
 public:
     /** default constructor */
-    CUAIFile();
+    UAIFile();
 
     /** constructor
      *
      * @param f already opened file
      * @param name variable name (e.g. "x" or "/path/to/x")
      */
-    CUAIFile(FILE* f, const char* name=NULL);
+    UAIFile(FILE* f, const char* name=NULL);
 
 #ifdef HAVE_FDOPEN
     /** constructor
@@ -42,7 +42,7 @@ public:
      * @param mode mode, 'r' or 'w'
      * @param name variable name (e.g. "x" or "/path/to/x")
      */
-    CUAIFile(int fd, const char* mode, const char* name=NULL);
+    UAIFile(int fd, const char* mode, const char* name=NULL);
 #endif
 
     /** constructor
@@ -51,10 +51,10 @@ public:
      * @param rw mode, 'r' or 'w'
      * @param name variable name (e.g. "x" or "/path/to/x")
      */
-    CUAIFile(const char* fname, char rw='r', const char* name=NULL);
+    UAIFile(const char* fname, char rw='r', const char* name=NULL);
 
     /** destructor */
-    virtual ~CUAIFile();
+    virtual ~UAIFile();
 
     /** @name Parse Function
      *
@@ -182,16 +182,16 @@ private:
 
 protected:
     /** object for reading lines from file */
-    CLineReader* m_line_reader;
+    std::shared_ptr<LineReader> m_line_reader;
 
     /** parser of lines */
-    CParser* m_parser;
+    std::shared_ptr<Parser> m_parser;
 
     /** tokenizer for line_reader */
-    CDelimiterTokenizer* m_line_tokenizer;
+    std::shared_ptr<DelimiterTokenizer> m_line_tokenizer;
 
     /** tokenizer for parser */
-    CDelimiterTokenizer* m_tokenizer;
+    std::shared_ptr<DelimiterTokenizer> m_tokenizer;
 
     /** delimiter */
     char m_delimiter;

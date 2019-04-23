@@ -49,18 +49,18 @@ namespace shogun
  * ...
  * </pre>
  */
-class CProtobufFile : public CFile
+class ProtobufFile : public File
 {
 public:
 	/** default constructor */
-	CProtobufFile();
+	ProtobufFile();
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CProtobufFile(FILE* f, const char* name=NULL);
+	ProtobufFile(FILE* f, const char* name=NULL);
 
 	/** constructor
 	 *
@@ -68,10 +68,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CProtobufFile(const char* fname, char rw='r', const char* name=NULL);
+	ProtobufFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
-	virtual ~CProtobufFile();
+	virtual ~ProtobufFile();
 
 #ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions

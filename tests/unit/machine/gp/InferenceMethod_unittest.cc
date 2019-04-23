@@ -34,13 +34,13 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 	lab_train[0]=1;
 	lab_train[1]=-1;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8);
-	CZeroMean* mean=new CZeroMean();
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
-	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
+	auto kernel=std::make_shared<GaussianKernel>(10, 8);
+	auto mean=std::make_shared<ZeroMean>();
+	auto likelihood=std::make_shared<LogitLikelihood>();
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 	inf->set_scale(2.0);
 
@@ -51,7 +51,7 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 	EXPECT_NEAR(sample, -1.67990517588, 0.3);
 	EXPECT_NEAR(sample, -inf->get_negative_log_marginal_likelihood(), 0.3);
 
-	SG_UNREF(inf);
+
 }
 
 TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_ep)
@@ -67,13 +67,13 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_ep)
 	lab_train[0]=1;
 	lab_train[1]=-1;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8);
-	CZeroMean* mean=new CZeroMean();
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train, mean,
+	auto kernel=std::make_shared<GaussianKernel>(10, 8);
+	auto mean=std::make_shared<ZeroMean>();
+	auto likelihood=std::make_shared<LogitLikelihood>();
+	auto inf=std::make_shared<EPInferenceMethod>(kernel, features_train, mean,
 			labels_train, likelihood);
 	inf->set_scale(2.0);
 
@@ -82,7 +82,7 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_ep)
 	float64_t sample=inf->get_marginal_likelihood_estimate(100000);
 	EXPECT_NEAR(sample, -inf->get_negative_log_marginal_likelihood(), 1E-2);
 
-	SG_UNREF(inf);
+
 }
 #endif //USE_GPL_SHOGUN
 
@@ -107,16 +107,16 @@ TEST(InferenceMethod, compute_gradient)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<RegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -146,5 +146,5 @@ TEST(InferenceMethod, compute_gradient)
 	uint32_t hash7=inf->m_hash;
 	EXPECT_TRUE(hash6==hash7);
 
-	SG_UNREF(inf);
+
 }

@@ -45,7 +45,7 @@ using namespace shogun;
 
 /** @brief Class of the simple function
  */
-class CSimpleFunction : public CFunction
+class SimpleFunction : public Function
 {
 public:
 	/** returns value of the function at given point
@@ -63,7 +63,7 @@ public:
 /** @brief Class of the probability density function of the normal
  * distribution
  */
-class CNormalPDF : public CFunction
+class NormalPDF : public Function
 {
 public:
 	/** constructor
@@ -71,7 +71,7 @@ public:
 	 * @param mu mean
 	 * @param sigma standard deviation
 	 */
-	CNormalPDF(float64_t mu, float64_t sigma)
+	NormalPDF(float64_t mu, float64_t sigma)
 	{
 		m_mu=mu;
 		m_sigma=sigma;
@@ -97,8 +97,8 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0 / (std::sqrt(2 * CMath::PI) * m_sigma)) *
-		       std::exp(-CMath::sq(x - m_mu) / (2.0 * CMath::sq(m_sigma)));
+		return (1.0 / (std::sqrt(2 * Math::PI) * m_sigma)) *
+		       std::exp(-Math::sq(x - m_mu) / (2.0 * Math::sq(m_sigma)));
 	}
 
 private:
@@ -112,7 +112,7 @@ private:
 /** @brief Class of the probability density function of the
  * non-standardized Student's t-distribution
  */
-class CStudentsTPDF : public CFunction
+class StudentsTPDF : public Function
 {
 public:
 	/** constructor
@@ -121,7 +121,7 @@ public:
 	 * @param mu location parameter
 	 * @param nu degrees of freedom
 	 */
-	CStudentsTPDF(float64_t sigma, float64_t mu, float64_t nu)
+	StudentsTPDF(float64_t sigma, float64_t mu, float64_t nu)
 	{
 		m_sigma=sigma;
 		m_mu=mu;
@@ -155,14 +155,14 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		float64_t lZ = CStatistics::lgamma(m_nu / 2.0 + 0.5) -
-		               CStatistics::lgamma(m_nu / 2.0) -
-		               std::log(m_nu * CMath::PI * CMath::sq(m_sigma)) / 2.0;
+		float64_t lZ = Statistics::lgamma(m_nu / 2.0 + 0.5) -
+		               Statistics::lgamma(m_nu / 2.0) -
+		               std::log(m_nu * Math::PI * Math::sq(m_sigma)) / 2.0;
 		return std::exp(
 		    lZ -
 		    (m_nu / 2.0 + 0.5) *
 		        std::log(
-		            1.0 + CMath::sq(x - m_mu) / (m_nu * CMath::sq(m_sigma))));
+		            1.0 + Math::sq(x - m_mu) / (m_nu * Math::sq(m_sigma))));
 	}
 
 private:
@@ -178,7 +178,7 @@ private:
 
 /** @brief Class of the sigmoid function
  */
-class CSigmoidFunction : public CFunction
+class SigmoidFunction : public Function
 {
 public:
 	/** return value of the function at given point
@@ -196,7 +196,7 @@ public:
 /** @brief Class of the function, which is a product of two given
  * functions h(x)=f(x)*g(x)
  */
-class CProductFunction : public CFunction
+class ProductFunction : public Function
 {
 public:
 	/** constructor
@@ -204,18 +204,18 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	CProductFunction(CFunction* f, CFunction* g)
+	ProductFunction(std::shared_ptr<Function> f, std::shared_ptr<Function> g)
 	{
-		SG_REF(f);
-		SG_REF(g);
+		
+		
 		m_f=f;
 		m_g=g;
 	}
 
-	virtual ~CProductFunction()
+	virtual ~ProductFunction()
 	{
-		SG_UNREF(m_f);
-		SG_UNREF(m_g);
+		
+		
 	}
 
 	/** returns value of the function at given point
@@ -231,9 +231,9 @@ public:
 
 private:
 	/** function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 	/**	function g(x) */
-	CFunction* m_g;
+	std::shared_ptr<Function> m_g;
 };
 
 /** @brief Class of the transform function
@@ -241,7 +241,7 @@ private:
  * integral of N(x,mu,sigma^2)*f(x) on (-inf, inf) using Gauss-Hermite
  * quadrature formula
  */
-class CTransformFunction : public CFunction
+class TransformFunction : public Function
 {
 public:
 	/** constructor
@@ -250,15 +250,15 @@ public:
 	 * @param mu mean
 	 * @param sigma standard deviation
 	 */
-	CTransformFunction(CFunction* f, float64_t mu, float64_t sigma)
+	TransformFunction(std::shared_ptr<Function> f, float64_t mu, float64_t sigma)
 	{
-		SG_REF(f);
+		
 		m_f=f;
 		m_mu=mu;
 		m_sigma=sigma;
 	}
 
-	virtual ~CTransformFunction() { SG_UNREF(m_f); }
+	virtual ~TransformFunction() {  }
 
 	/** set mean
 	 *
@@ -280,13 +280,13 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		return (1.0 / std::sqrt(CMath::PI)) *
+		return (1.0 / std::sqrt(Math::PI)) *
 		       ((*m_f)(std::sqrt(2.0) * m_sigma * x + m_mu));
 	}
 
 private:
 	/* function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 
 	/* mean */
 	float64_t m_mu;
@@ -299,227 +299,227 @@ private:
 TEST(Integration,integrate_quadgk_simple_function)
 {
 	// create object of the simple function
-	CSimpleFunction* f=new CSimpleFunction();
-	SG_REF(f);
+	auto f=std::make_shared<SimpleFunction>();
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -5.1, 3.2);
+	float64_t q=Integration::integrate_quadgk(f, -5.1, 3.2);
 	EXPECT_NEAR(q, 165.419000000000, 1E-12);
 
-	q=CIntegration::integrate_quadgk(f, 0.0, 0.01);
+	q=Integration::integrate_quadgk(f, 0.0, 0.01);
 	EXPECT_NEAR(q, 0.00000100000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -2.0, -0.2);
+	q=Integration::integrate_quadgk(f, -2.0, -0.2);
 	EXPECT_NEAR(q, 7.99200000000000, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -21.23, 0.0);
+	q=Integration::integrate_quadgk(f, -21.23, 0.0);
 	EXPECT_NEAR(q, 9568.63486700000, 1E-11);
 
-	q=CIntegration::integrate_quadgk(f, 0.0, 21.23);
+	q=Integration::integrate_quadgk(f, 0.0, 21.23);
 	EXPECT_NEAR(q, 9568.63486700000, 1E-11);
 
-	q=CIntegration::integrate_quadgk(f, -21.11, 21.11);
+	q=Integration::integrate_quadgk(f, -21.11, 21.11);
 	EXPECT_NEAR(q, 18814.5872620000, 1E-10);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_normal_pdf)
 {
 	// create object of the normal PDF with mean=0 and variance=0.01
-	CNormalPDF* f=new CNormalPDF(0, 0.1);
-	SG_REF(f);
+	auto f=std::make_shared<NormalPDF>(0, 0.1);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -CMath::INFTY, CMath::INFTY);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 1.000000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, -0.1);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -0.1);
 	EXPECT_NEAR(q, 0.158655253931457, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, 0.01);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 0.01);
 	EXPECT_NEAR(q, 0.539827837277029, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 0.03, CMath::INFTY);
+	q=Integration::integrate_quadgk(f, 0.03, Math::INFTY);
 	EXPECT_NEAR(q, 0.382088577811047, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.4, CMath::INFTY);
+	q=Integration::integrate_quadgk(f, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.999968328759696, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.1959963984540054, 0.1959963984540054);
+	q=Integration::integrate_quadgk(f, -0.1959963984540054, 0.1959963984540054);
 	EXPECT_NEAR(q, 0.950000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.3, 0.1);
+	q=Integration::integrate_quadgk(f, -0.3, 0.1);
 	EXPECT_NEAR(q, 0.839994848036913, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 0.2, 0.4);
+	q=Integration::integrate_quadgk(f, 0.2, 0.4);
 	EXPECT_NEAR(q, 0.0227184607063461, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.1, -0.01);
+	q=Integration::integrate_quadgk(f, -0.1, -0.01);
 	EXPECT_NEAR(q, 0.301516908791514, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_students_t_pdf)
 {
 	// create object of the Student's-t PDF (sigma=0.5, mu=1.5,
 	// nu=4.0)
-	CStudentsTPDF* f=new CStudentsTPDF(0.5, 1.5, 4.0);
-	SG_REF(f);
+	auto f=std::make_shared<StudentsTPDF>(0.5, 1.5, 4.0);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -CMath::INFTY, CMath::INFTY);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 1.000000000000000, 1E-10);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, -0.7);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -0.7);
 	EXPECT_NEAR(q, 0.00584559356909982, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, 2.0);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 2.0);
 	EXPECT_NEAR(q, 0.813049516849971, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 1.3, CMath::INFTY);
+	q=Integration::integrate_quadgk(f, 1.3, Math::INFTY);
 	EXPECT_NEAR(q, 0.645201369285002, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.4, CMath::INFTY);
+	q=Integration::integrate_quadgk(f, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.990448168804432, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 1.25, 1.75);
+	q=Integration::integrate_quadgk(f, 1.25, 1.75);
 	EXPECT_NEAR(q, 0.356670036818137, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.3, 0.1);
+	q=Integration::integrate_quadgk(f, -0.3, 0.1);
 	EXPECT_NEAR(q, 0.0130267055593582, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.2, 2.0);
+	q=Integration::integrate_quadgk(f, -0.2, 2.0);
 	EXPECT_NEAR(q, 0.7994108541947792, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_sigmoid_function)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
-	SG_REF(f);
+	auto f=std::make_shared<SigmoidFunction>();
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -CMath::INFTY, 0.0);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, 0.0);
 	EXPECT_NEAR(q, 0.693147180559945, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, -2.7);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -2.7);
 	EXPECT_NEAR(q, 0.0650435617765905, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -CMath::INFTY, 3.0);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 3.0);
 	EXPECT_NEAR(q, 3.04858735157374, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -1.0, 5.0);
+	q=Integration::integrate_quadgk(f, -1.0, 5.0);
 	EXPECT_NEAR(q, 4.69345366097090, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, 10.0, 20.0);
+	q=Integration::integrate_quadgk(f, 10.0, 20.0);
 	EXPECT_NEAR(q, 9.99995460316194, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -3.0, -2.0);
+	q=Integration::integrate_quadgk(f, -3.0, -2.0);
 	EXPECT_NEAR(q, 0.0783406594692304, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_product_sigmoid_normal_pdf)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
+	auto f=std::make_shared<SigmoidFunction>();
 
 	// create object of the normal PDF function with mean=0.0 and
 	// variance=0.01
-	CNormalPDF* g=new CNormalPDF(0.0, 0.1);
+	auto g=std::make_shared<NormalPDF>(0.0, 0.1);
 
 	// create object of the product function
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<ProductFunction>(f, g);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(h, -CMath::INFTY, CMath::INFTY);
+	float64_t q=Integration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 0.500000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -CMath::INFTY, 0.2);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, 0.2);
 	EXPECT_NEAR(q, 0.487281864084370, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -CMath::INFTY, -0.1);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, -0.1);
 	EXPECT_NEAR(q, 0.0732934168890405, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, 0.03, CMath::INFTY);
+	q=Integration::integrate_quadgk(h, 0.03, Math::INFTY);
 	EXPECT_NEAR(q, 0.200562444119857, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -0.4, CMath::INFTY);
+	q=Integration::integrate_quadgk(h, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.499987460846813, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -2.0, 0.0);
+	q=Integration::integrate_quadgk(h, -2.0, 0.0);
 	EXPECT_NEAR(q, 0.240042999495053, 1E-15);
 
 	// clean up
-	SG_UNREF(h);
+	
 }
 
 TEST(Integration,integrate_quadgk_product_students_t_pdf_normal_pdf)
 {
 	// create object of the Student's-t PDF (sigma=1.5, mu=-1.5,
 	// nu=4.0)
-	CStudentsTPDF* f=new CStudentsTPDF(1.5, -1.5, 4.0);
+	auto f=std::make_shared<StudentsTPDF>(1.5, -1.5, 4.0);
 
 	// create object of the normal PDF function with mean=0.0 and
 	// variance=0.01
-	CNormalPDF* g=new CNormalPDF(0.0, 0.5);
+	auto g=std::make_shared<NormalPDF>(0.0, 0.5);
 
 	// create object of the product function
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<ProductFunction>(f, g);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(h, -CMath::INFTY, CMath::INFTY);
+	float64_t q=Integration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 0.145255619704035, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -5.0, CMath::INFTY);
+	q=Integration::integrate_quadgk(h, -5.0, Math::INFTY);
 	EXPECT_NEAR(q, 0.145255619704012, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, 0.2, CMath::INFTY);
+	q=Integration::integrate_quadgk(h, 0.2, Math::INFTY);
 	EXPECT_NEAR(q, 0.0339899906690967, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -CMath::INFTY, -0.8);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, -0.8);
 	EXPECT_NEAR(q, 0.0127254813827678, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -CMath::INFTY, 2.17);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, 2.17);
 	EXPECT_NEAR(q, 0.145255453120542, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -20.0, 3.0);
+	q=Integration::integrate_quadgk(h, -20.0, 3.0);
 	EXPECT_NEAR(q, 0.145255619691797, 1E-14);
 
 	// clean up
-	SG_UNREF(h);
+	
 }
 
 TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
+	auto f=std::make_shared<SigmoidFunction>();
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	CTransformFunction* g=new CTransformFunction(f, 0.0, 0.1);
-	SG_REF(g);
+	auto g=std::make_shared<TransformFunction>(f, 0.0, 0.1);
+	
 
 	// compute integral of sigmoid(x)*N(x, 0.0, 0.01) on (-inf, inf)
 	// using Gauss-Hermite quadrature
-	float64_t q=CIntegration::integrate_quadgh(g);
+	float64_t q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.500000000000000, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, 2.0, 0.04) on (-inf, inf)
@@ -527,7 +527,7 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(2.0);
 	g->set_sigma(0.2);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.879202123093179, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, -1.0, 0.0009) on (-inf,
@@ -535,7 +535,7 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(-1.0);
 	g->set_sigma(0.03);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.268982294855682, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, -2.5, 1.0) on (-inf, inf)
@@ -543,27 +543,27 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(-2.5);
 	g->set_sigma(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.105362117215756, 1E-15);
 
 	// clean up
-	SG_UNREF(g);
+	
 }
 
 TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 {
 	// create object of the Student's-t PDF (sigma=0.1, mu=0.7,
 	// nu=3.0)
-	CStudentsTPDF* f=new CStudentsTPDF(0.1, 0.7, 3.0);
+	auto f=std::make_shared<StudentsTPDF>(0.1, 0.7, 3.0);
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	CTransformFunction* g=new CTransformFunction(f, 0.0, 0.1);
-	SG_REF(g);
+	auto g=std::make_shared<TransformFunction>(f, 0.0, 0.1);
+	
 
 	// compute integral of t(x, 0.1, 0.7, 0.3)*N(x, 0, 0.01) on (-inf,
 	// inf) using Gauss-Hermite quadrature formula
-	float64_t q=CIntegration::integrate_quadgh(g);
+	float64_t q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.0149093164709605, 1E-15);
 
 	// compute integral of t(x, 1, 1.5, 5)*N(x, 0, 0.16) on (-inf,
@@ -575,7 +575,7 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	g->set_sigma(0.4);
 	g->set_mu(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.310385847323180, 1E-15);
 
 	// compute integral of t(x, 1, 0.5, 10)*N(x, 1, 0.49) on (-inf,
@@ -587,11 +587,11 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	g->set_sigma(0.7);
 	g->set_mu(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.290698368717942, 1E-15);
 
 	// clean up
-	SG_UNREF(g);
+	
 }
 
 TEST(Integration, generate_gauher)
@@ -601,90 +601,90 @@ TEST(Integration, generate_gauher)
 	SGVector<float64_t> xgh(n);
 	SGVector<float64_t> wgh(n);
 
-	CIntegration::generate_gauher(xgh, wgh);
+	Integration::generate_gauher(xgh, wgh);
 
-	SGVector<index_t> index = CMath::argsort(xgh);
+	SGVector<index_t> index = Math::argsort(xgh);
 
-	abs_tolerance = CMath::get_abs_tolerance(-7.619048541679757, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-7.619048541679757, rel_tolerance);
 	EXPECT_NEAR(xgh[index[0]],  -7.619048541679757,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-6.510590157013656, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-6.510590157013656, rel_tolerance);
 	EXPECT_NEAR(xgh[index[1]],  -6.510590157013656,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-5.578738805893203, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-5.578738805893203, rel_tolerance);
 	EXPECT_NEAR(xgh[index[2]],  -5.578738805893203,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-4.734581334046057, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-4.734581334046057, rel_tolerance);
 	EXPECT_NEAR(xgh[index[3]],  -4.734581334046057,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-3.943967350657318, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-3.943967350657318, rel_tolerance);
 	EXPECT_NEAR(xgh[index[4]],  -3.943967350657318,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-3.189014816553390, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-3.189014816553390, rel_tolerance);
 	EXPECT_NEAR(xgh[index[5]],  -3.189014816553390,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-2.458663611172367, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-2.458663611172367, rel_tolerance);
 	EXPECT_NEAR(xgh[index[6]],  -2.458663611172367,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-1.745247320814127, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-1.745247320814127, rel_tolerance);
 	EXPECT_NEAR(xgh[index[7]],  -1.745247320814127,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-1.042945348802751, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-1.042945348802751, rel_tolerance);
 	EXPECT_NEAR(xgh[index[8]],  -1.042945348802751,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.346964157081356, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.346964157081356, rel_tolerance);
 	EXPECT_NEAR(xgh[index[9]],  -0.346964157081356,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.346964157081356, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.346964157081356, rel_tolerance);
 	EXPECT_NEAR(xgh[index[10]],  0.346964157081356,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.042945348802751, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.042945348802751, rel_tolerance);
 	EXPECT_NEAR(xgh[index[11]],  1.042945348802751,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.745247320814127, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.745247320814127, rel_tolerance);
 	EXPECT_NEAR(xgh[index[12]],  1.745247320814127,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(2.458663611172367, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(2.458663611172367, rel_tolerance);
 	EXPECT_NEAR(xgh[index[13]],  2.458663611172367,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(3.189014816553390, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.189014816553390, rel_tolerance);
 	EXPECT_NEAR(xgh[index[14]],  3.189014816553390,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(3.943967350657316, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.943967350657316, rel_tolerance);
 	EXPECT_NEAR(xgh[index[15]],  3.943967350657316,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(4.734581334046057, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(4.734581334046057, rel_tolerance);
 	EXPECT_NEAR(xgh[index[16]],  4.734581334046057,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(5.578738805893201, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(5.578738805893201, rel_tolerance);
 	EXPECT_NEAR(xgh[index[17]],  5.578738805893201,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(6.510590157013653, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(6.510590157013653, rel_tolerance);
 	EXPECT_NEAR(xgh[index[18]],  6.510590157013653,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(7.619048541679757, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(7.619048541679757, rel_tolerance);
 	EXPECT_NEAR(xgh[index[19]],  7.619048541679757,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[index[0]],  0.000000000000126,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000248206, rel_tolerance);
 	EXPECT_NEAR(wgh[index[1]],  0.000000000248206,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000061274903, rel_tolerance);
 	EXPECT_NEAR(wgh[index[2]],  0.000000061274903,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004402121090, rel_tolerance);
 	EXPECT_NEAR(wgh[index[3]],  0.000004402121090,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000128826279962, rel_tolerance);
 	EXPECT_NEAR(wgh[index[4]],  0.000128826279962,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001830103131080, rel_tolerance);
 	EXPECT_NEAR(wgh[index[5]],  0.001830103131080,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.013997837447101, rel_tolerance);
 	EXPECT_NEAR(wgh[index[6]],  0.013997837447101,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.061506372063977, rel_tolerance);
 	EXPECT_NEAR(wgh[index[7]],  0.061506372063977,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.161739333984000, rel_tolerance);
 	EXPECT_NEAR(wgh[index[8]],  0.161739333984000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.260793063449555, rel_tolerance);
 	EXPECT_NEAR(wgh[index[9]],  0.260793063449555,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.260793063449555, rel_tolerance);
 	EXPECT_NEAR(wgh[index[10]],  0.260793063449555,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.161739333984000, rel_tolerance);
 	EXPECT_NEAR(wgh[index[11]],  0.161739333984000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.061506372063977, rel_tolerance);
 	EXPECT_NEAR(wgh[index[12]],  0.061506372063977,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.013997837447101, rel_tolerance);
 	EXPECT_NEAR(wgh[index[13]],  0.013997837447101,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001830103131080, rel_tolerance);
 	EXPECT_NEAR(wgh[index[14]],  0.001830103131080,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000128826279962, rel_tolerance);
 	EXPECT_NEAR(wgh[index[15]],  0.000128826279962,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004402121090, rel_tolerance);
 	EXPECT_NEAR(wgh[index[16]],  0.000004402121090,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000061274903, rel_tolerance);
 	EXPECT_NEAR(wgh[index[17]],  0.000000061274903,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000248206, rel_tolerance);
 	EXPECT_NEAR(wgh[index[18]],  0.000000000248206,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[index[19]],  0.000000000000126,  abs_tolerance);
 }
 
@@ -695,88 +695,88 @@ TEST(Integration, generate_gauher20)
 	SGVector<float64_t> xgh(n);
 	SGVector<float64_t> wgh(n);
 
-	CIntegration::generate_gauher20(xgh, wgh);
+	Integration::generate_gauher20(xgh, wgh);
 
-	abs_tolerance = CMath::get_abs_tolerance(-7.619048541679757, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-7.619048541679757, rel_tolerance);
 	EXPECT_NEAR(xgh[0],  -7.619048541679757,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-6.510590157013656, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-6.510590157013656, rel_tolerance);
 	EXPECT_NEAR(xgh[1],  -6.510590157013656,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-5.578738805893203, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-5.578738805893203, rel_tolerance);
 	EXPECT_NEAR(xgh[2],  -5.578738805893203,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-4.734581334046057, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-4.734581334046057, rel_tolerance);
 	EXPECT_NEAR(xgh[3],  -4.734581334046057,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-3.943967350657318, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-3.943967350657318, rel_tolerance);
 	EXPECT_NEAR(xgh[4],  -3.943967350657318,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-3.189014816553390, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-3.189014816553390, rel_tolerance);
 	EXPECT_NEAR(xgh[5],  -3.189014816553390,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-2.458663611172367, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-2.458663611172367, rel_tolerance);
 	EXPECT_NEAR(xgh[6],  -2.458663611172367,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-1.745247320814127, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-1.745247320814127, rel_tolerance);
 	EXPECT_NEAR(xgh[7],  -1.745247320814127,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-1.042945348802751, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-1.042945348802751, rel_tolerance);
 	EXPECT_NEAR(xgh[8],  -1.042945348802751,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.346964157081356, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.346964157081356, rel_tolerance);
 	EXPECT_NEAR(xgh[9],  -0.346964157081356,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.346964157081356, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.346964157081356, rel_tolerance);
 	EXPECT_NEAR(xgh[10],  0.346964157081356,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.042945348802751, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.042945348802751, rel_tolerance);
 	EXPECT_NEAR(xgh[11],  1.042945348802751,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.745247320814127, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.745247320814127, rel_tolerance);
 	EXPECT_NEAR(xgh[12],  1.745247320814127,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(2.458663611172367, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(2.458663611172367, rel_tolerance);
 	EXPECT_NEAR(xgh[13],  2.458663611172367,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(3.189014816553390, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.189014816553390, rel_tolerance);
 	EXPECT_NEAR(xgh[14],  3.189014816553390,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(3.943967350657316, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(3.943967350657316, rel_tolerance);
 	EXPECT_NEAR(xgh[15],  3.943967350657316,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(4.734581334046057, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(4.734581334046057, rel_tolerance);
 	EXPECT_NEAR(xgh[16],  4.734581334046057,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(5.578738805893201, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(5.578738805893201, rel_tolerance);
 	EXPECT_NEAR(xgh[17],  5.578738805893201,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(6.510590157013653, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(6.510590157013653, rel_tolerance);
 	EXPECT_NEAR(xgh[18],  6.510590157013653,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(7.619048541679757, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(7.619048541679757, rel_tolerance);
 	EXPECT_NEAR(xgh[19],  7.619048541679757,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[0],  0.000000000000126,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000248206, rel_tolerance);
 	EXPECT_NEAR(wgh[1],  0.000000000248206,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000061274903, rel_tolerance);
 	EXPECT_NEAR(wgh[2],  0.000000061274903,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004402121090, rel_tolerance);
 	EXPECT_NEAR(wgh[3],  0.000004402121090,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000128826279962, rel_tolerance);
 	EXPECT_NEAR(wgh[4],  0.000128826279962,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001830103131080, rel_tolerance);
 	EXPECT_NEAR(wgh[5],  0.001830103131080,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.013997837447101, rel_tolerance);
 	EXPECT_NEAR(wgh[6],  0.013997837447101,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.061506372063977, rel_tolerance);
 	EXPECT_NEAR(wgh[7],  0.061506372063977,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.161739333984000, rel_tolerance);
 	EXPECT_NEAR(wgh[8],  0.161739333984000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.260793063449555, rel_tolerance);
 	EXPECT_NEAR(wgh[9],  0.260793063449555,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.260793063449555, rel_tolerance);
 	EXPECT_NEAR(wgh[10],  0.260793063449555,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.161739333984000, rel_tolerance);
 	EXPECT_NEAR(wgh[11],  0.161739333984000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.061506372063977, rel_tolerance);
 	EXPECT_NEAR(wgh[12],  0.061506372063977,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.013997837447101, rel_tolerance);
 	EXPECT_NEAR(wgh[13],  0.013997837447101,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001830103131080, rel_tolerance);
 	EXPECT_NEAR(wgh[14],  0.001830103131080,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000128826279962, rel_tolerance);
 	EXPECT_NEAR(wgh[15],  0.000128826279962,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000004402121090, rel_tolerance);
 	EXPECT_NEAR(wgh[16],  0.000004402121090,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000061274903, rel_tolerance);
 	EXPECT_NEAR(wgh[17],  0.000000061274903,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000248206, rel_tolerance);
 	EXPECT_NEAR(wgh[18],  0.000000000248206,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[19],  0.000000000000126,  abs_tolerance);
 }
 

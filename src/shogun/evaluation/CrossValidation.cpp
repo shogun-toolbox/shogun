@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
- *          Sergey Lisitsyn, Saurabh Mahindre, Jacob Walker, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
+ *          Sergey Lisitsyn, Saurabh Mahindre, Jacob Walker, Viktor Gal,
  *          Leon Kuchenbecker
  */
 
@@ -17,46 +17,47 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/util/converters.h>
+#include <shogun/util/factory.h>
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation() : CMachineEvaluation()
+CrossValidation::CrossValidation() : MachineEvaluation()
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    CMachine* machine, CFeatures* features, CLabels* labels,
-    CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_criterion,
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
+    std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion,
     bool autolock)
-    : CMachineEvaluation(
+    : MachineEvaluation(
           machine, features, labels, splitting_strategy, evaluation_criterion,
           autolock)
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    CMachine* machine, CLabels* labels, CSplittingStrategy* splitting_strategy,
-    CEvaluation* evaluation_criterion, bool autolock)
-    : CMachineEvaluation(
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
+    : MachineEvaluation(
           machine, labels, splitting_strategy, evaluation_criterion, autolock)
 {
 	init();
 }
 
-CCrossValidation::~CCrossValidation()
+CrossValidation::~CrossValidation()
 {
 }
 
-void CCrossValidation::init()
+void CrossValidation::init()
 {
 	m_num_runs = 1;
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
 }
 
-CEvaluationResult* CCrossValidation::evaluate_impl()
+std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl()
 {
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
@@ -97,8 +98,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 	{
 		/* evtl. update xvalidation output class */
 		SG_DEBUG("Creating CrossValidationStorage.\n")
-		CrossValidationStorage* storage = new CrossValidationStorage();
-		SG_REF(storage)
+		auto storage = std::make_shared<CrossValidationStorage>();
 		storage->put("num_runs", utils::safe_convert<index_t>(m_num_runs));
 		storage->put(
 		    "num_folds", utils::safe_convert<index_t>(
@@ -114,16 +114,14 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		/* Emit the value */
 		observe(
 		    i, "cross_validation_run", "One run of CrossValidation",
-		    storage->as<CEvaluationResult>());
-
-		SG_UNREF(storage)
+		    storage->as<EvaluationResult>());
 	}
 
 	/* construct evaluation result */
-	CCrossValidationResult* result = new CCrossValidationResult();
-	result->set_mean(CStatistics::mean(results));
+	auto result = std::make_shared<CrossValidationResult>();
+	result->set_mean(Statistics::mean(results));
 	if (m_num_runs > 1)
-		result->set_std_dev(CStatistics::std_deviation(results));
+		result->set_std_dev(Statistics::std_deviation(results));
 	else
 		result->set_std_dev(0);
 
@@ -134,11 +132,11 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		m_do_unlock = false;
 	}
 
-	SG_REF(result);
+
 	return result;
 }
 
-void CCrossValidation::set_num_runs(int32_t num_runs)
+void CrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs < 1)
 		SG_ERROR("%d is an illegal number of repetitions\n", num_runs)
@@ -146,8 +144,8 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs = num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run(
-    int64_t index, CrossValidationStorage* storage)
+float64_t CrossValidation::evaluate_one_run(
+    int64_t index, std::shared_ptr<CrossValidationStorage> storage)
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
@@ -171,8 +169,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			COMPUTATION_CONTROLLERS
 
 			/* evtl. update xvalidation output class */
-			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
-			SG_REF(fold)
+			auto fold = std::make_shared<CrossValidationFoldStorage>();
 			fold->put("run_index", (index_t)index);
 			fold->put("fold_index", i);
 
@@ -189,14 +186,11 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = (CMachine*)m_machine->clone();
-			SG_REF(fold_machine)
+			auto fold_machine = m_machine->clone()->as<Machine>();
 			fold->put("trained_machine", fold_machine);
-			SG_UNREF(fold_machine)
 
 			/* produce output for desired indices */
-			CLabels* result_labels = m_machine->apply_locked(subset_indices);
-			SG_REF(result_labels);
+			auto result_labels = m_machine->apply_locked(subset_indices);
 
 			/* set subset for testing labels */
 			m_labels->add_subset(subset_indices);
@@ -209,8 +203,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
 			fold->put("predicted_labels", result_labels);
-			CLabels* true_labels = (CLabels*)m_labels->clone();
-			SG_REF(true_labels)
+			auto true_labels = m_labels->clone()->as<Labels>();
 			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
@@ -220,11 +213,6 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* Save fold into storage */
 			storage->append_fold_result(fold);
-
-			/* clean up */
-			SG_UNREF(result_labels);
-			SG_UNREF(true_labels)
-			SG_UNREF(fold);
 
 			SG_DEBUG("done locked evaluation\n", get_name())
 		}
@@ -244,17 +232,17 @@ float64_t CCrossValidation::evaluate_one_run(
 		{
 			COMPUTATION_CONTROLLERS
 
-			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
-			SG_REF(fold)
+			auto fold = std::make_shared<CrossValidationFoldStorage>();
 
-			auto machine = (CMachine*)m_machine->clone();
+
+			auto machine = as_machine(m_machine->clone());
 
 			// TODO while these are not used through const interfaces,
 			// we unfortunately have to clone, even though these could be shared
-			auto features = (CFeatures*)m_features->clone();
-			auto labels = (CLabels*)m_labels->clone();
+			auto features = as_features(m_features->clone());
+			auto labels = std::dynamic_pointer_cast<Labels>(m_labels->clone());
 			auto evaluation_criterion =
-			    (CEvaluation*)m_evaluation_criterion->clone();
+			    as_evaluation(m_evaluation_criterion->clone());
 
 			/* evtl. update xvalidation output class */
 			fold->put("run_index", (index_t)index);
@@ -285,9 +273,8 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = (CMachine*)machine->clone();
+			auto fold_machine = machine->clone()->as<Machine>();
 			fold->put("trained_machine", fold_machine);
-			SG_UNREF(fold_machine)
 
 			features->remove_subset();
 			labels->remove_subset();
@@ -310,11 +297,11 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* apply machine to test features and remove subset */
 			SG_DEBUG("starting evaluation\n")
-			SG_DEBUG("%p\n", features)
-			CLabels* result_labels = machine->apply(features);
+			SG_DEBUG("%p\n", features.get())
+			auto result_labels = machine->apply(features);
 			SG_DEBUG("finished evaluation\n")
 			features->remove_subset();
-			SG_REF(result_labels);
+
 
 			/* evaluate */
 			results[i] = evaluation_criterion->evaluate(result_labels, labels);
@@ -323,8 +310,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
 			fold->put("predicted_labels", result_labels);
-			CLabels* true_labels = (CLabels*)labels->clone();
-			SG_REF(true_labels)
+			auto true_labels = labels->clone()->as<Labels>();
 			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
@@ -333,20 +319,13 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* clean up, remove subsets */
 			labels->remove_subset();
-			SG_UNREF(machine);
-			SG_UNREF(features);
-			SG_UNREF(labels);
-			SG_UNREF(evaluation_criterion);
-			SG_UNREF(result_labels);
-			SG_UNREF(true_labels);
-			SG_UNREF(fold);
 		}
 
 		SG_DEBUG("done unlocked evaluation\n", get_name())
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean = CStatistics::mean(results);
+	float64_t mean = Statistics::mean(results);
 
 	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
 	return mean;

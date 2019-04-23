@@ -16,32 +16,30 @@
 namespace shogun
 {
 
-template<class ST> class CDenseFeatures;
+template<class ST> class DenseFeatures;
 template<class ST> class SGVector;
-class CDotFeatures;
+class DotFeatures;
 
 /** SubsetFeatures wrap features but only uses a subset of the variables */
-template<class ST> class CDenseSubsetFeatures: public CDotFeatures
+template<class ST> class DenseSubsetFeatures: public DotFeatures
 {
 public:
     /** default constructor */
-	CDenseSubsetFeatures():m_fea(NULL) { set_generic<ST>(); }
+	DenseSubsetFeatures():m_fea(NULL) { set_generic<ST>(); }
 
 	/** constructor */
-	CDenseSubsetFeatures(CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
-		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); set_generic<ST>(); }
+	DenseSubsetFeatures(std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx)
+		:m_fea(fea), m_idx(idx) { set_generic<ST>(); }
 
     /** destructor */
-	virtual ~CDenseSubsetFeatures() { SG_UNREF(m_fea); }
+	virtual ~DenseSubsetFeatures() { }
 
     /** get name */
     virtual const char* get_name() const { return "DenseSubsetFeatures"; }
 
 	/** set the underlying features */
-	void set_features(CDenseFeatures<ST> *fea)
+	void set_features(std::shared_ptr<DenseFeatures<ST>> fea)
 	{
-		SG_REF(fea);
-		SG_UNREF(m_fea);
 		m_fea = fea;
 	}
 
@@ -57,9 +55,9 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const
+	virtual std::shared_ptr<Features> duplicate() const
 	{
-		return new CDenseSubsetFeatures(m_fea, m_idx);
+		return std::make_shared<DenseSubsetFeatures>(m_fea, m_idx);
 	}
 
 	/** get feature type
@@ -114,9 +112,9 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 	{
-		CDenseSubsetFeatures<ST> *dsf = dynamic_cast<CDenseSubsetFeatures<ST> *>(df);
+		auto dsf = std::dynamic_pointer_cast<DenseSubsetFeatures<ST>>(df);
 		if (dsf == NULL)
 			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n")
 
@@ -169,7 +167,7 @@ public:
 		if (abs_val)
 		{
 			for (int32_t i=0; i < vec2_len; ++i)
-				vec2[i] += alpha * CMath::abs(vec1[m_idx[i]]);
+				vec2[i] += alpha * Math::abs(vec1[m_idx[i]]);
 		}
 		else
 		{
@@ -231,7 +229,7 @@ public:
 		SG_NOTIMPLEMENTED
 	}
 private:
-	CDenseFeatures<ST> *m_fea;
+	std::shared_ptr<DenseFeatures<ST>> m_fea;
 	SGVector<int32_t> m_idx;
 };
 } /*  shogun */

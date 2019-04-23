@@ -22,7 +22,7 @@ See Chapter 16 in :cite:`barber2012bayesian` for a detailed introduction.
 Example
 -------
 
-We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` from files with training and test data.
+We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`BinaryLabels` from files with training and test data.
 
 .. sgexample:: linear_discriminant_analysis.sg:create_features
 
@@ -30,7 +30,7 @@ We create an instance of the :sgclass:`CLDA` classifier and set features and lab
 
 .. sgexample:: linear_discriminant_analysis.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`BinaryLabels`.
 
 .. sgexample:: linear_discriminant_analysis.sg:train_and_apply
 

@@ -49,11 +49,11 @@ namespace shogun
 	 * Implementation is based on the vlfeat library.
 	 *
 	 */
-	class CHomogeneousKernelMap : public CDensePreprocessor<float64_t>
+	class HomogeneousKernelMap : public DensePreprocessor<float64_t>
 	{
 		public:
 			/** default constructor */
-			CHomogeneousKernelMap();
+			HomogeneousKernelMap();
 
 			/** constructor
 			 *
@@ -63,11 +63,11 @@ namespace shogun
 			 * @param order the approximation order
 			 * @param period the period (use a negative value to use the default period)
 			 */
-			CHomogeneousKernelMap(HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
+			HomogeneousKernelMap(HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
 			                      float64_t gamma = 1.0, uint64_t order = 1, float64_t period = -1);
 
 			/** destructor */
-			virtual ~CHomogeneousKernelMap();
+			virtual ~HomogeneousKernelMap();
 
 			/** cleanup */
 			virtual void cleanup();

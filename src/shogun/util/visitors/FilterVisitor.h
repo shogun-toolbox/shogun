@@ -36,7 +36,7 @@ namespace shogun
 						m_operation(m_name, &obj);
 				}
 
-				auto* dyn_obj_array = dynamic_cast<CDynamicObjectArray*>(*v);
+				auto* dyn_obj_array = dynamic_cast<DynamicObjectArray*>(*v);
 				if(dyn_obj_array)
 				{
 					for(auto sub_object : *dyn_obj_array)
@@ -86,9 +86,9 @@ namespace shogun
 			on_impl(v);
 		}
 
-		virtual void on(CSGObject** v) override
+		virtual void on(std::shared_ptr<SGObject>* v) override
 		{
-			if(*v && v)
+			if(*v)
 				on_impl(v);
 		}
 

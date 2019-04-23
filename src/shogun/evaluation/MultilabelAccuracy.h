@@ -26,14 +26,14 @@ namespace shogun
  *      h(x_i)|}$
  * \f]
  */
-class CMultilabelAccuracy : public CEvaluation
+class MultilabelAccuracy : public Evaluation
 {
 public:
 	/** default constructor */
-	CMultilabelAccuracy();
+	MultilabelAccuracy();
 
 	/** destructor */
-	virtual ~CMultilabelAccuracy();
+	virtual ~MultilabelAccuracy();
 
 	/** evaluate accuracy
 	 *
@@ -42,7 +42,7 @@ public:
 	 *
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels * predicted, CLabels * ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

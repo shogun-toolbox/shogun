@@ -16,8 +16,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief The Isomap class is used to embed data using Isomap algorithm
  * as described in:
@@ -51,15 +51,15 @@ class CDistance;
  * cf. https://en.wikipedia.org/wiki/Isomap
  *
  */
-class CIsomap: public CMultidimensionalScaling
+class Isomap: public MultidimensionalScaling
 {
 public:
 
 	/* constructor */
-	CIsomap();
+	Isomap();
 
 	/* destructor */
-	virtual ~CIsomap();
+	virtual ~Isomap();
 
 	/** get name */
 	const char* get_name() const;
@@ -75,7 +75,7 @@ public:
 	int32_t get_k() const;
 
 	/** embed distance */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
 
 /// HELPERS
 protected:

@@ -28,14 +28,14 @@ namespace shogun
  * It therefore does not need any initialization. It is most useful to get data
  * onto a ball of radius one.
  */
-class CNormOne : public CDensePreprocessor<float64_t>
+class NormOne : public DensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */
-		CNormOne();
+		NormOne();
 
 		/** destructor */
-		virtual ~CNormOne();
+		virtual ~NormOne();
 
 		/// cleanup
 		virtual void cleanup();

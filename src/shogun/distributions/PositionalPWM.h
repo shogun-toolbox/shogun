@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer,
  *          Yuyu Zhang
  */
 
@@ -21,13 +21,13 @@
 namespace shogun
 {
 /** @brief Positional PWM */
-class CPositionalPWM : public CDistribution
+class PositionalPWM : public Distribution
 {
 	public:
 		/** default constructor */
-		CPositionalPWM();
+		PositionalPWM();
 
-		virtual ~CPositionalPWM();
+		virtual ~PositionalPWM();
 
 		/** learn distribution
 		 *
@@ -35,7 +35,7 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** get number of parameters in model
 		 *

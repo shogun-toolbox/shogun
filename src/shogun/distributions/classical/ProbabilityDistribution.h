@@ -22,24 +22,24 @@ template <class T> class SGVector;
  * over the real numbers (64bit) for which various statistics can be computed
  * and which can be sampled.
  */
-class CProbabilityDistribution: public CSGObject
+class ProbabilityDistribution: public SGObject
 {
 public:
 	/** Default constructor */
-	CProbabilityDistribution();
+	ProbabilityDistribution();
 
 	/** Constructur that sets the distribution's dimension */
-	CProbabilityDistribution(int32_t dimension);
+	ProbabilityDistribution(int32_t dimension);
 
 	/** Destructor */
-	virtual ~CProbabilityDistribution();
+	virtual ~ProbabilityDistribution();
 
 	/** Samples from the distribution multiple times
 	 *
 	 * @param num_samples number of samples to generate
 	 * @param pre_samples a matrix of pre-samples that might be used for
 	 * sampling. For example, a matrix with standard normal samples for the
-	 * CGaussianDistribution. For reproducible results. Ignored by default.
+	 * GaussianDistribution. For reproducible results. Ignored by default.
 	 * @return matrix with samples (column vectors)
 	 */
 	virtual SGMatrix<float64_t> sample(int32_t num_samples,

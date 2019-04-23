@@ -47,14 +47,14 @@ enum EWDKernType
  *      which evaluates to 1 when its argument is true and to 0
  *      otherwise.
  */
-class CWeightedDegreeStringKernel: public CStringKernel<char>
+class WeightedDegreeStringKernel: public StringKernel<char>
 {
 	public:
 
 		/** default constructor
 		 *
 		 */
-		CWeightedDegreeStringKernel();
+		WeightedDegreeStringKernel();
 
 
 		/** constructor
@@ -62,13 +62,13 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 * @param type weighted degree kernel type
 		 */
-		CWeightedDegreeStringKernel(int32_t degree, EWDKernType type=E_WD);
+		WeightedDegreeStringKernel(int32_t degree, EWDKernType type=E_WD);
 
 		/** constructor
 		 *
 		 * @param weights kernel's weights
 		 */
-		CWeightedDegreeStringKernel(SGVector<float64_t> weights);
+		WeightedDegreeStringKernel(SGVector<float64_t> weights);
 
 		/** constructor
 		 *
@@ -76,10 +76,10 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CWeightedDegreeStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree);
+		WeightedDegreeStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t degree);
 
-		virtual ~CWeightedDegreeStringKernel();
+		virtual ~WeightedDegreeStringKernel();
 
 		/** initialize kernel
 		 *
@@ -87,7 +87,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -227,7 +227,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		virtual int32_t get_num_subkernels()
 		{
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
-				return ((CMultitaskKernelMklNormalizer*)normalizer)->get_num_betas();
+				return std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->get_num_betas();
 			if (position_weights!=NULL)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
@@ -272,7 +272,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				for (int32_t i=0; i<num_weights; i++)
-					weights_buffer[i] = ((CMultitaskKernelMklNormalizer*)normalizer)->get_beta(i);
+					weights_buffer[i] = std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->get_beta(i);
 			else if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = position_weights[i*mkl_stepsize];
@@ -298,7 +298,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				for (int32_t i=0; i<num_weights; i++)
-					((CMultitaskKernelMklNormalizer*)normalizer)->set_beta(i, weights2[i]);
+					std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->set_beta(i, weights2[i]);
 			else if (position_weights!=NULL)
 			{
 				for (int32_t i=0; i<num_weights; i++)
@@ -338,7 +338,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(CKernelNormalizer* normalizer_) {
+		virtual bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer_) {
 
 			if (normalizer_ && strcmp(normalizer_->get_name(),"MultitaskKernelTreeNormalizer")==0) {
 				unset_property(KP_LINADD);
@@ -351,7 +351,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			}
 
 
-			return CStringKernel<char>::set_normalizer(normalizer_);
+			return StringKernel<char>::set_normalizer(normalizer_);
 
 		}
 
@@ -747,13 +747,13 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		int32_t which_degree;
 
 		/** tries */
-		CTrie<DNATrie>* tries;
+		std::shared_ptr<CTrie<DNATrie>> tries;
 
 		/** if tree is initialized */
 		bool tree_initialized;
 
 		/** alphabet of features */
-		CAlphabet* alphabet;
+		std::shared_ptr<Alphabet> alphabet;
 };
 
 }

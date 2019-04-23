@@ -194,7 +194,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 	for (i = 0; i < rows_$1; i++) {
 		len = cols_$1;
-		max_len = shogun::CMath::max(len, max_len);
+		max_len = shogun::Math::max(len, max_len);
 
 		strings[i].slen = len;
 		strings[i].string = NULL;
@@ -290,7 +290,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	for (i = 0; i < size_$1; i++) {
 		str = $input[i];
 		len = strlen(str);
-		max_len = shogun::CMath::max(len, max_len);
+		max_len = shogun::Math::max(len, max_len);
 
 		strings[i].slen = len;
 		strings[i].string = NULL;

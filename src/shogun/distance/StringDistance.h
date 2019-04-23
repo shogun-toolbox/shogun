@@ -15,11 +15,11 @@
 namespace shogun
 {
 /** @brief template class StringDistance */
-template <class ST> class CStringDistance : public CDistance
+template <class ST> class StringDistance : public Distance
 {
 	public:
 		/** default constructor */
-		CStringDistance() : CDistance() {}
+		StringDistance() : Distance() {}
 
 		/** init distance
 		 *
@@ -30,9 +30,9 @@ template <class ST> class CStringDistance : public CDistance
 		/* when training data is supplied as both l and r do_init
 		 * should be true
 		*/
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			CDistance::init(l,r);
+			Distance::init(l,r);
 
 			ASSERT(l->get_feature_class()==C_STRING)
 			ASSERT(r->get_feature_class()==C_STRING)
@@ -80,43 +80,43 @@ template <class ST> class CStringDistance : public CDistance
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CStringDistance<float64_t>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType StringDistance<float64_t>::get_feature_type() { return F_DREAL; }
 
 /** get feature type the ULONG distance can deal with
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CStringDistance<uint64_t>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType StringDistance<uint64_t>::get_feature_type() { return F_ULONG; }
 
 /** get feature type the INT distance can deal with
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CStringDistance<int32_t>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType StringDistance<int32_t>::get_feature_type() { return F_INT; }
 
 /** get feature type the WORD distance can deal with
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CStringDistance<uint16_t>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType StringDistance<uint16_t>::get_feature_type() { return F_WORD; }
 
 /** get feature type the SHORT distance can deal with
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CStringDistance<int16_t>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType StringDistance<int16_t>::get_feature_type() { return F_SHORT; }
 
 /** get feature type the BYTE distance can deal with
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CStringDistance<uint8_t>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType StringDistance<uint8_t>::get_feature_type() { return F_BYTE; }
 
 /** get feature type the CHAR distance can deal with
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CStringDistance<char>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType StringDistance<char>::get_feature_type() { return F_CHAR; }
 
 } // namespace shogun
 #endif

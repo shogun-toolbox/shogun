@@ -18,7 +18,7 @@ using namespace shogun;
 
 bool is_equal(float64_t a, float64_t b, float64_t eps)
 {
-	return CMath::abs(a-b)<=eps;
+	return Math::abs(a-b)<=eps;
 }
 
 void test_ev()

@@ -21,16 +21,16 @@
 
 using namespace shogun;
 
-CModelSelectionParameters* build_param_tree(CKernel* kernel)
+ModelSelectionParameters* build_param_tree(Kernel* kernel)
 {
-	CModelSelectionParameters * root=new CModelSelectionParameters();
-	CModelSelectionParameters * c=new CModelSelectionParameters("C");
+	ModelSelectionParameters * root=new ModelSelectionParameters();
+	ModelSelectionParameters * c=new ModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(-1.0, 1.0, R_EXP);
 
-	CModelSelectionParameters * params_kernel=new CModelSelectionParameters("kernel", kernel);
+	ModelSelectionParameters * params_kernel=new ModelSelectionParameters("kernel", kernel);
 	root->append_child(params_kernel);
-	CModelSelectionParameters * params_kernel_width=new CModelSelectionParameters("log_width");
+	ModelSelectionParameters * params_kernel_width=new ModelSelectionParameters("log_width");
 	params_kernel_width->build_values(-std::log(2.0), 0.0, R_LINEAR);
 	params_kernel->append_child(params_kernel_width);
 
@@ -56,36 +56,36 @@ void test()
 		lab[j]=j%dim_vectors;
 
 		for (index_t i=0; i<feat.num_rows; ++i)
-			feat(i, j)=CMath::randn_double();
+			feat(i, j)=Math::randn_double();
 
 		/* make sure classes are (alomst) linearly seperable against each other */
 		feat(lab[j],j)+=distance;
 	}
 
 	/* shogun representation of above data */
-	CDenseFeatures<float64_t> * cfeatures=new CDenseFeatures<float64_t>(feat);
-	CMulticlassLabels * clabels=new CMulticlassLabels(lab);
+	DenseFeatures<float64_t> * cfeatures=new DenseFeatures<float64_t>(feat);
+	MulticlassLabels * clabels=new MulticlassLabels(lab);
 
 	float64_t sigma=2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sigma);
+	GaussianKernel* kernel=new GaussianKernel(10, sigma);
 
 	const float C=10.;
 	CMulticlassLibSVM* cmachine=new CMulticlassLibSVM(C, kernel, clabels);
 
-	CMulticlassAccuracy * eval_crit=new CMulticlassAccuracy();
+	MulticlassAccuracy * eval_crit=new MulticlassAccuracy();
 
 	/* k-fold stratified x-validation */
 	index_t k=3;
-	CStratifiedCrossValidationSplitting * splitting=
-			new CStratifiedCrossValidationSplitting(clabels, k);
+	StratifiedCrossValidationSplitting * splitting=
+			new StratifiedCrossValidationSplitting(clabels, k);
 
-	CCrossValidation * cross=new CCrossValidation(cmachine, cfeatures, clabels,
+	CrossValidation * cross=new CrossValidation(cmachine, cfeatures, clabels,
 			splitting, eval_crit);
 	cross->set_num_runs(10);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* create peramters for model selection */
-	CModelSelectionParameters* root=build_param_tree(kernel);
+	ModelSelectionParameters* root=build_param_tree(kernel);
 
 	CGridSearchModelSelection * model_selection=new CGridSearchModelSelection(
 			cross, root);
@@ -95,8 +95,6 @@ void test()
 	params->print_tree();
 
 	/* clean up memory */
-	SG_UNREF(model_selection);
-	SG_UNREF(params);
 }
 
 int main(int argc, char **argv)

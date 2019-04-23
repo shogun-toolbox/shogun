@@ -47,8 +47,8 @@ TEST(KernelManager, store_precompute_restore)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	data_p(0, 0)=0;
 
-	auto feats=new CDenseFeatures<float64_t>(data_p);
-	auto kernel=new CGaussianKernel();
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(0.5);
 
 	KernelManager kernel_mgr(num_kernels);
@@ -57,7 +57,7 @@ TEST(KernelManager, store_precompute_restore)
 	kernel_mgr.kernel_at(0)=kernel;
 	ASSERT_TRUE(const_kernel_mgr.kernel_at(0)->get_kernel_type()==K_GAUSSIAN);
 
-	CKernel* k=const_kernel_mgr.kernel_at(0);
+	std::shared_ptr<Kernel> k=const_kernel_mgr.kernel_at(0);
 	k->init(feats, feats);
 	kernel_mgr.precompute_kernel_at(0);
 	ASSERT_TRUE(const_kernel_mgr.kernel_at(0)!=kernel);

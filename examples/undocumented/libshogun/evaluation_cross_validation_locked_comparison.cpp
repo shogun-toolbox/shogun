@@ -43,48 +43,43 @@ void test_cross_validation()
 		for (index_t j=0; j<num_features; ++j)
 		{
 			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
-			train_dat.matrix[i*num_features+j]=CMath::normal_random(mean, sigma);
+			train_dat.matrix[i*num_features+j]=Math::normal_random(mean, sigma);
 		}
 	}
 
 	/* training features */
-	CDenseFeatures<float64_t>* features=
-			new CDenseFeatures<float64_t>(train_dat);
-	SG_REF(features);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* training labels +/- 1 for each cluster */
 	SGVector<float64_t> lab(num_vectors);
 	for (index_t i=0; i<num_vectors; ++i)
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
-	CBinaryLabels* labels=new CBinaryLabels(lab);
-	SG_REF(labels);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	/* gaussian kernel */
-	CGaussianKernel* kernel=new CGaussianKernel();
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(10);
 	kernel->init(features, features);
 
 	/* create svm via libsvm */
 	float64_t svm_C=1;
 	float64_t svm_eps=0.0001;
-	CSVM* svm=new CLibSVM(svm_C, kernel, labels);
+	auto svm=std::make_shared<LibSVM>(svm_C, kernel, labels);
 	svm->set_epsilon(svm_eps);
 
 	/* train and output the normal way */
 	SG_SPRINT("starting normal training\n");
 	svm->train(features);
-	CBinaryLabels* output = svm->apply(features)->as<CBinaryLabels>();
-	SG_REF(output);
+	auto output = svm->apply(features)->as<BinaryLabels>();
 
 	/* evaluation criterion */
-	CContingencyTableEvaluation* eval_crit=
-			new CContingencyTableEvaluation(ACCURACY);
+	auto eval_crit=
+			std::make_shared<ContingencyTableEvaluation>(ACCURACY);
 
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
 	SG_SPRINT("training accuracy: %f\n", eval_result);
-	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
@@ -93,28 +88,27 @@ void test_cross_validation()
 
 	/* splitting strategy */
 	index_t n_folds=3;
-	CStratifiedCrossValidationSplitting* splitting=
-			new CStratifiedCrossValidationSplitting(labels, n_folds);
+	auto splitting=
+			std::make_shared<StratifiedCrossValidationSplitting>(labels, n_folds);
 
 	/* cross validation instance, 10 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
+	auto cross=std::make_shared<CrossValidation>(svm, features, labels,
 			splitting, eval_crit);
 
 	cross->set_num_runs(5);
 //	cross->set_conf_int_alpha(0.05);
 
-	CCrossValidationResult* tmp;
+	std::shared_ptr<CrossValidationResult> tmp;
 	/* no locking */
 	index_t repetitions=5;
 	SG_SPRINT("unlocked x-val\n");
 	kernel->init(features, features);
 	cross->set_autolock(false);
-	CTime time;
+	Time time;
 	time.start();
 	for (index_t i=0; i<repetitions; ++i)
 	{
-		tmp = (CCrossValidationResult*)cross->evaluate();
-		SG_UNREF(tmp);
+		tmp = cross->evaluate()->as<CrossValidationResult>();
 	}
 
 	time.stop();
@@ -127,8 +121,7 @@ void test_cross_validation()
 
 	for (index_t i=0; i<repetitions; ++i)
         {
-                tmp = (CCrossValidationResult*)cross->evaluate();
-                SG_UNREF(tmp);
+                tmp = cross->evaluate()->as<CrossValidationResult>();
         }
 
 	time.stop();
@@ -141,18 +134,13 @@ void test_cross_validation()
 
         for (index_t i=0; i<repetitions; ++i)
         {
-                tmp = (CCrossValidationResult*)cross->evaluate();
-                SG_UNREF(tmp);
+                tmp = cross->evaluate()->as<CrossValidationResult>();
         }
 
 	time.stop();
 	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
 	/* clean up */
-	SG_UNREF(labels);
-	SG_UNREF(output);
-	SG_UNREF(cross);
-	SG_UNREF(features);
 }
 
 int main(int argc, char **argv)

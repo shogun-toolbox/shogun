@@ -27,10 +27,10 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(matrix);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel and compute kernel matrix
-	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 	SGMatrix<float64_t> computed_kernel_matrix = kernel->get_kernel_matrix();
 
 	// Define expected kernel matrix
@@ -48,7 +48,7 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	is_eqauls(expected_kernel_matrix, computed_kernel_matrix);
 
 	// Clean up
-	SG_UNREF(kernel);
+
 }
 
 TEST(PeriodicKernelTest,test_derivative_width)
@@ -60,10 +60,10 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(matrix);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel
-	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
 	Parameter *parameters = kernel->m_parameters;
@@ -85,7 +85,7 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	is_eqauls(expected_derivative_matrix, dMatrix);
 
 	// Clean up
-	SG_UNREF(kernel);
+
 }
 
 TEST(PeriodicKernelTest,test_derivative_period)
@@ -97,10 +97,10 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	}
 
 	// Load them into DenseFeatures
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	auto features= std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel
-	CPeriodicKernel* kernel = new CPeriodicKernel(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
 	Parameter *parameters = kernel->m_parameters;
@@ -122,5 +122,5 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	is_eqauls(expected_derivative_matrix, dMatrix);
 
 	// Clean up
-	SG_UNREF(kernel);
+
 }

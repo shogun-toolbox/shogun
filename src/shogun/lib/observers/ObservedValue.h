@@ -18,7 +18,7 @@ namespace shogun
 	/**
 	* Observed value which is emitted by algorithms.
 	*/
-	class ObservedValue : public CSGObject
+	class ObservedValue : public SGObject
 	{
 	public:
 		/**

@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-template<class T> class CLinearOperator;
+template<class T> class LinearOperator;
 template<class T> class SGVector;
 
 /**
@@ -26,19 +26,19 @@ template<class T> class SGVector;
  * Where A Is Symmetric Complex". IEEE Transactions on Magnetics, Vol. 26,
  * No. 2, March 1990
  */
-class CConjugateOrthogonalCGSolver
- : public CIterativeLinearSolver<complex128_t, float64_t>
+class ConjugateOrthogonalCGSolver
+ : public IterativeLinearSolver<complex128_t, float64_t>
 {
 
 public:
 	/** default constructor */
-	CConjugateOrthogonalCGSolver();
+	ConjugateOrthogonalCGSolver();
 
 	/** one arg constructor */
-	CConjugateOrthogonalCGSolver(bool store_residuals);
+	ConjugateOrthogonalCGSolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~CConjugateOrthogonalCGSolver();
+	virtual ~ConjugateOrthogonalCGSolver();
 
 	/**
 	 * solve method for solving complex linear systems
@@ -47,7 +47,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
+	virtual SGVector<complex128_t> solve(std::shared_ptr<LinearOperator<complex128_t>> A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

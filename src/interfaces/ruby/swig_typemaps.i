@@ -182,7 +182,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		if (TYPE(arr) == T_STRING) {
 			len = RSTRING_LEN(arr);
 			const char *str = StringValuePtr(arr);
-			max_len = shogun::CMath::max(len, max_len);
+			max_len = shogun::Math::max(len, max_len);
 
 			strings[i].slen = len;
 			strings[i].string = NULL;
@@ -195,7 +195,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		else {
 			if (TYPE(arr) == T_ARRAY) {
 				len = RARRAY_LEN(arr);
-				max_len = shogun::CMath::max(len, max_len);
+				max_len = shogun::Math::max(len, max_len);
 
 				strings[i].slen=len;
 				strings[i].string=NULL;

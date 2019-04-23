@@ -19,13 +19,13 @@ void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, flo
         {
             labels[i]=-1.0;
             for(int32_t j=0; j<dimensions; j++)
-                features(j,i)=CMath::random(0.0,1.0)+distance;
+                features(j,i)=Math::random(0.0,1.0)+distance;
         }
         else
         {
             labels[i]=1.0;
             for(int32_t j=0; j<dimensions; j++)
-                features(j,i)=CMath::random(0.0,1.0)-distance;
+                features(j,i)=Math::random(0.0,1.0)-distance;
         }
     }
     labels.display_vector("labels");
@@ -50,34 +50,30 @@ int main(int argc, char** argv)
     gen_rand_data(featureMatrix,labelVector,dist);
 
     //create train labels
-    CLabels* labels=new CBinaryLabels(labelVector);
-	SG_REF(labels);
+    auto labels=std::make_shared<BinaryLabels>(labelVector);
 
 	// create train features
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(featureMatrix);
-	SG_REF(features);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(featureMatrix);
 
 	// create linear kernel
-	CLinearKernel* kernel = new CLinearKernel();
-	SG_REF(kernel);
+	auto kernel = std::make_shared<LinearKernel>();
 	kernel->init(features, features);
 
 	// create svm classifier by LibSVM
-	CLibSVM* svm = new CLibSVM(svm_C, kernel, labels);
-	SG_REF(svm);
+	auto svm = std::make_shared<LibSVM>(svm_C, kernel, labels);
 	svm->train();
 
 	// classify data points
-	CBinaryLabels* out_labels = svm->apply()->as<CBinaryLabels>();
+	auto out_labels = svm->apply()->as<BinaryLabels>();
 
 	/*convert scores to calibrated probabilities  by fitting a sigmoid function
 	using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note
 	on Platt's probabilistic outputs for support vector machines.
 	See BinaryLabels documentation for details*/
-	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
+	auto sigmoid_calibration = std::make_shared<SigmoidCalibration>();
 	sigmoid_calibration->fit_binary(
-	    out_labels, labels->as<CBinaryLabels>());
-	CBinaryLabels* calibrated_labels =
+	    out_labels, labels->as<BinaryLabels>());
+	auto calibrated_labels =
 	    sigmoid_calibration->calibrate_binary(out_labels);
 
 	// display output labels and probabilities
@@ -89,12 +85,6 @@ int main(int argc, char** argv)
 	}
 
 	// clean up
-	SG_UNREF(sigmoid_calibration);
-	SG_UNREF(calibrated_labels);
-	SG_UNREF(out_labels);
-	SG_UNREF(kernel);
-	SG_UNREF(features);
-	SG_UNREF(svm);
 
 	exit_shogun();
 

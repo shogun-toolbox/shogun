@@ -27,40 +27,35 @@ void test_cross_validation()
 {
 	index_t k =4;
 	/* dense features from matrix */
-	CCSVFile* feature_file = new CCSVFile(fname_feats);
+	CSVFile* feature_file = new CSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
-	SG_UNREF(feature_file);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(mat);
 
 	/* labels from vector */
-	CCSVFile* label_file = new CCSVFile(fname_labels);
+	CSVFile* label_file = new CSVFile(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
-	SG_UNREF(label_file);
 
-	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
-	SG_REF(labels);
+	MulticlassLabels* labels=new MulticlassLabels(label_vec);
 
 	/* create knn */
-	CEuclideanDistance* distance = new CEuclideanDistance(features, features);
-	CKNN* knn=new CKNN (k, distance, labels);
+	EuclideanDistance* distance = new EuclideanDistance(features, features);
+	KNN* knn=new KNN (k, distance, labels);
 
 	/* train and output */
 	knn->train(features);
-	CMulticlassLabels* output = knn->apply(features)->as<CMulticlassLabels>();
+	MulticlassLabels* output = knn->apply(features)->as<MulticlassLabels>();
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
-	CMulticlassAccuracy* eval_crit = new CMulticlassAccuracy ();
+	MulticlassAccuracy* eval_crit = new MulticlassAccuracy ();
 
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
 	SG_SPRINT("training accuracy: %f\n", eval_result);
-	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
@@ -69,29 +64,25 @@ void test_cross_validation()
 
 	/* splitting strategy */
 	index_t n_folds=5;
-	CStratifiedCrossValidationSplitting* splitting=
-			new CStratifiedCrossValidationSplitting(labels, n_folds);
+	StratifiedCrossValidationSplitting* splitting=
+			new StratifiedCrossValidationSplitting(labels, n_folds);
 
 	/* cross validation instance, 10 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(knn, features, labels,
+	CrossValidation* cross=new CrossValidation(knn, features, labels,
 			splitting, eval_crit);
 
 	cross->set_num_runs(1);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
 
 	result->print_result();
 
 	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(cross);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 }
 
 int main(int argc, char **argv)

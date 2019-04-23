@@ -11,32 +11,31 @@
 
 using namespace shogun;
 
-CHessianLocallyLinearEmbedding::CHessianLocallyLinearEmbedding() :
-		CLocallyLinearEmbedding()
+HessianLocallyLinearEmbedding::HessianLocallyLinearEmbedding() :
+		LocallyLinearEmbedding()
 {
 }
 
-CHessianLocallyLinearEmbedding::~CHessianLocallyLinearEmbedding()
+HessianLocallyLinearEmbedding::~HessianLocallyLinearEmbedding()
 {
 }
 
-const char* CHessianLocallyLinearEmbedding::get_name() const
+const char* HessianLocallyLinearEmbedding::get_name() const
 {
 	return "HessianLocallyLinearEmbedding";
 };
 
-CFeatures*
-CHessianLocallyLinearEmbedding::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features>
+HessianLocallyLinearEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	std::shared_ptr<Kernel> kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_HESSIAN_LOCALLY_LINEAR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
-	parameters.kernel = kernel;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	SG_UNREF(kernel);
-	return embedding;
+	parameters.kernel = kernel.get();
+	return tapkee_embed(parameters);
 }
 

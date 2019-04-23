@@ -60,12 +60,12 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
+class LogitVGPiecewiseBoundLikelihood : public VariationalGaussianLikelihood
 {
 public:
-	CLogitVGPiecewiseBoundLikelihood();
+	LogitVGPiecewiseBoundLikelihood();
 
-	virtual ~CLogitVGPiecewiseBoundLikelihood();
+	virtual ~LogitVGPiecewiseBoundLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -87,7 +87,7 @@ public:
 	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
+	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using piecewise bound

@@ -11,8 +11,8 @@
 
 using namespace shogun;
 
-CTime::CTime(bool st)
-: CSGObject()
+Time::Time(bool st)
+: SGObject()
 {
 	start_time=0;
 	stop_time=0;
@@ -22,11 +22,11 @@ CTime::CTime(bool st)
 		start();
 }
 
-CTime::~CTime()
+Time::~Time()
 {
 }
 
-clock_t CTime::cur_runtime(bool verbose)
+clock_t Time::cur_runtime(bool verbose)
 {
 	clock_t cur_time=clock();
 	if (verbose)
@@ -34,7 +34,7 @@ clock_t CTime::cur_runtime(bool verbose)
 	return cur_time;
 }
 
-clock_t CTime::cur_runtime_diff(bool verbose)
+clock_t Time::cur_runtime_diff(bool verbose)
 {
 	clock_t diff=clock()-start_runtime;
 	if (verbose)
@@ -42,7 +42,7 @@ clock_t CTime::cur_runtime_diff(bool verbose)
 	return diff;
 }
 
-float64_t CTime::cur_runtime_diff_sec(bool verbose)
+float64_t Time::cur_runtime_diff_sec(bool verbose)
 {
 	float64_t diff_s = ((float64_t)(clock() - start_runtime)) / CLOCKS_PER_SEC;
 	if (verbose)
@@ -52,7 +52,7 @@ float64_t CTime::cur_runtime_diff_sec(bool verbose)
 }
 
 
-float64_t CTime::start(bool verbose)
+float64_t Time::start(bool verbose)
 {
 	start_time=get_curtime();
 
@@ -61,7 +61,7 @@ float64_t CTime::start(bool verbose)
 	return start_time;
 }
 
-float64_t CTime::cur_time_diff(bool verbose)
+float64_t Time::cur_time_diff(bool verbose)
 {
 	float64_t diff_s = get_curtime()-start_time;
 	if (verbose)
@@ -70,7 +70,7 @@ float64_t CTime::cur_time_diff(bool verbose)
 	return diff_s;
 }
 
-float64_t CTime::time_diff_sec(bool verbose)
+float64_t Time::time_diff_sec(bool verbose)
 {
 	float64_t diff_s = stop_time - start_time;
 	if (verbose)
@@ -79,7 +79,7 @@ float64_t CTime::time_diff_sec(bool verbose)
 	return diff_s;
 }
 
-float64_t CTime::stop(bool verbose)
+float64_t Time::stop(bool verbose)
 {
 	stop_time=get_curtime();
 

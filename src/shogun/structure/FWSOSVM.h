@@ -19,11 +19,11 @@ namespace shogun
  * [1] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
-class CFWSOSVM : public CLinearStructuredOutputMachine
+class FWSOSVM : public LinearStructuredOutputMachine
 {
 public:
 	/** default constructor */
-	CFWSOSVM();
+	FWSOSVM();
 
 	/** standard constructor
 	 *
@@ -32,11 +32,11 @@ public:
 	 * @param do_line_search whether do analytical line search
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	CFWSOSVM(CStructuredModel* model, CStructuredLabels* labs,
+	FWSOSVM(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs,
 			bool do_line_search = true, bool verbose = false);
 
 	/** destructor */
-	~CFWSOSVM();
+	~FWSOSVM();
 
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "FWSOSVM"; }
@@ -89,7 +89,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	virtual bool train_machine(CFeatures* data = NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 	/** register and initialize parameters */

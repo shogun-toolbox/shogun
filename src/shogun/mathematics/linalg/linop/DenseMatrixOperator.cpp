@@ -18,8 +18,8 @@ namespace shogun
 {
 
 template<class T>
-CDenseMatrixOperator<T>::CDenseMatrixOperator()
-	: CMatrixOperator<T>()
+DenseMatrixOperator<T>::DenseMatrixOperator()
+	: MatrixOperator<T>()
 	{
 		init();
 
@@ -27,8 +27,8 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator()
 	}
 
 template<class T>
-CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
-	: CMatrixOperator<T>(op.num_cols),
+DenseMatrixOperator<T>::DenseMatrixOperator(SGMatrix<T> op)
+	: MatrixOperator<T>(op.num_cols),
 	  m_operator(op)
 	{
 		init();
@@ -37,9 +37,9 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
 	}
 
 template<class T>
-CDenseMatrixOperator<T>::CDenseMatrixOperator(
-	const CDenseMatrixOperator<T>& orig)
-	: CMatrixOperator<T>(orig.get_dimension())
+DenseMatrixOperator<T>::DenseMatrixOperator(
+	const DenseMatrixOperator<T>& orig)
+	: MatrixOperator<T>(orig.get_dimension())
 	{
 		init();
 
@@ -54,25 +54,25 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator(
 	}
 
 template<class T>
-void CDenseMatrixOperator<T>::init()
+void DenseMatrixOperator<T>::init()
 	{
-		CSGObject::set_generic<T>();
+		SGObject::set_generic<T>();
 	}
 
 template<class T>
-CDenseMatrixOperator<T>::~CDenseMatrixOperator()
+DenseMatrixOperator<T>::~DenseMatrixOperator()
 	{
 		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
-SGMatrix<T> CDenseMatrixOperator<T>::get_matrix_operator() const
+SGMatrix<T> DenseMatrixOperator<T>::get_matrix_operator() const
 	{
 		return m_operator;
 	}
 
 template<class T>
-SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
+SGVector<T> DenseMatrixOperator<T>::get_diagonal() const
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 
@@ -90,7 +90,7 @@ SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
 	}
 
 template<class T>
-void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
+void DenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 		REQUIRE(diag.vector, "Diagonal not initialized!\n");
@@ -109,7 +109,7 @@ void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	}
 
 template<class T>
-SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
+SGVector<T> DenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 		REQUIRE(this->get_dimension()==b.vlen,
@@ -132,7 +132,7 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 
 #define UNDEFINED(type) \
 template<> \
-SGVector<type> CDenseMatrixOperator<type>::apply(SGVector<type> b) const \
+SGVector<type> DenseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
 		SG_SERROR("Not supported for %s\n", #type);\
 		return b; \
@@ -144,18 +144,18 @@ UNDEFINED(int8_t)
 UNDEFINED(uint8_t)
 #undef UNDEFINED
 
-template class CDenseMatrixOperator<bool>;
-template class CDenseMatrixOperator<char>;
-template class CDenseMatrixOperator<int8_t>;
-template class CDenseMatrixOperator<uint8_t>;
-template class CDenseMatrixOperator<int16_t>;
-template class CDenseMatrixOperator<uint16_t>;
-template class CDenseMatrixOperator<int32_t>;
-template class CDenseMatrixOperator<uint32_t>;
-template class CDenseMatrixOperator<int64_t>;
-template class CDenseMatrixOperator<uint64_t>;
-template class CDenseMatrixOperator<float32_t>;
-template class CDenseMatrixOperator<float64_t>;
-template class CDenseMatrixOperator<floatmax_t>;
-template class CDenseMatrixOperator<complex128_t>;
+template class DenseMatrixOperator<bool>;
+template class DenseMatrixOperator<char>;
+template class DenseMatrixOperator<int8_t>;
+template class DenseMatrixOperator<uint8_t>;
+template class DenseMatrixOperator<int16_t>;
+template class DenseMatrixOperator<uint16_t>;
+template class DenseMatrixOperator<int32_t>;
+template class DenseMatrixOperator<uint32_t>;
+template class DenseMatrixOperator<int64_t>;
+template class DenseMatrixOperator<uint64_t>;
+template class DenseMatrixOperator<float32_t>;
+template class DenseMatrixOperator<float64_t>;
+template class DenseMatrixOperator<floatmax_t>;
+template class DenseMatrixOperator<complex128_t>;
 }

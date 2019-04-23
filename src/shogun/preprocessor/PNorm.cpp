@@ -17,32 +17,32 @@
 
 using namespace shogun;
 
-CPNorm::CPNorm ()
-: CDensePreprocessor<float64_t>(),
+PNorm::PNorm ()
+: DensePreprocessor<float64_t>(),
  m_p (2.0)
 {
 	register_param ();
 }
 
-CPNorm::CPNorm (double p)
-: CDensePreprocessor<float64_t>(),
+PNorm::PNorm (double p)
+: DensePreprocessor<float64_t>(),
  m_p (p)
 {
 	ASSERT (m_p >= 1.0)
 	register_param ();
 }
 
-CPNorm::~CPNorm ()
+PNorm::~PNorm ()
 {
 }
 
 /// clean up allocated memory
-void CPNorm::cleanup ()
+void PNorm::cleanup ()
 {
 }
 
 /// initialize preprocessor from file
-bool CPNorm::load (FILE* f)
+bool PNorm::load (FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -50,14 +50,14 @@ bool CPNorm::load (FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CPNorm::save (FILE* f)
+bool PNorm::save (FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-SGMatrix<float64_t> CPNorm::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> PNorm::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	for (auto i : range(matrix.num_cols))
 	{
@@ -70,7 +70,7 @@ SGMatrix<float64_t> CPNorm::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CPNorm::apply_to_feature_vector (SGVector<float64_t> vector)
+SGVector<float64_t> PNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 {
 	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
 	float64_t norm = get_pnorm (vector.vector, vector.vlen);
@@ -81,24 +81,24 @@ SGVector<float64_t> CPNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 	return SGVector<float64_t>(normed_vec,vector.vlen);
 }
 
-void CPNorm::set_pnorm (double pnorm)
+void PNorm::set_pnorm (double pnorm)
 {
 	ASSERT (pnorm >= 1.0)
 	m_p = pnorm;
 	register_param ();
 }
 
-double CPNorm::get_pnorm () const
+double PNorm::get_pnorm () const
 {
 	return m_p;
 }
 
-void CPNorm::register_param ()
+void PNorm::register_param ()
 {
 	SG_ADD(&m_p, "norm", "P-norm parameter", ParameterProperties::HYPER);
 }
 
-inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
+inline float64_t PNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 {
 	float64_t norm = 0.0;
 	if (m_p == 1.0)

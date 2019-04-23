@@ -34,7 +34,6 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/KRRNystrom.h>
 #include <shogun/regression/KernelRidgeRegression.h>
-#include <shogun/base/some.h>
 #include <shogun/mathematics/NormalDistribution.h>
 
 #include <random>
@@ -69,24 +68,24 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	}
 
 	/* training features */
-	auto features=some<CDenseFeatures<float64_t>>(train_dat);
-	auto features_krr=some<CDenseFeatures<float64_t>>(train_dat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
+	auto features_krr=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* testing features */
-	auto test_features=some<CDenseFeatures<float64_t>>(test_dat);
+	auto test_features=std::make_shared<DenseFeatures<float64_t>>(test_dat);
 
 	/* training labels */
-	auto labels=some<CRegressionLabels>(lab);
-	auto labels_krr=some<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
+	auto labels_krr=std::make_shared<RegressionLabels>(lab);
 
 	/* kernel */
-	auto kernel=some<CGaussianKernel>(features, features, 10, 0.5);
-	auto kernel_krr=some<CGaussianKernel>(features_krr, features_krr, 10, 0.5);
+	auto kernel=std::make_shared<GaussianKernel>(features, features, 10, 0.5);
+	auto kernel_krr=std::make_shared<GaussianKernel>(features_krr, features_krr, 10, 0.5);
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=some<CKRRNystrom>(tau, num_vectors, kernel, labels);
-	auto krr=some<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_vectors, kernel, labels);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
 	nystrom->train(features);
 	krr->train(features);
@@ -97,10 +96,10 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(alphas[i], alphas_krr[i], 1E-1);
 
-	auto result = Some<CRegressionLabels>::from_raw(
-	    nystrom->apply_regression(test_features));
+	auto result =
+	    nystrom->apply_regression(test_features);
 	auto result_krr =
-	    Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
+	    krr->apply_regression(test_features);
 
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(result->get_label(i), result_krr->get_label(i), 1E-5);
@@ -136,32 +135,32 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	}
 
 	/* training features */
-	auto features=some<CDenseFeatures<float64_t>>(train_dat);
-	auto features_krr=some<CDenseFeatures<float64_t>>(train_dat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
+	auto features_krr=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* testing features */
-	auto test_features=some<CDenseFeatures<float64_t>>(test_dat);
+	auto test_features=std::make_shared<DenseFeatures<float64_t>>(test_dat);
 
 	/* training labels */
-	auto labels=some<CRegressionLabels>(lab);
-	auto labels_krr=some<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
+	auto labels_krr=std::make_shared<RegressionLabels>(lab);
 
 	/* kernel */
-	auto kernel=some<CGaussianKernel>(features, features, 10, 0.5);
-	auto kernel_krr=some<CGaussianKernel>(features_krr, features_krr, 10, 0.5);
+	auto kernel=std::make_shared<GaussianKernel>(features, features, 10, 0.5);
+	auto kernel_krr=std::make_shared<GaussianKernel>(features_krr, features_krr, 10, 0.5);
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=some<CKRRNystrom>(tau, num_basis_rkhs, kernel, labels);
-	auto krr=some<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_basis_rkhs, kernel, labels);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
 	nystrom->train(features);
 	krr->train(features);
 
-	auto result = Some<CRegressionLabels>::from_raw(
-	    nystrom->apply_regression(test_features));
+	auto result =
+	    nystrom->apply_regression(test_features);
 	auto result_krr =
-	    Some<CRegressionLabels>::from_raw(krr->apply_regression(test_features));
+	    krr->apply_regression(test_features);
 
 	for (index_t i=0; i<num_vectors; ++i)
 		EXPECT_NEAR(result->get_label(i), result_krr->get_label(i), 1E-1);

@@ -27,13 +27,13 @@ namespace shogun
 	 * \f$C\f$ is the number of classes
 	 *
 	 */
-	class CWeightedMajorityVote : public CCombinationRule
+	class WeightedMajorityVote : public CombinationRule
 	{
 		public:
 			/**
 			 * Default ctor
 			 */
-			CWeightedMajorityVote();
+			WeightedMajorityVote();
 
 			/**
 			 * CWeightedMajorityVote constructor
@@ -41,9 +41,9 @@ namespace shogun
 			 * @param weights a vector of weights, where the nth element is the
 			 * weight of the nth Machine in ensemble.
 			 */
-			CWeightedMajorityVote(SGVector<float64_t>& weights);
+			WeightedMajorityVote(SGVector<float64_t>& weights);
 
-			virtual ~CWeightedMajorityVote();
+			virtual ~WeightedMajorityVote();
 
 			/**
 			 * Combines a matrix of an ensemble of Machines output, where each

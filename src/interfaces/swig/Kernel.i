@@ -12,7 +12,7 @@
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorKernel;
+%feature("director") shogun::DirectorKernel;
 %feature("director:except") {
     if ($error != NULL) {
         throw Swig::DirectorMethodException();
@@ -26,48 +26,112 @@
 #endif
 
 /* Remove C Prefix */
-%rename(Kernel) CKernel;
-%rename(KernelNormalizer) CKernelNormalizer;
-
-%rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
-%rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
-%rename(CommUlongStringKernel) CCommUlongStringKernel;
-%rename(CommWordStringKernel) CCommWordStringKernel;
+%shared_ptr(shogun::Kernel)
+%shared_ptr(shogun::KernelNormalizer)
+%shared_ptr(shogun::PyramidChi2)
+%shared_ptr(shogun::ANOVAKernel)
+%shared_ptr(shogun::AUCKernel)
+%shared_ptr(shogun::BesselKernel)
+%shared_ptr(shogun::AvgDiagKernelNormalizer)
+%shared_ptr(shogun::RidgeKernelNormalizer)
+%shared_ptr(shogun::CircularKernel)
+%shared_ptr(shogun::Chi2Kernel)
+%shared_ptr(shogun::CombinedKernel)
+%shared_ptr(shogun::ProductKernel)
+%shared_ptr(shogun::CommUlongStringKernel)
+%shared_ptr(shogun::CommWordStringKernel)
+%shared_ptr(shogun::ConstKernel)
 
 PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
-%rename(CustomKernel) CCustomKernel;
+%shared_ptr(shogun::CustomKernel)
 
-%rename(DiagKernel) CDiagKernel;
+%shared_ptr(shogun::DiagKernel)
 #ifdef USE_GPL_SHOGUN
-%rename(DistantSegmentsKernel) CDistantSegmentsKernel;
+%shared_ptr(shogun::DistantSegmentsKernel)
 #endif //USE_GPL_SHOGUN
-%rename(DiceKernelNormalizer) CDiceKernelNormalizer;
-%rename(ScatterKernelNormalizer) CScatterKernelNormalizer;
-%rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
-%rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
-%rename(DirectorKernel) CDirectorKernel;
-%rename(HistogramWordStringKernel) CHistogramWordStringKernel;
-%rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
-%rename(LinearStringKernel) CLinearStringKernel;
-%rename(SparseSpatialSampleStringKernel) CSparseSpatialSampleStringKernel;
-%rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
-%rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
-%rename(MatchWordStringKernel) CMatchWordStringKernel;
-%rename(OligoStringKernel) COligoStringKernel;
-%rename(PolyMatchStringKernel) CPolyMatchStringKernel;
-%rename(GaussianMatchStringKernel) CGaussianMatchStringKernel;
-%rename(SNPStringKernel) CSNPStringKernel;
-%rename(RegulatoryModulesStringKernel) CRegulatoryModulesStringKernel;
-%rename(PolyMatchWordStringKernel) CPolyMatchWordStringKernel;
-%rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
-%rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
-%rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
-%rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
-%rename(WeightedCommWordStringKernel) CWeightedCommWordStringKernel;
-%rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
-%rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
-%rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
-%rename(SubsequenceStringKernel) CSubsequenceStringKernel;
+%shared_ptr(shogun::WaveKernel)
+%shared_ptr(shogun::CauchyKernel)
+%shared_ptr(shogun::DiceKernelNormalizer)
+%shared_ptr(shogun::ExponentialKernel)
+%shared_ptr(shogun::ScatterKernelNormalizer)
+%shared_ptr(shogun::VarianceKernelNormalizer)
+%shared_ptr(shogun::DistanceKernel)
+%shared_ptr(shogun::FixedDegreeStringKernel)
+%shared_ptr(shogun::ShiftInvariantKernel)
+%shared_ptr(shogun::GaussianCompactKernel)
+%shared_ptr(shogun::DirectorKernel)
+%shared_ptr(shogun::WaveletKernel)
+%shared_ptr(shogun::GaussianShiftKernel)
+%shared_ptr(shogun::GaussianShortRealKernel)
+%shared_ptr(shogun::HistogramIntersectionKernel)
+%shared_ptr(shogun::HistogramWordStringKernel)
+%shared_ptr(shogun::IdentityKernelNormalizer)
+%shared_ptr(shogun::InverseMultiQuadricKernel)
+%shared_ptr(shogun::LinearKernel)
+%shared_ptr(shogun::LinearStringKernel)
+%shared_ptr(shogun::SparseSpatialSampleStringKernel)
+%shared_ptr(shogun::SplineKernel)
+%shared_ptr(shogun::LocalAlignmentStringKernel)
+%shared_ptr(shogun::LocalityImprovedStringKernel)
+%shared_ptr(shogun::MatchWordStringKernel)
+%shared_ptr(shogun::OligoStringKernel)
+%shared_ptr(shogun::PolyMatchStringKernel)
+%shared_ptr(shogun::PowerKernel)
+%shared_ptr(shogun::LogKernel)
+%shared_ptr(shogun::GaussianMatchStringKernel)
+%shared_ptr(shogun::SNPStringKernel)
+%shared_ptr(shogun::RegulatoryModulesStringKernel)
+%shared_ptr(shogun::PolyMatchWordStringKernel)
+%shared_ptr(shogun::SalzbergWordStringKernel)
+%shared_ptr(shogun::SigmoidKernel)
+%shared_ptr(shogun::SphericalKernel)
+%shared_ptr(shogun::SimpleLocalityImprovedStringKernel)
+%shared_ptr(shogun::SqrtDiagKernelNormalizer)
+%shared_ptr(shogun::TanimotoKernelNormalizer)
+%shared_ptr(shogun::TensorProductPairKernel)
+%shared_ptr(shogun::TStudentKernel)
+%shared_ptr(shogun::WeightedCommWordStringKernel)
+%shared_ptr(shogun::WeightedDegreePositionStringKernel)
+%shared_ptr(shogun::WeightedDegreeStringKernel)
+%shared_ptr(shogun::WeightedDegreeRBFKernel)
+%shared_ptr(shogun::SpectrumMismatchRBFKernel)
+%shared_ptr(shogun::ZeroMeanCenterKernelNormalizer)
+%shared_ptr(shogun::DotKernel)
+%shared_ptr(shogun::RationalQuadraticKernel)
+%shared_ptr(shogun::MultiquadricKernel)
+%shared_ptr(shogun::JensenShannonKernel)
+
+%shared_ptr(shogun::ExponentialARDKernel)
+%shared_ptr(shogun::GaussianARDKernel)
+
+%shared_ptr(shogun::GaussianARDSparseKernel)
+
+%shared_ptr(shogun::SubsequenceStringKernel)
+%shared_ptr(shogun::PeriodicKernel)
+
+#ifdef USE_FLOAT64
+    %shared_ptr(shogun::StringKernel<float64_t>)
+    %shared_ptr(shogun::SparseKernel<float64_t>)
+#endif
+#ifdef USE_INT16
+    %shared_ptr(shogun::StringKernel<int16_t>)
+#endif
+#ifdef USE_UINT16
+    %shared_ptr(shogun::StringKernel<uint16_t>)
+    %shared_ptr(shogun::SparseKernel<uint16_t>)
+#endif
+#ifdef USE_CHAR
+    %shared_ptr(shogun::StringKernel<char>)
+#endif
+#ifdef USE_UINT32
+    %shared_ptr(shogun::StringKernel<int32_t>)
+#endif
+#ifdef USE_UINT64
+    %shared_ptr(shogun::StringKernel<uint64_t>)
+#endif
+#ifdef USE_UINT8
+    %shared_ptr(shogun::StringKernel<uint8_t>)
+#endif
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -79,10 +143,10 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(SparseRealKernel) CSparseKernel<float64_t>;
+    %template(SparseRealKernel) SparseKernel<float64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(SparseWordKernel) CSparseKernel<uint16_t>;
+    %template(SparseWordKernel) SparseKernel<uint16_t>;
 #endif
 }
 
@@ -91,25 +155,25 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(StringRealKernel) CStringKernel<float64_t>;
+    %template(StringRealKernel) StringKernel<float64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StringWordKernel) CStringKernel<uint16_t>;
+    %template(StringWordKernel) StringKernel<uint16_t>;
 #endif
 #ifdef USE_CHAR
-    %template(StringCharKernel) CStringKernel<char>;
+    %template(StringCharKernel) StringKernel<char>;
 #endif
 #ifdef USE_UINT32
-    %template(StringIntKernel) CStringKernel<int32_t>;
+    %template(StringIntKernel) StringKernel<int32_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StringUlongKernel) CStringKernel<uint64_t>;
+    %template(StringUlongKernel) StringKernel<uint64_t>;
 #endif
-#ifdef USE_UINT16
-    %template(StringShortKernel) CStringKernel<int16_t>;
+#ifdef USE_INT16
+    %template(StringShortKernel) StringKernel<int16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(StringByteKernel) CStringKernel<uint8_t>;
+    %template(StringByteKernel) StringKernel<uint8_t>;
 #endif
 }
 

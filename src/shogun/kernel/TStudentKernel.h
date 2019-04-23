@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 
 /** @brief Generalized T-Student kernel
  *
@@ -28,18 +28,18 @@ class CDistance;
  * with degree=1 by default
  */
 
-class CTStudentKernel: public CKernel
+class TStudentKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CTStudentKernel();
+	TStudentKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param d kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CTStudentKernel(int32_t cache, float64_t d, CDistance* dist);
+	TStudentKernel(int32_t cache, float64_t d, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,16 +47,16 @@ public:
 	 * @param d kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CTStudentKernel(CFeatures *l, CFeatures *r, float64_t d, CDistance* dist);
+	TStudentKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t d, std::shared_ptr<Distance> dist);
 
-	virtual ~CTStudentKernel();
+	virtual ~TStudentKernel();
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -94,7 +94,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* distance;
+	std::shared_ptr<Distance> distance;
 
 	/// degree parameter of kernel
 	float64_t degree;

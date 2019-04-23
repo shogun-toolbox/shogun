@@ -17,17 +17,28 @@ namespace shogun
 		template <
 		    typename T, typename PRNG,
 		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        SGObject, typename std::remove_pointer<T>::type>::value>* =
 		        nullptr>
 		static inline void seed(T* object, PRNG&& prng)
 		{
 			if (object->has("seed"))
 				object->put("seed", (int32_t)prng());
 		}
+		template <
+		    typename T, typename PRNG,
+		    std::enable_if_t<std::is_base_of<
+		        SGObject, typename std::remove_pointer<T>::type>::value>* =
+		        nullptr>
+		static inline void seed(std::shared_ptr<T> object, PRNG&& prng)
+		{
+			seed(object.get(), prng);
+		}
 	} // namespace random
 
-	static inline void seed_callback(CSGObject*, int32_t);
-	static inline void random_seed_callback(CSGObject*);
+	static inline void seed_callback(SGObject*, int32_t);
+	static inline void random_seed_callback(SGObject*);
+
+	static constexpr const char * kSeedKey = "seed";
 
 	template <typename Parent, typename PRNG = std::mt19937_64>
 	class RandomMixin : public Parent
@@ -44,9 +55,9 @@ namespace shogun
 			init();
 		}
 
-		virtual CSGObject* clone() const override
+		virtual std::shared_ptr<SGObject> clone() const override
 		{
-			auto clone = dynamic_cast<this_t*>(Parent::clone());
+			auto clone = std::dynamic_pointer_cast<this_t>(Parent::clone());
 			clone->m_prng = m_prng;
 			return clone;
 		}
@@ -74,8 +85,8 @@ namespace shogun
 		{
 			init_random_seed();
 
-			Parent::watch_param("seed", &m_seed);
-			Parent::add_callback_function("seed", [&]() {
+			Parent::watch_param(kSeedKey, &m_seed);
+			Parent::add_callback_function(kSeedKey, [&]() {
 				m_prng = PRNG(m_seed);
 				seed_callback(this, m_seed);
 			});
@@ -91,9 +102,9 @@ namespace shogun
 		template <
 		    typename T,
 		    std::enable_if_t<std::is_base_of<
-		        CSGObject, typename std::remove_pointer<T>::type>::value>* =
+		        SGObject, typename std::remove_pointer<T>::type>::value>* =
 		        nullptr>
-		inline void seed(T* object) const
+		inline void seed(std::shared_ptr<T> object) const
 		{
 			random::seed(object, m_prng);
 		}
@@ -102,25 +113,25 @@ namespace shogun
 		mutable PRNG m_prng;
 	};
 
-	static inline void seed_callback(CSGObject* obj, int32_t seed)
+	static inline void seed_callback(SGObject* obj, int32_t seed)
 	{
-		obj->for_each_param_of_type<CSGObject*>(
-		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has("seed"))
-				    (*param)->put("seed", seed);
+		obj->for_each_param_of_type<std::shared_ptr<SGObject>>(
+		    [&](const std::string& name, std::shared_ptr<SGObject>* param) {
+			    if ((*param)->has(kSeedKey))
+				    (*param)->put(kSeedKey, seed);
 			    else
-				    seed_callback(*param, seed);
+				    seed_callback((*param).get(), seed);
 		    });
 	}
 
-	static inline void random_seed_callback(CSGObject* obj)
+	static inline void random_seed_callback(SGObject* obj)
 	{
-		obj->for_each_param_of_type<CSGObject*>(
-		    [&](const std::string& name, CSGObject** param) {
-			    if ((*param)->has("seed"))
+		obj->for_each_param_of_type<std::shared_ptr<SGObject>>(
+		    [&](const std::string& name, std::shared_ptr<SGObject>* param) {
+			    if ((*param)->has(kSeedKey))
 				    (*param)->run("set_random_seed");
 			    else
-				    random_seed_callback(*param);
+				    random_seed_callback((*param).get());
 		    });
 	}
 } // namespace shogun

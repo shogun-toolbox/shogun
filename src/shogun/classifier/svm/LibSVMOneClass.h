@@ -18,19 +18,19 @@
 namespace shogun
 {
 /** @brief class LibSVMOneClass */
-class CLibSVMOneClass : public CSVM
+class LibSVMOneClass : public SVM
 {
 	public:
 		/** default constructor */
-		CLibSVMOneClass();
+		LibSVMOneClass();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 * @param k kernel
 		 */
-		CLibSVMOneClass(float64_t C, CKernel* k);
-		virtual ~CLibSVMOneClass();
+		LibSVMOneClass(float64_t C, std::shared_ptr<Kernel> k);
+		virtual ~LibSVMOneClass();
 
 		/** get classifier type
 		 *
@@ -52,7 +52,7 @@ class CLibSVMOneClass : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 };
 }
 #endif

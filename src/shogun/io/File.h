@@ -23,23 +23,23 @@ template <class ST> struct SGSparseVectorEntry;
  *
  * A file is assumed to be a seekable raw data stream.
  *
- * \sa CCSVFile
+ * \sa CSVFile
  * \sa CBinaryFile
- * \sa CHDF5File
+ * \sa HDF5File
  *
  */
-class CFile : public CSGObject
+class File : public SGObject
 {
 public:
 	/** default constructor */
-	CFile();
+	File();
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CFile(FILE* f, const char* name=NULL);
+	File(FILE* f, const char* name=NULL);
 
 #ifdef HAVE_FDOPEN
 	/** constructor
@@ -48,7 +48,7 @@ public:
 	 * @param mode mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CFile(int fd, const char* mode, const char* name=NULL);
+	File(int fd, const char* mode, const char* name=NULL);
 #endif
 
 	/** constructor
@@ -57,10 +57,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CFile(const char* fname, char rw='r', const char* name=NULL);
+	File(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
-	virtual ~CFile();
+	virtual ~File();
 
 	/** close */
 	void close()
@@ -86,7 +86,7 @@ public:
 
 	/** set the path to the variable to be accessed
 	 *
-	 * only supported by some file interfaces like CHDF5File
+	 * only supported by some file interfaces like HDF5File
 	 *
 	 * @param name variable path & name
 	 */
@@ -94,7 +94,7 @@ public:
 
 	/** get the path to the variable to be accessed
 	 *
-	 * only supported by some file interfaces like CHDF5File
+	 * only supported by some file interfaces like HDF5File
 	 *
 	 * @return name variable path & name
 	 */

@@ -29,7 +29,7 @@
  */
 
 /* Remove C Prefix */
-%rename(StochasticGBMachine) CStochasticGBMachine;
+%shared_ptr(shogun::StochasticGBMachine)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/StochasticGBMachine.h>

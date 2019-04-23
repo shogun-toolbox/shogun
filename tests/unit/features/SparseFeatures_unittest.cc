@@ -4,7 +4,6 @@
  * Authors: Heiko Strathmann
  */
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
@@ -33,29 +32,29 @@ TEST(SparseFeaturesTest,serialization)
 	//data.display_matrix();
 
 	/* create sparse features */
-	auto sparse_features=some<CSparseFeatures<int32_t>>(data);
+	auto sparse_features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	auto fs = io::FileSystemRegistry::instance();
 	std::string filename("sparseFeatures.json");
 	ASSERT_TRUE(fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_FALSE(fs->new_writable_file(filename, &file));
-	auto fos = some<io::CFileOutputStream>(file.get());
-	auto serializer = some<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::FileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::JsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(sparse_features);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
-	auto fis = some<io::CFileInputStream>(raf.get());
-	auto deserializer = some<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::FileInputStream>(raf.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(fis);
 	auto sparse_features_loaded = deserializer->read_object();
 
 	ASSERT_FALSE(fs->delete_file(filename));
 
 	SGMatrix<int32_t> data_loaded =
-		(static_cast<CSparseFeatures<int32_t>*>(sparse_features_loaded.get()))
+		sparse_features_loaded->as<SparseFeatures<int32_t>>()
 			->get_full_feature_matrix();
 	//data_loaded.display_matrix();
 
@@ -73,7 +72,7 @@ TEST(SparseFeaturesTest,constructor_from_dense)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	EXPECT_EQ(features->get_num_features(), data.num_rows);
 	EXPECT_EQ(features->get_num_vectors(), data.num_cols);
@@ -86,7 +85,7 @@ TEST(SparseFeaturesTest,constructor_from_dense)
 	EXPECT_EQ(features->get_sparse_feature_vector(1).features[0].entry, data(0,1));
 	EXPECT_EQ(features->get_sparse_feature_vector(2).features[0].entry, data(0,2));
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_feature_vector_identity)
@@ -100,7 +99,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -117,7 +116,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_identity)
 	EXPECT_EQ(features->get_sparse_feature_vector(2).features[0].entry, data(0,2));
 	EXPECT_EQ(features->get_sparse_feature_vector(2).features[1].entry, data(1,2));
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_feature_vector_permutation)
@@ -131,7 +130,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=2;
@@ -148,7 +147,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_permutation)
 	EXPECT_EQ(features->get_sparse_feature_vector(2).features[0].entry, data(0,1));
 	EXPECT_EQ(features->get_sparse_feature_vector(2).features[1].entry, data(1,1));
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_feature_vector_smaller)
@@ -162,7 +161,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=2;
@@ -176,7 +175,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_smaller)
 	EXPECT_EQ(features->get_sparse_feature_vector(0).features[1].entry, data(1,2));
 	EXPECT_EQ(features->get_sparse_feature_vector(1).features[0].entry, data(1,0));
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_matrix_identity)
@@ -190,7 +189,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -205,7 +204,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_identity)
 	SGMatrix<int32_t> mat=features->get_full_feature_matrix();
 	EXPECT_TRUE(mat.equals(data));
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_matrix_permutation)
@@ -219,7 +218,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=2;
@@ -240,7 +239,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_permutation)
 			EXPECT_EQ(mat(i,j), data(i,subset_idx[j]));
 	}
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_matrix_repetition1)
@@ -254,7 +253,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_repetition1)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -275,7 +274,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_repetition1)
 			EXPECT_EQ(mat(i,j), data(i,subset_idx[j]));
 	}
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
@@ -289,7 +288,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=2;
@@ -309,7 +308,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
 			EXPECT_EQ(mat(i,j), data(i,subset_idx[j]));
 	}
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_vector_identity)
@@ -323,7 +322,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -343,7 +342,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_identity)
 			EXPECT_EQ(vec[j], data(j,subset_idx[i]));
 	}
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_vector_permutation)
@@ -357,7 +356,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -377,7 +376,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_permutation)
 			EXPECT_EQ(vec[j], data(j,subset_idx[i]));
 	}
 
-	SG_UNREF(features);
+
 }
 
 TEST(SparseFeaturesTest,subset_get_full_feature_vector_smaller)
@@ -391,7 +390,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=0;
@@ -410,5 +409,5 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_smaller)
 			EXPECT_EQ(vec[j], data(j,subset_idx[i]));
 	}
 
-	SG_UNREF(features);
+
 }

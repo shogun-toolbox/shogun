@@ -12,42 +12,42 @@
 
 using namespace shogun;
 
-CTanimotoDistance::CTanimotoDistance()
-: CDenseDistance<float64_t>()
+TanimotoDistance::TanimotoDistance()
+: DenseDistance<float64_t>()
 {
 }
 
-CTanimotoDistance::CTanimotoDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CDenseDistance<float64_t>()
+TanimotoDistance::TanimotoDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+: DenseDistance<float64_t>()
 {
 	init(l, r);
 }
 
-CTanimotoDistance::~CTanimotoDistance()
+TanimotoDistance::~TanimotoDistance()
 {
 	cleanup();
 }
 
-bool CTanimotoDistance::init(CFeatures* l, CFeatures* r)
+bool TanimotoDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result=CDenseDistance<float64_t>::init(l,r);
+	bool result=DenseDistance<float64_t>::init(l,r);
 
 	return result;
 }
 
-void CTanimotoDistance::cleanup()
+void TanimotoDistance::cleanup()
 {
 }
 
-float64_t CTanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t TanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen)
 
@@ -64,8 +64,8 @@ float64_t CTanimotoDistance::compute(int32_t idx_a, int32_t idx_b)
 		}
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	s=nx+ny-d;
 

@@ -30,18 +30,18 @@ int main(int argc, char** argv)
 	/* create some random data and hand it to each kernel */
 	SGMatrix<float64_t> matrix(n,n);
 	for (int32_t k=0; k<n*n; ++k)
-		matrix.matrix[k]=CMath::random((float64_t) -n, (float64_t) n);
+		matrix.matrix[k]=Math::random((float64_t) -n, (float64_t) n);
 
 	SG_SPRINT("feature data:\n");
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, n, n);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(matrix);
 
 	/* create n kernels with n features each */
-	CGaussianKernel** kernels=SG_MALLOC(CGaussianKernel*, n);
+	GaussianKernel** kernels=SG_MALLOC(GaussianKernel*, n);
 	for (int32_t i=0; i<n; ++i)
 	{
-		kernels[i]=new CGaussianKernel(10, CMath::random(0.0, (float64_t)n*n));
+		kernels[i]=new GaussianKernel(10, Math::random(0.0, (float64_t)n*n));
 
 		/* hand data to kernel */
 		kernels[i]->init(features, features);
@@ -52,11 +52,11 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i<n; ++i)
 	{
 		parameters[i]=new Parameter();
-		parameters[i]->add((CSGObject**)&kernels[i], "kernel", "");
+		parameters[i]->add((SGObject**)&kernels[i], "kernel", "");
 	}
 
 	/* create n labels (+1,-1,+1,-1,...) */
-	CBinaryLabels* labels=new CBinaryLabels(n);
+	BinaryLabels* labels=new BinaryLabels(n);
 	for (int32_t i=0; i<n; ++i)
 		labels->set_label(i, i%2==0 ? +1 : -1);
 
@@ -87,7 +87,6 @@ int main(int argc, char** argv)
 	SG_FREE(parameters);
 
 	/* this also handles features, labels, and last kernel in kernels[n-1] */
-	SG_UNREF(svm);
 
 	exit_shogun();
 	return 0;

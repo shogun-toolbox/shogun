@@ -47,12 +47,12 @@ TEST(KDTree,tree_structure)
 	data(0,3)=1;
 	data(1,3)=-2;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	CKDTree* tree=new CKDTree();
+	auto tree=std::make_shared<KDTree>();
 	tree->build_tree(feats);
 
-	CBinaryTreeMachineNode<NbodyTreeNodeData>* node=dynamic_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>*>(tree->get_root());
+	auto node=tree->get_root()->as<BinaryTreeMachineNode<NbodyTreeNodeData>>();
 
 	EXPECT_EQ(0,node->data.start_idx);
 	EXPECT_EQ(3,node->data.end_idx);
@@ -61,7 +61,7 @@ TEST(KDTree,tree_structure)
 	EXPECT_EQ(2,node->data.bbox_upper[1]);
 	EXPECT_EQ(-2,node->data.bbox_lower[1]);
 
-	CBinaryTreeMachineNode<NbodyTreeNodeData>* child=node->left();
+	auto child=node->left();
 
 	EXPECT_EQ(0,child->data.start_idx);
 	EXPECT_EQ(1,child->data.end_idx);
@@ -70,7 +70,6 @@ TEST(KDTree,tree_structure)
 	EXPECT_EQ(2,child->data.bbox_upper[1]);
 	EXPECT_EQ(0,child->data.bbox_lower[1]);
 
-	SG_UNREF(child);
 	child=node->right();
 
 	EXPECT_EQ(2,child->data.start_idx);
@@ -80,10 +79,9 @@ TEST(KDTree,tree_structure)
 	EXPECT_EQ(0,child->data.bbox_upper[1]);
 	EXPECT_EQ(-2,child->data.bbox_lower[1]);
 
-	SG_UNREF(node);
-	SG_UNREF(tree);
-	SG_UNREF(feats);
-	SG_UNREF(child);
+
+
+
 }
 
 TEST(KDTree, knn_query)
@@ -98,16 +96,16 @@ TEST(KDTree, knn_query)
 	data(0,3)=0;
 	data(1,3)=1;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	CKDTree* tree=new CKDTree();
+	auto tree=std::make_shared<KDTree>();
 	tree->build_tree(feats);
 
 	SGMatrix<float64_t> test_data(2,1);
 	test_data(0,0)=0;
 	test_data(1,0)=0;
 
-	CDenseFeatures<float64_t>* qfeats=new CDenseFeatures<float64_t>(test_data);
+	auto qfeats=std::make_shared<DenseFeatures<float64_t>>(test_data);
 	tree->query_knn(qfeats,3);
 
 	SGMatrix<index_t> ind=tree->get_knn_indices();
@@ -116,7 +114,7 @@ TEST(KDTree, knn_query)
 	EXPECT_EQ(0,ind(1,0));
 	EXPECT_EQ(2,ind(2,0));
 
-	SG_UNREF(qfeats);
-	SG_UNREF(feats);
-	SG_UNREF(tree);
+
+
+
 }

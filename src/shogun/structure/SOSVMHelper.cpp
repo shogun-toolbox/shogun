@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Bjoern Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu, 
+ * Authors: Shell Hu, Bjoern Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu,
  *          Sanuj Sharma
  */
 
@@ -12,22 +12,22 @@
 
 using namespace shogun;
 
-CSOSVMHelper::CSOSVMHelper() : CSGObject()
+SOSVMHelper::SOSVMHelper() : SGObject()
 {
 	init();
 }
 
-CSOSVMHelper::CSOSVMHelper(int32_t bufsize) : CSGObject()
+SOSVMHelper::SOSVMHelper(int32_t bufsize) : SGObject()
 {
 	m_bufsize = bufsize;
 	init();
 }
 
-CSOSVMHelper::~CSOSVMHelper()
+SOSVMHelper::~SOSVMHelper()
 {
 }
 
-void CSOSVMHelper::init()
+void SOSVMHelper::init()
 {
 	SG_ADD(&m_primal, "primal", "History of primal values");
 	SG_ADD(&m_dual, "dual", "History of dual values");
@@ -51,17 +51,17 @@ void CSOSVMHelper::init()
 	m_train_error.zero();
 }
 
-float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel* model, float64_t lbda)
+float64_t SOSVMHelper::primal_objective(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, float64_t lbda)
 {
 	float64_t hinge_losses = 0.0;
-	CStructuredLabels* labels = model->get_labels();
+	auto labels = model->get_labels();
 	int32_t N = labels->get_num_labels();
-	SG_UNREF(labels);
+
 
 	for (int32_t i = 0; i < N; i++)
 	{
 		// solve the loss-augmented inference for point i
-		CResultSet* result = model->argmax(w, i);
+		auto result = model->argmax(w, i);
 
 		// hinge loss for point i
 		float64_t hinge_loss_i = result->score;
@@ -71,38 +71,38 @@ float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel
 
 		hinge_losses += hinge_loss_i;
 
-		SG_UNREF(result);
+
 	}
 
 	return (lbda/2 * linalg::dot(w, w) + hinge_losses/N);
 }
 
-float64_t CSOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda)
+float64_t SOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda)
 {
 	return (-lbda/2 * linalg::dot(w, w) + aloss);
 }
 
-float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* model, bool is_ub)
+float64_t SOSVMHelper::average_loss(SGVector<float64_t> w, std::shared_ptr<StructuredModel> model, bool is_ub)
 {
 	float64_t loss = 0.0;
-	CStructuredLabels* labels = model->get_labels();
+	auto labels = model->get_labels();
 	int32_t N = labels->get_num_labels();
-	SG_UNREF(labels);
+
 
 	for (int32_t i = 0; i < N; i++)
 	{
 		// solve the standard inference for point i
-		CResultSet* result = model->argmax(w, i, is_ub);
+		auto result = model->argmax(w, i, is_ub);
 
 		loss += result->delta;
 
-		SG_UNREF(result);
+
 	}
 
 	return loss / N;
 }
 
-void CSOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error,
+void SOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error,
 		float64_t dual, float64_t dgap)
 {
 	if (m_tracker >= m_bufsize)
@@ -126,32 +126,32 @@ void CSOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_
 	m_tracker++;
 }
 
-SGVector<float64_t> CSOSVMHelper::get_primal_values() const
+SGVector<float64_t> SOSVMHelper::get_primal_values() const
 {
 	return m_primal;
 }
 
-SGVector<float64_t> CSOSVMHelper::get_dual_values() const
+SGVector<float64_t> SOSVMHelper::get_dual_values() const
 {
 	return m_dual;
 }
 
-SGVector<float64_t> CSOSVMHelper::get_duality_gaps() const
+SGVector<float64_t> SOSVMHelper::get_duality_gaps() const
 {
 	return m_duality_gap;
 }
 
-SGVector<float64_t> CSOSVMHelper::get_eff_passes() const
+SGVector<float64_t> SOSVMHelper::get_eff_passes() const
 {
 	return m_eff_pass;
 }
 
-SGVector<float64_t> CSOSVMHelper::get_train_errors() const
+SGVector<float64_t> SOSVMHelper::get_train_errors() const
 {
 	return m_train_error;
 }
 
-void CSOSVMHelper::terminate()
+void SOSVMHelper::terminate()
 {
 	m_primal.resize_vector(m_tracker);
 	m_dual.resize_vector(m_tracker);

@@ -11,12 +11,12 @@ using namespace shogun;
 
 TEST(AlphabetTest, test_clone)
 {
-    CAlphabet * alph = new CAlphabet(PROTEIN);
-    CAlphabet * alph_clone = (CAlphabet *) alph->clone();
+    auto alph = std::make_shared<Alphabet>(PROTEIN);
+    auto alph_clone = alph->clone()->as<Alphabet>();
 
     EXPECT_EQ(alph->get_num_symbols(), alph_clone->get_num_symbols());
     EXPECT_EQ(alph->get_num_symbols_in_histogram(), alph_clone->get_num_symbols_in_histogram());
 
-    SG_UNREF(alph);
-    SG_UNREF(alph_clone);
+
+
 }

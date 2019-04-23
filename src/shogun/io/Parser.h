@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Thoralf Klein, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Evgeniy Andreev, Thoralf Klein, Soeren Sonnenburg, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -15,24 +15,24 @@
 
 namespace shogun
 {
-class CTokenizer;
+class Tokenizer;
 
 /** @brief Class for reading from a string */
-class CParser : public CSGObject
+class Parser : public SGObject
 {
 public:
 	/** default constructor */
-	CParser();
+	Parser();
 
 	/** constructor
 	 *
 	 * @param string the text to parse
 	 * @param tokenizer tokenizer
 	 */
-	CParser(SGVector<char> string, CTokenizer* tokenizer);
+	Parser(SGVector<char> string, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** destructor */
-	virtual ~CParser();
+	virtual ~Parser();
 
 	/** check for next line in the stream
 	 *
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(CTokenizer* tokenizer);
+	void set_tokenizer(std::shared_ptr<Tokenizer> tokenizer);
 
 	/** set the char array that requires tokenization
 	 *
@@ -89,7 +89,7 @@ private:
 	SGVector<char> m_text;
 
 	/** tokenizer */
-	CTokenizer* m_tokenizer;
+	std::shared_ptr<Tokenizer> m_tokenizer;
 };
 
 }

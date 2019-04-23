@@ -46,22 +46,22 @@ using namespace Eigen;
 namespace shogun
 {
 
-CProbitVGLikelihood::CProbitVGLikelihood()
-	: CNumericalVGLikelihood()
+ProbitVGLikelihood::ProbitVGLikelihood()
+	: NumericalVGLikelihood()
 {
 	init();
 }
 
-CProbitVGLikelihood::~CProbitVGLikelihood()
+ProbitVGLikelihood::~ProbitVGLikelihood()
 {
 }
 
-void CProbitVGLikelihood::init_likelihood()
+void ProbitVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CProbitLikelihood());
+	set_likelihood(std::make_shared<ProbitLikelihood>());
 }
 
-void CProbitVGLikelihood::init()
+void ProbitVGLikelihood::init()
 {
 	init_likelihood();
 }

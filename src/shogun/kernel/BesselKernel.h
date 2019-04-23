@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-class CDistance;
+class Distance;
 /** @brief the class Bessel kernel
  *
  * It is defined as
@@ -27,11 +27,11 @@ class CDistance;
  *		\f$\tau\f$ is the kernel width, and
  *		\f$n\f$ is the kernel degree.
  * */
-class CBesselKernel: public CDistanceKernel
+class BesselKernel: public DistanceKernel
 {
 	public:
 		/** default constructor */
-		CBesselKernel();
+		BesselKernel();
 
 		/** constructor
 		 *
@@ -41,9 +41,9 @@ class CBesselKernel: public CDistanceKernel
 		 * @param degree the kernel degree
 		 * @param dist distance to be used
 		 */
-		CBesselKernel(int32_t size, float64_t order,
+		BesselKernel(int32_t size, float64_t order,
 				float64_t width, int32_t degree,
-				CDistance* dist);
+				std::shared_ptr<Distance> dist);
 
 		/** constructor
 		 *
@@ -55,14 +55,14 @@ class CBesselKernel: public CDistanceKernel
 		 * @param dist distance to be used
 		 * @param size cache size
 		 */
-		CBesselKernel(CFeatures* l, CFeatures* r,
+		BesselKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r,
 				float64_t order, float64_t width, int32_t degree,
-				CDistance* dist, int32_t size=10);
+				std::shared_ptr<Distance> dist, int32_t size=10);
 
 		/**
 		 * clean up kernel
 		 */
-		virtual ~CBesselKernel();
+		virtual ~BesselKernel();
 
 		/** initialize kernel
 		 *
@@ -70,7 +70,7 @@ class CBesselKernel: public CDistanceKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup */
 		virtual void cleanup();

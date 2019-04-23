@@ -29,11 +29,11 @@ struct TSGDataType;
  *
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CHDF5File : public CFile
+IGNORE_IN_CLASSLIST class HDF5File : public File
 {
 public:
 	/** default constructor  */
-	CHDF5File();
+	HDF5File();
 
 	/** constructor
 	 *
@@ -41,10 +41,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CHDF5File(char* fname, char rw='r', const char* name=NULL);
+	HDF5File(char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
-	virtual ~CHDF5File();
+	virtual ~HDF5File();
 
 #ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions

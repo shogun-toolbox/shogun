@@ -31,20 +31,20 @@ TEST(MultilabelAccuracy, evaluate_multilabel_labels)
 		lab_3[i] = i;
 	}
 
-	CMultilabelLabels * m_labels_1 = new CMultilabelLabels(1, 5);
-	SG_REF(m_labels_1);
+	auto m_labels_1 = std::make_shared<MultilabelLabels>(1, 5);
+	
 	m_labels_1->set_label(0, lab_1);
 
-	CMultilabelLabels * m_labels_2 = new CMultilabelLabels(1, 5);
-	SG_REF(m_labels_2);
+	auto m_labels_2 = std::make_shared<MultilabelLabels>(1, 5);
+	
 	m_labels_2->set_label(0, lab_2);
 
-	CMultilabelLabels * m_labels_3 = new CMultilabelLabels(1, 5);
-	SG_REF(m_labels_3);
+	auto m_labels_3 = std::make_shared<MultilabelLabels>(1, 5);
+	
 	m_labels_3->set_label(0, lab_3);
 
-	CMultilabelAccuracy * evaluator = new CMultilabelAccuracy();
-	SG_REF(evaluator);
+	auto evaluator = std::make_shared<MultilabelAccuracy>();
+	
 
 	float64_t acc;
 
@@ -54,10 +54,10 @@ TEST(MultilabelAccuracy, evaluate_multilabel_labels)
 	acc = evaluator->evaluate(m_labels_3, m_labels_1);
 	EXPECT_NEAR(acc, 0.8, 1E-7);
 
-	SG_UNREF(m_labels_1);
-	SG_UNREF(m_labels_2);
-	SG_UNREF(m_labels_3);
-	SG_UNREF(evaluator);
+	
+	
+	
+	
 }
 
 TEST(MultilabelAccuracy, evaluate_multilabel_so_labels)
@@ -78,20 +78,20 @@ TEST(MultilabelAccuracy, evaluate_multilabel_so_labels)
 		lab_3[i] = i;
 	}
 
-	CMultilabelSOLabels * m_labels_1 = new CMultilabelSOLabels(1, 5);
-	SG_REF(m_labels_1);
+	auto m_labels_1 = std::make_shared<MultilabelSOLabels>(1, 5);
+	
 	m_labels_1->set_sparse_label(0, lab_1);
 
-	CMultilabelSOLabels * m_labels_2 = new CMultilabelSOLabels(1, 5);
-	SG_REF(m_labels_2);
+	auto m_labels_2 = std::make_shared<MultilabelSOLabels>(1, 5);
+	
 	m_labels_2->set_sparse_label(0, lab_2);
 
-	CMultilabelSOLabels * m_labels_3 = new CMultilabelSOLabels(1, 5);
-	SG_REF(m_labels_3);
+	auto m_labels_3 = std::make_shared<MultilabelSOLabels>(1, 5);
+	
 	m_labels_3->set_sparse_label(0, lab_3);
 
-	CMultilabelAccuracy * evaluator = new CMultilabelAccuracy();
-	SG_REF(evaluator);
+	auto evaluator = std::make_shared<MultilabelAccuracy>();
+	
 
 	float64_t acc;
 
@@ -103,9 +103,9 @@ TEST(MultilabelAccuracy, evaluate_multilabel_so_labels)
 	                          m_labels_1->get_multilabel_labels());
 	EXPECT_NEAR(acc, 0.8, 1E-7);
 
-	SG_UNREF(m_labels_1);
-	SG_UNREF(m_labels_2);
-	SG_UNREF(m_labels_3);
-	SG_UNREF(evaluator);
+	
+	
+	
+	
 }
 

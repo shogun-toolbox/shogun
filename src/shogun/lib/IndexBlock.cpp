@@ -9,42 +9,42 @@
 
 using namespace shogun;
 
-CIndexBlock::CIndexBlock() : CSGObject(),
+IndexBlock::IndexBlock() : SGObject(),
 	m_min_index(0), m_max_index(0),
 	m_weight(1.0), m_sub_blocks(NULL)
 {
-	m_sub_blocks = new CList(true);
-	SG_REF(m_sub_blocks);
+	m_sub_blocks = std::make_shared<List>(true);
+
 }
 
-CIndexBlock::CIndexBlock(index_t min_index, index_t max_index,
+IndexBlock::IndexBlock(index_t min_index, index_t max_index,
              float64_t weight, const char* name) :
-	CSGObject(), m_min_index(min_index), m_max_index(max_index),
+	SGObject(), m_min_index(min_index), m_max_index(max_index),
 	m_weight(weight), m_sub_blocks(NULL)
 {
-	m_sub_blocks = new CList(true);
-	SG_REF(m_sub_blocks);
+	m_sub_blocks = std::make_shared<List>(true);
+
 }
 
-CIndexBlock::~CIndexBlock()
+IndexBlock::~IndexBlock()
 {
-	SG_UNREF(m_sub_blocks);
+
 }
 
-void CIndexBlock::add_sub_block(CIndexBlock* sub_block)
+void IndexBlock::add_sub_block(std::shared_ptr<IndexBlock> sub_block)
 {
 	ASSERT(sub_block->get_min_index()>=m_min_index)
 	ASSERT(sub_block->get_max_index()<=m_max_index)
 	m_sub_blocks->append_element(sub_block);
 }
 
-CList* CIndexBlock::get_sub_blocks()
+std::shared_ptr<List> IndexBlock::get_sub_blocks()
 {
-	SG_REF(m_sub_blocks);
+
 	return m_sub_blocks;
 }
 
-int32_t CIndexBlock::get_num_sub_blocks()
+int32_t IndexBlock::get_num_sub_blocks()
 {
 	return m_sub_blocks->get_num_elements();
 }

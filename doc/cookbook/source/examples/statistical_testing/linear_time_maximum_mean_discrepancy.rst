@@ -17,9 +17,9 @@ Example
 -------
 
 Imagine we have samples from :math:`p` and :math:`q`.
-As the linear time MMD is a streaming statistic, we need to pass it :sgclass:`CStreamingFeatures`.
-Here, we use synthetic data generators, but it is possible to construct :sgclass:`CStreamingFeatures` from (large) files.
-We create an instance of :sgclass:`CLinearTimeMMD`, passing it data and the kernel to use,
+As the linear time MMD is a streaming statistic, we need to pass it :sgclass:`StreamingFeatures`.
+Here, we use synthetic data generators, but it is possible to construct :sgclass:`StreamingFeatures` from (large) files.
+We create an instance of :sgclass:`LinearTimeMMD`, passing it data and the kernel to use,
 
 .. sgexample:: linear_time_maximum_mean_discrepancy.sg:create_instance
 
@@ -63,7 +63,7 @@ If all kernels have the same type, we can convert the result into that type, for
 
 Note that in order to extract particular kernel parameters, we need to cast the kernel to its actual type.
 
-Similarly, a convex combination of kernels, in the form of :sgclass:`CCombinedKernel` can be learned and extracted as
+Similarly, a convex combination of kernels, in the form of :sgclass:`CombinedKernel` can be learned and extracted as
 
 .. sgexample:: linear_time_maximum_mean_discrepancy.sg:select_kernel_combined
 

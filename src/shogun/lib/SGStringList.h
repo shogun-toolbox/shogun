@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-class CFile;
+class File;
 template <class T> class SGString;
 
 /** @brief template class SGStringList */
@@ -52,13 +52,13 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	void load(CFile* loader);
+	void load(File* loader);
 
 	/** save strings to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	void save(CFile* saver);
+	void save(File* saver);
 
 	/** clone string list
 	 *

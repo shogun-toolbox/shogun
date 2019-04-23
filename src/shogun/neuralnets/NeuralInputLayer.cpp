@@ -37,20 +37,20 @@
 
 using namespace shogun;
 
-CNeuralInputLayer::CNeuralInputLayer() : CNeuralLayer()
+NeuralInputLayer::NeuralInputLayer() : NeuralLayer()
 {
 	init();
 }
 
-CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons, int32_t start_index):
-CNeuralLayer(num_neurons)
+NeuralInputLayer::NeuralInputLayer(int32_t num_neurons, int32_t start_index):
+NeuralLayer(num_neurons)
 {
 	init();
 	m_start_index = start_index;
 }
 
-CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height,
-	int32_t num_channels, int32_t start_index): CNeuralLayer(width*height*num_channels)
+NeuralInputLayer::NeuralInputLayer(int32_t width, int32_t height,
+	int32_t num_channels, int32_t start_index): NeuralLayer(width*height*num_channels)
 {
 	init();
 	m_width = width;
@@ -58,7 +58,7 @@ CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height,
 	m_start_index = start_index;
 }
 
-void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
+void NeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 {
 	if (m_start_index == 0)
 	{
@@ -80,7 +80,7 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 	}
 }
 
-void CNeuralInputLayer::init()
+void NeuralInputLayer::init()
 {
 	m_start_index = 0;
 	gaussian_noise = 0;

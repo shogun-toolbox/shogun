@@ -13,11 +13,11 @@ This distance is calculated by the equation:
 Example
 -------
 
-We first create some sample data. So we instantiate CDenseFeatures containing the sample data.
+We first create some sample data. So we instantiate DenseFeatures containing the sample data.
 
 .. sgexample:: chi_square.sg:create_features
 
-We create an instance of :sgclass:`CChiSquareDistance` by passing it the sample data :sgclass:`CDenseFeatures`.
+We create an instance of :sgclass:`CChiSquareDistance` by passing it the sample data :sgclass:`DenseFeatures`.
 
 .. sgexample:: cosine.sg:create_instance
 
@@ -25,7 +25,7 @@ The distance matrix can be extracted as follows:
 
 .. sgexample:: chi_square.sg:extract_distance
 
-We can use the same instance with new :sgclass:`CDenseFeatures` to compute asymmetrical distance as follows:
+We can use the same instance with new :sgclass:`DenseFeatures` to compute asymmetrical distance as follows:
 
 .. sgexample:: chi_square.sg:refresh_distance
 

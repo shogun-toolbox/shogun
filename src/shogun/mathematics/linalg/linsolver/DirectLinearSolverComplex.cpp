@@ -18,36 +18,35 @@ using namespace Eigen;
 namespace shogun
 {
 
-CDirectLinearSolverComplex::CDirectLinearSolverComplex()
-	: CLinearSolver<complex128_t, float64_t>(),
+DirectLinearSolverComplex::DirectLinearSolverComplex()
+	: LinearSolver<complex128_t, float64_t>(),
 	  m_type(DS_QR_NOPERM)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDirectLinearSolverComplex::CDirectLinearSolverComplex(EDirectSolverType type)
-	: CLinearSolver<complex128_t, float64_t>(),
+DirectLinearSolverComplex::DirectLinearSolverComplex(EDirectSolverType type)
+	: LinearSolver<complex128_t, float64_t>(),
 	  m_type(type)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
+DirectLinearSolverComplex::~DirectLinearSolverComplex()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-SGVector<complex128_t> CDirectLinearSolverComplex::solve(
-		CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
+SGVector<complex128_t> DirectLinearSolverComplex::solve(
+		std::shared_ptr<LinearOperator<complex128_t>> A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> x(b.vlen);
 
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
-	CDenseMatrixOperator<complex128_t> *op=
-		dynamic_cast<CDenseMatrixOperator<complex128_t>*>(A);
-	REQUIRE(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!\n");
+	auto op=A->as<DenseMatrixOperator<complex128_t>>();
+	REQUIRE(op, "Operator is not DenseMatrixOperator<complex128_t, float64_t> type!\n");
 
 	SGMatrix<complex128_t> mat_A=op->get_matrix_operator();
 	Map<MatrixXcd> map_A(mat_A.matrix, mat_A.num_rows, mat_A.num_cols);

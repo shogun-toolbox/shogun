@@ -179,7 +179,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 			strs[i].string=(sg_type*) sg_memcpy(dst, c, len*sizeof(sg_type));
             strs[i].string[len]='\0'; /* zero terminate */
             strs[i].slen=len;
-            max_len=CMath::max(max_len, len);
+            max_len=Math::max(max_len, len);
         }
         else
         {

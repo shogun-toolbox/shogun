@@ -11,7 +11,7 @@ TEST(NGramTokenizerTest, tokenization)
 	SGVector<char> cv(const_cast<char* >(text), 26, false);
 
 	int32_t n = 3;
-	CNGramTokenizer* tokenizer = new CNGramTokenizer(n);
+	auto tokenizer = std::make_shared<NGramTokenizer>(n);
 	tokenizer->set_text(cv);
 
 	index_t token_start = 0;
@@ -27,5 +27,5 @@ TEST(NGramTokenizerTest, tokenization)
 		ngram_index++;
 	}
 
-	SG_UNREF(tokenizer);
+	
 }

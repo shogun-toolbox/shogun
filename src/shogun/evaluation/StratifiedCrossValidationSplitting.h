@@ -15,26 +15,26 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Implementation of stratified cross-validation on the base of
- * CSplittingStrategy. Produces subset index sets of equal size (at most one
+ * SplittingStrategy. Produces subset index sets of equal size (at most one
  * difference) in which the label ratio is equal (at most one difference) to
  * the label ratio of the specified labels. Do not use for regression since it
  * may be impossible to distribute nice in that case
  */
-class CStratifiedCrossValidationSplitting: public RandomMixin<CSplittingStrategy>
+class StratifiedCrossValidationSplitting: public RandomMixin<SplittingStrategy>
 {
 public:
 	/** constructor */
-	CStratifiedCrossValidationSplitting();
+	StratifiedCrossValidationSplitting();
 
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	CStratifiedCrossValidationSplitting(CLabels* labels, index_t num_subsets);
+	StratifiedCrossValidationSplitting(std::shared_ptr<Labels> labels, index_t num_subsets);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

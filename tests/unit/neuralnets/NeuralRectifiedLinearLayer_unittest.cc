@@ -53,25 +53,25 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
 	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	CNeuralInputLayer* input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the rectified linear layer
-	CNeuralRectifiedLinearLayer layer(9);
+	auto layer=std::make_shared<NeuralRectifiedLinearLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
-	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
-	SGMatrix<float64_t> A = layer.get_activations();
+	    init_linear_layer(layer, input_indices, x.num_cols, 1.0, false);
+	SGMatrix<float64_t> A = layer->get_activations();
 
 	// Manually compute Recitified linear activations
 	auto biases =
-	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	    SGVector<float64_t>(params.vector, layer->get_num_neurons(), 0);
 	auto weights = SGMatrix<float64_t>(
-	    params.vector, layer.get_num_neurons(), x.num_rows,
-	    layer.get_num_neurons());
-	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
+	    params.vector, layer->get_num_neurons(), x.num_rows,
+	    layer->get_num_neurons());
+	SGMatrix<float64_t> A_ref(layer->get_num_neurons(), x.num_cols);
 	shogun::linalg::add_vector(
 	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
 	shogun::linalg::rectified_linear(A_ref, A_ref);
@@ -92,13 +92,13 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x1, x2;
-	CNeuralInputLayer *input1, *input2;
+	std::shared_ptr<NeuralInputLayer> input1, input2;
 	std::mt19937_64 prng(seed);
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0, prng);
 
 	// initialize the hidden rectified linear layer
-	CNeuralLinearLayer* layer_hid = new CNeuralRectifiedLinearLayer(5);
+	auto layer_hid = std::make_shared<NeuralRectifiedLinearLayer>(5);
 	SGVector<int32_t> input_indices_hid(2);
 	input_indices_hid[0] = 0;
 	input_indices_hid[1] = 1;
@@ -107,20 +107,20 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 
 	// initialize the output layer
 	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0, prng);
-	CNeuralLinearLayer layer_out(y.num_rows);
+	auto layer_out=std::make_shared<NeuralLinearLayer>(y.num_rows);
 	SGVector<int32_t> input_indices_out(1);
 	input_indices_out[0] = 2;
 	auto param_out = init_linear_layer(
-	    &layer_out, input_indices_out, x1.num_cols, 0.01, false);
+	    layer_out, input_indices_out, x1.num_cols, 0.01, false);
 
 	// compute gradients
 	layer_hid->get_activation_gradients().zero();
-	SGVector<float64_t> gradients_out(layer_out.get_num_parameters());
-	layer_out.compute_gradients(param_out, y, m_layers.get(), gradients_out);
+	SGVector<float64_t> gradients_out(layer_out->get_num_parameters());
+	layer_out->compute_gradients(param_out, y, m_layers, gradients_out);
 
 	SGVector<float64_t> gradients_hid(layer_hid->get_num_parameters());
 	layer_hid->compute_gradients(
-	    param_hid, SGMatrix<float64_t>(), m_layers.get(), gradients_hid);
+	    param_hid, SGMatrix<float64_t>(), m_layers, gradients_hid);
 
 	// manually compute parameter gradients
 	SGVector<float64_t> gradients_hid_numerical(
@@ -131,16 +131,16 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 		param_hid[i] += epsilon;
 		input1->compute_activations(x1);
 		input2->compute_activations(x2);
-		layer_hid->compute_activations(param_hid, m_layers.get());
-		layer_out.compute_activations(param_out, m_layers.get());
-		float64_t error_plus = layer_out.compute_error(y);
+		layer_hid->compute_activations(param_hid, m_layers);
+		layer_out->compute_activations(param_out, m_layers);
+		float64_t error_plus = layer_out->compute_error(y);
 
 		param_hid[i] -= 2 * epsilon;
 		input1->compute_activations(x1);
 		input2->compute_activations(x2);
-		layer_hid->compute_activations(param_hid, m_layers.get());
-		layer_out.compute_activations(param_out, m_layers.get());
-		float64_t error_minus = layer_out.compute_error(y);
+		layer_hid->compute_activations(param_hid, m_layers);
+		layer_out->compute_activations(param_out, m_layers);
+		float64_t error_minus = layer_out->compute_error(y);
 		param_hid[i] += epsilon;
 
 		gradients_hid_numerical[i] = (error_plus - error_minus) / (2 * epsilon);

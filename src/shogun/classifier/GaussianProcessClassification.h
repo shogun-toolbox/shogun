@@ -49,22 +49,22 @@ namespace shogun
 /** @brief Class GaussianProcessClassification implements binary and multiclass
  * classification based on Gaussian Processes.
  */
-class CGaussianProcessClassification : public CGaussianProcessMachine
+class GaussianProcessClassification : public GaussianProcessMachine
 {
 public:
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_CLASS);
 
 	/** default constructor */
-	CGaussianProcessClassification();
+	GaussianProcessClassification();
 
 	/** constructor
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessClassification(CInference* method);
+	GaussianProcessClassification(std::shared_ptr<Inference> method);
 
-	virtual ~CGaussianProcessClassification();
+	virtual ~GaussianProcessClassification();
 
 	/** apply machine to data in means of binary classification problem
 	 *
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @return classified labels (label is either -1 or 1)
 	 */
-	virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+	virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 
 	/** returns a vector of of the posterior predictive means
 	 *
@@ -80,7 +80,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(CFeatures* data);
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<Features> data);
 
 	/** returns a vector of the posterior predictive variances
 	 *
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(CFeatures* data);
+	SGVector<float64_t> get_variance_vector(std::shared_ptr<Features> data);
 
 	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @return vector of probabilities
 	 */
-	SGVector<float64_t> get_probabilities(CFeatures* data);
+	SGVector<float64_t> get_probabilities(std::shared_ptr<Features> data);
 
 	/** get classifier type
 	 *
@@ -121,7 +121,7 @@ public:
 	 *
 	 * @return classified labels (label starts from 0)
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 protected:
 	/** train classifier
@@ -130,7 +130,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 };
 }

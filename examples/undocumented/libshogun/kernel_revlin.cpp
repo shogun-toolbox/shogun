@@ -7,11 +7,11 @@
 
 using namespace shogun;
 
-class CReverseLinearKernel : public CDotKernel
+class CReverseLinearKernel : public DotKernel
 {
 public:
     /** default constructor */
-    CReverseLinearKernel() : CDotKernel(0)
+    CReverseLinearKernel() : DotKernel(0)
     {
     }
 
@@ -26,9 +26,9 @@ public:
      * @param r features of right-hand side
      * @return if initializing was successful
      */
-    virtual bool init(CFeatures* l, CFeatures* r)
+    virtual bool init(Features* l, Features* r)
     {
-        CDotKernel::init(l, r);
+        DotKernel::init(l, r);
         return init_normalizer();
     }
 
@@ -86,9 +86,9 @@ protected:
         bool afree, bfree;
 
         float64_t* avec=
-            ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+            ((DenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
         float64_t* bvec=
-            ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+            ((DenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
         ASSERT(alen==blen);
 
@@ -96,8 +96,8 @@ protected:
         for (int32_t i=0; i<alen; i++)
             result+=avec[i]*bvec[alen-i-1];
 
-        ((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-        ((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+        ((DenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+        ((DenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
         return result;
     }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     // create three 2-dimensional vectors
     // shogun will now own the matrix created
-    CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+    DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
     // create reverse linear kernel
     CReverseLinearKernel* kernel = new CReverseLinearKernel();
@@ -135,7 +135,6 @@ int main(int argc, char** argv)
     }
 
     // free up memory
-    SG_UNREF(kernel);
 
     exit_shogun();
     return 0;

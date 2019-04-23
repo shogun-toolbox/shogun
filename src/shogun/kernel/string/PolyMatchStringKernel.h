@@ -31,11 +31,11 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchStringKernel: public CStringKernel<char>
+class PolyMatchStringKernel: public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CPolyMatchStringKernel();
+		PolyMatchStringKernel();
 
 		/** constructor
 		 *
@@ -43,7 +43,7 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchStringKernel(int32_t size, int32_t degree, bool inhomogene);
+		PolyMatchStringKernel(int32_t size, int32_t degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -52,11 +52,11 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		PolyMatchStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			int32_t degree, bool inhomogene);
 
-		virtual ~CPolyMatchStringKernel();
+		virtual ~PolyMatchStringKernel();
 
 		/** initialize kernel
 		 *
@@ -64,7 +64,7 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

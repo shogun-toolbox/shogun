@@ -20,7 +20,7 @@ namespace shogun
 {
 
 // Forward declaration
-class CLMNNStatistics;
+class LMNNStatistics;
 
 /**
  * @brief Class LMNN that implements the distance metric learning technique
@@ -29,11 +29,11 @@ class CLMNNStatistics;
  * Weinberger, K. Q., Saul, L. K.
  * Distance Metric Learning for Large Margin Nearest Neighbor Classification.
  */
-class CLMNN : public CSGObject
+class LMNN : public SGObject
 {
 	public:
 		/** default constructor */
-		CLMNN();
+		LMNN();
 
 		/** standard constructor
 		 *
@@ -41,10 +41,10 @@ class CLMNN : public CSGObject
 		 * @param labels labels of the features
 		 * @param k number of target neighbours per example
 		 */
-		CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k);
+		LMNN(std::shared_ptr<Features> features, std::shared_ptr<MulticlassLabels> labels, int32_t k);
 
 		/** destructor */
-		virtual ~CLMNN();
+		virtual ~LMNN();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const;
@@ -70,7 +70,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @return the distance M
 		 */
-		CDistance* get_distance() const;
+		std::shared_ptr<Distance> get_distance() const;
 
 		/** get the number of target neighbours per example
 		 *
@@ -172,7 +172,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @return LMNN training statistics
 		 */
-		CLMNNStatistics* get_statistics() const;
+		std::shared_ptr<LMNNStatistics> get_statistics() const;
 
 	private:
 		/** register parameters */
@@ -183,10 +183,10 @@ class CLMNN : public CSGObject
 		SGMatrix<float64_t> m_linear_transform;
 
 		/** training features */
-		CFeatures* m_features;
+		std::shared_ptr<Features> m_features;
 
 		/** training labels */
-		CLabels* m_labels;
+		std::shared_ptr<Labels> m_labels;
 
 		/**
 		 * trade-off between pull and push forces in the objective.
@@ -233,30 +233,30 @@ class CLMNN : public CSGObject
 		 */
 		bool m_diagonal;
 
-		/** training statistics, @see CLMNNStatistics */
-		CLMNNStatistics* m_statistics;
+		/** training statistics, @see LMNNStatistics */
+		std::shared_ptr<LMNNStatistics> m_statistics;
 
-}; /* class CLMNN */
+}; /* class LMNN */
 
 /**
  * @brief Class LMNNStatistics used to give access to intermediate results
  * obtained training LMNN.
  */
-class CLMNNStatistics : public CSGObject
+class LMNNStatistics : public SGObject
 {
 	public:
 		/** default constructor */
-		CLMNNStatistics();
+		LMNNStatistics();
 
 		/** destructor */
-		virtual ~CLMNNStatistics();
+		virtual ~LMNNStatistics();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const;
 
 		/**
-		 * resize CLMNNStatistics::obj, CLMNNStatistics::stepsize and
-		 * CLMNNStatistics::num_impostors to fit the specified number of elements
+		 * resize LMNNStatistics::obj, LMNNStatistics::stepsize and
+		 * LMNNStatistics::num_impostors to fit the specified number of elements
 		 *
 		 * @param size number of elements
 		 */

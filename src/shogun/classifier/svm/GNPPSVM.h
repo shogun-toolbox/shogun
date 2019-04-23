@@ -15,11 +15,11 @@
 namespace shogun
 {
 /** @brief class GNPPSVM */
-class CGNPPSVM : public CSVM
+class GNPPSVM : public SVM
 {
 	public:
 		/** default constructor */
-		CGNPPSVM();
+		GNPPSVM();
 
 		/** constructor
 		 *
@@ -27,9 +27,9 @@ class CGNPPSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGNPPSVM(float64_t C, CKernel* k, CLabels* lab);
+		GNPPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-		virtual ~CGNPPSVM();
+		virtual ~GNPPSVM();
 
 		/** get classifier type
 		 *
@@ -49,7 +49,7 @@ class CGNPPSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 };
 }
 #endif

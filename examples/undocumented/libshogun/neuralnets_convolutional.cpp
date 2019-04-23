@@ -51,10 +51,10 @@ int main(int, char*[])
 {
 	init_shogun_with_defaults();
 
-#ifdef HAVE_LAPACK // for CDataGenerator::generate_gaussian()
+#ifdef HAVE_LAPACK // for DataGenerator::generate_gaussian()
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	// Prepare the training data
 	const int width = 4;
@@ -68,7 +68,7 @@ int main(int, char*[])
 	SGVector<float64_t> Y;
 	try
 	{
-		X = CDataGenerator::generate_gaussians(
+		X = DataGenerator::generate_gaussians(
 			num_examples_per_class,num_classes,num_features);
 
 		Y = SGVector<float64_t>(num_classes*num_examples_per_class);
@@ -84,28 +84,28 @@ int main(int, char*[])
 		for (int32_t j = 0; j < num_examples_per_class; j++)
 			Y[i*num_examples_per_class + j] = i;
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
-	CMulticlassLabels* labels = new CMulticlassLabels(Y);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(X);
+	auto labels = std::make_shared<MulticlassLabels>(Y);
 
 	// prepare the layers
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<DynamicObjectArray>();
 
 	// input layer
-	layers->append_element(new CNeuralInputLayer(width,height,num_channels));
+	layers->append_element(std::make_shared<NeuralInputLayer>(width,height,num_channels));
 
 	// first convolutional layer: 3 feature maps, 3x3 masks, 2x2 max-pooling
-	layers->append_element(new CNeuralConvolutionalLayer(
+	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_RECTIFIED_LINEAR, 3, 1,1, 2,2));
 
 	// second convolutional layer: 5 feature maps, 3x3 masks
-	layers->append_element(new CNeuralConvolutionalLayer(
+	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_RECTIFIED_LINEAR, 5, 1,1));
 
 	// output layer
-	layers->append_element(new CNeuralSoftmaxLayer(num_classes));
+	layers->append_element(std::make_shared<NeuralSoftmaxLayer>(num_classes));
 
 	// create and initialize the network
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -117,17 +117,13 @@ int main(int, char*[])
 	network->train(features);
 
 	// evaluate
-	CMulticlassLabels* predictions = network->apply_multiclass(features);
-	CMulticlassAccuracy* evaluator = new CMulticlassAccuracy();
+	auto predictions = network->apply_multiclass(features);
+	auto evaluator = std::make_shared<MulticlassAccuracy>();
 	float64_t accuracy = evaluator->evaluate(predictions, labels);
 
 	SG_SINFO("Accuracy = %f %\n", accuracy*100);
 
 	// Clean up
-	SG_UNREF(network);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
-	SG_UNREF(evaluator);
 
 #endif
 

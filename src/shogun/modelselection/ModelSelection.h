@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Jacob Walker, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Heiko Strathmann, Jacob Walker, Sergey Lisitsyn, Roman Votyakov,
  *          Soeren Sonnenburg, Yuyu Zhang
  */
 
@@ -15,8 +15,8 @@
 
 namespace shogun
 {
-class CModelSelectionParameters;
-class CParameterCombination;
+class ModelSelectionParameters;
+class ParameterCombination;
 
 /** @brief Abstract base class for model selection.
  *
@@ -25,22 +25,22 @@ class CParameterCombination;
  * in the abstract method select_model(), which has to be implemented in
  * concrete sub-classes.
  */
-class CModelSelection: public CSGObject
+class ModelSelection: public SGObject
 {
 public:
 	/** default constructor */
-	CModelSelection();
+	ModelSelection();
 
 	/** constructor
 	 *
 	 * @param machine_eval object that computes the actual evaluation
 	 * @param model_parameters parameter tree with model parameters to optimize
 	 */
-	CModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters);
+	ModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+			std::shared_ptr<ModelSelectionParameters> model_parameters);
 
 	/** destructor */
-	virtual ~CModelSelection();
+	virtual ~ModelSelection();
 
 	/** abstract method to select model
 	 *
@@ -48,7 +48,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false)=0;
+	virtual std::shared_ptr<ParameterCombination> select_model(bool print_state=false)=0;
 
 private:
 	/** initializer */
@@ -56,9 +56,9 @@ private:
 
 protected:
 	/** model parameters */
-	CModelSelectionParameters* m_model_parameters;
+	std::shared_ptr<ModelSelectionParameters> m_model_parameters;
 	/** cross validation */
-	CMachineEvaluation* m_machine_eval;
+	std::shared_ptr<MachineEvaluation> m_machine_eval;
 };
 }
 #endif /* __MODELSELECTION_H_ */

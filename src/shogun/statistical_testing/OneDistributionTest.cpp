@@ -33,41 +33,40 @@
 #include <shogun/statistical_testing/internals/TestTypes.h>
 
 using namespace shogun;
-using namespace internal;
 
-COneDistributionTest::COneDistributionTest() : CHypothesisTest(OneDistributionTest::num_feats)
+OneDistributionTest::OneDistributionTest() : HypothesisTest(internal::OneDistributionTest::num_feats)
 {
 }
 
-COneDistributionTest::~COneDistributionTest()
+OneDistributionTest::~OneDistributionTest()
 {
 }
 
-void COneDistributionTest::set_samples(CFeatures* samples)
+void OneDistributionTest::set_samples(std::shared_ptr<Features> samples)
 {
 	auto& data_mgr=get_data_mgr();
 	data_mgr.samples_at(0)=samples;
 }
 
-CFeatures* COneDistributionTest::get_samples() const
+std::shared_ptr<Features> OneDistributionTest::get_samples() const
 {
 	const auto& data_mgr=get_data_mgr();
 	return data_mgr.samples_at(0);
 }
 
-void COneDistributionTest::set_num_samples(index_t num_samples)
+void OneDistributionTest::set_num_samples(index_t num_samples)
 {
 	auto& data_mgr=get_data_mgr();
 	data_mgr.num_samples_at(0)=num_samples;
 }
 
-index_t COneDistributionTest::get_num_samples() const
+index_t OneDistributionTest::get_num_samples() const
 {
 	const auto& data_mgr=get_data_mgr();
 	return data_mgr.num_samples_at(0);
 }
 
-const char* COneDistributionTest::get_name() const
+const char* OneDistributionTest::get_name() const
 {
 	return "OneDistributionTest";
 }

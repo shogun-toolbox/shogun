@@ -9,7 +9,7 @@ Features are transformed by transformers and fed into the next stage sequentiall
 -------
 Example
 -------
-Imagine we have files with training data. We create :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) as
+Imagine we have files with training data. We create :sgclass:`DenseFeatures` (here 64 bit floats aka RealFeatures) as
 
 .. sgexample:: pipeline:create_features
 
@@ -17,7 +17,7 @@ To project the feature to a lower dimension, we create an instance of transforme
 
 .. sgexample:: pipeline:create_transformers
 
-We then perform clustering using :sgclass:`CKMeans`.
+We then perform clustering using :sgclass:`KMeans`.
 
 .. sgexample:: pipeline:create_machine
 

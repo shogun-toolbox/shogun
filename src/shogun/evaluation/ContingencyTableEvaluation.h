@@ -17,7 +17,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** type of measure */
 enum EContingencyTableMeasureType
@@ -65,30 +65,30 @@ enum EContingencyTableMeasureType
  * convenient.
  *
  */
-class CContingencyTableEvaluation: public CBinaryClassEvaluation
+class ContingencyTableEvaluation: public BinaryClassEvaluation
 {
 
 public:
 
 	/** constructor */
-	CContingencyTableEvaluation() :
-		CBinaryClassEvaluation(), m_type(ACCURACY), m_computed(false) {};
+	ContingencyTableEvaluation() :
+		BinaryClassEvaluation(), m_type(ACCURACY), m_computed(false) {};
 
 	/** constructor
 	 * @param type type of measure (e.g ACCURACY)
 	 */
-	CContingencyTableEvaluation(EContingencyTableMeasureType type) :
-		CBinaryClassEvaluation(), m_type(type), m_computed(false)  {};
+	ContingencyTableEvaluation(EContingencyTableMeasureType type) :
+		BinaryClassEvaluation(), m_type(type), m_computed(false)  {};
 
 	/** destructor */
-	virtual ~CContingencyTableEvaluation() {};
+	virtual ~ContingencyTableEvaluation() {};
 
 	/** evaluate labels
 	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	virtual EEvaluationDirection get_evaluation_direction() const;
 
@@ -249,7 +249,7 @@ public:
 protected:
 
 	/** get scores for TP, FP, TN, FN */
-	void compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth);
+	void compute_scores(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth);
 
 	/** type of measure to evaluate */
 	EContingencyTableMeasureType m_type;
@@ -278,17 +278,17 @@ protected:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CAccuracyMeasure: public CContingencyTableEvaluation
+class AccuracyMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CAccuracyMeasure() : CContingencyTableEvaluation(ACCURACY) {};
+	AccuracyMeasure() : ContingencyTableEvaluation(ACCURACY) {};
 	/* virtual destructor */
-	virtual ~CAccuracyMeasure() {};
+	virtual ~AccuracyMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "AccuracyMeasure"; };
 };
@@ -298,17 +298,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CErrorRateMeasure: public CContingencyTableEvaluation
+class ErrorRateMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CErrorRateMeasure() : CContingencyTableEvaluation(ERROR_RATE) {};
+	ErrorRateMeasure() : ContingencyTableEvaluation(ERROR_RATE) {};
 	/* virtual destructor */
-	virtual ~CErrorRateMeasure() {};
+	virtual ~ErrorRateMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "ErrorRateMeasure"; };
 };
@@ -318,17 +318,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CBALMeasure: public CContingencyTableEvaluation
+class BALMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CBALMeasure() : CContingencyTableEvaluation(BAL) {};
+	BALMeasure() : ContingencyTableEvaluation(BAL) {};
 	/* virtual destructor */
-	virtual ~CBALMeasure() {};
+	virtual ~BALMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "BALMeasure"; };
 };
@@ -338,17 +338,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CWRACCMeasure: public CContingencyTableEvaluation
+class WRACCMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CWRACCMeasure() : CContingencyTableEvaluation(WRACC) {};
+	WRACCMeasure() : ContingencyTableEvaluation(WRACC) {};
 	/* virtual destructor */
-	virtual ~CWRACCMeasure() {};
+	virtual ~WRACCMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "WRACCMeasure"; };
 };
@@ -358,17 +358,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CF1Measure: public CContingencyTableEvaluation
+class F1Measure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CF1Measure() : CContingencyTableEvaluation(F1) {};
+	F1Measure() : ContingencyTableEvaluation(F1) {};
 	/* virtual destructor */
-	virtual ~CF1Measure() {};
+	virtual ~F1Measure() {};
 	/* name */
 	virtual const char* get_name() const { return "F1Measure"; };
 };
@@ -378,17 +378,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CCrossCorrelationMeasure: public CContingencyTableEvaluation
+class CrossCorrelationMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CCrossCorrelationMeasure() : CContingencyTableEvaluation(CROSS_CORRELATION) {};
+	CrossCorrelationMeasure() : ContingencyTableEvaluation(CROSS_CORRELATION) {};
 	/* virtual destructor */
-	virtual ~CCrossCorrelationMeasure() {};
+	virtual ~CrossCorrelationMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "CrossCorrelationMeasure"; };
 };
@@ -398,17 +398,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CRecallMeasure: public CContingencyTableEvaluation
+class RecallMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CRecallMeasure() : CContingencyTableEvaluation(RECALL) {};
+	RecallMeasure() : ContingencyTableEvaluation(RECALL) {};
 	/* virtual destructor */
-	virtual ~CRecallMeasure() {};
+	virtual ~RecallMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "RecallMeasure"; };
 };
@@ -418,17 +418,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CPrecisionMeasure: public CContingencyTableEvaluation
+class PrecisionMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CPrecisionMeasure() : CContingencyTableEvaluation(PRECISION) {};
+	PrecisionMeasure() : ContingencyTableEvaluation(PRECISION) {};
 	/* virtual destructor */
-	virtual ~CPrecisionMeasure() {};
+	virtual ~PrecisionMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "PrecisionMeasure"; };
 };
@@ -438,17 +438,17 @@ public:
  *
  * This class is also capable of measuring
  * any other rate using get_[measure name] methods
- * of CContingencyTableEvaluation class.
+ * of ContingencyTableEvaluation class.
  *
  * Note that evaluate() should be called first.
  */
-class CSpecificityMeasure: public CContingencyTableEvaluation
+class SpecificityMeasure: public ContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CSpecificityMeasure() : CContingencyTableEvaluation(SPECIFICITY) {};
+	SpecificityMeasure() : ContingencyTableEvaluation(SPECIFICITY) {};
 	/* virtual destructor */
-	virtual ~CSpecificityMeasure() {};
+	virtual ~SpecificityMeasure() {};
 	/* name */
 	virtual const char* get_name() const { return "SpecificityMeasure"; };
 };

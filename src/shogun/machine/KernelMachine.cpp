@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin,
  *          Fernando Iglesias, Thoralf Klein
  */
 
@@ -25,7 +25,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_KERNEL_MACHINE
 {
-	CKernelMachine* kernel_machine;
+	KernelMachine* kernel_machine;
 	float64_t* result;
 	int32_t start;
 	int32_t end;
@@ -37,13 +37,13 @@ struct S_THREAD_PARAM_KERNEL_MACHINE
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CKernelMachine::CKernelMachine() : CMachine()
+KernelMachine::KernelMachine() : Machine()
 {
     init();
 }
 
-CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
-        SGVector<int32_t> svs, float64_t b) : CMachine()
+KernelMachine::KernelMachine(std::shared_ptr<Kernel> k, SGVector<float64_t> alphas,
+        SGVector<int32_t> svs, float64_t b) : Machine()
 {
     init();
 
@@ -56,14 +56,14 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
     set_bias(b);
 }
 
-CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
+KernelMachine::KernelMachine(std::shared_ptr<KernelMachine> machine) : Machine()
 {
 	init();
 
 	SGVector<float64_t> alphas = machine->get_alphas().clone();
 	SGVector<int32_t> svs = machine->get_support_vectors().clone();
 	float64_t bias = machine->get_bias();
-	CKernel* ker = machine->get_kernel();
+	auto ker = machine->get_kernel();
 
 	int32_t num_sv = svs.vlen;
 	create_new_model(num_sv);
@@ -73,73 +73,68 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 	set_kernel(ker);
 }
 
-CKernelMachine::~CKernelMachine()
+KernelMachine::~KernelMachine()
 {
-	SG_UNREF(kernel);
-	SG_UNREF(m_custom_kernel);
-	SG_UNREF(m_kernel_backup);
 }
 
-void CKernelMachine::set_kernel(CKernel* k)
+void KernelMachine::set_kernel(std::shared_ptr<Kernel> k)
 {
-	SG_REF(k);
-	SG_UNREF(kernel);
 	kernel=k;
 }
 
-CKernel* CKernelMachine::get_kernel()
+std::shared_ptr<Kernel> KernelMachine::get_kernel()
 {
-    SG_REF(kernel);
+
     return kernel;
 }
 
-void CKernelMachine::set_batch_computation_enabled(bool enable)
+void KernelMachine::set_batch_computation_enabled(bool enable)
 {
     use_batch_computation=enable;
 }
 
-bool CKernelMachine::get_batch_computation_enabled()
+bool KernelMachine::get_batch_computation_enabled()
 {
     return use_batch_computation;
 }
 
-void CKernelMachine::set_linadd_enabled(bool enable)
+void KernelMachine::set_linadd_enabled(bool enable)
 {
     use_linadd=enable;
 }
 
-bool CKernelMachine::get_linadd_enabled()
+bool KernelMachine::get_linadd_enabled()
 {
     return use_linadd;
 }
 
-void CKernelMachine::set_bias_enabled(bool enable_bias)
+void KernelMachine::set_bias_enabled(bool enable_bias)
 {
     use_bias=enable_bias;
 }
 
-bool CKernelMachine::get_bias_enabled()
+bool KernelMachine::get_bias_enabled()
 {
     return use_bias;
 }
 
-float64_t CKernelMachine::get_bias()
+float64_t KernelMachine::get_bias()
 {
     return m_bias;
 }
 
-void CKernelMachine::set_bias(float64_t bias)
+void KernelMachine::set_bias(float64_t bias)
 {
     m_bias=bias;
 }
 
-int32_t CKernelMachine::get_support_vector(int32_t idx)
+int32_t KernelMachine::get_support_vector(int32_t idx)
 {
     ASSERT(m_svs.vector && idx<m_svs.vlen)
     return m_svs.vector[idx];
 }
 
-float64_t CKernelMachine::get_alpha(int32_t idx)
+float64_t KernelMachine::get_alpha(int32_t idx)
 {
     if (!m_alpha.vector)
         SG_ERROR("No alphas set\n")
@@ -148,7 +143,7 @@ float64_t CKernelMachine::get_alpha(int32_t idx)
     return m_alpha.vector[idx];
 }
 
-bool CKernelMachine::set_support_vector(int32_t idx, int32_t val)
+bool KernelMachine::set_support_vector(int32_t idx, int32_t val)
 {
     if (m_svs.vector && idx<m_svs.vlen)
         m_svs.vector[idx]=val;
@@ -158,7 +153,7 @@ bool CKernelMachine::set_support_vector(int32_t idx, int32_t val)
     return true;
 }
 
-bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
+bool KernelMachine::set_alpha(int32_t idx, float64_t val)
 {
     if (m_alpha.vector && idx<m_alpha.vlen)
         m_alpha.vector[idx]=val;
@@ -168,32 +163,32 @@ bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
     return true;
 }
 
-int32_t CKernelMachine::get_num_support_vectors()
+int32_t KernelMachine::get_num_support_vectors()
 {
     return m_svs.vlen;
 }
 
-void CKernelMachine::set_alphas(SGVector<float64_t> alphas)
+void KernelMachine::set_alphas(SGVector<float64_t> alphas)
 {
     m_alpha = alphas;
 }
 
-void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
+void KernelMachine::set_support_vectors(SGVector<int32_t> svs)
 {
     m_svs = svs;
 }
 
-SGVector<int32_t> CKernelMachine::get_support_vectors()
+SGVector<int32_t> KernelMachine::get_support_vectors()
 {
 	return m_svs;
 }
 
-SGVector<float64_t> CKernelMachine::get_alphas()
+SGVector<float64_t> KernelMachine::get_alphas()
 {
 	return m_alpha;
 }
 
-bool CKernelMachine::create_new_model(int32_t num)
+bool KernelMachine::create_new_model(int32_t num)
 {
     m_alpha=SGVector<float64_t>();
     m_svs=SGVector<int32_t>();
@@ -210,7 +205,7 @@ bool CKernelMachine::create_new_model(int32_t num)
         return true;
 }
 
-bool CKernelMachine::init_kernel_optimization()
+bool KernelMachine::init_kernel_optimization()
 {
 	int32_t num_sv=get_num_support_vectors();
 
@@ -241,22 +236,22 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CRegressionLabels* CKernelMachine::apply_regression(CFeatures* data)
+std::shared_ptr<RegressionLabels> KernelMachine::apply_regression(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<RegressionLabels>(outputs);
 }
 
-CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
+std::shared_ptr<BinaryLabels> KernelMachine::apply_binary(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<BinaryLabels>(outputs);
 }
 
-SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> KernelMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", data.get());
 
 	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n")
 
@@ -270,11 +265,11 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (data)
 	{
-		CFeatures* lhs=kernel->get_lhs();
+		auto lhs=kernel->get_lhs();
 		REQUIRE(lhs, "%s::apply_get_outputs(): No left hand side specified\n",
 				get_name());
 		kernel->init(lhs, data);
-		SG_UNREF(lhs);
+
 	}
 
 	/* using the features to get num vectors is far safer than using the kernel
@@ -284,9 +279,9 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	 * However, the below version works
 	 * TODO Heiko Strathmann
 	 */
-	CFeatures* rhs=kernel->get_rhs();
+	auto rhs=kernel->get_rhs();
 	int32_t num_vectors=rhs ? rhs->get_num_vectors() : kernel->get_num_vec_rhs();
-	SG_UNREF(rhs)
+
 
 	SGVector<float64_t> output(num_vectors);
 
@@ -385,41 +380,41 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", data.get());
 
 	return output;
 }
 
-void CKernelMachine::store_model_features()
+void KernelMachine::store_model_features()
 {
 	if (!kernel)
 		SG_ERROR("kernel is needed to store SV features.\n")
 
-	CFeatures* lhs=kernel->get_lhs();
-	CFeatures* rhs=kernel->get_rhs();
+	auto lhs=kernel->get_lhs();
+	auto rhs=kernel->get_rhs();
 
 	if (!lhs)
 		SG_ERROR("kernel lhs is needed to store SV features.\n")
 
 	/* copy sv feature data */
-	CFeatures* sv_features=lhs->copy_subset(m_svs);
-	SG_UNREF(lhs);
+	auto sv_features=lhs->copy_subset(m_svs);
+
 
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
 
 	/* unref rhs */
-	SG_UNREF(rhs);
+
 
 	/* was SG_REF'ed by copy_subset */
-	SG_UNREF(sv_features);
+
 
 	/* now sv indices are just the identity */
 	m_svs.range_fill();
 
 }
 
-bool CKernelMachine::train_locked(SGVector<index_t> indices)
+bool KernelMachine::train_locked(SGVector<index_t> indices)
 {
 	/* this is asusmed here */
 	ASSERT(m_custom_kernel==kernel)
@@ -439,7 +434,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-	bool result = CMachine::train_locked();
+	bool result = Machine::train_locked();
 	/* remove last col subset of custom kernel */
 	m_custom_kernel->remove_col_subset();
 
@@ -449,24 +444,24 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-CBinaryLabels* CKernelMachine::apply_locked_binary(SGVector<index_t> indices)
+std::shared_ptr<BinaryLabels> KernelMachine::apply_locked_binary(SGVector<index_t> indices)
 {
 	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<BinaryLabels>(outputs);
 }
 
-CRegressionLabels* CKernelMachine::apply_locked_regression(
+std::shared_ptr<RegressionLabels> KernelMachine::apply_locked_regression(
 		SGVector<index_t> indices)
 {
 	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<RegressionLabels>(outputs);
 }
 
-SGVector<float64_t> CKernelMachine::apply_locked_get_output(
+SGVector<float64_t> KernelMachine::apply_locked_get_output(
 		SGVector<index_t> indices)
 {
 	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n")
+		SG_ERROR("KernelMachine::apply_locked() call data_lock() before!\n")
 
 	/* we are working on a custom kernel here */
 	ASSERT(m_custom_kernel==kernel)
@@ -530,7 +525,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	return output;
 }
 
-float64_t CKernelMachine::apply_one(int32_t num)
+float64_t KernelMachine::apply_one(int32_t num)
 {
 	ASSERT(kernel)
 
@@ -549,7 +544,7 @@ float64_t CKernelMachine::apply_one(int32_t num)
 	}
 }
 
-void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
+void KernelMachine::data_lock(std::shared_ptr<Labels> labs, std::shared_ptr<Features> features)
 {
 	if ( !kernel )
 		SG_ERROR("The kernel is not initialized\n")
@@ -560,29 +555,29 @@ void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 	kernel->init(features, features);
 
 	/* backup reference to old kernel */
-	SG_UNREF(m_kernel_backup)
+
 	m_kernel_backup=kernel;
-	SG_REF(m_kernel_backup);
+
 
 	/* unref possible old custom kernel */
-	SG_UNREF(m_custom_kernel);
+
 
 	/* create custom kernel matrix from current kernel */
-	m_custom_kernel=new CCustomKernel(kernel);
-	SG_REF(m_custom_kernel);
+	m_custom_kernel=std::make_shared<CustomKernel>(kernel);
+
 
 	/* replace kernel by custom kernel */
-	SG_UNREF(kernel);
+
 	kernel=m_custom_kernel;
-	SG_REF(kernel);
+
 
 	/* dont forget to call superclass method */
-	CMachine::data_lock(labs, features);
+	Machine::data_lock(labs, features);
 }
 
-void CKernelMachine::data_unlock()
+void KernelMachine::data_unlock()
 {
-	SG_UNREF(m_custom_kernel);
+
 	m_custom_kernel=NULL;
 
 	/* restore original kernel, possibly delete created one */
@@ -590,17 +585,17 @@ void CKernelMachine::data_unlock()
 	{
 		/* check if kernel was created in train_locked */
 		if (kernel!=m_kernel_backup)
-			SG_UNREF(kernel);
+
 
 		kernel=m_kernel_backup;
 		m_kernel_backup=NULL;
 	}
 
 	/* dont forget to call superclass method */
-	CMachine::data_unlock();
+	Machine::data_unlock();
 }
 
-void CKernelMachine::init()
+void KernelMachine::init()
 {
 	m_bias=0.0;
 	kernel=NULL;
@@ -611,9 +606,9 @@ void CKernelMachine::init()
 	use_bias=true;
 
 	SG_ADD(&kernel, "kernel", "", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
+	SG_ADD((std::shared_ptr<Kernel>*) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock");
-	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
+	SG_ADD(&m_kernel_backup, "kernel_backup",
 			"Kernel backup for data lock");
 	SG_ADD(&use_batch_computation, "use_batch_computation",
 			"Batch computation is enabled.");
@@ -624,7 +619,7 @@ void CKernelMachine::init()
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.");
 }
 
-bool CKernelMachine::supports_locking() const
+bool KernelMachine::supports_locking() const
 {
 	return true;
 }

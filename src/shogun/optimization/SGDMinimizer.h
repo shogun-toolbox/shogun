@@ -51,7 +51,7 @@ public:
 	/** Constructor
 	 * @param fun stochastic cost function
 	 */
-	SGDMinimizer(FirstOrderStochasticCostFunction *fun);
+	SGDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun);
 
 	/** Destructor */
 	virtual ~SGDMinimizer();

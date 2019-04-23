@@ -9,37 +9,37 @@
 
 using namespace shogun;
 
-float64_t CSquaredLoss::loss(float64_t prediction, float64_t label)
+float64_t SquaredLoss::loss(float64_t prediction, float64_t label)
 {
 	return (prediction - label) * (prediction - label);
 }
 
-float64_t CSquaredLoss::loss(float64_t z)
+float64_t SquaredLoss::loss(float64_t z)
 {
 	return z*z;
 }
 
-float64_t CSquaredLoss::first_derivative(float64_t prediction, float64_t label)
+float64_t SquaredLoss::first_derivative(float64_t prediction, float64_t label)
 {
 	return 2. * (prediction - label);
 }
 
-float64_t CSquaredLoss::first_derivative(float64_t z)
+float64_t SquaredLoss::first_derivative(float64_t z)
 {
 	return 2. * z;
 }
 
-float64_t CSquaredLoss::second_derivative(float64_t prediction, float64_t label)
+float64_t SquaredLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return 2;
 }
 
-float64_t CSquaredLoss::second_derivative(float64_t z)
+float64_t SquaredLoss::second_derivative(float64_t z)
 {
 	return 2;
 }
 
-float64_t CSquaredLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t SquaredLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
     if (eta_t < 1e-6)
     {
@@ -52,7 +52,7 @@ float64_t CSquaredLoss::get_update(float64_t prediction, float64_t label, float6
     return (label - prediction)*(1-exp(-eta_t))/norm;
 }
 
-float64_t CSquaredLoss::get_square_grad(float64_t prediction, float64_t label)
+float64_t SquaredLoss::get_square_grad(float64_t prediction, float64_t label)
 {
 	return (prediction - label) * (prediction - label);
 }

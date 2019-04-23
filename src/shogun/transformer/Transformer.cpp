@@ -5,7 +5,7 @@
 namespace shogun
 {
 
-	CTransformer::CTransformer() : CSGObject()
+	Transformer::Transformer() : SGObject()
 	{
 		m_fitted = false;
 
@@ -13,7 +13,7 @@ namespace shogun
 		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.");
 	}
 
-	void CTransformer::assert_fitted() const
+	void Transformer::assert_fitted() const
 	{
 		REQUIRE_E(
 		    m_fitted, NotFittedException, "Transformer has not been fitted.\n")

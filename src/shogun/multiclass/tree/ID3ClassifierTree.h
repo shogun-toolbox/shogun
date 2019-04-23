@@ -71,14 +71,14 @@ namespace shogun
  * end ID3;
  *
  */
-class CID3ClassifierTree : public CTreeMachine<id3TreeNodeData>
+class ID3ClassifierTree : public TreeMachine<id3TreeNodeData>
 {
 public:
 	/** constructor */
-	CID3ClassifierTree();
+	ID3ClassifierTree();
 
 	/** destructor */
-	virtual ~CID3ClassifierTree();
+	virtual ~ID3ClassifierTree();
 
 	/** get name
 	 * @return class name ID3ClassifierTree
@@ -88,7 +88,7 @@ public:
 	/** classify data using ID3 Tree
 	 * @param data data to be classified
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** prune id3 decision tree - uses reduced error pruning algorithm
 	 *
@@ -109,14 +109,14 @@ public:
 	 *
 	 * @return true if pruning successful
 	 */
-	bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
+	bool prune_tree(std::shared_ptr<DenseFeatures<float64_t>> validation_data, std::shared_ptr<MulticlassLabels> validation_labels, float64_t epsilon=0.f);
 
 protected:
 
 	/** train machine - build ID3 Tree from training data
 	 * @param data training data
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 private:
 
@@ -128,7 +128,7 @@ private:
 	 * @param level current depth of tree
 	 * @return pointer to the root of the ID3 tree
 	 */
-	node_t* id3train(CFeatures* data, CMulticlassLabels* class_labels, SGVector<int32_t> values, int level = 0);
+	std::shared_ptr<node_t> id3train(std::shared_ptr<Features> data, std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> values, int level = 0);
 
 	/** informational gain attribute for selecting best feature at each node of ID3 Tree
 	 *
@@ -137,14 +137,14 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */
-	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels* class_labels);
+	float64_t informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data, std::shared_ptr<MulticlassLabels> class_labels);
 
 	/** computes entropy (aka randomness) in data
 	 *
 	 * @param labels labels of parameters chosen
 	 * @return entropy
 	 */
-	float64_t entropy(CMulticlassLabels* labels);
+	float64_t entropy(std::shared_ptr<MulticlassLabels> labels);
 
 	/** recursive tree pruning method - called within prune_tree method
 	 *
@@ -153,7 +153,7 @@ private:
 	 * @param current root of current subtree
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree_machine(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon);
+	void prune_tree_machine(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon);
 
 	/** uses current subtree to classify data
 	 *
@@ -161,7 +161,7 @@ private:
 	 * @param current root of current subtree
 	 * @return classification labels of input data
 	 */
-	CMulticlassLabels* apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current);
+	std::shared_ptr<MulticlassLabels> apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<node_t> current);
 };
 } /* namespace shogun */
 

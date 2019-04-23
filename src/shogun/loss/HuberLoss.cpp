@@ -33,65 +33,65 @@
 
 using namespace shogun;
 
-CHuberLoss::CHuberLoss(float64_t delta)
-: CLossFunction()
+HuberLoss::HuberLoss(float64_t delta)
+: LossFunction()
 {
 	init();
 	m_delta=delta;
 }
 
-float64_t CHuberLoss::loss(float64_t prediction, float64_t label)
+float64_t HuberLoss::loss(float64_t prediction, float64_t label)
 {
 	return loss(prediction-label);
 }
 
-float64_t CHuberLoss::loss(float64_t z)
+float64_t HuberLoss::loss(float64_t z)
 {
-	if (CMath::abs(z)<m_delta)
+	if (Math::abs(z)<m_delta)
 		return z*z;
 	else
-		return m_delta*(CMath::abs(z)-m_delta/2.0);
+		return m_delta*(Math::abs(z)-m_delta/2.0);
 }
 
-float64_t CHuberLoss::first_derivative(float64_t prediction, float64_t label)
+float64_t HuberLoss::first_derivative(float64_t prediction, float64_t label)
 {
 	return first_derivative(prediction-label);
 }
 
-float64_t CHuberLoss::first_derivative(float64_t z)
+float64_t HuberLoss::first_derivative(float64_t z)
 {
-	if (CMath::abs(z)<m_delta)
+	if (Math::abs(z)<m_delta)
 		return 2*z;
 	else
 		return (z>0)?m_delta:-m_delta;
 }
 
-float64_t CHuberLoss::second_derivative(float64_t prediction, float64_t label)
+float64_t HuberLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return second_derivative(prediction-label);
 }
 
-float64_t CHuberLoss::second_derivative(float64_t z)
+float64_t HuberLoss::second_derivative(float64_t z)
 {
-	if (CMath::abs(z)<m_delta)
+	if (Math::abs(z)<m_delta)
 		return 2;
 	else
 		return 0;
 }
 
-float64_t CHuberLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t HuberLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-float64_t CHuberLoss::get_square_grad(float64_t prediction, float64_t label)
+float64_t HuberLoss::get_square_grad(float64_t prediction, float64_t label)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-void CHuberLoss::init()
+void HuberLoss::init()
 {
 	m_delta=0;
 

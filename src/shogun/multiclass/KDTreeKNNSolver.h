@@ -21,17 +21,17 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/K-d_tree
  *
  */
-class CKDTREEKNNSolver : public CKNNSolver
+class KDTREEKNNSolver : public KNNSolver
 {
 	public:
 		/** default constructor */
-		CKDTREEKNNSolver() : CKNNSolver()
+		KDTREEKNNSolver() : KNNSolver()
 		{
 			init(); 
 		}
 
 		/** deconstructor */
-		virtual ~CKDTREEKNNSolver() { /* nothing to do */ }
+		virtual ~KDTREEKNNSolver() { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -42,11 +42,11 @@ class CKDTREEKNNSolver : public CKNNSolver
 		 * @param train_labels m_train_labels
 		 * @param leaf_size m_leaf_size
 		 */
-		CKDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t leaf_size);
+		KDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t leaf_size);
 
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
-		virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
 
 		/** @return object name */
 		const char* get_name() const { return "KDTREEKNNSolver"; }

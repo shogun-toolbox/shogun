@@ -20,8 +20,8 @@ TEST(LaRank,train)
 	// create some linearly seperable data
 	SGMatrix<float64_t> matrix(num_class, num_vec);
 	SGMatrix<float64_t> matrix_test(num_class, num_vec);
-	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
-	CMulticlassLabels* labels_test=new CMulticlassLabels(num_vec);
+	MulticlassLabels* labels=new MulticlassLabels(num_vec);
+	MulticlassLabels* labels_test=new MulticlassLabels(num_vec);
 	std::mt19937_64 prng(seed);
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<num_vec; ++i)
@@ -43,16 +43,16 @@ TEST(LaRank,train)
 	//labels->get_int_labels().display_vector("labels");
 
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
-	CDenseFeatures<float64_t>* features_test=
-			new CDenseFeatures<float64_t>(matrix_test);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features_test=
+			new DenseFeatures<float64_t>(matrix_test);
 
 	// create three labels
 	for (index_t i=0; i<num_vec; ++i)
 		labels->set_label(i, i%num_class);
 
 	// create gaussian kernel with cache 10MB, width 0.5
-	CGaussianKernel* kernel = new CGaussianKernel(10, 0.5);
+	GaussianKernel* kernel = new GaussianKernel(10, 0.5);
 	kernel->init(features, features);
 
 	// create libsvm with C=10 and train
@@ -61,7 +61,7 @@ TEST(LaRank,train)
 	svm->train();
 
 	// classify on training examples
-	CMulticlassLabels* output=(CMulticlassLabels*)svm->apply();
+	MulticlassLabels* output=(MulticlassLabels*)svm->apply();
 	//output->get_labels().display_vector("batch output");
 
 	/* assert that batch apply and apply(index_t) give same result */
@@ -75,8 +75,8 @@ TEST(LaRank,train)
 		EXPECT_EQ(output->get_label(i), single_outputs[i]);
 
 	// predict test labels (since data is easy this has to be correct
-	CMulticlassLabels* output_test=
-			(CMulticlassLabels*)svm->apply(features_test);
+	MulticlassLabels* output_test=
+			(MulticlassLabels*)svm->apply(features_test);
 	//labels_test->get_labels().display_vector("labels_test");
 	//output_test->get_labels().display_vector("output_test");
 

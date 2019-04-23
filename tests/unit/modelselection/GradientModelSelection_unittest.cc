@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Wu Lin, Roman Votyakov, Heiko Strathmann, Grigorii Guz, 
+ * Authors: Wu Lin, Roman Votyakov, Heiko Strathmann, Grigorii Guz,
  *          Thoralf Klein, Pan Deng
  */
 
@@ -53,44 +53,44 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	y_train[4]=-3.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X_train);
-	CRegressionLabels* lab_train=new CRegressionLabels(y_train);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X_train);
+	auto lab_train=std::make_shared<RegressionLabels>(y_train);
 
 	// choose Gaussian kernel with width=2*ell^2, where ell=3
-	CGaussianKernel* kernel=new CGaussianKernel(10, 3*3*2.0);
+	auto kernel=std::make_shared<GaussianKernel>(10, 3*3*2.0);
 
 	// create zero mean
-	CZeroMean* mean=new CZeroMean();
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma
-	CGaussianLikelihood* lik=new CGaussianLikelihood(4.0);
+	auto lik=std::make_shared<GaussianLikelihood>(4.0);
 
 	// specify exact inference method
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, lab_train, lik);
 
 	// set kernel scale
 	inf->set_scale(3);
 
 	// specify GP regression with exact inference
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 
 	// specify gradient evaluation object
-	CGradientEvaluation* grad_eval=new CGradientEvaluation(gpr, feat_train,
-			lab_train, new CGradientCriterion(), false);
+	auto grad_eval=std::make_shared<GradientEvaluation>(gpr, feat_train,
+			lab_train, std::make_shared<GradientCriterion>(), false);
 
 	// set diffirentiable function
 	grad_eval->set_function(inf);
 
 	// specify gradient search
-	CGradientModelSelection* grad_search=new CGradientModelSelection(grad_eval);
+	auto grad_search=std::make_shared<GradientModelSelection>(grad_eval);
 
-	CNLOPTMinimizer *minimizer = new CNLOPTMinimizer();
+	auto minimizer = std::make_shared<NLOPTMinimizer>();
 	minimizer->set_nlopt_parameters(LD_MMA);
 	grad_search->set_minimizer(minimizer);
 
 	// find best parameter combination
-	CParameterCombination* best_comb=grad_search->select_model(false);
+	auto best_comb=grad_search->select_model(false);
 	best_comb->apply_to_machine(gpr);
 
 	// compare negative log marginal likelihood with result from GPML toolbox
@@ -111,9 +111,6 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	EXPECT_NEAR(std::sqrt(width / 2.0), 2.024939917854716, 1E-3);
 	EXPECT_NEAR(sigma, 1.862122012902403, 1E-3);
 
-	// cleanup
-	SG_UNREF(grad_search);
-	SG_UNREF(best_comb);
 }
 
 
@@ -144,49 +141,46 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
 	// specify GP classification with EP inference
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 
 	// specify gradient evaluation object
-	CGradientEvaluation* grad_eval=new CGradientEvaluation(gpc, features_train,
-			labels_train, new CGradientCriterion(), false);
+	auto grad_eval=std::make_shared<GradientEvaluation>(gpc, features_train,
+			labels_train, std::make_shared<GradientCriterion>(), false);
 
 	// set diffirentiable function
 	grad_eval->set_function(inf);
 
 	// specify gradient search
-	CGradientModelSelection* grad_search=new CGradientModelSelection(grad_eval);
-	CNLOPTMinimizer *minimizer = new CNLOPTMinimizer();
+	auto grad_search=std::make_shared<GradientModelSelection>(grad_eval);
+	auto minimizer = std::make_shared<NLOPTMinimizer>();
 	minimizer->set_nlopt_parameters(LD_MMA);
 	grad_search->set_minimizer(minimizer);
 
 	// find best parameter combination
-	CParameterCombination* best_comb=grad_search->select_model(false);
+	auto best_comb=grad_search->select_model(false);
 	best_comb->apply_to_machine(gpc);
 
 	// compare negative log marginal likelihood with result from GPML toolbox
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
 	EXPECT_NEAR(nlZ, 3.334009, 1E-3);
 
-	// cleanup
-	SG_UNREF(grad_search);
-	SG_UNREF(best_comb);
 }
 
-#endif //HAVE_NLOPT 
+#endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN

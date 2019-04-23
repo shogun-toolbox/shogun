@@ -39,7 +39,7 @@
 namespace shogun
 {
 
-class CMultiKernelQuadraticTimeMMD;
+class MultiKernelQuadraticTimeMMD;
 template <typename> class SGVector;
 
 /**
@@ -59,7 +59,7 @@ template <typename> class SGVector;
  *
  * Note that all these operations can be done for multiple kernels
  * at once as well. To use this functionality, use multikernel() method to
- * obtain a CMultiKernelQuadraticTimeMMD instance and then call methods on that.
+ * obtain a MultiKernelQuadraticTimeMMD instance and then call methods on that.
  *
  * If you do not know about your data, but want to use the MMD from a kernel
  * matrix, just use the custom kernel constructor and initialize the features as
@@ -70,7 +70,7 @@ template <typename> class SGVector;
  * keeps a backup of the old kernel and rather uses this pre-computed one as
  * long as the present kernel is valid. Therefore, after a computation phase
  * is executed, upon calling get_kernel() we will obtain the pre-computed
- * kernel matrix as a CCustomKernel object. However, if subsequently the
+ * kernel matrix as a CustomKernel object. However, if subsequently the
  * features are updated or the underlying kernel itself is updated, it discards
  * the pre-computed kernel matrix (frees memory) and pulls the old kernel from
  * backup (or, simply replace that if a new kernel is provided) and then
@@ -95,49 +95,49 @@ template <typename> class SGVector;
  * [2]: Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
  * A fast, consistent kernel two-sample test.
  */
-class CQuadraticTimeMMD : public CMMD
+class QuadraticTimeMMD : public MMD
 {
-	friend class CMultiKernelQuadraticTimeMMD;
+	friend class MultiKernelQuadraticTimeMMD;
 
 public:
 	/** Default constructor */
-	CQuadraticTimeMMD();
+	QuadraticTimeMMD();
 
 	/** Destructor */
-	virtual ~CQuadraticTimeMMD();
+	virtual ~QuadraticTimeMMD();
 
 	/**
 	 * Method that initializes/replaces samples from p. It will invalidate
 	 * existing pre-computed kernel, if any, from previous run. However, if
 	 * the underlying kernel, if set already by this point, is an instance of
-	 * CCustomKernel itself, the supplied features will be ignored.
+	 * CustomKernel itself, the supplied features will be ignored.
 	 *
 	 * @param samples_from_p Samples from p.
 	 */
-	virtual void set_p(CFeatures* samples_from_p);
+	virtual void set_p(std::shared_ptr<Features> samples_from_p);
 
 	/**
 	 * Method that initializes/replaces samples from q. It will invalidate
 	 * existing pre-computed kernel, if any, from previous run. However, if
 	 * the underlying kernel, if set already by this point, is an instance of
-	 * CCustomKernel itself, the supplied features will be ignored.
+	 * CustomKernel itself, the supplied features will be ignored.
 	 *
 	 * @param samples_from_p Samples from q.
 	 */
-	virtual void set_q(CFeatures* samples_from_q);
+	virtual void set_q(std::shared_ptr<Features> samples_from_q);
 
 	/**
-	 * Method that creates a merged copy of CFeatures instance from both
+	 * Method that creates a merged copy of Features instance from both
 	 * the features, appending the samples from p and q. This method does not
 	 * cache the merged copy from previous call. So, calling this method will
 	 * create a new instance every time.
 	 *
 	 * @return The merged samples.
 	 */
-	CFeatures* get_p_and_q();
+	std::shared_ptr<Features> get_p_and_q();
 
 	/**
-	 * Method that sets the kernel instance to be used. If a CCustomKernel is
+	 * Method that sets the kernel instance to be used. If a CustomKernel is
 	 * set, then the features passed would be effectively ignored. Therefore,
 	 * if this is the intended behavior, simply passing two instances of
 	 * CDummyFeatures would do (since they cannot be left null as of now).
@@ -147,7 +147,7 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	virtual void set_kernel(CKernel* kernel);
+	virtual void set_kernel(std::shared_ptr<Kernel> kernel);
 
 	/**
 	 * Method that learns/selects the kernel from a set of provided kernel
@@ -208,14 +208,14 @@ public:
 	float64_t compute_variance_h1();
 
 	/**
-	 * Method that returns the internal instance of CMultiKernelQuadraticTimeMMD which
+	 * Method that returns the internal instance of MultiKernelQuadraticTimeMMD which
 	 * provides a similar API to this class to compute the estimates for multiple kernel
 	 * all at once. This internal instance shares the same set of samples with this one
 	 * but the kernel has to be added seperately using multikernel().add_kernel() method.
 	 *
-	 * @return An internal instance of CMultiKernelQuadraticTimeMMD.
+	 * @return An internal instance of MultiKernelQuadraticTimeMMD.
 	 */
-	CMultiKernelQuadraticTimeMMD* multikernel();
+	std::shared_ptr<MultiKernelQuadraticTimeMMD> multikernel();
 
 	/**
 	 * Method that sets the number of eigenvalues to be used when spectral estimation

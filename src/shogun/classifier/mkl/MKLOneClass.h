@@ -18,20 +18,20 @@ namespace shogun
  * Learns a One-Class SVM classifier and its kernel weights. Makes only sense
  * if multiple kernels are used.
  *
- * \sa CMKL
+ * \sa MKL
  */
-class CMKLOneClass : public CMKL
+class MKLOneClass : public MKL
 {
 	public:
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLOneClass(CSVM* s=NULL);
+		MKLOneClass(std::shared_ptr<SVM> s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKLOneClass();
+		virtual ~MKLOneClass();
 
 		/** compute beta independent term from objective, e.g., in 2-class MKL
 		 * sum_i alpha_i etc

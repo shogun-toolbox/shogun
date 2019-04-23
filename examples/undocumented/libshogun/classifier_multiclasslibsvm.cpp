@@ -19,23 +19,23 @@ int main(int argc, char** argv)
 
 	// create vectors
 	// shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// create three labels
-	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
+	auto labels=std::make_shared<MulticlassLabels>(num_vec);
 	for (index_t i=0; i<num_vec; ++i)
 		labels->set_label(i, i%num_class);
 
 	// create gaussian kernel with cache 10MB, width 0.5
-	CGaussianKernel* kernel = new CGaussianKernel(10, 0.5);
+	auto kernel = std::make_shared<GaussianKernel>(10, 0.5);
 	kernel->init(features, features);
 
 	// create libsvm with C=10 and train
-	CMulticlassLibSVM* svm = new CMulticlassLibSVM(10, kernel, labels);
+	auto svm = std::make_shared<MulticlassLibSVM>(10, kernel, labels);
 	svm->train();
 
 	// classify on training examples
-	CMulticlassLabels* output = svm->apply()->as<CMulticlassLabels>();
+	auto output = svm->apply()->as<MulticlassLabels>();
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(),
 			"batch output");
 
@@ -46,10 +46,8 @@ int main(int argc, char** argv)
 		SG_SPRINT("single output[%d]=%f\n", i, label);
 		ASSERT(output->get_label(i)==label);
 	}
-	SG_UNREF(output);
 
 	// free up memory
-	SG_UNREF(svm);
 
 	exit_shogun();
 	return 0;

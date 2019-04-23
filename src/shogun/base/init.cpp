@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev,
  *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Bjoern Esser
  */
 
@@ -32,13 +32,13 @@
 
 namespace shogun
 {
-	Parallel* sg_parallel=NULL;
-	SGIO* sg_io=NULL;
-	Version* sg_version=NULL;
-	std::unique_ptr<CSignal> sg_signal(nullptr);
+	std::shared_ptr<Parallel> sg_parallel=NULL;
+	std::shared_ptr<SGIO> sg_io=NULL;
+	std::shared_ptr<Version> sg_version=NULL;
+	std::unique_ptr<Signal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
-	// Two global variables to over-ride CMath::fequals for certain
+	// Two global variables to over-ride Math::fequals for certain
 	// serialization
 	// unit tests to pass. These should be removed if possible and serialization
 	// formats should be fixed.
@@ -60,19 +60,15 @@ namespace shogun
 	    const std::function<void(FILE*, const char*)> print_error)
 	{
 		if (!sg_io)
-			sg_io = new shogun::SGIO();
+			sg_io = std::make_shared<shogun::SGIO>();
 		if (!sg_parallel)
-			sg_parallel=new shogun::Parallel();
+			sg_parallel=std::make_shared<shogun::Parallel>();
 		if (!sg_version)
-			sg_version = new shogun::Version();
+			sg_version = std::make_shared<shogun::Version>();
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
 		if (!sg_signal)
-			sg_signal = std::unique_ptr<CSignal>(new shogun::CSignal());
-
-		SG_REF(sg_io);
-		SG_REF(sg_parallel);
-		SG_REF(sg_version);
+			sg_signal = std::unique_ptr<Signal>(new shogun::Signal());
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -97,29 +93,26 @@ namespace shogun
 
 	void exit_shogun()
 	{
-		SG_UNREF(sg_version);
-		SG_UNREF(sg_parallel);
-		SG_UNREF(sg_io);
+		sg_version.reset();
+		sg_parallel.reset();
+		sg_io.reset();
 
-		delete CSignal::m_subscriber;
-		delete CSignal::m_observable;
-		delete CSignal::m_subject;
+		delete Signal::m_subscriber;
+		delete Signal::m_observable;
+		delete Signal::m_subject;
 
 #ifdef HAVE_PROTOBUF
 		::google::protobuf::ShutdownProtobufLibrary();
 #endif
 	}
 
-	void set_global_io(SGIO* io)
+	void set_global_io(std::shared_ptr<SGIO> io)
 	{
-		SG_REF(io);
-		SG_UNREF(sg_io);
 		sg_io=io;
 	}
 
-	SGIO* get_global_io()
+	std::shared_ptr<SGIO> get_global_io()
 	{
-		SG_REF(sg_io);
 		return sg_io;
 	}
 
@@ -143,33 +136,27 @@ namespace shogun
 		return sg_fequals_tolerant;
 	}
 
-	void set_global_parallel(Parallel* parallel)
+	void set_global_parallel(std::shared_ptr<Parallel> parallel)
 	{
-		SG_REF(parallel);
-		SG_UNREF(sg_parallel);
 		sg_parallel=parallel;
 	}
 
-	Parallel* get_global_parallel()
+	std::shared_ptr<Parallel> get_global_parallel()
 	{
-		SG_REF(sg_parallel);
 		return sg_parallel;
 	}
 
-	void set_global_version(Version* version)
+	void set_global_version(std::shared_ptr<Version> version)
 	{
-		SG_REF(version);
-		SG_UNREF(sg_version);
 		sg_version=version;
 	}
 
-	Version* get_global_version()
+	std::shared_ptr<Version> get_global_version()
 	{
-		SG_REF(sg_version);
 		return sg_version;
 	}
 
-	CSignal* get_global_signal()
+	Signal* get_global_signal()
 	{
 		return sg_signal.get();
 	}
@@ -184,7 +171,7 @@ namespace shogun
 	void init_from_env()
 	{
 		char* env_log_val = NULL;
-		SGIO* io = get_global_io();
+		auto io = get_global_io();
 		env_log_val = getenv("SHOGUN_LOG_LEVEL");
 		if (env_log_val)
 		{
@@ -195,10 +182,9 @@ namespace shogun
 			else if(strncmp(env_log_val, "ERROR", 5) == 0)
 				io->set_loglevel(MSG_ERROR);
 		}
-		SG_UNREF(io);
 
 		char* env_warnings_val = NULL;
-		SGLinalg* linalg = get_global_linalg();
+		auto linalg = get_global_linalg();
 		env_warnings_val = getenv("SHOGUN_GPU_WARNINGS");
 		if (env_warnings_val)
 		{
@@ -207,7 +193,7 @@ namespace shogun
 		}
 
 		char* env_thread_val = NULL;
-		Parallel* parallel = get_global_parallel();
+		auto parallel = get_global_parallel();
 		env_thread_val = getenv("SHOGUN_NUM_THREADS");
 		if (env_thread_val)
 		{

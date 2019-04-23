@@ -7,15 +7,15 @@ The Custom Kernel allows for custom user provided kernel matrices.
 -------
 Example
 -------
-In this example, we initialize a :sgclass:`CGaussianKernel` and then use the kernel matrix to create a custom kernel.
+In this example, we initialize a :sgclass:`GaussianKernel` and then use the kernel matrix to create a custom kernel.
 
 Imagine we have files with data.
-We create :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) as
+We create :sgclass:`DenseFeatures` (here 64 bit floats aka RealFeatures) as
 
 .. sgexample:: custom_kernel_machine:create_features
 
-We create an instance of :sgclass:`CGaussianKernel`.
-We initialize with :sgclass:`CDenseFeatures` and then get the kernel matrix.
+We create an instance of :sgclass:`GaussianKernel`.
+We initialize with :sgclass:`DenseFeatures` and then get the kernel matrix.
 
 .. sgexample:: custom_kernel_machine:create_kernel
 
@@ -27,7 +27,7 @@ We create an instance of :sgclass:`CLibSVM` with the custom kernel.
 
 .. sgexample:: custom_kernel_machine:create_machine
 
-Then we train the :sgclass:`CLibSVM` and we apply it to the test data, which gives the predicted :sgclass:`CLabels`.
+Then we train the :sgclass:`CLibSVM` and we apply it to the test data, which gives the predicted :sgclass:`Labels`.
 
 .. sgexample:: custom_kernel_machine:train_and_apply
 

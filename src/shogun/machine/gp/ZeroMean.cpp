@@ -33,15 +33,15 @@
 
 using namespace shogun;
 
-CZeroMean::CZeroMean() : CMeanFunction()
+ZeroMean::ZeroMean() : MeanFunction()
 {
 }
 
-CZeroMean::~CZeroMean()
+ZeroMean::~ZeroMean()
 {
 }
 
-SGVector<float64_t> CZeroMean::get_mean_vector(const CFeatures* features) const
+SGVector<float64_t> ZeroMean::get_mean_vector(std::shared_ptr<const Features> features) const
 {
 	SGVector<float64_t> result(features->get_num_vectors());
 	result.zero();

@@ -8,10 +8,10 @@
 
 using namespace shogun;
 
-CDifferentiableFunction::CDifferentiableFunction() : CSGObject()
+DifferentiableFunction::DifferentiableFunction() : SGObject()
 {
 }
 
-CDifferentiableFunction::~CDifferentiableFunction()
+DifferentiableFunction::~DifferentiableFunction()
 {
 }

@@ -52,16 +52,16 @@ namespace shogun
 	 * can also be included, which effectively centers the \f$X\f$ before
 	 * computing the solution.
 	 */
-	class CLinearRidgeRegression : public CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>
+	class LinearRidgeRegression : public DenseRealDispatch<LinearRidgeRegression, LinearMachine>
 	{
-		friend class CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>;
+		friend class DenseRealDispatch<LinearRidgeRegression, LinearMachine>;
 
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** default constructor */
-		CLinearRidgeRegression();
+		LinearRidgeRegression();
 
 		/** constructor
 		 *
@@ -69,8 +69,8 @@ namespace shogun
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab);
-		virtual ~CLinearRidgeRegression() {}
+		LinearRidgeRegression(float64_t tau, std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab);
+		virtual ~LinearRidgeRegression() {}
 
 		/** set regularization constant
 		 *
@@ -106,7 +106,7 @@ namespace shogun
 
 	protected:
 		template <typename T>
-		bool train_machine_templated(const CDenseFeatures<T>* feats);
+		bool train_machine_templated(std::shared_ptr<const DenseFeatures<T>> feats);
 
 	private:
 		void init();

@@ -78,11 +78,11 @@ enum EInferenceType
  * any implemented approximation. See
  * CInference::get_marginal_likelihood_estimate.
  */
-class CInference : public CDifferentiableFunction
+class Inference : public DifferentiableFunction
 {
 public:
 	/** default constructor */
-	CInference();
+	Inference();
 
 	/** constructor
 	 *
@@ -92,10 +92,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	Inference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CInference();
+	virtual ~Inference();
 
 	/** return what type of inference we are, e.g. exact, FITC, Laplace, etc.
 	 *
@@ -168,9 +168,9 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >*
-	get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*,
-			CSGObject*>* parameters);
+	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >>
+	get_negative_log_marginal_likelihood_derivatives(
+		std::shared_ptr<CMap<TParameter*, SGObject*>> parameters);
 
 	/** get alpha vector
 	 *
@@ -242,8 +242,8 @@ public:
 	 * @return map of gradient. Keys are names of parameters, values are values
 	 * of derivative with respect to that parameter.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient(
-			CMap<TParameter*, CSGObject*>* parameters)
+	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient(
+			std::shared_ptr<CMap<TParameter*, SGObject*>> parameters)
 	{
         return get_negative_log_marginal_likelihood_derivatives(parameters);
 	}
@@ -263,16 +263,16 @@ public:
 	*
 	* @return features
 	*/
-	virtual CFeatures* get_features() { SG_REF(m_features); return m_features; }
+	virtual std::shared_ptr<Features> get_features() {  return m_features; }
 
 	/** set features
 	*
 	* @param feat features to set
 	*/
-	virtual void set_features(CFeatures* feat)
+	virtual void set_features(std::shared_ptr<Features> feat)
 	{
-		SG_REF(feat);
-		SG_UNREF(m_features);
+
+
 		m_features=feat;
 	}
 
@@ -280,16 +280,16 @@ public:
 	 *
 	 * @return kernel
 	 */
-	virtual CKernel* get_kernel() { SG_REF(m_kernel); return m_kernel; }
+	virtual std::shared_ptr<Kernel> get_kernel() {  return m_kernel; }
 
 	/** set kernel
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(CKernel* kern)
+	virtual void set_kernel(std::shared_ptr<Kernel> kern)
 	{
-		SG_REF(kern);
-		SG_UNREF(m_kernel);
+
+
 		m_kernel=kern;
 	}
 
@@ -297,16 +297,16 @@ public:
 	 *
 	 * @return mean
 	 */
-	virtual CMeanFunction* get_mean() { SG_REF(m_mean); return m_mean; }
+	virtual std::shared_ptr<MeanFunction> get_mean() {  return m_mean; }
 
 	/** set mean
 	 *
 	 * @param m mean function to set
 	 */
-	virtual void set_mean(CMeanFunction* m)
+	virtual void set_mean(std::shared_ptr<MeanFunction> m)
 	{
-		SG_REF(m);
-		SG_UNREF(m_mean);
+
+
 		m_mean=m;
 	}
 
@@ -314,16 +314,16 @@ public:
 	 *
 	 * @return labels
 	 */
-	virtual CLabels* get_labels() { SG_REF(m_labels); return m_labels; }
+	virtual std::shared_ptr<Labels> get_labels() {  return m_labels; }
 
 	/** set labels
 	 *
 	 * @param lab label to set
 	 */
-	virtual void set_labels(CLabels* lab)
+	virtual void set_labels(std::shared_ptr<Labels> lab)
 	{
-		SG_REF(lab);
-		SG_UNREF(m_labels);
+
+
 		m_labels=lab;
 	}
 
@@ -331,16 +331,16 @@ public:
 	 *
 	 * @return likelihood
 	 */
-	CLikelihoodModel* get_model() { SG_REF(m_model); return m_model; }
+	std::shared_ptr<LikelihoodModel> get_model() {  return m_model; }
 
 	/** set likelihood model
 	 *
 	 * @param mod model to set
 	 */
-	virtual void set_model(CLikelihoodModel* mod)
+	virtual void set_model(std::shared_ptr<LikelihoodModel> mod)
 	{
-		SG_REF(mod);
-		SG_UNREF(m_model);
+
+
 		m_model=mod;
 	}
 
@@ -391,7 +391,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -458,22 +458,22 @@ private:
 
 protected:
 	/** minimizer */
-	Minimizer* m_minimizer;
+	std::shared_ptr<Minimizer> m_minimizer;
 
 	/** covariance function */
-	CKernel* m_kernel;
+	std::shared_ptr<Kernel> m_kernel;
 
 	/** mean function */
-	CMeanFunction* m_mean;
+	std::shared_ptr<MeanFunction> m_mean;
 
 	/** likelihood function to use */
-	CLikelihoodModel* m_model;
+	std::shared_ptr<LikelihoodModel> m_model;
 
 	/** features to use */
-	CFeatures* m_features;
+	std::shared_ptr<Features> m_features;
 
 	/** labels of features */
-	CLabels* m_labels;
+	std::shared_ptr<Labels> m_labels;
 
 	/** alpha vector used in process mean calculation */
 	SGVector<float64_t> m_alpha;

@@ -26,33 +26,25 @@ int main()
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(matrix);
-	SG_REF(features);
+	DenseFeatures< float64_t >* features = new DenseFeatures<float64_t>(matrix);
 
 	// Create embedding and set parameters for global strategy
 	CStochasticProximityEmbedding* spe = new CStochasticProximityEmbedding();
 	spe->set_target_dim(2);
 	spe->set_strategy(SPE_GLOBAL);
 	spe->set_nupdates(40);
-	SG_REF(spe);
 
 	// Apply embedding with global strategy
 	auto embedding = spe->transform(features);
-	SG_REF(embedding);
 
 	// Set parameters for local strategy
 	spe->set_strategy(SPE_LOCAL);
 	spe->set_k(12);
 
 	// Apply embedding with local strategy
-	SG_UNREF(embedding);
 	embedding = spe->transform(features);
-	SG_REF(embedding);
 
 	// Free memory
-	SG_UNREF(embedding);
-	SG_UNREF(spe);
-	SG_UNREF(features);
 
 	exit_shogun();
 

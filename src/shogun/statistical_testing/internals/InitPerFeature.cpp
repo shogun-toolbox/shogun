@@ -44,13 +44,13 @@ InitPerFeature::~InitPerFeature()
 {
 }
 
-InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
+InitPerFeature& InitPerFeature::operator=(std::shared_ptr<Features> feats)
 {
-	m_fetcher = std::unique_ptr<DataFetcher>(DataFetcherFactory::get_instance(feats));
+	m_fetcher = DataFetcherFactory::get_instance(feats);
 	return *this;
 }
 
-InitPerFeature::operator const CFeatures*() const
+InitPerFeature::operator const std::shared_ptr<Features>() const
 {
 	return m_fetcher->m_samples;
 }

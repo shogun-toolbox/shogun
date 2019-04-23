@@ -42,19 +42,19 @@ namespace shogun
 {
 /** @brief The class IndexFeatures implements features that
  *  contain the index of the features. This features used in
- *  the CCustomKernel::init to make the subset of the kernel
+ *  the CustomKernel::init to make the subset of the kernel
  *  matrix.
  *  Initial CIndexFeature of row_idx and col_idx, pass them
- *  to the CCustomKernel::init(row_idx, col_idx), then use
- *  CCustomKernel::get_kernel_matrix() will get the sub kernel
+ *  to the CustomKernel::init(row_idx, col_idx), then use
+ *  CustomKernel::get_kernel_matrix() will get the sub kernel
  *  matrix specified by the row_idx and col_idx.
  *
- * This is used in the CCustomKernel.*/
-class CIndexFeatures : public CDummyFeatures
+ * This is used in the CustomKernel.*/
+class IndexFeatures : public DummyFeatures
 {
 	public:
 		/** default constructor  */
-		CIndexFeatures();
+		IndexFeatures();
 
 		/** constructor
 		 *
@@ -63,10 +63,10 @@ class CIndexFeatures : public CDummyFeatures
 		 *
 		 * @param feature_index feature index vector
 		 */
-		CIndexFeatures(SGVector<index_t> feature_index);
+		IndexFeatures(SGVector<index_t> feature_index);
 
 		/** destructor */
-		virtual ~CIndexFeatures();
+		virtual ~IndexFeatures();
 
 		/** get number of feature vectors
 		 *
@@ -81,9 +81,9 @@ class CIndexFeatures : public CDummyFeatures
 		 *
 		 * return the copy of this instance
 		 *
-		 * @return the copy of this CIndexFeatures
+		 * @return the copy of this IndexFeatures
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get feature type (ANY)
 		 *
@@ -135,7 +135,7 @@ class CIndexFeatures : public CDummyFeatures
 		void free_feature_index();
 
 	private:
-		/** Initialize CIndexFeatures
+		/** Initialize IndexFeatures
 		 *
 		 * set num_vectors to 0
 		 * add m_feature_index to m_parameters

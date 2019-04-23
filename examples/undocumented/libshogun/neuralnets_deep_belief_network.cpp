@@ -45,7 +45,7 @@ int main(int, char*[])
 	init_shogun_with_defaults();
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	// Prepare the training data
 	const int num_features = 5;
@@ -67,16 +67,16 @@ int main(int, char*[])
 	}
 
 	for (int32_t i=0; i<num_features; i++)
-			means[i] = CMath::random(-1.0,1.0);
+			means[i] = Math::random(-1.0,1.0);
 
 	for (int32_t i=0; i<num_features; i++)
 			for (int32_t j=0; j<num_examples; j++)
-				X(i,j) = CMath::normal_random(means[i], 1.0);
+				X(i,j) = Math::normal_random(means[i], 1.0);
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
+	DenseFeatures<float64_t>* features = new DenseFeatures<float64_t>(X);
 
 	// Create a DBN
-	CDeepBeliefNetwork* dbn = new CDeepBeliefNetwork(num_features, RBMVUT_GAUSSIAN);
+	DeepBeliefNetwork* dbn = new DeepBeliefNetwork(num_features, RBMVUT_GAUSSIAN);
 	dbn->add_hidden_layer(10);
 	dbn->add_hidden_layer(10);
 	dbn->add_hidden_layer(20);
@@ -99,24 +99,21 @@ int main(int, char*[])
 	dbn->train(features);
 
 	// draw 1000 samples from the DBN
-	CDenseFeatures<float64_t>* samples = dbn->sample(100,1000);
+	DenseFeatures<float64_t>* samples = dbn->sample(100,1000);
 	SGMatrix<float64_t> samples_matrix = samples->get_feature_matrix();
 
 	// compute the sample means
-	SGVector<float64_t> samples_means = CStatistics::matrix_mean(samples_matrix, false);
+	SGVector<float64_t> samples_means = Statistics::matrix_mean(samples_matrix, false);
 
 	// compute the average difference between the sample means and the true means
 	float64_t avg_diff = 0;
 	for (int32_t i=0; i<num_features; i++)
-		avg_diff += CMath::abs(means[i]-samples_means[i]);
+		avg_diff += Math::abs(means[i]-samples_means[i]);
 	avg_diff /= num_features;
 
 	SG_SINFO("Average difference = %f\n", avg_diff);
 
 	// Clean up
-	SG_UNREF(dbn);
-	SG_UNREF(features);
-	SG_UNREF(samples);
 
 	exit_shogun();
 	return 0;

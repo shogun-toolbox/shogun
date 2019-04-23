@@ -43,7 +43,7 @@ namespace shogun
      * This class stores name and not the type information for
      * a shogun object. It can be used as an identifier for a shogun object
      * where type information is not known.
-     * One application of this can be found in CSGObject::set_param_with_btag().
+     * One application of this can be found in SGObject::set_param_with_btag().
      */
     class BaseTag
     {

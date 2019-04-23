@@ -93,7 +93,7 @@ void SGString<T>::destroy_string()
 	free_string();
 }
 
-template<class T> void SGString<T>::load(CFile* loader)
+template<class T> void SGString<T>::load(File* loader)
 {
 	ASSERT(loader)
 	free_string();
@@ -104,7 +104,7 @@ template<class T> void SGString<T>::load(CFile* loader)
 	SG_RESET_LOCALE;
 }
 
-template<class T> void SGString<T>::save(CFile* saver)
+template<class T> void SGString<T>::save(File* saver)
 {
 	ASSERT(saver)
 

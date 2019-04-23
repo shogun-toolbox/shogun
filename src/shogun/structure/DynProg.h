@@ -28,12 +28,12 @@
 
 namespace shogun
 {
-	template <class T> class CSparseFeatures;
-	class CIntronList;
-	class CPlifMatrix;
-	class CSegmentLoss;
+	template <class T> class SparseFeatures;
+	class IntronList;
+	class PlifMatrix;
+	class SegmentLoss;
 
-	template <class T> class CDynamicArray;
+	template <class T> class DynamicArray;
 
 //#define DYNPROG_TIMING
 
@@ -66,15 +66,15 @@ struct segment_loss_struct
  * Structure and Function collection.
  * This Class implements a Dynamic Programming functions.
  */
-class CDynProg : public CSGObject
+class DynProg : public SGObject
 {
 public:
 	/** constructor
 	 *
 	 * @param p_num_svms number of SVMs
 	 */
-	CDynProg(int32_t p_num_svms=8);
-	virtual ~CDynProg();
+	DynProg(int32_t p_num_svms=8);
+	virtual ~DynProg();
 
 	// model related functions
 	/** set number of states
@@ -90,14 +90,14 @@ public:
 	/** get num svms*/
 	int32_t get_num_svms();
 
-	/** init CDynamicArray for precomputed content svm values
+	/** init DynamicArray for precomputed content svm values
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param p_num_svms: number of svm weight vectors for content prediction
 	 */
 	void init_content_svm_value_array(const int32_t p_num_svms);
 
-	/** init CDynamicArray for precomputed tiling intensitie-plif-values
+	/** init DynamicArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param probe_pos local positions of probes
@@ -112,7 +112,7 @@ public:
 	 * @param tiling_plif_ids tiling plif id's
 	 * @param num_tiling_plifs number of tiling plifs
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);
+	void precompute_tiling_plifs(Plif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);
 
 	/** append rows to linear features array
 	 *
@@ -225,16 +225,16 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(int32_t* segment_ids, float64_t* segment_mask, int32_t m);
+	void best_path_set_segment_ids_mask(const std::vector<int32_t>& segment_ids, const std::vector<float64_t>& segment_mask, int32_t m);
 
 	/** set sparse feature matrices */
-	void set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSparseFeatures<float64_t>* seq_sparse2);
+	void set_sparse_features(std::shared_ptr<SparseFeatures<float64_t>> seq_sparse1, std::shared_ptr<SparseFeatures<float64_t>> seq_sparse2);
 
 	/** set plif matrices
 	 *
 	 * @param pm plif matrix object
 	 */
-	void set_plif_matrices(CPlifMatrix* pm);
+	void set_plif_matrices(std::shared_ptr<PlifMatrix> pm);
 
 	// best_path result retrieval functions
 	/** best path get scores
@@ -456,10 +456,10 @@ public:
 	 * @param intron_list
 	 * @param num_plifs number of intron plifs
 	 */
-	void set_intron_list(CIntronList* intron_list, int32_t num_plifs);
+	void set_intron_list(std::shared_ptr<IntronList> intron_list, int32_t num_plifs);
 
 	/** get the segment loss object */
-	CSegmentLoss* get_segment_loss_object()
+	std::shared_ptr<SegmentLoss> get_segment_loss_object()
 	{
 		return m_seg_loss_obj;
 	}
@@ -567,9 +567,9 @@ private:
 	bool mem_initialized;
 
 #ifdef DYNPROG_TIMING
-	CTime MyTime;
-	CTime MyTime2;
-	CTime MyTime3;
+	Time MyTime;
+	Time MyTime2;
+	Time MyTime3;
 
 	float64_t segment_init_time;
 	float64_t segment_pos_time;
@@ -598,17 +598,17 @@ protected:
 	int32_t m_N;
 
 	/// transition matrix
-	CDynamicArray<int32_t> m_transition_matrix_a_id; // 2d
-	CDynamicArray<float64_t> m_transition_matrix_a; // 2d
-	CDynamicArray<float64_t> m_transition_matrix_a_deriv; // 2d
+	DynamicArray<int32_t> m_transition_matrix_a_id; // 2d
+	DynamicArray<float64_t> m_transition_matrix_a; // 2d
+	DynamicArray<float64_t> m_transition_matrix_a_deriv; // 2d
 
 	/// initial distribution of states
-	CDynamicArray<float64_t> m_initial_state_distribution_p;
-	CDynamicArray<float64_t> m_initial_state_distribution_p_deriv;
+	DynamicArray<float64_t> m_initial_state_distribution_p;
+	DynamicArray<float64_t> m_initial_state_distribution_p_deriv;
 
 	/// distribution of end-states
-	CDynamicArray<float64_t> m_end_state_distribution_q;
-	CDynamicArray<float64_t> m_end_state_distribution_q_deriv;
+	DynamicArray<float64_t> m_end_state_distribution_q;
+	DynamicArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
 
@@ -618,32 +618,30 @@ protected:
 	int32_t m_num_svms;
 
 	/** word degree */
-	CDynamicArray<int32_t> m_word_degree;
+	DynamicArray<int32_t> m_word_degree;
 	/** cum num words */
-	CDynamicArray<int32_t> m_cum_num_words;
+	DynamicArray<int32_t> m_cum_num_words;
 	/** cum num words array */
 	int32_t * m_cum_num_words_array;
 	/** num words */
-	CDynamicArray<int32_t> m_num_words;
+	DynamicArray<int32_t> m_num_words;
 	/** num words array */
 	int32_t* m_num_words_array;
 	/** mod words */
-	CDynamicArray<int32_t> m_mod_words; // 2d
+	DynamicArray<int32_t> m_mod_words; // 2d
 	/** mod words array */
 	int32_t* m_mod_words_array;
 	/** sign words */
-	CDynamicArray<bool> m_sign_words;
-	/** sign words array */
-	bool* m_sign_words_array;
+	DynamicArray<bool> m_sign_words;
 	/** string words */
-	CDynamicArray<int32_t> m_string_words;
+	DynamicArray<int32_t> m_string_words;
 	/** string words array */
 	int32_t* m_string_words_array;
 
 	/** SVM start position */
-//	CDynamicArray<int32_t> m_svm_pos_start;
+//	DynamicArray<int32_t> m_svm_pos_start;
 	/** number of unique words */
-	CDynamicArray<int32_t> m_num_unique_words;
+	DynamicArray<int32_t> m_num_unique_words;
 	/** SVM arrays clean */
 	bool m_svm_arrays_clean;
 	/** max a id */
@@ -651,19 +649,19 @@ protected:
 
 	// input arguments
 	/** sequence */
-	CDynamicArray<float64_t> m_observation_matrix; //3d
+	DynamicArray<float64_t> m_observation_matrix; //3d
 	/** candidate position */
-	CDynamicArray<int32_t> m_pos;
+	DynamicArray<int32_t> m_pos;
 	/** number of candidate positions */
 	int32_t m_seq_len;
 	/** orf info */
-	CDynamicArray<int32_t> m_orf_info; // 2d
+	DynamicArray<int32_t> m_orf_info; // 2d
 	/** segment sum weights */
-	CDynamicArray<float64_t> m_segment_sum_weights; // 2d
+	DynamicArray<float64_t> m_segment_sum_weights; // 2d
 	/** Plif list */
-	CDynamicObjectArray m_plif_list; // CPlifBase*
+	DynamicObjectArray m_plif_list; // PlifBase*
 	/** a single string (to be segmented) */
-	CDynamicArray<char> m_genestr;
+	DynamicArray<char> m_genestr;
 	/**
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095
 	  corresponding to the 6-mer in genestr(i-5:i)
@@ -680,49 +678,49 @@ protected:
 	**/
 	uint16_t*** m_wordstr;
 	/** dict weights */
-	CDynamicArray<float64_t> m_dict_weights; // 2d
+	DynamicArray<float64_t> m_dict_weights; // 2d
 	/** segment loss */
-	CDynamicArray<float64_t> m_segment_loss; // 3d
+	DynamicArray<float64_t> m_segment_loss; // 3d
 	/** segment IDs */
-	CDynamicArray<int32_t> m_segment_ids;
+	std::vector<int32_t> m_segment_ids;
 	/** segment mask */
-	CDynamicArray<float64_t> m_segment_mask;
+	std::vector<float64_t> m_segment_mask;
 	/** my state seq */
-	CDynamicArray<int32_t> m_my_state_seq;
+	DynamicArray<int32_t> m_my_state_seq;
 	/** my position sequence */
-	CDynamicArray<int32_t> m_my_pos_seq;
+	DynamicArray<int32_t> m_my_pos_seq;
 	/** my scores */
-	CDynamicArray<float64_t> m_my_scores;
+	DynamicArray<float64_t> m_my_scores;
 	/** my losses */
-	CDynamicArray<float64_t> m_my_losses;
+	DynamicArray<float64_t> m_my_losses;
 
 	/** segment loss object containing the functions
 	 *  to compute the segment loss*/
-	CSegmentLoss* m_seg_loss_obj;
+	std::shared_ptr<SegmentLoss> m_seg_loss_obj;
 
 	// output arguments
 	/** scores */
-	CDynamicArray<float64_t> m_scores;
+	DynamicArray<float64_t> m_scores;
 	/** states */
-	CDynamicArray<int32_t> m_states; // 2d
+	DynamicArray<int32_t> m_states; // 2d
 	/** positions */
-	CDynamicArray<int32_t> m_positions; // 2d
+	DynamicArray<int32_t> m_positions; // 2d
 
 	/** sparse feature matrix dim1*/
-	CSparseFeatures<float64_t>* m_seq_sparse1;
+	std::shared_ptr<SparseFeatures<float64_t>> m_seq_sparse1;
 	/** sparse feature matrix dim2*/
-	CSparseFeatures<float64_t>* m_seq_sparse2;
+	std::shared_ptr<SparseFeatures<float64_t>> m_seq_sparse2;
 	/** plif matrices*/
-	CPlifMatrix* m_plif_matrices;
+	std::shared_ptr<PlifMatrix> m_plif_matrices;
 
 	/** storeage of stop codons
 	 *  array of size length(sequence)
 	 */
-	CDynamicArray<bool> m_genestr_stop;
+	DynamicArray<bool> m_genestr_stop;
 
 	/** administers a list of introns and quality scores
 	 *  and provides functions for fast access */
-	CIntronList* m_intron_list;
+	std::shared_ptr<IntronList> m_intron_list;
 
 	/** number of intron features and plifs*/
 	int32_t m_num_intron_plifs;
@@ -731,7 +729,7 @@ protected:
 	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data
 	 * Jonas
 	 */
-	CDynamicArray<float64_t> m_lin_feat; // 2d
+	DynamicArray<float64_t> m_lin_feat; // 2d
 
 	/** raw intensities */
 	float64_t *m_raw_intensities;

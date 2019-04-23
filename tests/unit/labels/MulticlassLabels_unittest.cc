@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-class MulticlassLabels : public ::testing::Test
+class MulticlassLabelsTest : public ::testing::Test
 {
 public:
 	SGMatrix<float64_t> probabilities;
@@ -41,12 +41,12 @@ public:
 	}
 };
 
-TEST_F(MulticlassLabels, confidences)
+TEST_F(MulticlassLabelsTest, confidences)
 {
 	const int n_labels = 3;
 	const int n_classes = 4;
 
-	CMulticlassLabels* labels = new CMulticlassLabels(n_labels);
+	auto labels = std::make_shared<MulticlassLabels>(n_labels);
 
 	EXPECT_NO_THROW(labels->allocate_confidences_for(n_classes));
 
@@ -69,21 +69,21 @@ TEST_F(MulticlassLabels, confidences)
 				EXPECT_NEAR(obtained_confs[j],0.0,1e-9);
 		}
 	}
-	SG_UNREF(labels);
+	
 }
 
-TEST_F(MulticlassLabels, multiclass_labels_from_multiclass)
+TEST_F(MulticlassLabelsTest, multiclass_labels_from_multiclass)
 {
-	auto labels = some<CMulticlassLabels>(labels_true);
+	auto labels = std::make_shared<MulticlassLabels>(labels_true);
 	auto labels2 = multiclass_labels(labels);
 	EXPECT_EQ(labels.get(), labels2.get());
 }
 
-TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
+TEST_F(MulticlassLabelsTest, multiclass_labels_from_binary_not_contiguous)
 {
 	// delete this test once multiclass labels dont need to be contiguous,
 	// i.e. [0,1,2,3,4,...], anymore
-	auto labels = some<CBinaryLabels>(labels_true.size());
+	auto labels = std::make_shared<BinaryLabels>(labels_true.size());
 	labels->set_labels({0, 1, 3});
 	auto converted = multiclass_labels(labels);
 	ASSERT_NE(converted.get(), nullptr);
@@ -95,11 +95,11 @@ TEST_F(MulticlassLabels, multiclass_labels_from_binary_not_contiguous)
 	EXPECT_TRUE(converted2->get_labels().equals({0, 1, 1}));
 }
 
-TEST_F(MulticlassLabels, view)
+TEST_F(MulticlassLabelsTest, view)
 {
-	auto labels = some<CMulticlassLabels>(labels_true);
+	auto labels = std::make_shared<MulticlassLabels>(labels_true);
 	SGVector<index_t> subset{0, 2};
-	auto labels_subset = wrap(view(labels, subset));
+	auto labels_subset = view(labels, subset);
 
 	ASSERT_EQ(labels_subset->get_num_labels(), subset.vlen);
 	for (auto i : range(subset.vlen))

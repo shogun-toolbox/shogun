@@ -20,17 +20,17 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/Locality-sensitive_hashing.
  *
  */
-class CLSHKNNSolver : public CKNNSolver
+class LSHKNNSolver : public KNNSolver
 {
 	public:
 		/** default constructor */
-		CLSHKNNSolver() : CKNNSolver()
+		LSHKNNSolver() : KNNSolver()
 		{
 			init();
 		}
 
 		/** deconstructor */
-		virtual ~CLSHKNNSolver() { /* nothing to do */ }
+		virtual ~LSHKNNSolver() { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -42,11 +42,11 @@ class CLSHKNNSolver : public CKNNSolver
 		 * @param lsh_l m_lsh_l
 		 * @param lsh_t m_lsh_t
 		 */
-		CLSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t);
+		LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t);
 
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
-		virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
 
 		/** @return object name */
 		const char* get_name() const { return "LSHKNNSolver"; }
@@ -59,7 +59,7 @@ class CLSHKNNSolver : public CKNNSolver
 		}
 
 		template<typename PointType, typename FeatureType>
-		CMulticlassLabels* classify_objects(FeatureType* lhs, FeatureType* query_features, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		std::shared_ptr<MulticlassLabels> classify_objects(FeatureType* lhs, FeatureType* query_features, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
 	protected:
 		/* Number of hash tables for LSH */

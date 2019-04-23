@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 
 namespace internal
 {
@@ -46,13 +46,13 @@ class InitPerKernel
 {
 	friend class KernelManager;
 private:
-	explicit InitPerKernel(std::shared_ptr<CKernel>& kernel);
+	explicit InitPerKernel(std::shared_ptr<Kernel>& kernel);
 public:
 	~InitPerKernel();
-	InitPerKernel& operator=(CKernel* kernel);
-	operator CKernel*() const;
+	InitPerKernel& operator=(std::shared_ptr<Kernel> kernel);
+	operator std::shared_ptr<shogun::Kernel>() const;
 private:
-	std::shared_ptr<CKernel>& m_kernel;
+	std::shared_ptr<shogun::Kernel>& m_kernel;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

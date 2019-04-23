@@ -3,7 +3,6 @@
 #include "environments/MultiLabelTestEnvironment.h"
 #include "environments/RegressionTestEnvironment.h"
 #include "utils/Utils.h"
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/SGIO.h>
@@ -32,19 +31,13 @@ protected:
 	void SetUp()
 	{
 		fs = io::FileSystemRegistry::instance();
-		machine = new T();
-		SG_REF(machine)
-
+		machine = std::make_shared<T>();
 		this->load_data(this->machine->get_machine_problem_type());
 	}
 
 	void TearDown()
 	{
-		SG_UNREF(train_feats)
-		SG_UNREF(test_feats)
-		SG_UNREF(train_labels)
-		SG_UNREF(machine)
-		SG_UNREF(deserialized_machine)
+		
 	}
 
 	void load_data(EProblemType pt)
@@ -83,29 +76,28 @@ protected:
 			FAIL();
 		}
 
-		SG_REF(train_feats)
-		SG_REF(test_feats)
-		SG_REF(train_labels)
+		
+		
+		
 	}
 
 	bool serialize_machine(
-	    CMachine* cmachine, std::string& filename, bool store_model_features)
+	    std::shared_ptr<Machine> cmachine, std::string& filename, bool store_model_features)
 	{
 		std::string class_name = cmachine->get_name();
 		filename = "shogun-unittest-trained-model-serialization-" + class_name +
 		           ".XXXXXX";
 		generate_temp_filename(const_cast<char*>(filename.c_str()));
 
-		SG_REF(cmachine);
 		if (fs->file_exists(filename))
 			return false;
 		std::unique_ptr<io::WritableFile> file;
 		if (fs->new_writable_file(filename, &file))
 			return false;
-		auto fos = some<io::CFileOutputStream>(file.get());
-		auto serializer = some<io::CBitserySerializer>();
+		auto fos = std::make_shared<io::FileOutputStream>(file.get());
+		auto serializer = std::make_unique<io::BitserySerializer>();
 		serializer->attach(fos);
-		serializer->write(wrap<CSGObject>(cmachine));
+		serializer->write(cmachine);
 
 		return true;
 	}
@@ -115,7 +107,7 @@ protected:
 		machine->set_labels(train_labels);
 		machine->train(train_feats);
 
-		auto predictions = wrap<CLabels>(machine->apply(test_feats));
+		auto predictions = machine->apply(test_feats);
 
 		std::string filename;
 		if (!serialize_machine(machine, filename, store_model_features))
@@ -125,7 +117,7 @@ protected:
 			return false;
 
 		auto deserialized_predictions =
-		    wrap<CLabels>(deserialized_machine->apply(test_feats));
+		    deserialized_machine->apply(test_feats);
 
 		set_global_fequals_epsilon(1e-7);
 		if (!predictions->equals(deserialized_predictions))
@@ -139,23 +131,22 @@ protected:
 		std::unique_ptr<io::RandomAccessFile> raf;
 		if (fs->new_random_access_file(filename, &raf))
 			return false;
-		auto fis = some<io::CFileInputStream>(raf.get());
-		auto deserializer = some<io::CBitseryDeserializer>();
+		auto fis = std::make_shared<io::FileInputStream>(raf.get());
+		auto deserializer = std::make_unique<io::BitseryDeserializer>();
 		deserializer->attach(fis);
 		auto deser_obj = deserializer->read_object();
 		bool delete_success = !fs->delete_file(filename);
 
-		deserialized_machine = dynamic_cast<T*>(deser_obj.get());
+		deserialized_machine = deser_obj->as<T>();
 		if (deserialized_machine == nullptr)
 			return false;
-		SG_REF(deserialized_machine);
 		return delete_success;
 	}
 
-	CDenseFeatures<float64_t> *train_feats, *test_feats;
-	CLabels* train_labels;
-	T* machine;
-	T* deserialized_machine;
+	std::shared_ptr<DenseFeatures<float64_t>> train_feats, test_feats;
+	std::shared_ptr<Labels> train_labels;
+	std::shared_ptr<T> machine;
+	std::shared_ptr<T> deserialized_machine;
 	io::FileSystemRegistry* fs;
 };
 
@@ -183,7 +174,7 @@ TYPED_TEST_CASE(TrainedKernelMachineSerialization, KernelMachineTypes);
 
 TYPED_TEST(TrainedKernelMachineSerialization, Test)
 {
-	CGaussianKernel* kernel = new CGaussianKernel(2.0);
+	auto kernel = std::make_shared<GaussianKernel>(2.0);
 	this->machine->set_kernel(kernel);
 	for (auto store_model_features : {false, true})
 	{

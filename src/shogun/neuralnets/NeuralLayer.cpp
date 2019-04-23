@@ -39,15 +39,15 @@
 
 using namespace shogun;
 
-CNeuralLayer::CNeuralLayer()
-: RandomMixin<CSGObject>()
+NeuralLayer::NeuralLayer()
+: RandomMixin<SGObject>()
 {
 	init();
 }
 
 
-CNeuralLayer::CNeuralLayer(int32_t num_neurons)
-: RandomMixin<CSGObject>()
+NeuralLayer::NeuralLayer(int32_t num_neurons)
+: RandomMixin<SGObject>()
 {
 	init();
 	m_num_neurons = num_neurons;
@@ -55,11 +55,11 @@ CNeuralLayer::CNeuralLayer(int32_t num_neurons)
 	m_height = 1;
 }
 
-CNeuralLayer::~CNeuralLayer()
+NeuralLayer::~NeuralLayer()
 {
 }
 
-void CNeuralLayer::initialize_neural_layer(CDynamicObjectArray* layers,
+void NeuralLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
 	m_input_indices = input_indices;
@@ -67,13 +67,12 @@ void CNeuralLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 
 	for (int32_t i=0; i<m_input_sizes.vlen; i++)
 	{
-		CNeuralLayer* layer = (CNeuralLayer*)layers->get_element(m_input_indices[i]);
+		auto layer = layers->get_element<NeuralLayer>(m_input_indices[i]);
 		m_input_sizes[i] = layer->get_num_neurons();
-		SG_UNREF(layer);
 	}
 }
 
-void CNeuralLayer::set_batch_size(int32_t batch_size)
+void NeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 
@@ -88,7 +87,7 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 	}
 }
 
-void CNeuralLayer::dropout_activations()
+void NeuralLayer::dropout_activations()
 {
 	if (dropout_prop==0.0) return;
 
@@ -111,7 +110,7 @@ void CNeuralLayer::dropout_activations()
 	}
 }
 
-void CNeuralLayer::init()
+void NeuralLayer::init()
 {
 	m_num_neurons = 0;
 	m_width = 0;

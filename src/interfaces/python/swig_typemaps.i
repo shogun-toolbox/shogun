@@ -376,7 +376,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                         SG_FREE(strings);
                         return false;
                     }
-					max_len=shogun::CMath::max(len, max_len);
+					max_len=shogun::Math::max(len, max_len);
 
                     strings[i].slen=len;
                     strings[i].string=NULL;
@@ -409,7 +409,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 
                     type* str=(type*) PyArray_DATA(array);
                     Py_ssize_t len = PyArray_DIM(array,0);
-                    max_len=shogun::CMath::max(len,max_len);
+                    max_len=shogun::Math::max(len,max_len);
 
                     strings[i].slen=len;
                     strings[i].string=NULL;
@@ -752,7 +752,7 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %}
 
-/* CFeatures to ... */
+/* Features to ... */
 %define FEATURES_BY_TYPECODE(obj, f, type, typecode)
 	switch (typecode) {
 	case F_BOOL:
@@ -792,7 +792,7 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 		obj=SWIG_NewPointerObj(f, $descriptor(type<floatmax_t> *), SWIG_POINTER_EXCEPTION);
 		break;
 	default:
-		obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+		obj=SWIG_NewPointerObj(f, $descriptor(shogun::Features*), SWIG_POINTER_EXCEPTION);
 		break;
 	}
 %enddef

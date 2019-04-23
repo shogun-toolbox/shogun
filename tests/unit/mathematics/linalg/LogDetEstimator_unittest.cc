@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sunil Mahendrakar, Soumyajit De, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Sunil Mahendrakar, Soumyajit De, Heiko Strathmann, Bjoern Esser,
  *          Viktor Gal, Thoralf Klein, Shubham Shukla, Pan Deng
  */
 #include <gtest/gtest.h>
@@ -44,16 +44,16 @@ TEST(LogDetEstimator, sample)
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(mat);
 
-	CDenseMatrixExactLog* op_func = new CDenseMatrixExactLog(op);
-	SG_REF(op_func);
 
-	CNormalSampler* trace_sampler=new CNormalSampler(size);
-	SG_REF(trace_sampler);
+	auto op_func = std::make_shared<DenseMatrixExactLog>(op);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+
+	auto trace_sampler=std::make_shared<NormalSampler>(size);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=5000;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -63,10 +63,6 @@ TEST(LogDetEstimator, sample)
 	result/=num_estimates;
 
 	EXPECT_NEAR(result, 1.60943791243410050384, 0.1);
-
-	SG_UNREF(trace_sampler);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
 }
 
 #ifdef HAVE_LAPACK
@@ -76,23 +72,22 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
 
-	CSparseFeatures<float64_t> feat(mat);
+	SparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 
-	CLogDetEstimator estimator(sm);
+	LogDetEstimator estimator(sm);
 
-	COperatorFunction<float64_t>* op=
-		dynamic_cast<COperatorFunction<float64_t>*>
-		(estimator.get_operator_function());
+	auto op=
+		estimator.get_operator_function()->as<OperatorFunction<float64_t>>();
 
-	CTraceSampler* tracer=
-		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+	auto tracer=
+		estimator.get_trace_sampler()->as<TraceSampler>();
 
 	EXPECT_TRUE(op);
 	EXPECT_TRUE(tracer);
 
-	SG_UNREF(tracer);
-	SG_UNREF(op);
+
+
 }
 #endif //HAVE_LAPACK
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -108,25 +103,25 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,1)=1000.0;
 
 	float64_t accuracy=1E-5;
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(mat);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
-	SG_REF(eig_solver);
 
-	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
-	SG_REF(linear_solver);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
-	CLogRationalApproximationIndividual* op_func =
-	    new CLogRationalApproximationIndividual(
+
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
+
+
+	auto op_func =
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
-	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
-	SG_REF(op_func);
+	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), accuracy);
 
-	CNormalSampler* trace_sampler=new CNormalSampler(size);
-	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+	auto trace_sampler=std::make_shared<NormalSampler>(size);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=10;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -134,12 +129,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	for (index_t i=0; i<num_estimates; ++i)
 		result+=estimates[i];
 	result/=num_estimates;
-
-	SG_UNREF(trace_sampler);
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
 }
 
 #ifdef HAVE_COLPACK
@@ -154,7 +143,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(normal_dist(prng))*1000;
+		float64_t value=Math::abs(normal_dist(prng))*1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -186,33 +175,33 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	mat(9,13)=mat(13,9)=1.0;
 	mat(9,14)=mat(14,9)=1.0;
 
-	float64_t actual_result=CStatistics::log_det(mat);
+	float64_t actual_result=Statistics::log_det(mat);
 	float64_t accuracy=1E-5;
 
-	CSparseFeatures<float64_t> feat(mat);
+	SparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
-	SG_REF(op);
-	CDenseMatrixOperator<float64_t>* opd=new CDenseMatrixOperator<float64_t>(mat);
-	SG_REF(opd);
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
-	SG_REF(eig_solver);
+	auto opd=std::make_shared<DenseMatrixOperator<float64_t>>(mat);
 
-	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
-	SG_REF(linear_solver);
 
-	CLogRationalApproximationIndividual* op_func =
-	    new CLogRationalApproximationIndividual(
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
+
+
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
+
+
+	auto op_func =
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        opd, eig_solver,
-	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
-	SG_REF(op_func);
+	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), accuracy);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
-	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+	auto trace_sampler=std::make_shared<ProbingSampler>(op, 1, NATURAL, DISTANCE_TWO);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -223,12 +212,12 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 	EXPECT_NEAR(result, actual_result, 1.0);
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
-	SG_UNREF(opd);
+
+
+
+
+
+
 }
 
 TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
@@ -241,7 +230,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(normal_dist(prng))*1000;
+		float64_t value=Math::abs(normal_dist(prng))*1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -273,29 +262,29 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	mat(9,13)=mat(13,9)=1.0;
 	mat(9,14)=mat(14,9)=1.0;
 
-	float64_t actual_result=CStatistics::log_det(mat);
+	float64_t actual_result=Statistics::log_det(mat);
 	float64_t accuracy=1E-15;
 
-	CSparseFeatures<float64_t> feat(mat);
+	SparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
-	SG_REF(op);
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
-	SG_REF(eig_solver);
 
-	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
-	SG_REF(linear_solver);
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
 
-	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
+
+
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
-	SG_REF(op_func);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
-	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+	auto trace_sampler=std::make_shared<ProbingSampler>(op, 1, NATURAL, DISTANCE_TWO);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=10;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -306,11 +295,11 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 
 	EXPECT_NEAR(result, actual_result, 1E-3);
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
+
 }
 
 TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
@@ -323,8 +312,8 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	// create a sparse matrix
 	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
-	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
-	SG_REF(op);
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
+
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
@@ -332,25 +321,25 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
+		diag[i]=Math::pow(Math::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
-	SG_REF(eig_solver);
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
 
-	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
-	SG_REF(linear_solver);
 
-	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
+
+
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
-	SG_REF(op_func);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(op);
-	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+	auto trace_sampler=std::make_shared<ProbingSampler>(op);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -361,14 +350,14 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 
 	// test the log-det samples
 	sm=op->get_matrix_operator();
-	float64_t actual_result=CStatistics::log_det(sm);
+	float64_t actual_result=Statistics::log_det(sm);
 	EXPECT_NEAR(result, actual_result, 1.0);
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
+
 }
 
 TEST(LogDetEstimator, sample_ratapp_big_matrix)
@@ -388,7 +377,7 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	NormalDistribution<float64_t> normal_dist;
 	for (index_t i=0; i<size; ++i)
 	{
-		sm(i,i)=CMath::pow(CMath::abs(normal_dist(prng)), difficulty)
+		sm(i,i)=Math::pow(Math::abs(normal_dist(prng)), difficulty)
 			+min_eigenvalue;
 	}
 	// set its subdiagonal
@@ -399,24 +388,24 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 		sm(i+1,i)=entry;
 	}
 
-	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
-	SG_REF(op);
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
-	SG_REF(eig_solver);
 
-	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
+
+
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
 	//linear_solver->set_iteration_limit(2000);
-	SG_REF(linear_solver);
 
-	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
-	SG_REF(op_func);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(op);
-	SG_REF(trace_sampler);
 
-	CLogDetEstimator estimator(trace_sampler, op_func);
+	auto trace_sampler=std::make_shared<ProbingSampler>(op);
+
+
+	LogDetEstimator estimator(trace_sampler, op_func);
 	const index_t num_estimates=1;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 
@@ -427,14 +416,14 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 
 	// test the log-det samples
 	sm=op->get_matrix_operator();
-	float64_t actual_result=CStatistics::log_det(sm);
+	float64_t actual_result=Statistics::log_det(sm);
 	EXPECT_NEAR(result, actual_result, 1.0);
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
+
 }
 #endif // HAVE_LAPACK
 #endif // HAVE_COLPACK

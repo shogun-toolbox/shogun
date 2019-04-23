@@ -69,11 +69,11 @@ namespace shogun
  * Note that "Cholesky" means Cholesky represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLCholeskyInferenceMethod: public CKLLowerTriangularInference
+class KLCholeskyInferenceMethod: public KLLowerTriangularInference
 {
 public:
 	/** default constructor */
-	CKLCholeskyInferenceMethod();
+	KLCholeskyInferenceMethod();
 
 	/** constructor
 	 *
@@ -83,10 +83,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLCholeskyInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLCholeskyInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLCholeskyInferenceMethod();
+	virtual ~KLCholeskyInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -103,9 +103,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CKLCholeskyInferenceMethod object
+	 * @return casted KLCholeskyInferenceMethod object
 	 */
-	static CKLCholeskyInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<KLCholeskyInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get alpha vector
 	 *

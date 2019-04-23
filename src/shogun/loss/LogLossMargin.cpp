@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CLogLossMargin::loss(float64_t z)
+float64_t LogLossMargin::loss(float64_t z)
 {
 	if (z >= 1)
 		return log(1+exp(1-z));
@@ -18,7 +18,7 @@ float64_t CLogLossMargin::loss(float64_t z)
 	return 1-z + log(1+exp(z-1));
 }
 
-float64_t CLogLossMargin::first_derivative(float64_t z)
+float64_t LogLossMargin::first_derivative(float64_t z)
 {
 	if (z < 1)
 		return -1 / (exp(z-1) + 1);
@@ -27,20 +27,20 @@ float64_t CLogLossMargin::first_derivative(float64_t z)
 	return -ez / (ez + 1);
 }
 
-float64_t CLogLossMargin::second_derivative(float64_t z)
+float64_t LogLossMargin::second_derivative(float64_t z)
 {
 	float64_t ez = exp(z-1);
 
 	return ez / (ez + 1)*(ez + 1);
 }
 
-float64_t CLogLossMargin::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t LogLossMargin::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
 	SG_NOTIMPLEMENTED
 	return -1;
 }
 
-float64_t CLogLossMargin::get_square_grad(float64_t prediction, float64_t label)
+float64_t LogLossMargin::get_square_grad(float64_t prediction, float64_t label)
 {
 	SG_NOTIMPLEMENTED
 	return -1;

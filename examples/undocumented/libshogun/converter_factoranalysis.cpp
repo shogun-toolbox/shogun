@@ -23,13 +23,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
-	CFactorAnalysis* fa = new CFactorAnalysis();
+	auto features = std::make_shared<DenseFeatures<double>>(SGMatrix<double>(matrix,dim,N));
+	auto fa = std::make_shared<FactorAnalysis>();
 	auto embedding = fa->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(fa);
-	SG_UNREF(features);
 	exit_shogun();
 	return 0;
 }

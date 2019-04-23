@@ -48,7 +48,7 @@ TEST(NeuralInputLayer, compute_activations)
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = uniform_real_dist(prng);
 
-	CNeuralInputLayer layer(5, 4);
+	NeuralInputLayer layer(5, 4);
 	layer.set_batch_size(x.num_cols);
 
 	layer.compute_activations(x);

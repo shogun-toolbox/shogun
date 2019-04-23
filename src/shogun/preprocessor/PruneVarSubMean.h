@@ -23,20 +23,20 @@ namespace shogun
  * It will optionally normalize standard deviation of
  * features to 1 (by dividing by standard deviation of the feature)
  */
-class CPruneVarSubMean : public CDensePreprocessor<float64_t>
+class PruneVarSubMean : public DensePreprocessor<float64_t>
 {
 	public:
 		/** constructor
 		 *
 		 * @param divide if division shall be made
 		 */
-		CPruneVarSubMean(bool divide=true);
+		PruneVarSubMean(bool divide=true);
 
 		/** destructor */
-		virtual ~CPruneVarSubMean();
+		virtual ~PruneVarSubMean();
 
 		/// Fit preprocessor into features
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/// cleanup
 		virtual void cleanup();

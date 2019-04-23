@@ -689,9 +689,9 @@ ocas_return_value_T svm_ocas_solver(
   for(i=0; i < nData; i++)
     new_cut[i] = i;
 
-	gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
+	gap=(ocas.Q_P-ocas.Q_D)/Math::abs(ocas.Q_P);
 	pb.print_absolute(
-		gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel));
+		gap, -Math::log10(gap), -Math::log10(1), -Math::log10(TolRel));
 
 	ocas.trn_err = nData;
 	ocas.ocas_time = get_time() - ocas_start_time;
@@ -773,10 +773,10 @@ ocas_return_value_T svm_ocas_solver(
 				goto cleanup;
 			}
 			ocas.output_time += get_time() - start_time;
-			gap = (ocas.Q_P - ocas.Q_D) / CMath::abs(ocas.Q_P);
+			gap = (ocas.Q_P - ocas.Q_D) / Math::abs(ocas.Q_P);
 			pb.print_absolute(
-				gap, -CMath::log10(gap), -CMath::log10(1),
-				-CMath::log10(TolRel));
+				gap, -Math::log10(gap), -Math::log10(1),
+				-Math::log10(TolRel));
 
 			xi = 0;
 			cut_length = 0;

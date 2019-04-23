@@ -27,17 +27,17 @@ namespace shogun
  * a set \f${C^1 ... C^k}\f$ of real valued symmetric
  * \f$NxN\f$ matrices - \f$V*C*V^T\f$
  */
-class CApproxJointDiagonalizer : public CSGObject
+class ApproxJointDiagonalizer : public SGObject
 {
 	public:
 
 		/** constructor */
-		CApproxJointDiagonalizer() : CSGObject()
+		ApproxJointDiagonalizer() : SGObject()
 		{
 		};
 
 		/** destructor */
-		virtual ~CApproxJointDiagonalizer()
+		virtual ~ApproxJointDiagonalizer()
 		{
 		}
 
@@ -50,7 +50,7 @@ class CApproxJointDiagonalizer : public CSGObject
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=Math::MACHINE_EPSILON,
 						   int itermax=200) = 0;
 
 		/** return the matrix V that best diagonalizes C */

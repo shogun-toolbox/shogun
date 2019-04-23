@@ -38,43 +38,39 @@ int main(int argc, char** argv)
 	SGVector<float64_t> y_train;
 
 	// load training features from file
-	CCSVFile* file_feat_train=new CCSVFile(fname_feat_train);
+	CSVFile* file_feat_train=new CSVFile(fname_feat_train);
 	X_train.load(file_feat_train);
-	SG_UNREF(file_feat_train);
 
 	// load training labels from file
-	CCSVFile* file_label_train=new CCSVFile(fname_label_train);
+	CSVFile* file_label_train=new CSVFile(fname_label_train);
 	y_train.load(file_label_train);
-	SG_UNREF(file_label_train);
 
 	// testing features
 	SGMatrix<float64_t> X_test;
 
 	// load testing features from file
-	CCSVFile* file_feat_test=new CCSVFile(fname_feat_test);
+	CSVFile* file_feat_test=new CSVFile(fname_feat_test);
 	X_test.load(file_feat_test);
-	SG_UNREF(file_feat_test);
 
 	// convert training and testing data into shogun representation
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X_train);
-	CBinaryLabels* lab_train=new CBinaryLabels(y_train);
-	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
-	SG_REF(feat_test);
+	DenseFeatures<float64_t>* feat_train=new DenseFeatures<float64_t>(X_train);
+	BinaryLabels* lab_train=new BinaryLabels(y_train);
+	DenseFeatures<float64_t>* feat_test=new DenseFeatures<float64_t>(X_test);
 
 	// create Gaussian kernel with width = 2.0
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2.0);
+	GaussianKernel* kernel=new GaussianKernel(10, 2.0);
 
 	// create zero mean function
-	CZeroMean* mean=new CZeroMean();
+	ZeroMean* mean=new ZeroMean();
 
 	// you can easily switch between probit and logit likelihood models
     // by uncommenting/commenting the following lines:
 
 	// create probit likelihood model
-	// CProbitLikelihood* lik=new CProbitLikelihood();
+	// ProbitLikelihood* lik=new ProbitLikelihood();
 
 	// create logit likelihood model
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	LogitLikelihood* lik=new LogitLikelihood();
 
 	// you can easily switch between SingleLaplace and EP approximation by
 	// uncommenting/commenting the following lines:
@@ -84,16 +80,16 @@ int main(int argc, char** argv)
 	//		feat_train, mean, lab_train, lik);
 
 	// specify EP approximation inference method
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, feat_train, mean,
+	EPInferenceMethod* inf=new EPInferenceMethod(kernel, feat_train, mean,
 			lab_train, lik);
 
 	// create and train GP classifier, which uses SingleLaplace approximation
-	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
 	gpc->train();
 
 	// apply binary classification to the test data and get -1/+1
 	// labels of the predictions
-	CBinaryLabels* predictions=gpc->apply_binary(feat_test);
+	BinaryLabels* predictions=gpc->apply_binary(feat_test);
 	predictions->get_labels().display_vector("predictions");
 
 	// get probabilities p(y*=1|x*) for each testing feature x*
@@ -109,9 +105,6 @@ int main(int argc, char** argv)
 	s2_test.display_vector("predictive variance");
 
 	// free up memory
-	SG_UNREF(gpc);
-	SG_UNREF(predictions);
-	SG_UNREF(feat_test);
 
 	exit_shogun();
 	return 0;

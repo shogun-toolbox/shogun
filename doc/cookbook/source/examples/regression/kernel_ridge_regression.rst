@@ -18,19 +18,19 @@ See Chapter 17 in :cite:`barber2012bayesian` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create `CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` as
+Imagine we have files with training and test data. We create `DenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` as
 
 .. sgexample:: kernel_ridge_regression.sg:create_features
 
-Choose an appropriate :sgclass:`CKernel` and instantiate it. Here we use a :sgclass:`CGaussianKernel`.
+Choose an appropriate :sgclass:`Kernel` and instantiate it. Here we use a :sgclass:`GaussianKernel`.
 
 .. sgexample:: kernel_ridge_regression.sg:create_appropriate_kernel
 
-We create an instance of :sgclass:`CKernelRidgeRegression` classifier by passing it :math:`\tau`, the kernel and labels.
+We create an instance of :sgclass:`KernelRidgeRegression` classifier by passing it :math:`\tau`, the kernel and labels.
 
 .. sgexample:: kernel_ridge_regression.sg:create_instance
 
-Then we train the regression model and apply it to test data to get the predicted :sgclass:`CRegressionLabels`.
+Then we train the regression model and apply it to test data to get the predicted :sgclass:`RegressionLabels`.
 
 .. sgexample:: kernel_ridge_regression.sg:train_and_apply
 
@@ -38,7 +38,7 @@ After training, we can extract :math:`\alpha`.
 
 .. sgexample:: kernel_ridge_regression.sg:extract_alpha
 
-Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
+Finally, we can evaluate the :sgclass:`MeanSquaredError`.
 
 .. sgexample:: kernel_ridge_regression.sg:evaluate_error
 

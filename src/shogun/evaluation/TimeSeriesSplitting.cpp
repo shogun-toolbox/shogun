@@ -37,25 +37,25 @@
 
 using namespace shogun;
 
-CTimeSeriesSplitting::CTimeSeriesSplitting() : RandomMixin<CSplittingStrategy>()
+TimeSeriesSplitting::TimeSeriesSplitting() : RandomMixin<SplittingStrategy>()
 {
 	init();
 }
 
-CTimeSeriesSplitting::CTimeSeriesSplitting(CLabels* labels, index_t num_subsets)
-    : RandomMixin<CSplittingStrategy>(labels, num_subsets)
+TimeSeriesSplitting::TimeSeriesSplitting(std::shared_ptr<Labels> labels, index_t num_subsets)
+    : RandomMixin<SplittingStrategy>(labels, num_subsets)
 {
 	init();
 }
 
-void CTimeSeriesSplitting::init()
+void TimeSeriesSplitting::init()
 {
 	m_min_subset_size = 1;
-	SG_ADD(&m_min_subset_size, "min_subset_size", 
-			"The minimum subset size for test set")
+	SG_ADD(&m_min_subset_size, "min_subset_size",
+			"The minimum subset size for test set");
 }
 
-void CTimeSeriesSplitting::build_subsets()
+void TimeSeriesSplitting::build_subsets()
 {
 	reset_subsets();
 	m_is_filled = true;
@@ -67,8 +67,7 @@ void CTimeSeriesSplitting::build_subsets()
 
 	for (auto i = 0; i < num_subsets; ++i)
 	{
-		CDynamicArray<index_t>* current =
-		    (CDynamicArray<index_t>*)m_subset_indices->get_element(i);
+		auto current =m_subset_indices->get_element<DynamicArray<index_t>>(i);
 
 		if (i == num_subsets - 1)
 			split_index = indices.vlen - m_min_subset_size;
@@ -81,13 +80,13 @@ void CTimeSeriesSplitting::build_subsets()
 			current->append_element(indices.vector[k]);
 		}
 
-		SG_UNREF(current);
+
 	}
 
 	random::shuffle(m_subset_indices->begin(), m_subset_indices->end(), m_prng);
 }
 
-void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
+void TimeSeriesSplitting::set_min_subset_size(index_t min_size)
 {
 	index_t num_subsets = m_subset_indices->get_num_elements();
 	index_t num_labels = m_labels->get_num_labels();
@@ -103,7 +102,7 @@ void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
 	m_min_subset_size = min_size;
 }
 
-index_t CTimeSeriesSplitting::get_min_subset_size()
+index_t TimeSeriesSplitting::get_min_subset_size()
 {
 	return m_min_subset_size;
 }

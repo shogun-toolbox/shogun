@@ -38,18 +38,16 @@ using namespace shogun;
 
 DescendUpdaterWithCorrection::~DescendUpdaterWithCorrection()
 {
-	SG_UNREF(m_correction);
+
 }
 
-void DescendUpdaterWithCorrection::set_descend_correction(DescendCorrection* correction)
+void DescendUpdaterWithCorrection::set_descend_correction(std::shared_ptr<DescendCorrection> correction)
 {
 	if(m_correction != correction)
 	{
-		SG_REF(correction);
-		SG_REF(m_correction);
 		m_correction=correction;
 	}
-}   
+}
 
 void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
@@ -61,7 +59,7 @@ void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_
 
 	if(m_correction)
 	{
-		MomentumCorrection* momentum_correction=dynamic_cast<MomentumCorrection *>(m_correction);
+		auto momentum_correction=std::dynamic_pointer_cast<MomentumCorrection>(m_correction);
 		if(momentum_correction)
 		{
 			if(!momentum_correction->is_initialized())
@@ -89,6 +87,6 @@ void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_
 void DescendUpdaterWithCorrection::init()
 {
 	m_correction=NULL;
-	SG_ADD((CSGObject **)&m_correction, "DescendUpdaterWithCorrection__m_correction",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_correction, "DescendUpdaterWithCorrection__m_correction",
 		"correction in DescendUpdaterWithCorrection");
 }

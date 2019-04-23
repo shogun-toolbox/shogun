@@ -14,19 +14,19 @@
 namespace shogun
 {
 /** @brief Implementation of Leave one out cross-validation on the base of
- * CCrossValidationSplitting. Produces subset index sets consisting of one element,for each label.
+ * CrossValidationSplitting. Produces subset index sets consisting of one element,for each label.
  */
-class CLOOCrossValidationSplitting: public CCrossValidationSplitting
+class LOOCrossValidationSplitting: public CrossValidationSplitting
 {
 public:
 	/** constructor */
-	CLOOCrossValidationSplitting();
+	LOOCrossValidationSplitting();
 
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting
 	 */
-	CLOOCrossValidationSplitting(CLabels* labels);
+	LOOCrossValidationSplitting(std::shared_ptr<Labels> labels);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

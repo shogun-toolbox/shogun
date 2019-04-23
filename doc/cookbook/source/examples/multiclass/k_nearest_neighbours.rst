@@ -16,23 +16,23 @@ See Chapter 14 in :cite:`barber2012bayesian` for a detailed introduction.
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: k_nearest_neighbours.sg:create_features
 
-In order to run :sgclass:`CKNN`, we need to choose a distance, for example :sgclass:`CEuclideanDistance`, or other sub-classes of :sgclass:`CDistance`. The distance is initialized with the data we want to classify.
+In order to run :sgclass:`KNN`, we need to choose a distance, for example :sgclass:`EuclideanDistance`, or other sub-classes of :sgclass:`Distance`. The distance is initialized with the data we want to classify.
 
 .. sgexample:: k_nearest_neighbours.sg:choose_distance
 
-Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` classifier, passing it :math:`k`.
+Once we have chosen a distance, we create an instance of the :sgclass:`KNN` classifier, passing it :math:`k`.
 
 .. sgexample:: k_nearest_neighbours.sg:create_instance
 
-Then we run the train KNN algorithm and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we run the train KNN algorithm and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: k_nearest_neighbours.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: k_nearest_neighbours.sg:evaluate_accuracy
 

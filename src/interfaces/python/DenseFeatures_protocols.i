@@ -15,20 +15,20 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 {
 	PyObject* resultobj=0;
 
-	CDenseFeatures< type_name >* arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	DenseFeatures< type_name >* arg1=(DenseFeatures< type_name > *) 0; // self in c++ repr
 	int res1=0; // result for self's casting
 	void* argp1=0; // pointer to self
 
 	PyObject* internal_data=0;
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "inplace operator_name" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" "inplace operator_name" "', argument " "1"" of type '" "DenseFeatures< type_name > *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
+	arg1=reinterpret_cast< DenseFeatures < type_name >* >(argp1);
 
 	internal_data=PySequence_GetSlice(self, 0, arg1->get_num_features());
 	PyNumber_InPlace ## operator ## (internal_data, o2);
@@ -52,7 +52,7 @@ fail:
 /* used by PyObject_GetBuffer */
 static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	CDenseFeatures< type_name >* arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	DenseFeatures< type_name >* arg1=(DenseFeatures< type_name > *) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
@@ -64,11 +64,11 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" "getbuffer" "', argument " "1"" of type '" "DenseFeatures< type_name > *""'");
 	}
 
 	if ((flags & PyBUF_C_CONTIGUOUS)==PyBUF_C_CONTIGUOUS)
@@ -84,7 +84,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 		goto fail;
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
+	arg1=reinterpret_cast< DenseFeatures < type_name >* >(argp1);
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
 	new (&info->buf) SGMatrix< type_name >();
@@ -151,7 +151,7 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 /* used by PySequence_GetItem */
 static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 {
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	DenseFeatures< type_name >* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
@@ -166,14 +166,14 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _getitem" "', argument " "1"" of type '" "DenseFeatures< type_name > *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< DenseFeatures< type_name >* >(argp1);
 
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
@@ -241,7 +241,7 @@ fail:
 /* used by PySequence_GetSlice */
 static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	DenseFeatures< type_name >* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
@@ -256,14 +256,14 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _slice" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _slice" "', argument " "1"" of type '" "DenseFeatures< type_name > *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< DenseFeatures< type_name >* >(argp1);
 
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
@@ -331,7 +331,7 @@ static PyObject* class_name ## _getsubscript_helper(PyObject *self, PyObject *ke
 	// key is tuple, like (PySlice or PyLong, PySlice or PyLong)
 	// or only PySlice or PyLong
 
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	DenseFeatures< type_name >* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
@@ -364,14 +364,14 @@ static PyObject* class_name ## _getsubscript_helper(PyObject *self, PyObject *ke
 
 	PyObject* tmp; // temporary object for tuple's item
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _subscript" "', argument " "1"" of type '" "DenseFeatures< type_name > *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< DenseFeatures< type_name >* >(argp1);
 
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
@@ -516,17 +516,17 @@ fail:
 static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *args)
 {
 	PyObject* resultobj=0;
-	CDenseFeatures< type_name > *arg1=(CDenseFeatures< type_name > *) 0;
+	DenseFeatures< type_name > *arg1=(DenseFeatures< type_name > *) 0;
 	void* argp1=0;
 	int res1=0;
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::DenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::CDenseFeatures< bool > *""'");
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::DenseFeatures< bool > *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	arg1=reinterpret_cast< DenseFeatures< type_name > * >(argp1);
 	{
 		try
 		{
@@ -579,10 +579,10 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 %init
 %{
 // overload flags slot in DenseFatures proxy class
-SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
+SwigPyBuiltin__shogun__DenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
 
 // overload free_feature_matrix in DenseFeatures
-set_method(SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_methods, "free_feature_matrix", (PyCFunction) class_name ## _free_feature_matrix);
+set_method(SwigPyBuiltin__shogun__DenseFeaturesT_ ## type_name ## _t_methods, "free_feature_matrix", (PyCFunction) class_name ## _free_feature_matrix);
 
 %}
 
@@ -590,30 +590,30 @@ set_method(SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_methods, "
 %{
 
 #include <map>
-static std::map<CDenseFeatures< type_name >*, Py_buffer*> extend_ ## class_name ## _info;
+static std::map<DenseFeatures< type_name >*, Py_buffer*> extend_ ## class_name ## _info;
 
 %}
 
-%feature("python:bf_getbuffer") CDenseFeatures< type_name > #class_name "_getbuffer"
-%feature("python:bf_releasebuffer") CDenseFeatures< type_name > #class_name "_releasebuffer"
+%feature("python:bf_getbuffer") DenseFeatures< type_name > #class_name "_getbuffer"
+%feature("python:bf_releasebuffer") DenseFeatures< type_name > #class_name "_releasebuffer"
 
-%feature("python:nb_inplace_add") CDenseFeatures< type_name > #class_name "_inplaceadd"
-%feature("python:nb_inplace_subtract") CDenseFeatures< type_name > #class_name "_inplacesub"
-%feature("python:nb_inplace_multiply") CDenseFeatures< type_name > #class_name "_inplacemul"
+%feature("python:nb_inplace_add") DenseFeatures< type_name > #class_name "_inplaceadd"
+%feature("python:nb_inplace_subtract") DenseFeatures< type_name > #class_name "_inplacesub"
+%feature("python:nb_inplace_multiply") DenseFeatures< type_name > #class_name "_inplacemul"
 
-%feature("python:sq_item") CDenseFeatures< type_name > #class_name "_getitem"
-%feature("python:sq_ass_item") CDenseFeatures< type_name > #class_name "_setitem"
-%feature("python:sq_slice") CDenseFeatures< type_name > #class_name "_getslice"
-%feature("python:sq_ass_slice") CDenseFeatures< type_name > #class_name "_setslice"
+%feature("python:sq_item") DenseFeatures< type_name > #class_name "_getitem"
+%feature("python:sq_ass_item") DenseFeatures< type_name > #class_name "_setitem"
+%feature("python:sq_slice") DenseFeatures< type_name > #class_name "_getslice"
+%feature("python:sq_ass_slice") DenseFeatures< type_name > #class_name "_setslice"
 
-%feature("python:mp_subscript") CDenseFeatures< type_name > #class_name "_getsubscript"
-%feature("python:mp_ass_subscript") CDenseFeatures< type_name > #class_name "_setsubscript"
+%feature("python:mp_subscript") DenseFeatures< type_name > #class_name "_getsubscript"
+%feature("python:mp_ass_subscript") DenseFeatures< type_name > #class_name "_setsubscript"
 
 %enddef /* PROTOCOLS_DENSEFEATURES */
 
 %define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 
-%extend CDenseFeatures< type_name >
+%extend DenseFeatures< type_name >
 {
 
 int frombuffer(PyObject* exporter, bool copy)

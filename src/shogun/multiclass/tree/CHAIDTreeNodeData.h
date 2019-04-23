@@ -39,7 +39,7 @@ namespace shogun
 /** @brief structure to store data of a node of
  * CHAID. This can be used as a template type in
  * TreeMachineNode class. CHAID algorithm uses nodes
- * of type CTreeMachineNode<CHAIDTreeNodeData>
+ * of type TreeMachineNode<CHAIDTreeNodeData>
  */
 struct CHAIDTreeNodeData
 {

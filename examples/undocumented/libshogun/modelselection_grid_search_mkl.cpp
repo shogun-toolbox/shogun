@@ -20,34 +20,34 @@
 
 using namespace shogun;
 
-CModelSelectionParameters* create_param_tree()
+ModelSelectionParameters* create_param_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* c1=new ModelSelectionParameters("C1");
 	root->append_child(c1);
 	c1->build_values(-1.0, 1.0, R_EXP);
 
-	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
+	ModelSelectionParameters* c2=new ModelSelectionParameters("C2");
 	root->append_child(c2);
 	c2->build_values(-1.0, 1.0, R_EXP);
 
-	CCombinedKernel* kernel1=new CCombinedKernel();
-	kernel1->append_kernel(new CGaussianKernel(10, 2));
-	kernel1->append_kernel(new CGaussianKernel(10, 3));
-	kernel1->append_kernel(new CGaussianKernel(10, 4));
+	CombinedKernel* kernel1=new CombinedKernel();
+	kernel1->append_kernel(new GaussianKernel(10, 2));
+	kernel1->append_kernel(new GaussianKernel(10, 3));
+	kernel1->append_kernel(new GaussianKernel(10, 4));
 
-	CModelSelectionParameters* param_kernel1=
-			new CModelSelectionParameters("kernel", kernel1);
+	ModelSelectionParameters* param_kernel1=
+			new ModelSelectionParameters("kernel", kernel1);
 	root->append_child(param_kernel1);
 
-	CCombinedKernel* kernel2=new CCombinedKernel();
-	kernel2->append_kernel(new CGaussianKernel(10, 20));
-	kernel2->append_kernel(new CGaussianKernel(10, 30));
-	kernel2->append_kernel(new CGaussianKernel(10, 40));
+	CombinedKernel* kernel2=new CombinedKernel();
+	kernel2->append_kernel(new GaussianKernel(10, 20));
+	kernel2->append_kernel(new GaussianKernel(10, 30));
+	kernel2->append_kernel(new GaussianKernel(10, 40));
 
-	CModelSelectionParameters* param_kernel2=
-			new CModelSelectionParameters("kernel", kernel2);
+	ModelSelectionParameters* param_kernel2=
+			new ModelSelectionParameters("kernel", kernel2);
 	root->append_child(param_kernel2);
 
 	return root;
@@ -62,46 +62,44 @@ void test()
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix.matrix[i]=CMath::randn_double();
+		matrix.matrix[i]=Math::randn_double();
 
 	/* create feature object */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (matrix);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t> (matrix);
 
 	/* create combined features */
-	CCombinedFeatures* comb_features=new CCombinedFeatures();
+	CombinedFeatures* comb_features=new CombinedFeatures();
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
-	SG_REF(comb_features);
 
 	/* create labels, two classes */
-	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
-	SG_REF(labels);
+	BinaryLabels* labels=new BinaryLabels(num_vectors);
 	for (index_t i=0; i<num_vectors; ++i)
 		labels->set_label(i, i%2==0 ? +1 : -1);
 
 	/* works */
 //	/* create svm */
-//	CMKLClassification* classifier=new CMKLClassification(new CLibSVM());
+//	MKLClassification* classifier=new MKLClassification(new CLibSVM());
 //	classifier->set_interleaved_optimization_enabled(false);
 
 	/* create svm */
-	CMKLClassification* classifier=new CMKLClassification();
+	MKLClassification* classifier=new MKLClassification();
 
 	// both fail:
 	//classifier->set_interleaved_optimization_enabled(false);
 	classifier->set_interleaved_optimization_enabled(true);
 
 	/* splitting strategy */
-	CStratifiedCrossValidationSplitting* splitting_strategy=
-			new CStratifiedCrossValidationSplitting(labels, num_subsets);
+	StratifiedCrossValidationSplitting* splitting_strategy=
+			new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 	/* accuracy evaluation */
-	CContingencyTableEvaluation* evaluation_criterion=
-			new CContingencyTableEvaluation(ACCURACY);
+	ContingencyTableEvaluation* evaluation_criterion=
+			new ContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
-	CCrossValidation* cross=new CCrossValidation(classifier, comb_features,
+	CrossValidation* cross=new CrossValidation(classifier, comb_features,
 			labels, splitting_strategy, evaluation_criterion);
 	cross->set_num_runs(1);
 
@@ -109,8 +107,7 @@ void test()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	classifier->print_modsel_params();
 
-	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
-	CModelSelectionParameters* param_tree=create_param_tree();
+	ModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
 
 	/* handles all of the above structures in memory */
@@ -130,15 +127,11 @@ void test()
 	/* larger number of runs to have tighter confidence intervals */
 	/*cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 
 	SG_SPRINT("result: %f", result->mean);*/
 
 	/* clean up */
-	SG_UNREF(comb_features);
-	SG_UNREF(labels);
-	//SG_UNREF(best_combination);
-	SG_UNREF(grid_search);
 }
 
 int main(int argc, char **argv)

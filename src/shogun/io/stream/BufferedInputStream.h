@@ -14,7 +14,7 @@ namespace shogun
 	namespace io
 	{
 #define IGNORE_IN_CLASSLIST
-		IGNORE_IN_CLASSLIST class CBufferedInputStream : public CInputStream
+		IGNORE_IN_CLASSLIST class BufferedInputStream : public InputStream
 		{
 		public:
 			/**
@@ -23,9 +23,9 @@ namespace shogun
 			 * @param os
 			 * @param buffer_bytes
 			 */
-			CBufferedInputStream(CInputStream* is, size_t buffer_bytes = 4096);
+			BufferedInputStream(InputStream* is, size_t buffer_bytes = 4096);
 
-			~CBufferedInputStream() override;
+			~BufferedInputStream() override;
 
 			std::error_condition read(std::string* buffer, int64_t size) override;
 			std::error_condition skip(int64_t bytes) override;
@@ -44,14 +44,14 @@ namespace shogun
 		private:
 			std::error_condition fill();
 		private:
-			CInputStream* m_is;
+			InputStream* m_is;
 			size_t m_size;
 			std::string m_buffer;
 			size_t m_pos = 0;
 			size_t m_limit = 0;
 			std::error_condition m_status;
 
-			SG_DELETE_COPY_AND_ASSIGN(CBufferedInputStream);
+			SG_DELETE_COPY_AND_ASSIGN(BufferedInputStream);
 		};
 	}
 }

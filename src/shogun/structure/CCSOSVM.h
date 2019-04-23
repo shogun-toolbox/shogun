@@ -36,20 +36,20 @@ namespace shogun
 	 *     Cutting-Plane Training of Structural SVMs,
 	 *     Machine Learning Journal, 77(1):27-59
 	 */
-	class CCCSOSVM : public CLinearStructuredOutputMachine
+	class CCSOSVM : public LinearStructuredOutputMachine
 	{
 		public:
 			/** default constructor*/
-			CCCSOSVM();
+			CCSOSVM();
 
 			/** constructor
 			 * @param model structured output model
 			 * @param w initial w (optional)
 			 */
-			CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w = SGVector<float64_t>());
+			CCSOSVM(std::shared_ptr<StructuredModel> model, SGVector<float64_t> w = SGVector<float64_t>());
 
 			/** destructor */
-			virtual ~CCCSOSVM();
+			virtual ~CCSOSVM();
 
 			/** @return object name */
 			inline virtual const char* get_name() const { return "CCSOSVM"; }
@@ -171,7 +171,7 @@ namespace shogun
 			virtual EMachineType get_classifier_type();
 
 		protected:
-			bool train_machine(CFeatures* data=NULL);
+			bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		private:
 			/** find new cutting plane

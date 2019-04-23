@@ -48,7 +48,7 @@ class ShogunLoggerImplementation : public tapkee::LoggerImplementation
 
 struct ShogunFeatureVectorCallback
 {
-	ShogunFeatureVectorCallback(CDotFeatures* f) : dim(0), features(f) { }
+	ShogunFeatureVectorCallback(DotFeatures* f) : dim(0), features(f) { }
 	inline tapkee::IndexType dimension() const
 	{
 		if (features)
@@ -62,18 +62,18 @@ struct ShogunFeatureVectorCallback
 		features->add_to_dense_vec(1.0,i,v.data(),dim);
 	}
 	mutable int32_t dim;
-	CDotFeatures* features;
+	DotFeatures* features;
 };
 
 
-CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
+std::shared_ptr<DenseFeatures<float64_t>> shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
 {
 	tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
 	tapkee::LoggingSingleton::instance().enable_benchmark();
 	tapkee::LoggingSingleton::instance().enable_info();
 
-	pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
-	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
+	pimpl_kernel_callback<Kernel> kernel_callback(parameters.kernel);
+	pimpl_distance_callback<Distance> distance_callback(parameters.distance);
 	ShogunFeatureVectorCallback features_callback(parameters.features);
 
 	tapkee::DimensionReductionMethod method = tapkee::PCA;
@@ -197,6 +197,6 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			feature_matrix(j,i) = result_embedding(i,j);
 		}
 	}
-	return new CDenseFeatures<float64_t>(feature_matrix);
+	return std::make_shared<DenseFeatures<float64_t>>(feature_matrix);
 }
 

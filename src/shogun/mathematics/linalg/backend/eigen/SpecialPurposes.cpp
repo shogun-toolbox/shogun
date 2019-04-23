@@ -154,7 +154,7 @@ void LinalgBackendEigen::rectified_linear_impl(
 	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 	for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
-		result_eig(i) = CMath::max((T)0, a_eig(i));
+		result_eig(i) = Math::max((T)0, a_eig(i));
 }
 
 /** Eigen3 softmax method */

@@ -14,7 +14,7 @@
 using namespace shogun;
 
 void load_data(int32_t num_dim, int32_t num_vecs,
-	CDenseFeatures<float64_t>*& feats, CBinaryLabels*& labels)
+	DenseFeatures<float64_t>*& feats, BinaryLabels*& labels)
 {
 	SGMatrix<float64_t> mat(num_dim, num_vecs);
 	SGVector<float64_t> labs(num_vecs);
@@ -25,17 +25,17 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 			if ((i+j)%2==0)
 			{
 				labs[i] = -1;
-				mat(j,i) = CMath::random(0,1) + 0.5;
+				mat(j,i) = Math::random(0,1) + 0.5;
 			}
 			else
 			{
 				labs[i] = 1;
-				mat(j,i) = CMath::random(0,1) - 0.5;
+				mat(j,i) = Math::random(0,1) - 0.5;
 			}
 		}
 	}
-	feats = new CDenseFeatures<float64_t>(mat);
-	labels = new CBinaryLabels(labs);
+	feats = new DenseFeatures<float64_t>(mat);
+	labels = new BinaryLabels(labs);
 }
 
 int main(int argv, char** argc)
@@ -45,8 +45,8 @@ int main(int argv, char** argc)
 	int32_t num_dim = 100;
 	int32_t num_vecs = 10000;
 
-	CDenseFeatures<float64_t>* dense_feats = 0;
-	CBinaryLabels* labels = 0;
+	DenseFeatures<float64_t>* dense_feats = 0;
+	BinaryLabels* labels = 0;
 	load_data(num_dim, num_vecs, dense_feats, labels);
 
 	/** Specifying the kernel parameter for the Gaussian approximation of RFFeatures,
@@ -71,21 +71,19 @@ int main(int argv, char** argc)
 	 * classifier
 	 */
 
-	//CLibLinear* lin_svm = new CLibLinear(C, r_feats, labels);
+	//LibLinear* lin_svm = new LibLinear(C, r_feats, labels);
 	float64_t C = 0.1;
 	float64_t epsilon = 0.01;
-	CSVMOcas* lin_svm = new CSVMOcas(C, rf_feats, labels);
+	SVMOcas* lin_svm = new SVMOcas(C, rf_feats, labels);
 	lin_svm->set_epsilon(epsilon);
 
 	lin_svm->train();
 
-	CBinaryLabels* predicted = lin_svm->apply()->as<CBinaryLabels>();
+	BinaryLabels* predicted = lin_svm->apply()->as<BinaryLabels>();
 
 	CPRCEvaluation* evaluator = new CPRCEvaluation();
 	float64_t auPRC = evaluator->evaluate(predicted, labels);
 	//SG_SPRINT("Training auPRC = %f\n", auPRC);
 
-	SG_UNREF(lin_svm);
-	SG_UNREF(predicted);
 	exit_shogun();
 }

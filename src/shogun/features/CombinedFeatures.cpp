@@ -7,60 +7,57 @@
 
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/Set.h>
-#include <shogun/lib/Map.h>
+
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace shogun;
 
-CCombinedFeatures::CCombinedFeatures()
-: CFeatures(0)
+CombinedFeatures::CombinedFeatures()
+: Features(0)
 {
 	init();
 	num_vec=0;
 }
 
-CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
-: CFeatures(0)
+CombinedFeatures::CombinedFeatures(const CombinedFeatures& orig)
+: Features(0)
 {
 	init();
 	//TODO copy features
 	num_vec=orig.num_vec;
 }
 
-CFeatures* CCombinedFeatures::duplicate() const
+std::shared_ptr<Features> CombinedFeatures::duplicate() const
 {
-	return new CCombinedFeatures(*this);
+	return std::make_shared<CombinedFeatures>(*this);
 }
 
-CCombinedFeatures::~CCombinedFeatures()
+CombinedFeatures::~CombinedFeatures()
 {
-	SG_UNREF(feature_array);
+
 }
 
-CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx) const
+std::shared_ptr<Features> CombinedFeatures::get_feature_obj(int32_t idx) const
 {
 	REQUIRE(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
 	    idx, 0, get_num_feature_obj()-1);
-	return (CFeatures*) feature_array->get_element(idx);
+	return feature_array[idx];
 }
 
-void CCombinedFeatures::list_feature_objs() const
+void CombinedFeatures::list_feature_objs() const
 {
 	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
 	this->list_feature_obj();
 
-	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
-	{
-		CFeatures* f = get_feature_obj(f_idx);
+	for (const auto& f: feature_array)
 		f->list_feature_obj();
-		SG_UNREF(f);
-	}
 
 	SG_INFO("END COMBINED FEATURES LIST - ")
 }
 
-bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
+bool CombinedFeatures::check_feature_obj_compatibility(std::shared_ptr<CombinedFeatures> comb_feat)
 {
 	bool result=false;
 
@@ -68,13 +65,13 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	{
 		for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 		{
-			CFeatures* f1=this->get_feature_obj(f_idx);
-			CFeatures* f2=comb_feat->get_feature_obj(f_idx);
+			auto f1=this->get_feature_obj(f_idx);
+			auto f2=comb_feat->get_feature_obj(f_idx);
 
 			if ( ! (f1 && f2 && f1->check_feature_compatibility(f2)) )
 			{
-				SG_UNREF(f1);
-				SG_UNREF(f2);
+
+
 				SG_INFO("not compatible, combfeat\n")
 				comb_feat->list_feature_objs();
 				SG_INFO("vs this\n")
@@ -82,8 +79,8 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 				return false;
 			}
 
-			SG_UNREF(f1);
-			SG_UNREF(f2);
+
+
 		}
 		SG_DEBUG("features are compatible\n")
 		result=true;
@@ -107,17 +104,17 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	return result;
 }
 
-CFeatures* CCombinedFeatures::get_first_feature_obj() const
+std::shared_ptr<Features> CombinedFeatures::get_first_feature_obj() const
 {
 	return get_feature_obj(0);
 }
 
-CFeatures* CCombinedFeatures::get_last_feature_obj() const
+std::shared_ptr<Features> CombinedFeatures::get_last_feature_obj() const
 {
 	return get_feature_obj(get_num_feature_obj()-1);
 }
 
-bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
+bool CombinedFeatures::insert_feature_obj(std::shared_ptr<Features> obj, int32_t idx)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -129,10 +126,11 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
 	}
 
 	num_vec=n;
-	return feature_array->insert_element(obj, idx);
+	feature_array.insert(feature_array.begin()+idx, obj);
+	return true;
 }
 
-bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
+bool CombinedFeatures::append_feature_obj(std::shared_ptr<Features> obj)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -146,30 +144,28 @@ bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 	num_vec=n;
 
 	int num_feature_obj = get_num_feature_obj();
-	feature_array->push_back(obj);
-	return num_feature_obj+1 == feature_array->get_num_elements();
+	feature_array.push_back(obj);
+	return num_feature_obj+1 == feature_array.size();
 }
 
-bool CCombinedFeatures::delete_feature_obj(int32_t idx)
+bool CombinedFeatures::delete_feature_obj(int32_t idx)
 {
-	return feature_array->delete_element(idx);
+	feature_array.erase(feature_array.cbegin()+idx);
+	return true;
 }
 
-int32_t CCombinedFeatures::get_num_feature_obj() const
+int32_t CombinedFeatures::get_num_feature_obj() const
 {
-	return feature_array->get_num_elements();
+	return feature_array.size();
 }
 
-void CCombinedFeatures::init()
+void CombinedFeatures::init()
 {
-	feature_array = new CDynamicObjectArray();
-	SG_REF(feature_array);
-
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
 }
 
-CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
+std::shared_ptr<Features> CombinedFeatures::create_merged_copy(std::shared_ptr<Features> other) const
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
@@ -184,7 +180,7 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 				get_name());
 	}
 
-	auto casted = dynamic_cast<const CCombinedFeatures*>(other);
+	auto casted = std::dynamic_pointer_cast<CombinedFeatures>(other);
 
 	if (!casted)
 	{
@@ -198,142 +194,130 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other) const
 				"have the same number of sub-feature-objects\n", get_name());
 	}
 
-	CCombinedFeatures* result=new CCombinedFeatures();
+	auto result=std::make_shared<CombinedFeatures>();
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		CFeatures* current_this=get_feature_obj(f_idx);
-		CFeatures* current_other=casted->get_feature_obj(f_idx);
+		auto current_this=get_feature_obj(f_idx);
+		auto current_other=casted->get_feature_obj(f_idx);
 
 		result->append_feature_obj(
 				current_this->create_merged_copy(current_other));
-		SG_UNREF(current_this);
-		SG_UNREF(current_other);
+
+
 	}
 
 	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
 	return result;
 }
 
-void CCombinedFeatures::add_subset(SGVector<index_t> subset)
+void CombinedFeatures::add_subset(SGVector<index_t> subset)
 {
 	SG_DEBUG("entering %s::add_subset()\n", get_name())
-	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		CFeatures* current=get_feature_obj(f_idx);
+		auto current=get_feature_obj(f_idx);
 
-		if (!processed->contains(current))
+		if (processed.find(current) == processed.end())
 		{
 			/* remember that subset was added here */
 			current->add_subset(subset);
-			processed->add(current);
+			processed.insert(current);
 			SG_DEBUG("adding subset to %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), current.get());
 		}
-		SG_UNREF(current);
+
 	}
 
 	/* also add subset to local stack to have it for easy access */
 	m_subset_stack->add_subset(subset);
 
 	subset_changed_post();
-	SG_UNREF(processed);
+
 	SG_DEBUG("leaving %s::add_subset()\n", get_name())
 }
 
-void CCombinedFeatures::remove_subset()
+void CombinedFeatures::remove_subset()
 {
 	SG_DEBUG("entering %s::remove_subset()\n", get_name())
-	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		CFeatures* current=get_feature_obj(f_idx);
-		if (!processed->contains(current))
+		auto current=get_feature_obj(f_idx);
+		if (processed.find(current) == processed.end())
 		{
 			/* remember that subset was added here */
 			current->remove_subset();
-			processed->add(current);
+			processed.insert(current);
 			SG_DEBUG("removing subset from %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), current.get());
 		}
-		SG_UNREF(current);
+
 	}
 
 	/* also remove subset from local stack to have it for easy access */
 	m_subset_stack->remove_subset();
 
 	subset_changed_post();
-	SG_UNREF(processed);
+
 	SG_DEBUG("leaving %s::remove_subset()\n", get_name())
 }
 
-void CCombinedFeatures::remove_all_subsets()
+void CombinedFeatures::remove_all_subsets()
 {
 	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name())
-	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		CFeatures* current=get_feature_obj(f_idx);
-		if (!processed->contains(current))
+		auto current=get_feature_obj(f_idx);
+		if (processed.find(current) == processed.end())
 		{
 			/* remember that subset was added here */
 			current->remove_all_subsets();
-			processed->add(current);
+			processed.insert(current);
 			SG_DEBUG("removing all subsets from %s at %p\n",
-					current->get_name(), current);
+					current->get_name(), current.get());
 		}
-		SG_UNREF(current);
+
 	}
 
 	/* also remove subsets from local stack to have it for easy access */
 	m_subset_stack->remove_all_subsets();
 
 	subset_changed_post();
-	SG_UNREF(processed);
+
 	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name())
 }
 
-CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices) const
+std::shared_ptr<Features> CombinedFeatures::copy_subset(SGVector<index_t> indices) const
 {
 	/* this is returned with the results of copy_subset of sub-features */
-	CCombinedFeatures* result=new CCombinedFeatures();
+	auto result=std::make_shared<CombinedFeatures>();
 
 	/* map to only copy same feature objects once */
-	CMap<CFeatures*, CFeatures*>* processed=new CMap<CFeatures*, CFeatures*>();
+	std::unordered_map<std::shared_ptr<Features>, std::shared_ptr<Features>> processed;
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		CFeatures* current=get_feature_obj(f_idx);
+		auto current=get_feature_obj(f_idx);
 
-		CFeatures* new_element=NULL;
+		std::shared_ptr<Features> new_element=NULL;
 
 		/* only copy if not done yet, otherwise, use old copy */
-		if (!processed->contains(current))
+		if (processed.find(current) == processed.end())
 		{
 			new_element=current->copy_subset(indices);
-			processed->add(current, new_element);
+			processed.emplace(current, new_element);
 		}
 		else
 		{
-			new_element=processed->get_element(current);
-
-			/* has to be SG_REF'ed since it will be unrefed afterwards */
-			SG_REF(new_element);
+			new_element=processed[current];
 		}
 
 		/* add to result */
 		result->append_feature_obj(new_element);
-
-		/* clean up: copy_subset of SG_REF has to be undone */
-		SG_UNREF(new_element);
-
-		SG_UNREF(current);
 	}
-
-	SG_UNREF(processed);
-
-	SG_REF(result);
 	return result;
 }

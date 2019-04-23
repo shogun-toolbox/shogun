@@ -16,8 +16,8 @@
 
 namespace shogun
 {
-class CFeatures;
-class CMath;
+class Features;
+class Math;
 /** @brief Base class Distribution from which all methods implementing a
  * distribution are derived.
  *
@@ -32,19 +32,19 @@ class CMath;
  * get_log_likelihood_example() - for the likelihood for the
  *										n-th example
  *
- * This way methods building on CDistribution, might enumerate over all possible
+ * This way methods building on Distribution, might enumerate over all possible
  * model parameters and obtain the parameter vector and the gradient. This is
- * used to compute e.g. the TOP and Fisher Kernel (cf. CPluginEstimate, CHistogramKernel,
+ * used to compute e.g. the TOP and Fisher Kernel (cf. PluginEstimate, CHistogramKernel,
  * CTOPFeatures and CFKFeatures ).
  */
-class CDistribution : public CSGObject
+class Distribution : public SGObject
 {
 	public:
 		/** default constructor */
-		CDistribution();
+		Distribution();
 
 		/** destructor */
-		virtual ~CDistribution();
+		virtual ~Distribution();
 
 		/** learn distribution
 		 *
@@ -54,7 +54,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)=0;
+		virtual bool train(std::shared_ptr<Features> data=NULL)=0;
 
 		/** get number of parameters in model
 		 *
@@ -153,20 +153,17 @@ class CDistribution : public CSGObject
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual void set_features(CFeatures* f)
+		virtual void set_features(std::shared_ptr<Features> f)
 		{
-			SG_UNREF(features);
 			features=f;
-			SG_REF(features);
 		}
 
 		/** get feature vectors
 		 *
 		 * @return feature vectors
 		 */
-		virtual CFeatures* get_features()
+		virtual std::shared_ptr<Features> get_features()
 		{
-			SG_REF(features);
 			return features;
 		}
 
@@ -200,11 +197,11 @@ class CDistribution : public CSGObject
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CDistribution* obtain_from_generic(CSGObject* object);
+		static std::shared_ptr<Distribution> obtain_from_generic(std::shared_ptr<SGObject> object);
 
 	protected:
 		/** feature vectors */
-		CFeatures* features;
+		std::shared_ptr<Features> features;
 		/** pseudo count */
 		float64_t pseudo_count;
 };

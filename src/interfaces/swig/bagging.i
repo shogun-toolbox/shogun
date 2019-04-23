@@ -1,6 +1,6 @@
 /* remove C prefix */
-%rename(BaggingMachine) CBaggingMachine;
-%rename(RandomForest) CRandomForest;
+%shared_ptr(shogun::BaggingMachine)
+%shared_ptr(shogun::RandomForest)
 
 /* include class headers to make them visible from target language */
 %include <shogun/machine/BaggingMachine.h>

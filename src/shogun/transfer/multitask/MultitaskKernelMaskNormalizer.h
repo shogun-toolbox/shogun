@@ -29,14 +29,14 @@ namespace shogun
  * K_S(x,y)=\left\{\begin{array}{cl} K_B(x,y), & \mbox{if } t(x) \in S \wedge t(y) \in S\\ 0, & \mbox{else} \end{array}\right.
  * \f]
  */
-class CMultitaskKernelMaskNormalizer: public CKernelNormalizer
+class MultitaskKernelMaskNormalizer: public KernelNormalizer
 {
 
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMaskNormalizer() : CKernelNormalizer(),
+	MultitaskKernelMaskNormalizer() : KernelNormalizer(),
 		scale(1.0), normalization_constant(1.0)
 	{
 	}
@@ -47,10 +47,10 @@ public:
 	 * @param task_rhs task vector with containing task_id for each example for right hand side
 	 * @param active_tasks_vec
 	 */
-	CMultitaskKernelMaskNormalizer(std::vector<int32_t> task_lhs,
+	MultitaskKernelMaskNormalizer(std::vector<int32_t> task_lhs,
 								   std::vector<int32_t> task_rhs,
 								   std::vector<int32_t> active_tasks_vec)
-		: CKernelNormalizer(), scale(1.0), normalization_constant(1.0)
+		: KernelNormalizer(), scale(1.0), normalization_constant(1.0)
 	{
 
 
@@ -67,13 +67,13 @@ public:
 
 
 	/** default destructor */
-	virtual ~CMultitaskKernelMaskNormalizer()
+	virtual ~MultitaskKernelMaskNormalizer()
 	{
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();
@@ -83,8 +83,8 @@ public:
 
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
@@ -264,9 +264,9 @@ public:
 	/** casts kernel normalizer to multitask kernel mask normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	CMultitaskKernelMaskNormalizer* KernelNormalizerToMultitaskKernelMaskNormalizer(CKernelNormalizer* n)
+	std::shared_ptr<MultitaskKernelMaskNormalizer> KernelNormalizerToMultitaskKernelMaskNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		   return dynamic_cast<CMultitaskKernelMaskNormalizer*>(n);
+		   return std::dynamic_pointer_cast<MultitaskKernelMaskNormalizer>(n);
 	}
 
 protected:

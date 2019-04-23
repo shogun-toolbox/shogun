@@ -87,26 +87,26 @@ namespace shogun
  * different categories of X are the same. For more details please see :
  * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_scale.htm
  */
-class CCHAIDTree : public CTreeMachine<CHAIDTreeNodeData>
+class CHAIDTree : public TreeMachine<CHAIDTreeNodeData>
 {
 public:
 	/** default constructor */
-	CCHAIDTree();
+	CHAIDTree();
 
 	/** constructor
 	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)
 	 */
-	CCHAIDTree(int32_t dependent_vartype);
+	CHAIDTree(int32_t dependent_vartype);
 
 	/** constructor
 	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)
 	 * @param feature_types type of various attributes (0-nominal, 1-ordinal or 2-continuous)
 	 * @param num_breakpoints number of breakpoints for continuous to ordinal conversion of attributes
 	 */
-	CCHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints=0);
+	CHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints=0);
 
 	/** destructor */
-	virtual ~CCHAIDTree();
+	virtual ~CHAIDTree();
 
 	/** get name
 	 * @return class name CHAIDTree
@@ -122,7 +122,7 @@ public:
 	 * @param lab labels supplied
 	 * @return true for valid labels, false for invalid labels
 	 */
-	virtual bool is_label_valid(CLabels* lab) const;
+	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
 
 	/** classify data using Classification Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
@@ -130,7 +130,7 @@ public:
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** Get regression labels using Regression Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
@@ -138,7 +138,7 @@ public:
 	 * @param data data whose regression output is needed
 	 * @return Regression output for various test vectors
 	 */
-	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 	/** set weights of data points
 	 * @param w vector of weights
@@ -231,7 +231,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 private:
 	/** CHAIDtrain - recursive CHAID training method
@@ -242,7 +242,7 @@ private:
 	 * @param level current depth of tree
 	 * @return pointer to the root of the CHAID subtree
 	 */
-	CTreeMachineNode<CHAIDTreeNodeData>* CHAIDtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level);
+	std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDtrain(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<Labels> labels, int32_t level);
 
 	/** executes merge step of the tree growing process for ordinal features
 	 *
@@ -271,7 +271,7 @@ private:
 	 * @param data test data to be classified/regressed
 	 * @return classification/regression labels of input data
 	 */
-	CLabels* apply_tree(CFeatures* data);
+	std::shared_ptr<Labels> apply_tree(std::shared_ptr<Features> data);
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -279,7 +279,7 @@ private:
 	 * @param current root of current subtree
 	 * @return classification/regression labels of input data
 	 */
-	CLabels* apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current);
+	std::shared_ptr<Labels> apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current);
 
 	/** handles missing values category for ordinal feature type
 	 *
@@ -376,14 +376,14 @@ private:
 	 * @param feats features
 	 * @return whether data matrix is updated
 	 */
-	bool continuous_to_ordinal(CDenseFeatures<float64_t>* feats);
+	bool continuous_to_ordinal(std::shared_ptr<DenseFeatures<float64_t>> feats);
 
 	/** converts continuous features to ordinal using conversion matrix m_cont_breakpoints.
 	 * NOTE : This method changes data matrix.
 	 *
 	 * @param feats features
 	 */
-	void modify_data_matrix(CDenseFeatures<float64_t>* feats);
+	void modify_data_matrix(std::shared_ptr<DenseFeatures<float64_t>> feats);
 
 	/** initializes members of class */
 	void init();

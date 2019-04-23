@@ -11,7 +11,7 @@
 
 namespace shogun
 {
-	IGNORE_IN_CLASSLIST class CBufferedOutputStream : public COutputStream
+	IGNORE_IN_CLASSLIST class BufferedOutputStream : public OutputStream
 	{
 	public:
 		/**
@@ -20,25 +20,25 @@ namespace shogun
 		 * @param os
 		 * @param buffer_bytes
 		 */
-		CBufferedOutputStream(std::shared_ptr<COutputStream> os, index_t buffer_bytes = 4096):
-			COutputStream(), m_os(std::move(os))
+		BufferedOutputStream(std::shared_ptr<OutputStream> os, index_t buffer_bytes = 4096):
+			OutputStream(), m_os(std::move(os))
 		{
 
 		}
 
-		CBufferedOutputStream(CBufferedOutputStream&& src):
-			COutputStream(), m_os(std::move(src.m_os))
+		BufferedOutputStream(BufferedOutputStream&& src):
+			OutputStream(), m_os(std::move(src.m_os))
 		{
 			src.m_os = nullptr;
 		}
 
-		CBufferedOutputStream& operator=(CBufferedOutputStream&& src)
+		BufferedOutputStream& operator=(BufferedOutputStream&& src)
 		{
 			m_os = std::move(src.m_os);
 			return *this;
 		}
 
-		~CBufferedOutputStream() override
+		~BufferedOutputStream() override
 		{
 			m_os->flush();
 			m_os->close();
@@ -65,9 +65,9 @@ namespace shogun
 		}
 
 	private:
-		std::shared_ptr<COutputStream> m_os;
+		std::shared_ptr<OutputStream> m_os;
 
-		SG_DELETE_COPY_AND_ASSIGN(CBufferedOutputStream);
+		SG_DELETE_COPY_AND_ASSIGN(BufferedOutputStream);
 	};
 }
 

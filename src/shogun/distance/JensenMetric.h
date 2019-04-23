@@ -29,19 +29,19 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Kullback-Leibler_divergence">
  * Wikipedia: Kullback-Leibler divergence</a>
  */
-class CJensenMetric: public CDenseDistance<float64_t>
+class JensenMetric: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CJensenMetric();
+		JensenMetric();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CJensenMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CJensenMetric();
+		JensenMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~JensenMetric();
 
 		/** init distance
 		 *
@@ -49,7 +49,7 @@ class CJensenMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -20,25 +20,25 @@ using namespace Eigen;
 namespace shogun
 {
 
-CConjugateGradientSolver::CConjugateGradientSolver()
-	: CIterativeLinearSolver<float64_t>()
+ConjugateGradientSolver::ConjugateGradientSolver()
+	: IterativeLinearSolver<float64_t>()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
-CConjugateGradientSolver::CConjugateGradientSolver(bool store_residuals)
-	: CIterativeLinearSolver<float64_t>(store_residuals)
+ConjugateGradientSolver::ConjugateGradientSolver(bool store_residuals)
+	: IterativeLinearSolver<float64_t>(store_residuals)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
-CConjugateGradientSolver::~CConjugateGradientSolver()
+ConjugateGradientSolver::~ConjugateGradientSolver()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 }
 
-SGVector<float64_t> CConjugateGradientSolver::solve(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+SGVector<float64_t> ConjugateGradientSolver::solve(
+	std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b)
 {
 	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..\n");
 
@@ -72,7 +72,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 	float64_t r_norm2=r.dot(r);
 
 	// start the timer
-	CTime time;
+	Time time;
 	time.start();
 
 	// set the residuals to zero

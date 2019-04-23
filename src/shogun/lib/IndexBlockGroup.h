@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CIndexBlock;
-class CList;
+class IndexBlock;
+class List;
 
 /** @brief class IndexBlockGroup used to represent
  * group-based feature relation.
@@ -24,25 +24,25 @@ class CList;
  * Currently can be constructed with a few CIndexBlock
  * instances.
  */
-class CIndexBlockGroup : public CIndexBlockRelation
+class IndexBlockGroup : public IndexBlockRelation
 {
 public:
 
 	/** default constructor */
-	CIndexBlockGroup();
+	IndexBlockGroup();
 
 	/** destructor */
-	virtual ~CIndexBlockGroup();
+	virtual ~IndexBlockGroup();
 
 	/** add IndexBlock to the group
 	 * @param block IndexBlock to add
 	 */
-	void add_block(CIndexBlock* block);
+	void add_block(std::shared_ptr<IndexBlock> block);
 
 	/** remove IndexBlock from the group
 	 * @param block IndexBlock to remove
 	 */
-	void remove_block(CIndexBlock* block);
+	void remove_block(std::shared_ptr<IndexBlock> block);
 
 	/** returns information about IndexBlocks in
 	 * SLEP "ind" format
@@ -57,7 +57,7 @@ public:
 protected:
 
 	/** blocks in group */
-	CList* m_blocks;
+	std::shared_ptr<List> m_blocks;
 
 };
 

@@ -1,4 +1,3 @@
-#include <shogun/base/some.h>
 #include <gtest/gtest.h>
 
 #include "Unique_unittest.h"

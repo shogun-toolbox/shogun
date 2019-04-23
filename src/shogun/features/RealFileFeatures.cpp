@@ -14,14 +14,14 @@
 
 using namespace shogun;
 
-CRealFileFeatures::CRealFileFeatures()
+RealFileFeatures::RealFileFeatures()
 {
 	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures()", "\n")
 	init();
 }
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
-: CDenseFeatures<float64_t>(size)
+RealFileFeatures::RealFileFeatures(int32_t size, char* fname)
+: DenseFeatures<float64_t>(size)
 {
 	init();
 
@@ -31,8 +31,8 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 	status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
-: CDenseFeatures<float64_t>(size)
+RealFileFeatures::RealFileFeatures(int32_t size, FILE* file)
+: DenseFeatures<float64_t>(size)
 {
 	init();
 
@@ -40,7 +40,7 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
 	status=load_base_data();
 }
 
-void CRealFileFeatures::init()
+void RealFileFeatures::init()
 {
 	working_file=NULL;
 	working_filename=get_strdup("");
@@ -55,14 +55,14 @@ void CRealFileFeatures::init()
 	unset_generic();
 }
 
-CRealFileFeatures::~CRealFileFeatures()
+RealFileFeatures::~RealFileFeatures()
 {
 	SG_FREE(working_filename);
 	SG_FREE(labels);
 }
 
-CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
-: CDenseFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
+RealFileFeatures::RealFileFeatures(const RealFileFeatures & orig)
+: DenseFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
 {
 	if (orig.working_filename)
 		working_filename=get_strdup(orig.working_filename);
@@ -73,7 +73,7 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 	}
 }
 
-float64_t* CRealFileFeatures::compute_feature_vector(
+float64_t* RealFileFeatures::compute_feature_vector(
 	int32_t num, int32_t &len, float64_t* target) const
 {
 	ASSERT(num<num_vectors)
@@ -87,7 +87,7 @@ float64_t* CRealFileFeatures::compute_feature_vector(
 	return featurevector;
 }
 
-float64_t* CRealFileFeatures::load_feature_matrix()
+float64_t* RealFileFeatures::load_feature_matrix()
 {
 	ASSERT(working_file)
 	fseek(working_file, filepos, SEEK_SET);
@@ -113,7 +113,7 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-int32_t CRealFileFeatures::get_label(int32_t idx)
+int32_t RealFileFeatures::get_label(int32_t idx)
 {
 	ASSERT(idx<num_vectors)
 	if (labels)
@@ -121,7 +121,7 @@ int32_t CRealFileFeatures::get_label(int32_t idx)
 	return 0;
 }
 
-bool CRealFileFeatures::load_base_data()
+bool RealFileFeatures::load_base_data()
 {
 	ASSERT(working_file)
 	uint32_t num_vec=0;

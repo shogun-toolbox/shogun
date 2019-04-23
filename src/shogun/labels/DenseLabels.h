@@ -18,8 +18,8 @@
 
 namespace shogun
 {
-	class CFile;
-	class CBinaryLabels;
+	class File;
+	class BinaryLabels;
 
 	/** @brief Dense integer or floating point labels
 	 *
@@ -31,32 +31,32 @@ namespace shogun
 	 * label
 	 * (vectors).
 	 */
-	class CDenseLabels : public CLabels
+	class DenseLabels : public Labels
 	{
 	public:
 		/** default constructor */
-		CDenseLabels();
+		DenseLabels();
 
 		/** constructor
 		 *
 		 * @param num_labels number of labels
 		 */
-		CDenseLabels(int32_t num_labels);
+		DenseLabels(int32_t num_labels);
 
 		/** copy constructor
 		 *
 		 * @param orig The dense labels to copy
 		 */
-		CDenseLabels(const CDenseLabels& orig);
+		DenseLabels(const DenseLabels& orig);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CDenseLabels(CFile* loader);
+		DenseLabels(std::shared_ptr<File> loader);
 
 		/** destructor */
-		virtual ~CDenseLabels() override;
+		virtual ~DenseLabels() override;
 
 		virtual bool is_valid() const override;
 
@@ -74,7 +74,7 @@ namespace shogun
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(std::shared_ptr<File> loader);
 
 		/** save labels to file
 		 *
@@ -82,7 +82,7 @@ namespace shogun
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(std::shared_ptr<File> writer);
 
 		/** set label
 		 *
@@ -144,7 +144,7 @@ namespace shogun
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		int32_t get_int_label(int32_t idx);
+		int32_t get_int_label(int32_t idx) const;
 
 		/** Gets a copy of the labels.
 		 *
@@ -237,7 +237,7 @@ namespace shogun
 		 *
 		 * @return INT labels
 		 */
-		SGVector<int32_t> get_int_labels();
+		SGVector<int32_t> get_int_labels() const;
 
 		/** set INT labels
 		 *
@@ -283,7 +283,7 @@ namespace shogun
 * is set
 */
 template <>
-inline SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
+inline SGVector<float64_t> DenseLabels::get_labels_t<float64_t>()
 {
 	if (m_subset_stack->has_subsets())
 		return get_labels_copy_t<float64_t>();

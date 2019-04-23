@@ -20,14 +20,13 @@ const int32_t num_classes=3;
 
 void test()
 {
-	const int32_t num_subset_idx=CMath::random(1, num_labels);
+	const int32_t num_subset_idx=Math::random(1, num_labels);
 
 	/* create labels */
-	CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
+	MulticlassLabels* labels=new MulticlassLabels(num_labels);
 	for (index_t i=0; i<num_labels; ++i)
 		labels->set_label(i, i%num_classes);
 
-	SG_REF(labels);
 
 	/* print labels */
 	SGVector<float64_t> labels_data=labels->get_labels();
@@ -36,7 +35,7 @@ void test()
 	/* create subset indices */
 	SGVector<index_t> subset_idx(num_subset_idx);
 	subset_idx.range_fill();
-	CMath::permute(subset_idx);
+	Math::permute(subset_idx);
 
 	/* print subset indices */
 	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
@@ -72,7 +71,6 @@ void test()
 		SG_SPRINT("label %f:\n", label);
 		ASSERT(label==labels_data.vector[i]);
 	}
-	SG_UNREF(labels);
 }
 
 int main(int argc, char **argv)

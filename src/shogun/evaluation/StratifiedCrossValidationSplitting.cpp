@@ -13,20 +13,20 @@
 
 using namespace shogun;
 
-CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
-	RandomMixin<CSplittingStrategy>()
+StratifiedCrossValidationSplitting::StratifiedCrossValidationSplitting() :
+	RandomMixin<SplittingStrategy>()
 {
 }
 
-CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
-		CLabels* labels, index_t num_subsets) :
-	RandomMixin<CSplittingStrategy>(labels, num_subsets)
+StratifiedCrossValidationSplitting::StratifiedCrossValidationSplitting(
+		std::shared_ptr<Labels> labels, index_t num_subsets) :
+	RandomMixin<SplittingStrategy>(labels, num_subsets)
 {
 }
 
-void CStratifiedCrossValidationSplitting::check_labels() const
+void StratifiedCrossValidationSplitting::check_labels() const
 {
-	auto dense_labels = m_labels->as<CDenseLabels>();
+	auto dense_labels = std::static_pointer_cast<DenseLabels>(m_labels);
 	auto classes = dense_labels->get_labels().unique();
 
 	SGVector<index_t> labels_per_class(classes.size());
@@ -54,7 +54,7 @@ void CStratifiedCrossValidationSplitting::check_labels() const
 	}
 }
 
-void CStratifiedCrossValidationSplitting::build_subsets()
+void StratifiedCrossValidationSplitting::build_subsets()
 {
 	check_labels();
 
@@ -62,13 +62,13 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	reset_subsets();
 	m_is_filled=true;
 
-	auto dense_labels = m_labels->as<CDenseLabels>();
+	auto dense_labels = m_labels->as<DenseLabels>();
 	auto classes = dense_labels->get_labels().unique();
 
 	/* for every label, build set for indices */
-	CDynamicObjectArray label_indices;
+	DynamicObjectArray label_indices;
 	for (auto i : range(classes.size()))
-		label_indices.append_element(new CDynamicArray<index_t> ());
+		label_indices.append_element(std::make_shared<DynamicArray<index_t>>());
 
 	/* fill set with indices, for each label type ... */
 	for (auto i : range(classes.size()))
@@ -78,10 +78,9 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 		{
 			if (dense_labels->get_label(j) == classes[i])
 			{
-				CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
-						label_indices.get_element(i);
+				auto current=label_indices.get_element<DynamicArray<index_t>>(i);
 				current->append_element(j);
-				SG_UNREF(current);
+
 			}
 		}
 	}
@@ -89,13 +88,13 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* shuffle created label sets */
 	for (index_t i=0; i<label_indices.get_num_elements(); ++i)
 	{
-		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
-				label_indices.get_element(i);
+		auto current=
+				label_indices.get_element<DynamicArray<index_t>>(i);
 
 		// external random state important for threads
 		random::shuffle(current->begin(), current->end(), m_prng);
 
-		SG_UNREF(current);
+
 	}
 
 	/* distribute labels to subsets for all label types */
@@ -103,19 +102,19 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	for (auto i : range(classes.size()))
 	{
 		/* current index set for current label */
-		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
-				label_indices.get_element(i);
+		auto current=
+				label_indices.get_element<DynamicArray<index_t>>(i);
 
 		for (index_t j=0; j<current->get_num_elements(); ++j)
 		{
-			CDynamicArray<index_t>* next=(CDynamicArray<index_t>*)
-					m_subset_indices->get_element(target_set++);
+			auto next=
+					m_subset_indices->get_element<DynamicArray<index_t>>(target_set++);
 			next->append_element(current->get_element(j));
 			target_set%=m_subset_indices->get_num_elements();
-			SG_UNREF(next);
+
 		}
 
-		SG_UNREF(current);
+
 	}
 
 	/* finally shuffle to avoid that subsets with low indices have more

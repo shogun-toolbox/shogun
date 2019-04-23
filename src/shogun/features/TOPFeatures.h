@@ -14,8 +14,8 @@
 
 namespace shogun
 {
-template <class T> class CDenseFeatures;
-class CHMM;
+template <class T> class DenseFeatures;
+class HMM;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** HMM indices */
@@ -59,14 +59,14 @@ struct T_HMM_INDIZES
  * Note that TOP-features are computed on the fly, so to be effective feature
  * caching should be enabled.
  *
- * It inherits its functionality from CDenseFeatures, which should be
+ * It inherits its functionality from DenseFeatures, which should be
  * consulted for further reference.
  */
-class CTOPFeatures : public CDenseFeatures<float64_t>
+class TOPFeatures : public DenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */
-		CTOPFeatures();
+		TOPFeatures();
 
 		/** constructor
 		 *
@@ -76,19 +76,19 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param neglin if negative HMM is of linear shape
 		 * @param poslin if positive HMM is of linear shape
 		 */
-		CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
+		TOPFeatures(int32_t size, std::shared_ptr<HMM> p, std::shared_ptr<HMM> n, bool neglin, bool poslin);
 
 		/** copy constructor */
-		CTOPFeatures(const CTOPFeatures &orig);
+		TOPFeatures(const TOPFeatures &orig);
 
-		virtual ~CTOPFeatures();
+		virtual ~TOPFeatures();
 
 		/** set HMMs
 		 *
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(CHMM* p, CHMM* n);
+		void set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n);
 
 		/** set feature matrix
 		 *
@@ -108,7 +108,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param hmm_idx HMM index
 		 * @return if computing was successful
 		 */
-		bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
+		bool compute_relevant_indizes(std::shared_ptr<HMM> hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "TOPFeatures"; }
@@ -137,9 +137,9 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 
 	protected:
 		/** positive HMM */
-		CHMM* pos;
+		std::shared_ptr<HMM> pos;
 		/** negative HMM */
-		CHMM* neg;
+		std::shared_ptr<HMM> neg;
 		/** if negative HMM is a LinearHMM */
 		bool neglinear;
 		/** if positive HMM is a LinearHMM */

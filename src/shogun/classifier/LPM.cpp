@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CLPM::CLPM()
-: CLinearMachine(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+: LinearMachine(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 }
 
@@ -27,14 +27,14 @@ CLPM::~CLPM()
 {
 }
 
-bool CLPM::train_machine(CFeatures* data)
+bool CLPM::train_machine(Features* data)
 {
 	ASSERT(m_labels)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+			SG_ERROR("Specified features are not of type DotFeatures\n")
+		set_features((DotFeatures*) data);
 	}
 	ASSERT(features)
 	int32_t num_train_labels=m_labels->get_num_labels();
@@ -52,7 +52,7 @@ bool CLPM::train_machine(CFeatures* data)
 	CCplex solver;
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1)
-	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, (CBinaryLabels*)m_labels, get_bias_enabled());
+	solver.setup_lpm(C1, (SparseFeatures<float64_t>*) features, (BinaryLabels*)m_labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);
@@ -64,11 +64,11 @@ bool CLPM::train_machine(CFeatures* data)
 
 //#define LPM_DEBUG
 #ifdef LPM_DEBUG
-	CMath::display_vector(params,num_params, "params");
+	Math::display_vector(params,num_params, "params");
 	SG_PRINT("bias=%f\n", bias)
-	CMath::display_vector(w,w_dim, "w");
-	CMath::display_vector(&params[1],w_dim, "w+");
-	CMath::display_vector(&params[1+w_dim],w_dim, "w-");
+	Math::display_vector(w,w_dim, "w");
+	Math::display_vector(&params[1],w_dim, "w+");
+	Math::display_vector(&params[1+w_dim],w_dim, "w-");
 #endif
 	SG_FREE(params);
 

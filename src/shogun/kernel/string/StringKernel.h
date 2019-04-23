@@ -19,21 +19,21 @@ namespace shogun
  * For a (very complex) example see e.g. CWeightedDegreeStringKernel
  *
  */
-template <class ST> class CStringKernel : public CKernel
+template <class ST> class StringKernel : public Kernel
 {
 	public:
 		/** constructor
 		 *
 		 * @param cachesize cache size
 		 */
-		CStringKernel(int32_t cachesize=0) : CKernel(cachesize) {}
+		StringKernel(int32_t cachesize=0) : Kernel(cachesize) {}
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CStringKernel(CFeatures *l, CFeatures *r) : CKernel(10)
+		StringKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r) : Kernel(10)
 		{
 			init(l, r);
 		}
@@ -48,9 +48,9 @@ template <class ST> class CStringKernel : public CKernel
 		 *  @param r features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
-			CKernel::init(l,r);
+			Kernel::init(l,r);
 
 			ASSERT(l->get_feature_class()==C_STRING)
 			ASSERT(r->get_feature_class()==C_STRING)
@@ -90,19 +90,19 @@ template <class ST> class CStringKernel : public CKernel
 		virtual EKernelType get_kernel_type()=0;
 };
 
-template<> inline EFeatureType CStringKernel<float64_t>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType StringKernel<float64_t>::get_feature_type() { return F_DREAL; }
 
-template<> inline EFeatureType CStringKernel<uint64_t>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType StringKernel<uint64_t>::get_feature_type() { return F_ULONG; }
 
-template<> inline EFeatureType CStringKernel<int32_t>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType StringKernel<int32_t>::get_feature_type() { return F_INT; }
 
-template<> inline EFeatureType CStringKernel<uint16_t>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType StringKernel<uint16_t>::get_feature_type() { return F_WORD; }
 
-template<> inline EFeatureType CStringKernel<int16_t>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType StringKernel<int16_t>::get_feature_type() { return F_SHORT; }
 
-template<> inline EFeatureType CStringKernel<uint8_t>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType StringKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
-template<> inline EFeatureType CStringKernel<char>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType StringKernel<char>::get_feature_type() { return F_CHAR; }
 }
 #endif /* _STRINGKERNEL_H__ */
 

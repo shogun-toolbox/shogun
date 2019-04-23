@@ -47,9 +47,7 @@ int main(int argc, char ** argv)
 	features->set_feature_vector(SGMatrix< float64_t >(mat5, 3, 4, false), 4);
 
 	CHMSVMModel* model = new CHMSVMModel(features, labels, SMT_TWO_STATE, 3);
-	SG_REF(model);
 	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
-	SG_REF(sosvm);
 
 	sosvm->train();
 
@@ -57,8 +55,6 @@ int main(int argc, char ** argv)
 	sosvm->get_slacks().display_vector("slacks");
 
 	// Free memory
-	SG_UNREF(sosvm);
-	SG_UNREF(model);
 
 #endif /* USE_MOSEK */
 	exit_shogun();

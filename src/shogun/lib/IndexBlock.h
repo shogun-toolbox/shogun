@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, Thoralf Klein,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -15,17 +15,17 @@
 namespace shogun
 {
 
-class CList;
+class List;
 
 /** @brief class IndexBlock used to represent
  * contiguous indices of one group (e.g. block of related features)
  */
-class CIndexBlock : public CSGObject
+class IndexBlock : public SGObject
 {
 public:
 
 	/** default constructor */
-	CIndexBlock();
+	IndexBlock();
 
 	/** constructor
 	 * @param min_index smallest index of the index block
@@ -33,11 +33,11 @@ public:
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CIndexBlock(index_t min_index, index_t max_index,
+	IndexBlock(index_t min_index, index_t max_index,
 	      float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	~CIndexBlock();
+	~IndexBlock();
 
 	/** get min index */
 	index_t get_min_index() const { return m_min_index; }
@@ -56,7 +56,7 @@ public:
 	virtual const char* get_name() const { return "IndexBlock"; };
 
 	/** get subtasks */
-	CList* get_sub_blocks();
+	std::shared_ptr<List> get_sub_blocks();
 
 	/** get num subtasks */
 	int32_t get_num_sub_blocks();
@@ -64,7 +64,7 @@ public:
 	/** adds sub-block
 	 * @param sub_block subtask to add
 	 */
-	void add_sub_block(CIndexBlock* sub_block);
+	void add_sub_block(std::shared_ptr<IndexBlock> sub_block);
 
 private:
 	/** min index */
@@ -77,7 +77,7 @@ private:
 	float64_t m_weight;
 
 	/** subtasks */
-	CList* m_sub_blocks;
+	std::shared_ptr<List> m_sub_blocks;
 
 };
 

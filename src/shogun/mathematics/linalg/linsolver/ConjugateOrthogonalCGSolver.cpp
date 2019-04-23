@@ -19,27 +19,27 @@ using namespace Eigen;
 namespace shogun
 {
 
-CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
-	: CIterativeLinearSolver<complex128_t, float64_t>()
+ConjugateOrthogonalCGSolver::ConjugateOrthogonalCGSolver()
+	: IterativeLinearSolver<complex128_t, float64_t>()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
-CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
-	: CIterativeLinearSolver<complex128_t, float64_t>(store_residuals)
+ConjugateOrthogonalCGSolver::ConjugateOrthogonalCGSolver(bool store_residuals)
+	: IterativeLinearSolver<complex128_t, float64_t>(store_residuals)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
-CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
+ConjugateOrthogonalCGSolver::~ConjugateOrthogonalCGSolver()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 }
 
-SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
-	CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
+SGVector<complex128_t> ConjugateOrthogonalCGSolver::solve(
+	std::shared_ptr<LinearOperator<complex128_t>> A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..\n");
+	SG_DEBUG("ConjugateOrthogonalCGSolver::solve(): Entering..\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
@@ -69,7 +69,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 		m_relative_tolerence, m_absolute_tolerence);
 
 	// start the timer
-	CTime time;
+	Time time;
 	time.start();
 
 	// set the residuals to zero
@@ -131,7 +131,7 @@ SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
 	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
-	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..\n");
+	SG_DEBUG("ConjugateOrthogonalCGSolver::solve(): Leaving..\n");
 	return result;
 }
 

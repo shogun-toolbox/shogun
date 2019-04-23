@@ -14,8 +14,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class LocalTangentSpaceAlignment used to embed
  * data using Local Tangent Space Alignment (LTSA)
@@ -33,21 +33,21 @@ class CDistance;
  * Uses implementation from the Tapkee library.
  *
  */
-class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
+class LocalTangentSpaceAlignment: public LocallyLinearEmbedding
 {
 public:
 
 	/** constructor */
-	CLocalTangentSpaceAlignment();
+	LocalTangentSpaceAlignment();
 
 	/** destructor */
-	virtual ~CLocalTangentSpaceAlignment();
+	virtual ~LocalTangentSpaceAlignment();
 
 	/** get name */
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 };
 }
 

@@ -24,21 +24,21 @@ namespace shogun
  *
  * Note: Basically the same as LinearByteKernel but on signed chars.
  */
-class CLinearStringKernel: public CStringKernel<char>
+class LinearStringKernel: public StringKernel<char>
 {
 	public:
 		/** constructor
 		 */
-		CLinearStringKernel();
+		LinearStringKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearStringKernel(CStringFeatures<char>* l, CStringFeatures<char>* r);
+		LinearStringKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r);
 
-		virtual ~CLinearStringKernel();
+		virtual ~LinearStringKernel();
 
 		/** initialize kernel
 		 *
@@ -46,7 +46,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

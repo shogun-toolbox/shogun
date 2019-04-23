@@ -5,12 +5,12 @@
  */
 
 /* Remove C Prefix */
-%rename(Regression) CRegression;
-%rename(MKL) CMKL;
-%rename(MKLRegression) CMKLRegression;
+%shared_ptr(shogun::Regression)
+%shared_ptr(shogun::MKL)
+%shared_ptr(shogun::MKLRegression)
 
 #ifdef USE_SVMLIGHT
-%rename(SVRLight) CSVRLight;
+%shared_ptr(shogun::SVRLight)
 #endif //USE_SVMLIGHT
 
 

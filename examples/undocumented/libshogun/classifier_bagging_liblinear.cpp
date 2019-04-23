@@ -27,24 +27,24 @@ int main(int argc, char** argv)
 	int32_t bag_size = 25;
 
 	/* streaming data generator for mean shift distributions */
-    CMeanShiftDataGenerator* gen_n = new CMeanShiftDataGenerator(0, dim);
-	CMeanShiftDataGenerator* gen_p = new CMeanShiftDataGenerator(difference, dim);
+    MeanShiftDataGenerator* gen_n = new MeanShiftDataGenerator(0, dim);
+	MeanShiftDataGenerator* gen_p = new MeanShiftDataGenerator(difference, dim);
 
-	CFeatures* neg = gen_n->get_streamed_features(num_pos);
-	CFeatures* pos = gen_p->get_streamed_features(num_neg);
-	CDenseFeatures<float64_t>* train_feats =
-		neg->create_merged_copy(pos)->as<CDenseFeatures<float64_t>>();
+	Features* neg = gen_n->get_streamed_features(num_pos);
+	Features* pos = gen_p->get_streamed_features(num_neg);
+	DenseFeatures<float64_t>* train_feats =
+		neg->create_merged_copy(pos)->as<DenseFeatures<float64_t>>();
 
 	SGVector<float64_t> tl(num_neg+num_pos);
 	tl.set_const(1);
 	for (index_t i = 0; i < num_neg; ++i)
 		tl[i] = -1;
-	CBinaryLabels* train_labels = new CBinaryLabels(tl);
+	BinaryLabels* train_labels = new BinaryLabels(tl);
 
-	CBaggingMachine* bm = new CBaggingMachine(train_feats, train_labels);
-	CLibLinear* ll = new CLibLinear();
+	BaggingMachine* bm = new BaggingMachine(train_feats, train_labels);
+	LibLinear* ll = new LibLinear();
 	ll->set_bias_enabled(true);
-	CMajorityVote* mv = new CMajorityVote();
+	MajorityVote* mv = new MajorityVote();
 
 	bm->set_num_bags(num_bags);
 	bm->set_bag_size(bag_size);
@@ -53,27 +53,23 @@ int main(int argc, char** argv)
 
 	bm->train();
 
-	CBinaryLabels* pred_bagging = bm->apply_binary(train_feats);
-	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+	BinaryLabels* pred_bagging = bm->apply_binary(train_feats);
+	ContingencyTableEvaluation* eval = new ContingencyTableEvaluation();
 	pred_bagging->get_int_labels().display_vector();
 
 	float64_t bag_accuracy = eval->evaluate(pred_bagging, train_labels);
 	float64_t oob_error = bm->get_oob_error(eval);
 
-	CLibLinear* libLin = new CLibLinear(2.0, train_feats, train_labels);
+	LibLinear* libLin = new LibLinear(2.0, train_feats, train_labels);
 	libLin->set_bias_enabled(true);
 	libLin->train();
-	CBinaryLabels* pred_liblin = libLin->apply_binary(train_feats);
+	BinaryLabels* pred_liblin = libLin->apply_binary(train_feats);
 	pred_liblin->get_int_labels().display_vector();
 	float64_t liblin_accuracy = eval->evaluate(pred_liblin, train_labels);
 
 	SG_SPRINT("bagging accuracy: %f (OOB-error: %f)\nLibLinear accuracy: %f\n",
 		bag_accuracy, oob_error, liblin_accuracy);
 
-	SG_UNREF(bm);
-	SG_UNREF(pos);
-	SG_UNREF(neg);
-	SG_UNREF(eval);
 
 	exit_shogun();
 

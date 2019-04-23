@@ -4,45 +4,44 @@
  * Authors: Giovanni De Toni, Sahil Chaddha, Sergey Lisitsyn
  */
 
-/* These functions return new Objects */
-%newobject CMachineEvaluation::evaluate();
-
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorContingencyTableEvaluation;
+%feature("director") shogun::DirectorContingencyTableEvaluation;
 #endif
 
-/* Remove C Prefix */
-%rename(Evaluation) CEvaluation;
-%rename(EvaluationResult) CEvaluationResult;
-%rename(BinaryClassEvaluation) CBinaryClassEvaluation;
-%rename(ClusteringEvaluation) CClusteringEvaluation;
-%rename(ClusteringAccuracy) CClusteringAccuracy;
-%rename(ClusteringMutualInformation) CClusteringMutualInformation;
-%rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
-%rename(MachineEvaluation) CMachineEvaluation;
-%rename(MulticlassAccuracy) CMulticlassAccuracy;
-%rename(MeanAbsoluteError) CMeanAbsoluteError;
-%rename(MeanSquaredError) CMeanSquaredError;
-%rename(MeanSquaredLogError) CMeanSquaredLogError;
-%rename(ROCEvaluation) CROCEvaluation;
-%rename(PRCEvaluation) CPRCEvaluation;
-%rename(AccuracyMeasure) CAccuracyMeasure;
-%rename(ErrorRateMeasure) CErrorRateMeasure;
-%rename(BALMeasure) CBALMeasure;
-%rename(WRACCMeasure) CWRACCMeasure;
-%rename(F1Measure) CF1Measure;
-%rename(CrossCorrelationMeasure) CCrossCorrelationMeasure;
-%rename(RecallMeasure) CRecallMeasure;
-%rename(PrecisionMeasure) CPrecisionMeasure;
-%rename(SpecificityMeasure) CSpecificityMeasure;
-%rename(SplittingStrategy) CSplittingStrategy;
-%rename(GradientCriterion) CGradientCriterion;
-%rename(GradientEvaluation) CGradientEvaluation;
-%rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
-%rename(CrossValidationResult) CCrossValidationResult;
-%rename(StructuredAccuracy) CStructuredAccuracy;
-%rename(DirectorContingencyTableEvaluation) CDirectorContingencyTableEvaluation;
-%rename(DifferentiableFunction) CDifferentiableFunction;
+%shared_ptr(shogun::Evaluation)
+%shared_ptr(shogun::EvaluationResult)
+%shared_ptr(shogun::GradientResult)
+%shared_ptr(shogun::BinaryClassEvaluation)
+%shared_ptr(shogun::ClusteringEvaluation)
+%shared_ptr(shogun::ClusteringAccuracy)
+%shared_ptr(shogun::ClusteringMutualInformation)
+%shared_ptr(shogun::ContingencyTableEvaluation)
+%shared_ptr(shogun::MachineEvaluation)
+%shared_ptr(shogun::MulticlassAccuracy)
+%shared_ptr(shogun::MeanAbsoluteError)
+%shared_ptr(shogun::MeanSquaredError)
+%shared_ptr(shogun::MeanSquaredLogError)
+%shared_ptr(shogun::ROCEvaluation)
+%shared_ptr(shogun::PRCEvaluation)
+%shared_ptr(shogun::AccuracyMeasure)
+%shared_ptr(shogun::ErrorRateMeasure)
+%shared_ptr(shogun::BALMeasure)
+%shared_ptr(shogun::WRACCMeasure)
+%shared_ptr(shogun::F1Measure)
+%shared_ptr(shogun::CrossCorrelationMeasure)
+%shared_ptr(shogun::RecallMeasure)
+%shared_ptr(shogun::PrecisionMeasure)
+%shared_ptr(shogun::SpecificityMeasure)
+%shared_ptr(shogun::SplittingStrategy)
+%shared_ptr(shogun::GradientCriterion)
+%shared_ptr(shogun::GradientEvaluation)
+%shared_ptr(shogun::MulticlassOVREvaluation)
+%shared_ptr(shogun::CrossValidationResult)
+%shared_ptr(shogun::CrossValidationStorage)
+%shared_ptr(shogun::CrossValidationFoldStorage)
+%shared_ptr(shogun::StructuredAccuracy)
+%shared_ptr(shogun::DirectorContingencyTableEvaluation)
+%shared_ptr(shogun::DifferentiableFunction)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/EvaluationResult.h>

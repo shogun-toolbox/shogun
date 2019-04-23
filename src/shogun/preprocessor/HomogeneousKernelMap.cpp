@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CHomogeneousKernelMap::CHomogeneousKernelMap()
-	: CDensePreprocessor<float64_t>(),
+HomogeneousKernelMap::HomogeneousKernelMap()
+	: DensePreprocessor<float64_t>(),
 	m_kernel(HomogeneousKernelIntersection),
 	m_window(HomogeneousKernelMapWindowRectangular),
 	m_gamma(1.0),
@@ -24,10 +24,10 @@ CHomogeneousKernelMap::CHomogeneousKernelMap()
 	register_params ();
 }
 
-CHomogeneousKernelMap::CHomogeneousKernelMap(HomogeneousKernelType kernel,
+HomogeneousKernelMap::HomogeneousKernelMap(HomogeneousKernelType kernel,
 	HomogeneousKernelMapWindowType wType, float64_t gamma,
 	uint64_t order, float64_t period)
-	: CDensePreprocessor<float64_t>(),
+	: DensePreprocessor<float64_t>(),
 	m_kernel(kernel),
 	m_window(wType),
 	m_gamma(gamma),
@@ -39,18 +39,18 @@ CHomogeneousKernelMap::CHomogeneousKernelMap(HomogeneousKernelType kernel,
 	register_params ();
 }
 
-CHomogeneousKernelMap::~CHomogeneousKernelMap()
+HomogeneousKernelMap::~HomogeneousKernelMap()
 {
 }
 
 
-void CHomogeneousKernelMap::cleanup()
+void HomogeneousKernelMap::cleanup()
 {
 	m_table=SGVector<float64_t>();
 }
 
 
-void CHomogeneousKernelMap::init()
+void HomogeneousKernelMap::init()
 {
 	SG_DEBUG ("Initialising homogeneous kernel map...\n")
 	ASSERT (m_gamma > 0)
@@ -96,7 +96,7 @@ void CHomogeneousKernelMap::init()
 			    }
 			    break;
 		}
-		m_period = CMath::max (m_period, 1.0) ;
+		m_period = Math::max (m_period, 1.0) ;
 	}
 
 	m_numSubdivisions = 8 + 8*m_order;
@@ -118,7 +118,7 @@ void CHomogeneousKernelMap::init()
 	float64_t* tablep = m_table.vector;
 	float64_t* kappa = m_table.vector + tableHeight * tableWidth;
 	float64_t* freq = kappa + (1+m_order);
-	float64_t L = 2.0 * CMath::PI / m_period;
+	float64_t L = 2.0 * Math::PI / m_period;
 
 	/* precompute the sampled periodicized spectrum */
 	while (i <= m_order) {
@@ -139,7 +139,7 @@ void CHomogeneousKernelMap::init()
 		for (i = 0 ; i < m_numSubdivisions;
 				++i, mantissa += m_subdivision) {
 			x = std::ldexp (mantissa, exponent);
-			xgamma = CMath::pow (x, m_gamma);
+			xgamma = Math::pow (x, m_gamma);
 			Lxgamma = L * xgamma;
 			Llogx = L * std::log(x);
 
@@ -155,7 +155,7 @@ void CHomogeneousKernelMap::init()
 }
 
 SGMatrix<float64_t>
-CHomogeneousKernelMap::apply_to_matrix(SGMatrix<float64_t> matrix)
+HomogeneousKernelMap::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
@@ -172,80 +172,80 @@ CHomogeneousKernelMap::apply_to_matrix(SGMatrix<float64_t> matrix)
 }
 
 /// apply preproc on single feature vector
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> HomogeneousKernelMap::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SGVector<float64_t> result = apply_to_vector(vector);
 	return result;
 }
 
-void CHomogeneousKernelMap::set_kernel_type(HomogeneousKernelType k)
+void HomogeneousKernelMap::set_kernel_type(HomogeneousKernelType k)
 {
 	m_kernel = k;
 	init ();
 }
 
-HomogeneousKernelType CHomogeneousKernelMap::get_kernel_type() const
+HomogeneousKernelType HomogeneousKernelMap::get_kernel_type() const
 {
 	return m_kernel;
 }
 
-void CHomogeneousKernelMap::set_window_type(HomogeneousKernelMapWindowType w)
+void HomogeneousKernelMap::set_window_type(HomogeneousKernelMapWindowType w)
 {
 	m_window = w;
 	init ();
 }
 
-HomogeneousKernelMapWindowType CHomogeneousKernelMap::get_window_type() const
+HomogeneousKernelMapWindowType HomogeneousKernelMap::get_window_type() const
 {
 	return m_window;
 }
 
-void CHomogeneousKernelMap::set_gamma(float64_t g)
+void HomogeneousKernelMap::set_gamma(float64_t g)
 {
 	m_gamma = g;
 	init ();
 }
 
-float64_t CHomogeneousKernelMap::get_gamma(float64_t g) const
+float64_t HomogeneousKernelMap::get_gamma(float64_t g) const
 {
 	return m_gamma;
 }
 
-void CHomogeneousKernelMap::set_order(uint64_t o)
+void HomogeneousKernelMap::set_order(uint64_t o)
 {
 	m_order = o;
 	init ();
 }
 
-uint64_t CHomogeneousKernelMap::get_order() const
+uint64_t HomogeneousKernelMap::get_order() const
 {
 	return m_order;
 }
 
-void CHomogeneousKernelMap::set_period(float64_t p)
+void HomogeneousKernelMap::set_period(float64_t p)
 {
 	m_period = p;
 	init ();
 }
 
-float64_t CHomogeneousKernelMap::get_period() const
+float64_t HomogeneousKernelMap::get_period() const
 {
 	return m_period;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_spectrum(float64_t omega) const
+HomogeneousKernelMap::get_spectrum(float64_t omega) const
 {
 	switch (m_kernel) {
 		case HomogeneousKernelIntersection:
-			return (2.0 / CMath::PI) / (1 + 4 * omega*omega);
+			return (2.0 / Math::PI) / (1 + 4 * omega*omega);
 		case HomogeneousKernelChi2:
 		    return 2.0 /
-		           (std::exp(CMath::PI * omega) + std::exp(-CMath::PI * omega));
+		           (std::exp(Math::PI * omega) + std::exp(-Math::PI * omega));
 	    case HomogeneousKernelJS:
 		    return (2.0 / std::log(4.0)) * 2.0 /
-		           (std::exp(CMath::PI * omega) +
-		            std::exp(-CMath::PI * omega)) /
+		           (std::exp(Math::PI * omega) +
+		            std::exp(-Math::PI * omega)) /
 		           (1 + 4 * omega * omega);
 	    default:
 		    /* throw exception */
@@ -256,14 +256,14 @@ CHomogeneousKernelMap::get_spectrum(float64_t omega) const
 }
 
 inline float64_t
-CHomogeneousKernelMap::sinc(float64_t x) const
+HomogeneousKernelMap::sinc(float64_t x) const
 {
 	if (x == 0.0) return 1.0 ;
 	return std::sin(x) / x;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_smooth_spectrum(float64_t omega) const
+HomogeneousKernelMap::get_smooth_spectrum(float64_t omega) const
 {
 	float64_t kappa_hat = 0;
 	float64_t omegap ;
@@ -277,12 +277,12 @@ CHomogeneousKernelMap::get_smooth_spectrum(float64_t omega) const
 		case HomogeneousKernelMapWindowRectangular:
 			for (omegap = - omegaRange ; omegap <= omegaRange ; omegap += domega) {
 				float64_t win = sinc ((m_period/2.0) * omegap);
-				win *= (m_period/(2.0*CMath::PI));
+				win *= (m_period/(2.0*Math::PI));
 				kappa_hat += win * get_spectrum (omegap + omega);
 			}
 			kappa_hat *= domega;
 			/* project on the postivie orthant (see PAMI) */
-			kappa_hat = CMath::max (kappa_hat, 0.0);
+			kappa_hat = Math::max (kappa_hat, 0.0);
 			break;
 		default:
 			/* throw exception */
@@ -291,7 +291,7 @@ CHomogeneousKernelMap::get_smooth_spectrum(float64_t omega) const
 	return kappa_hat;
 }
 
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float64_t>& in_v) const
+SGVector<float64_t> HomogeneousKernelMap::apply_to_vector(const SGVector<float64_t>& in_v) const
 {
 	/* assert for in vector */
 	ASSERT (in_v.vlen > 0)
@@ -343,7 +343,7 @@ SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float6
 	return out_v;
 }
 
-void CHomogeneousKernelMap::register_params()
+void HomogeneousKernelMap::register_params()
 {
 	/* register variables */
 	SG_ADD(&m_gamma, "gamma", "Homogeneity order.", ParameterProperties::HYPER);

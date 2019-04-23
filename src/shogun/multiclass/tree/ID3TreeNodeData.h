@@ -39,7 +39,7 @@ namespace shogun
 /** @brief structure to store data of a node of
  * id3 tree. This can be used as a template type in
  * TreeMachineNode class. Ex: id3 algorithm uses nodes
- * of type CTreeMachineNode<id3TreeNodeData>
+ * of type TreeMachineNode<id3TreeNodeData>
  */
 struct id3TreeNodeData
 {

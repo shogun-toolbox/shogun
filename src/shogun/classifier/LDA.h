@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Michele Mazzoni, Heiko Strathmann, 
- *          Fernando Iglesias, Sergey Lisitsyn, Abhijeet Kislay, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Michele Mazzoni, Heiko Strathmann,
+ *          Fernando Iglesias, Sergey Lisitsyn, Abhijeet Kislay, Bjoern Esser,
  *          Christopher Goldsworthy, Sanuj Sharma
  */
 
@@ -34,10 +34,10 @@ enum ELDAMethod
 	FLD_LDA = 30
 };
 
-template <class ST> class CDenseFeatures;
+template <class ST> class DenseFeatures;
 /** @brief Class LDA implements regularized Linear Discriminant Analysis.
  *
- * LDA learns a linear classifier and requires examples to be CDenseFeatures.
+ * LDA learns a linear classifier and requires examples to be DenseFeatures.
  * The learned linear classification rule is optimal under the assumption that
  * both classes a gaussian distributed with equal co-variance. To find a linear
  * separation \f${\bf w}\f$ in training, the in-between class variance is
@@ -89,13 +89,13 @@ template <class ST> class CDenseFeatures;
  * Note that even if N > D FLD_LDA may fail being the covariance matrix not
  * invertible,
  * in such case one should use SVD_LDA.
- * \sa CLinearMachine
+ * \sa LinearMachine
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
 
-class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
+class LDA : public DenseRealDispatch<LDA, LinearMachine>
 {
-	friend class CDenseRealDispatch<CLDA, CLinearMachine>;
+	friend class DenseRealDispatch<LDA, LinearMachine>;
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
@@ -109,7 +109,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
 		 * [default = BDC-SVD]
 		 */
-		CLDA(
+		LDA(
 		    float64_t gamma = 0, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
 
@@ -125,11 +125,11 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
 		 * [default = BDC-SVD]
 		 */
-		CLDA(
-		    float64_t gamma, CDenseFeatures<float64_t>* traindat,
-		    CLabels* trainlab, ELDAMethod method = AUTO_LDA,
+		LDA(
+		    float64_t gamma, std::shared_ptr<DenseFeatures<float64_t>> traindat,
+		    std::shared_ptr<Labels> trainlab, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
-		virtual ~CLDA();
+		virtual ~LDA();
 
 		/** get classifier type
 		 *
@@ -154,7 +154,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 */
 		template <typename ST, typename U = typename std::enable_if_t<
 		                           std::is_floating_point<ST>::value>>
-		bool train_machine_templated(CDenseFeatures<ST>* data);
+		bool train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data);
 
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
@@ -162,7 +162,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd(CDenseFeatures<ST>* data);
+		bool solver_svd(std::shared_ptr<DenseFeatures<ST>> data);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -171,7 +171,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic(CDenseFeatures<ST>* data);
+		bool solver_classic(std::shared_ptr<DenseFeatures<ST>> data);
 
 	protected:
 

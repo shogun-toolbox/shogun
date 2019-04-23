@@ -21,7 +21,7 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-void print_modsel_parameters(CSGObject* object)
+void print_modsel_parameters(SGObject* object)
 {
 	SGStringList<char> modsel_params=object->get_modelsel_names();
 
@@ -50,31 +50,25 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 #ifndef HAVE_LAPACK
-	CSGObject* object;
+	SGObject* object;
 
 	object=new CLibSVM();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 
-	object=new CLibLinear();
+	object=new LibLinear();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 
 	object=new CDistantSegmentsKernel();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 
-	object=new CGaussianKernel();
+	object=new GaussianKernel();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 
 	object=new CPowerKernel();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 
 	object=new CMinkowskiMetric();
 	print_modsel_parameters(object);
-	SG_UNREF(object);
 #endif // HAVE_LAPACK
 
 	exit_shogun();

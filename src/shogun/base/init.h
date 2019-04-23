@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 
@@ -12,6 +12,7 @@
 #include <shogun/lib/config.h>
 
 #include <functional>
+#include <memory>
 #include <stdio.h>
 
 namespace shogun
@@ -20,7 +21,7 @@ namespace shogun
 	class Version;
 	class Parallel;
 	class SGLinalg;
-	class CSignal;
+	class Signal;
 
 	/** This function must be called before libshogun is used. Usually shogun
 	 * does
@@ -54,32 +55,32 @@ namespace shogun
 	 *
 	 * @param io io object to use
 	 */
-	void set_global_io(SGIO* io);
+	void set_global_io(std::shared_ptr<SGIO> io);
 
 	/** get the global io object
 	 *
 	 * @return io object
 	 */
-	SGIO* get_global_io();
+	std::shared_ptr<SGIO> get_global_io();
 
 	/** @return the globally over-ridden floating point epsilon for
-	 * CMath::fequals
+	 * Math::fequals
 	 */
 	float64_t get_global_fequals_epsilon();
 
-	/** Globally over-ride the floating point epsilon for CMath::fequals.
-	 * Hack required for CSGObject::equals checks for certain serialization
+	/** Globally over-ride the floating point epsilon for Math::fequals.
+	 * Hack required for SGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_epsilon new epsilon to use
 	 */
 	void set_global_fequals_epsilon(float64_t fequals_epsilon);
 
-	/** @return whether global linient check for CMath::fequals is enabled
+	/** @return whether global linient check for Math::fequals is enabled
 	 */
 	bool get_global_fequals_tolerant();
 
-	/** Globally enable linient check for CMath::fequals.
-	 * Hack required for CSGObject::equals checks for certain serialization
+	/** Globally enable linient check for Math::fequals.
+	 * Hack required for SGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_tolerant whether or not to use tolerant check
 	 */
@@ -89,25 +90,25 @@ namespace shogun
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_global_parallel(Parallel* parallel);
+	void set_global_parallel(std::shared_ptr<Parallel> parallel);
 
 	/** get the global parallel object
 	 *
 	 * @return parallel object
 	 */
-	Parallel* get_global_parallel();
+	std::shared_ptr<Parallel> get_global_parallel();
 
 	/** set the global version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_global_version(Version* version);
+	void set_global_version(std::shared_ptr<Version> version);
 
 	/** get the global version object
 	 *
 	 * @return version object
 	 */
-	Version* get_global_version();
+	std::shared_ptr<Version> get_global_version();
 
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object
@@ -121,7 +122,7 @@ SGLinalg* get_global_linalg();
  *
  * @return linalg object
  */
-CSignal* get_global_signal();
+Signal* get_global_signal();
 
 /** Checks environment variables and modifies global objects
  */

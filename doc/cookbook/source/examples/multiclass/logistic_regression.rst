@@ -25,7 +25,7 @@ where :math:`\mathbf{a}_{ik}` denotes the :math:`i`-th sample for the :math:`k`-
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`MulticlassLabels` as
 
 .. sgexample:: logistic_regression.sg:create_features
 
@@ -33,11 +33,11 @@ We create an instance of the :sgclass:`CMulticlassLogisticRegression` classifier
 
 .. sgexample:: logistic_regression.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`MulticlassLabels`.
 
 .. sgexample:: logistic_regression.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+We can evaluate test performance via e.g. :sgclass:`MulticlassAccuracy`.
 
 .. sgexample:: logistic_regression.sg:evaluate_accuracy
 

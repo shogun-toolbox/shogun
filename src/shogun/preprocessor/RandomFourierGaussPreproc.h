@@ -42,18 +42,18 @@ namespace shogun {
  * 2c) set_dim_input_space(const int32_t dim);
  * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
  */
-class CRandomFourierGaussPreproc: public RandomMixin<CDensePreprocessor<float64_t>> {
+class RandomFourierGaussPreproc: public RandomMixin<DensePreprocessor<float64_t>> {
 public:
 	/** default constructor */
-	CRandomFourierGaussPreproc();
+	RandomFourierGaussPreproc();
 
 	/** alternative constructor */
-	CRandomFourierGaussPreproc(const CRandomFourierGaussPreproc & pr);
+	RandomFourierGaussPreproc(const RandomFourierGaussPreproc & pr);
 
 	/** default destructor
 	 * takes care for float64_t* randomcoeff_additive,float64_t* randomcoeff_multiplicative;
 	 */
-	~CRandomFourierGaussPreproc();
+	~RandomFourierGaussPreproc();
 
 
 	/** alternative processing routine, inherited from base class
@@ -80,11 +80,11 @@ public:
 	 * the dimensions of input AND feature space are equal to the values from
 	 * the previous call to void set_randomcoefficients(...)
 	 * @param f the features to be processed, must be of type
-	 * CDenseFeatures<float64_t>
+	 * DenseFeatures<float64_t>
 	 * @return true if new random coefficients were generated, false if old ones
 	 * from a call to set_randomcoefficients(...) are kept
 	 */
-	virtual void fit(CFeatures* f);
+	virtual void fit(std::shared_ptr<Features> f);
 
 	/**  setter for kernel width
 	 * @param width kernel width to be set
@@ -144,7 +144,7 @@ public:
 	 * set_randomcoefficients(...)
 	 *
 	 * this function is useful if you want to use apply_to_feature_vector but
-	 * cannot call before it fit(CFeatures *f)
+	 * cannot call before it fit(Features *f)
 	 *
 	 */
 	bool init_randomcoefficients();
@@ -173,7 +173,7 @@ public:
 protected:
 	/** default processing routine, inherited from base class
 	 * @param matrix the features matrix to be processed
-	 * @return the processed feature matrix from the CDenseFeatures<float64_t>
+	 * @return the processed feature matrix from the DenseFeatures<float64_t>
 	 * class in case (2) (see description above) this routine requires only
 	 * steps 2a) and 2b), the rest is determined automatically
 	 */
@@ -182,7 +182,7 @@ protected:
 	/**
 	 * helper for copy constructor and assignment operator=
 	 */
-	void copy(const CRandomFourierGaussPreproc & feats); // helper for two constructors
+	void copy(const RandomFourierGaussPreproc & feats); // helper for two constructors
 
 
 	/** dimension of input features

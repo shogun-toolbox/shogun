@@ -39,7 +39,7 @@
 namespace shogun
 {
 
-/** Evaluation method of KDE, see CKernelDensity */
+/** Evaluation method of KDE, see KernelDensity */
 enum EEvaluationMode
 {
 	EM_KDTREE_SINGLE,
@@ -58,7 +58,7 @@ enum EEvaluationMode
  * faster than ball trees at lower dimensions. In case of high dimensional data, ball tree tends to out-perform KD-tree.
  * By default, the class used is Ball tree.
  */
-class CKernelDensity : public CDistribution
+class KernelDensity : public Distribution
 {
 public :
 	/** Constructor
@@ -71,10 +71,10 @@ public :
 	 * @param atol absolute tolerance
 	 * @param rtol relative tolerance
 	 */
-	CKernelDensity(float64_t bandwidth=1.0, EKernelType kernel_type=K_GAUSSIAN, EDistanceType dist=D_EUCLIDEAN, EEvaluationMode eval=EM_BALLTREE_SINGLE, int32_t leaf_size=1, float64_t atol=0, float64_t rtol=0);
+	KernelDensity(float64_t bandwidth=1.0, EKernelType kernel_type=K_GAUSSIAN, EDistanceType dist=D_EUCLIDEAN, EEvaluationMode eval=EM_BALLTREE_SINGLE, int32_t leaf_size=1, float64_t atol=0, float64_t rtol=0);
 
 	/** destructor */
-	~CKernelDensity();
+	~KernelDensity();
 
 	/** return class name
 	 *
@@ -87,7 +87,7 @@ public :
 	 * @param data data points to be used for density estimation
 	 * @return true
 	 */
-	virtual bool train(CFeatures* data=NULL);
+	virtual bool train(std::shared_ptr<Features> data=NULL);
 
 	/** compute kde for given test points
 	 *
@@ -95,7 +95,7 @@ public :
 	 * @param leaf_size leaf size of query tree (ignored in case of single tree evaluation mode)
 	 * @return log of estimated kernel density velues at given test points
 	 */
-	SGVector<float64_t> get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size=1);
+	SGVector<float64_t> get_log_density(std::shared_ptr<DenseFeatures<float64_t>> test, int32_t leaf_size=1);
 
 	/** return number of model parameters
 	 * NOT IMPLEMENTED
@@ -142,7 +142,7 @@ public :
 		{
 			case K_GAUSSIAN:
 			{
-				return -0.5 * dim * std::log(2 * CMath::PI) -
+				return -0.5 * dim * std::log(2 * Math::PI) -
 				       dim * std::log(width);
 				break;
 			}
@@ -203,7 +203,7 @@ private :
 	EDistanceType m_dist;
 
 	/** Tree */
-	CNbodyTree* tree;
+	std::shared_ptr<CNbodyTree> tree;
 };
 } /* shogun */
 

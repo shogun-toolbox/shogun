@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-CStoppableSGObject::CStoppableSGObject() : CSGObject()
+StoppableSGObject::StoppableSGObject() : SGObject()
 {
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
@@ -19,9 +19,9 @@ CStoppableSGObject::CStoppableSGObject() : CSGObject()
 	m_callback = nullptr;
 };
 
-CStoppableSGObject::~CStoppableSGObject(){};
+StoppableSGObject::~StoppableSGObject(){};
 
-rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
+rxcpp::subscription StoppableSGObject::connect_to_signal_handler()
 {
 	// Subscribe this algorithm to the signal handler
 	auto subscriber = rxcpp::make_subscriber<int>(
@@ -35,40 +35,40 @@ rxcpp::subscription CStoppableSGObject::connect_to_signal_handler()
 	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
 
-void CStoppableSGObject::set_callback(std::function<bool()> callback)
+void StoppableSGObject::set_callback(std::function<bool()> callback)
 {
 	m_callback = callback;
 }
 
-void CStoppableSGObject::reset_computation_variables()
+void StoppableSGObject::reset_computation_variables()
 {
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
 }
 
-void CStoppableSGObject::on_next()
+void StoppableSGObject::on_next()
 {
 	m_cancel_computation.store(true);
 	on_next_impl();
 }
 
-void CStoppableSGObject::on_pause()
+void StoppableSGObject::on_pause()
 {
 	m_pause_computation_flag.store(true);
 	on_pause_impl();
 	resume_computation();
 }
 
-void CStoppableSGObject::on_complete()
+void StoppableSGObject::on_complete()
 {
 	on_complete_impl();
 }
-void CStoppableSGObject::on_next_impl()
+void StoppableSGObject::on_next_impl()
 {
 }
-void CStoppableSGObject::on_pause_impl()
+void StoppableSGObject::on_pause_impl()
 {
 }
-void CStoppableSGObject::on_complete_impl()
+void StoppableSGObject::on_complete_impl()
 {
 }

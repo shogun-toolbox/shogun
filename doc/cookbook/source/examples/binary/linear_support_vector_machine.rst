@@ -24,19 +24,19 @@ See :cite:`fan2008liblinear` and Chapter 6 in :cite:`cristianini2000introduction
 Example
 -------
 
-Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CBinaryLabels` as
+Imagine we have files with training and test data. We create DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`BinaryLabels` as
 
 .. sgexample:: linear_support_vector_machine.sg:create_features
 
-In order to run :sgclass:`CLibLinear`, we need to initialize some parameters like :math:`C` and epsilon which is the residual convergence parameter of the solver.
+In order to run :sgclass:`LibLinear`, we need to initialize some parameters like :math:`C` and epsilon which is the residual convergence parameter of the solver.
 
 .. sgexample:: linear_support_vector_machine.sg:set_parameters
 
-We create an instance of the :sgclass:`CLibLinear` classifier by passing it regularization coefficient, features and labels. We here set the solver type to L2 regularized classification. There are many other solver types in :sgclass:`CLibLinear` to choose from.
+We create an instance of the :sgclass:`LibLinear` classifier by passing it regularization coefficient, features and labels. We here set the solver type to L2 regularized classification. There are many other solver types in :sgclass:`LibLinear` to choose from.
 
 .. sgexample:: linear_support_vector_machine.sg:create_instance
 
-Then we train and apply it to test data, which here gives :sgclass:`CBinaryLabels`.
+Then we train and apply it to test data, which here gives :sgclass:`BinaryLabels`.
 
 .. sgexample:: linear_support_vector_machine.sg:train_and_apply
 

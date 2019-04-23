@@ -44,12 +44,10 @@ char FNAME[] = "data.svmlight";
  */
 void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector<float64_t> labs, SGMatrix<float64_t> feats)
 {
-	CStreamingAsciiFile* file=new CStreamingAsciiFile(fname);
-	SG_REF(file);
+	StreamingAsciiFile* file=new StreamingAsciiFile(fname);
 
-	CStreamingSparseFeatures< float64_t >* stream_features=
-		new CStreamingSparseFeatures< float64_t >(file, true, 1024);
-	SG_REF(stream_features);
+	StreamingSparseFeatures< float64_t >* stream_features=
+		new StreamingSparseFeatures< float64_t >(file, true, 1024);
 
 	SGVector<float64_t > vec(DIM);
 
@@ -73,7 +71,6 @@ void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector<float64_t>
 
 	stream_features->end_parser();
 
-	SG_UNREF(stream_features);
 }
 
 /** Generates random multiclass training data and stores them in svmlight format
@@ -88,14 +85,14 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 
 	FILE* pfile = fopen(FNAME, "w");
 
-	CMath::init_random(17);
+	Math::init_random(17);
 
 	for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
 	{
 		for ( int32_t j = 0 ; j < DIMS ; ++j )
 		{
-			means[j] = CMath::random(-100, 100);
-			stds[j] = CMath::random(   1,   5);
+			means[j] = Math::random(-100, 100);
+			stds[j] = Math::random(   1,   5);
 		}
 
 		for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
@@ -107,7 +104,7 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 			for ( int32_t j = 0 ; j < DIMS ; ++j )
 			{
 				feats[(c*NUM_SAMPLES+i)*DIMS + j] =
-					CMath::normal_random(means[j], stds[j]);
+					Math::normal_random(means[j], stds[j]);
 
 				fprintf(pfile, " %d:%f", j+1, feats[(c*NUM_SAMPLES+i)*DIMS + j]);
 			}
@@ -194,8 +191,8 @@ int main(int argc, char * argv[])
 	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
 
 	// Create train features
-	CDenseFeatures< float64_t >* features =
-		new CDenseFeatures< float64_t >(feats);
+	DenseFeatures< float64_t >* features =
+		new DenseFeatures< float64_t >(feats);
 
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
@@ -206,7 +203,6 @@ int main(int argc, char * argv[])
 				model,
 				labels,
 				lambda);
-	SG_REF(sosvm);
 
 	sosvm->set_cleanAfter(10);
 	sosvm->set_cleanICP(icp);
@@ -227,8 +223,7 @@ int main(int argc, char * argv[])
 	SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
 			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
-	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
-	SG_REF(out);
+	StructuredLabels* out = sosvm->apply()->as<StructuredLabels>();
 
 	SG_SPRINT("\n");
 
@@ -238,17 +233,14 @@ int main(int argc, char * argv[])
 
 	for (uint32_t i=0; i<num_feat; ++i)
 	{
-		CRealNumber* rn = CRealNumber::obtain_from_generic( out->get_label(i) );
+		RealNumber* rn = RealNumber::obtain_from_generic( out->get_label(i) );
 		error+=(rn->value==labs.get_element(i)) ? 0.0 : 1.0;
-		SG_UNREF(rn);	// because of out->get_label(i) above
 	}
 
 	SG_SPRINT("Error = %lf %% \n", error/num_feat*100);
 
 
 	// Free memory
-	SG_UNREF(sosvm);
-	SG_UNREF(out);
 
 	exit_shogun();
 

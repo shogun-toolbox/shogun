@@ -23,16 +23,12 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
+	DenseFeatures<double>* features = new DenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	CLaplacianEigenmaps* lem = new CLaplacianEigenmaps();
 	lem->set_target_dim(2);
 	lem->set_k(10);
 	lem->parallel->set_num_threads(4);
 	auto embedding = lem->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(lem);
-	SG_UNREF(features);
 	exit_shogun();
 	return 0;
 }

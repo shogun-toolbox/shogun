@@ -24,9 +24,9 @@ TEST(StreamingHashedSparseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* d_feats = new CSparseFeatures<float64_t>(data);
-	CStreamingHashedSparseFeatures<float64_t>* h_feats =
-		new CStreamingHashedSparseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<SparseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedSparseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	index_t i;
@@ -38,7 +38,7 @@ TEST(StreamingHashedSparseFeaturesTest, dot)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -55,7 +55,7 @@ TEST(StreamingHashedSparseFeaturesTest, dot)
 
 	EXPECT_EQ(i, n);
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedSparseFeaturesTest, dense_dot)
@@ -72,9 +72,9 @@ TEST(StreamingHashedSparseFeaturesTest, dense_dot)
 
 	int32_t hashing_dim = 8;
 
-	CSparseFeatures<float64_t>* d_feats = new CSparseFeatures<float64_t>(data);
-	CStreamingHashedSparseFeatures<float64_t>* h_feats =
-		new CStreamingHashedSparseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<SparseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedSparseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -85,7 +85,7 @@ TEST(StreamingHashedSparseFeaturesTest, dense_dot)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -101,7 +101,7 @@ TEST(StreamingHashedSparseFeaturesTest, dense_dot)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedSparseFeaturesTest, add_to_dense)
@@ -117,9 +117,9 @@ TEST(StreamingHashedSparseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* d_feats = new CSparseFeatures<float64_t>(data);
-	CStreamingHashedSparseFeatures<float64_t>* h_feats =
-		new CStreamingHashedSparseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<SparseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<StreamingHashedSparseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -130,7 +130,7 @@ TEST(StreamingHashedSparseFeaturesTest, add_to_dense)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -147,5 +147,5 @@ TEST(StreamingHashedSparseFeaturesTest, add_to_dense)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }

@@ -26,13 +26,13 @@ namespace shogun
  *
  * Currently only simple reading and writing of blocks is supported.
  */
-template <class T> class CSimpleFile : public CSGObject
+template <class T> class SimpleFile : public SGObject
 {
 	public:
 		/** default constructor  */
-		CSimpleFile() :CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
+		SimpleFile() :SGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
-			SG_UNSTABLE("CSimpleFile::CSimpleFile()", "\n")
+			SG_UNSTABLE("SimpleFile::SimpleFile()", "\n")
 
 			file=NULL;
 			filename=get_strdup("");
@@ -47,15 +47,15 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param fname filename
 		 * @param f file descriptor
 		 */
-		CSimpleFile(char* fname, FILE* f)
-		: CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
+		SimpleFile(char* fname, FILE* f)
+		: SGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
 			file=f;
 			filename=get_strdup(fname);
 			status = (file!=NULL && filename!=NULL);
 		}
 
-		virtual ~CSimpleFile()
+		virtual ~SimpleFile()
 		{
 			SG_FREE(filename);
 			free_line_buffer();

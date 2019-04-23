@@ -19,18 +19,18 @@ namespace shogun
  * conjugate gradient (CG) solvers. provides interface for setting the
  * iteration limit, relative/absolute tolerence. solve method is abstract.
  */
-template<class T, class ST=T> class CIterativeLinearSolver : public CLinearSolver<T, ST>
+template<class T, class ST=T> class IterativeLinearSolver : public LinearSolver<T, ST>
 {
 
 public:
 	/** default constructor */
-	CIterativeLinearSolver();
+	IterativeLinearSolver();
 
 	/** one arg constructor */
-	CIterativeLinearSolver(bool store_residuals);
+	IterativeLinearSolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~CIterativeLinearSolver();
+	virtual ~IterativeLinearSolver();
 
 	/**
 	 * abstract solve method for solving real linear systems
@@ -39,7 +39,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(std::shared_ptr<LinearOperator<T>> A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
 	void set_iteration_limit(index_t iteration_limit)
