@@ -96,12 +96,6 @@ namespace shogun
 		};
 
 		/**
-		 * Get the total number of observation received.
-		 * @return number of obsevation received.
-		 */
-		const index_t get_num_observations() const;
-
-		/**
 		 * Erase all observations registered so far by the observer.
 		 */
 		virtual void clear()
@@ -139,6 +133,12 @@ namespace shogun
 		}
 
 	protected:
+
+		/**
+		 * Get the total number of observation received.
+		 * @return number of obsevation received.
+		 */
+		index_t get_num_observations() const;
 
 		/**
 		 * Implementation of the on_next method which will be needed
