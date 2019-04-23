@@ -475,7 +475,7 @@ TEST(LeastAngleRegression, early_stop_l1_norm)
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
 	lars->set_labels((CLabels*) labels);
 	// set max l1 norm
-	lars->set_max_l1_norm(1);
+	lars->put("max_l1_norm", 1);
 	lars->train(features);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
