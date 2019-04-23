@@ -9,18 +9,18 @@
 
 using namespace shogun;
 
-CDistribution::CDistribution()
-: CSGObject(), features(NULL), pseudo_count(1e-10)
+Distribution::Distribution()
+: SGObject(), features(NULL), pseudo_count(1e-10)
 {
 	SG_ADD(&features, "features", "features to be used");
 }
 
-CDistribution::~CDistribution()
+Distribution::~Distribution()
 {
-	SG_UNREF(features);
+	
 }
 
-float64_t CDistribution::get_log_likelihood_sample()
+float64_t Distribution::get_log_likelihood_sample()
 {
 	ASSERT(features)
 
@@ -31,7 +31,7 @@ float64_t CDistribution::get_log_likelihood_sample()
 	return sum/features->get_num_vectors();
 }
 
-SGVector<float64_t> CDistribution::get_log_likelihood()
+SGVector<float64_t> Distribution::get_log_likelihood()
 {
 	ASSERT(features)
 
@@ -44,20 +44,20 @@ SGVector<float64_t> CDistribution::get_log_likelihood()
 	return SGVector<float64_t>(vec,num);
 }
 
-int32_t CDistribution::get_num_relevant_model_parameters()
+int32_t Distribution::get_num_relevant_model_parameters()
 {
 	int32_t total_num=get_num_model_parameters();
 	int32_t num=0;
 
 	for (int32_t i=0; i<total_num; i++)
 	{
-		if (get_log_model_parameter(i)>CMath::ALMOST_NEG_INFTY)
+		if (get_log_model_parameter(i)>Math::ALMOST_NEG_INFTY)
 			num++;
 	}
 	return num;
 }
 
-SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
+SGVector<float64_t> Distribution::get_likelihood_for_all_examples()
 {
 	ASSERT(features);
 	int32_t num=features->get_num_vectors();
@@ -70,19 +70,19 @@ SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
 	return result;
 }
 
-float64_t CDistribution::update_params_em(const SGVector<float64_t> alpha_k)
+float64_t Distribution::update_params_em(const SGVector<float64_t> alpha_k)
 {
 	io::warn("Not implemented in this class. This class cannot be used for Mixture models.");
 	not_implemented(SOURCE_LOCATION);
 	return -1;
 }
 
-CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
+std::shared_ptr<Distribution> Distribution::obtain_from_generic(std::shared_ptr<SGObject> object)
 {
 	if (!object)
 		return NULL;
 
-	CDistribution* casted=dynamic_cast<CDistribution*>(object);
+	auto casted=std::dynamic_pointer_cast<Distribution>(object);
 	if (!casted)
 		return NULL;
 

@@ -31,7 +31,7 @@ namespace shogun
 {
 	template<class T> class SGVector;
 	template<typename T> struct GPUMemoryBase;
-	class CFile;
+	class File;
 
 /** @brief shogun matrix */
 template<class T> class SGMatrix : public SGReferencedData
@@ -325,7 +325,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/**
 		 * Checks whether the matrix is symmetric or not. The equality check
 		 * is performed using '==' operators for discrete types (int, char,
-		 * bool) and using CMath::fequals method for floating types (float,
+		 * bool) and using Math::fequals method for floating types (float,
 		 * double, long double, std::complex<double>) with default espilon
 		 * values from std::numeric_limits
 		 *
@@ -461,13 +461,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<File> loader);
 
 		/** Save matrix to file
 		 *
 		 * @param saver File object via which to save data
 		 */
-		void save(CFile* saver);
+		void save(std::shared_ptr<File> saver);
 #endif // #ifndef SWIG // SWIG should skip this part
 
 	protected:

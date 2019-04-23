@@ -68,7 +68,7 @@ namespace shogun
 
 	public:
 		LDACanVarSolver(
-		    CDenseFeatures<T>* features, CMulticlassLabels* labels,
+		    std::shared_ptr<DenseFeatures<T>> features, std::shared_ptr<MulticlassLabels> labels,
 		    index_t num_dim, float64_t gamma = 0.0, bool bdc_svd = true,
 		    float64_t threshold = 0.01)
 		    : LDASolver<T>(features, labels, gamma)
@@ -111,7 +111,7 @@ namespace shogun
 		index_t num_features = this->m_features->get_num_features();
 		index_t num_vectors = this->m_features->get_num_vectors();
 
-		index_t r = CMath::min(num_vectors, num_features);
+		index_t r = Math::min(num_vectors, num_features);
 		SGMatrix<T> U(num_features, r);
 		SGVector<T> singularValues(r);
 

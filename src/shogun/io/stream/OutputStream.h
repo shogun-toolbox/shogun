@@ -11,11 +11,11 @@ namespace shogun
 {
 	namespace io
 	{
-		class COutputStream : public CSGObject
+		class OutputStream : public SGObject
 		{
 		public:
-			COutputStream();
-			virtual ~COutputStream();
+			OutputStream();
+			virtual ~OutputStream();
 
 			virtual std::error_condition close() = 0;
 			virtual std::error_condition flush() = 0;

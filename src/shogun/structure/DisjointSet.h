@@ -19,20 +19,20 @@ namespace shogun
  * It's easy to identify connected graph, acyclic graph, roots of forest etc.
  * please refer to http://en.wikipedia.org/wiki/Disjoint-set_data_structure
  */
-class CDisjointSet : public CSGObject
+class DisjointSet : public SGObject
 {
 public:
 	/** default constructor */
-	CDisjointSet();
+	DisjointSet();
 
 	/** constructor
 	 *
 	 * @param num_elements number of initial disjoint elements
 	 */
-	CDisjointSet(int32_t num_elements);
+	DisjointSet(int32_t num_elements);
 
 	/** destructor */
-	~CDisjointSet() { }
+	~DisjointSet() { }
 
 	/** @return class name */
 	virtual const char* get_name() const { return "DisjointSet"; }

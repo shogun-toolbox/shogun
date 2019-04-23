@@ -18,20 +18,20 @@ namespace shogun
  * Learns an SVM classifier and its kernel weights. Makes only sense if
  * multiple kernels are used.
  *
- * \sa CMKL
+ * \sa MKL
  */
-class CMKLClassification : public CMKL
+class MKLClassification : public MKL
 {
 	public:
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLClassification(CSVM* s=NULL);
+		MKLClassification(std::shared_ptr<SVM> s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKLClassification();
+		virtual ~MKLClassification();
 
 		/** compute beta independent term from objective, e.g., in 2-class MKL
 		 * sum_i alpha_i etc
@@ -46,7 +46,7 @@ class CMKLClassification : public CMKL
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CMKLClassification* obtain_from_generic(CMachine* machine);
+		static std::shared_ptr<MKLClassification> obtain_from_generic(std::shared_ptr<Machine> machine);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MKLClassification"; }

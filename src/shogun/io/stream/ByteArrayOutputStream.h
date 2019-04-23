@@ -16,11 +16,11 @@ namespace shogun
 	{
 #define IGNORE_IN_CLASSLIST
 
-		IGNORE_IN_CLASSLIST class CByteArrayOutputStream : public COutputStream
+		IGNORE_IN_CLASSLIST class ByteArrayOutputStream : public OutputStream
 		{
 		public:
-			CByteArrayOutputStream(): COutputStream() {}
-			~CByteArrayOutputStream() override {}
+			ByteArrayOutputStream(): OutputStream() {}
+			~ByteArrayOutputStream() override {}
 
 			std::error_condition close() override
 			{
@@ -56,7 +56,7 @@ namespace shogun
 		private:
 			std::vector<char> m_byte_array;
 
-			SG_DELETE_COPY_AND_ASSIGN(CByteArrayOutputStream);
+			SG_DELETE_COPY_AND_ASSIGN(ByteArrayOutputStream);
 		};
 	}
 }

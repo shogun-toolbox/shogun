@@ -36,7 +36,7 @@ enum E_IS_EXAMPLE_USED
  * label is a float64_t.
  *
  * Objects of this type are stored in the ring of
- * class CParseBuffer.
+ * class ParseBuffer.
  */
 template <class T>
 class Example
@@ -49,12 +49,12 @@ public:
 	index_t length;
 };
 
-/** @brief Class CParseBuffer implements a ring of
+/** @brief Class ParseBuffer implements a ring of
  * examples of a defined size. The ring stores
  * objects of the Example type.
  *
  * The feature vector and label are provided to this
- * class from an external source. CParseBuffer is
+ * class from an external source. ParseBuffer is
  * only responsible for managing how these examples
  * are represented and stored in the memory. It is
  * also responsible for returning stored examples to be
@@ -65,7 +65,7 @@ public:
  * Writing of examples is done into whichever position
  * in the ring is free to be overwritten, or empty.
  */
-template <class T> class CParseBuffer: public CSGObject
+template <class T> class ParseBuffer: public SGObject
 {
 public:
 	/**
@@ -73,13 +73,13 @@ public:
 	 *
 	 * @param size Ring size as number of examples
 	 */
-	CParseBuffer(int32_t size = 1024);
+	ParseBuffer(int32_t size = 1024);
 
 	/**
 	 * Destructor, frees up buffer.
 	 *
 	 */
-	~CParseBuffer();
+	~ParseBuffer();
 
 	/**
 	 * Return the next position to write the example
@@ -223,7 +223,7 @@ protected:
 };
 
 
-template <class T> void CParseBuffer<T>::init_vector()
+template <class T> void ParseBuffer<T>::init_vector()
 {
 	if (!free_vectors_on_destruct)
 		return;
@@ -234,7 +234,7 @@ template <class T> void CParseBuffer<T>::init_vector()
 	}
 }
 
-template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
+template <class T> ParseBuffer<T>::ParseBuffer(int32_t size)
 {
 	ring_size = size;
 	ex_ring = SG_CALLOC(Example<T>, ring_size);
@@ -260,7 +260,7 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	free_vectors_on_destruct = true;
 }
 
-template <class T> CParseBuffer<T>::~CParseBuffer()
+template <class T> ParseBuffer<T>::~ParseBuffer()
 {
 	for (int32_t i=0; i<ring_size; i++)
 	{
@@ -281,7 +281,7 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 }
 
 template <class T>
-int32_t CParseBuffer<T>::write_example(Example<T> *ex)
+int32_t ParseBuffer<T>::write_example(Example<T> *ex)
 {
 	ex_ring[ex_write_index].label = ex->label;
 	ex_ring[ex_write_index].fv = ex->fv;
@@ -293,7 +293,7 @@ int32_t CParseBuffer<T>::write_example(Example<T> *ex)
 }
 
 template <class T>
-Example<T>* CParseBuffer<T>::return_example_to_read()
+Example<T>* ParseBuffer<T>::return_example_to_read()
 {
 	if (ex_read_index >= 0)
 		return &ex_ring[ex_read_index];
@@ -302,7 +302,7 @@ Example<T>* CParseBuffer<T>::return_example_to_read()
 }
 
 template <class T>
-Example<T>* CParseBuffer<T>::get_unused_example()
+Example<T>* ParseBuffer<T>::get_unused_example()
 {
 	std::lock_guard<std::mutex> read_lk(*read_mutex);
 
@@ -321,7 +321,7 @@ Example<T>* CParseBuffer<T>::get_unused_example()
 }
 
 template <class T>
-int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
+int32_t ParseBuffer<T>::copy_example(Example<T> *ex)
 {
 	std::lock_guard<std::mutex> write_lk(*write_mutex);
 	int32_t ret;
@@ -339,7 +339,7 @@ int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 }
 
 template <class T>
-void CParseBuffer<T>::finalize_example(bool free_after_release)
+void ParseBuffer<T>::finalize_example(bool free_after_release)
 {
 	std::lock_guard<std::mutex> read_lk(*read_mutex);
 	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_read_index]);

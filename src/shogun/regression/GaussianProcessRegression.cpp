@@ -12,58 +12,58 @@
 
 using namespace shogun;
 
-CGaussianProcessRegression::CGaussianProcessRegression()
-		: CGaussianProcessMachine()
+GaussianProcessRegression::GaussianProcessRegression()
+		: GaussianProcessMachine()
 {
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(CInference* method)
-		: CGaussianProcessMachine(method)
+GaussianProcessRegression::GaussianProcessRegression(std::shared_ptr<Inference> method)
+		: GaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
 }
 
-CGaussianProcessRegression::~CGaussianProcessRegression()
+GaussianProcessRegression::~GaussianProcessRegression()
 {
 }
 
-CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
+std::shared_ptr<RegressionLabels> GaussianProcessRegression::apply_regression(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
-	SG_UNREF(lik);
 
-	CRegressionLabels* result;
+
+	std::shared_ptr<RegressionLabels> result;
 
 	// if regression data equals to NULL, then apply regression on training
 	// features
 	if (!data)
 	{
-		CFeatures* feat;
+		std::shared_ptr<Features> feat;
 
 		// use inducing features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
 		{
-			CFITCInferenceMethod* fitc_method = m_method->as<CFITCInferenceMethod>();
+			auto fitc_method = m_method->as<FITCInferenceMethod>();
 			feat=fitc_method->get_inducing_features();
 		}
 		else
 			feat=m_method->get_features();
 
-		result=new CRegressionLabels(get_mean_vector(feat));
+		result=std::make_shared<RegressionLabels>(get_mean_vector(feat));
 		if (m_compute_variance)
 			result->put("current_values", get_variance_vector(feat));
 
-		SG_UNREF(feat);
+
 	}
 	else
 	{
-		result=new CRegressionLabels(get_mean_vector(data));
+		result=std::make_shared<RegressionLabels>(get_mean_vector(data));
 		if (m_compute_variance)
 			result->put("current_values", get_variance_vector(data));
 	}
@@ -71,24 +71,22 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	return result;
 }
 
-bool CGaussianProcessRegression::train_machine(CFeatures* data)
+bool GaussianProcessRegression::train_machine(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
-	SG_UNREF(lik);
-
 	if (data)
 	{
 		// set inducing features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
 		{
-			CFITCInferenceMethod* fitc_method = m_method->as<CFITCInferenceMethod>();
+			auto fitc_method = m_method->as<FITCInferenceMethod>();
 			fitc_method->set_inducing_features(data);
-			SG_UNREF(fitc_method);
+
 		}
 		else
 			m_method->set_features(data);
@@ -100,15 +98,14 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
+SGVector<float64_t> GaussianProcessRegression::get_mean_vector(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
-	SG_UNREF(lik);
 
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
@@ -116,18 +113,18 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 	// evaluate mean
 	lik=m_method->get_model();
 	mu=lik->get_predictive_means(mu, s2);
-	SG_UNREF(lik);
+
 
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
-		CFeatures* data)
+SGVector<float64_t> GaussianProcessRegression::get_variance_vector(
+		std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports regression
 	require(m_method, "Inference method should not be NULL");
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	require(m_method->supports_regression(), "{} with {} doesn't support "
 			"regression",	m_method->get_name(), lik->get_name());
 
@@ -136,7 +133,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 
 	// evaluate variance
 	s2=lik->get_predictive_variances(mu, s2);
-	SG_UNREF(lik);
+
 
 	return s2;
 }

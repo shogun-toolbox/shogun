@@ -15,11 +15,11 @@
 namespace shogun
 {
 /** @brief class RealDistance */
-class CRealDistance : public CDenseDistance<float64_t>
+class RealDistance : public DenseDistance<float64_t>
 {
 public:
 	/** default constructor */
-	CRealDistance() : CDenseDistance<float64_t>() {}
+	RealDistance() : DenseDistance<float64_t>() {}
 
 	/** init distance
 	 *
@@ -27,9 +27,9 @@ public:
 	 * @param r features of right-hand side
 	 * @return if init was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r)
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 	{
-		CDenseDistance<float64_t>::init(l,r);
+		DenseDistance<float64_t>::init(l,r);
 
 		ASSERT(l->get_feature_type()==F_DREAL)
 		ASSERT(r->get_feature_type()==F_DREAL)

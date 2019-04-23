@@ -39,14 +39,14 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	list.push_back(string_2);
 	list.push_back(string_3);
 
-	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, true);
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, 5, true);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto feats = std::make_shared<StreamingHashedDocDotFeatures>(doc_collection,
 			tokenizer, 5);
 
 	index_t i = 0;
@@ -69,9 +69,9 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 		i++;
 	}
 	feats->end_parser();
-	SG_UNREF(feats);
-	SG_UNREF(doc_collection);
-	SG_UNREF(converter);
+
+
+
 }
 
 TEST(StreamingHashedDocFeaturesTest, dot_tests)
@@ -99,14 +99,14 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	list.push_back(string_2);
 	list.push_back(string_3);
 
-	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, true);
-	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
-	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, 5, true);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto feats = std::make_shared<StreamingHashedDocDotFeatures>(doc_collection,
 			tokenizer, 5);
 	feats->start_parser();
 
@@ -154,7 +154,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	}
 
 	feats->end_parser();
-	SG_UNREF(feats);
-	SG_UNREF(doc_collection);
-	SG_UNREF(converter);
+
+
+
 }

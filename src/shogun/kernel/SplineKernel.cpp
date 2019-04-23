@@ -13,21 +13,21 @@
 
 using namespace shogun;
 
-CSplineKernel::CSplineKernel() : CDotKernel()
+SplineKernel::SplineKernel() : DotKernel()
 {
 }
 
-CSplineKernel::CSplineKernel(CDotFeatures* l, CDotFeatures* r) : CDotKernel()
+SplineKernel::SplineKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r) : DotKernel()
 {
 	init(l,r);
 }
 
-CSplineKernel::~CSplineKernel()
+SplineKernel::~SplineKernel()
 {
 	cleanup();
 }
 
-bool CSplineKernel::init(CFeatures* l, CFeatures* r)
+bool SplineKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(l->get_feature_type()==F_DREAL)
 	ASSERT(l->get_feature_type()==r->get_feature_type())
@@ -35,33 +35,33 @@ bool CSplineKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_class()==C_DENSE)
 	ASSERT(l->get_feature_class()==r->get_feature_class())
 
-	CDotKernel::init(l,r);
+	DotKernel::init(l,r);
 	return init_normalizer();
 }
 
-void CSplineKernel::cleanup()
+void SplineKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t SplineKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec = ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec = (std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec = (std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen == blen)
 
 	float64_t result = 0;
 	for (int32_t i = 0; i < alen; i++) {
 		const float64_t x = avec[i], y = bvec[i];
-		const float64_t min = CMath::min(avec[i], bvec[i]);
+		const float64_t min = Math::min(avec[i], bvec[i]);
 		result += 1 + x*y + x*y*min - ((x+y)/2)*min*min + min*min*min/3;
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

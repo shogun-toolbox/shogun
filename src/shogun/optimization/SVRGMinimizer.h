@@ -53,7 +53,7 @@ public:
 	/** Constructor
 	 * @param fun stochastic cost function
 	 */
-	SVRGMinimizer(FirstOrderSAGCostFunction *fun);
+	SVRGMinimizer(std::shared_ptr<FirstOrderSAGCostFunction >fun);
 
 	/** Destructor */
 	virtual ~SVRGMinimizer();

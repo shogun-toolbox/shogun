@@ -18,12 +18,12 @@
 namespace shogun
 {
 /** @brief class DomainAdaptationSVM */
-class CDomainAdaptationSVM : public CSVMLight
+class DomainAdaptationSVM : public SVMLight
 {
 	public:
 
 		/** default constructor */
-		CDomainAdaptationSVM();
+		DomainAdaptationSVM();
 
 		/** constructor
 		 *
@@ -33,17 +33,17 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* presvm, float64_t B);
+		DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> presvm, float64_t B);
 
 		/** destructor */
-		virtual ~CDomainAdaptationSVM();
+		virtual ~DomainAdaptationSVM();
 
 		/** init SVM
 		 *
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 * */
-		void init(CSVM* presvm, float64_t B);
+		void init(std::shared_ptr<SVM> presvm, float64_t B);
 
 		/** get classifier type
 		 *
@@ -56,13 +56,13 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 
 		/** returns SVM that is used as prior information
 		 *
 		 * @return presvm
 		 */
-		virtual CSVM* get_presvm();
+		virtual std::shared_ptr<SVM> get_presvm();
 
 		/** getter for regularization parameter B
 		 *
@@ -100,7 +100,7 @@ class CDomainAdaptationSVM : public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void init();
@@ -108,7 +108,7 @@ class CDomainAdaptationSVM : public CSVMLight
 	protected:
 
 		/** SVM to regularize against */
-		CSVM* presvm;
+		std::shared_ptr<SVM> presvm;
 
 		/** regularization parameter B */
 		float64_t B;

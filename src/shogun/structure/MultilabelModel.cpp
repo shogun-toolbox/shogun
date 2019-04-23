@@ -13,28 +13,28 @@
 
 using namespace shogun;
 
-CMultilabelModel::CMultilabelModel()
-	: CStructuredModel()
+MultilabelModel::MultilabelModel()
+	: StructuredModel()
 {
 	init();
 }
 
-CMultilabelModel::CMultilabelModel(CFeatures * features, CStructuredLabels * labels)
-	: CStructuredModel(features, labels)
+MultilabelModel::MultilabelModel(std::shared_ptr<Features > features, std::shared_ptr<StructuredLabels > labels)
+	: StructuredModel(features, labels)
 {
 	init();
 }
 
-CMultilabelModel::~CMultilabelModel()
+MultilabelModel::~MultilabelModel()
 {
 }
 
-CStructuredLabels * CMultilabelModel::structured_labels_factory(int32_t num_labels)
+std::shared_ptr<StructuredLabels > MultilabelModel::structured_labels_factory(int32_t num_labels)
 {
-	return new CMultilabelSOLabels(num_labels, m_num_classes);
+	return std::make_shared<MultilabelSOLabels>(num_labels, m_num_classes);
 }
 
-void CMultilabelModel::init()
+void MultilabelModel::init()
 {
 	SG_ADD(&m_false_positive, "false_positive", "Misclassification cost for false positive");
 	SG_ADD(&m_false_negative, "false_negative", "Misclassification cost for false negative");
@@ -44,29 +44,29 @@ void CMultilabelModel::init()
 	m_num_classes = 0;
 }
 
-int32_t CMultilabelModel::get_dim() const
+int32_t MultilabelModel::get_dim() const
 {
-	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	int32_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	int32_t num_classes = m_labels->as<MultilabelSOLabels>()->get_num_classes();
+	int32_t feats_dim = m_features->as<DotFeatures>()->get_dim_feature_space();
 
 	return feats_dim * num_classes;
 }
 
-void CMultilabelModel::set_misclass_cost(float64_t false_positive, float64_t false_negative)
+void MultilabelModel::set_misclass_cost(float64_t false_positive, float64_t false_negative)
 {
 	m_false_positive = false_positive;
 	m_false_negative = false_negative;
 }
 
-SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
-                CStructuredData * y)
+SGVector<float64_t> MultilabelModel::get_joint_feature_vector(int32_t feat_idx,
+                std::shared_ptr<StructuredData > y)
 {
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
 
-	SGVector<float64_t> x = ((CDotFeatures *)m_features)->
+	SGVector<float64_t> x = m_features->as<DotFeatures>()->
 	                        get_computed_dot_feature_vector(feat_idx);
-	CSparseMultilabel * slabel = y->as<CSparseMultilabel>();
+	auto slabel = y->as<SparseMultilabel>();
 	ASSERT(slabel != NULL);
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
@@ -81,23 +81,23 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 	return psi;
 }
 
-float64_t CMultilabelModel::delta_loss(CStructuredData * y1, CStructuredData * y2)
+float64_t MultilabelModel::delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2)
 {
-	CSparseMultilabel * y1_slabel = y1->as<CSparseMultilabel>();
-	CSparseMultilabel * y2_slabel = y2->as<CSparseMultilabel>();
+	auto y1_slabel = y1->as<SparseMultilabel>();
+	auto y2_slabel = y2->as<SparseMultilabel>();
 
 	ASSERT(y1_slabel != NULL);
 	ASSERT(y2_slabel != NULL);
 
-	CMultilabelSOLabels * multi_labels = (CMultilabelSOLabels *)m_labels;
+	auto multi_labels = m_labels->as<MultilabelSOLabels>();
 	return delta_loss(
-	               CMultilabelSOLabels::to_dense(y1_slabel,
+	               MultilabelSOLabels::to_dense(y1_slabel,
 	                               multi_labels->get_num_classes(), 1, 0),
-	               CMultilabelSOLabels::to_dense(y2_slabel,
+	               MultilabelSOLabels::to_dense(y2_slabel,
 	                               multi_labels->get_num_classes(), 1, 0));
 }
 
-float64_t CMultilabelModel::delta_loss(SGVector<float64_t> y1, SGVector<float64_t> y2)
+float64_t MultilabelModel::delta_loss(SGVector<float64_t> y1, SGVector<float64_t> y2)
 {
 	require(y1.vlen == y2.vlen, "Size of both the vectors should be same");
 
@@ -111,12 +111,12 @@ float64_t CMultilabelModel::delta_loss(SGVector<float64_t> y1, SGVector<float64_
 	return loss;
 }
 
-float64_t CMultilabelModel::delta_loss(float64_t y1, float64_t y2)
+float64_t MultilabelModel::delta_loss(float64_t y1, float64_t y2)
 {
 	return y1 > y2 ? m_false_negative : y1 < y2 ? m_false_positive : 0;
 }
 
-SGVector<int32_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
+SGVector<int32_t> MultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
                 float64_t d_true, float64_t d_false)
 {
 	int32_t size = 0;
@@ -148,13 +148,13 @@ SGVector<int32_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
 	return sparse_vec;
 }
 
-CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
+std::shared_ptr<ResultSet > MultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
                                       bool const training)
 {
-	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
+	auto dot_feats = m_features->as<DotFeatures>();
 	int32_t feats_dim = dot_feats->get_dim_feature_space();
 
-	CMultilabelSOLabels * multi_labs = (CMultilabelSOLabels *)m_labels;
+	auto multi_labs = m_labels->as<MultilabelSOLabels>();
 
 	if (training)
 	{
@@ -187,12 +187,12 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 
 	SGVector<int32_t> y_pred_sparse = to_sparse(y_pred_dense, 1, 0);
 
-	CResultSet * ret = new CResultSet();
-	SG_REF(ret);
+	auto ret = std::make_shared<ResultSet>();
+
 	ret->psi_computed = true;
 
-	CSparseMultilabel * y_pred = new CSparseMultilabel(y_pred_sparse);
-	SG_REF(y_pred);
+	auto y_pred = std::make_shared<SparseMultilabel>(y_pred_sparse);
+
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y_pred);
 	ret->score = total_score;
@@ -200,8 +200,8 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 
 	if (training)
 	{
-		ret->delta = CStructuredModel::delta_loss(feat_idx, y_pred);
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+		ret->delta = StructuredModel::delta_loss(feat_idx, y_pred);
+		ret->psi_truth = StructuredModel::get_joint_feature_vector(
 		                         feat_idx, feat_idx);
 		ret->score += (ret->delta - linalg::dot(w, ret->psi_truth));
 	}
@@ -209,7 +209,7 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 	return ret;
 }
 
-void CMultilabelModel::init_primal_opt(
+void MultilabelModel::init_primal_opt(
         float64_t regularization,
         SGMatrix<float64_t> &A,
         SGVector<float64_t> a,

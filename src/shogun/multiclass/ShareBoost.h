@@ -25,17 +25,17 @@ namespace shogun
  *     Shai Shalev-Shwartz, Yonatan Wexler, Amnon Shashua. ShareBoost: Efficient
  *     Multiclass Learning with Feature Sharing. NIPS 2011.
  */
-class CShareBoost: public CLinearMulticlassMachine
+class ShareBoost: public LinearMulticlassMachine
 {
 public:
     /** default constructor */
-	CShareBoost();
+	ShareBoost();
 
 	/** constructor */
-	CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels *labs, int32_t num_nonzero_feas);
+	ShareBoost(std::shared_ptr<DenseFeatures<float64_t> >features, std::shared_ptr<MulticlassLabels >labs, int32_t num_nonzero_feas);
 
     /** destructor */
-	virtual ~CShareBoost() {}
+	virtual ~ShareBoost() {}
 
     /** get name */
     virtual const char* get_name() const { return "ShareBoost"; }
@@ -47,7 +47,7 @@ public:
 	int32_t get_num_nonzero_feas() const { return m_nonzero_feas; }
 
 	/** assign features */
-	void set_features(CFeatures *f);
+	void set_features(std::shared_ptr<Features >f);
 
 	/** get active set */
 	SGVector<int32_t> get_activeset();
@@ -56,7 +56,7 @@ public:
 protected:
 
 	/** train machine */
-	virtual bool train_machine(CFeatures* data = NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 	void init_sb_params(); ///< init machine parameters

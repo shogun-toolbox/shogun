@@ -65,13 +65,13 @@ void PNormMappingFunction::projection(SGVector<float64_t> input, SGVector<float6
 	float64_t scale=0.0;
 	for(index_t idx=0; idx<input.vlen; idx++)
 	{
-		scale += CMath::pow(CMath::abs(input[idx]),degree);
+		scale += Math::pow(Math::abs(input[idx]),degree);
 		if (input[idx] >= 0.0)
-			output[idx]=CMath::pow(input[idx],degree-1);
+			output[idx]=Math::pow(input[idx],degree-1);
 		else
-			output[idx]=-CMath::pow(-input[idx],degree-1);
+			output[idx]=-Math::pow(-input[idx],degree-1);
 	}
-	scale=CMath::pow(scale,1.0-2.0/degree);
+	scale=Math::pow(scale,1.0-2.0/degree);
 	for(index_t idx=0; idx<input.vlen; idx++)
 		output[idx]/=scale;
 }

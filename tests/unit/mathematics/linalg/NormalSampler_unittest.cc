@@ -23,7 +23,7 @@ TEST(NormalSampler, sample)
 	const index_t num_samples=5000;
 	SGMatrix<float64_t> samples(num_samples, dimension);
 
-	CNormalSampler sampler(dimension);
+	NormalSampler sampler(dimension);
 	sampler.precompute();
 	for (index_t i=0; i<num_samples; ++i)
 	{
@@ -32,11 +32,11 @@ TEST(NormalSampler, sample)
 			samples(i,j)=s[j];
 	}
 
-	SGVector<float64_t> mean=CStatistics::matrix_mean(samples);
+	SGVector<float64_t> mean=Statistics::matrix_mean(samples);
 	Map<VectorXd> map_mean(mean.vector, mean.vlen);
 	EXPECT_NEAR((map_mean-VectorXd::Zero(dimension)).norm(), 0.0, 0.1);
 	samples = linalg::transpose_matrix(samples); // TODO: refactor sample_from_gaussian to return column vectors!
-	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> cov=Statistics::covariance_matrix(samples);
 	Map<MatrixXd> map_cov(cov.matrix, cov.num_rows, cov.num_cols);
 	EXPECT_NEAR((map_cov-MatrixXd::Identity(dimension, dimension)).norm(),
 		0.0, 0.1);

@@ -20,10 +20,10 @@
 #include <shogun/lib/common.h>
 
 namespace shogun {
-template<class ST> class CStringFeatures;
-template<class ST> class CDenseFeatures;
+template<class ST> class StringFeatures;
+template<class ST> class DenseFeatures;
 template<class ST> class SGMatrix;
-class CDotFeatures;
+class DotFeatures;
 
 /** @brief The class DenseFeatures implements dense feature matrices.
  *
@@ -40,43 +40,43 @@ class CDotFeatures;
  * From this template class a number the following dense feature matrix types
  * are used and supported:
  *
- * \li bool matrix - CDenseFeatures<bool>
- * \li 8bit char matrix - CDenseFeatures<char>
- * \li 8bit Byte matrix - CDenseFeatures<uint8_t>
- * \li 16bit Integer matrix - CDenseFeatures<int16_t>
- * \li 16bit Word matrix - CDenseFeatures<uint16_t>
- * \li 32bit Integer matrix - CDenseFeatures<int32_t>
- * \li 32bit Unsigned Integer matrix - CDenseFeatures<uint32_t>
- * \li 32bit Float matrix - CDenseFeatures<float32_t>
- * \li 64bit Float matrix - CDenseFeatures<float64_t>
+ * \li bool matrix - DenseFeatures<bool>
+ * \li 8bit char matrix - DenseFeatures<char>
+ * \li 8bit Byte matrix - DenseFeatures<uint8_t>
+ * \li 16bit Integer matrix - DenseFeatures<int16_t>
+ * \li 16bit Word matrix - DenseFeatures<uint16_t>
+ * \li 32bit Integer matrix - DenseFeatures<int32_t>
+ * \li 32bit Unsigned Integer matrix - DenseFeatures<uint32_t>
+ * \li 32bit Float matrix - DenseFeatures<float32_t>
+ * \li 64bit Float matrix - DenseFeatures<float64_t>
  * \li 64bit Float matrix <b>in a file</b> - CRealFileFeatures
  * \li 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
  * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
- * \li 96bit Float matrix - CDenseFeatures<floatmax_t>
+ * \li 96bit Float matrix - DenseFeatures<floatmax_t>
  *
  * Partly) subset access is supported for this feature type.
  * Dense use the (inherited) add_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.
  * See comments to find out whether it is supported for that method.
- * See also CFeatures class documentation
+ * See also Features class documentation
  */
-template<class ST> class CDenseFeatures: public CDotFeatures
+template<class ST> class DenseFeatures: public DotFeatures
 {
 public:
 	/** constructor
 	 *
 	 * @param size cache size
 	 */
-	CDenseFeatures(int32_t size = 0);
+	DenseFeatures(int32_t size = 0);
 
 	/** copy constructor */
-	CDenseFeatures(const CDenseFeatures & orig);
+	DenseFeatures(const DenseFeatures & orig);
 
 	/** constructor
 	 *
 	 * @param matrix feature matrix
 	 */
-	CDenseFeatures(SGMatrix<ST> matrix);
+	DenseFeatures(SGMatrix<ST> matrix);
 
 	/** constructor
 	 *
@@ -84,27 +84,27 @@ public:
 	 * @param num_feat number of features in matrix
 	 * @param num_vec number of vectors in matrix
 	 */
-	CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec);
+	DenseFeatures(ST* src, int32_t num_feat, int32_t num_vec);
 
 	/** constructor from DotFeatures
 	 *
 	 * @param features DotFeatures object
 	 */
-	CDenseFeatures(CDotFeatures* features);
+	DenseFeatures(std::shared_ptr<DotFeatures> features);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CDenseFeatures(CFile* loader);
+	DenseFeatures(std::shared_ptr<File> loader);
 
 	/** duplicate feature object
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<Features> duplicate() const;
 
-	virtual ~CDenseFeatures();
+	virtual ~DenseFeatures();
 
 	/** free feature matrix
 	 *
@@ -209,7 +209,7 @@ public:
 	 *
 	 * @return transposed copy
 	 */
-	CDenseFeatures<ST>* get_transposed();
+	std::shared_ptr<DenseFeatures<ST>> get_transposed();
 
 	/** compute and return the transpose of the feature matrix
 	 * which will be prepocessed.
@@ -286,7 +286,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** Computes the sum of all feature vectors
@@ -344,7 +344,7 @@ public:
 	 * @param vec2 dense vector
 	 */
 	virtual float64_t
-	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
+	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const;
 
 	/** add vector 1 multiplied with alpha to dense vector2
 	 *
@@ -370,13 +370,13 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	virtual void load(CFile* loader);
+	virtual void load(std::shared_ptr<File> loader);
 
 	/** save features to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	virtual void save(CFile* saver);
+	virtual void save(std::shared_ptr<File> saver);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for dense features */
@@ -431,17 +431,17 @@ public:
 	 */
 	virtual void free_feature_iterator(void* iterator);
 
-	/** Creates a new CFeatures instance containing copies of the elements
+	/** Creates a new Features instance containing copies of the elements
 	 * which are specified by the provided indices.
 	 *
 	 * possible with subset
 	 *
 	 * @param indices indices of feature elements to copy
-	 * @return new CFeatures instance with copies of feature data
+	 * @return new Features instance with copies of feature data
 	 */
-	virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+	virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
 
-	/** Creates a new CFeatures instance containing only the dimensions
+	/** Creates a new Features instance containing only the dimensions
 	 * of the feature vector which are specified by the provided indices.
 	 *
 	 * This method is needed for feature selection tasks
@@ -449,17 +449,17 @@ public:
 	 * possible with subset
 	 *
 	 * @param dims indices of feature dimensions to copy
-	 * @return new CFeatures instance with copies of specified features
+	 * @return new Features instance with copies of specified features
 	 */
-	virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
+	virtual std::shared_ptr<Features> copy_dimension_subset(SGVector<index_t> dims) const;
 
-	/** checks if the contents of this CDenseFeatures object are the same to
+	/** checks if the contents of this DenseFeatures object are the same to
 	 * the contents of rhs
 	 *
-	 * @param rhs other CDenseFeatures object to compare to this one
+	 * @param rhs other DenseFeatures object to compare to this one
 	 * @return whether they represent the same information
 	 */
-	virtual bool is_equal(CDenseFeatures* rhs);
+	virtual bool is_equal(std::shared_ptr<DenseFeatures> rhs);
 
 	/** Takes a list of feature instances and returns a new instance which is
 	 * a concatenation of a copy if this instace's data and the given
@@ -470,7 +470,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CList* other) const;
+	std::shared_ptr<Features> create_merged_copy(const std::vector<std::shared_ptr<Features>>& other) const;
 
 	/** Convenience method for method with same name and list as parameter.
 	 *
@@ -478,7 +478,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CFeatures* other) const;
+	std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const;
 
 /** helper method used to specialize a base class instance
  *
@@ -486,10 +486,10 @@ public:
 #ifndef SWIG
 	[[deprecated("use .as template function")]]
 #endif
-	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
+	static std::shared_ptr<DenseFeatures> obtain_from_generic(std::shared_ptr<Features> base_features);
 
 #ifndef SWIG // SWIG should skip this part
-	virtual CFeatures* shallow_subset_copy();
+	virtual std::shared_ptr<Features> shallow_subset_copy();
 #endif
 
 	/** @return object name */
@@ -555,7 +555,7 @@ protected:
 	SGMatrix<ST> feature_matrix;
 
 	/** feature cache */
-	CCache<ST>* feature_cache;
+	std::shared_ptr<Cache<ST>> feature_cache;
 };
 }
 #endif // _DENSEFEATURES__H__

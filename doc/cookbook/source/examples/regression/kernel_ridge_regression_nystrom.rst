@@ -33,14 +33,14 @@ See :cite:`williams2001using` or :cite:`rudi2015less` for more details.
 Example
 -------
 
-The API is very similar to :sgclass:`CKernelRidgeRegression`. We create
-:sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) and
-:sgclass:`CRegressionLabels` as
+The API is very similar to :sgclass:`KernelRidgeRegression`. We create
+:sgclass:`DenseFeatures` (here 64 bit floats aka RealFeatures) and
+:sgclass:`RegressionLabels` as
 
 .. sgexample:: kernel_ridge_regression_nystrom.sg:create_features
 
-Choose an appropriate :sgclass:`CKernel` and instantiate it. Here we use a
-:sgclass:`CGaussianKernel`.
+Choose an appropriate :sgclass:`Kernel` and instantiate it. Here we use a
+:sgclass:`GaussianKernel`.
 
 .. sgexample:: kernel_ridge_regression_nystrom.sg:create_appropriate_kernel
 
@@ -51,7 +51,7 @@ the labels.
 .. sgexample:: kernel_ridge_regression_nystrom.sg:create_instance
 
 Then we train the regression model and apply it to test data to get the
-predicted :sgclass:`CRegressionLabels`.
+predicted :sgclass:`RegressionLabels`.
 
 .. sgexample:: kernel_ridge_regression_nystrom.sg:train_and_apply
 
@@ -59,7 +59,7 @@ After training, we can extract :math:`\alpha`.
 
 .. sgexample:: kernel_ridge_regression_nystrom.sg:extract_alpha
 
-Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
+Finally, we can evaluate the :sgclass:`MeanSquaredError`.
 
 .. sgexample:: kernel_ridge_regression_nystrom.sg:evaluate_error
 

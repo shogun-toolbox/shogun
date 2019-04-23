@@ -16,10 +16,10 @@
 
 namespace shogun
 {
-	class CKernelMachine;
-	class CDotFeatures;
+	class KernelMachine;
+	class DotFeatures;
 
-/** @brief Computes the standard linear kernel on CDotFeatures.
+/** @brief Computes the standard linear kernel on DotFeatures.
  *
  * Formally, it computes
  *
@@ -27,21 +27,21 @@ namespace shogun
  * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearKernel: public CDotKernel
+class LinearKernel: public DotKernel
 {
 	public:
 		/** constructor
 		 */
-		CLinearKernel();
+		LinearKernel();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearKernel(CDotFeatures* l, CDotFeatures* r);
+		LinearKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r);
 
-		virtual ~CLinearKernel();
+		virtual ~LinearKernel();
 
 		/** initialize kernel
 		 *
@@ -49,7 +49,7 @@ class CLinearKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -80,7 +80,7 @@ class CLinearKernel: public CDotKernel
 		/** init optimization
 		 * @param km
 		 */
-		virtual bool init_optimization(CKernelMachine* km);
+		virtual bool init_optimization(std::shared_ptr<KernelMachine> km);
 
 		/** delete optimization
 		 *
@@ -97,7 +97,7 @@ class CLinearKernel: public CDotKernel
 
 		virtual void clear_normal()
 		{
-			normal = SGVector<float64_t>(((CDotFeatures*)lhs)->get_dim_feature_space());
+			normal = SGVector<float64_t>((std::static_pointer_cast<DotFeatures>(lhs))->get_dim_feature_space());
 			normal.zero();
 			set_is_initialized(false);
 		}
@@ -125,7 +125,7 @@ class CLinearKernel: public CDotKernel
 		 */
 		void set_w(SGVector<float64_t> w)
 		{
-			ASSERT(lhs && w.size()==((CDotFeatures*) lhs)->get_dim_feature_space())
+			ASSERT(lhs && w.size()==(std::static_pointer_cast<DotFeatures>(lhs))->get_dim_feature_space())
 			this->normal = w;
 		}
 

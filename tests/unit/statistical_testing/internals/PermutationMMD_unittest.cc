@@ -32,7 +32,6 @@
 
 #include <numeric>
 #include <algorithm>
-#include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
@@ -50,8 +49,6 @@
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 
 using namespace shogun;
-using namespace internal;
-using namespace mmd;
 
 using Eigen::Map;
 using Eigen::MatrixXf;
@@ -77,20 +74,19 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
 	auto kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -99,7 +95,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
-	auto compute_mmd=ComputeMMD();
+	auto compute_mmd=internal::mmd::ComputeMMD();
 	compute_mmd.m_n_x=n;
 	compute_mmd.m_n_y=m;
 	compute_mmd.m_stype=stype;
@@ -138,7 +134,6 @@ TEST(PermutationMMD, biased_full_single_kernel)
 		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
-	SG_UNREF(feats);
 }
 
 TEST(PermutationMMD, unbiased_full_single_kernel)
@@ -160,20 +155,19 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
 	auto kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -182,7 +176,7 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
-	auto compute_mmd=ComputeMMD();
+	auto compute_mmd=internal::mmd::ComputeMMD();
 	compute_mmd.m_n_x=n;
 	compute_mmd.m_n_y=m;
 	compute_mmd.m_stype=stype;
@@ -221,7 +215,6 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
-	SG_UNREF(feats);
 }
 
 TEST(PermutationMMD, unbiased_incomplete_single_kernel)
@@ -242,20 +235,19 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	std::iota(data_q.matrix, data_q.matrix+dim*n, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*n, [&n](float64_t& val) { val/=2*n; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
 	auto kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=n;
 	permutation_mmd.m_stype=stype;
@@ -264,7 +256,7 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	prng.seed(seed);
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
-	auto compute_mmd=ComputeMMD();
+	auto compute_mmd=internal::mmd::ComputeMMD();
 	compute_mmd.m_n_x=n;
 	compute_mmd.m_n_y=n;
 	compute_mmd.m_stype=stype;
@@ -303,7 +295,6 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
-	SG_UNREF(feats);
 }
 
 TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
@@ -325,20 +316,19 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
 	auto kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -348,13 +338,12 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 	SGVector<float32_t> result_1=permutation_mmd(kernel_matrix, prng);
 
 	prng.seed(seed);
-	SGVector<float32_t> result_2=permutation_mmd(Kernel(kernel), prng);
+	SGVector<float32_t> result_2=permutation_mmd(internal::Kernel(kernel), prng);
 
 	EXPECT_TRUE(result_1.size()==result_2.size());
 	for (auto i=0; i<result_1.size(); ++i)
 		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
 
-	SG_UNREF(feats);
 }
 
 TEST(PermutationMMD, biased_full_multi_kernel)
@@ -370,36 +359,33 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	const auto stype=ST_BIASED_FULL;
 
 	std::mt19937_64 prng(seed);
-
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
-		(feats_p->create_merged_copy(feats_q));
-	SG_REF(merged_feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
+	auto merged_feats=
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
 
-	KernelManager kernel_mgr;
+
+	internal::KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
-		auto width=CMath::pow(2, i);
-		auto kernel=new CGaussianKernel(cache_size, width);
+		auto width=Math::pow(2, i);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=some<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
-	SG_UNREF(distance_instance);
+
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -414,7 +400,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
@@ -425,7 +411,6 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(merged_feats);
 }
 
 TEST(PermutationMMD, unbiased_full_multi_kernel)
@@ -441,36 +426,33 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	const auto stype=ST_UNBIASED_FULL;
 
 	std::mt19937_64 prng(seed);
-
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
-		(feats_p->create_merged_copy(feats_q));
-	SG_REF(merged_feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
+	auto merged_feats=
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
 
-	KernelManager kernel_mgr;
+
+	internal::KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
-		auto width=CMath::pow(2, i);
-		auto kernel=new CGaussianKernel(cache_size, width);
+		auto width=Math::pow(2, i);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=some<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
-	SG_UNREF(distance_instance);
+
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -485,7 +467,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
@@ -496,7 +478,6 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(merged_feats);
 }
 
 TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
@@ -512,36 +493,33 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	const auto stype=ST_UNBIASED_INCOMPLETE;
 
 	std::mt19937_64 prng(seed);
-
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
-		(feats_p->create_merged_copy(feats_q));
-	SG_REF(merged_feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
+	auto merged_feats=
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
 
-	KernelManager kernel_mgr;
+
+	internal::KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
-		auto width=CMath::pow(2, i);
-		auto kernel=new CGaussianKernel(cache_size, width);
+		auto width=Math::pow(2, i);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=some<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
-	SG_UNREF(distance_instance);
+
 	kernel_mgr.set_precomputed_distance(precomputed_distance);
 
-	auto permutation_mmd=PermutationMMD();
+	auto permutation_mmd=internal::mmd::PermutationMMD();
 	permutation_mmd.m_n_x=n;
 	permutation_mmd.m_n_y=m;
 	permutation_mmd.m_stype=stype;
@@ -556,7 +534,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		CKernel* kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		kernel->init(merged_feats, merged_feats);
 		prng.seed(seed);
 		SGVector<float32_t> curr_null_samples=permutation_mmd(kernel->get_kernel_matrix<float32_t>(), prng);
@@ -567,5 +545,4 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 
 		kernel->remove_lhs_and_rhs();
 	}
-	SG_UNREF(merged_feats);
 }

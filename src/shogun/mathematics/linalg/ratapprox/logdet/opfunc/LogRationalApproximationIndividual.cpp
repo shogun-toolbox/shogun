@@ -20,40 +20,40 @@ using namespace Eigen;
 namespace shogun
 {
 
-	CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
-	    : CRationalApproximation(nullptr, nullptr, 0, OF_LOG)
+	LogRationalApproximationIndividual::LogRationalApproximationIndividual()
+	    : RationalApproximation(nullptr, nullptr, 0, OF_LOG)
 	{
 		init();
 }
 
-CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
-	CMatrixOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
-	CLinearSolver<complex128_t, float64_t>* linear_solver,
+LogRationalApproximationIndividual::LogRationalApproximationIndividual(
+	std::shared_ptr<MatrixOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
+	std::shared_ptr<LinearSolver<complex128_t, float64_t>> linear_solver,
 	float64_t desired_accuracy)
-	: CRationalApproximation(
+	: RationalApproximation(
 	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
 {
 	init();
 
 	m_linear_solver=linear_solver;
-	SG_REF(m_linear_solver);
+
 }
 
-void CLogRationalApproximationIndividual::init()
+void LogRationalApproximationIndividual::init()
 {
 	m_linear_solver=NULL;
 
-	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_linear_solver, "linear_solver",
 		"Linear solver for complex systems");
 }
 
-CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
+LogRationalApproximationIndividual::~LogRationalApproximationIndividual()
 {
-	SG_UNREF(m_linear_solver);
+
 }
 
 float64_t
-CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
+LogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 {
 	SG_TRACE("Entering..");
 	require(sample.vector, "Sample is not initialized!");
@@ -63,30 +63,30 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 	enum typeID {DENSE=1, SPARSE, UNKNOWN} operator_type=UNKNOWN;
 
 	// create a complex copy of the matrix linear operator
-	CMatrixOperator<complex128_t>* complex_op=NULL;
-	if (typeid(*m_linear_operator)==typeid(CDenseMatrixOperator<float64_t>))
+	std::shared_ptr<MatrixOperator<complex128_t>> complex_op=NULL;
+	if (typeid(*m_linear_operator)==typeid(DenseMatrixOperator<float64_t>))
 	{
 		operator_type=DENSE;
 
-		CDenseMatrixOperator<float64_t>* op
-			=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+		auto op
+			=m_linear_operator->as<DenseMatrixOperator<float64_t>>();
 
 		require(op->get_matrix_operator().matrix, "Matrix is not initialized!");
 
 		// create complex dense matrix operator
-		complex_op=static_cast<CDenseMatrixOperator<complex128_t>*>(*op);
+		complex_op=std::shared_ptr<MatrixOperator<complex128_t>>(static_cast<DenseMatrixOperator<complex128_t>*>(*op));
 	}
-	else if (typeid(*m_linear_operator)==typeid(CSparseMatrixOperator<float64_t>))
+	else if (typeid(*m_linear_operator)==typeid(SparseMatrixOperator<float64_t>))
 	{
 		operator_type=SPARSE;
 
-		CSparseMatrixOperator<float64_t>* op
-			=dynamic_cast<CSparseMatrixOperator<float64_t>*>(m_linear_operator);
+		auto op
+			=m_linear_operator->as<SparseMatrixOperator<float64_t>>();
 
 		require(op->get_matrix_operator().sparse_matrix, "Matrix is not initialized!");
 
 		// create complex sparse matrix operator
-		complex_op=static_cast<CSparseMatrixOperator<complex128_t>*>(*op);
+		complex_op=std::shared_ptr<MatrixOperator<complex128_t>>(static_cast<SparseMatrixOperator<complex128_t>*>(*op));
 	}
 	else
 	{
@@ -99,17 +99,17 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CMatrixOperator<complex128_t>* shifted_op=NULL;
+		std::shared_ptr<MatrixOperator<complex128_t>> shifted_op=NULL;
 
 		switch(operator_type)
 		{
 		case DENSE:
-			shifted_op=new CDenseMatrixOperator<complex128_t>
-				(*dynamic_cast<CDenseMatrixOperator<complex128_t>*>(complex_op));
+			shifted_op=std::make_shared<DenseMatrixOperator<complex128_t>>
+				(*(complex_op->as<DenseMatrixOperator<complex128_t>>()));
 			break;
 		case SPARSE:
-			shifted_op=new CSparseMatrixOperator<complex128_t>
-				(*dynamic_cast<CSparseMatrixOperator<complex128_t>*>(complex_op));
+			shifted_op=std::make_shared<SparseMatrixOperator<complex128_t>>
+				(*(complex_op->as<SparseMatrixOperator<complex128_t>>()));
 			break;
 		default:
 			break;
@@ -122,7 +122,7 @@ CLogRationalApproximationIndividual::compute(SGVector<float64_t> sample) const
 
 		SGVector<complex128_t> vec = m_linear_solver->solve(shifted_op, sample);
 		// multiply with the weight using Eigen3 and take negative
-		// (see CRationalApproximation for the formula)
+		// (see RationalApproximation for the formula)
 		Map<VectorXcd> v(vec.vector, vec.vlen);
 		v *= m_weights[i];
 		v = -v;

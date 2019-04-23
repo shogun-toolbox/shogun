@@ -23,10 +23,10 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i<2*4; i++)
 		matrix.matrix[i]=i;
 
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features= new DenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CBinaryLabels* labels=new CBinaryLabels(4);
+	BinaryLabels* labels=new BinaryLabels(4);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
@@ -55,7 +55,6 @@ int main(int argc, char** argv)
 	regressor->set_current_task(0);
 	regressor->get_w().display_vector();
 
-	SG_UNREF(regressor);
 	return 0;
 }
 #else //USE_GPL_SHOGUN

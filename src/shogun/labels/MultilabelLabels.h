@@ -48,27 +48,27 @@ namespace shogun
  * Labels are subsets of {0, ..., num_classes-1}
  */
 
-class CMultilabelLabels : public CLabels
+class MultilabelLabels : public Labels
 {
 public:
 	/** default constructor */
-	CMultilabelLabels();
+	MultilabelLabels();
 
 	/** constructor
 	 *
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int32_t num_classes);
+	MultilabelLabels(int32_t num_classes);
 
 	/** constructor
 	 *
 	 * @param num_labels  number of labels
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int32_t num_labels, int32_t num_classes);
+	MultilabelLabels(int32_t num_labels, int32_t num_classes);
 
 	/** destructor */
-	~CMultilabelLabels();
+	~MultilabelLabels();
 
 	virtual bool is_valid() const override;
 

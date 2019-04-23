@@ -42,15 +42,15 @@
 using namespace shogun;
 using namespace internal;
 
-CLinearTimeMMD::CLinearTimeMMD() : CStreamingMMD()
+LinearTimeMMD::LinearTimeMMD() : StreamingMMD()
 {
 }
 
-CLinearTimeMMD::~CLinearTimeMMD()
+LinearTimeMMD::~LinearTimeMMD()
 {
 }
 
-void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+void LinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	auto& data_mgr=get_data_mgr();
 	auto min_blocksize=data_mgr.get_min_blocksize();
@@ -72,12 +72,12 @@ void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	SG_DEBUG("Block contains {} and {} samples, from P and Q respectively!", data_mgr.blocksize_at(0), data_mgr.blocksize_at(1));
 }
 
-const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_estimation_method() const
+const std::function<float32_t(SGMatrix<float32_t>)> LinearTimeMMD::get_direct_estimation_method() const
 {
 	return mmd::WithinBlockDirect();
 }
 
-float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
+float64_t LinearTimeMMD::normalize_statistic(float64_t statistic) const
 {
 	const DataManager& data_mgr = get_data_mgr();
 	const index_t Nx = data_mgr.num_samples_at(0);
@@ -85,7 +85,7 @@ float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
 	return std::sqrt(Nx * Ny / float64_t(Nx + Ny)) * statistic;
 }
 
-const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
+const float64_t LinearTimeMMD::normalize_variance(float64_t variance) const
 {
 	const DataManager& data_mgr = get_data_mgr();
 	const index_t Bx = data_mgr.blocksize_at(0);
@@ -98,7 +98,7 @@ const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 	return variance * Bx * By * (Bx - 1) * (By - 1) / (B - 1) / (B - 2);
 }
 
-const float64_t CLinearTimeMMD::gaussian_variance(float64_t variance) const
+const float64_t LinearTimeMMD::gaussian_variance(float64_t variance) const
 {
 	const DataManager& data_mgr = get_data_mgr();
 	const index_t Bx = data_mgr.blocksize_at(0);
@@ -111,7 +111,7 @@ const float64_t CLinearTimeMMD::gaussian_variance(float64_t variance) const
 	return variance * (B - 1) * (B - 2) / (Bx - 1) / (By - 1) / B;
 }
 
-float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
+float64_t LinearTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result = 0;
 	switch (get_null_approximation_method())
@@ -120,7 +120,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		{
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 		    float64_t std_dev = std::sqrt(sigma_sq);
-		    result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		    result = 1.0 - Statistics::normal_cdf(statistic, std_dev);
 		    break;
 	    }
 	    case NAM_PERMUTATION:
@@ -133,14 +133,14 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	    }
 	    default:
 	    {
-		    result = CHypothesisTest::compute_p_value(statistic);
+		    result = HypothesisTest::compute_p_value(statistic);
 		    break;
 	    }
 	}
 	return result;
 }
 
-float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
+float64_t LinearTimeMMD::compute_threshold(float64_t alpha)
 {
 	float64_t result = 0;
 	switch (get_null_approximation_method())
@@ -150,19 +150,19 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 		    float64_t std_dev = std::sqrt(sigma_sq);
 		    result =
-		        1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		        1.0 - Statistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
 		    break;
 	    }
 	    default:
 	    {
-		    result = CHypothesisTest::compute_threshold(alpha);
+		    result = HypothesisTest::compute_threshold(alpha);
 		    break;
 	    }
 	}
 	return result;
 }
 
-const char* CLinearTimeMMD::get_name() const
+const char* LinearTimeMMD::get_name() const
 {
 	return "LinearTimeMMD";
 }

@@ -43,7 +43,7 @@ namespace shogun
 	 * large-
 	 * scale linear learning focusing on SVM [1]. This is the classification
 	 * interface. For
-	 * regression, see CLibLinearRegression. There is also an online version,
+	 * regression, see LibLinearRegression. There is also an online version,
 	 * see
 	 * COnlineLibLinear.
 	 *
@@ -59,19 +59,19 @@ namespace shogun
 	 *
 	 * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
 	 * */
-	class CLibLinear : public RandomMixin<CLinearMachine>
+	class LibLinear : public RandomMixin<LinearMachine>
 	{
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor  */
-		CLibLinear();
+		LibLinear();
 
 		/** constructor
 		 *
 		 * @param liblinear_solver_type liblinear_solver_type
 		 */
-		CLibLinear(LIBLINEAR_SOLVER_TYPE liblinear_solver_type);
+		LibLinear(LIBLINEAR_SOLVER_TYPE liblinear_solver_type);
 
 		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
 		 *
@@ -79,10 +79,10 @@ namespace shogun
 		 * @param traindat training features
 		 * @param trainlab training labels
 		 */
-		CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab);
+		LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab);
 
 		/** destructor */
-		virtual ~CLibLinear();
+		virtual ~LibLinear();
 
 		/**
 		 * @return the currently used liblinear solver
@@ -222,7 +222,7 @@ namespace shogun
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 	private:
 		/** set up parameters */

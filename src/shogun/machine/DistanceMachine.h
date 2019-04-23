@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang,
  *          Thoralf Klein, Evan Shelhamer, Saurabh Goyal
  */
 
@@ -16,34 +16,34 @@
 
 namespace shogun
 {
-	class CDistance;
-	class CFeatures;
-	class CMulticlassLabels;
+	class Distance;
+	class Features;
+	class MulticlassLabels;
 
 /** @brief A generic DistanceMachine interface.
  *
  * A distance machine is based on a a-priori choosen distance.
  */
-class CDistanceMachine : public CMachine
+class DistanceMachine : public Machine
 {
 	public:
 		/** default constructor */
-		CDistanceMachine();
+		DistanceMachine();
 
 		/** destructor */
-		virtual ~CDistanceMachine();
+		virtual ~DistanceMachine();
 
 		/** set distance
 		 *
 		 * @param d distance to set
 		 */
-		void set_distance(CDistance* d);
+		void set_distance(std::shared_ptr<Distance> d);
 
 		/** get distance
 		 *
 		 * @return distance
 		 */
-		CDistance* get_distance() const;
+		std::shared_ptr<Distance> get_distance() const;
 
 		/**
 		 * get distance functions for lhs feature vectors
@@ -81,7 +81,7 @@ class CDistanceMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 		/** Apply machine to one example.
 		 * Cluster index with smallest distance to to be classified element is
@@ -97,7 +97,7 @@ class CDistanceMachine : public CMachine
 
 	protected:
 		/** the distance */
-		CDistance* distance;
+		std::shared_ptr<Distance> distance;
 };
 }
 #endif

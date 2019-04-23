@@ -18,39 +18,39 @@ using namespace Eigen;
 namespace shogun
 {
 
-	CLogRationalApproximationCGM::CLogRationalApproximationCGM()
-	    : CRationalApproximation(nullptr, nullptr, 0, OF_LOG)
+	LogRationalApproximationCGM::LogRationalApproximationCGM()
+	    : RationalApproximation(nullptr, nullptr, 0, OF_LOG)
 	{
 		init();
 }
 
-CLogRationalApproximationCGM::CLogRationalApproximationCGM(
-	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
-	CCGMShiftedFamilySolver* linear_solver, float64_t desired_accuracy)
-	: CRationalApproximation(
+LogRationalApproximationCGM::LogRationalApproximationCGM(
+	std::shared_ptr<LinearOperator<float64_t>> linear_operator, std::shared_ptr<EigenSolver> eigen_solver,
+	std::shared_ptr<CGMShiftedFamilySolver> linear_solver, float64_t desired_accuracy)
+	: RationalApproximation(
 	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
 {
 	init();
 
 	m_linear_solver=linear_solver;
-	SG_REF(m_linear_solver);
+
 }
 
-void CLogRationalApproximationCGM::init()
+void LogRationalApproximationCGM::init()
 {
 	m_linear_solver=NULL;
 
-	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_linear_solver, "linear_solver",
 		"Linear solver for complex systems");
 }
 
-CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
+LogRationalApproximationCGM::~LogRationalApproximationCGM()
 {
-	SG_UNREF(m_linear_solver);
+
 }
 
 float64_t
-CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
+LogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 {
 	SG_TRACE("Entering");
 	require(sample.vector, "Sample is not initialized!");
@@ -61,7 +61,7 @@ CLogRationalApproximationCGM::compute(SGVector<float64_t> sample) const
 	SGVector<complex128_t> vec = m_linear_solver->solve_shifted_weighted(
 		m_linear_operator, sample, m_shifts, m_weights, true);
 
-	// Take negative (see CRationalApproximation for the formula)
+	// Take negative (see RationalApproximation for the formula)
 	Map<VectorXcd> v(vec.vector, vec.vlen);
 	v = -v;
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -28,19 +28,19 @@ namespace shogun
  * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures
  * for Sequential Data. Journal of Machine Learning Research, 9:23--48,2008.
  */
-class CChiSquareDistance: public CDenseDistance<float64_t>
+class ChiSquareDistance: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CChiSquareDistance();
+		ChiSquareDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChiSquareDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CChiSquareDistance();
+		ChiSquareDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~ChiSquareDistance();
 
 		/** init distance
 		 *
@@ -48,7 +48,7 @@ class CChiSquareDistance: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -20,12 +20,12 @@ namespace shogun
  * \mathbb{C}^{n}\f$ being the vector. The result is a vector \f$y\in
  * \mathbb{C}^{m}\f$.
  */
-template<class T> class CMatrixOperator : public CLinearOperator<T>
+template<class T> class MatrixOperator : public LinearOperator<T>
 {
 public:
 	/** default constructor */
-	CMatrixOperator()
-	: CLinearOperator<T>()
+	MatrixOperator()
+	: LinearOperator<T>()
 	{
 	}
 
@@ -34,13 +34,13 @@ public:
 	 *
 	 * @param dimension the dimension of the vector on which this it can apply
 	 */
-	CMatrixOperator(index_t dimension)
-	: CLinearOperator<T>(dimension)
+	MatrixOperator(index_t dimension)
+	: LinearOperator<T>(dimension)
 	{
 	}
 
 	/** destructor */
-	~CMatrixOperator()
+	~MatrixOperator()
 	{
 	}
 

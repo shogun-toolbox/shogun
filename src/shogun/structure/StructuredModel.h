@@ -43,22 +43,22 @@ IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
 	uint32_t m_N;
 };
 
-class CStructuredModel;
+class StructuredModel;
 
 /** output of the argmax function */
-struct CResultSet : public CSGObject
+struct ResultSet : public SGObject
 {
 	/** constructor */
-	CResultSet();
+	ResultSet();
 
 	/** destructor */
-	virtual ~CResultSet();
+	virtual ~ResultSet();
 
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const;
 
 	/** argmax */
-	CStructuredData* argmax;
+	std::shared_ptr<StructuredData> argmax;
 
 	/** whether joint feature vector is sparse or not */
 	bool psi_computed_sparse;
@@ -87,7 +87,7 @@ struct CResultSet : public CSGObject
 };
 
 /**
- * @brief Class CStructuredModel that represents the application specific model
+ * @brief Class StructuredModel that represents the application specific model
  * and contains most of the application dependent logic to solve structured
  * output (SO) problems. The idea of this class is to be instantiated giving
  * pointers to the functions that are dependent on the application, i.e. the
@@ -96,21 +96,21 @@ struct CResultSet : public CSGObject
  * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: MulticlassModel.h and
  * .cpp for an example of these functions implemented.
  */
-class CStructuredModel : public CSGObject
+class StructuredModel : public SGObject
 {
 	public:
 		/** default constructor */
-		CStructuredModel();
+		StructuredModel();
 
 		/** constructor
 		 *
 		 * @param features the feature vectors
 		 * @param labels structured labels
 		 */
-		CStructuredModel(CFeatures* features, CStructuredLabels* labels);
+		StructuredModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels);
 
 		/** destructor */
-		virtual ~CStructuredModel();
+		virtual ~StructuredModel();
 
 		/** initialize the optimization problem for primal solver
 		 *
@@ -140,28 +140,28 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @param labs labels
 		 */
-		void set_labels(CStructuredLabels* labs);
+		void set_labels(std::shared_ptr<StructuredLabels> labs);
 
 		/** get labels
 		 *
 		 * @return labels
 		 */
-		CStructuredLabels* get_labels();
+		std::shared_ptr<StructuredLabels> get_labels();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
+		virtual std::shared_ptr<StructuredLabels> structured_labels_factory(int32_t num_labels=0);
 
 		/** set features
 		 *
 		 * @param feats features
 		 */
-		void set_features(CFeatures* feats);
+		void set_features(std::shared_ptr<Features> feats);
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		CFeatures* get_features();
+		std::shared_ptr<Features> get_features();
 
 		/**
 		 * gets joint feature vector
@@ -189,7 +189,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
 
 		/**
 		 * gets joint feature vector
@@ -219,7 +219,7 @@ class CStructuredModel : public CSGObject
 		 * @return the joint feature vector
 		 */
 		virtual SGSparseVector< float64_t > get_sparse_joint_feature_vector(int32_t feat_idx,
-				CStructuredData* y);
+				std::shared_ptr<StructuredData> y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -234,7 +234,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) = 0;
+		virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
@@ -243,7 +243,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		float64_t delta_loss(int32_t ytrue_idx, std::shared_ptr<StructuredData> ypred);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -252,7 +252,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
@@ -300,12 +300,12 @@ class CStructuredModel : public CSGObject
 
 	protected:
 		/** structured labels */
-		CStructuredLabels* m_labels;
+		std::shared_ptr<StructuredLabels> m_labels;
 
 		/** feature vectors */
-		CFeatures* m_features;
+		std::shared_ptr<Features> m_features;
 
-}; /* class CStructuredModel */
+}; /* class StructuredModel */
 
 } /* namespace shogun */
 

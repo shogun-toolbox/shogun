@@ -8,20 +8,20 @@
 %newobject *::select_model();
 %newobject CParameterCombination::copy_tree();
 %newobject CParameterCombination::leaf_sets_multiplication();
-%newobject CModelSelectionParameters::get_combinations();
-%newobject CModelSelectionParameters::get_single_combination();
+%newobject ModelSelectionParameters::get_combinations();
+%newobject ModelSelectionParameters::get_single_combination();
 
 /* what about parameter_set_multiplication returns new DynArray<Parameter*>? */
 
-/* Remove C Prefix */
-%rename(GridSearchModelSelection) CGridSearchModelSelection;
-%rename(RandomSearchModelSelection) CRandomSearchModelSelection;
+%shared_ptr(shogun::ModelSelection)
+%shared_ptr(shogun::GridSearchModelSelection)
+%shared_ptr(shogun::RandomSearchModelSelection)
 #ifdef USE_GPL_SHOGUN
-%rename(GradientModelSelection) CGradientModelSelection;
+%shared_ptr(shogun::GradientModelSelection)
 #endif //USE_GPL_SHOGUN
-%rename(ModelSelectionBase) CModelSelection;
-%rename(ModelSelectionParameters) CModelSelectionParameters;
-%rename(ParameterCombination) CParameterCombination;
+%shared_ptr(shogun::ModelSelectionBase)
+%shared_ptr(shogun::ModelSelectionParameters)
+%shared_ptr(shogun::ParameterCombination)
 
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>

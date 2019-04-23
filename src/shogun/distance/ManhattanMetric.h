@@ -30,19 +30,19 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Manhattan_distance">
  * Wikipedia: Manhattan distance</a>
  */
-class CManhattanMetric: public CDenseDistance<float64_t>
+class ManhattanMetric: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CManhattanMetric();
+		ManhattanMetric();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CManhattanMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CManhattanMetric();
+		ManhattanMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~ManhattanMetric();
 
 		/** init distance
 		 *
@@ -50,7 +50,7 @@ class CManhattanMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -38,9 +38,9 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
-class CCustomDistance;
+class Kernel;
+class MMD;
+class CustomDistance;
 template <typename T> class SGVector;
 template <typename T> class SGMatrix;
 
@@ -50,17 +50,17 @@ namespace internal
 class MedianHeuristic : public KernelSelection
 {
 public:
-	MedianHeuristic(KernelManager&, CMMD*);
+	MedianHeuristic(KernelManager&, std::shared_ptr<MMD>);
 	MedianHeuristic(const MedianHeuristic& other)=delete;
 	~MedianHeuristic();
 	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
-	virtual CKernel* select_kernel() override;
+	virtual std::shared_ptr<Kernel> select_kernel() override;
 	virtual SGVector<float64_t> get_measure_vector() override;
 	virtual SGMatrix<float64_t> get_measure_matrix() override;
 protected:
 	virtual void init_measures() override;
 	virtual void compute_measures() override;
-	std::shared_ptr<CCustomDistance> distance;
+	std::shared_ptr<CustomDistance> distance;
 	SGVector<float64_t> measures;
 	int32_t n;
 };

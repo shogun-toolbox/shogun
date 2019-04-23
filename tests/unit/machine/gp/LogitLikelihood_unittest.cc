@@ -45,7 +45,7 @@ TEST(LogitLikelihood,get_predictive_log_probabilities)
 	mu[9]=0.106952;
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2);
 
@@ -62,7 +62,7 @@ TEST(LogitLikelihood,get_predictive_log_probabilities)
 	EXPECT_NEAR(lp[9], -0.645370763225588, 1E-12);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 
 TEST(LogitLikelihood,get_predictive_means)
@@ -97,7 +97,7 @@ TEST(LogitLikelihood,get_predictive_means)
 	mu[9]=0.106952;
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	mu=likelihood->get_predictive_means(mu, s2);
 
@@ -114,7 +114,7 @@ TEST(LogitLikelihood,get_predictive_means)
 	EXPECT_NEAR(mu[9], 0.0489529561764410, 1E-3);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 
 TEST(LogitLikelihood,get_predictive_variances)
@@ -149,7 +149,7 @@ TEST(LogitLikelihood,get_predictive_variances)
 	mu[9]=0.106952;
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	s2=likelihood->get_predictive_variances(mu, s2);
 
@@ -166,7 +166,7 @@ TEST(LogitLikelihood,get_predictive_variances)
 	EXPECT_NEAR(s2[9], 0.997603608081587, 1E-3);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 #endif //USE_GPL_SHOGUN
 
@@ -202,10 +202,10 @@ TEST(LogitLikelihood,get_log_probability_f)
 	func[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
@@ -222,8 +222,8 @@ TEST(LogitLikelihood,get_log_probability_f)
 	EXPECT_NEAR(lp[9], -0.641100340885144, 1E-15);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(LogitLikelihood,get_log_probability_f_sum_multiple)
@@ -269,20 +269,20 @@ TEST(LogitLikelihood,get_log_probability_f_sum_multiple)
 	func(9,1)=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
-	SGVector<float64_t> lp=((CLikelihoodModel*)likelihood)->get_log_probability_fmatrix(labels, func);
+	SGVector<float64_t> lp=likelihood->as<LikelihoodModel>()->get_log_probability_fmatrix(labels, func);
 
 	// comparison of log likelihood with result from GPML package
 	EXPECT_NEAR(lp[0], -4.8927, 1E-4);
 	EXPECT_NEAR(lp[1], -4.8927, 1E-4);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(LogitLikelihood,get_log_probability_derivative_f)
@@ -317,10 +317,10 @@ TEST(LogitLikelihood,get_log_probability_derivative_f)
 	func[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	SGVector<float64_t> dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	SGVector<float64_t> d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
@@ -361,8 +361,8 @@ TEST(LogitLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[9], 0.0133181, 1E-7);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -401,10 +401,10 @@ TEST(LogitLikelihood,get_first_moments)
 	mu[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	mu=likelihood->get_first_moments(mu, s2, labels);
 
@@ -421,8 +421,8 @@ TEST(LogitLikelihood,get_first_moments)
 	EXPECT_NEAR(mu[9], 0.281174465384849, 1E-12);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(LogitLikelihood,get_second_moments)
@@ -460,10 +460,10 @@ TEST(LogitLikelihood,get_second_moments)
 	mu[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	s2=likelihood->get_second_moments(mu, s2, labels);
 
@@ -480,7 +480,7 @@ TEST(LogitLikelihood,get_second_moments)
 	EXPECT_NEAR(s2[9], 0.3667340355471636, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 #endif //USE_GPL_SHOGUN

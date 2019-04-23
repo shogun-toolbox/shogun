@@ -28,37 +28,37 @@ using namespace shogun;
 #define MAX_LOG_TABLE_SIZE 123*1024*1024
 #define LOG_TABLE_PRECISION 1e-15
 #endif //USE_HMMDEBUG
-int32_t CMath::LOGACCURACY         = 0; // 100000 steps per integer
+int32_t Math::LOGACCURACY         = 0; // 100000 steps per integer
 #endif // USE_LOGCACHE
 
-int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
+int32_t Math::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
-const float64_t CMath::NOT_A_NUMBER    	=  NAN;
-const float64_t CMath::INFTY            =  INFINITY;	// infinity
-const float64_t CMath::ALMOST_INFTY		=  +1e+300;		//a large number
-const float64_t CMath::ALMOST_NEG_INFTY =  -1e+300;
-const float64_t CMath::PI=M_PI;
-const float64_t CMath::MACHINE_EPSILON=DBL_EPSILON;
-const float64_t CMath::MAX_REAL_NUMBER=DBL_MAX;
-const float64_t CMath::MIN_REAL_NUMBER=DBL_MIN;
-const float32_t CMath::F_MAX_VAL32=FLT_MAX;
-const float32_t CMath::F_MIN_NORM_VAL32=FLT_MIN;
-const float64_t CMath::F_MAX_VAL64=DBL_MAX;
-const float64_t CMath::F_MIN_NORM_VAL64=DBL_MIN;
-const float32_t CMath::F_MIN_VAL32=(FLT_MIN * FLT_EPSILON);
-const float64_t CMath::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
+const float64_t Math::NOT_A_NUMBER    	=  NAN;
+const float64_t Math::INFTY            =  INFINITY;	// infinity
+const float64_t Math::ALMOST_INFTY		=  +1e+300;		//a large number
+const float64_t Math::ALMOST_NEG_INFTY =  -1e+300;
+const float64_t Math::PI=M_PI;
+const float64_t Math::MACHINE_EPSILON=DBL_EPSILON;
+const float64_t Math::MAX_REAL_NUMBER=DBL_MAX;
+const float64_t Math::MIN_REAL_NUMBER=DBL_MIN;
+const float32_t Math::F_MAX_VAL32=FLT_MAX;
+const float32_t Math::F_MIN_NORM_VAL32=FLT_MIN;
+const float64_t Math::F_MAX_VAL64=DBL_MAX;
+const float64_t Math::F_MIN_NORM_VAL64=DBL_MIN;
+const float32_t Math::F_MIN_VAL32=(FLT_MIN * FLT_EPSILON);
+const float64_t Math::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
 
 #ifdef USE_LOGCACHE
-float64_t* CMath::logtable = NULL;
+float64_t* Math::logtable = NULL;
 #endif
 
-CMath::CMath()
-: CSGObject()
+Math::Math()
+: SGObject()
 {
 #ifdef USE_LOGCACHE
-    LOGRANGE=CMath::determine_logrange();
-    LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-    CMath::logtable=SG_MALLOC(float64_t, LOGRANGE*LOGACCURACY);
+    LOGRANGE=Math::determine_logrange();
+    LOGACCURACY=Math::determine_logaccuracy(LOGRANGE);
+    Math::logtable=SG_MALLOC(float64_t, LOGRANGE*LOGACCURACY);
     init_log_table();
 #else
 	int32_t i=0;
@@ -69,16 +69,16 @@ CMath::CMath()
 #endif
 }
 
-CMath::~CMath()
+Math::~Math()
 {
 #ifdef USE_LOGCACHE
-	SG_FREE(CMath::logtable);
-	CMath::logtable=NULL;
+	SG_FREE(Math::logtable);
+	Math::logtable=NULL;
 #endif
 }
 
 #ifdef USE_LOGCACHE
-int32_t CMath::determine_logrange()
+int32_t Math::determine_logrange()
 {
     int32_t i;
     float64_t acc=0;
@@ -96,7 +96,7 @@ int32_t CMath::determine_logrange()
 	return i;
 }
 
-int32_t CMath::determine_logaccuracy(int32_t range)
+int32_t Math::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
 	io::info(
@@ -107,7 +107,7 @@ int32_t CMath::determine_logaccuracy(int32_t range)
 }
 
 //init log table of form log(1+exp(x))
-void CMath::init_log_table()
+void Math::init_log_table()
 {
   for (int32_t i=0; i< LOGACCURACY*LOGRANGE; i++)
 	  logtable[i] =
@@ -115,7 +115,7 @@ void CMath::init_log_table()
 }
 #endif
 
-void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
+void Math::sort(int32_t *a, int32_t cols, int32_t sort_col)
 {
   int32_t changed=1;
   if (a[0]==-1) return;
@@ -127,7 +127,7 @@ void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
 		  if (a[i*cols+sort_col]>a[(i+1)*cols+sort_col])
 		  {
 			  for (int32_t j=0; j<cols; j++)
-				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]);
+				  Math::swap(a[i*cols+j],a[(i+1)*cols+j]);
 			  changed=1;
 		  };
 		  i++;
@@ -135,7 +135,7 @@ void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
   };
 }
 
-void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
+void Math::sort(float64_t *a, int32_t* idx, int32_t N)
 {
 	int32_t changed=1;
 	while (changed)
@@ -154,7 +154,7 @@ void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
 
 }
 
-float64_t CMath::Align(
+float64_t Math::Align(
 	char* seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost)
 {
   float64_t actCost=0 ;
@@ -197,7 +197,7 @@ float64_t CMath::Align(
   return actCost;
 }
 
-void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t n)
+void Math::linspace(float64_t* output, float64_t start, float64_t end, int32_t n)
 {
 	float64_t delta = (end-start) / (n-1);
 	float64_t v = start;
@@ -210,17 +210,17 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 	output[n-1] = end;
 }
 
-int CMath::is_nan(double f)
+int Math::is_nan(double f)
 {
   return std::isnan(f);
 }
 
-int CMath::is_finite(double f)
+int Math::is_finite(double f)
 {
   return std::isfinite(f);
 }
 
-bool CMath::strtof(const char* str, float32_t* float_result)
+bool Math::strtof(const char* str, float32_t* float_result)
 {
 	ASSERT(str);
 	ASSERT(float_result);
@@ -233,7 +233,7 @@ bool CMath::strtof(const char* str, float32_t* float_result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*float_result = CMath::INFTY;
+		*float_result = Math::INFTY;
 
 		if (strchr(buf,'-') != NULL)
 			*float_result *= -1;
@@ -242,7 +242,7 @@ bool CMath::strtof(const char* str, float32_t* float_result)
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*float_result = CMath::NOT_A_NUMBER;
+		*float_result = Math::NOT_A_NUMBER;
 		return true;
 	}
 
@@ -251,7 +251,7 @@ bool CMath::strtof(const char* str, float32_t* float_result)
 	return endptr != buf.vector;
 }
 
-bool CMath::strtod(const char* str, float64_t* double_result)
+bool Math::strtod(const char* str, float64_t* double_result)
 {
 	ASSERT(str);
 	ASSERT(double_result);
@@ -264,7 +264,7 @@ bool CMath::strtod(const char* str, float64_t* double_result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*double_result = CMath::INFTY;
+		*double_result = Math::INFTY;
 
 		if (strchr(buf,'-') != NULL)
 			*double_result *= -1;
@@ -273,7 +273,7 @@ bool CMath::strtod(const char* str, float64_t* double_result)
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*double_result = CMath::NOT_A_NUMBER;
+		*double_result = Math::NOT_A_NUMBER;
 		return true;
 	}
 
@@ -282,7 +282,7 @@ bool CMath::strtod(const char* str, float64_t* double_result)
 	return endptr != buf.vector;
 }
 
-bool CMath::strtold(const char* str, floatmax_t* long_double_result)
+bool Math::strtold(const char* str, floatmax_t* long_double_result)
 {
 	ASSERT(str);
 	ASSERT(long_double_result);
@@ -295,7 +295,7 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*long_double_result = CMath::INFTY;
+		*long_double_result = Math::INFTY;
 
 		if (strchr(buf,'-') != NULL)
 			*long_double_result *= -1;
@@ -304,7 +304,7 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*long_double_result = CMath::NOT_A_NUMBER;
+		*long_double_result = Math::NOT_A_NUMBER;
 		return true;
 	}
 
@@ -320,7 +320,7 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 	return endptr != buf.vector;
 }
 
-float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance)
+float64_t Math::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance)
 {
 	require(rel_tolerance > 0 && rel_tolerance < 1.0,
 		"Relative tolerance ({}) should be less than 1.0 and positive", rel_tolerance);

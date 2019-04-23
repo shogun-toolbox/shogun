@@ -27,17 +27,17 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 54(9), 3270-3278.
  *
  */
-class CQDiag : public RandomMixin<CApproxJointDiagonalizer>
+class QDiag : public RandomMixin<ApproxJointDiagonalizer>
 {
 	public:
 
 		/** constructor */
-		CQDiag()
+		QDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CQDiag()
+		virtual ~QDiag()
 		{
 		}
 
@@ -50,13 +50,13 @@ class CQDiag : public RandomMixin<CApproxJointDiagonalizer>
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
 							SGMatrix<float64_t> V0,
-							double eps=CMath::MACHINE_EPSILON,
+							double eps=Math::MACHINE_EPSILON,
 							int itermax=200);
 
 		template <typename PRNG>
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
 							PRNG& prng,
-							double eps=CMath::MACHINE_EPSILON,
+							double eps=Math::MACHINE_EPSILON,
 							int itermax=200)
 		{
 			int N = C.dims[0];
@@ -75,7 +75,7 @@ class CQDiag : public RandomMixin<CApproxJointDiagonalizer>
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=Math::MACHINE_EPSILON,
 						   int itermax=200)
 		{
 			int N = C.dims[0];

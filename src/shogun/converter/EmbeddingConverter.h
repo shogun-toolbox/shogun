@@ -18,30 +18,30 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
-class CKernel;
+class Features;
+class Distance;
+class Kernel;
 
 /** @brief class EmbeddingConverter (part of the Efficient Dimensionality
  * Reduction Toolkit) used to construct embeddings of
  * features, e.g. construct dense numeric embedding of string features
  */
-class CEmbeddingConverter: public CConverter
+class EmbeddingConverter: public Converter
 {
 public:
 
 	/** constructor */
-	CEmbeddingConverter();
+	EmbeddingConverter();
 
 	/** destructor */
-	virtual ~CEmbeddingConverter();
+	virtual ~EmbeddingConverter();
 
 	/** Apply transformation to features. In-place mode is not supported for
 	 * Tapkee converters.
 	 * @param features features to embed
 	 * @return embedding dense real features
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true) = 0;
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) = 0;
 
 	/** setter for target dimension
 	 * @param dim target dimension
@@ -56,22 +56,22 @@ public:
 	/** setter for distance
 	 * @param distance distance to set
 	 */
-	void set_distance(CDistance* distance);
+	void set_distance(std::shared_ptr<Distance> distance);
 
 	/** getter for distance
 	 * @return distance
 	 */
-	CDistance* get_distance() const;
+	std::shared_ptr<Distance> get_distance() const;
 
 	/** setter for kernel
 	 * @param kernel kernel to set
 	 */
-	void set_kernel(CKernel* kernel);
+	void set_kernel(std::shared_ptr<Kernel> kernel);
 
 	/** getter for kernel
 	 * @return kernel
 	 */
-	CKernel* get_kernel() const;
+	std::shared_ptr<Kernel> get_kernel() const;
 
 	virtual const char* get_name() const { return "EmbeddingConverter"; };
 
@@ -86,10 +86,10 @@ protected:
 	int32_t m_target_dim;
 
 	/** distance to be used */
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 	/** kernel to be used */
-	CKernel* m_kernel;
+	std::shared_ptr<Kernel> m_kernel;
 };
 }
 

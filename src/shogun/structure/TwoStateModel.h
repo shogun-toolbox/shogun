@@ -18,17 +18,17 @@ namespace shogun
 {
 
 /**
- * @brief class CTwoStateModel class for the internal two-state representation
+ * @brief class TwoStateModel class for the internal two-state representation
  * used in the CHMSVMModel.
  */
-class CTwoStateModel : public CStateModel
+class TwoStateModel : public StateModel
 {
 	public:
 		/** default constructor */
-		CTwoStateModel();
+		TwoStateModel();
 
 		/** destructor */
-		virtual ~CTwoStateModel();
+		virtual ~TwoStateModel();
 
 		/**
 		 * computes a loss matrix with m_num_states rows and number of columns
@@ -40,7 +40,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return the loss matrix
 		 */
-		virtual SGMatrix< float64_t > loss_matrix(CSequence* label_seq);
+		virtual SGMatrix< float64_t > loss_matrix(std::shared_ptr<Sequence> label_seq);
 
 		/**
 		 * computes the loss between two sequences of labels using the Hamming loss
@@ -51,7 +51,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return the Hamming loss
 		 */
-		virtual float64_t loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs);
+		virtual float64_t loss(std::shared_ptr<Sequence> label_seq_lhs, std::shared_ptr<Sequence> label_seq_rhs);
 
 		/**
 		 * arranges the emission parameterss of the weight vector into a vector
@@ -77,7 +77,7 @@ class CTwoStateModel : public CStateModel
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
+		virtual void reshape_emission_params(std::shared_ptr<DynamicObjectArray> plif_matrix,
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes);
 
 		/**
@@ -98,7 +98,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const;
+		virtual SGVector< int32_t > labels_to_states(std::shared_ptr<Sequence> label_seq) const;
 
 		/** translates state sequence to label sequence
 		 *
@@ -106,7 +106,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< int32_t > state_seq) const;
+		virtual std::shared_ptr<Sequence> states_to_labels(SGVector< int32_t > state_seq) const;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -144,7 +144,7 @@ class CTwoStateModel : public CStateModel
 		 * specify monotonicity constraints for feature scoring functions. The
 		 * elements of the vector returned can take one of three values:
 		 *
-		 * see CStateModel::get_monotonicity
+		 * see StateModel::get_monotonicity
 		 *
 		 * @param num_free_states number of states whose parameters are learnt
 		 * @param num_feats number of features
@@ -168,7 +168,7 @@ class CTwoStateModel : public CStateModel
 		 * @return a model that contains the data simulated
 		 */
 		template <typename PRNG>
-		static CHMSVMModel* simulate_data(
+		static std::shared_ptr<HMSVMModel> simulate_data(
 			int32_t num_exm, int32_t exm_len, int32_t num_features,
 			int32_t num_noise_features, PRNG& prng);
 
@@ -184,7 +184,7 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return a model that contains the data simulated
 		 */
-		static CHMSVMModel* simulate_data(
+		static std::shared_ptr<HMSVMModel> simulate_data(
 			int32_t num_exm, int32_t exm_len, int32_t num_features,
 			int32_t num_noise_features, int32_t seed=-1);
 

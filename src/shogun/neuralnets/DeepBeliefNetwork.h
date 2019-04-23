@@ -47,11 +47,11 @@ namespace shogun
 template <class T> class SGVector;
 template <class T> class SGMatrix;
 template <class T> class SGMatrixList;
-template <class T> class CDenseFeatures;
-template <class T> class CDynamicArray;
-class CDynamicObjectArray;
-class CNeuralNetwork;
-class CNeuralLayer;
+template <class T> class DenseFeatures;
+template <class T> class DynamicArray;
+class DynamicObjectArray;
+class NeuralNetwork;
+class NeuralLayer;
 
 /** @brief A Deep Belief Network
  *
@@ -88,21 +88,21 @@ class CNeuralLayer;
  * neural network
  *
  */
-class CDeepBeliefNetwork : public RandomMixin<CSGObject>
+class DeepBeliefNetwork : public RandomMixin<SGObject>
 {
 public:
 	/** default constructor */
-	CDeepBeliefNetwork();
+	DeepBeliefNetwork();
 
 	/** Creates a network with one layer of visible units
 	 *
 	 * @param num_visible_units Number of visible units
 	 * @param unit_type Type of visible units
 	 */
-	CDeepBeliefNetwork(int32_t num_visible_units,
+	DeepBeliefNetwork(int32_t num_visible_units,
 		ERBMVisibleUnitType unit_type = RBMVUT_BINARY);
 
-	virtual ~CDeepBeliefNetwork();
+	virtual ~DeepBeliefNetwork();
 
 	/** Adds a layer of hidden units. The layer is connected to the layer that
 	 * was added directly before it.
@@ -129,7 +129,7 @@ public:
 	 * @param features Input features. Should have as many features as the
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(CDenseFeatures<float64_t>* features);
+	virtual void pre_train(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	/** Pre-trains a single RBM
 	 *
@@ -137,7 +137,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(int32_t index, CDenseFeatures<float64_t>* features);
+	virtual void pre_train(int32_t index, std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	/** Trains the DBN using the variant of the wake-sleep algorithm described
 	 * in [A Fast Learning Algorithm for Deep Belief Nets, Hinton, 2006].
@@ -145,7 +145,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void train(CDenseFeatures<float64_t>* features);
+	virtual void train(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	/** Applies the DBN as a features transformation
 	 *
@@ -159,8 +159,8 @@ public:
 	 *
 	 * @return Mean activations of the \f$ i^{th} \f$ hidden layer
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* features, int32_t i=-1);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
+		std::shared_ptr<DenseFeatures<float64_t>> features, int32_t i=-1);
 
 	/** Draws samples from the marginal distribution of the visible units. The
 	 * sampling starts from the values DBN's internal state and result of the
@@ -172,7 +172,7 @@ public:
 	 *
 	 * @return Sampled states of the visible units
 	 */
-	virtual CDenseFeatures<float64_t>* sample(
+	virtual std::shared_ptr<DenseFeatures<float64_t>> sample(
 		int32_t num_gibbs_steps=1, int32_t batch_size=1);
 
 	/** Resets the state of the markov chain used for sampling */
@@ -180,8 +180,8 @@ public:
 
 	/** Converts the DBN into a neural network with the same structure and
 	 * parameters. The visible layer in the DBN is converted into a
-	 * CNeuralInputLayer object, and the hidden layers are converted into
-	 * CNeuralLogisticLayer objects. An output layer can also be stacked on top
+	 * NeuralInputLayer object, and the hidden layers are converted into
+	 * NeuralLogisticLayer objects. An output layer can also be stacked on top
 	 * of the last hidden layer
 	 *
 	 * @param output_layer An output layer
@@ -190,8 +190,8 @@ public:
 	 *
 	 * @return Neural network inititialized using the DBN
 	 */
-	virtual CNeuralNetwork* convert_to_neural_network(
-		CNeuralLayer* output_layer=NULL, float64_t sigma = 0.01);
+	virtual std::shared_ptr<NeuralNetwork> convert_to_neural_network(
+		std::shared_ptr<NeuralLayer> output_layer=NULL, float64_t sigma = 0.01);
 
 	/** Returns the weights matrix between layer i and i+1
 	 *
@@ -226,7 +226,7 @@ protected:
 
 	/** Computes the gradients using the wake-sleep algorithm */
 	virtual void wake_sleep(SGMatrix<float64_t> data,
-		CRBM* top_rbm,
+		std::shared_ptr<RBM> top_rbm,
 		SGMatrixList<float64_t> sleep_states,
 		SGMatrixList<float64_t> wake_states,
 		SGMatrixList<float64_t> psleep_states,
@@ -240,62 +240,62 @@ private:
 	void init();
 
 public:
-	/** CRBM::cd_num_steps for pre-training each RBM.
+	/** RBM::cd_num_steps for pre-training each RBM.
 	 * Default value is 1 for all RBMs
 	 */
 	SGVector<int32_t> pt_cd_num_steps;
 
-	/** CRBM::cd_persistent for pre-training each RBM.
+	/** RBM::cd_persistent for pre-training each RBM.
 	 * Default value is true for all RBMs
 	 */
 	SGVector<bool> pt_cd_persistent;
 
-	/** CRBM::cd_sample_visible for pre-training each RBM.
+	/** RBM::cd_sample_visible for pre-training each RBM.
 	 * Default value is false for all RBMs
 	 */
 	SGVector<bool> pt_cd_sample_visible;
 
-	/** CRBM::l2_coefficient for pre-training each RBM.
+	/** RBM::l2_coefficient for pre-training each RBM.
 	 * Default value is 0.0 for all RBMs
 	 */
 	SGVector<float64_t> pt_l2_coefficient;
 
-	/** CRBM::l1_coefficient for pre-training each RBM.
+	/** RBM::l1_coefficient for pre-training each RBM.
 	 * Default value is 0.0 for all RBMs
 	 */
 	SGVector<float64_t> pt_l1_coefficient;
 
-	/** CRBM::monitoring_interval for pre-training each RBM.
+	/** RBM::monitoring_interval for pre-training each RBM.
 	 * Default value is 10 for all RBMs
 	 */
 	SGVector<int32_t> pt_monitoring_interval;
 
-	/** CRBM::monitoring_method for pre-training each RBM.
+	/** RBM::monitoring_method for pre-training each RBM.
 	 * Default value is RBMMM_RECONSTRUCTION_ERROR for all RBMs
 	 */
 	SGVector<int32_t> pt_monitoring_method;
 
-	/** CRBM::max_num_epochs for pre-training each RBM.
+	/** RBM::max_num_epochs for pre-training each RBM.
 	 * Default value is 1 for all RBMs
 	 */
 	SGVector<int32_t> pt_max_num_epochs;
 
-	/** CRBM::gd_mini_batch_size for pre-training each RBM.
+	/** RBM::gd_mini_batch_size for pre-training each RBM.
 	 * Default value is 0 for all RBMs
 	 */
 	SGVector<int32_t> pt_gd_mini_batch_size;
 
-	/** CRBM::gd_learning_rate for pre-training each RBM.
+	/** RBM::gd_learning_rate for pre-training each RBM.
 	 * Default value is 0.1 for all RBMs
 	 */
 	SGVector<float64_t> pt_gd_learning_rate;
 
-	/** CRBM::gd_learning_rate_decay for pre-training each RBM.
+	/** RBM::gd_learning_rate_decay for pre-training each RBM.
 	 * Default value is 1.0 for all RBMs
 	 */
 	SGVector<float64_t> pt_gd_learning_rate_decay;
 
-	/** CRBM::gd_momentum for pre-training each RBM.
+	/** RBM::gd_momentum for pre-training each RBM.
 	 * Default value is 0.9 for all RBMs
 	 */
 	SGVector<float64_t> pt_gd_momentum;
@@ -349,7 +349,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** Size of each layer */
-	CDynamicArray<int32_t>* m_layer_sizes;
+	std::shared_ptr<DynamicArray<int32_t>> m_layer_sizes;
 
 	/** States of each layer */
 	SGMatrixList<float64_t> m_states;

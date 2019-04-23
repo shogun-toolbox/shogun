@@ -12,22 +12,22 @@
 
 using namespace shogun;
 
-CSumOne::CSumOne()
-: CDensePreprocessor<float64_t>()
+SumOne::SumOne()
+: DensePreprocessor<float64_t>()
 {
 }
 
-CSumOne::~CSumOne()
+SumOne::~SumOne()
 {
 }
 
 /// clean up allocated memory
-void CSumOne::cleanup()
+void SumOne::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CSumOne::load(FILE* f)
+bool SumOne::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -35,14 +35,14 @@ bool CSumOne::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CSumOne::save(FILE* f)
+bool SumOne::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-SGMatrix<float64_t> CSumOne::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> SumOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	for (int32_t i = 0; i < matrix.num_cols; i++)
 	{
@@ -55,7 +55,7 @@ SGMatrix<float64_t> CSumOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CSumOne::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> SumOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
 	float64_t sum = SGVector<float64_t>::sum(vector.vector, vector.vlen);

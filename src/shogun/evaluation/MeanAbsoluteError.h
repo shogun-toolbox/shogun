@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief Class MeanAbsoluteError
  * used to compute an error of regression model.
@@ -29,21 +29,21 @@ class CLabels;
  * \f]
  *
  */
-class CMeanAbsoluteError: public CEvaluation
+class MeanAbsoluteError: public Evaluation
 {
 public:
 	/** constructor */
-	CMeanAbsoluteError() : CEvaluation() {};
+	MeanAbsoluteError() : Evaluation() {};
 
 	/** destructor */
-	virtual ~CMeanAbsoluteError() {};
+	virtual ~MeanAbsoluteError() {};
 
 	/** evaluate mean absolute error
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean absolute error
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

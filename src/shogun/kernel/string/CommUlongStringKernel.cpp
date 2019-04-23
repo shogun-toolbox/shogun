@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Evangelos Anagnostopoulos, Leon Kuchenbecker
  */
 
@@ -15,13 +15,13 @@
 
 using namespace shogun;
 
-CCommUlongStringKernel::CCommUlongStringKernel() : CStringKernel<uint64_t>()
+CommUlongStringKernel::CommUlongStringKernel() : StringKernel<uint64_t>()
 {
 	init_params();
 }
 
-CCommUlongStringKernel::CCommUlongStringKernel(bool us, int32_t size)
-: CStringKernel<uint64_t>(size)
+CommUlongStringKernel::CommUlongStringKernel(bool us, int32_t size)
+: StringKernel<uint64_t>(size)
 {
 	init_params();
 
@@ -30,34 +30,34 @@ CCommUlongStringKernel::CCommUlongStringKernel(bool us, int32_t size)
 	properties |= KP_LINADD;
 	clear_normal();
 
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 }
 
-CCommUlongStringKernel::CCommUlongStringKernel(
-	CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r, bool us,
+CommUlongStringKernel::CommUlongStringKernel(
+	std::shared_ptr<StringFeatures<uint64_t>> l, std::shared_ptr<StringFeatures<uint64_t>> r, bool us,
 	int32_t size)
-: CStringKernel<uint64_t>(size)
+: StringKernel<uint64_t>(size)
 {
 	init_params();
 	use_sign=us;
 	properties |= KP_LINADD;
 	clear_normal();
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	init(l,r);
 }
 
-void CCommUlongStringKernel::init_params()
+void CommUlongStringKernel::init_params()
 {
 	use_sign = false;
-	SG_ADD(&use_sign, "use_sign", "Whether or not to use sign.")
+	SG_ADD(&use_sign, "use_sign", "Whether or not to use sign.");
 }
 
-CCommUlongStringKernel::~CCommUlongStringKernel()
+CommUlongStringKernel::~CommUlongStringKernel()
 {
 	cleanup();
 }
 
-void CCommUlongStringKernel::remove_lhs()
+void CommUlongStringKernel::remove_lhs()
 {
 	delete_optimization();
 
@@ -70,7 +70,7 @@ void CCommUlongStringKernel::remove_lhs()
 	rhs = NULL ;
 }
 
-void CCommUlongStringKernel::remove_rhs()
+void CommUlongStringKernel::remove_rhs()
 {
 #ifdef SVMLIGHT
 	if (rhs)
@@ -80,25 +80,25 @@ void CCommUlongStringKernel::remove_rhs()
 	rhs = lhs;
 }
 
-bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
+bool CommUlongStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<uint64_t>::init(l,r);
+	StringKernel<uint64_t>::init(l,r);
 	return init_normalizer();
 }
 
-void CCommUlongStringKernel::cleanup()
+void CommUlongStringKernel::cleanup()
 {
 	delete_optimization();
 	clear_normal();
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint64_t* avec=(std::static_pointer_cast<StringFeatures<uint64_t>>(lhs))->get_feature_vector(idx_a, alen, free_avec);
+	uint64_t* bvec=(std::static_pointer_cast<StringFeatures<uint64_t>>(rhs))->get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
 
@@ -152,13 +152,13 @@ float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				right_idx++;
 		}
 	}
-	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	(std::static_pointer_cast<StringFeatures<uint64_t>>(lhs))->free_feature_vector(avec, idx_a, free_avec);
+	(std::static_pointer_cast<StringFeatures<uint64_t>>(rhs))->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
 
-void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
+void CommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 {
 	int32_t t=0;
 	int32_t j=0;
@@ -166,7 +166,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 	int32_t last_j=0;
 	int32_t len=-1;
 	bool free_vec;
-	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len, free_vec);
+	uint64_t* vec=(std::static_pointer_cast<StringFeatures<uint64_t>>(lhs))->get_feature_vector(vec_idx, len, free_vec);
 
 	if (vec && len>0)
 	{
@@ -221,19 +221,19 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 		dictionary = dic;
 		dictionary_weights = dic_weights;
 	}
-	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(vec, vec_idx, free_vec);
+	(std::static_pointer_cast<StringFeatures<uint64_t>>(lhs))->free_feature_vector(vec, vec_idx, free_vec);
 
 	set_is_initialized(true);
 }
 
-void CCommUlongStringKernel::clear_normal()
+void CommUlongStringKernel::clear_normal()
 {
 	dictionary.resize_vector(0);
 	dictionary_weights.resize_vector(0);
 	set_is_initialized(false);
 }
 
-bool CCommUlongStringKernel::init_optimization(
+bool CommUlongStringKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)
 {
 	clear_normal();
@@ -258,7 +258,7 @@ bool CCommUlongStringKernel::init_optimization(
 	return true;
 }
 
-bool CCommUlongStringKernel::delete_optimization()
+bool CommUlongStringKernel::delete_optimization()
 {
 	SG_DEBUG("deleting CCommUlongStringKernel optimization")
 	clear_normal();
@@ -267,7 +267,7 @@ bool CCommUlongStringKernel::delete_optimization()
 
 // binary search for each feature. trick: as features are sorted save last found idx in old_idx and
 // only search in the remainder of the dictionary
-float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
+float64_t CommUlongStringKernel::compute_optimized(int32_t i)
 {
 	float64_t result = 0;
 	int32_t j, last_j=0;
@@ -283,7 +283,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 
 	int32_t alen = -1;
 	bool free_avec;
-	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
+	uint64_t* avec=(std::static_pointer_cast<StringFeatures<uint64_t>>(rhs))->
 		get_feature_vector(i, alen, free_avec);
 
 	if (avec && alen>0)
@@ -295,7 +295,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				int32_t idx = Math::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -306,7 +306,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				}
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			int32_t idx = Math::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx];
 		}
@@ -317,7 +317,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				int32_t idx = Math::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -330,13 +330,13 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				last_j = j;
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			int32_t idx = Math::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}
 	}
 
-	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(avec, i, free_avec);
+	(std::static_pointer_cast<StringFeatures<uint64_t>>(rhs))->free_feature_vector(avec, i, free_avec);
 
 	return normalizer->normalize_rhs(result, i);
 }

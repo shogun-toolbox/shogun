@@ -14,21 +14,21 @@
 namespace shogun
 {
 
-/** @brief class CManifoldSculpting used to embed
+/** @brief class ManifoldSculpting used to embed
  * data using manifold sculpting embedding algorithm.
  *
  * Uses implementation from the Tapkee library.
  *
  */
-class CManifoldSculpting : public CEmbeddingConverter
+class ManifoldSculpting : public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CManifoldSculpting();
+	ManifoldSculpting();
 
 	/** destructor */
-	virtual ~CManifoldSculpting();
+	virtual ~ManifoldSculpting();
 
 	/** get name */
 	virtual const char* get_name() const;
@@ -37,7 +37,7 @@ public:
 	 *
 	 * @param features features to embed
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** setter for the k
 	 *
@@ -93,7 +93,7 @@ private:
 	 */
 	float64_t m_max_iteration;
 
-}; /* class CManifoldSculpting */
+}; /* class ManifoldSculpting */
 
 } /* namespace shogun */
 

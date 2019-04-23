@@ -11,11 +11,11 @@ See :cite:`Breiman2001` for a detailed introduction.
 Example
 -------
 
-CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CRegressionLabels` are created from training and test data file
+DenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`RegressionLabels` are created from training and test data file
 
 .. sgexample:: random_forest_regression.sg:create_features
 
-Combination rules to be used for prediction are derived form the :sgclass:`CCombinationRule` class. Here we create a :sgclass:`CMeanRule` class to be used as a combination rule.
+Combination rules to be used for prediction are derived form the :sgclass:`CombinationRule` class. Here we create a :sgclass:`MeanRule` class to be used as a combination rule.
 
 .. sgexample:: random_forest_regression.sg:create_combination_rule
 
@@ -23,11 +23,11 @@ Next an instance of :sgclass:`CRandomForest` is created. The parameters provided
 
 .. sgexample:: random_forest_regression.sg:create_instance
 
-Then we train the random forest and apply it to test data, which here gives :sgclass:`CRegressionLabels`.
+Then we train the random forest and apply it to test data, which here gives :sgclass:`RegressionLabels`.
 
 .. sgexample:: random_forest_regression.sg:train_and_apply
 
-We can evaluate test performance via e.g. :sgclass:`CMeanSquaredError` as well as get the "out of bag error".
+We can evaluate test performance via e.g. :sgclass:`MeanSquaredError` as well as get the "out of bag error".
 
 .. sgexample:: random_forest_regression.sg:evaluate_error
 

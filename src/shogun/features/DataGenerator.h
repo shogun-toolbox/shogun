@@ -21,12 +21,12 @@ namespace shogun
 /** @brief Class that is able to generate various data samples, which may be
  * used for examples in SHOGUN.
  */
-class CDataGenerator: public CSGObject
+class DataGenerator: public SGObject
 {
 public:
-	CDataGenerator();
+	DataGenerator();
 
-	virtual ~CDataGenerator();
+	virtual ~DataGenerator();
 
 	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can
 	 * scale or translate the features afterwards. It works be creating a grid in the n-dimensional space

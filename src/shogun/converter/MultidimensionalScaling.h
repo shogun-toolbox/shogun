@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
  *          Evan Shelhamer
  */
 
@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief class Multidimensionalscaling is used to perform
  * multidimensional scaling (capable of landmark approximation
@@ -54,28 +54,28 @@ class CDistance;
  * sg('create_converter','mds');
  *
  */
-class CMultidimensionalScaling: public CEmbeddingConverter
+class MultidimensionalScaling: public EmbeddingConverter
 {
 public:
 
 	/* constructor */
-	CMultidimensionalScaling();
+	MultidimensionalScaling();
 
 	/* destructor */
-	virtual ~CMultidimensionalScaling();
+	virtual ~MultidimensionalScaling();
 
-	/** apply preprocessor to CDistance
+	/** apply preprocessor to Distance
 	 * @param distance (should be approximate euclidean for consistent result)
 	 * @return new features with distance similar to given as much as possible
 	 */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
 
 	/** apply preprocessor to feature matrix,
 	 * changes feature matrix to the one having target dimensionality
 	 * @param features features which feature matrix should be processed
 	 * @return new feature matrix
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** get name */
 	const char* get_name() const;

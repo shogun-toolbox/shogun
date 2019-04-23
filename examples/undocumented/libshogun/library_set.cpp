@@ -25,6 +25,5 @@ int main(int argc, char** argv)
 			//SG_SPRINT("%lg contains in set with index %d\n", v[i], set->index_of(v[i]));
 	}
 
-	SG_UNREF(set);
 	return 0;
 }

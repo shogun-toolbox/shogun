@@ -35,17 +35,17 @@ TEST(SplittingStrategy,standard)
 		fold_sizes=0;
 		num_labels=uniform_int_dist(prng, {10, 150});
 		num_subsets=uniform_int_dist(prng, {1, 5});
-		index_t desired_size=CMath::round(
+		index_t desired_size=Math::round(
 				(float64_t)num_labels/(float64_t)num_subsets);
 
 		/* build labels */
-		CRegressionLabels* labels=new CRegressionLabels(num_labels);
+		auto labels=std::make_shared<RegressionLabels>(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		/* build splitting strategy */
-		CCrossValidationSplitting* splitting=
-				new CCrossValidationSplitting(labels, num_subsets);
+		CrossValidationSplitting* splitting=
+				new CrossValidationSplitting(labels, num_subsets);
 
 		splitting->build_subsets();
 
@@ -68,7 +68,7 @@ TEST(SplittingStrategy,standard)
 
 			fold_sizes+=subset.vlen;
 
-			EXPECT_LE(CMath::abs(subset.vlen-desired_size),1);
+			EXPECT_LE(Math::abs(subset.vlen-desired_size),1);
 			EXPECT_EQ(subset.vlen+inverse.vlen,num_labels);
 		}
 
@@ -86,7 +86,7 @@ TEST(SplittingStrategy,standard)
 		EXPECT_EQ(flag,0);
 
 		/* clean up */
-		SG_UNREF(splitting);
+		
 	}
 
 }
@@ -107,7 +107,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 		num_subsets=uniform_int_dist(prng, {1, 10});
 
 		/* build labels */
-		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
+		auto labels=std::make_shared<MulticlassLabels>(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, prng()%num_classes);
 
@@ -129,8 +129,8 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 
 
 		/* build splitting strategy */
-		CStratifiedCrossValidationSplitting* splitting=
-				new CStratifiedCrossValidationSplitting(labels, num_subsets);
+		StratifiedCrossValidationSplitting* splitting=
+				new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 		splitting->build_subsets();
 
@@ -169,7 +169,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 		EXPECT_EQ(flag,0);
 
 		/* clean up */
-		SG_UNREF(splitting);
+		
 	}
 }
 
@@ -188,7 +188,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 		num_subsets=uniform_int_dist(prng, {1, 10});
 
 		/* build labels */
-		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
+		auto labels=std::make_shared<MulticlassLabels>(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, prng()%num_classes);
 
@@ -208,8 +208,8 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 
 
 		/* build splitting strategy */
-		CStratifiedCrossValidationSplitting* splitting=
-				new CStratifiedCrossValidationSplitting(labels, num_subsets);
+		StratifiedCrossValidationSplitting* splitting=
+				new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 		splitting->build_subsets();
 
@@ -239,12 +239,12 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 
 				total_count+=temp_count;
 				/* at most one difference */
-				EXPECT_LE(CMath::abs(temp_count-count),1);
+				EXPECT_LE(Math::abs(temp_count-count),1);
 			}
 			EXPECT_EQ(total_count,class_labels.vector[i]);
 		}
 		/* clean up */
-		SG_UNREF(splitting);
+		
 	}
 }
 
@@ -264,13 +264,13 @@ TEST(SplittingStrategy,LOO)
 		num_labels=uniform_int_dist(prng, {10, 50});
 
 		/* build labels */
-		CRegressionLabels* labels=new CRegressionLabels(num_labels);
+		auto labels=std::make_shared<RegressionLabels>(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
 		/* build Leave one out splitting strategy */
-		CLOOCrossValidationSplitting* splitting=
-				new CLOOCrossValidationSplitting(labels);
+		LOOCrossValidationSplitting* splitting=
+				new LOOCrossValidationSplitting(labels);
 
 		splitting->build_subsets();
 
@@ -309,7 +309,7 @@ TEST(SplittingStrategy,LOO)
 		EXPECT_EQ(flag,0);
 
 		/* clean up */
-		SG_UNREF(splitting);
+		
 	}
 }
 
@@ -329,12 +329,12 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 		min_subset_size = uniform_int_dist(prng, {1, 6});
 		base_size = num_labels / num_subsets;
 
-		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		auto labels = std::make_shared<RegressionLabels>(num_labels);
 		for (index_t i = 0; i < num_labels; ++i)
 			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
-		CTimeSeriesSplitting* splitting =
-		    new CTimeSeriesSplitting(labels, num_subsets);
+		TimeSeriesSplitting* splitting =
+		    new TimeSeriesSplitting(labels, num_subsets);
 
 		splitting->set_min_subset_size(min_subset_size);
 		splitting->build_subsets();
@@ -353,7 +353,7 @@ TEST(SplittingStrategy, timeseries_subset_linear_splits)
 			    inverse.vlen == num_labels - min_subset_size);
 		}
 
-		SG_UNREF(splitting);
+		
 	}
 }
 
@@ -372,12 +372,12 @@ TEST(SplittingStrategy, timeseries_subsets_future_leak)
 		num_subsets = uniform_int_dist(prng, {1, 5});
 		min_subset_size = uniform_int_dist(prng, {1, 7});
 
-		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		auto labels = std::make_shared<RegressionLabels>(num_labels);
 		for (index_t i = 0; i < num_labels; ++i)
 			labels->set_label(i, uniform_real_dist(prng, {-10.0, 10.0}));
 
-		CTimeSeriesSplitting* splitting =
-		    new CTimeSeriesSplitting(labels, num_subsets);
+		TimeSeriesSplitting* splitting =
+		    new TimeSeriesSplitting(labels, num_subsets);
 
 		splitting->set_min_subset_size(min_subset_size);
 		splitting->build_subsets();
@@ -404,6 +404,6 @@ TEST(SplittingStrategy, timeseries_subsets_future_leak)
 		}
 
 		/* clean up */
-		SG_UNREF(splitting);
+		
 	}
 }

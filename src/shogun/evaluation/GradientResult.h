@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Roman Votyakov, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Jacob Walker, Roman Votyakov, Soeren Sonnenburg, Heiko Strathmann,
  *          Yuyu Zhang, Ariane Paola Gomes
  */
 
@@ -20,21 +20,21 @@ namespace shogun
 /** @brief Container class that returns results from GradientEvaluation. It
  * contains the function value as well as its gradient.
  */
-class CGradientResult : public CEvaluationResult
+class GradientResult : public EvaluationResult
 {
 public:
 	/** default constructor */
-	CGradientResult() : CEvaluationResult()
+	GradientResult() : EvaluationResult()
 	{
 		m_total_variables=0;
 		m_gradient=NULL;
 		m_parameter_dictionary=NULL;
 	}
 
-	virtual ~CGradientResult()
+	virtual ~GradientResult()
 	{
-		SG_UNREF(m_gradient);
-		SG_UNREF(m_parameter_dictionary);
+
+
 	}
 
 	/** returns the name of the evaluation result
@@ -66,7 +66,7 @@ public:
 
 		for (index_t i=0; i<m_gradient->get_num_elements(); i++)
 		{
-			CMapNode<TParameter*, SGVector<float64_t> >* param_node=
+			auto param_node=
 				m_gradient->get_node_ptr(i);
 
 			// get parameter name
@@ -130,12 +130,12 @@ public:
 	 *
 	 * @param gradient gradient map to set
 	 */
-	virtual void set_gradient(CMap<TParameter*, SGVector<float64_t> >* gradient)
+	virtual void set_gradient(std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> gradient)
 	{
 		require(gradient, "Gradient map should not be NULL");
 
-		SG_REF(gradient);
-		SG_UNREF(m_gradient);
+
+
 		m_gradient=gradient;
 
 		m_total_variables=0;
@@ -152,9 +152,9 @@ public:
 	 *
 	 * @return gradient map
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient()
+	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient()
 	{
-		SG_REF(m_gradient);
+
 		return m_gradient;
 	}
 
@@ -163,10 +163,10 @@ public:
 	 * @param parameter_dictionary parameter dictionary
 	 */
 	virtual void set_paramter_dictionary(
-			CMap<TParameter*, CSGObject*>* parameter_dictionary)
+			std::shared_ptr<CMap<TParameter*, SGObject*>> parameter_dictionary)
 	{
-		SG_REF(parameter_dictionary);
-		SG_UNREF(m_parameter_dictionary);
+
+
 		m_parameter_dictionary=parameter_dictionary;
 	}
 
@@ -174,9 +174,9 @@ public:
 	 *
 	 * @return parameter dictionary
 	 */
-	virtual CMap<TParameter*, CSGObject*>* get_paramter_dictionary()
+	virtual std::shared_ptr<CMap<TParameter*, SGObject*>> get_paramter_dictionary()
 	{
-		SG_REF(m_parameter_dictionary);
+
 		return m_parameter_dictionary;
 	}
 
@@ -185,10 +185,10 @@ private:
 	SGVector<float64_t> m_value;
 
 	/** function gradient */
-	CMap<TParameter*, SGVector<float64_t> >* m_gradient;
+	std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> m_gradient;
 
 	/** which objects do the gradient parameters belong to? */
-	CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
+	std::shared_ptr<CMap<TParameter*, SGObject*>>  m_parameter_dictionary;
 
 	/** total number of variables represented by the gradient */
 	uint32_t m_total_variables;

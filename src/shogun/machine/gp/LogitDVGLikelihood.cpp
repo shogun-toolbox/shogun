@@ -43,24 +43,24 @@ using namespace Eigen;
 namespace shogun
 {
 
-CLogitDVGLikelihood::CLogitDVGLikelihood()
-	: CDualVariationalGaussianLikelihood()
+LogitDVGLikelihood::LogitDVGLikelihood()
+	: DualVariationalGaussianLikelihood()
 {
 	init();
 }
 
-CLogitDVGLikelihood::~CLogitDVGLikelihood()
+LogitDVGLikelihood::~LogitDVGLikelihood()
 {
 }
 
-SGVector<float64_t> CLogitDVGLikelihood::get_variance_dual_parameter() const
+SGVector<float64_t> LogitDVGLikelihood::get_variance_dual_parameter() const
 {
 	SGVector<float64_t> lambda=m_lambda.clone();
 
 	return lambda;
 }
 
-SGVector<float64_t> CLogitDVGLikelihood::get_mu_dual_parameter() const
+SGVector<float64_t> LogitDVGLikelihood::get_mu_dual_parameter() const
 {
 	SGVector<float64_t> alpha=m_lambda.clone();
 
@@ -70,14 +70,14 @@ SGVector<float64_t> CLogitDVGLikelihood::get_mu_dual_parameter() const
 	return alpha;
 }
 
-SGVector<float64_t> CLogitDVGLikelihood::get_dual_objective_value()
+SGVector<float64_t> LogitDVGLikelihood::get_dual_objective_value()
 {
 	SGVector<float64_t> result(m_lambda.vlen);
 
 	if (!m_is_valid)
 	{
 		Map<VectorXd> eigen_reslut(result.vector, result.vlen);
-		eigen_reslut.fill(CMath::INFTY);
+		eigen_reslut.fill(Math::INFTY);
 		return result;
 	}
 
@@ -90,7 +90,7 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_objective_value()
 	return result;
 }
 
-SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
+SGVector<float64_t> LogitDVGLikelihood::get_dual_first_derivative(
 		const TParameter* param) const
 {
 	require(param, "Param is required (param should not be NULL)");
@@ -106,7 +106,7 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
 	if (!m_is_valid)
 	{
 		Map<VectorXd> eigen_reslut(result.vector, result.vlen);
-		eigen_reslut.fill(CMath::INFTY);
+		eigen_reslut.fill(Math::INFTY);
 		return result;
 	}
 
@@ -118,12 +118,12 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
 	return result;
 }
 
-void CLogitDVGLikelihood::init_likelihood()
+void LogitDVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CLogitVGLikelihood());
+	set_likelihood(std::make_shared<LogitVGLikelihood>());
 }
 
-void CLogitDVGLikelihood::init()
+void LogitDVGLikelihood::init()
 {
 	init_likelihood();
 }

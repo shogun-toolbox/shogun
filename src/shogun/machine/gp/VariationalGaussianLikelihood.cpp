@@ -35,13 +35,13 @@
 namespace shogun
 {
 
-CVariationalGaussianLikelihood::CVariationalGaussianLikelihood()
-	: CVariationalLikelihood()
+VariationalGaussianLikelihood::VariationalGaussianLikelihood()
+	: VariationalLikelihood()
 {
 	init();
 }
 
-void CVariationalGaussianLikelihood::init()
+void VariationalGaussianLikelihood::init()
 {
 	SG_ADD(&m_mu, "mu",
 		"The mean of variational normal distribution\n");
@@ -54,14 +54,14 @@ void CVariationalGaussianLikelihood::init()
 	m_noise_factor=1e-6;
 }
 
-void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
+void VariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 {
 	require(noise_factor>=0, "The noise_factor ({}) should be non negative", noise_factor);
 	m_noise_factor=noise_factor;
 }
 
-bool CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels* lab)
+bool VariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, std::shared_ptr<const Labels> lab)
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 	require((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),

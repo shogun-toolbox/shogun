@@ -19,7 +19,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CUWedgeSep, blind_source_separation)
+TEST(UWedgeSep, blind_source_separation)
 {
 	// Generate sample data
 	int FS = 4000;
@@ -43,10 +43,10 @@ TEST(CUWedgeSep, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	auto mixed_signals = some<CDenseFeatures<float64_t>>(X);
+	auto mixed_signals = std::make_shared<DenseFeatures<float64_t>>(X);
 
 	// Separate
-	auto uwedgesep = some<CUWedgeSep>();
+	auto uwedgesep = std::make_shared<UWedgeSep>();
 	uwedgesep->fit(mixed_signals);
 	auto signals = uwedgesep->transform(mixed_signals);
 

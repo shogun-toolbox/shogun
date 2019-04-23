@@ -16,24 +16,24 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** TODO doc */
-class CLinearStructuredOutputMachine : public CStructuredOutputMachine
+class LinearStructuredOutputMachine : public StructuredOutputMachine
 {
 	public:
 		/** default constructor  */
-		CLinearStructuredOutputMachine();
+		LinearStructuredOutputMachine();
 
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
 		 * @param labs structured labels
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs);
+		LinearStructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs);
 
 		/** destructor */
-		virtual ~CLinearStructuredOutputMachine();
+		virtual ~LinearStructuredOutputMachine();
 
 		/** set w (useful for modular interfaces)
 		 *
@@ -55,7 +55,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 *
 		 * @return classified 'labels'
 		 */
-		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
+		virtual std::shared_ptr<StructuredLabels> apply_structured(std::shared_ptr<Features> data = NULL);
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -71,7 +71,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		/** weight vector */
 		SGVector< float64_t > m_w;
 
-}; /* class CLinearStructuredOutputMachine */
+}; /* class LinearStructuredOutputMachine */
 
 } /* namespace shogun */
 

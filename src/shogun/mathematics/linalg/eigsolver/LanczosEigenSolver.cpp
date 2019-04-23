@@ -23,20 +23,20 @@ using namespace Eigen;
 namespace shogun
 {
 
-CLanczosEigenSolver::CLanczosEigenSolver()
-	: CEigenSolver()
+LanczosEigenSolver::LanczosEigenSolver()
+	: EigenSolver()
 {
 	init();
 }
 
-CLanczosEigenSolver::CLanczosEigenSolver(
-	CLinearOperator<float64_t>* linear_operator)
-	: CEigenSolver(linear_operator)
+LanczosEigenSolver::LanczosEigenSolver(
+	std::shared_ptr<LinearOperator<float64_t>> linear_operator)
+	: EigenSolver(linear_operator)
 {
 	init();
 }
 
-void CLanczosEigenSolver::init()
+void LanczosEigenSolver::init()
 {
 	m_max_iteration_limit=1000;
 	m_relative_tolerence=1E-6;
@@ -52,11 +52,11 @@ void CLanczosEigenSolver::init()
 		"Absolute tolerence of solver");
 }
 
-CLanczosEigenSolver::~CLanczosEigenSolver()
+LanczosEigenSolver::~LanczosEigenSolver()
 {
 }
 
-void CLanczosEigenSolver::compute()
+void LanczosEigenSolver::compute()
 {
 	SG_TRACE("Entering");
 

@@ -21,14 +21,14 @@ namespace shogun
 /** @brief Base-class for parameterized Kernel Normalizers
  *
  */
-class CMultitaskKernelMklNormalizer: public CKernelNormalizer
+class MultitaskKernelMklNormalizer: public KernelNormalizer
 {
 
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMklNormalizer() : CKernelNormalizer(), scale(1.0)
+	MultitaskKernelMklNormalizer() : KernelNormalizer(), scale(1.0)
 	{
 		m_type = N_MULTITASK;
 	}
@@ -36,12 +36,12 @@ public:
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 

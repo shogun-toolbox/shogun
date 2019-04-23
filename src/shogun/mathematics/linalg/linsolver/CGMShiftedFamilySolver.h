@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-template<class T> class CLinearOperator;
+template<class T> class LinearOperator;
 template<class T> class SGVector;
 
 /**
@@ -25,19 +25,19 @@ template<class T> class SGVector;
  * open source library Krylstat (https://github.com/Froskekongen/KRYLSTAT/),
  * written by Erlend Aune, under GPL2+
  */
-class CCGMShiftedFamilySolver
- : public CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>
+class CGMShiftedFamilySolver
+ : public IterativeShiftedLinearFamilySolver<float64_t, complex128_t>
 {
 
 public:
 	/** default constructor */
-	CCGMShiftedFamilySolver();
+	CGMShiftedFamilySolver();
 
 	/** one arg constructor */
-	CCGMShiftedFamilySolver(bool store_residuals);
+	CGMShiftedFamilySolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~CCGMShiftedFamilySolver();
+	virtual ~CGMShiftedFamilySolver();
 
 	/**
 	 * solve method for solving linear systems assuming no shift
@@ -46,7 +46,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator<float64_t>* A,
+	virtual SGVector<float64_t> solve(std::shared_ptr<LinearOperator<float64_t>> A,
 		SGVector<float64_t> b);
 
 	/**
@@ -61,7 +61,7 @@ public:
 	 * shift
 	 */
 	virtual SGVector<complex128_t> solve_shifted_weighted(
-		CLinearOperator<float64_t>* A, SGVector<float64_t> b,
+		std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b,
 		SGVector<complex128_t> shifts, SGVector<complex128_t> weights,
 		bool negate = false);
 

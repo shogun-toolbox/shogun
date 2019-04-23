@@ -23,14 +23,14 @@ namespace shogun
 	 * \f]
 	 * where \f$x\f$ is an original value, \f$x'\f$ is the normalized value.
      */
-	class CRescaleFeatures : public CDensePreprocessor<float64_t>
+	class RescaleFeatures : public DensePreprocessor<float64_t>
 	{
 	public:
 		/** default ctor */
-		CRescaleFeatures();
+		RescaleFeatures();
 
 		/** dtor */
-		virtual ~CRescaleFeatures();
+		virtual ~RescaleFeatures();
 
 		/**
 		 * Fit preprocessor into features
@@ -38,7 +38,7 @@ namespace shogun
 		 * @param features the features to derive the min and max values
 		 * from.
 		 */
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/**
 		 * Cleanup

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang,
  *          Evangelos Anagnostopoulos, Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILEFROMDENSE_H__
@@ -14,23 +14,23 @@
 
 namespace shogun
 {
-/** @brief Class CStreamingFileFromDenseFeatures is a derived
+/** @brief Class StreamingFileFromDenseFeatures is a derived
  * class of CStreamingFile which creates an input source
- * for the online framework from a CDenseFeatures object.
+ * for the online framework from a DenseFeatures object.
  *
  * This kind of input is seekable, and hence can be used for
  * making multiple passes over data.
  *
  * It is useful for testing/comparison purposes.
  */
-template<class T> class CStreamingFileFromDenseFeatures:
-	public CStreamingFileFromFeatures
+template<class T> class StreamingFileFromDenseFeatures:
+	public StreamingFileFromFeatures
 {
 public:
 	/**
 	 * Default constructor
 	 */
-	CStreamingFileFromDenseFeatures();
+	StreamingFileFromDenseFeatures();
 
 	/**
 	 * Constructor taking a DenseFeatures object as arg
@@ -38,13 +38,13 @@ public:
 	 * @param feat DenseFeatures object
 	 * @param lab Labels as float64_t*, optional
 	 */
-	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat,
+	StreamingFileFromDenseFeatures(std::shared_ptr<DenseFeatures<T>> feat,
 			float64_t* lab=NULL);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFileFromDenseFeatures();
+	virtual ~StreamingFileFromDenseFeatures();
 
 	/**
 	 * This function will be called for reading vectors from the
@@ -93,7 +93,7 @@ private:
 protected:
 
 	/// DenseFeatures object
-	CDenseFeatures<T>* features;
+	std::shared_ptr<DenseFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -101,36 +101,30 @@ protected:
 };
 
 template<class T>
-CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures() :
-		CStreamingFileFromFeatures()
+StreamingFileFromDenseFeatures<T>::StreamingFileFromDenseFeatures() :
+		StreamingFileFromFeatures()
 {
 	init();
 }
 
 template<class T>
-CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(
-		CDenseFeatures<T>* feat, float64_t* lab) :
-		CStreamingFileFromFeatures()
+StreamingFileFromDenseFeatures<T>::StreamingFileFromDenseFeatures(
+		std::shared_ptr<DenseFeatures<T>> feat, float64_t* lab) :
+		StreamingFileFromDenseFeatures()
 {
-	init();
-
-	require(feat,"{}::CStreamingFileFromDenseFeatures() features required!",
+	require(feat,"{}::StreamingFileFromDenseFeatures() features required!",
 			get_name());
 	features=feat;
-	SG_REF(feat);
-
 	labels=lab;
-
 }
 
 template<class T>
-CStreamingFileFromDenseFeatures<T>::~CStreamingFileFromDenseFeatures()
+StreamingFileFromDenseFeatures<T>::~StreamingFileFromDenseFeatures()
 {
-	SG_UNREF(features);
 }
 
 template<class T>
-void CStreamingFileFromDenseFeatures<T>::init()
+void StreamingFileFromDenseFeatures<T>::init()
 {
 	vector_num=0;
 	features=NULL;
@@ -142,7 +136,7 @@ void CStreamingFileFromDenseFeatures<T>::init()
  * If the class is of type T, specialize this function to work for
  * vectors of that type. */
 template<class T>
-void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
+void StreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
 		int32_t& num_feat)
 {
 	if (vector_num>=features->get_num_vectors())
@@ -162,7 +156,7 @@ void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
 
 /* Functions to return the vector from the DenseFeatures object with label */
 template<class T>
-void CStreamingFileFromDenseFeatures<T>::get_vector_and_label(T*& vector,
+void StreamingFileFromDenseFeatures<T>::get_vector_and_label(T*& vector,
 		int32_t& num_feat, float64_t& label)
 {
 	if (vector_num>=features->get_num_vectors())

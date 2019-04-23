@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov,
  *          Soeren Sonnenburg, Wu Lin
  */
 
@@ -23,13 +23,13 @@ class GradientModelSelectionCostFunction;
 /** @brief Model selection class which searches for the best model by a
  * gradient-search.
  */
-class CGradientModelSelection : public CModelSelection
+class GradientModelSelection : public ModelSelection
 {
 friend class GradientModelSelectionCostFunction;
 
 public:
 	/** default constructor */
-	CGradientModelSelection();
+	GradientModelSelection();
 
 	/** constructor
 	 *
@@ -39,10 +39,10 @@ public:
 	 * @param machine_eval machine evaluation object
 	 * @param model_parameters parameters
 	 */
-	CGradientModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters=NULL);
+	GradientModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+			std::shared_ptr<ModelSelectionParameters> model_parameters=NULL);
 
-	virtual ~CGradientModelSelection();
+	virtual ~GradientModelSelection();
 
 	/** method to select model via gradient search
 	 *
@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false);
+	virtual std::shared_ptr<ParameterCombination> select_model(bool print_state=false);
 
 	/** returns the name of the model selection object
 	 *
@@ -62,7 +62,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in model selection
 	 */
-	virtual void set_minimizer(FirstOrderMinimizer* minimizer);
+	virtual void set_minimizer(std::shared_ptr<FirstOrderMinimizer> minimizer);
 
 private:
 	/** initialize object */
@@ -71,7 +71,7 @@ private:
 protected:
 
 	/** minimizer */
-	FirstOrderMinimizer* m_mode_minimizer;
+	std::shared_ptr<FirstOrderMinimizer> m_mode_minimizer;
 
 	/** get the cost given current model parameter
 	 * Note that this function will compute the gradient

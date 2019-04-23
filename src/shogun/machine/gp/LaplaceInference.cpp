@@ -42,19 +42,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CLaplaceInference::CLaplaceInference() : CInference()
+LaplaceInference::LaplaceInference() : Inference()
 {
 	init();
 }
 
-CLaplaceInference::CLaplaceInference(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CInference(kern, feat, m, lab, mod)
+LaplaceInference::LaplaceInference(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: Inference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CLaplaceInference::init()
+void LaplaceInference::init()
 {
 	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location");
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior");
@@ -62,13 +62,13 @@ void CLaplaceInference::init()
 	SG_ADD(&m_W, "W", "the noise matrix");
 }
 
-CLaplaceInference::~CLaplaceInference()
+LaplaceInference::~LaplaceInference()
 {
 }
 
-void CLaplaceInference::compute_gradient()
+void LaplaceInference::compute_gradient()
 {
-	CInference::compute_gradient();
+	Inference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -78,11 +78,11 @@ void CLaplaceInference::compute_gradient()
 		update_parameter_hash();
 	}
 }
-void CLaplaceInference::update()
+void LaplaceInference::update()
 {
 	SG_TRACE("entering");
 
-	CInference::update();
+	Inference::update();
 	update_alpha();
 	update_chol();
 	m_gradient_update=false;
@@ -91,7 +91,7 @@ void CLaplaceInference::update()
 	SG_TRACE("leaving");
 }
 
-SGVector<float64_t> CLaplaceInference::get_alpha()
+SGVector<float64_t> LaplaceInference::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -101,7 +101,7 @@ SGVector<float64_t> CLaplaceInference::get_alpha()
 
 }
 
-SGMatrix<float64_t> CLaplaceInference::get_cholesky()
+SGMatrix<float64_t> LaplaceInference::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -110,7 +110,7 @@ SGMatrix<float64_t> CLaplaceInference::get_cholesky()
 
 }
 
-SGMatrix<float64_t> CLaplaceInference::get_posterior_covariance()
+SGMatrix<float64_t> LaplaceInference::get_posterior_covariance()
 {
 	compute_gradient();
 

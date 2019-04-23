@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-	template <class T> class CDenseFeatures;
+	template <class T> class DenseFeatures;
 
 /** @brief The class BinnedDotFeatures contains a 0-1 conversion of features into bins.
  *
@@ -36,19 +36,19 @@ namespace shogun
  *
  * Note that BinnedDotFeatures never *explicitly* compute the binned feature
  * representation but only overload the abstract dot/add methods in
- * CDotFeatures making them highly memory and computationally efficient.
+ * DotFeatures making them highly memory and computationally efficient.
  */
-class CBinnedDotFeatures : public CDotFeatures
+class BinnedDotFeatures : public DotFeatures
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CBinnedDotFeatures(int32_t size=0);
+		BinnedDotFeatures(int32_t size=0);
 
 		/** copy constructor */
-		CBinnedDotFeatures(const CBinnedDotFeatures & orig);
+		BinnedDotFeatures(const BinnedDotFeatures & orig);
 
 		/** constructor
 		 *
@@ -56,9 +56,9 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * binned features
 		 * @param bins a matrix with bins to compute binned features from
 		 */
-		CBinnedDotFeatures(CFeatures* sf, SGMatrix<float64_t> bins);
+		BinnedDotFeatures(std::shared_ptr<Features> sf, SGMatrix<float64_t> bins);
 
-		virtual ~CBinnedDotFeatures();
+		virtual ~BinnedDotFeatures();
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -76,7 +76,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -164,13 +164,13 @@ class CBinnedDotFeatures : public CDotFeatures
 		 *
 		 * @param features - features to convert to binned features
 		 */
-		void set_simple_features(CDenseFeatures<float64_t>* features);
+		void set_simple_features(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 		/** get features that are convert to binned features
 		 *
 		 * @return features - simple features object
 		 */
-		CDenseFeatures<float64_t>* get_simple_features();
+		std::shared_ptr<DenseFeatures<float64_t>> get_simple_features();
 
 		/** set bins
 		 *
@@ -198,7 +198,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get feature type
 		 *
@@ -229,7 +229,7 @@ class CBinnedDotFeatures : public CDotFeatures
 
 	protected:
 		/// underlying features
-		CDenseFeatures<float64_t>* m_features;
+		std::shared_ptr<DenseFeatures<float64_t>> m_features;
 
 		/// bins with limits
 		SGMatrix<float64_t> m_bins;

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos,
  *          Vladislav Horbatiuk, Yuyu Zhang, Evgeniy Andreev, Bjoern Esser
  */
 
@@ -15,14 +15,14 @@
 
 namespace shogun
 {
-class CFeatures;
-class CDynamicObjectArray;
+class Features;
+class DynamicObjectArray;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
  * into a single CombinedFeatures object.
  *
  * It keeps pointers to the added sub-features and is especially useful to
- * combine kernels working on different domains (c.f. CCombinedKernel) and to
+ * combine kernels working on different domains (c.f. CombinedKernel) and to
  * combine kernels looking at independent features.
  *
  * Subsets are supported: All actions will just be given through to all
@@ -30,22 +30,22 @@ class CDynamicObjectArray;
  * sub-features that are the same instance, the subset action will only be
  * performed once.
  */
-class CCombinedFeatures : public CFeatures
+class CombinedFeatures : public Features
 {
 	public:
 		/** default constructor */
-		CCombinedFeatures();
+		CombinedFeatures();
 		/** copy constructor */
-		CCombinedFeatures(const CCombinedFeatures& orig);
+		CombinedFeatures(const CombinedFeatures& orig);
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** destructor */
-		virtual ~CCombinedFeatures();
+		virtual ~CombinedFeatures();
 
 		/** get feature type
 		 *
@@ -80,26 +80,26 @@ class CCombinedFeatures : public CFeatures
 		 * @param comb_feat feature to check for compatibility
 		 * @return if feature is compatible
 		 */
-		bool check_feature_obj_compatibility(CCombinedFeatures* comb_feat);
+		bool check_feature_obj_compatibility(std::shared_ptr<CombinedFeatures> comb_feat);
 
 		/** get first feature object
 		 *
 		 * @return first feature object
 		 */
-		CFeatures* get_first_feature_obj() const;
+		std::shared_ptr<Features> get_first_feature_obj() const;
 
 		/** get feature object at index idx
 		*
 		* @param idx index of feature object
 		* @return the feature object at index idx
 		*/
-		CFeatures* get_feature_obj(int32_t idx) const;
+		std::shared_ptr<Features> get_feature_obj(int32_t idx) const;
 
 		/** get last feature object
 		 *
 		 * @return last feature object
 		 */
-		CFeatures* get_last_feature_obj() const;
+		std::shared_ptr<Features> get_last_feature_obj() const;
 
 		/** insert feature object at index idx
 		 *  Important, idx must be < num_feature_obj
@@ -108,14 +108,14 @@ class CCombinedFeatures : public CFeatures
 		 * @param idx the index where to insert the feature object
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CFeatures* obj, int32_t idx);
+		bool insert_feature_obj(std::shared_ptr<Features> obj, int32_t idx);
 
 		/** append feature object to the end of this CombinedFeatures object array
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		bool append_feature_obj(CFeatures* obj);
+		bool append_feature_obj(std::shared_ptr<Features> obj);
 
 		/** delete feature object at position idx
 		 *
@@ -140,7 +140,7 @@ class CCombinedFeatures : public CFeatures
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		CFeatures* create_merged_copy(CFeatures* other) const;
+		std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const;
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards.
@@ -164,15 +164,15 @@ class CCombinedFeatures : public CFeatures
 		 * */
 		virtual void remove_all_subsets();
 
-		/** Creates a new CFeatures instance containing copies of the elements
+		/** Creates a new Features instance containing copies of the elements
 		 * which are specified by the provided indices.
 		 * Simply creates a combined features instance where all sub-features
 		 * are the results of their copy_subset calls
 		 *
 		 * @param indices indices of feature elements to copy
-		 * @return new CFeatures instance with copies of feature data
+		 * @return new Features instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "CombinedFeatures"; }
@@ -182,7 +182,7 @@ class CCombinedFeatures : public CFeatures
 
 	protected:
 		/** feature array */
-		CDynamicObjectArray* feature_array;
+		std::vector<std::shared_ptr<Features>> feature_array;
 
 		/** number of vectors
 		 * must match between sub features

@@ -16,18 +16,18 @@
 
 namespace shogun
 {
-template <class ST> class CStringFeatures;
+template <class ST> class StringFeatures;
 
 /** @brief Features that compute the Weighted Degreee Kernel feature space
  * explicitly.
  *
  * \sa CWeightedDegreeStringKernel
  */
-class CHashedWDFeaturesTransposed : public CDotFeatures
+class HashedWDFeaturesTransposed : public DotFeatures
 {
 	public:
 		/** default constructor  */
-		CHashedWDFeaturesTransposed();
+		HashedWDFeaturesTransposed();
 
 		/** constructor
 		 *
@@ -37,14 +37,14 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param from_order use first order weights from higher order weighting
 		 * @param hash_bits number of bits in hash
 		 */
-		CHashedWDFeaturesTransposed(CStringFeatures<uint8_t>* str, int32_t start_order,
+		HashedWDFeaturesTransposed(std::shared_ptr<StringFeatures<uint8_t>> str, int32_t start_order,
 				int32_t order,  int32_t from_order, int32_t hash_bits=12);
 
 		/** copy constructor */
-		CHashedWDFeaturesTransposed(const CHashedWDFeaturesTransposed & orig);
+		HashedWDFeaturesTransposed(const HashedWDFeaturesTransposed & orig);
 
 		/** destructor */
-		virtual ~CHashedWDFeaturesTransposed();
+		virtual ~HashedWDFeaturesTransposed();
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -65,7 +65,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -126,7 +126,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<Features> duplicate() const;
 
 		/** get feature type
 		 *
@@ -223,7 +223,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
-		CStringFeatures<uint8_t>* strings;
+		std::shared_ptr<StringFeatures<uint8_t>> strings;
 
 		/** pointer to transposed strings */
 		std::vector<SGVector<uint8_t>> transposed_strings;

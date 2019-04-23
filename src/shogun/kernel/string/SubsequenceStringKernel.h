@@ -49,11 +49,11 @@ namespace shogun
  * [1] Text Classification using String Kernels, Lodhi et. al. Journal of Machine
  * Learning Research 2(2002), 419-444.
  */
-class CSubsequenceStringKernel: public CStringKernel<char>
+class SubsequenceStringKernel: public StringKernel<char>
 {
 public:
 	/** default constructor  */
-	CSubsequenceStringKernel();
+	SubsequenceStringKernel();
 
 	/**
 	 * constructor
@@ -62,7 +62,7 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	CSubsequenceStringKernel(int32_t size, int32_t maxlen, float64_t lambda);
+	SubsequenceStringKernel(int32_t size, int32_t maxlen, float64_t lambda);
 
 	/**
 	 * constructor
@@ -72,11 +72,11 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	CSubsequenceStringKernel(CStringFeatures<char>* lhs, CStringFeatures<char>* rhs,
+	SubsequenceStringKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 		int32_t maxlen, float64_t lambda);
 
 	/** destructor */
-	virtual ~CSubsequenceStringKernel();
+	virtual ~SubsequenceStringKernel();
 
 	/**
 	 * initialize kernel
@@ -85,7 +85,7 @@ public:
 	 * @param rhs features of right-hand side
 	 * @return true if initialization was successful, false otherwise
 	 */
-	virtual bool init(CFeatures* lhs, CFeatures* rhs);
+	virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
 
 	/** clean up kernel */
 	virtual void cleanup();

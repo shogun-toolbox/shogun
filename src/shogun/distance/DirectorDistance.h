@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang,
  *          Viktor Gal, Sergey Lisitsyn, Bjoern Esser
  */
 
@@ -20,18 +20,18 @@ namespace shogun
 {
 
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
+IGNORE_IN_CLASSLIST class DirectorDistance : public Distance
 {
 	public:
 		/* default constructor */
-		CDirectorDistance(bool is_external_features)
-		: CDistance(), external_features(is_external_features)
+		DirectorDistance(bool is_external_features)
+		: Distance(), external_features(is_external_features)
 		{
 
 		}
 
 		/** destructor */
-		virtual ~CDirectorDistance()
+		virtual ~DirectorDistance()
 		{
 			cleanup();
 		}
@@ -55,7 +55,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 				return 0;
 
 			if (!external_features)
-				CDistance::distance(idx_a, idx_b);
+				Distance::distance(idx_a, idx_b);
 			else
 				return compute(idx_a, idx_b);
 		}
@@ -75,7 +75,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 */
 		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
 		{
-			return CDistance::distance(idx_a, idx_b);
+			return Distance::distance(idx_a, idx_b);
 		}
 
 		/** init distance
@@ -87,14 +87,14 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 * @param rhs features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs)
+		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs)
 		{
 			if (env()->get_num_threads()!=1)
 			{
 				io::warn("Enforcing to use only one thread due to restrictions of directors");
 				env()->set_num_threads(1);
 			}
-			return CDistance::init(lhs, rhs);
+			return Distance::init(lhs, rhs);
 		}
 
 		/** cleanup distance */
@@ -109,7 +109,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 */
 		virtual int32_t get_num_vec_lhs()
 		{
-			return CDistance::get_num_vec_lhs();
+			return Distance::get_num_vec_lhs();
 		}
 
 		/** get number of vectors of rhs features
@@ -118,7 +118,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 */
 		virtual int32_t get_num_vec_rhs()
 		{
-			return CDistance::get_num_vec_rhs();
+			return Distance::get_num_vec_rhs();
 		}
 
 		/** get number of vectors of lhs features
@@ -146,7 +146,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		virtual bool has_features()
 		{
 			if (!external_features)
-				return CDistance::has_features();
+				return Distance::has_features();
 			else
 				return true;
 		}
@@ -154,19 +154,19 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs()
 		{
-			CDistance::remove_lhs_and_rhs();
+			Distance::remove_lhs_and_rhs();
 		}
 
 		/// takes all necessary steps if the lhs is removed from distance matrix
 		virtual void remove_lhs()
 		{
-			CDistance::remove_lhs();
+			Distance::remove_lhs();
 		}
 
 		/// takes all necessary steps if the rhs is removed from distance matrix
 		virtual void remove_rhs()
 		{
-			CDistance::remove_rhs();
+			Distance::remove_rhs();
 		}
 
 		/** get distance type we are
@@ -200,7 +200,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 */
 		virtual void set_precompute_matrix(bool flag)
 		{
-			CDistance::set_precompute_matrix(flag);
+			Distance::set_precompute_matrix(flag);
 		}
 
 	protected:

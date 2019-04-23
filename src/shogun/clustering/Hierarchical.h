@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-class CDistanceMachine;
+class DistanceMachine;
 
 /** @brief Agglomerative hierarchical single linkage clustering.
  *
@@ -32,19 +32,19 @@ class CDistanceMachine;
  * are merged.
  *
  * cf e.g. http://en.wikipedia.org/wiki/Data_clustering*/
-class CHierarchical : public CDistanceMachine
+class Hierarchical : public DistanceMachine
 {
 	public:
 		/** default constructor */
-		CHierarchical();
+		Hierarchical();
 
 		/** constructor
 		 *
 		 * @param merges the merges
 		 * @param d distance
 		 */
-		CHierarchical(int32_t merges, CDistance* d);
-		virtual ~CHierarchical();
+		Hierarchical(int32_t merges, std::shared_ptr<Distance> d);
+		virtual ~Hierarchical();
 
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
@@ -117,7 +117,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		/** Initialize attributes */

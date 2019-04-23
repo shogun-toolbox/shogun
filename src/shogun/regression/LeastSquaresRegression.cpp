@@ -14,14 +14,14 @@
 
 using namespace shogun;
 
-CLeastSquaresRegression::CLeastSquaresRegression()
-: CLinearRidgeRegression()
+LeastSquaresRegression::LeastSquaresRegression()
+: LinearRidgeRegression()
 {
 	m_tau=0;
 }
 
-CLeastSquaresRegression::CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab)
-: CLinearRidgeRegression(0, data, lab)
+LeastSquaresRegression::LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab)
+: LinearRidgeRegression(0, data, lab)
 {
 }
 #endif

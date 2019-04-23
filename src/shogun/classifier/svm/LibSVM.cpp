@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Leon Kuchenbecker, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Leon Kuchenbecker,
  *          Sergey Lisitsyn
  */
 
@@ -11,30 +11,30 @@
 
 using namespace shogun;
 
-CLibSVM::CLibSVM()
-: CSVM(), solver_type(LIBSVM_C_SVC)
+LibSVM::LibSVM()
+: SVM(), solver_type(LIBSVM_C_SVC)
 {
 	register_params();
 }
 
-CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
-: CSVM(), solver_type(st)
+LibSVM::LibSVM(LIBSVM_SOLVER_TYPE st)
+: SVM(), solver_type(st)
 {
 	register_params();
 }
 
 
-CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab, LIBSVM_SOLVER_TYPE st)
-: CSVM(C, k, lab), solver_type(st)
+LibSVM::LibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, LIBSVM_SOLVER_TYPE st)
+: SVM(C, k, lab), solver_type(st)
 {
 	register_params();
 }
 
-CLibSVM::~CLibSVM()
+LibSVM::~LibSVM()
 {
 }
 
-void CLibSVM::register_params()
+void LibSVM::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
@@ -42,7 +42,7 @@ void CLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool CLibSVM::train_machine(CFeatures* data)
+bool LibSVM::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -126,7 +126,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu();
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
@@ -153,7 +153,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 		int32_t num_sv=model->l;
 
 		create_new_model(num_sv);
-		CSVM::set_objective(model->objective);
+		SVM::set_objective(model->objective);
 
 		float64_t sgn=model->label[0];
 

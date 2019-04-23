@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Heiko Strathmann, Soeren Sonnenburg, Shell Hu, 
+ * Authors: Chiyuan Zhang, Heiko Strathmann, Soeren Sonnenburg, Shell Hu,
  *          Sergey Lisitsyn
  */
 
@@ -11,21 +11,21 @@
 using namespace shogun;
 
 
-CMulticlassStrategy::CMulticlassStrategy()
-	: CSGObject()
+MulticlassStrategy::MulticlassStrategy()
+	: SGObject()
 {
 	init();
 }
 
-CMulticlassStrategy::CMulticlassStrategy(EProbHeuristicType prob_heuris)
-	: CSGObject()
+MulticlassStrategy::MulticlassStrategy(EProbHeuristicType prob_heuris)
+	: SGObject()
 {
 	init();
 
 	m_prob_heuris=prob_heuris;
 }
 
-void CMulticlassStrategy::init()
+void MulticlassStrategy::init()
 {
 	m_rejection_strategy=NULL;
 	m_train_labels=NULL;
@@ -35,37 +35,36 @@ void CMulticlassStrategy::init()
 	m_num_classes=0;
 
 	SG_ADD(
-	    (CSGObject**)&m_rejection_strategy, "rejection_strategy",
+	    (std::shared_ptr<SGObject>*)&m_rejection_strategy, "rejection_strategy",
 	    "Strategy of rejection");
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_prob_heuris, "prob_heuris",
 	    "Probability estimation heuristics", ParameterProperties::NONE,
 	    SG_OPTIONS(PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE, OVO_HASTIE,
-	    OVO_HAMAMURA))
+	    OVO_HAMAMURA));
 }
 
-void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+void MulticlassStrategy::train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels)
 {
 	if (m_train_labels != NULL)
 		error("Stop the previous training task before starting a new one!");
-	SG_REF(train_labels);
 	m_train_labels=train_labels;
-	SG_REF(orig_labels);
+
 	m_orig_labels=orig_labels;
 	m_train_iter=0;
 }
 
-SGVector<int32_t> CMulticlassStrategy::train_prepare_next()
+SGVector<int32_t> MulticlassStrategy::train_prepare_next()
 {
 	m_train_iter++;
 	return SGVector<int32_t>();
 }
 
-void CMulticlassStrategy::train_stop()
+void MulticlassStrategy::train_stop()
 {
-	SG_UNREF(m_train_labels);
-	SG_UNREF(m_orig_labels);
+
+
     m_train_labels = NULL;
     m_orig_labels = NULL;
 }

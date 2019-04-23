@@ -1,5 +1,4 @@
 #include <shogun/base/ShogunEnv.h>
-#include <shogun/base/some.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
@@ -12,7 +11,7 @@
 using namespace shogun;
 using namespace std;
 
-static Some<CSGObject> load_object(const string& fname)
+static std::shared_ptr<SGObject> load_object(const string& fname)
 {
 	auto fs = env();
 	auto ec = fs->file_exists(fname);
@@ -22,8 +21,8 @@ static Some<CSGObject> load_object(const string& fname)
 	ec = fs->new_random_access_file(fname, &f);
 	if (ec)
 		throw io::to_system_error(ec);
-	auto fis = some<io::CFileInputStream>(f.get());
-	auto deserializer = some<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::FileInputStream>(f.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(fis);
 	return deserializer->read_object();
 }

@@ -14,8 +14,8 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
-class CEigenSolver;
+template<class T> class LinearOperator;
+class EigenSolver;
 
 /** @brief Abstract base class of the rational approximation of a function of a
  * linear operator (A) times vector (v) using Cauchy's integral formula -
@@ -54,11 +54,11 @@ class CEigenSolver;
  * adapted from KRYLSTAT (Copyright 2011 by Erlend Aune <erlenda@math.ntnu.no>)
  * under GPL2+. See https://github.com/Froskekongen/KRYLSTAT.
  */
-class CRationalApproximation : public COperatorFunction<float64_t>
+class RationalApproximation : public OperatorFunction<float64_t>
 {
 public:
 	/** default constructor */
-	CRationalApproximation();
+	RationalApproximation();
 
 	/**
 	 * Constructor. Number of shifts will be computed using a specified accuracy.
@@ -71,14 +71,14 @@ public:
 	 * the number of shifts automatically
 	 * @param function_type operator function type
 	 */
-	CRationalApproximation(
-		CLinearOperator<float64_t>* linear_operator,
-		CEigenSolver* eigen_solver,
+	RationalApproximation(
+		std::shared_ptr<LinearOperator<float64_t>> linear_operator,
+		std::shared_ptr<EigenSolver> eigen_solver,
 		float64_t desired_accuracy,
 		EOperatorFunction function_type);
 
 	/** destructor */
-	virtual ~CRationalApproximation();
+	virtual ~RationalApproximation();
 
 	/**
 	 * precompute method that computes extremal eigenvalues using the eigensolver
@@ -131,7 +131,7 @@ public:
 
 protected:
 	/** the eigen solver for computing extremal eigenvalues */
-	CEigenSolver* m_eigen_solver;
+	std::shared_ptr<EigenSolver> m_eigen_solver;
 
 	/** complex shifts in the systems coming from rational approximation */
 	SGVector<complex128_t> m_shifts;

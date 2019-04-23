@@ -15,21 +15,21 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 {
 	PyObject* resultobj=NULL;
 
-	CCustomKernel* arg1=NULL; // self in c++ repr
+	CustomKernel* arg1=NULL; // self in c++ repr
 	int res1=0; // result for self's casting
 	void* argp1=NULL; // pointer to self
 
 	PyObject* kernel_narray=NULL;
 	SGMatrix< type_name > kernel_matrix;
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "inplace operator_name" "', argument " "1"" of type '" "CCustomKernel *""'");
+					"in method '" "inplace operator_name" "', argument " "1"" of type '" "CustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CCustomKernel* >(argp1);
+	arg1=reinterpret_cast< CustomKernel* >(argp1);
 
 	kernel_matrix=arg1->get_float32_kernel_matrix();
 	kernel_narray=PySequence_GetSlice(self, 0, kernel_matrix.num_rows);
@@ -54,7 +54,7 @@ fail:
 /* used by PyObject_GetBuffer */
 static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	CCustomKernel* arg1=(CCustomKernel *) 0; // self in c++ repr
+	CustomKernel* arg1=(CustomKernel *) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
@@ -67,11 +67,11 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "getbuffer" "', argument " "1"" of type '" "CCustomKernel *""'");
+					"in method '" "getbuffer" "', argument " "1"" of type '" "CustomKernel *""'");
 	}
 
 	if ((flags & PyBUF_C_CONTIGUOUS)==PyBUF_C_CONTIGUOUS)
@@ -87,7 +87,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 		goto fail;
 	}
 
-	arg1=reinterpret_cast< CCustomKernel* >(argp1);
+	arg1=reinterpret_cast< CustomKernel* >(argp1);
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
 	new (&info->buf) SGMatrix< type_name >();
@@ -156,7 +156,7 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 /* used by PySequence_GetItem */
 static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 {
-	CCustomKernel* arg1=0; // self in c++ repr
+	CustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
@@ -172,14 +172,14 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CCustomKernel *""'");
+					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CCustomKernel* >(argp1);
+	arg1=reinterpret_cast< CustomKernel* >(argp1);
 
 	kernel_matrix=arg1->get_float32_kernel_matrix();
 	num_rows=kernel_matrix.num_rows;
@@ -247,7 +247,7 @@ fail:
 /* used by PySequence_GetSlice */
 static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	CCustomKernel* arg1=0; // self in c++ repr
+	CustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
@@ -262,14 +262,14 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _slice" "', argument " "1"" of type '" "CCustomKernel *""'");
+					"in method '" " class_name _slice" "', argument " "1"" of type '" "CustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CCustomKernel* >(argp1);
+	arg1=reinterpret_cast< CustomKernel* >(argp1);
 
 	kernel_matrix=arg1->get_float32_kernel_matrix();
 	num_rows=kernel_matrix.num_rows;
@@ -337,7 +337,7 @@ static PyObject* class_name ## _getsubscript_helper(PyObject *self, PyObject *ke
 	// key is tuple, like (PySlice or PyLong, PySlice or PyLong)
 	// or only PySlice/PyLong
 
-	CCustomKernel* arg1=0; // self in c++ repr
+	CustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
@@ -370,14 +370,14 @@ static PyObject* class_name ## _getsubscript_helper(PyObject *self, PyObject *ke
 
 	PyObject* tmp; // temporary object for tuple's item
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CCustomKernel *""'");
+					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CCustomKernel* >(argp1);
+	arg1=reinterpret_cast< CustomKernel* >(argp1);
 
 	kernel_matrix=arg1->get_float32_kernel_matrix();
 	num_rows=kernel_matrix.num_rows;
@@ -522,18 +522,18 @@ fail:
 static PyObject* class_name ## _cleanup_custom(PyObject *self, PyObject *args)
 {
 	PyObject* resultobj=NULL;
-	CCustomKernel* arg1=NULL;
+	CustomKernel* arg1=NULL;
 	void* argp1=NULL;
 	int res1=0;
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1), "in method '"
-				"cleanup" "', argument " "1"" of type '" "shogun::CCustomKernel *""'");
+				"cleanup" "', argument " "1"" of type '" "shogun::CustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CCustomKernel * >(argp1);
+	arg1=reinterpret_cast< CustomKernel * >(argp1);
 	{
 		try
 		{
@@ -586,10 +586,10 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 %init
 %{
 // overload flags slot in DenseFatures proxy class
-SwigPyBuiltin__shogun__CCustomKernel_type.ht_type.tp_flags = class_name ## _flags;
+SwigPyBuiltin__shogun__CustomKernel_type.ht_type.tp_flags = class_name ## _flags;
 
 // overload free_feature_matrix in DenseFeatures
-set_method(SwigPyBuiltin__shogun__CCustomKernel_methods, "cleanup_custom", (PyCFunction) class_name ## _cleanup_custom);
+set_method(SwigPyBuiltin__shogun__CustomKernel_methods, "cleanup_custom", (PyCFunction) class_name ## _cleanup_custom);
 
 %}
 
@@ -597,30 +597,30 @@ set_method(SwigPyBuiltin__shogun__CCustomKernel_methods, "cleanup_custom", (PyCF
 %{
 
 #include <map>
-static std::map< CCustomKernel*, Py_buffer*> extend_ ## class_name ## _info;
+static std::map< CustomKernel*, Py_buffer*> extend_ ## class_name ## _info;
 
 %}
 
-%feature("python:bf_getbuffer") CCustomKernel #class_name "_getbuffer"
-%feature("python:bf_releasebuffer") CCustomKernel #class_name "_releasebuffer"
+%feature("python:bf_getbuffer") CustomKernel #class_name "_getbuffer"
+%feature("python:bf_releasebuffer") CustomKernel #class_name "_releasebuffer"
 
-%feature("python:nb_inplace_add") CCustomKernel #class_name "_inplaceadd"
-%feature("python:nb_inplace_subtract") CCustomKernel #class_name "_inplacesub"
-%feature("python:nb_inplace_multiply") CCustomKernel #class_name "_inplacemul"
+%feature("python:nb_inplace_add") CustomKernel #class_name "_inplaceadd"
+%feature("python:nb_inplace_subtract") CustomKernel #class_name "_inplacesub"
+%feature("python:nb_inplace_multiply") CustomKernel #class_name "_inplacemul"
 
-%feature("python:sq_item") CCustomKernel #class_name "_getitem"
-%feature("python:sq_ass_item") CCustomKernel #class_name "_setitem"
-%feature("python:sq_slice") CCustomKernel #class_name "_getslice"
-%feature("python:sq_ass_slice") CCustomKernel #class_name "_setslice"
+%feature("python:sq_item") CustomKernel #class_name "_getitem"
+%feature("python:sq_ass_item") CustomKernel #class_name "_setitem"
+%feature("python:sq_slice") CustomKernel #class_name "_getslice"
+%feature("python:sq_ass_slice") CustomKernel #class_name "_setslice"
 
-%feature("python:mp_subscript") CCustomKernel #class_name "_getsubscript"
-%feature("python:mp_ass_subscript") CCustomKernel #class_name "_setsubscript"
+%feature("python:mp_subscript") CustomKernel #class_name "_getsubscript"
+%feature("python:mp_ass_subscript") CustomKernel #class_name "_setsubscript"
 
 %enddef /* PROTOCOLS_CUSTOMKERNEL */
 
 %define EXTEND_CUSTOMKERNEL(class_name, type_name, typecode)
 
-%extend shogun::CCustomKernel
+%extend shogun::CustomKernel
 {
 
 int frombuffer(PyObject* exporter, bool copy)

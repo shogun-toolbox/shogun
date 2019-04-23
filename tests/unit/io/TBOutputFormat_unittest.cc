@@ -62,7 +62,7 @@ void test_case_scalar(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	auto emitted_value = std::shared_ptr<ObservedValue>(
 	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
@@ -80,7 +80,7 @@ void test_case_scalar_error(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	auto emitted_value = std::shared_ptr<ObservedValue>(
 	    new ObservedValueTemplated<T>(1, "test", "test description", v));
 
 	std::string node_name = "node";
@@ -108,7 +108,7 @@ void test_case_vector(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	auto emitted_value = std::shared_ptr<ObservedValue>(
 	    new ObservedValueTemplated<std::vector<T>>(
 	        1, "test", "test description", v));
 
@@ -130,7 +130,7 @@ void test_case_vector_error(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	Some<ObservedValue> emitted_value = Some<ObservedValue>::from_raw(
+	auto emitted_value = std::shared_ptr<ObservedValue>(
 	    new ObservedValueTemplated<std::vector<T>>(
 	        1, "test", "test_description", v));
 

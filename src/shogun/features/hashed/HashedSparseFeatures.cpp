@@ -18,96 +18,96 @@
 namespace shogun {
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(int32_t size, bool use_quadr,
-	bool keep_lin_terms) : CDotFeatures(size)
+HashedSparseFeatures<ST>::HashedSparseFeatures(int32_t size, bool use_quadr,
+	bool keep_lin_terms) : DotFeatures(size)
 {
 	init(NULL, 0, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d,
-	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
+HashedSparseFeatures<ST>::HashedSparseFeatures(std::shared_ptr<SparseFeatures<ST>> feats, int32_t d,
+	bool use_quadr, bool keep_lin_terms) : DotFeatures()
 {
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d,
-	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
+HashedSparseFeatures<ST>::HashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d,
+	bool use_quadr, bool keep_lin_terms) : DotFeatures()
 {
-	CSparseFeatures<ST>* feats = new CSparseFeatures<ST>(matrix);
+	auto feats = std::make_shared<SparseFeatures<ST>>(matrix);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr,
-	bool keep_lin_terms) : CDotFeatures(loader)
+HashedSparseFeatures<ST>::HashedSparseFeatures(std::shared_ptr<File> loader, int32_t d, bool use_quadr,
+	bool keep_lin_terms) : DotFeatures(loader)
 {
-	CSparseFeatures<ST>* feats = new CSparseFeatures<ST>();
+	auto feats = std::make_shared<SparseFeatures<ST>>();
 	feats->load(loader);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-void CHashedSparseFeatures<ST>::init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr,
+void HashedSparseFeatures<ST>::init(std::shared_ptr<SparseFeatures<ST>> feats, int32_t d, bool use_quadr,
 	bool keep_lin_terms)
 {
 	dim = d;
 	use_quadratic = use_quadr;
 	keep_linear_terms = keep_lin_terms;
 	sparse_feats = feats;
-	SG_REF(sparse_feats);
+
 
 	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
 	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
 	SG_ADD(&dim, "dim", "Dimension of new feature space");
-	SG_ADD((CSGObject** ) &sparse_feats, "sparse_feats", "Sparse features to work on");
+	SG_ADD((std::shared_ptr<SGObject>* ) &sparse_feats, "sparse_feats", "Sparse features to work on");
 
 	set_generic<ST>();
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(const CHashedSparseFeatures& orig)
-: CDotFeatures(orig)
+HashedSparseFeatures<ST>::HashedSparseFeatures(const HashedSparseFeatures& orig)
+: DotFeatures(orig)
 {
 	init(orig.sparse_feats, orig.dim, orig.use_quadratic, orig.keep_linear_terms);
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::~CHashedSparseFeatures()
+HashedSparseFeatures<ST>::~HashedSparseFeatures()
 {
-	SG_UNREF(sparse_feats);
+
 }
 
 template <class ST>
-CFeatures* CHashedSparseFeatures<ST>::duplicate() const
+std::shared_ptr<Features> HashedSparseFeatures<ST>::duplicate() const
 {
-	return new CHashedSparseFeatures<ST>(*this);
+	return std::make_shared<HashedSparseFeatures>(*this);
 }
 
 template <class ST>
-int32_t CHashedSparseFeatures<ST>::get_dim_feature_space() const
+int32_t HashedSparseFeatures<ST>::get_dim_feature_space() const
 {
 	return dim;
 }
 
 template <class ST>
-SGSparseVector<ST> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
+SGSparseVector<ST> HashedSparseFeatures<ST>::get_hashed_feature_vector(
 	int32_t vec_idx) const
 {
-	return CHashedSparseFeatures<ST>::hash_vector(sparse_feats->get_sparse_feature_vector(vec_idx),
+	return HashedSparseFeatures<ST>::hash_vector(sparse_feats->get_sparse_feature_vector(vec_idx),
 		dim, use_quadratic, keep_linear_terms);
 }
 
 template <class ST>
-SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim,
+SGSparseVector<ST> HashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim,
 	bool use_quadratic, bool keep_linear_terms)
 {
-	return CHashedDenseFeatures<ST>::hash_vector(vec, dim, use_quadratic, keep_linear_terms);
+	return HashedDenseFeatures<ST>::hash_vector(vec, dim, use_quadratic, keep_linear_terms);
 }
 
 template <class ST>
-SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec, int32_t dim,
+SGSparseVector<ST> HashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec, int32_t dim,
 	bool use_quadratic, bool keep_linear_terms)
 {
 	SGVector<ST> h_vec(dim);
@@ -118,7 +118,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
+		uint32_t hash = Hash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 						vec.features[i].feat_index);
 
 		if (use_quadratic)
@@ -133,7 +133,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 		for (index_t i=0; i<vec.num_feat_entries; i++)
 		{
 			index_t n_idx = vec.features[i].feat_index + vec.features[i].feat_index;
-			index_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof(index_t),
+			index_t idx = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof(index_t),
 					vec.features[i].feat_index) % dim;
 
 			h_vec[idx] += vec.features[i].entry * vec.features[i].entry;
@@ -169,7 +169,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 }
 
 template <class ST>
-float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
+float64_t HashedSparseFeatures<ST>::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 	int32_t vec_idx2) const
 {
 	ASSERT(df)
@@ -177,7 +177,7 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	ASSERT(df->get_feature_class() == get_feature_class())
 	ASSERT(strcmp(df->get_name(), get_name())==0)
 
-	CHashedSparseFeatures<ST>* feats = (CHashedSparseFeatures<ST>* ) df;
+	auto feats = std::dynamic_pointer_cast<HashedSparseFeatures<ST>>(df);
 	SGSparseVector<ST> vec_1 = get_hashed_feature_vector(vec_idx1);
 	SGSparseVector<ST> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 
@@ -186,7 +186,7 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedSparseFeatures<ST>::dot(
+float64_t HashedSparseFeatures<ST>::dot(
 	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	ASSERT(vec2.size() == dim)
@@ -199,7 +199,7 @@ float64_t CHashedSparseFeatures<ST>::dot(
 	float64_t result = 0;
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
+		uint32_t hash = Hash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 					   vec.features[i].feat_index);
 
 		if (use_quadratic)
@@ -214,7 +214,7 @@ float64_t CHashedSparseFeatures<ST>::dot(
 		for (index_t i=0; i<vec.num_feat_entries; i++)
 		{
 			index_t n_idx = vec.features[i].feat_index + vec.features[i].feat_index;
-			index_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t),
+			index_t idx = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t),
 						vec.features[i].feat_index) % dim;
 
 			result += vec2[idx] * vec.features[i].entry * vec.features[i].entry;
@@ -232,10 +232,10 @@ float64_t CHashedSparseFeatures<ST>::dot(
 }
 
 template <class ST>
-void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+void HashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
-	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
+	float64_t val = abs_val ? Math::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
 
 	SGSparseVector<ST> vec = sparse_feats->get_sparse_feature_vector(vec_idx1);
@@ -245,7 +245,7 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
+		uint32_t hash = Hash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 					   vec.features[i].feat_index);
 		if (use_quadratic)
 			hash_cache[i] = hash;
@@ -259,7 +259,7 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 		for (index_t i=0; i<vec.num_feat_entries; i++)
 		{
 			index_t n_idx = vec.features[i].feat_index + vec.features[i].feat_index;
-			index_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t),
+			index_t idx = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t),
 						vec.features[i].feat_index) % dim;
 
 			vec2[idx] += val * vec.features[i].entry * vec.features[i].entry;
@@ -275,65 +275,65 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 }
 
 template <class ST>
-int32_t CHashedSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
+int32_t HashedSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
 {
 	return dim;
 }
 
 template <class ST>
-void* CHashedSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
+void* HashedSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 template <class ST>
-bool CHashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
+bool HashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
 	void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 template <class ST>
-void CHashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
+void HashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
 
 template <class ST>
-const char* CHashedSparseFeatures<ST>::get_name() const
+const char* HashedSparseFeatures<ST>::get_name() const
 {
 	return "HashedSparseFeatures";
 }
 
 template <class ST>
-EFeatureType CHashedSparseFeatures<ST>::get_feature_type() const
+EFeatureType HashedSparseFeatures<ST>::get_feature_type() const
 {
 	return F_UINT;
 }
 
 template <class ST>
-EFeatureClass CHashedSparseFeatures<ST>::get_feature_class() const
+EFeatureClass HashedSparseFeatures<ST>::get_feature_class() const
 {
 	return C_SPARSE;
 }
 
 template <class ST>
-int32_t CHashedSparseFeatures<ST>::get_num_vectors() const
+int32_t HashedSparseFeatures<ST>::get_num_vectors() const
 {
 	return sparse_feats ->get_num_vectors();
 }
 
-template class CHashedSparseFeatures <bool>;
-template class CHashedSparseFeatures <char>;
-template class CHashedSparseFeatures <int8_t>;
-template class CHashedSparseFeatures <uint8_t>;
-template class CHashedSparseFeatures <int16_t>;
-template class CHashedSparseFeatures <uint16_t>;
-template class CHashedSparseFeatures <int32_t>;
-template class CHashedSparseFeatures <uint32_t>;
-template class CHashedSparseFeatures <int64_t>;
-template class CHashedSparseFeatures <uint64_t>;
-template class CHashedSparseFeatures <float32_t>;
-template class CHashedSparseFeatures <float64_t>;
-template class CHashedSparseFeatures <floatmax_t>;
+template class HashedSparseFeatures <bool>;
+template class HashedSparseFeatures <char>;
+template class HashedSparseFeatures <int8_t>;
+template class HashedSparseFeatures <uint8_t>;
+template class HashedSparseFeatures <int16_t>;
+template class HashedSparseFeatures <uint16_t>;
+template class HashedSparseFeatures <int32_t>;
+template class HashedSparseFeatures <uint32_t>;
+template class HashedSparseFeatures <int64_t>;
+template class HashedSparseFeatures <uint64_t>;
+template class HashedSparseFeatures <float32_t>;
+template class HashedSparseFeatures <float64_t>;
+template class HashedSparseFeatures <floatmax_t>;
 }

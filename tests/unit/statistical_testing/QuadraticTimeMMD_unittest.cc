@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <cfloat>
 
-#include <shogun/base/some.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
@@ -72,15 +71,15 @@ TEST(QuadraticTimeMMD, biased_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -116,15 +115,15 @@ TEST(QuadraticTimeMMD, unbiased_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -160,15 +159,15 @@ TEST(QuadraticTimeMMD, incomplete_same_num_samples)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
@@ -195,13 +194,13 @@ TEST(QuadraticTimeMMD, unbiased_different_num_samples)
 	SGMatrix<float64_t> data_q(d, n);
 	sg_memcpy(&(data_q.matrix[0]), &(data[m]), sizeof(float64_t)*n);
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -229,13 +228,13 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 	SGMatrix<float64_t> data_q(d, n);
 	sg_memcpy(&(data_q.matrix[0]), &(data[m]), sizeof(float64_t)*n);
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// shoguns kernel width is different
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -270,14 +269,14 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 		data_q.matrix[i]/=max_q;
 	}
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -310,12 +309,12 @@ TEST(QuadraticTimeMMD, compute_variance_h1)
 	SGMatrix<float64_t> data_q(d, m);
 	std::copy(samples.data()+m, samples.data()+samples.size(), data_q.data());
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+	auto features_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto features_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
-	CGaussianKernel* kernel=new CGaussianKernel(10, sigma*sigma*2);
+	auto kernel=std::make_shared<GaussianKernel>(10, sigma*sigma*2);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -337,21 +336,21 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// stream some data from generator
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
@@ -378,21 +377,21 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// stream some data from generator
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
@@ -419,21 +418,21 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// stream some data from generator
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
@@ -460,21 +459,21 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
 	// stream some data from generator
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
 	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
@@ -487,7 +486,6 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	mmd->spectrum_set_num_eigenvalues(num_eigenvalues);
 
 	// biased case
-
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -495,7 +493,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
 
 	// unbiased case
-
+	
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -512,17 +510,17 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 
 	float64_t difference=0.5;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+	auto kernel=std::make_shared<GaussianKernel>(10, sq_sigma_twice);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_kernel(kernel);
@@ -557,22 +555,22 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 
 	float64_t difference=0.5;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	SGVector<float64_t> mmd_multiple=mmd->multikernel()->compute_statistic();
 	mmd->multikernel()->cleanup();
@@ -581,13 +579,13 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->set_kernel(new CGaussianKernel(10, tau));
+		mmd->set_kernel(std::make_shared<GaussianKernel>(10, tau));
 		mmd_single[i]=mmd->compute_statistic();
 	}
 
 	ASSERT_EQ(mmd_multiple.size(), mmd_single.size());
 	for (auto i=0; i<mmd_multiple.size(); ++i)
-		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-4);
+		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-4);	
 }
 
 TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
@@ -600,22 +598,22 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 
 	float64_t difference=0.5;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
-	gen_q->put("seed", seed);
+	gen_q->put("seed", seed);	
 
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	SGVector<float64_t> var_est_multiple=mmd->multikernel()->compute_variance_h1();
 	mmd->multikernel()->cleanup();
@@ -624,7 +622,7 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->set_kernel(new CGaussianKernel(10, tau));
+		mmd->set_kernel(std::make_shared<GaussianKernel>(10, tau));
 		var_est_single[i]=mmd->compute_variance_h1();
 	}
 
@@ -643,15 +641,15 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 
 	float64_t difference=0.5;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->put("seed", seed);
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
@@ -660,7 +658,7 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	SGVector<float64_t> test_power_multiple=mmd->multikernel()->compute_test_power();
 	mmd->multikernel()->cleanup();
@@ -669,7 +667,7 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->set_kernel(new CGaussianKernel(10, tau));
+		mmd->set_kernel(std::make_shared<GaussianKernel>(10, tau));
 		test_power_single[i] = mmd->compute_statistic() * (m + n) / m / n /
 		                       std::sqrt(mmd->compute_variance_h1() + 1E-5);
 	}
@@ -692,15 +690,15 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 
 	float64_t difference=0.5;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	gen_p->put("seed", seed);
 	gen_q->put("seed", seed);
 
-	CFeatures* features_p=gen_p->get_streamed_features(m);
-	CFeatures* features_q=gen_q->get_streamed_features(n);
+	auto features_p=gen_p->get_streamed_features(m);
+	auto features_q=gen_q->get_streamed_features(n);
 
-	auto mmd=some<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(features_p);
 	mmd->set_q(features_q);
 	mmd->set_num_null_samples(num_null_samples);
@@ -708,7 +706,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->multikernel()->add_kernel(new CGaussianKernel(cache_size, tau));
+		mmd->multikernel()->add_kernel(std::make_shared<GaussianKernel>(cache_size, tau));
 	}
 
 	mmd->put("seed", seed);
@@ -719,7 +717,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->set_kernel(new CGaussianKernel(cache_size, tau));
+		mmd->set_kernel(std::make_shared<GaussianKernel>(cache_size, tau));
 		mmd->put("seed", seed);
 		rejections_single[i]=mmd->perform_test(alpha);
 	}

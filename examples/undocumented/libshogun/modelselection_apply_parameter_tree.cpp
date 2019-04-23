@@ -15,27 +15,27 @@
 
 using namespace shogun;
 
-CModelSelectionParameters* create_param_tree()
+ModelSelectionParameters* create_param_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* c=new ModelSelectionParameters("C1");
 	root->append_child(c);
 	c->build_values(1.0, 2.0, R_EXP);
 
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+	GaussianKernel* gaussian_kernel=new GaussianKernel();
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	gaussian_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters("kernel", gaussian_kernel);
+	ModelSelectionParameters* param_gaussian_kernel=
+			new ModelSelectionParameters("kernel", gaussian_kernel);
 
 	root->append_child(param_gaussian_kernel);
 
-	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("log_width");
+	ModelSelectionParameters* param_gaussian_kernel_width=
+			new ModelSelectionParameters("log_width");
 	param_gaussian_kernel_width->build_values(
 	    0.0, 0.5 * std::log(2.0), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
@@ -43,7 +43,7 @@ CModelSelectionParameters* create_param_tree()
 	return root;
 }
 
-void apply_parameter_tree(CDynamicObjectArray* combinations)
+void apply_parameter_tree(DynamicObjectArray* combinations)
 {
 	/* create some data */
 	SGMatrix<float64_t> matrix(2,3);
@@ -52,19 +52,16 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 
 	/* create three 2-dimensional vectors
 	 * to avoid deleting these, REF now and UNREF when finished */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
-	SG_REF(features);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(matrix);
 
 	/* create three labels, will be handed to svm and automaticall deleted */
-	CBinaryLabels* labels=new CBinaryLabels(3);
-	SG_REF(labels);
+	BinaryLabels* labels=new BinaryLabels(3);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
 
 	/* create libsvm with C=10 and train */
 	CLibSVM* svm=new CLibSVM();
-	SG_REF(svm);
 	svm->set_labels(labels);
 
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
@@ -75,10 +72,8 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 		current_combination->print_tree();
 		Parameter* current_parameters=svm->m_parameters;
 		current_combination->apply_to_modsel_parameter(current_parameters);
-		SG_UNREF(current_combination);
 
-		/* get kernel to set features, get_kernel SG_REF's the kernel */
-		CKernel* kernel=svm->get_kernel();
+		Kernel* kernel=svm->get_kernel();
 		kernel->init(features, features);
 
 		svm->train();
@@ -87,28 +82,23 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 		for (index_t j=0; j<3; j++)
 			SG_SPRINT("output[%d]=%f\n", j, svm->apply_one(j));
 
-		/* unset features and SG_UNREF kernel */
 		kernel->cleanup();
-		SG_UNREF(kernel);
 
 		SG_SPRINT("----------------\n\n");
 	}
 
 	/* free up memory */
-	SG_UNREF(features);
-	SG_UNREF(labels);
-	SG_UNREF(svm);
 }
 
 int main(int argc, char **argv)
 {
 	/* create example tree */
-	CModelSelectionParameters* tree=create_param_tree();
+	ModelSelectionParameters* tree=create_param_tree();
 	tree->print_tree();
 	SG_SPRINT("----------------------------------\n");
 
 	/* build combinations of parameter trees */
-	CDynamicObjectArray* combinations=tree->get_combinations();
+	DynamicObjectArray* combinations=tree->get_combinations();
 
 	apply_parameter_tree(combinations);
 
@@ -117,15 +107,11 @@ int main(int argc, char **argv)
 	{
 		CParameterCombination* combination=(CParameterCombination*)
 				combinations->get_element(i);
-		SG_UNREF(combination);
 	}
 
-	SG_UNREF(combinations);
 
-	/* delete example tree (after processing of combinations because CSGObject
-	 * (namely the kernel) of the tree is SG_UNREF'ed (and not REF'ed anywhere
+	/* delete example tree (after processing of combinations because SGObject
 	 * else) */
-	SG_UNREF(tree);
 
 	return 0;
 }

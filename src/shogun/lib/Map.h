@@ -55,7 +55,7 @@ IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
 /** @brief the class CMap, a map based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
-IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
+IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public SGObject
 {
 public:
 	/** Custom constructor */
@@ -442,7 +442,7 @@ protected:
 	 */
 	virtual uint32_t get_hash_value(const K& key)
 	{
-		return CHash::MurmurHash3((uint8_t*)(&key), sizeof(key), 0xDEADBEEF);
+		return Hash::MurmurHash3((uint8_t*)(&key), sizeof(key), 0xDEADBEEF);
 	}
 
 	/** whether SG_MALLOC or just malloc etc shall be used */

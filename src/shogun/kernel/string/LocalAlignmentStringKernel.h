@@ -24,13 +24,13 @@ const int32_t LOGSUM_TBL=10000;
  * The implementation is taken from http://www.mloss.org/software/view/40/ and
  * only adjusted to work with shogun.
  */
-class CLocalAlignmentStringKernel: public CStringKernel<char>
+class LocalAlignmentStringKernel: public StringKernel<char>
 {
 	public:
 		/** constructor
 		 * @param size cache size
 		 */
-		CLocalAlignmentStringKernel(int32_t size=0);
+		LocalAlignmentStringKernel(int32_t size=0);
 
 		/** constructor
 		 *
@@ -39,11 +39,11 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param opening gap opening penalty
 		 * @param extension gap extension penalty
 		 */
-		CLocalAlignmentStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		LocalAlignmentStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			float64_t opening=10, float64_t extension=2);
 
-		virtual ~CLocalAlignmentStringKernel();
+		virtual ~LocalAlignmentStringKernel();
 
 		/** initialize kernel
 		 *
@@ -51,7 +51,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

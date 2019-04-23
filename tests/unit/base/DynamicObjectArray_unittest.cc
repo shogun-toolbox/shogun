@@ -36,56 +36,53 @@ using namespace shogun;
 
 TEST(DynamicObjectArray,clone)
 {
-	CDynamicObjectArray * orig_array = new CDynamicObjectArray();
+	auto orig_array = std::make_shared<DynamicObjectArray>();
 
 	// Something relatively simple to add
-	CSubset * subset = new CSubset();
+	auto subset = std::make_shared<Subset>();
 	orig_array->append_element(subset);
 	EXPECT_EQ(orig_array->get_num_elements(), 1);
 
-	CDynamicObjectArray * cloned_array = (CDynamicObjectArray*) orig_array->clone();
+	auto cloned_array = orig_array->clone()->as<DynamicObjectArray>();
 	EXPECT_EQ(cloned_array->get_num_elements(), 1);
 	// Expand the cloned array into reserved space to check if the cloned
 	// array has correctly allocated memory
 	for (index_t i=0; i < 100; ++i)
-		cloned_array->append_element(new CSubset());
+		cloned_array->append_element(std::make_shared<Subset>());
 
 	// Check sizes
 	EXPECT_EQ(orig_array->get_num_elements(), 1);
 	EXPECT_EQ(cloned_array->get_num_elements(), 101);
-
-	SG_UNREF(orig_array);
-	SG_UNREF(cloned_array);
 }
 
 TEST(DynamicObjectArray, equals_after_resize)
 {
-	CDynamicObjectArray* array1 = new CDynamicObjectArray();
-	CDynamicObjectArray* array2 = new CDynamicObjectArray();
+	auto array1 = std::make_shared<DynamicObjectArray>();
+	auto array2 = std::make_shared<DynamicObjectArray>();
 
 	/* enforce a resize */
 	for (index_t i = 0; i < 1000; ++i)
-		array1->append_element(new CDynamicObjectArray());
+		array1->append_element(std::make_shared<DynamicObjectArray>());
 
 	array1->reset_array();
 
 	EXPECT_TRUE(array1->equals(array2));
 	EXPECT_TRUE(array2->equals(array1));
 
-	SG_UNREF(array1);
-	SG_UNREF(array2);
+
+
 }
 
 TEST(DynamicObjectArray, equals_different)
 {
-	CDynamicObjectArray* array1 = new CDynamicObjectArray();
-	CDynamicObjectArray* array2 = new CDynamicObjectArray();
+	auto array1 = std::make_shared<DynamicObjectArray>();
+	auto array2 = std::make_shared<DynamicObjectArray>();
 
-	array1->append_element(new CDynamicObjectArray());
+	array1->append_element(std::make_shared<DynamicObjectArray>());
 
 	EXPECT_FALSE(array1->equals(array2));
 	EXPECT_FALSE(array2->equals(array1));
 
-	SG_UNREF(array1);
-	SG_UNREF(array2);
+
+
 }

@@ -104,10 +104,10 @@ void test_with_method(
 
 	generate_test_data<float64_t>(lab, feat);
 
-	auto features = some<CDenseFeatures<float64_t>>(feat);
-	auto labels = Some<CLabels>::from_raw(new CBinaryLabels(lab));
+	auto features = std::make_shared<DenseFeatures<float64_t>>(feat);
+	auto labels = std::make_shared<BinaryLabels>(lab);
 
-	auto lda = some<CLDA>(0, method);
+	auto lda = std::make_shared<LDA>(0, method);
 	lda->put("labels", labels);
 	lda->train(features);
 
@@ -199,9 +199,9 @@ TEST(LDA, num_classes_in_labels_exception)
 {
 	SGVector<float64_t> lab{1, -1, 2};
 	SGMatrix<float64_t> feat(1, 3);
-	auto labels = Some<CLabels>::from_raw(new CMulticlassLabels(lab));
-	auto features = some<CDenseFeatures<float64_t>>(feat);
-	auto lda = some<CLDA>(0, SVD_LDA);
+	auto labels = std::make_shared<MulticlassLabels>(lab);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(feat);
+	auto lda = std::make_shared<LDA>(0, SVD_LDA);
 	lda->put("labels", labels);
 	// should throw an incorrect number of classes exception (expected value is
 	// 2)

@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief class FastICA
  *
@@ -26,15 +26,15 @@ class CFeatures;
  * Algorithms and Applications, Neural Networks, 13(4-5), 2000,
  * pp. 411-430`
  */
-class CFastICA: public RandomMixin<CICAConverter>
+class FastICA: public RandomMixin<ICAConverter>
 {
 	public:
 
 		/** constructor */
-		CFastICA();
+		FastICA();
 
 		/** destructor */
-		virtual ~CFastICA();
+		virtual ~FastICA();
 
 		/** setter for whiten flag
 		 * whether to whiten the data or not
@@ -55,7 +55,7 @@ class CFastICA: public RandomMixin<CICAConverter>
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

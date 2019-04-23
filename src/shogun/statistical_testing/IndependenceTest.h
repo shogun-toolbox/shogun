@@ -38,7 +38,7 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 
 namespace internal
 {
@@ -59,14 +59,14 @@ namespace internal
  * the other distribution in its original order
  *
  */
-class CIndependenceTest : public CTwoDistributionTest
+class IndependenceTest : public TwoDistributionTest
 {
 public:
 	/** Default constructor */
-	CIndependenceTest();
+	IndependenceTest();
 
 	/** Destructor */
-	virtual ~CIndependenceTest();
+	virtual ~IndependenceTest();
 
 	/**
 	 * Method that sets the kernel to be used for performing the test for the
@@ -74,10 +74,10 @@ public:
 	 *
 	 * @param kernel_p The kernel instance to be used for samples from p
 	 */
-	void set_kernel_p(CKernel* kernel_p);
+	void set_kernel_p(std::shared_ptr<Kernel> kernel_p);
 
 	/** @return The kernel instance that is used for samples from p */
-	CKernel* get_kernel_p() const;
+	std::shared_ptr<Kernel> get_kernel_p() const;
 
 	/**
 	 * Method that sets the kernel to be used for performing the test for the
@@ -85,10 +85,10 @@ public:
 	 *
 	 * @param kernel_q The kernel instance to be used for samples from q
 	 */
-	void set_kernel_q(CKernel* kernel_q);
+	void set_kernel_q(std::shared_ptr<Kernel> kernel_q);
 
 	/** @return The kernel instance that is used for samples from q */
-	CKernel* get_kernel_q() const;
+	std::shared_ptr<Kernel> get_kernel_q() const;
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

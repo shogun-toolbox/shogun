@@ -11,36 +11,36 @@
 
 using namespace shogun;
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel()
-: CStringKernel<char>(0)
+RegulatoryModulesStringKernel::RegulatoryModulesStringKernel()
+: StringKernel<char>(0)
 {
 	init();
 }
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
+RegulatoryModulesStringKernel::RegulatoryModulesStringKernel(
 		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
-: CStringKernel<char>(size)
+: StringKernel<char>(size)
 {
 	init();
 }
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
-		CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
+RegulatoryModulesStringKernel::RegulatoryModulesStringKernel(std::shared_ptr<StringFeatures<char>> lstr, std::shared_ptr<StringFeatures<char>> rstr,
+		std::shared_ptr<DenseFeatures<uint16_t>> lpos, std::shared_ptr<DenseFeatures<uint16_t>> rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
-: CStringKernel<char>(size)
+: StringKernel<char>(size)
 {
 	init();
 	set_motif_positions(lpos, rpos);
 	init(lstr,rstr);
 }
 
-CRegulatoryModulesStringKernel::~CRegulatoryModulesStringKernel()
+RegulatoryModulesStringKernel::~RegulatoryModulesStringKernel()
 {
-	SG_UNREF(motif_positions_lhs);
-	SG_UNREF(motif_positions_rhs);
+
+
 }
 
-void CRegulatoryModulesStringKernel::init()
+void RegulatoryModulesStringKernel::init()
 {
 	width=0;
 	degree=0;
@@ -55,15 +55,15 @@ void CRegulatoryModulesStringKernel::init()
 	SG_ADD(&shift, "shift",
 	    "the shift of weighted degree with shifts kernel part", ParameterProperties::HYPER);
 	SG_ADD(&window, "window", "the size of window around motifs", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**)&motif_positions_lhs, "motif_positions_lhs",
+	SG_ADD((std::shared_ptr<SGObject>*)&motif_positions_lhs, "motif_positions_lhs",
 			"the matrix of motif positions from sequences left-hand side");
-	SG_ADD((CSGObject**)&motif_positions_rhs, "motif_positions_rhs",
+	SG_ADD((std::shared_ptr<SGObject>*)&motif_positions_rhs, "motif_positions_rhs",
 			"the matrix of motif positions from sequences right-hand side");
 	SG_ADD(&position_weights, "position_weights", "scaling weights in window");
 	SG_ADD(&weights, "weights", "weights of WD kernel");
 }
 
-bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
+bool RegulatoryModulesStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(motif_positions_lhs)
 	ASSERT(motif_positions_rhs)
@@ -76,27 +76,27 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 				r->get_num_vectors(), motif_positions_rhs->get_num_vectors());
 
 	set_wd_weights();
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CRegulatoryModulesStringKernel::set_motif_positions(
-		CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs)
+void RegulatoryModulesStringKernel::set_motif_positions(
+		std::shared_ptr<DenseFeatures<uint16_t>> positions_lhs, std::shared_ptr<DenseFeatures<uint16_t>> positions_rhs)
 {
 	ASSERT(positions_lhs)
 	ASSERT(positions_rhs)
-	SG_UNREF(motif_positions_lhs);
-	SG_UNREF(motif_positions_rhs);
+
+
 	if (positions_lhs->get_num_features() != positions_rhs->get_num_features())
 		error("Number of dimensions does not agree.");
 
 	motif_positions_lhs=positions_lhs;
 	motif_positions_rhs=positions_rhs;
-	SG_REF(positions_lhs);
-	SG_REF(positions_rhs);
+
+
 }
 
-float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t RegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	ASSERT(motif_positions_lhs)
 	ASSERT(motif_positions_rhs)
@@ -104,8 +104,8 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool free_avec, free_bvec;
 	int32_t alen=0;
 	int32_t blen=0;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec=std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	int32_t alen_pos, blen_pos;
 	bool afree_pos, bfree_pos;
@@ -120,17 +120,17 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	for (int32_t p=0; p<num_pos; p++)
 	{
-		result_rbf+=CMath::sq(positions_a[p]-positions_b[p]);
+		result_rbf+=Math::sq(positions_a[p]-positions_b[p]);
 
 		for (int32_t p2=0; p2<num_pos; p2++) //p+1 and below * 2
-			result_rbf+=CMath::sq( (positions_a[p]-positions_a[p2]) - (positions_b[p]-positions_b[p2]) );
+			result_rbf+=Math::sq( (positions_a[p]-positions_a[p2]) - (positions_b[p]-positions_b[p2]) );
 
 		int32_t limit = window;
 		if (window + positions_a[p] > alen)
 			limit = alen - positions_a[p];
 
 		if (window + positions_b[p] > blen)
-			limit = CMath::min(limit, blen - positions_b[p]);
+			limit = Math::min(limit, blen - positions_b[p]);
 
 		result_wds+=compute_wds(&avec[positions_a[p]], &bvec[positions_b[p]],
 				limit);
@@ -138,15 +138,15 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result=exp(-result_rbf/width)+result_wds;
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-	((CDenseFeatures<uint16_t>*) lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
-	((CDenseFeatures<uint16_t>*) rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<DenseFeatures<uint16_t>>(lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
+	std::static_pointer_cast<DenseFeatures<uint16_t>>(rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
 
 	return result;
 }
 
-float64_t CRegulatoryModulesStringKernel::compute_wds(
+float64_t RegulatoryModulesStringKernel::compute_wds(
 	char* avec, char* bvec, int32_t len)
 {
 	float64_t* max_shift_vec = SG_MALLOC(float64_t, shift);
@@ -211,7 +211,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 	return result ;
 }
 
-void CRegulatoryModulesStringKernel::set_wd_weights()
+void RegulatoryModulesStringKernel::set_wd_weights()
 {
 	ASSERT(degree>0)
 

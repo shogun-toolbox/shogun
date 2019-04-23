@@ -16,11 +16,11 @@ namespace shogun
 	{
 #define IGNORE_IN_CLASSLIST
 
-		IGNORE_IN_CLASSLIST class CFileInputStream : public CInputStream
+		IGNORE_IN_CLASSLIST class FileInputStream : public InputStream
 		{
 		public:
-			CFileInputStream(RandomAccessFile* src, bool free = false);
-			~CFileInputStream() override;
+			FileInputStream(RandomAccessFile* src, bool free = false);
+			~FileInputStream() override;
 
 			std::error_condition read(std::string* buffer, int64_t size) override;
 
@@ -35,7 +35,7 @@ namespace shogun
 			bool m_free;
 			int64_t m_pos;
 
-			SG_DELETE_COPY_AND_ASSIGN(CFileInputStream);
+			SG_DELETE_COPY_AND_ASSIGN(FileInputStream);
 		};
 	}
 }

@@ -16,7 +16,7 @@ namespace shogun
 
 /** @brief Class of a function of one variable
  */
-class CFunction : public CSGObject
+class Function : public SGObject
 {
 public:
 	/** returns the real value of the function at given point

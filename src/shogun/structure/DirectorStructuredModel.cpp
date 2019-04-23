@@ -10,47 +10,47 @@
 
 using namespace shogun;
 
-CDirectorStructuredModel::CDirectorStructuredModel() : CStructuredModel()
+DirectorStructuredModel::DirectorStructuredModel() : StructuredModel()
 {
 }
 
-CDirectorStructuredModel::~CDirectorStructuredModel()
+DirectorStructuredModel::~DirectorStructuredModel()
 {
 }
 
-int32_t CDirectorStructuredModel::get_dim() const
+int32_t DirectorStructuredModel::get_dim() const
 {
 	error("Please implemement get_dim() in your target language before use");
 	return 0;
 }
 
-CResultSet* CDirectorStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training)
+std::shared_ptr<ResultSet> DirectorStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training)
 {
 	error("Please implemement argmax(w,feat_idx,lab_idx,training) in your target language before use");
 	return NULL;
 }
 
-SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
+SGVector< float64_t > DirectorStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		std::shared_ptr<StructuredData> y)
 {
 	error("Please implemement get_joint_feature_vector(feat_idx,y) in your target language before use");
 	return SGVector<float64_t>();
 }
 
-float64_t CDirectorStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t DirectorStructuredModel::delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2)
 {
 	error("Please implemement delta_loss(y1,y2) in your target language before use");
 	return 0.0;
 }
 
-bool CDirectorStructuredModel::check_training_setup() const
+bool DirectorStructuredModel::check_training_setup() const
 {
 	error("Please implemement check_trainig_setup() in your target language before use");
 	return false;
 }
 
-void CDirectorStructuredModel::init_primal_opt(
+void DirectorStructuredModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -63,7 +63,7 @@ void CDirectorStructuredModel::init_primal_opt(
 	error("Please implemement init_primal_opt(regularization,A,a,B,b,lb,ub,C) in your target language before use");
 }
 
-void CDirectorStructuredModel::init_training()
+void DirectorStructuredModel::init_training()
 {
 	error("Please implemement init_training() in your target language before use");
 }

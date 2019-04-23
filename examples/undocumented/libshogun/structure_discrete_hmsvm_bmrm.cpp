@@ -21,6 +21,5 @@ int main()
 	CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, labels, 5000,0);
 	sosvm->train();
 
-	SG_UNREF(sosvm);
 	return 0;
 }

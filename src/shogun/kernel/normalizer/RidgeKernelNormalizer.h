@@ -38,7 +38,7 @@ namespace shogun
  * \f]
  *
  */
-class CRidgeKernelNormalizer : public CKernelNormalizer
+class RidgeKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** constructor
@@ -51,25 +51,25 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
 		 * - r=0.1 and c=1 will add 0.1 to the diagonal
 		 */
-		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
-			: CKernelNormalizer()
+		RidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
+			: KernelNormalizer()
 		{
-			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER);
-			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER);
+			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER)*/;
+			/*SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER)*/;
 
 			scale=c;
 			ridge=r;
 		}
 
 		/** default destructor */
-		virtual ~CRidgeKernelNormalizer()
+		virtual ~RidgeKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			if (scale<=0)
 			{
@@ -77,8 +77,8 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 				int32_t num=k->get_num_vec_lhs();
 				ASSERT(num>0)
 
-				CFeatures* old_lhs=k->lhs;
-				CFeatures* old_rhs=k->rhs;
+				auto old_lhs=k->lhs;
+				auto old_rhs=k->rhs;
 				k->lhs=old_lhs;
 				k->rhs=old_lhs;
 

@@ -16,9 +16,9 @@
 
 namespace shogun
 {
-	class CLabels;
+	class Labels;
 	template <class T>
-	class CDenseFeatures;
+	class DenseFeatures;
 
 	/** @brief The AUC kernel can be used to maximize the area under the
 	 * receiver operator characteristic curve (AUC) instead of margin in SVM
@@ -29,13 +29,12 @@ namespace shogun
 	 * are created that ensure that all positive examples get a higher score
 	 * than all negative examples in training.
 	 */
-	class CAUCKernel : public CDotKernel
+	class AUCKernel : public DotKernel
 	{
 		void init();
-
 	public:
 		/** default constructor  */
-		CAUCKernel();
+		AUCKernel();
 
 		/** constructor
 		 *
@@ -43,10 +42,10 @@ namespace shogun
 		 * @param subkernel the subkernel
 		 * @param labels the labels for AUC maximization
 		 */
-		CAUCKernel(int32_t size, CKernel* subkernel, CLabels* labels);
+		AUCKernel(int32_t size, std::shared_ptr<Kernel> subkernel, std::shared_ptr<Labels> labels);
 
 		/** destructor */
-		virtual ~CAUCKernel();
+		virtual ~AUCKernel();
 
 		/** initialize kernel based on current labeling and subkernel
 		 *
@@ -61,7 +60,7 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *
@@ -112,9 +111,9 @@ namespace shogun
 
 	protected:
 		/** the subkernel */
-		CKernel* subkernel;
+		std::shared_ptr<Kernel> subkernel;
 		/** the labels */
-		CLabels* labels;
+		std::shared_ptr<Labels> labels;
 	};
 } // namespace shogun
 #endif /* _AUCKERNEL_H__ */

@@ -7,57 +7,59 @@
 #ifndef BASE_TYPES_H
 #define BASE_TYPES_H
 
+#include <memory>
+
 namespace shogun
 {
 
 	// all shogun base classes for put/add templates
-	class CMachine;
-	class CKernel;
-	class CDistance;
-	class CFeatures;
-	class CLabels;
-	class CECOCEncoder;
-	class CECOCDecoder;
-	class CEvaluation;
-	class CEvaluationResult;
-	class CMulticlassStrategy;
-	class CNeuralLayer;
-	class CSplittingStrategy;
-	class CPipeline;
-	class CSVM;
-	class CLikelihoodModel;
-	class CMeanFunction;
-	class CDifferentiableFunction;
-	class CInference;
-	class CLossFunction;
-	class CTokenizer;
-	class CCombinationRule;
+	class Machine;
+	class Kernel;
+	class Distance;
+	class Features;
+	class Labels;
+	class ECOCEncoder;
+	class ECOCDecoder;
+	class Evaluation;
+	class EvaluationResult;
+	class MulticlassStrategy;
+	class NeuralLayer;
+	class SplittingStrategy;
+	class Pipeline;
+	class SVM;
+	class LikelihoodModel;
+	class MeanFunction;
+	class DifferentiableFunction;
+	class Inference;
+	class LossFunction;
+	class Tokenizer;
+	class CombinationRule;
 
 	// type trait to enable certain methods only for shogun base types
 	// FIXME: use sg_interface to populate this trait
 	template <class T>
 	struct is_sg_base
 	    : std::integral_constant<
-	          bool, std::is_same<CMachine, T>::value ||
-	                    std::is_same<CKernel, T>::value ||
-	                    std::is_same<CDistance, T>::value ||
-	                    std::is_same<CFeatures, T>::value ||
-	                    std::is_same<CLabels, T>::value ||
-	                    std::is_same<CECOCEncoder, T>::value ||
-	                    std::is_same<CECOCDecoder, T>::value ||
-	                    std::is_same<CEvaluation, T>::value ||
-	                    std::is_same<CMulticlassStrategy, T>::value ||
-	                    std::is_same<CNeuralLayer, T>::value ||
-	                    std::is_same<CSplittingStrategy, T>::value ||
-	                    std::is_same<CSVM, T>::value ||
-	                    std::is_same<CDifferentiableFunction, T>::value ||
-	                    std::is_same<CInference, T>::value ||
-	                    std::is_same<CLikelihoodModel, T>::value ||
-	                    std::is_same<CMeanFunction, T>::value ||
-	                    std::is_same<CLossFunction, T>::value ||
-	                    std::is_same<CTokenizer, T>::value ||
-	                    std::is_same<CEvaluationResult, T>::value ||
-	                    std::is_same<CCombinationRule, T>::value>
+	          bool, std::is_same<Machine, T>::value ||
+	                    std::is_same<Kernel, T>::value ||
+	                    std::is_same<Distance, T>::value ||
+	                    std::is_same<Features, T>::value ||
+	                    std::is_same<Labels, T>::value ||
+	                    std::is_same<ECOCEncoder, T>::value ||
+	                    std::is_same<ECOCDecoder, T>::value ||
+	                    std::is_same<Evaluation, T>::value ||
+	                    std::is_same<MulticlassStrategy, T>::value ||
+	                    std::is_same<NeuralLayer, T>::value ||
+	                    std::is_same<SplittingStrategy, T>::value ||
+	                    std::is_same<SVM, T>::value ||
+	                    std::is_same<DifferentiableFunction, T>::value ||
+	                    std::is_same<Inference, T>::value ||
+	                    std::is_same<LikelihoodModel, T>::value ||
+	                    std::is_same<MeanFunction, T>::value ||
+	                    std::is_same<LossFunction, T>::value ||
+	                    std::is_same<Tokenizer, T>::value ||
+	                    std::is_same<EvaluationResult, T>::value ||
+	                    std::is_same<CombinationRule, T>::value>
 	{
 	};
 
@@ -107,12 +109,12 @@ namespace shogun
 		typedef T type;
 	};
 
-	using sg_inferface = type_list<CMachine, CKernel, CDistance,
-		CFeatures, CLabels, CECOCEncoder, CECOCDecoder, CEvaluation,
-		CEvaluationResult, CMulticlassStrategy, CNeuralLayer,
-		CSplittingStrategy, CLikelihoodModel, CMeanFunction,
-		CDifferentiableFunction, CInference, CLossFunction,
-		CTokenizer>;
+	using sg_inferface = type_list<Machine, Kernel, Distance,
+		Features, Labels, ECOCEncoder, ECOCDecoder, Evaluation,
+		EvaluationResult, MulticlassStrategy, NeuralLayer,
+		SplittingStrategy, LikelihoodModel, MeanFunction,
+		DifferentiableFunction, Inference, LossFunction,
+		Tokenizer>;
 
 	template <typename Derived>
 	constexpr auto find_base(type_list<>)
@@ -130,6 +132,21 @@ namespace shogun
 
 	template <typename Derived>
 	using base_type = typename decltype(find_base<Derived>(sg_inferface{}))::type;
+
+	template <class T>
+   	struct remove_shared_ptr
+	{
+		using type = T;
+	};
+
+	template <class T>
+	struct remove_shared_ptr<std::shared_ptr<T>>
+    	{
+        	using type = T;
+	};
+
+	template <class T>
+	using remove_shared_ptr_t = typename remove_shared_ptr<T>::type;
 
 } // namespace shogun
 

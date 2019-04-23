@@ -33,79 +33,77 @@
 namespace shogun
 {
 
-template<class ST> CDenseSubSamplesFeatures<ST>::CDenseSubSamplesFeatures()
-	:CDotFeatures()
+template<class ST> DenseSubSamplesFeatures<ST>::DenseSubSamplesFeatures()
+	:DotFeatures()
 {
 	init();
 }
 
-template<class ST> CDenseSubSamplesFeatures<ST>::CDenseSubSamplesFeatures(
-	CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
-	:CDotFeatures()
+template<class ST> DenseSubSamplesFeatures<ST>::DenseSubSamplesFeatures(
+	std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx)
+	:DotFeatures()
 {
 	init();
 	set_features(fea);
 	set_subset_idx(idx);
 }
 
-template<class ST> CDenseSubSamplesFeatures<ST>::~CDenseSubSamplesFeatures()
+template<class ST> DenseSubSamplesFeatures<ST>::~DenseSubSamplesFeatures()
 {
-	SG_UNREF(m_fea);
+
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::set_features(CDenseFeatures<ST> *fea)
+template<class ST> void DenseSubSamplesFeatures<ST>::set_features(std::shared_ptr<DenseFeatures<ST>> fea)
 {
-	if (m_fea!=fea)
+	if (m_fea.get()!=fea.get())
 	{
-		SG_REF(fea);
-		SG_UNREF(m_fea);
 		m_fea = fea;
 	}
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::init()
+template<class ST> void DenseSubSamplesFeatures<ST>::init()
 {
 	set_generic<ST>();
 	m_fea=NULL;
 	m_idx=SGVector<int32_t>();
 	SG_ADD(&m_idx, "idx", "idx");
-	SG_ADD((CSGObject **)&m_fea, "fea", "fea");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_fea, "fea", "fea");
 }
 
-template<class ST> CFeatures* CDenseSubSamplesFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<Features> DenseSubSamplesFeatures<ST>::duplicate() const
 {
-	return new CDenseSubSamplesFeatures(m_fea, m_idx);
+	return std::make_shared<DenseSubSamplesFeatures>(m_fea, m_idx);
 }
 
-template<class ST> bool CDenseSubSamplesFeatures<ST>::get_feature_class_compatibility (EFeatureClass rhs) const
+template<class ST> bool DenseSubSamplesFeatures<ST>::get_feature_class_compatibility (EFeatureClass rhs) const
 {
 	if (this->get_feature_class()==rhs || m_fea->get_feature_class()==rhs)
 		return true;
 	return false;
 }
 
-template<class ST> EFeatureType CDenseSubSamplesFeatures<ST>::get_feature_type() const
+template<class ST> EFeatureType DenseSubSamplesFeatures<ST>::get_feature_type() const
 
 {
 	return m_fea->get_feature_type();
 }
 
-template<class ST> EFeatureClass CDenseSubSamplesFeatures<ST>::get_feature_class() const
+template<class ST> EFeatureClass DenseSubSamplesFeatures<ST>::get_feature_class() const
 {
 	return C_SUB_SAMPLES_DENSE;
 }
 
-template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_dim_feature_space() const
+template<class ST> int32_t DenseSubSamplesFeatures<ST>::get_dim_feature_space() const
 {
 	return m_fea->get_dim_feature_space();
 }
 
-template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_num_vectors() const
+template<class ST> int32_t DenseSubSamplesFeatures<ST>::get_num_vectors() const
 {
 	return m_idx.vlen;
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<int32_t> idx)
+template<class ST> void DenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<int32_t> idx)
 {
 	require(m_fea, "Please set the features first");
 	int32_t total_vlen=m_fea->get_num_vectors();
@@ -119,11 +117,11 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<in
 	m_idx = idx;
 }
 
-template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
-	int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+template<class ST> float64_t DenseSubSamplesFeatures<ST>::dot(
+	int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	check_bound(vec_idx1);
-	CDenseSubSamplesFeatures<ST>* df_f= dynamic_cast<CDenseSubSamplesFeatures<ST>* >(df);
+	auto df_f= std::dynamic_pointer_cast<DenseSubSamplesFeatures<ST>>(df);
 	float64_t res=0.0;
 	if (df_f)
 	{
@@ -138,64 +136,64 @@ template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
 }
 
 template <class ST>
-float64_t CDenseSubSamplesFeatures<ST>::dot(
+float64_t DenseSubSamplesFeatures<ST>::dot(
 	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	check_bound(vec_idx1);
 	return m_fea->dot(m_idx[vec_idx1], vec2);
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::check_bound(int32_t index) const
+template<class ST> void DenseSubSamplesFeatures<ST>::check_bound(int32_t index) const
 {
 	require(index<m_idx.vlen && index>=0,
 		"Index ({}) is out of bound ({})", index, m_idx.vlen);
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::add_to_dense_vec(
+template<class ST> void DenseSubSamplesFeatures<ST>::add_to_dense_vec(
 	float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	check_bound(vec_idx1);
 	m_fea->add_to_dense_vec(alpha, m_idx[vec_idx1], vec2, vec2_len, abs_val);
 }
 
-template<class ST> int32_t CDenseSubSamplesFeatures<ST>::get_nnz_features_for_vector(
+template<class ST> int32_t DenseSubSamplesFeatures<ST>::get_nnz_features_for_vector(
 	int32_t num) const
 {
 	return m_fea->get_nnz_features_for_vector(num);
 }
 
-template<class ST> void* CDenseSubSamplesFeatures<ST>::get_feature_iterator(
+template<class ST> void* DenseSubSamplesFeatures<ST>::get_feature_iterator(
 	int32_t vector_index)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
-template<class ST> bool CDenseSubSamplesFeatures<ST>::get_next_feature(
+template<class ST> bool DenseSubSamplesFeatures<ST>::get_next_feature(
 	int32_t& index, float64_t& value, void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::free_feature_iterator(
+template<class ST> void DenseSubSamplesFeatures<ST>::free_feature_iterator(
 	void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);
 }
 
-template class CDenseSubSamplesFeatures<bool>;
-template class CDenseSubSamplesFeatures<char>;
-template class CDenseSubSamplesFeatures<int8_t>;
-template class CDenseSubSamplesFeatures<uint8_t>;
-template class CDenseSubSamplesFeatures<int16_t>;
-template class CDenseSubSamplesFeatures<uint16_t>;
-template class CDenseSubSamplesFeatures<int32_t>;
-template class CDenseSubSamplesFeatures<uint32_t>;
-template class CDenseSubSamplesFeatures<int64_t>;
-template class CDenseSubSamplesFeatures<uint64_t>;
-template class CDenseSubSamplesFeatures<float32_t>;
-template class CDenseSubSamplesFeatures<float64_t>;
-template class CDenseSubSamplesFeatures<floatmax_t>;
+template class DenseSubSamplesFeatures<bool>;
+template class DenseSubSamplesFeatures<char>;
+template class DenseSubSamplesFeatures<int8_t>;
+template class DenseSubSamplesFeatures<uint8_t>;
+template class DenseSubSamplesFeatures<int16_t>;
+template class DenseSubSamplesFeatures<uint16_t>;
+template class DenseSubSamplesFeatures<int32_t>;
+template class DenseSubSamplesFeatures<uint32_t>;
+template class DenseSubSamplesFeatures<int64_t>;
+template class DenseSubSamplesFeatures<uint64_t>;
+template class DenseSubSamplesFeatures<float32_t>;
+template class DenseSubSamplesFeatures<float64_t>;
+template class DenseSubSamplesFeatures<floatmax_t>;
 
 }

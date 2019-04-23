@@ -15,8 +15,8 @@ using namespace Eigen;
 
 #include <shogun/lib/external/falconn/lsh_nn_table.h>
 
-CLSHKNNSolver::CLSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t):
-CKNNSolver(k, q, num_classes, min_label, train_labels)
+LSHKNNSolver::LSHKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t lsh_l, const int32_t lsh_t):
+KNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	init();
 
@@ -28,7 +28,7 @@ template<typename PointType, typename FeatureType>
 PointType get_falconn_point(FeatureType* f, index_t i);
 
 template<>
-falconn::DenseVector<double> get_falconn_point(CDenseFeatures<float64_t>* f, index_t i)
+falconn::DenseVector<double> get_falconn_point(DenseFeatures<float64_t>* f, index_t i)
 {
 	index_t len;
 	bool free;
@@ -37,7 +37,7 @@ falconn::DenseVector<double> get_falconn_point(CDenseFeatures<float64_t>* f, ind
 }
 
 template<>
-falconn::SparseVector<double> get_falconn_point(CSparseFeatures<float64_t>* f, index_t i)
+falconn::SparseVector<double> get_falconn_point(SparseFeatures<float64_t>* f, index_t i)
 {
 	// FIXME: this basically copies the data :(
 	auto fv = f->get_sparse_feature_vector(i);
@@ -48,9 +48,9 @@ falconn::SparseVector<double> get_falconn_point(CSparseFeatures<float64_t>* f, i
 }
 
 template<typename PointType, typename FeatureType>
-CMulticlassLabels* CLSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType* query_features, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType* query_features, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
 {
-	auto output = new CMulticlassLabels(num_lab);
+	auto output = std::make_shared<MulticlassLabels>(num_lab);
 	std::vector<PointType> feats(lhs->get_num_vectors());
 	for(index_t i = 0; i < lhs->get_num_vectors(); ++i)
 		feats[i] = get_falconn_point<PointType>(lhs, i);
@@ -60,7 +60,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType
                            lhs->get_num_features(),
                            falconn::DistanceFunction::EuclideanSquared,
                            true);
-	SG_UNREF(lhs);
+
 	if (m_lsh_l && m_lsh_t)
 		params.l = m_lsh_l;
 
@@ -89,26 +89,26 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(FeatureType* lhs, FeatureType
 		//write the label of 'nearest' in the output
 		output->set_label(i, out_idx + m_min_label);
 	}
-	SG_UNREF(query_features);
+
 
 	return output;
 }
 
-CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<MulticlassLabels> LSHKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	auto lhs = knn_distance->get_lhs();
 	auto rhs = knn_distance->get_rhs();
 	if ((lhs->get_feature_class() == C_DENSE) && (rhs->get_feature_class() == C_DENSE))
 	{
-		auto features = lhs->as<CDenseFeatures<float64_t>>();
-		auto query_features = rhs->as<CDenseFeatures<float64_t>>();
-		return classify_objects<falconn::DenseVector<double>>(features, query_features, num_lab, train_lab, classes);
+		auto features = lhs->as<DenseFeatures<float64_t>>();
+		auto query_features = rhs->as<DenseFeatures<float64_t>>();
+		return classify_objects<falconn::DenseVector<double>>(features.get(), query_features.get(), num_lab, train_lab, classes);
 	}
 	else if ((lhs->get_feature_class() == C_SPARSE) && (rhs->get_feature_class() == C_SPARSE))
 	{
-		auto features = lhs->as<CSparseFeatures<float64_t>>();
-		auto query_features = rhs->as<CSparseFeatures<float64_t>>();
-		return classify_objects<falconn::SparseVector<double>>(features, query_features, num_lab, train_lab, classes);
+		auto features = lhs->as<SparseFeatures<float64_t>>();
+		auto query_features = rhs->as<SparseFeatures<float64_t>>();
+		return classify_objects<falconn::SparseVector<double>>(features.get(), query_features.get(), num_lab, train_lab, classes);
 	}
 	else
 	{
@@ -116,7 +116,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 	}
 }
 
-SGVector<int32_t> CLSHKNNSolver::classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<int32_t> LSHKNNSolver::classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;

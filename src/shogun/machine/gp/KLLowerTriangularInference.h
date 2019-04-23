@@ -65,11 +65,11 @@ namespace shogun
  * Note that "lowerTriangular" means lowerTriangular represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLLowerTriangularInference: public CKLInference
+class KLLowerTriangularInference: public KLInference
 {
 public:
 	/** default constructor */
-	CKLLowerTriangularInference();
+	KLLowerTriangularInference();
 
 	/** constructor
 	 *
@@ -79,10 +79,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLLowerTriangularInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	KLLowerTriangularInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLLowerTriangularInference();
+	virtual ~KLLowerTriangularInference();
 
 	/** returns the name of the inference method
 	 *

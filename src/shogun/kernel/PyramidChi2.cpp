@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CPyramidChi2::CPyramidChi2()
+PyramidChi2::PyramidChi2()
 : weights(NULL)
 {
 	// this will produce an erro in kernel computation!
@@ -24,17 +24,17 @@ CPyramidChi2::CPyramidChi2()
 	num_randfeats_forwidthcomputation=-1;
 }
 
-CPyramidChi2::CPyramidChi2(
+PyramidChi2::PyramidChi2(
 	int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: RandomMixin<CDotKernel>(size), num_cells(num_cells2),weights(NULL),
+: RandomMixin<DotKernel>(size), num_cells(num_cells2),weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	 num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		error("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
+		error("PyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -48,14 +48,14 @@ width_computation_type(width_computation_type2), width(width2),
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 
 
 }
 
-void CPyramidChi2::cleanup()
+void PyramidChi2::cleanup()
 {
 	// this will produce an erro in kernel computation!
 	num_cells=0;
@@ -67,27 +67,27 @@ void CPyramidChi2::cleanup()
 	SG_FREE(weights);
 	weights=NULL;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
+bool PyramidChi2::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	return init_normalizer();
 }
 
-CPyramidChi2::CPyramidChi2(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+PyramidChi2::PyramidChi2(
+	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: RandomMixin<CDotKernel>(size), num_cells(num_cells2), weights(NULL),
+: RandomMixin<DotKernel>(size), num_cells(num_cells2), weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	  num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		error("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
+		error("PyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -101,35 +101,37 @@ width_computation_type(width_computation_type2), width(width2),
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 
 	init(l, r);
 }
 
-CPyramidChi2::~CPyramidChi2()
+PyramidChi2::~PyramidChi2()
 {
 	cleanup();
 }
 
 
 
-float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
+float64_t PyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 {
 
 	if(num_cells<=0)
-		error("CPyramidChi2::compute(...) fatal error: parameter num_cells NOT positive");
+		error("PyramidChi2::compute(...) fatal error: parameter num_cells NOT positive");
 
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	auto df_lhs = std::static_pointer_cast<DenseFeatures<float64_t>>(lhs);
+	auto df_rhs = std::static_pointer_cast<DenseFeatures<float64_t>>(rhs);
+	float64_t* avec=df_lhs->get_feature_vector(idx_a,
 					alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	float64_t* bvec=df_rhs->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
-		error("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");
+		error("PyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");
 
 	int32_t dims=alen/num_cells;
 
@@ -144,11 +146,11 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 			if (num_randfeats_forwidthcomputation >1)
 			{
-				numind=CMath::min( ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors() , num_randfeats_forwidthcomputation);
+				numind=Math::min(df_lhs->get_num_vectors() , num_randfeats_forwidthcomputation);
 			}
 			else
 			{
-				numind= ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors();
+				numind= df_lhs->get_num_vectors();
 			}
 			float64_t* featindices = SG_MALLOC(float64_t, numind);
 
@@ -156,7 +158,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			{
 				random::fill_array(
 					featindices, featindices + numind, 0,
-					((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1, m_prng);
+					lhs->as<DenseFeatures<float64_t>>()->get_num_vectors()-1, m_prng);
 			}
 			else
 			{
@@ -170,12 +172,12 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			//get avec, get bvec	only from lhs, do not free
 			for (int32_t li=0; li < numind;++li)
 			{
-				avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
+				avec=df_lhs->get_feature_vector(featindices[li],
 					alen, afree);
 				for (int32_t ri=0; ri <=li;++ri)
 				{
 					// lhs is right here!!!
-					bvec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
+					bvec=df_lhs->get_feature_vector(featindices[ri],
 							blen, bfree);
 
 					float64_t result=0;
@@ -201,15 +203,15 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 		}
 		else
 		{
-			error("CPyramidChi2::compute(...) fatal error: width<=0");
+			error("PyramidChi2::compute(...) fatal error: width<=0");
 		}
 	}
 
 
 	//the actual kernel computation
-	avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	avec=df_lhs->get_feature_vector(idx_a,
 					alen, afree);
-	bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	bvec=df_rhs->get_feature_vector(idx_b,
 					blen, bfree);
 
 	float64_t result=0;
@@ -229,13 +231,13 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	}
 	result = std::exp(-result / width);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	df_lhs->free_feature_vector(avec, idx_a, afree);
+	df_rhs->free_feature_vector(bvec, idx_b, bfree);
 
 	return (result);
 }
 
-void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
+void PyramidChi2::setparams_pychi2(int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
@@ -246,7 +248,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 	num_randfeats_forwidthcomputation=-1;
 
 	if(num_cells<=0)
-		error("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
+		error("PyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
 	if(weights)
 		SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, num_cells);
@@ -262,7 +264,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 }

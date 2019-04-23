@@ -29,13 +29,13 @@
 
 namespace shogun
 {
-/** @brief Class CFactorGraphDataGenerator Create factor graph data for  multiple unit tests
+/** @brief Class FactorGraphDataGenerator Create factor graph data for  multiple unit tests
  */
-class CFactorGraphDataGenerator: public RandomMixin<CSGObject>
+class FactorGraphDataGenerator: public RandomMixin<SGObject>
 {
 public:
 	/** Constructor */
-	CFactorGraphDataGenerator();
+	FactorGraphDataGenerator();
 
 	/** @return class name */
 	virtual const char* get_name() const
@@ -44,7 +44,7 @@ public:
 	}
 
 	/** Define a simple 2 node chain graph */
-	CFactorGraph* simple_chain_graph();
+	std::shared_ptr<FactorGraph> simple_chain_graph();
 
 	/** Convert grid coordinate into 1-d index
 	 *
@@ -71,10 +71,10 @@ public:
 	 * @param min_energy_expect expected minimum energies
 	 * @param N size of the energy table (e.g., 2x2)
 	 */
-	CFactorGraph* random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N = 2);
+	std::shared_ptr<FactorGraph> random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N = 2);
 
 	/** Define a multiple state tree graph */
-	CFactorGraph* multi_state_tree_graph();
+	std::shared_ptr<FactorGraph> multi_state_tree_graph();
 
 	/** Generate random data following [1]:
 	 * Each example has exactly one label on.
@@ -111,8 +111,8 @@ public:
 	 * @param fg_labels labels for factor graph
 	 */
 	void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
-	                        SGMatrix< int32_t > edge_list, const DynArray<CTableFactorType*> &v_factor_type,
-	                        CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels);
+	                        SGMatrix< int32_t > edge_list, const std::vector<std::shared_ptr<TableFactorType>> &v_factor_type,
+	                        std::shared_ptr<FactorGraphFeatures> fg_feats, std::shared_ptr<FactorGraphLabels> fg_labels);
 
 	/** Define factor type
 	 *
@@ -122,7 +122,7 @@ public:
 	 * @param v_factor_type factor types
 	 */
 	void define_factor_types(int32_t num_classes, int32_t dim, int32_t num_edges,
-	                         DynArray<CTableFactorType*> &v_factor_type);
+	                         std::vector<std::shared_ptr<TableFactorType>> &v_factor_type);
 
 	/** Test sosvm inference algorithm with random data
 	 *

@@ -16,11 +16,9 @@ int main()
 {
 	const char* train_file_name = "../data/7class_example4_train.dense";
 	const char* test_file_name = "../data/7class_example4_test.dense";
-	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
-	SG_REF(train_file);
+	StreamingAsciiFile* train_file = new StreamingAsciiFile(train_file_name);
 
-	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
-	SG_REF(train_features);
+	StreamingDenseFeatures<float32_t>* train_features = new StreamingDenseFeatures<float32_t>(train_file, true, 1024);
 
 	CRandomConditionalProbabilityTree *cpt = new CRandomConditionalProbabilityTree();
 	cpt->set_num_passes(1);
@@ -28,23 +26,17 @@ int main()
 	cpt->train();
 	cpt->print_tree();
 
-	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
-	CStreamingDenseFeatures<float32_t>* test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
-	SG_REF(test_features);
+	StreamingAsciiFile* test_file = new StreamingAsciiFile(test_file_name);
+	StreamingDenseFeatures<float32_t>* test_features = new StreamingDenseFeatures<float32_t>(test_file, true, 1024);
 
-	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
+	MulticlassLabels *pred = cpt->apply_multiclass(test_features);
 	test_features->reset_stream();
 	SG_SPRINT("num_labels = %d\n", pred->get_num_labels());
 
-	SG_UNREF(test_features);
-	SG_UNREF(test_file);
-	test_file = new CStreamingAsciiFile(test_file_name);
-	SG_REF(test_file);
-	test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
-	SG_REF(test_features);
+	test_file = new StreamingAsciiFile(test_file_name);
+	test_features = new StreamingDenseFeatures<float32_t>(test_file, true, 1024);
 
-	CMulticlassLabels *gnd = new CMulticlassLabels(pred->get_num_labels());
+	MulticlassLabels *gnd = new MulticlassLabels(pred->get_num_labels());
 	test_features->start_parser();
 	for (int32_t i=0; i < pred->get_num_labels(); ++i)
 	{
@@ -65,12 +57,6 @@ int main()
 
 	SG_SPRINT("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
 
-	SG_UNREF(train_features);
-	SG_UNREF(test_features);
-	SG_UNREF(train_file);
-	SG_UNREF(test_file);
-	SG_UNREF(cpt);
-	SG_UNREF(pred);
 
 	return 0;
 }

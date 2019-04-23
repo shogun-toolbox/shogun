@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Giovanni De Toni, Viktor Gal, Evan Shelhamer
  */
 
@@ -25,15 +25,15 @@ struct pair
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CHierarchical::CHierarchical()
-: CDistanceMachine()
+Hierarchical::Hierarchical()
+: DistanceMachine()
 {
 	init();
 	register_parameters();
 }
 
-CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
-: CDistanceMachine()
+Hierarchical::Hierarchical(int32_t merges_, std::shared_ptr<Distance> d)
+: DistanceMachine()
 {
 	init();
 	merges = merges_;
@@ -41,7 +41,7 @@ CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
 	register_parameters();
 }
 
-void CHierarchical::init()
+void Hierarchical::init()
 {
 	merges = 3;
 	dimensions = 0;
@@ -54,7 +54,7 @@ void CHierarchical::init()
 	merge_distance_len = 0;
 }
 
-void CHierarchical::register_parameters()
+void Hierarchical::register_parameters()
 {
 	watch_param("merges", &merges);
 	watch_param("dimensions", &dimensions);
@@ -64,26 +64,26 @@ void CHierarchical::register_parameters()
 	watch_param("merge_distance", &merge_distance, &merge_distance_len);
 }
 
-CHierarchical::~CHierarchical()
+Hierarchical::~Hierarchical()
 {
 	SG_FREE(merge_distance);
 	SG_FREE(assignment);
 	SG_FREE(pairs);
 }
 
-EMachineType CHierarchical::get_classifier_type()
+EMachineType Hierarchical::get_classifier_type()
 {
 	return CT_HIERARCHICAL;
 }
 
-bool CHierarchical::train_machine(CFeatures* data)
+bool Hierarchical::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(distance)
 
 	if (data)
 		distance->init(data, data);
 
-	CFeatures* lhs=distance->get_lhs();
+	auto lhs=distance->get_lhs();
 	ASSERT(lhs)
 
 	int32_t num=lhs->get_num_vectors();
@@ -120,8 +120,8 @@ bool CHierarchical::train_machine(CFeatures* data)
 		}
 	}
 
-	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
-	//CMath::display_vector(distances, (num-1)*num/2, "dists");
+	Math::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
+	//Math::display_vector(distances, (num-1)*num/2, "dists");
 
 	auto pb = SG_PROGRESS(range(0, num_pairs - 1));
 	int32_t k=-1;
@@ -172,19 +172,19 @@ bool CHierarchical::train_machine(CFeatures* data)
 	ASSERT(table_size>0)
 	SG_FREE(distances);
 	SG_FREE(index);
-	SG_UNREF(lhs)
+
 
 	return true;
 }
 
-bool CHierarchical::load(FILE* srcfile)
+bool Hierarchical::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CHierarchical::save(FILE* dstfile)
+bool Hierarchical::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -192,22 +192,23 @@ bool CHierarchical::save(FILE* dstfile)
 }
 
 
-int32_t CHierarchical::get_merges()
+int32_t Hierarchical::get_merges()
 {
 	return merges;
 }
 
-SGVector<int32_t> CHierarchical::get_assignment()
+SGVector<int32_t> Hierarchical::get_assignment()
 {
 	return SGVector<int32_t>(assignment,table_size, false);
 }
 
-SGVector<float64_t> CHierarchical::get_merge_distances()
+SGVector<float64_t> Hierarchical::get_merge_distances()
 {
 	return SGVector<float64_t>(merge_distance,merges, false);
 }
 
-SGMatrix<int32_t> CHierarchical::get_cluster_pairs()
+SGMatrix<int32_t> Hierarchical::get_cluster_pairs()
 {
 	return SGMatrix<int32_t>(pairs,2,merges, false);
 }
+

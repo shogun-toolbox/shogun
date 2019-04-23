@@ -19,7 +19,7 @@
 namespace shogun
 {
 /** @brief class SGDQN */
-class CSGDQN : public CLinearMachine
+class SGDQN : public LinearMachine
 {
 	public:
 
@@ -27,13 +27,13 @@ class CSGDQN : public CLinearMachine
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */
-		CSGDQN();
+		SGDQN();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 */
-		CSGDQN(float64_t C);
+		SGDQN(float64_t C);
 
 		/** constructor
 		 *
@@ -41,11 +41,11 @@ class CSGDQN : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSGDQN(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+		SGDQN(
+			float64_t C, std::shared_ptr<DotFeatures> traindat,
+			std::shared_ptr<Labels> trainlab);
 
-		virtual ~CSGDQN();
+		virtual ~SGDQN();
 
 		/** get classifier type
 		 *
@@ -61,7 +61,7 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** set C
 		 *
@@ -105,13 +105,13 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @param loss_func object derived from CLossFunction
 		 */
-		void set_loss_function(CLossFunction* loss_func);
+		void set_loss_function(std::shared_ptr<LossFunction> loss_func);
 
 		/** Return the loss function
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+		inline std::shared_ptr<LossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SGDQN"; }
@@ -131,7 +131,7 @@ class CSGDQN : public CLinearMachine
 		int32_t skip;
 		int32_t count;
 
-		CLossFunction* loss;
+		std::shared_ptr<LossFunction> loss;
 };
 }
 #endif

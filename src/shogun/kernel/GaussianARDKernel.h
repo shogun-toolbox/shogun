@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief Gaussian Kernel with Automatic Relevance Detection computed
- * on CDotFeatures.
+ * on DotFeatures.
  *
  * It is computed as
  *
@@ -51,14 +51,14 @@ namespace shogun
  * When \f$\Lambda=\lambda I\f$ is, the last case becomes the first case.
  * When \f$\Lambda=\textbf{diag}(\lambda) \f$ is, the last case becomes the second case.
  */
-class CGaussianARDKernel: public CExponentialARDKernel
+class GaussianARDKernel: public ExponentialARDKernel
 {
 public:
 	/** default constructor */
-	CGaussianARDKernel();
+	GaussianARDKernel();
 
 	/** destructor */
-	virtual ~CGaussianARDKernel();
+	virtual ~GaussianARDKernel();
 
 	/** return what type of kernel we are
 	 *
@@ -94,7 +94,7 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	CGaussianARDKernel(int32_t size);
+	GaussianARDKernel(int32_t size);
 
 	/** constructor
 	 *
@@ -103,14 +103,14 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	CGaussianARDKernel(CDotFeatures* l, CDotFeatures* r,
+	GaussianARDKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
 		int32_t size=10);
 
-	/** @param kernel is casted to CGaussianARDKernel, error if not possible
+	/** @param kernel is casted to GaussianARDKernel, error if not possible
 	 * is SG_REF'ed
-	 * @return casted CGaussianARDKernel object
+	 * @return casted GaussianARDKernel object
 	 */
-	static CGaussianARDKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<GaussianARDKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
 
 	/** initialize kernel
 	 *
@@ -118,7 +118,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/** return derivative with respect to specified parameter
 	 *
@@ -154,7 +154,7 @@ protected:
 	 * @param buf buffer to store squared terms (will be allocated)
 	 * @param df dot feature object based on which k(i,i) is computed
 	 * */
-	virtual SGVector<float64_t> precompute_squared_helper(CDotFeatures* df);
+	virtual SGVector<float64_t> precompute_squared_helper(std::shared_ptr<DotFeatures> df);
 
 	/** squared left-hand side */
 	SGVector<float64_t> m_sq_lhs;

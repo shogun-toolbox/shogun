@@ -11,25 +11,25 @@
 
 using namespace shogun;
 
-CMeanShiftDataGenerator::CMeanShiftDataGenerator() :
-		RandomMixin<CStreamingDenseFeatures<float64_t>>()
+MeanShiftDataGenerator::MeanShiftDataGenerator() :
+		RandomMixin<StreamingDenseFeatures<float64_t>>()
 {
 	init();
 }
 
-CMeanShiftDataGenerator::CMeanShiftDataGenerator(float64_t mean_shift,
+MeanShiftDataGenerator::MeanShiftDataGenerator(float64_t mean_shift,
 		index_t dimension, index_t dimension_shift) :
-				RandomMixin<CStreamingDenseFeatures<float64_t>>()
+				RandomMixin<StreamingDenseFeatures<float64_t>>()
 {
 	init();
 	set_mean_shift_model(mean_shift, dimension, dimension_shift);
 }
 
-CMeanShiftDataGenerator::~CMeanShiftDataGenerator()
+MeanShiftDataGenerator::~MeanShiftDataGenerator()
 {
 }
 
-void CMeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
+void MeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
 		index_t dimension, index_t dimension_shift)
 {
 	require(dimension_shift<dimension, "{}::set_mean_shift_model({},{},{}): "
@@ -41,7 +41,7 @@ void CMeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
 	m_dimension_shift=dimension_shift;
 }
 
-void CMeanShiftDataGenerator::init()
+void MeanShiftDataGenerator::init()
 {
 	SG_ADD(&m_dimension, "dimension", "Dimension of data");
 	SG_ADD(&m_mean_shift, "mean_shift", "Mean shift in one dimension");
@@ -54,7 +54,7 @@ void CMeanShiftDataGenerator::init()
 	unset_generic();
 }
 
-bool CMeanShiftDataGenerator::get_next_example()
+bool MeanShiftDataGenerator::get_next_example()
 {
 	SG_TRACE("entering");
 
@@ -68,14 +68,14 @@ bool CMeanShiftDataGenerator::get_next_example()
 	result[m_dimension_shift]+=m_mean_shift;
 
 	/* save example back to superclass */
-	CMeanShiftDataGenerator::current_vector=result;
+	MeanShiftDataGenerator::current_vector=result;
 
 	SG_TRACE("leaving");
 	return true;
 }
 
-void CMeanShiftDataGenerator::release_example()
+void MeanShiftDataGenerator::release_example()
 {
 	SGVector<float64_t> temp=SGVector<float64_t>();
-	CMeanShiftDataGenerator::current_vector=temp;
+	MeanShiftDataGenerator::current_vector=temp;
 }

@@ -21,14 +21,14 @@ namespace shogun
  * into a multiclass label according to the ECOC
  * codebook.
  */
-class CECOCDecoder: public CSGObject
+class ECOCDecoder: public SGObject
 {
 public:
     /** constructor */
-    CECOCDecoder() {}
+    ECOCDecoder() {}
 
     /** destructor */
-    ~CECOCDecoder() {}
+    ~ECOCDecoder() {}
 
     /** get name */
     const char* get_name() const

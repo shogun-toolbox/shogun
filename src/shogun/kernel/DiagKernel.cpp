@@ -13,38 +13,38 @@
 
 using namespace shogun;
 
-CDiagKernel::CDiagKernel()
-: CKernel()
+DiagKernel::DiagKernel()
+: Kernel()
 {
 	init();
 }
 
-CDiagKernel::CDiagKernel(int32_t size, float64_t d)
-: CKernel(size)
+DiagKernel::DiagKernel(int32_t size, float64_t d)
+: Kernel(size)
 {
 	init();
 	diag=d;
 }
 
-CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
-: CKernel()
+DiagKernel::DiagKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t d)
+: Kernel()
 {
 	init();
 	diag=d;
 	init(l, r);
 }
 
-CDiagKernel::~CDiagKernel()
+DiagKernel::~DiagKernel()
 {
 }
 
-bool CDiagKernel::init(CFeatures* l, CFeatures* r)
+bool DiagKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CKernel::init(l, r);
+	Kernel::init(l, r);
 	return init_normalizer();
 }
 
-void CDiagKernel::init()
+void DiagKernel::init()
 {
 	diag=1.0;
 	SG_ADD(&diag, "diag", "Value on kernel diagonal.", ParameterProperties::HYPER);

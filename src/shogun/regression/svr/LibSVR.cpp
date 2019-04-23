@@ -15,16 +15,16 @@
 
 using namespace shogun;
 
-CLibSVR::CLibSVR()
-: CSVM()
+LibSVR::LibSVR()
+: SVM()
 {
 	register_params();
 	solver_type=LIBSVR_EPSILON_SVR;
 }
 
-CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+LibSVR::LibSVR(float64_t C, float64_t svr_param, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab,
 		LIBSVR_SOLVER_TYPE st)
-: CSVM()
+: SVM()
 {
 	register_params();
 	set_C(C,C);
@@ -38,7 +38,7 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 		set_nu(svr_param);
 		break;
 	default:
-		error("CLibSVR::CLibSVR(): Unknown solver type!");
+		error("LibSVR::LibSVR(): Unknown solver type!");
 		break;
 	}
 
@@ -47,11 +47,11 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 	solver_type=st;
 }
 
-CLibSVR::~CLibSVR()
+LibSVR::~LibSVR()
 {
 }
 
-void CLibSVR::register_params()
+void LibSVR::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvr_solver_type",
@@ -59,12 +59,12 @@ void CLibSVR::register_params()
 	    SG_OPTIONS(LIBSVR_EPSILON_SVR, LIBSVR_NU_SVR));
 }
 
-EMachineType CLibSVR::get_classifier_type()
+EMachineType LibSVR::get_classifier_type()
 {
 	return CT_LIBSVR;
 }
 
-bool CLibSVR::train_machine(CFeatures* data)
+bool LibSVR::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -121,7 +121,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = nu;
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
@@ -149,7 +149,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 
 		create_new_model(num_sv);
 
-		CSVM::set_objective(model->objective);
+		SVM::set_objective(model->objective);
 
 		set_bias(-model->rho[0]);
 

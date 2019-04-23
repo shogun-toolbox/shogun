@@ -15,26 +15,26 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CDenseMatrixOperator;
+template<class T> class DenseMatrixOperator;
 
 /** @brief Class that generates jobs for computing logarithm of
  *  a dense matrix linear operator
  */
-class CDenseMatrixExactLog : public COperatorFunction<float64_t>
+class DenseMatrixExactLog : public OperatorFunction<float64_t>
 {
 public:
 	/** default constructor */
-	CDenseMatrixExactLog();
+	DenseMatrixExactLog();
 
 	/**
 	 * constructor
 	 *
 	 * @param op the dense matrix linear operator for this operator function
 	 */
-	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op);
+	DenseMatrixExactLog(std::shared_ptr<DenseMatrixOperator<float64_t>> op);
 
 	/** destructor */
-	virtual ~CDenseMatrixExactLog();
+	virtual ~DenseMatrixExactLog();
 
 	/**
 	 * precompute method that computes the log of the linear operator using

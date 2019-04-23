@@ -21,37 +21,37 @@
 namespace shogun
 {
 
-class CMultilabelSOLabels;
+class MultilabelSOLabels;
 
 /** @brief Class CSparseMultilabel to be used in the application of Structured
  * Output (SO) learning to Multilabel classification.*/
-class CSparseMultilabel : public CStructuredData
+class SparseMultilabel : public StructuredData
 {
 public:
 	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_SPARSE_MULTILABEL);
 
 	/** default constructor */
-	CSparseMultilabel() { }
+	SparseMultilabel() { }
 
 	/** constructor
 	 *
 	 * @param label sparse label
 	 */
-	CSparseMultilabel(SGVector<int32_t> label) : CStructuredData(), m_label(label) { }
+	SparseMultilabel(SGVector<int32_t> label) : StructuredData(), m_label(label) { }
 
 	/** destructor */
-	~CSparseMultilabel() { }
+	~SparseMultilabel() { }
 
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param base_data its dynamic type must be CSparseMultilabel
 	 */
-	static CSparseMultilabel * obtain_from_generic(CStructuredData * base_data)
+	static std::shared_ptr<SparseMultilabel > obtain_from_generic(std::shared_ptr<StructuredData > base_data)
 	{
 		if (base_data->get_structured_data_type() == SDT_SPARSE_MULTILABEL)
 		{
-			return (CSparseMultilabel *) base_data;
+			return std::static_pointer_cast<SparseMultilabel>(base_data);
 		}
 		else
 		{
@@ -81,35 +81,35 @@ protected:
 /** @brief Class CMultilabelSOLabels used in the application of Structured
  * Output (SO) learning to Multilabel Classification. Labels are subsets
  * of {0, 1, ..., num_classes-1}. Each of the label if of type CSparseMultilabel and
- * all of them are stored in a CDynamicObjectArray.
+ * all of them are stored in a DynamicObjectArray.
  */
-class CMultilabelSOLabels : public CStructuredLabels
+class MultilabelSOLabels : public StructuredLabels
 {
 public:
 	/** default constructor */
-	CMultilabelSOLabels();
+	MultilabelSOLabels();
 
 	/** constructor
 	 *
 	 * @param num_classes number of (binary) class assignment per label
 	 */
-	CMultilabelSOLabels(int32_t num_classes);
+	MultilabelSOLabels(int32_t num_classes);
 
 	/** constructor
 	 *
 	 * @param num_labels number of labels
 	 * @param num_classes number of (binary) class assignment per label
 	 */
-	CMultilabelSOLabels(int32_t num_labels, int32_t num_classes);
+	MultilabelSOLabels(int32_t num_labels, int32_t num_classes);
 
 	/** constructor
 	 *
 	 * @param multilabel_labels
 	 */
-	CMultilabelSOLabels(CMultilabelLabels * multilabel_labels);
+	MultilabelSOLabels(std::shared_ptr<MultilabelLabels > multilabel_labels);
 
 	/** destructor */
-	~CMultilabelSOLabels();
+	~MultilabelSOLabels();
 
 	/** @return name of the SGSerializable */
 	virtual const char * get_name() const
@@ -124,7 +124,7 @@ public:
 	virtual int32_t get_num_classes() const;
 
 	/** @return multilabel-labels object */
-	virtual CMultilabelLabels * get_multilabel_labels();
+	virtual std::shared_ptr<MultilabelLabels > get_multilabel_labels();
 
 	/** set sparse labels
 	 *
@@ -144,14 +144,14 @@ public:
 	 * @param j label index
 	 * @param label sparse label
 	 */
-	virtual bool set_label(int32_t j, CStructuredData * label);
+	virtual bool set_label(int32_t j, std::shared_ptr<StructuredData > label);
 
 	/** add a new label to the vector of labels.
 	 * This method should be used when inserting labels for the first time.
 	 *
 	 * @param label sparse label to add
 	 */
-	virtual void add_label(CStructuredData * label);
+	virtual void add_label(std::shared_ptr<StructuredData > label);
 
 	/** get sparse assigment for j-th label
 	 *
@@ -163,7 +163,7 @@ public:
 	 *
 	 * @param j label index
 	 */
-	virtual CStructuredData * get_label(int32_t j);
+	virtual std::shared_ptr<StructuredData > get_label(int32_t j);
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR
 	 *
@@ -182,11 +182,11 @@ public:
 	 *
 	 * @return SGVector<float64_t> dense vector of dimension dense_dim
 	 */
-	static SGVector<float64_t> to_dense(CStructuredData * label,
+	static SGVector<float64_t> to_dense(std::shared_ptr<StructuredData > label,
 	                                    int32_t dense_dim, float64_t d_true, float64_t d_false);
 
 private:
-	CMultilabelLabels * m_multilabel_labels;
+	std::shared_ptr<MultilabelLabels > m_multilabel_labels;
 	int32_t m_last_set_label;
 
 private:

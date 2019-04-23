@@ -11,14 +11,14 @@ namespace shogun
 {
 
 /** @brief base rejection strategy class */
-class CRejectionStrategy : public CSGObject
+class RejectionStrategy : public SGObject
 {
 	public:
 		/** default constructor  */
-		CRejectionStrategy() { };
+		RejectionStrategy() { };
 
 		/** destructor */
-		virtual ~CRejectionStrategy() { };
+		virtual ~RejectionStrategy() { };
 
 		/** get name */
 		virtual const char* get_name() const
@@ -32,19 +32,19 @@ class CRejectionStrategy : public CSGObject
 };
 
 /** @brief threshold based rejection strategy */
-class CThresholdRejectionStrategy : public CRejectionStrategy
+class ThresholdRejectionStrategy : public RejectionStrategy
 {
 	public:
 
 		/** constructor */
-		CThresholdRejectionStrategy() :
-			CRejectionStrategy(), m_threshold(0.0) { };
+		ThresholdRejectionStrategy() :
+			RejectionStrategy(), m_threshold(0.0) { };
 
 		/** constructor */
-		CThresholdRejectionStrategy(float64_t threshold) :
-			CRejectionStrategy(), m_threshold(threshold) { };
+		ThresholdRejectionStrategy(float64_t threshold) :
+			RejectionStrategy(), m_threshold(threshold) { };
 
-		virtual ~CThresholdRejectionStrategy() {};
+		virtual ~ThresholdRejectionStrategy() {};
 
 		/** get name */
 		virtual const char* get_name() const
@@ -90,13 +90,13 @@ static const float64_t Q_test_statistic_values[10][8] =
  * rejection strategy. Statistic values are taken from
  * http://www.vias.org/tmdatanaleng/cc_outlier_tests_dixon.html
  * */
-class CDixonQTestRejectionStrategy : public CRejectionStrategy
+class DixonQTestRejectionStrategy : public RejectionStrategy
 {
 	public:
 
 		/** constructor */
-		CDixonQTestRejectionStrategy() :
-			CRejectionStrategy()
+		DixonQTestRejectionStrategy() :
+			RejectionStrategy()
 		{
 			s_index = 3;
 		}
@@ -105,8 +105,8 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 		 * @param significance_level either 0.001,0.002,0.005,
 		 * 0.01,0.02,0.05,0.1 or 0.2
 		 */
-		CDixonQTestRejectionStrategy(float64_t significance_level) :
-			CRejectionStrategy()
+		DixonQTestRejectionStrategy(float64_t significance_level) :
+			RejectionStrategy()
 		{
 			if (significance_level==0.001)
 				s_index = 0;
@@ -127,7 +127,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 			else error("Given significance level is not supported");
 		}
 
-		virtual ~CDixonQTestRejectionStrategy()
+		virtual ~DixonQTestRejectionStrategy()
 		{
 		}
 
@@ -147,7 +147,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 			int32_t Ni = N/10 - 1;
 
 			SGVector<float64_t> outputs_local = outputs.clone();
-			CMath::qsort(outputs_local);
+			Math::qsort(outputs_local);
 
 			float64_t Q = 0.0;
 			if (N==10)

@@ -17,15 +17,15 @@ namespace shogun
 {
 /* Virtual base class for all KNN solvers */
 
-class CDistanceMachine;
-class CKNNSolver : public CDistanceMachine
+class DistanceMachine;
+class KNNSolver : public DistanceMachine
 {
 	public:
 		/** default constructor */
-		CKNNSolver(): CDistanceMachine() { init(); }
+		KNNSolver(): DistanceMachine() { init(); }
 
 		/** deconstructor */
-		virtual ~CKNNSolver() { /* nothing to do */ }
+		virtual ~KNNSolver() { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -35,7 +35,7 @@ class CKNNSolver : public CDistanceMachine
 		 * @param min_label m_min_label
 		 * @param train_labels m_train_labels 
 		 */
-		CKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels);
+		KNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels);
 
 		/** compute the histogram of class outputs of the k nearest 
 		 * neighbors to a test vector and return the index of the most frequent class
@@ -71,7 +71,7 @@ class CKNNSolver : public CDistanceMachine
 		 * @param classes vector used to store the histogram
 		 * @return the classified labels
 		 */
-		 virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const = 0;
+		 virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const = 0;
 
 		/**
 		 * classify all objects, and the implementation will depended on which knn solver been choosen.
@@ -81,7 +81,7 @@ class CKNNSolver : public CDistanceMachine
 		 * @param classes vector used to store the histogram
 		 * @return the classified labels
 		 */
-		 virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const = 0;
+		 virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const = 0;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KNNSolver"; }

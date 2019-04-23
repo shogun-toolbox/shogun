@@ -11,13 +11,13 @@
 
 using namespace shogun;
 
-CSigmoidKernel::CSigmoidKernel() : CDotKernel()
+SigmoidKernel::SigmoidKernel() : DotKernel()
 {
 	init();
 }
 
-CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
-    : CDotKernel(size)
+SigmoidKernel::SigmoidKernel(int32_t size, float64_t g, float64_t c)
+    : DotKernel(size)
 {
 	init();
 
@@ -25,9 +25,9 @@ CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
 	coef0 = c;
 }
 
-CSigmoidKernel::CSigmoidKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t size, float64_t g, float64_t c)
-    : CDotKernel(size)
+SigmoidKernel::SigmoidKernel(
+    std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, int32_t size, float64_t g, float64_t c)
+    : DotKernel(size)
 {
 	init();
 
@@ -37,22 +37,22 @@ CSigmoidKernel::CSigmoidKernel(
 	init(l, r);
 }
 
-CSigmoidKernel::~CSigmoidKernel()
+SigmoidKernel::~SigmoidKernel()
 {
 	cleanup();
 }
 
-void CSigmoidKernel::cleanup()
+void SigmoidKernel::cleanup()
 {
 }
 
-bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
+bool SigmoidKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	return init_normalizer();
 }
 
-void CSigmoidKernel::init()
+void SigmoidKernel::init()
 {
 	gamma = 0.0;
 	coef0 = 0.0;

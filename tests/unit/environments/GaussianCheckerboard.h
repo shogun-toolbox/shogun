@@ -48,9 +48,9 @@ public:
 	    const int32_t num_dim, PRNG& prng)
 	{
 		ASSERT(num_labels > 1)
-		SGMatrix<float64_t> data = CDataGenerator::generate_gaussians(
+		SGMatrix<float64_t> data = DataGenerator::generate_gaussians(
 		    num_samples, num_labels, num_dim, prng);
-		CDenseFeatures<float64_t> features(data);
+		DenseFeatures<float64_t> features(data);
 
 		set_size = data.num_cols / 2;
 		SGVector<index_t> train_idx(set_size), test_idx(set_size);
@@ -71,8 +71,8 @@ public:
 				labels[i / 2] = (i < data.num_cols / 2) ? 1.0 : -1.0;
 			}
 
-			labels_train = new CBinaryLabels(labels);
-			labels_test = new CBinaryLabels(labels);
+			labels_train = std::make_shared<BinaryLabels>(labels);
+			labels_test = std::make_shared<BinaryLabels>(labels);
 		}
 		if (num_labels > 2)
 		{
@@ -86,47 +86,41 @@ public:
 				}
 			}
 
-			labels_train = new CMulticlassLabels(labels);
-			labels_test = new CMulticlassLabels(labels);
+			labels_train = std::make_shared<MulticlassLabels>(labels);
+			labels_test = std::make_shared<MulticlassLabels>(labels);
 		}
 
 		features_train =
-		    (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
+		    features.copy_subset(train_idx)->as<DenseFeatures<float64_t>>();
 		features_test =
-		    (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
+		    features.copy_subset(test_idx)->as<DenseFeatures<float64_t>>();
 
-		SG_REF(labels_train)
-		SG_REF(labels_test)
 	}
 
 	~GaussianCheckerboard()
 	{
-		SG_UNREF(features_train)
-		SG_UNREF(features_test)
-		SG_UNREF(labels_train)
-		SG_UNREF(labels_test)
 	}
 
 	/* get the traning features */
-	CDenseFeatures<float64_t>* get_features_train() const
+	auto get_features_train() const
 	{
 		return features_train;
 	}
 
 	/* get the test features */
-	CDenseFeatures<float64_t>* get_features_test() const
+	auto get_features_test() const
 	{
 		return features_test;
 	}
 
 	/* get the test labels */
-	CLabels* get_labels_train() const
+	auto get_labels_train() const
 	{
 		return labels_train;
 	}
 
 	/* get the traning labels */
-	CLabels* get_labels_test() const
+	auto get_labels_test() const
 	{
 		return labels_test;
 	}
@@ -139,16 +133,16 @@ public:
 
 protected:
 	// data for training
-	CDenseFeatures<float64_t>* features_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train;
 
 	// data for testing
-	CDenseFeatures<float64_t>* features_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_test;
 
 	// traning label
-	CLabels* labels_train;
+	std::shared_ptr<Labels> labels_train;
 
 	// testing label
-	CLabels* labels_test;
+	std::shared_ptr<Labels> labels_test;
 
 	// the size of generated data set
 	int32_t set_size;

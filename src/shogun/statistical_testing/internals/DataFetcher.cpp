@@ -41,17 +41,16 @@ DataFetcher::DataFetcher() : m_num_samples(0), train_test_mode(false),
 {
 }
 
-DataFetcher::DataFetcher(CFeatures* samples) : train_test_mode(false),
+DataFetcher::DataFetcher(std::shared_ptr<Features> samples) : train_test_mode(false),
    	train_mode(false), m_samples(samples), features_shuffled(false)
 {
 	require(m_samples!=nullptr, "Samples cannot be null!");
-	SG_REF(m_samples);
 	m_num_samples=m_samples->get_num_vectors();
 }
 
 DataFetcher::~DataFetcher()
 {
-	SG_UNREF(m_samples);
+
 }
 
 void DataFetcher::set_blockwise(bool blockwise)
@@ -195,9 +194,9 @@ void DataFetcher::start()
 	reset();
 }
 
-CFeatures* DataFetcher::next()
+std::shared_ptr<Features> DataFetcher::next()
 {
-	CFeatures* next_samples=nullptr;
+	std::shared_ptr<Features> next_samples=nullptr;
 	// figure out how many samples to fetch in this burst
 	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
 	auto num_more_samples=get_num_samples()-num_already_fetched;

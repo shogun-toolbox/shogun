@@ -16,14 +16,14 @@ namespace shogun
 
 /** @brief clustering (normalized) mutual information
  */
-class CClusteringMutualInformation: public CClusteringEvaluation
+class ClusteringMutualInformation: public ClusteringEvaluation
 {
 public:
 	/** constructor */
-	CClusteringMutualInformation(): CClusteringEvaluation() {}
+	ClusteringMutualInformation(): ClusteringEvaluation() {}
 
 	/** destructor */
-	virtual ~CClusteringMutualInformation() {}
+	virtual ~ClusteringMutualInformation() {}
 
 	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction() const
@@ -49,7 +49,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate_impl(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate_impl(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 };
 
 }

@@ -16,26 +16,23 @@
 using namespace shogun;
 using namespace std;
 
-CClusteringEvaluation::CClusteringEvaluation() : CEvaluation()
+ClusteringEvaluation::ClusteringEvaluation() : Evaluation()
 {
 	m_use_best_map = true;
 	SG_ADD(&m_use_best_map, "use_best_map",
 		"Find best match between predicted labels and the ground truth");
 }
 
-float64_t CClusteringEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t ClusteringEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	if(m_use_best_map)
 		predicted = best_map(predicted, ground_truth);
-	else
-		SG_REF(predicted);
 	float64_t result = evaluate_impl(predicted,ground_truth);
-	SG_UNREF(predicted);
 	return result;
 }
 
 
-int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	int32_t match_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
@@ -47,22 +44,22 @@ int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1
 	return match_count;
 }
 
-int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
 
-CLabels* CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
+std::shared_ptr<Labels> ClusteringEvaluation::best_map(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 
-	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
-	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
+	SGVector<float64_t> label_p=multiclass_labels(predicted)->get_unique_labels();
+	SGVector<float64_t> label_g=multiclass_labels(ground_truth)->get_unique_labels();
 
-	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
-	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();
+	SGVector<int32_t> predicted_ilabels=multiclass_labels(predicted)->get_int_labels();
+	SGVector<int32_t> groundtruth_ilabels=multiclass_labels(ground_truth)->get_int_labels();
 
 	int32_t n_class=max(label_p.vlen, label_g.vlen);
 	SGMatrix<float64_t> G(n_class, n_class);
@@ -94,8 +91,7 @@ CLabels* CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_tru
 		}
 	}
 
-	auto result = new CMulticlassLabels(predicted->get_num_labels());
-	SG_REF(result);
+	auto result = std::make_shared<MulticlassLabels>(predicted->get_num_labels());
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
 		result->set_int_label(i, label_map[predicted_ilabels[i]]);
 

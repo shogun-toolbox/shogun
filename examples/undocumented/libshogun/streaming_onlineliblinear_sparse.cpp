@@ -50,29 +50,25 @@ int main(int argc, char* argv[])
     fprintf(stderr, "*** training file %s with C %g\n", train_file_name, C);
 
     // Create an OnlineLiblinear object from the features. The first parameter is 'C'.
-    COnlineLibLinear *svm = new COnlineLibLinear(C);
+    auto svm = std::make_shared<OnlineLibLinear>(C);
     svm->set_bias_enabled(true);
 
     {
-        CTime train_time;
+        Time train_time;
         train_time.start();
 
         // Create a StreamingAsciiFile from the training data
-        CStreamingAsciiFile *train_file = new CStreamingAsciiFile(train_file_name);
-        SG_REF(train_file);
+        auto train_file = std::make_shared<StreamingAsciiFile>(train_file_name);
 
         // The bool value is true if examples are labelled.
         // 1024 is a good standard value for the number of examples for the parser to hold at a time.
-        CStreamingSparseFeatures < float32_t > *train_features =
-            new CStreamingSparseFeatures < float32_t > (train_file, true, 1024);
-        SG_REF(train_features);
+        auto train_features =
+            std::make_shared<StreamingSparseFeatures < float32_t >> (train_file, true, 1024);
 
         svm->set_features(train_features);
         svm->train();
 
         train_file->close();
-        SG_UNREF(train_file);
-        SG_UNREF(train_features);
 
         train_time.stop();
 
@@ -89,29 +85,24 @@ int main(int argc, char* argv[])
 
 
     {
-        CTime test_time;
+        Time test_time;
         test_time.start();
 
         // Now we want to test on holdout data
-        CStreamingAsciiFile *test_file = new CStreamingAsciiFile(test_file_name);
-        SG_REF(test_file);
+        auto test_file = std::make_shared<StreamingAsciiFile>(test_file_name);
 
         // Set second parameter to 'false' if the file contains unlabelled examples
-        CStreamingSparseFeatures < float32_t > *test_features =
-            new CStreamingSparseFeatures < float32_t > (test_file, true, 1024);
-        SG_REF(test_features);
+        auto test_features =
+            std::make_shared<StreamingSparseFeatures < float32_t >> (test_file, true, 1024);
 
-        // Apply on all examples and return a CBinaryLabels*
-        CBinaryLabels *test_binary_labels = svm->apply_binary(test_features);
-        SG_REF(test_binary_labels);
+        // Apply on all examples and return a BinaryLabels*
+        auto test_binary_labels = svm->apply_binary(test_features);
 
         test_time.stop();
         uint64_t test_time_int = test_time.cur_time_diff();
         fprintf(stderr, "*** testing took %llum%llus (or %.1f sec)\n",
             test_time_int / 60, test_time_int % 60, test_time.cur_time_diff());
 
-        SG_UNREF(test_features);
-        SG_UNREF(test_file);
 
         // Writing labels for evaluation
         fprintf(stderr, "*** writing labels to file %s\n", test_labels_file_name);
@@ -122,11 +113,8 @@ int main(int argc, char* argv[])
             fprintf(fh, "%d\n", test_binary_labels->get_int_label(j));
 
         fclose(fh);
-        SG_UNREF(test_binary_labels);
         unlink(test_labels_file_name);
     }
-
-    SG_UNREF(svm);
 
     return 0;
 }

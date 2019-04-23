@@ -11,12 +11,12 @@ namespace shogun
 {
 	namespace io
 	{
-		class CJsonSerializer : public CSerializer
+		class JsonSerializer : public Serializer
 		{
 		public:
-			CJsonSerializer();
-			~CJsonSerializer() override;
-			virtual void write(Some<CSGObject> object) noexcept(false);
+			JsonSerializer();
+			~JsonSerializer() override;
+			virtual void write(std::shared_ptr<SGObject> object) noexcept(false);
 
 			virtual const char* get_name() const
 			{

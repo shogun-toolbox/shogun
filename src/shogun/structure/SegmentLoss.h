@@ -16,17 +16,17 @@
 
 namespace shogun
 {
-	template <class T> class CDynamicArray;
+	template <class T> class DynamicArray;
 /** @brief class IntronList */
-class CSegmentLoss : public CSGObject
+class SegmentLoss : public SGObject
 {
         public:
 
 		/** constructor
 		 */
-		CSegmentLoss();
+		SegmentLoss();
 
-		virtual ~CSegmentLoss();
+		virtual ~SegmentLoss();
 
 		/** get segment loss for a given range
 		 *
@@ -56,7 +56,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_ids segment ids
 		 */
-		void set_segment_ids(CDynamicArray<int32_t>* segment_ids);
+		void set_segment_ids(const std::vector<int32_t>& segment_ids);
 
 		/** mask parts of the sequence such that there is no
 		 *  loss incured there; this is used if there is uncertainty
@@ -64,7 +64,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_mask mask
 		 */
-		void set_segment_mask(CDynamicArray<float64_t>* segment_mask);
+		void set_segment_mask(const std::vector<float64_t>& segment_mask);
 
 		/** set num segment types
 		 *
@@ -89,25 +89,25 @@ class CSegmentLoss : public CSGObject
 	protected:
 
 		/** segment loss matrix*/
-		CDynamicArray<float32_t> m_segment_loss_matrix; // 2d
+		DynamicArray<float32_t> m_segment_loss_matrix; // 2d
 
 		/** segment loss
 		 *  two square matrices:
 		 *  one for segment based loss and
 		 *  one for length contribution*/
-		CDynamicArray<float64_t> m_segment_loss; // 3d
+		DynamicArray<float64_t> m_segment_loss; // 3d
 
 		/** segment IDs */
-		CDynamicArray<int32_t>* m_segment_ids;
+		std::vector<int32_t> m_segment_ids;
 
 		/** segment mask */
-		CDynamicArray<float64_t>* m_segment_mask;
+		std::vector<float64_t> m_segment_mask;
 
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;
 };
 
-inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
+inline float32_t SegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
 
 	/*	int32_t from_pos_shift = from_pos ;
@@ -141,11 +141,11 @@ inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos
 	io::print("break\n");  */
 
 	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
-	diff_contrib += m_segment_mask->element(to_pos-1)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos-1), 0);
+	diff_contrib += m_segment_mask.at(to_pos-1)*m_segment_loss.element(segment_id, m_segment_ids.at(to_pos-1), 0);
 	return diff_contrib;
 }
 
-inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id)
+inline float32_t SegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
 	int32_t from_pos_shift = from_pos ;
 
@@ -156,7 +156,7 @@ inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t
 			 m_segment_ids->element(from_pos_shift), m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos),
 			 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;*/
 
-	while (from_pos_shift<to_pos && m_segment_ids->element(from_pos_shift)==m_segment_ids->element(from_pos_shift+1))
+	while (from_pos_shift<to_pos && m_segment_ids.at(from_pos_shift)==m_segment_ids.at(from_pos_shift+1))
 		from_pos_shift++ ;
 
 	/*io::print("segment_id={}, m_segment_ids[from-2]={} ({:1.1f}), m_segment_ids[from-1]={} ({:1.1f}), m_segment_ids[from]={} ({:1.1f}), m_segment_ids[from+1]={} ({:1.1f}), \n",

@@ -32,11 +32,11 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CSNPStringKernel: public CStringKernel<char>
+class SNPStringKernel: public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSNPStringKernel();
+		SNPStringKernel();
 
 		/** constructor
 		 *
@@ -45,7 +45,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @param win_len length of local window
 		 * @param inhomogene whether inhomogeneous poly
 		 */
-		CSNPStringKernel(int32_t size, int32_t degree, int32_t win_len, bool inhomogene);
+		SNPStringKernel(int32_t size, int32_t degree, int32_t win_len, bool inhomogene);
 
 		/** constructor
 		 *
@@ -55,11 +55,11 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @param win_len length of local window
 		 * @param inhomogene whether inhomogeneous poly
 		 */
-		CSNPStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		SNPStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			int32_t degree, int32_t win_len, bool inhomogene);
 
-		virtual ~CSNPStringKernel();
+		virtual ~SNPStringKernel();
 
 		/** initialize kernel
 		 *
@@ -67,7 +67,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

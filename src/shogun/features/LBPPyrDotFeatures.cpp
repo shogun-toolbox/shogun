@@ -13,90 +13,90 @@ using namespace shogun;
 
 #define LIBLBP_INDEX(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
+LBPPyrDotFeatures::LBPPyrDotFeatures() : DotFeatures()
 {
 	init(NULL, 0, 0);
 	vec_nDim = 0;
 }
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int32_t image_w,
-	int32_t image_h, uint16_t num_pyramids) : CDotFeatures()
+LBPPyrDotFeatures::LBPPyrDotFeatures(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w,
+	int32_t image_h, uint16_t num_pyramids) : DotFeatures()
 {
 	ASSERT(image_set)
 	init(image_set, image_w, image_h);
 	vec_nDim = liblbp_pyr_get_dim(num_pyramids);
 }
 
-void CLBPPyrDotFeatures::init(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h)
+void LBPPyrDotFeatures::init(std::shared_ptr<DenseFeatures<uint32_t>> image_set, int32_t image_w, int32_t image_h)
 {
 	images = image_set;
-	SG_REF(images);
+
 	image_width = image_w;
 	image_height = image_h;
 
-	SG_ADD((CSGObject**) &images, "images", "Set of images");
+	SG_ADD((std::shared_ptr<SGObject>*) &images, "images", "Set of images");
 	SG_ADD(&image_width, "image_width", "The image width");
 	SG_ADD(&image_height, "image_height", "The image height");
 	SG_ADD(&vec_nDim, "vec_nDim", "The dimension of the pyr");
 }
 
-CLBPPyrDotFeatures::~CLBPPyrDotFeatures()
+LBPPyrDotFeatures::~LBPPyrDotFeatures()
 {
-	SG_UNREF(images);
+
 }
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures(const CLBPPyrDotFeatures& orig)
+LBPPyrDotFeatures::LBPPyrDotFeatures(const LBPPyrDotFeatures& orig)
 {
 	init(orig.images, orig.image_width, orig.image_height);
 	vec_nDim = orig.vec_nDim;
 }
 
-int32_t CLBPPyrDotFeatures::get_dim_feature_space() const
+int32_t LBPPyrDotFeatures::get_dim_feature_space() const
 {
 	return vec_nDim;
 }
 
-int32_t CLBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t LBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return vec_nDim;
 }
 
-EFeatureType CLBPPyrDotFeatures::get_feature_type() const
+EFeatureType LBPPyrDotFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CLBPPyrDotFeatures::get_feature_class() const
+EFeatureClass LBPPyrDotFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
 
-int32_t CLBPPyrDotFeatures::get_num_vectors() const
+int32_t LBPPyrDotFeatures::get_num_vectors() const
 {
 	return images->get_num_vectors();
 }
 
-void* CLBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
+void* LBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
 {
 	not_implemented(SOURCE_LOCATION);
 	return NULL;
 }
 
-bool CLBPPyrDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool LBPPyrDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
-void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
+void LBPPyrDotFeatures::free_feature_iterator(void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);
 }
 
-float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t LBPPyrDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(strcmp(df->get_name(),get_name())==0)
-	CLBPPyrDotFeatures* lbp_feat = (CLBPPyrDotFeatures* ) df;
+	auto lbp_feat = std::static_pointer_cast<LBPPyrDotFeatures>(df);
 	ASSERT(get_dim_feature_space() == lbp_feat->get_dim_feature_space());
 
 	SGVector<char> vec1 = get_transformed_image(vec_idx1);
@@ -105,7 +105,7 @@ float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	return linalg::dot(vec1, vec2);
 }
 
-SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index) const
+SGVector<char> LBPPyrDotFeatures::get_transformed_image(int32_t index) const
 {
 	SGVector<char> vec(vec_nDim);
 	SGVector<char>::fill_vector(vec, vec_nDim, 0);
@@ -152,7 +152,7 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index) const
 	return vec;
 }
 
-uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& height) const
+uint32_t* LBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& height) const
 {
 	int32_t len;
 	bool do_free;
@@ -167,7 +167,7 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 }
 
 float64_t
-CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
+LBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	require(
 	    vec2.size() == vec_nDim,
@@ -217,7 +217,7 @@ CLBPPyrDotFeatures::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	return dot_prod;
 }
 
-void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void LBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != vec_nDim)
 		error("Dimensions don't match, vec2_dim={}, vec_nDim={}", vec2_len, vec_nDim);
@@ -227,7 +227,7 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 	uint32_t* img = get_image(vec_idx1, ww, hh);
 
 	if (abs_val)
-		alpha = CMath::abs(alpha);
+		alpha = Math::abs(alpha);
 
 	int32_t offset = 0;
 
@@ -266,7 +266,7 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 	SG_FREE(img);
 }
 
-uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t y) const
+uint8_t LBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t y) const
 {
 	uint8_t pattern = 0;
 	uint32_t center = img[LIBLBP_INDEX(y,x,image_height)];
@@ -291,18 +291,18 @@ uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t
 	return pattern;
 }
 
-CFeatures* CLBPPyrDotFeatures::duplicate() const
+std::shared_ptr<Features> LBPPyrDotFeatures::duplicate() const
 {
-	return new CLBPPyrDotFeatures(*this);
+	return std::make_shared<LBPPyrDotFeatures>(*this);
 }
 
-uint32_t CLBPPyrDotFeatures::liblbp_pyr_get_dim(uint16_t nPyramids)
+uint32_t LBPPyrDotFeatures::liblbp_pyr_get_dim(uint16_t nPyramids)
 {
   uint32_t N = 0;
   uint32_t w = image_width;
   uint32_t h = image_height;
 
-  for (uint32_t i=0; (i<nPyramids) && (CMath::min(w,h)>=3); i++)
+  for (uint32_t i=0; (i<nPyramids) && (Math::min(w,h)>=3); i++)
   {
     N += (w-2)*(h-2);
 

@@ -35,135 +35,135 @@
 namespace shogun
 {
 
-CVariationalLikelihood::CVariationalLikelihood()
-	: CLikelihoodModel()
+VariationalLikelihood::VariationalLikelihood()
+	: LikelihoodModel()
 {
 	init();
 }
 
-CVariationalLikelihood::~CVariationalLikelihood()
+VariationalLikelihood::~VariationalLikelihood()
 {
-	SG_UNREF(m_likelihood);
+	
 }
 
-void CVariationalLikelihood::set_likelihood(CLikelihoodModel * lik)
+void VariationalLikelihood::set_likelihood(std::shared_ptr<LikelihoodModel > lik)
 {
-	SG_UNREF(m_likelihood);
+	
 	m_likelihood=lik;
-	SG_REF(m_likelihood);
+	
 }
 
-void CVariationalLikelihood::init()
+void VariationalLikelihood::init()
 {
 	//m_likelihood will be specified by its subclass
 	//via the init_likelihood method
 	m_likelihood = NULL;
-	SG_REF(m_likelihood);
+	
 
 	SG_ADD(&m_lab, "labels",
 		"The label of the data\n");
 
-	SG_ADD((CSGObject**)&m_likelihood, "likelihood",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_likelihood, "likelihood",
 		"The distribution used to model the data\n");
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_predictive_means(
+SGVector<float64_t> VariationalLikelihood::get_predictive_means(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
-	const CLabels* lab) const
+	std::shared_ptr<const Labels> lab) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_predictive_means(mu, s2, lab);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_predictive_variances(
+SGVector<float64_t> VariationalLikelihood::get_predictive_variances(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
-	const CLabels* lab) const
+	std::shared_ptr<const Labels> lab) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_predictive_variances(mu, s2, lab);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_first_derivative(
-	const CLabels* lab, SGVector<float64_t> func,
+SGVector<float64_t> VariationalLikelihood::get_first_derivative(
+	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_first_derivative(lab, func, param);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_second_derivative(
-	const CLabels* lab, SGVector<float64_t> func,
+SGVector<float64_t> VariationalLikelihood::get_second_derivative(
+	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_second_derivative(lab, func, param);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_third_derivative(
-	const CLabels* lab, SGVector<float64_t> func,
+SGVector<float64_t> VariationalLikelihood::get_third_derivative(
+	std::shared_ptr<const Labels> lab, SGVector<float64_t> func,
 	const TParameter* param) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_third_derivative(lab, func, param);
 }
 
-ELikelihoodModelType CVariationalLikelihood::get_model_type() const
+ELikelihoodModelType VariationalLikelihood::get_model_type() const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_model_type();
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_log_probability_f(
-	const CLabels* lab, SGVector<float64_t> func) const
+SGVector<float64_t> VariationalLikelihood::get_log_probability_f(
+	std::shared_ptr<const Labels> lab, SGVector<float64_t> func) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_probability_f(lab, func);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_log_probability_derivative_f(
-	const CLabels* lab, SGVector<float64_t> func, index_t i) const
+SGVector<float64_t> VariationalLikelihood::get_log_probability_derivative_f(
+	std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_probability_derivative_f(lab, func, i);
 }
 
-SGVector<float64_t> CVariationalLikelihood::get_log_zeroth_moments(
+SGVector<float64_t> VariationalLikelihood::get_log_zeroth_moments(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
-	const CLabels* lab) const
+	std::shared_ptr<const Labels> lab) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_log_zeroth_moments(mu, s2, lab);
 }
 
-float64_t CVariationalLikelihood::get_first_moment(
+float64_t VariationalLikelihood::get_first_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
-	const CLabels* lab, index_t i) const
+	std::shared_ptr<const Labels> lab, index_t i) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_first_moment(mu, s2, lab, i);
 }
 
-float64_t CVariationalLikelihood::get_second_moment(
+float64_t VariationalLikelihood::get_second_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
-	const CLabels* lab, index_t i) const
+	std::shared_ptr<const Labels> lab, index_t i) const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->get_second_moment(mu, s2, lab, i);
 }
 
-bool CVariationalLikelihood::supports_regression() const
+bool VariationalLikelihood::supports_regression() const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_regression();
 }
 
-bool CVariationalLikelihood::supports_binary() const
+bool VariationalLikelihood::supports_binary() const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_binary();
 }
 
-bool CVariationalLikelihood::supports_multiclass() const
+bool VariationalLikelihood::supports_multiclass() const
 {
 	require(m_likelihood != NULL, "The likelihood should be initialized");
 	return m_likelihood->supports_multiclass();

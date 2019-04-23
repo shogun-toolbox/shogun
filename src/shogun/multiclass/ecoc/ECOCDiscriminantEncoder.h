@@ -16,6 +16,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/RandomMixin.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 namespace shogun
 {
@@ -29,20 +30,20 @@ namespace shogun
  *   Application Dependent Design of Error Correcting Output Codes. TPAMI 2006.
  *
  */
-class CECOCDiscriminantEncoder: public RandomMixin<CECOCEncoder>
+class ECOCDiscriminantEncoder: public RandomMixin<ECOCEncoder>
 {
 public:
     /** constructor */
-    CECOCDiscriminantEncoder();
+    ECOCDiscriminantEncoder();
 
     /** destructor */
-    virtual ~CECOCDiscriminantEncoder();
+    virtual ~ECOCDiscriminantEncoder();
 
     /** set features */
-    void set_features(CFeatures *features);
+    void set_features(std::shared_ptr<Features >features);
 
     /** set labels */
-    void set_labels(CLabels *labels);
+    void set_labels(std::shared_ptr<Labels >labels);
 
     /** set sffs iterations
      * @param iterations number of sffs iterations
@@ -79,8 +80,8 @@ protected:
 
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
-    CLabels *m_labels;
-    CFeatures *m_features;
+    std::shared_ptr<MulticlassLabels> m_labels;
+    std::shared_ptr<DenseFeatures<float64_t>> m_features;
     SGMatrix<float64_t> m_feats;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };

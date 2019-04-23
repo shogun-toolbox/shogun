@@ -39,28 +39,28 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCInference()
+FITCInferenceMethod::FITCInferenceMethod() : SingleFITCInference()
 {
 	init();
 }
 
-CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCInference(kern, feat, m, lab, mod, lat)
+FITCInferenceMethod::FITCInferenceMethod(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
+		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
+		: SingleFITCInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
 
-void CFITCInferenceMethod::init()
+void FITCInferenceMethod::init()
 {
 }
 
-CFITCInferenceMethod::~CFITCInferenceMethod()
+FITCInferenceMethod::~FITCInferenceMethod()
 {
 }
-void CFITCInferenceMethod::compute_gradient()
+void FITCInferenceMethod::compute_gradient()
 {
-	CInference::compute_gradient();
+	Inference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -70,11 +70,11 @@ void CFITCInferenceMethod::compute_gradient()
 	}
 }
 
-void CFITCInferenceMethod::update()
+void FITCInferenceMethod::update()
 {
 	SG_TRACE("entering");
 
-	CInference::update();
+	Inference::update();
 	update_chol();
 	update_alpha();
 	m_gradient_update=false;
@@ -83,36 +83,35 @@ void CFITCInferenceMethod::update()
 	SG_TRACE("leaving");
 }
 
-CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<FITCInferenceMethod> FITCInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
-		error("Provided inference is not of type CFITCInferenceMethod!");
+		error("Provided inference is not of type FITCInferenceMethod!");
 
-	SG_REF(inference);
-	return (CFITCInferenceMethod*)inference;
+	return inference->as<FITCInferenceMethod>();
 }
 
-void CFITCInferenceMethod::check_members() const
+void FITCInferenceMethod::check_members() const
 {
-	CSingleFITCInference::check_members();
+	SingleFITCInference::check_members();
 
 	require(m_model->get_model_type()==LT_GAUSSIAN,
 			"FITC inference method can only use Gaussian likelihood function");
 	require(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
-			"of CRegressionLabels");
+			"of RegressionLabels");
 }
 
-SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> FITCInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<GaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// compute diagonal vector: sW=1/sigma
@@ -122,7 +121,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 	return result;
 }
 
-float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t FITCInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -141,18 +140,18 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	float64_t result =
 	    eigen_chol_utr.diagonal().array().log().sum() +
 	    (-eigen_t.array().log().sum() + eigen_r.dot(eigen_r) -
-	     eigen_be.dot(eigen_be) + m_ktrtr_diag.vlen * std::log(2 * CMath::PI)) /
+	     eigen_be.dot(eigen_be) + m_ktrtr_diag.vlen * std::log(2 * Math::PI)) /
 	        2.0;
 
 	return result;
 }
 
-void CFITCInferenceMethod::update_chol()
+void FITCInferenceMethod::update_chol()
 {
 	//time complexits O(m^2*n)
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<GaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// eigen3 representation of covariance matrix of inducing features (m_kuu)
@@ -192,7 +191,7 @@ void CFITCInferenceMethod::update_chol()
 
 	//g_sn2 = diagK + sn2 - sum(V.*V,1)';          % g + sn2 = diag(K) + sn2 - diag(Q)
 	eigen_t = eigen_ktrtr_diag * std::exp(m_log_scale * 2.0) +
-	          CMath::sq(sigma) * VectorXd::Ones(m_t.vlen) -
+	          Math::sq(sigma) * VectorXd::Ones(m_t.vlen) -
 	          (V.cwiseProduct(V)).colwise().sum().adjoint();
 	eigen_t=MatrixXd::Ones(eigen_t.rows(),1).cwiseQuotient(eigen_t);
 
@@ -209,7 +208,7 @@ void CFITCInferenceMethod::update_chol()
 	eigen_chol_utr=Lu.matrixU();
 
 	// create eigen representation of labels and mean vectors
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
@@ -246,7 +245,7 @@ void CFITCInferenceMethod::update_chol()
 	eigen_chol=eigen_prod.triangularView<Upper>().solve(eigen_chol)-iKuu;
 }
 
-void CFITCInferenceMethod::update_alpha()
+void FITCInferenceMethod::update_alpha()
 {
 	//time complexity O(m^2) since triangular.solve is O(m^2)
 	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
@@ -265,7 +264,7 @@ void CFITCInferenceMethod::update_alpha()
 	eigen_alpha=eigen_chol_uu.triangularView<Upper>().solve(eigen_alpha);
 }
 
-void CFITCInferenceMethod::update_deriv()
+void FITCInferenceMethod::update_deriv()
 {
 	//time complexits O(m^2*n)
 
@@ -279,7 +278,7 @@ void CFITCInferenceMethod::update_deriv()
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 
 	// get and create eigen representation of labels
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// get and create eigen representation of mean vector
@@ -328,7 +327,7 @@ void CFITCInferenceMethod::update_deriv()
 }
 
 
-SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
+SGVector<float64_t> FITCInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 
@@ -339,14 +338,14 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 	//true posterior mean with equivalent FITC prior
 	//time complexity of the following operations is O(n)
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=((RegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	auto lik=GaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
-	eigen_mu=(eigen_y-eigen_m)-eigen_al*CMath::sq(sigma);
+	eigen_mu=(eigen_y-eigen_m)-eigen_al*Math::sq(sigma);
 	*/
 
 	//FITC approximated posterior mean
@@ -358,7 +357,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 	return SGVector<float64_t>(m_mu);
 }
 
-SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
+SGMatrix<float64_t> FITCInferenceMethod::get_posterior_covariance()
 {
 	compute_gradient();
 
@@ -373,17 +372,17 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 
 	/*
 	//true posterior mean with equivalent FITC prior
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	auto lik=GaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
-	VectorXd diag_part=CMath::sq(sigma)*eigen_t;
+	VectorXd diag_part=Math::sq(sigma)*eigen_t;
 	// diag(sigma2/dg)*V'*(Lu\eye(n))
 	MatrixXd part1=diag_part.asDiagonal()*eigen_V.adjoint()*
 		(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols)));
 	eigen_Sigma=part1*part1.adjoint();
-	VectorXd part2=(VectorXd::Ones(m_t.vlen)-diag_part)*CMath::sq(sigma);
+	VectorXd part2=(VectorXd::Ones(m_t.vlen)-diag_part)*Math::sq(sigma);
 	eigen_Sigma+=part2.asDiagonal();
 	*/
 
@@ -400,7 +399,7 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> FITCInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	//time complexity O(m*n)
@@ -416,20 +415,20 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<GaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	SGVector<float64_t> result(1);
 
 	//diag_dK = 1./g_sn2 - sum(W.*W,1)' - al.*al;                  % diag(dnlZ/dK)
 	//dnlZ.lik = sn2*sum(diag_dK) without noise term
-	result[0]=CMath::sq(sigma)*(VectorXd::Ones(m_t.vlen).cwiseProduct(
+	result[0]=Math::sq(sigma)*(VectorXd::Ones(m_t.vlen).cwiseProduct(
 		eigen_t).sum()-eigen_W.cwiseProduct(eigen_W).sum()-eigen_al.dot(eigen_al));
 
 	return result;
 }
 
-void CFITCInferenceMethod::register_minimizer(Minimizer* minimizer)
+void FITCInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	io::warn("The method does not require a minimizer. The provided minimizer will not be used.");
 }

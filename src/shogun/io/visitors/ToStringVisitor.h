@@ -43,7 +43,7 @@ namespace shogun {
 
 		virtual void on(std::string *v);
 
-		virtual void on(CSGObject **v);
+		virtual void on(std::shared_ptr<SGObject>* v);
 
 		virtual void on(char *string);
 

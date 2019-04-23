@@ -37,14 +37,14 @@
 namespace shogun
 {
 
-class CFeatures;
-class CIndependenceTest;
+class Features;
+class IndependenceTest;
 
 /** @brief Class CDependenceMaximization, base class for all feature selection
  * preprocessors which select a subset of features that shows maximum dependence
  * between the features and the labels. This is done via an implementation of
- * CIndependenceTest, #m_estimator inside compute_measures() (see class
- * documentation of CFeatureSelection), which performs a statistical test for a
+ * IndependenceTest, #m_estimator inside compute_measures() (see class
+ * documentation of FeatureSelection), which performs a statistical test for a
  * given feature \f$\mathbf{X}_i\f$ from the set of features \f$\mathbf{X}\f$,
  * and the labels \f$\mathbf{Y}\f$. The test checks
  * \f[
@@ -67,7 +67,7 @@ class CIndependenceTest;
  * the labels and sets this as features \f$\mathbf{Y}\sim q\f$ to the estimator
  * which is required to compute the measure.
  */
-class CDependenceMaximization : public CFeatureSelection<float64_t>
+class CDependenceMaximization : public FeatureSelection<float64_t>
 {
 public:
 	/** Default constructor */
@@ -78,7 +78,7 @@ public:
 
 	/**
 	 * Method that computes the measures using test statistic computed by
-	 * an instance of CIndependenceTest wiht the provided features and
+	 * an instance of IndependenceTest wiht the provided features and
 	 * the labels
 	 *
 	 * @param features the features on which the measure has to be computed
@@ -86,11 +86,11 @@ public:
 	 * the measure on
 	 * @return the measure based on which features are selected
 	 */
-	virtual float64_t compute_measures(CFeatures* features, index_t idx);
+	virtual float64_t compute_measures(std::shared_ptr<Features> features, index_t idx);
 
 	/**
 	 * Method which handles the removal of features based on removal policy.
-	 * see documentation of CFeatureSelection. For dependence maximization
+	 * see documentation of FeatureSelection. For dependence maximization
 	 * approach, the highest scoring features are removed. Therefore, only
 	 * #m_policy can only be shogun::N_LARGEST, shogun::PERCENTILE_LARGEST.
 	 * See set_policy() method for specifying the exact policy
@@ -101,7 +101,7 @@ public:
 	 * the lowest rank which corresponds to smallest measure.
 	 * @return the feature object after removal of features based on the policy
 	 */
-	virtual CFeatures* remove_feats(CFeatures* features, SGVector<index_t> ranks);
+	virtual std::shared_ptr<Features> remove_feats(std::shared_ptr<Features> features, SGVector<index_t> ranks);
 
 	/** @param policy feature removal policy */
 	virtual void set_policy(EFeatureRemovalPolicy policy);
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @param labels the labels
 	 */
-	virtual void set_labels(CLabels* labels);
+	virtual void set_labels(std::shared_ptr<Labels> labels);
 
 	/** @return the class name */
 	virtual const char* get_name() const
@@ -140,16 +140,16 @@ protected:
 	 * @param idx index of the dimension which is required to be removed
 	 * @return a new feature object with the specified dimension removed
 	 */
-	virtual CFeatures* create_transformed_copy(CFeatures* features, index_t idx);
+	virtual std::shared_ptr<Features> create_transformed_copy(std::shared_ptr<Features> features, index_t idx);
 
 	/**
 	 * The estimator for performing statistical tests for independence which
 	 * is used for computing measures
 	 */
-	CIndependenceTest* m_estimator;
+	std::shared_ptr<IndependenceTest> m_estimator;
 
 	/** The feature for the labels */
-	CFeatures* m_labels_feats;
+	std::shared_ptr<Features> m_labels_feats;
 
 private:
 	/** Register params and initialize with default values */

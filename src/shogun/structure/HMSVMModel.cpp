@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Abinash Panda, Sanuj Sharma, Shell Hu, 
+ * Authors: Fernando Iglesias, Abinash Panda, Sanuj Sharma, Shell Hu,
  *          Sergey Lisitsyn, Soeren Sonnenburg, Viktor Gal
  */
 
@@ -15,14 +15,14 @@
 
 using namespace shogun;
 
-CHMSVMModel::CHMSVMModel()
-: CStructuredModel()
+HMSVMModel::HMSVMModel()
+: StructuredModel()
 {
 	init();
 }
 
-CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
-: CStructuredModel(features, labels)
+HMSVMModel::HMSVMModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
+: StructuredModel(features, labels)
 {
 	init();
 	m_num_obs = num_obs;
@@ -32,7 +32,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 	switch (smt)
 	{
 		case SMT_TWO_STATE:
-			m_state_model = new CTwoStateModel();
+			m_state_model = std::make_shared<TwoStateModel>();
 			break;
 		case SMT_UNKNOWN:
 		default:
@@ -40,17 +40,17 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 	}
 }
 
-CHMSVMModel::~CHMSVMModel()
+HMSVMModel::~HMSVMModel()
 {
-	SG_UNREF(m_state_model);
-	SG_UNREF(m_plif_matrix);
+
+
 }
 
-int32_t CHMSVMModel::get_dim() const
+int32_t HMSVMModel::get_dim() const
 {
 	// Shorthand for the number of free states
-	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	int32_t free_states = m_labels->as<SequenceLabels>()->get_num_states();
+	auto mf = m_features->as<MatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	if ( m_use_plifs )
@@ -59,16 +59,16 @@ int32_t CHMSVMModel::get_dim() const
 		return free_states*(free_states + D*m_num_obs);
 }
 
-SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
+SGVector< float64_t > HMSVMModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		std::shared_ptr<StructuredData> y)
 {
 	// Shorthand for the number of features of the feature vector
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<MatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	// Get the sequence of labels
-	CSequence* label_seq = y->as<CSequence>();
+	auto label_seq = y->as<Sequence>();
 
 	// Initialize psi
 	SGVector< float64_t > psi(get_dim());
@@ -114,7 +114,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 			{
-				CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
+				auto plif = m_plif_matrix->get_element<Plif>(S*f + state_seq[j]);
 				SGVector<float64_t> limits = plif->get_plif_limits();
 				// The number of supporting points smaller or equal than value
 				int32_t count = 0;
@@ -144,7 +144,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 						(limits[count]-value) / (limits[count]-limits[count-1]);
 				}
 
-				SG_UNREF(plif);
+
 			}
 		}
 
@@ -155,7 +155,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	return psi;
 }
 
-CResultSet* CHMSVMModel::argmax(
+std::shared_ptr<ResultSet> HMSVMModel::argmax(
 		SGVector< float64_t > w,
 		int32_t feat_idx,
 		bool const training)
@@ -163,7 +163,7 @@ CResultSet* CHMSVMModel::argmax(
 	ASSERT(w.vlen == get_dim())
 
 	// Shorthand for the number of features of the feature vector
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<MatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 	// Shorthand for the number of states
 	int32_t S = m_state_model->get_num_states();
@@ -200,7 +200,7 @@ CResultSet* CHMSVMModel::argmax(
 			for ( int32_t j = 0 ; j < D ; ++j )
 			{
 				//FIXME make independent of observation values
-				em_idx = j*m_num_obs + (index_t)CMath::round(x(j,i));
+				em_idx = j*m_num_obs + (index_t)Math::round(x(j,i));
 
 				for ( int32_t s = 0 ; s < S ; ++s )
 					E(s,i) += m_emission_weights[s*D*m_num_obs + em_idx];
@@ -217,9 +217,9 @@ CResultSet* CHMSVMModel::argmax(
 			{
 				for ( int32_t s = 0 ; s < S ; ++s )
 				{
-					CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + s);
+					auto plif = m_plif_matrix->get_element<Plif>(S*f + s);
 					E(s,i) += plif->lookup( x(f,i) );
-					SG_UNREF(plif);
+
 				}
 			}
 		}
@@ -228,7 +228,7 @@ CResultSet* CHMSVMModel::argmax(
 	// If argmax used while training, add to E the loss matrix (loss-augmented inference)
 	if ( training )
 	{
-		CSequence* ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
+		auto ytrue = m_labels->get_label(feat_idx)->as<Sequence>();
 
 		require(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i ({}) and the length of its corresponding label y^i "
@@ -243,7 +243,7 @@ CResultSet* CHMSVMModel::argmax(
 				1.0, loss_matrix.matrix, E.num_rows*E.num_cols);
 
 		// Decrement the reference count corresponding to get_label above
-		SG_UNREF(ytrue);
+
 	}
 
 	// Initialize the dynamic programming table and the traceback matrix
@@ -253,14 +253,14 @@ CResultSet* CHMSVMModel::argmax(
 
 	for ( int32_t s = 0 ; s < S ; ++s )
 	{
-		if ( p[s] > -CMath::INFTY )
+		if ( p[s] > -Math::INFTY )
 		{
 			// dp(0,s) = E(s,0)
 			dp(0,s) = E[s];
 		}
 		else
 		{
-			dp(0,s) = -CMath::INFTY;
+			dp(0,s) = -Math::INFTY;
 		}
 	}
 
@@ -274,7 +274,7 @@ CResultSet* CHMSVMModel::argmax(
 		{
 			idx = cur*T + i;
 
-			 dp[idx] = -CMath::INFTY;
+			 dp[idx] = -Math::INFTY;
 			trb[idx] = -1;
 
 			// e = E(cur,i)
@@ -285,7 +285,7 @@ CResultSet* CHMSVMModel::argmax(
 				// aij = m_transmission_weights(prev, cur)
 				a = m_transmission_weights[cur*S + prev];
 
-				if ( a > -CMath::INFTY )
+				if ( a > -Math::INFTY )
 				{
 					// tmp_score = e + a + dp(i-1, prev)
 					tmp_score = e + a + dp[prev*T + i-1];
@@ -302,17 +302,17 @@ CResultSet* CHMSVMModel::argmax(
 
 	// Trace back the most likely sequence of states
 	SGVector< int32_t > opt_path(T);
-	CResultSet* ret = new CResultSet();
-	SG_REF(ret);
+	auto ret = std::make_shared<ResultSet>();
+
 	ret->psi_computed = true;
-	ret->score = -CMath::INFTY;
+	ret->score = -Math::INFTY;
 	opt_path[T-1] = -1;
 
 	for ( int32_t s = 0 ; s < S ; ++s )
 	{
 		idx = s*T + T-1;
 
-		if ( q[s] > -CMath::INFTY && dp[idx] > ret->score )
+		if ( q[s] > -Math::INFTY && dp[idx] > ret->score )
 		{
 			ret->score = dp[idx];
 			opt_path[T-1] = s;
@@ -326,31 +326,31 @@ CResultSet* CHMSVMModel::argmax(
 	for ( int32_t i = T-1 ; i > 0 ; --i )
 		opt_path[i-1] = trb[opt_path[i]*T + i];
 
-	// Populate the CResultSet object to return
-	CSequence* ypred = m_state_model->states_to_labels(opt_path);
+	// Populate the ResultSet object to return
+	auto ypred = m_state_model->states_to_labels(opt_path);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, ypred);
 	ret->argmax   = ypred;
 	if ( training )
 	{
-		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
+		ret->delta     = StructuredModel::delta_loss(feat_idx, ypred);
+		ret->psi_truth = StructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
 		ret->score    -= linalg::dot(w, ret->psi_truth);
 	}
 
 	return ret;
 }
 
-float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t HMSVMModel::delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2)
 {
-	CSequence* seq1 = y1->as<CSequence>();
-	CSequence* seq2 = y2->as<CSequence>();
+	auto seq1 = y1->as<Sequence>();
+	auto seq2 = y2->as<Sequence>();
 
 	// Compute the Hamming loss, number of distinct elements in the sequences
 	return m_state_model->loss(seq1, seq2);
 }
 
-void CHMSVMModel::init_primal_opt(
+void HMSVMModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -361,9 +361,9 @@ void CHMSVMModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	// Shorthand for the number of free states (i.e. states for which parameters are learnt)
-	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
+	int32_t S = m_labels->as<SequenceLabels>()->get_num_states();
 	// Shorthand for the number of features of the feature vector
-	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+	int32_t D = m_features->as<MatrixFeatures<float64_t>>()->get_num_features();
 
 	// Monotonicity constraints for feature scoring functions
 	SGVector< int32_t > monotonicity = m_state_model->get_monotonicity(S,D);
@@ -435,19 +435,19 @@ void CHMSVMModel::init_primal_opt(
 	b.zero();
 }
 
-bool CHMSVMModel::check_training_setup() const
+bool HMSVMModel::check_training_setup() const
 {
 	// Shorthand for the labels in the correct type
-	CSequenceLabels* hmsvm_labels = (CSequenceLabels*) m_labels;
+	auto hmsvm_labels = m_labels->as<SequenceLabels>();
 	// Frequency of each state
 	SGVector< int32_t > state_freq( hmsvm_labels->get_num_states() );
 	state_freq.zero();
 
-	CSequence* seq;
+	std::shared_ptr<Sequence> seq;
 	int32_t state;
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_labels() ; ++i )
 	{
-		seq = hmsvm_labels->get_label(i)->as<CSequence>();
+		seq = hmsvm_labels->get_label(i)->as<Sequence>();
 
 		SGVector<int32_t> seq_data = seq->get_data();
 		for ( int32_t j = 0 ; j < seq_data.size() ; ++j )
@@ -467,7 +467,7 @@ bool CHMSVMModel::check_training_setup() const
 		}
 
 		// Decrement the reference count increased by get_label
-		SG_UNREF(seq);
+
 	}
 
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_states() ; ++i )
@@ -482,9 +482,9 @@ bool CHMSVMModel::check_training_setup() const
 	return true;
 }
 
-void CHMSVMModel::init()
+void HMSVMModel::init()
 {
-	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_state_model, "m_state_model", "The state model");
 	SG_ADD(&m_transmission_weights, "m_transmission_weights",
 			"Transmission weights used in Viterbi");
 	SG_ADD(&m_emission_weights, "m_emission_weights",
@@ -500,26 +500,26 @@ void CHMSVMModel::init()
 	m_num_plif_nodes = 0;
 }
 
-int32_t CHMSVMModel::get_num_aux() const
+int32_t HMSVMModel::get_num_aux() const
 {
 	return m_num_aux;
 }
 
-int32_t CHMSVMModel::get_num_aux_con() const
+int32_t HMSVMModel::get_num_aux_con() const
 {
 	return 2*m_num_aux;
 }
 
-void CHMSVMModel::set_use_plifs(bool use_plifs)
+void HMSVMModel::set_use_plifs(bool use_plifs)
 {
 	m_use_plifs = use_plifs;
 }
 
-void CHMSVMModel::init_training()
+void HMSVMModel::init_training()
 {
 	// Shorthands for the number of states, the matrix features and their dimension
 	int32_t S = m_state_model->get_num_states();
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<MatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	// Transmission and emission weights allocation
@@ -532,7 +532,7 @@ void CHMSVMModel::init_training()
 	// Auxiliary variables
 
 	// Shorthand for the number of free states
-	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
+	int32_t free_states = m_labels->as<SequenceLabels>()->get_num_states();
 	if ( m_use_plifs )
 		m_num_aux = free_states*D*(m_num_plif_nodes-1);
 	else
@@ -541,8 +541,8 @@ void CHMSVMModel::init_training()
 	if ( m_use_plifs )
 	{
 		// Initialize PLiF matrix
-		m_plif_matrix = new CDynamicObjectArray(S*D);
-		SG_REF(m_plif_matrix);
+		m_plif_matrix = std::make_shared<DynamicObjectArray>(S*D);
+
 
 		// Determine the x values for the supporting points of the PLiFs
 
@@ -555,10 +555,10 @@ void CHMSVMModel::init_training()
 		}
 
 		// Choose the supporting points so that roughly the same number of points fall in each bin
-		SGVector< float64_t > a = CMath::linspace_vec(1, N, m_num_plif_nodes+1);
+		SGVector< float64_t > a = Math::linspace_vec(1, N, m_num_plif_nodes+1);
 		SGVector< index_t > signal_idxs(m_num_plif_nodes);
 		for ( int32_t i = 0 ; i < signal_idxs.vlen ; ++i )
-			signal_idxs[i] = (index_t) CMath::round( (a[i] + a[i+1]) / 2 ) - 1;
+			signal_idxs[i] = (index_t) Math::round( (a[i] + a[i+1]) / 2 ) - 1;
 
 		SGVector< float64_t > signal(N);
 		index_t idx; // used to populate signal
@@ -573,7 +573,7 @@ void CHMSVMModel::init_training()
 					signal[idx++] = feat_vec(f,j);
 			}
 
-			CMath::qsort(signal);
+			Math::qsort(signal);
 			SGVector< float64_t > limits(m_num_plif_nodes);
 			for ( int32_t i = 0 ; i < m_num_plif_nodes ; ++i )
 				limits[i] = signal[ signal_idxs[i] ];
@@ -581,28 +581,28 @@ void CHMSVMModel::init_training()
 			// Set the PLiFs' supporting points
 			for ( int32_t s = 0 ; s < S ; ++s )
 			{
-				CPlif* plif = new CPlif(m_num_plif_nodes);
+				auto plif = std::make_shared<Plif>(m_num_plif_nodes);
 				plif->set_plif_limits(limits);
-				plif->set_min_value(-CMath::INFTY);
-				plif->set_max_value(CMath::INFTY);
+				plif->set_min_value(-Math::INFTY);
+				plif->set_max_value(Math::INFTY);
 				m_plif_matrix->push_back(plif);
 			}
 		}
 	}
 }
 
-SGMatrix< float64_t > CHMSVMModel::get_transmission_weights() const
+SGMatrix< float64_t > HMSVMModel::get_transmission_weights() const
 {
 	return m_transmission_weights;
 }
 
-SGVector< float64_t > CHMSVMModel::get_emission_weights() const
+SGVector< float64_t > HMSVMModel::get_emission_weights() const
 {
 	return m_emission_weights;
 }
 
-CStateModel* CHMSVMModel::get_state_model() const
+std::shared_ptr<StateModel> HMSVMModel::get_state_model() const
 {
-	SG_REF(m_state_model);
+
 	return m_state_model;
 }

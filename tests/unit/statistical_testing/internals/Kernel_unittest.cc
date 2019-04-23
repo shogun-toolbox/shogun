@@ -29,7 +29,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
@@ -54,9 +53,9 @@ TEST(SelfAdjointKernelFunctor, kernel)
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 0.1);
 	for (auto i=0; i<dim*num_vec; ++i)
 		data.matrix[i]=uniform_real_dist(prng);
-	auto feats=some<CDenseFeatures<float64_t> >(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t> >(data);
 
-	auto kernel=some<CGaussianKernel>(10, 2*sigma*sigma);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*sigma*sigma);
 	kernel->init(feats, feats);
 
 	SelfAdjointPrecomputedKernel kernel_functor;

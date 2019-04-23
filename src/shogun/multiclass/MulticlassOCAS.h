@@ -17,23 +17,23 @@ namespace shogun
 {
 
 /** @brief multiclass OCAS wrapper */
-class CMulticlassOCAS : public CLinearMulticlassMachine
+class MulticlassOCAS : public LinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
 		/** default constructor  */
-		CMulticlassOCAS();
+		MulticlassOCAS();
 
 		/** standard constructor
 		 * @param C C regularication constant value
 		 * @param features features
 		 * @param labs labels
 		 */
-		CMulticlassOCAS(float64_t C, CFeatures* features, CLabels* labs);
+		MulticlassOCAS(float64_t C, std::shared_ptr<Features> features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~CMulticlassOCAS();
+		virtual ~MulticlassOCAS();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -109,7 +109,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 		/** update W */
 		static float64_t msvm_update_W(float64_t t, void* user_data);

@@ -14,24 +14,24 @@
 
 namespace shogun
 {
-class CSGObject;
+class SGObject;
 template<class T> class SGVector;
 
-/** @brief The class CTokenizer acts as a base class in order
+/** @brief The class Tokenizer acts as a base class in order
  * to implement tokenizers. Sub-classes must implement
  * the methods has_next(), next_token_idx() and get_copy().
  */
-class CTokenizer: public CSGObject
+class Tokenizer: public SGObject
 {
 public:
 	/** Constructor */
-	CTokenizer();
+	Tokenizer();
 
 	/** Copy constructor */
-	CTokenizer(const CTokenizer& orig);
+	Tokenizer(const Tokenizer& orig);
 
 	/** Destructor */
-	virtual ~CTokenizer() { };
+	virtual ~Tokenizer() { };
 
 	/** Set the char array that requires tokenization
 	 *
@@ -55,10 +55,10 @@ public:
 	virtual index_t next_token_idx(index_t& start)=0;
 
 	/** Creates a copy of the appropriate runtime
-	 * instance of a CTokenizer subclass
+	 * instance of a Tokenizer subclass
 	 * Needs to be overriden
 	 */
-	virtual CTokenizer* get_copy()=0;
+	virtual Tokenizer* get_copy()=0;
 
 private:
 	void init();

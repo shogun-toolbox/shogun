@@ -69,12 +69,12 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	float64_t sne_theta;
 	float64_t sne_perplexity;
 	float64_t squishing_rate;
-	CKernel* kernel;
-	CDistance* distance;
-	CDotFeatures* features;
+	Kernel* kernel;
+	Distance* distance;
+	DotFeatures* features;
 };
 
-CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+std::shared_ptr<DenseFeatures<float64_t>> tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
 }
 
 #endif

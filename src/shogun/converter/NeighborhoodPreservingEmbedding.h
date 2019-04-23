@@ -15,8 +15,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CDistance;
+class Features;
+class Distance;
 
 /** @brief NeighborhoodPreservingEmbedding converter used to
  * construct embeddings as described in:
@@ -35,21 +35,21 @@ class CDistance;
  * sg('create_converter','npe',k);
  *
  */
-class CNeighborhoodPreservingEmbedding: public CLocallyLinearEmbedding
+class NeighborhoodPreservingEmbedding: public LocallyLinearEmbedding
 {
 public:
 
 	/** constructor */
-	CNeighborhoodPreservingEmbedding();
+	NeighborhoodPreservingEmbedding();
 
 	/** destructor */
-	virtual ~CNeighborhoodPreservingEmbedding();
+	virtual ~NeighborhoodPreservingEmbedding();
 
 	/** get name */
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 };
 }
 

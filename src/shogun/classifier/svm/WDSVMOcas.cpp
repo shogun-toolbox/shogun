@@ -27,14 +27,14 @@ struct wdocas_thread_params_output
 	float32_t* out;
 	int32_t* val;
 	float64_t* output;
-	CWDSVMOcas* wdocas;
+	WDSVMOcas* wdocas;
 	int32_t start;
 	int32_t end;
 };
 
 struct wdocas_thread_params_add
 {
-	CWDSVMOcas* wdocas;
+	WDSVMOcas* wdocas;
 	float32_t* new_a;
 	uint32_t* new_cut;
 	int32_t start;
@@ -43,8 +43,8 @@ struct wdocas_thread_params_add
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CWDSVMOcas::CWDSVMOcas()
-: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
+WDSVMOcas::WDSVMOcas()
+: Machine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(SVM_OCAS)
 {
 	unstable(SOURCE_LOCATION);
@@ -59,8 +59,8 @@ CWDSVMOcas::CWDSVMOcas()
 	normalization_const=1.0;
 }
 
-CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
-: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
+WDSVMOcas::WDSVMOcas(E_SVM_TYPE type)
+: Machine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
@@ -73,10 +73,10 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 	normalization_const=1.0;
 }
 
-CWDSVMOcas::CWDSVMOcas(
-	float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
-	CLabels* trainlab)
-: CMachine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
+WDSVMOcas::WDSVMOcas(
+	float64_t C, int32_t d, int32_t from_d, std::shared_ptr<StringFeatures<uint8_t>> traindat,
+	std::shared_ptr<Labels> trainlab)
+: Machine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
 	w=NULL;
@@ -90,23 +90,23 @@ CWDSVMOcas::CWDSVMOcas(
 }
 
 
-CWDSVMOcas::~CWDSVMOcas()
+WDSVMOcas::~WDSVMOcas()
 {
 }
 
-CBinaryLabels* CWDSVMOcas::apply_binary(CFeatures* data)
-{
-	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
-}
-
-CRegressionLabels* CWDSVMOcas::apply_regression(CFeatures* data)
+std::shared_ptr<BinaryLabels> WDSVMOcas::apply_binary(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<BinaryLabels>(outputs);
 }
 
-SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
+std::shared_ptr<RegressionLabels> WDSVMOcas::apply_regression(std::shared_ptr<Features> data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return std::make_shared<RegressionLabels>(outputs);
+}
+
+SGVector<float64_t> WDSVMOcas::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -116,7 +116,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 			error("Features not of class string type byte");
 		}
 
-		set_features((CStringFeatures<uint8_t>*) data);
+		set_features(std::static_pointer_cast<StringFeatures<uint8_t>>(data));
 	}
 	ASSERT(features)
 
@@ -138,7 +138,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 	return outputs;
 }
 
-int32_t CWDSVMOcas::set_wd_weights()
+int32_t WDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8)
 	SG_FREE(wd_weights);
@@ -149,14 +149,14 @@ int32_t CWDSVMOcas::set_wd_weights()
 
 	for (int32_t i=0; i<degree; i++)
 	{
-		w_offsets[i]=CMath::pow(alphabet_size, i+1);
+		w_offsets[i]=Math::pow(alphabet_size, i+1);
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 		w_dim_single_c+=w_offsets[i];
 	}
 	return w_dim_single_c;
 }
 
-bool CWDSVMOcas::train_machine(CFeatures* data)
+bool WDSVMOcas::train_machine(std::shared_ptr<Features> data)
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 
@@ -169,20 +169,20 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 		{
 			error("Features not of class string type byte");
 		}
-		set_features((CStringFeatures<uint8_t>*) data);
+		set_features(std::static_pointer_cast<StringFeatures<uint8_t>>(data));
 	}
 
 	ASSERT(get_features())
-	CAlphabet* alphabet=get_features()->get_alphabet();
+	auto alphabet=get_features()->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA)
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	SGVector<float64_t> labvec=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> labvec=(std::static_pointer_cast<BinaryLabels>(m_labels))->get_labels();
 	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();
-	//CMath::display_vector(wd_weights, degree, "wd_weights");
+	//Math::display_vector(wd_weights, degree, "wd_weights");
 	SG_DEBUG("w_dim_single_char={}", w_dim_single_char)
 	w_dim=string_length*w_dim_single_char;
 	SG_DEBUG("cutting plane has {} dims", w_dim)
@@ -210,10 +210,10 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 
 /////speed tests/////
 	/*float64_t* tmp = SG_MALLOC(float64_t, num_vec);
-	float64_t start=CTime::get_curtime();
-	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
+	float64_t start=Time::get_curtime();
+	Math::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
-	start=CTime::get_curtime()-start;
+	start=Time::get_curtime()-start;
 	io::print("timing:{}\n", start);
 	SG_FREE(tmp);
 	exit(1);*/
@@ -225,12 +225,12 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
 			TolAbs, QPBound, get_max_train_time(), bufsize, Method,
-			&CWDSVMOcas::compute_W,
-			&CWDSVMOcas::update_W,
-			&CWDSVMOcas::add_new_cut,
-			&CWDSVMOcas::compute_output,
-			&CWDSVMOcas::sort,
-			&CWDSVMOcas::print,
+			&WDSVMOcas::compute_W,
+			&WDSVMOcas::update_W,
+			&WDSVMOcas::add_new_cut,
+			&WDSVMOcas::compute_output,
+			&WDSVMOcas::sort,
+			&WDSVMOcas::print,
 			this);
 
 	io::info("Ocas Converged after {} iterations"
@@ -249,7 +249,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(cuts);
 
 	lab=NULL;
-	SG_UNREF(alphabet);
+
 
 	return true;
 }
@@ -261,10 +261,10 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
   sq_norm_W = W'*W;
 
   ---------------------------------------------------------------------------------*/
-float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
+float64_t WDSVMOcas::update_W( float64_t t, void* ptr )
 {
   float64_t sq_norm_W = 0;
-  CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+  auto o = (WDSVMOcas*)ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   float32_t* W=o->w;
   float32_t* oldW=o->old_w;
@@ -278,7 +278,7 @@ float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
   }
 
   bias=old_bias*(1-t) + t*bias;
-  sq_norm_W += CMath::sq(bias);
+  sq_norm_W += Math::sq(bias);
 
   o->bias=bias;
   o->old_bias=old_bias;
@@ -294,10 +294,10 @@ float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-void* CWDSVMOcas::add_new_cut_helper( void* ptr)
+void* WDSVMOcas::add_new_cut_helper( void* ptr)
 {
 	wdocas_thread_params_add* p = (wdocas_thread_params_add*) ptr;
-	CWDSVMOcas* o = p->wdocas;
+	auto o = p->wdocas;
 	int32_t start = p->start;
 	int32_t end = p->end;
 	int32_t string_length = o->string_length;
@@ -309,7 +309,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	int32_t alphabet_size = o->alphabet_size;
 	float32_t* wd_weights = o->wd_weights;
 	int32_t degree = o->degree;
-	CStringFeatures<uint8_t>* f = o->features;
+	auto f = o->features;
 	float64_t normalization_const = o->normalization_const;
 
 	// temporary vector
@@ -322,7 +322,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	{
 		int32_t offs=o->w_dim_single_char*j;
 		memset(val,0,sizeof(int32_t)*cut_length);
-		int32_t lim=CMath::min(degree, string_length-j);
+		int32_t lim=Math::min(degree, string_length-j);
 		int32_t len;
 
 		for (int32_t k=0; k<lim; k++)
@@ -346,11 +346,11 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	return NULL;
 }
 
-int CWDSVMOcas::add_new_cut(
+int WDSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (WDSVMOcas*)ptr;
 	uint32_t i;
 	float64_t* c_bias = o->cp_bias;
 	uint32_t nDim=(uint32_t) o->w_dim;
@@ -382,7 +382,7 @@ int CWDSVMOcas::add_new_cut(
 		params_add[t].end = step*(t+1);
 		params_add[t].cut_length = cut_length;
 
-		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
+		if (pthread_create(&threads[t], NULL, &WDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
 		{
 			nthreads=t;
 			io::warn("thread creation failed");
@@ -425,19 +425,19 @@ int CWDSVMOcas::add_new_cut(
 		SGVector<float32_t> cut_wrap(cuts[i], nDim, false);
 		new_col_H[i] = linalg::dot(new_a, cut_wrap) + c_bias[nSel]*c_bias[i];
 	}
-	new_col_H[nSel] = linalg::dot(new_a, new_a) + CMath::sq(c_bias[nSel]);
+	new_col_H[nSel] = linalg::dot(new_a, new_a) + Math::sq(c_bias[nSel]);
 
 	cuts[nSel]=new_a;
-	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
-	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
+	//Math::display_vector(new_col_H, nSel+1, "new_col_H");
+	//Math::display_vector(cuts[nSel], nDim, "cut[nSel]");
 	//
 
 	return 0;
 }
 
-int CWDSVMOcas::sort( float64_t* vals, float64_t* data, uint32_t size)
+int WDSVMOcas::sort( float64_t* vals, float64_t* data, uint32_t size)
 {
-	CMath::qsort_index(vals, data, size);
+	Math::qsort_index(vals, data, size);
 	return 0;
 }
 
@@ -446,17 +446,17 @@ int CWDSVMOcas::sort( float64_t* vals, float64_t* data, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-void* CWDSVMOcas::compute_output_helper(void* ptr)
+void* WDSVMOcas::compute_output_helper(void* ptr)
 {
 	wdocas_thread_params_output* p = (wdocas_thread_params_output*) ptr;
-	CWDSVMOcas* o = p->wdocas;
+	WDSVMOcas* o = p->wdocas;
 	int32_t start = p->start;
 	int32_t end = p->end;
 	float32_t* out = p->out;
 	float64_t* output = p->output;
 	int32_t* val = p->val;
 
-	CStringFeatures<uint8_t>* f=o->get_features();
+	auto f=o->get_features();
 
 	int32_t degree = o->degree;
 	int32_t string_length = o->string_length;
@@ -475,7 +475,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 		for (int32_t i=start ; i<end; i++)
 			val[i]=0;
 
-		int32_t lim=CMath::min(degree, string_length-j);
+		int32_t lim=Math::min(degree, string_length-j);
 		int32_t len;
 
 		for (int32_t k=0; k<lim; k++)
@@ -533,15 +533,15 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	for (int32_t i=start; i<end; i++)
 		output[i]=y[i]*o->bias + out[i]*y[i]/normalization_const;
 
-	//CMath::display_vector(o->w, o->w_dim, "w");
-	//CMath::display_vector(output, nData, "out");
+	//Math::display_vector(o->w, o->w_dim, "w");
+	//Math::display_vector(output, nData, "out");
 	return NULL;
 }
 
-int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
+int WDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 #ifdef HAVE_PTHREAD
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (WDSVMOcas*)ptr;
 	int32_t nData=o->num_vec;
 	wdocas_thread_params_output* params_output=SG_MALLOC(wdocas_thread_params_output, env()->get_num_threads());
 	pthread_t* threads = SG_MALLOC(pthread_t, env()->get_num_threads());
@@ -570,7 +570,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		params_output[t].end = step*(t+1);
 
 		//io::print("t={} start={} end={} output={}\n", t, params_output[t].start, params_output[t].end, fmt::ptr(params_output[t].output));
-		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
+		if (pthread_create(&threads[t], NULL, &WDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
 			io::warn("thread creation failed");
@@ -608,13 +608,13 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
   dp_WoldW = W'*oldW';
 
   ----------------------------------------------------------------------*/
-void CWDSVMOcas::compute_W(
+void WDSVMOcas::compute_W(
 	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
 	void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (WDSVMOcas*)ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
-	CMath::swap(o->w, o->old_w);
+	Math::swap(o->w, o->old_w);
 	SGVector<float32_t> W(o->w, nDim, false);
 	linalg::zero(W);
 	SGVector<float32_t> oldW(o->old_w, nDim, false);
@@ -631,7 +631,7 @@ void CWDSVMOcas::compute_W(
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = linalg::dot(W, W) +CMath::sq(bias);
+	*sq_norm_W = linalg::dot(W, W) +Math::sq(bias);
 	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;;
 	//io::print("nSel={} sq_norm_W={} dp_WoldW={}\n", nSel, *sq_norm_W, *dp_WoldW);
 

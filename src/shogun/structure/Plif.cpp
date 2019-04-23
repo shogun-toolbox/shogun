@@ -16,8 +16,8 @@
 
 using namespace shogun;
 
-CPlif::CPlif(int32_t l)
-: CPlifBase()
+Plif::Plif(int32_t l)
+: PlifBase()
 {
 	limits=SGVector<float64_t>();
 	penalties=SGVector<float64_t>();
@@ -36,13 +36,13 @@ CPlif::CPlif(int32_t l)
 		set_plif_length(l);
 }
 
-CPlif::~CPlif()
+Plif::~Plif()
 {
 	SG_FREE(name);
 	SG_FREE(cache);
 }
 
-bool CPlif::set_transform_type(const char *type_str)
+bool Plif::set_transform_type(const char *type_str)
 {
 	invalidate_cache();
 
@@ -66,7 +66,7 @@ bool CPlif::set_transform_type(const char *type_str)
 	return true ;
 }
 
-void CPlif::init_penalty_struct_cache()
+void Plif::init_penalty_struct_cache()
 {
 	if (!use_cache)
 		return ;
@@ -82,7 +82,7 @@ void CPlif::init_penalty_struct_cache()
 		for (int32_t i=0; i<=max_value; i++)
 		{
 			if (i<min_value)
-				local_cache[i] = -CMath::INFTY ;
+				local_cache[i] = -Math::INFTY ;
 			else
 				local_cache[i] = lookup_penalty(i, NULL) ;
 		}
@@ -90,13 +90,13 @@ void CPlif::init_penalty_struct_cache()
 	this->cache=local_cache ;
 }
 
-void CPlif::set_plif_name(char *p_name)
+void Plif::set_plif_name(char *p_name)
 {
 	SG_FREE(name);
 	name=get_strdup(p_name);
 }
 
-char* CPlif::get_plif_name() const
+char* Plif::get_plif_name() const
 {
 	if (name)
 		return name;
@@ -108,14 +108,14 @@ char* CPlif::get_plif_name() const
 	}
 }
 
-void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
+void Plif::delete_penalty_struct(std::vector<std::shared_ptr<Plif>>& PEN, int32_t P)
 {
 	for (int32_t i=0; i<P; i++)
-		delete PEN[i] ;
-	SG_FREE(PEN);
+		PEN[i].reset();
+	PEN.clear();
 }
 
-float64_t CPlif::lookup_penalty_svm(
+float64_t Plif::lookup_penalty_svm(
 	float64_t p_value, float64_t *d_values) const
 {
 	ASSERT(use_svm>0)
@@ -178,7 +178,7 @@ float64_t CPlif::lookup_penalty_svm(
 	return ret ;
 }
 
-float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
+float64_t Plif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 {
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
@@ -186,7 +186,7 @@ float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 	if ((p_value<min_value) || (p_value>max_value))
 	{
 		//io::print("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value);
-		return -CMath::INFTY ;
+		return -Math::INFTY ;
 	}
 	if (!do_calc)
 		return p_value;
@@ -198,7 +198,7 @@ float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 	return lookup_penalty((float64_t) p_value, svm_values) ;
 }
 
-float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
+float64_t Plif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 {
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
@@ -211,7 +211,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 	if ((p_value<min_value) || (p_value>max_value))
 	{
 		//io::print("Feature:{}, {}.lookup_penalty({}): return -inf min_value: {}, max_value: {}\n", name, get_name(), p_value, min_value, max_value);
-		return -CMath::INFTY ;
+		return -Math::INFTY ;
 	}
 
 	if (!do_calc)
@@ -276,13 +276,13 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 	return ret ;
 }
 
-void CPlif::penalty_clear_derivative()
+void Plif::penalty_clear_derivative()
 {
 	for (int32_t i=0; i<len; i++)
 		cum_derivatives[i]=0.0 ;
 }
 
-void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor)
+void Plif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor)
 {
 	if (use_svm)
 	{
@@ -334,7 +334,7 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 	}
 }
 
-void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, float64_t factor)
+void Plif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, float64_t factor)
 {
 	ASSERT(use_svm>0)
 	float64_t d_value=d_values[use_svm-1] ;
@@ -381,7 +381,7 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 	}
 }
 
-void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
+void Plif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
 	if (use_svm)
 	{
@@ -391,12 +391,12 @@ void CPlif::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 	io::print("->use_svm:{} plif_id:{} name:{} trans_type:{}  ",use_svm, get_id(), get_name(), get_transform_type());
 }
 
-bool CPlif::get_do_calc()
+bool Plif::get_do_calc()
 {
 	return do_calc;
 }
 
-void CPlif::set_do_calc(bool b)
+void Plif::set_do_calc(bool b)
 {
 	do_calc = b;;
 }

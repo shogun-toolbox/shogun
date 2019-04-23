@@ -39,7 +39,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 namespace internal
 {
@@ -118,8 +118,8 @@ public:
 	 * @code
 	 *
 	 * DataManager data_mgr;
-	 * // feats_0 = some CFeatures instance
-	 * // feats_1 = some CFeatures instance
+	 * // feats_0 = some Features instance
+	 * // feats_1 = some Features instance
 	 * data_mgr.sample_at(0) = feats_0;
 	 * data_mgr.sample_at(1) = feats_1;
 	 *
@@ -136,9 +136,9 @@ public:
 	 * Getter for feature object at a give data source index.
 	 *
 	 * @param i The data source index, from which the feature object is to be obtained
-	 * @return The underlying CFeatures object at the specified data source.
+	 * @return The underlying Features object at the specified data source.
 	 */
-	CFeatures* samples_at(index_t i) const;
+	std::shared_ptr<Features> samples_at(index_t i) const;
 
 	/**
 	 * Setter for the number of samples. Setting this number is mandatory for

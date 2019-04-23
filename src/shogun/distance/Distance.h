@@ -22,9 +22,9 @@
 
 namespace shogun
 {
-class CFile;
-class CMath;
-class CFeatures;
+class File;
+class Math;
+class Features;
 
 /** type of distance */
 enum EDistanceType
@@ -66,14 +66,14 @@ enum EDistanceType
  *
  * - \f$ d(x,y) \leq d(x,z) + d(z,y) \f$
  *
- * Currently distance inherited from the CDistance class should be
+ * Currently distance inherited from the Distance class should be
  * symmetric.
  *
  * The simplest example of a distance function is the Euclidean
- * distance: @see CEuclideanDistance
+ * distance: @see EuclideanDistance
  *
  * In the means of Shogun toolbox the distance function is defined
- * on the 'space' of CFeatures.
+ * on the 'space' of Features.
  *
  * Precomputations can be done for left hand side and right hand side features.
  * This has to be implemented in overloaded methods for precompute_lhs() and
@@ -82,11 +82,11 @@ enum EDistanceType
  * when features or feature matrix are changed.
  *
  */
-class CDistance : public CSGObject
+class Distance : public SGObject
 {
 	public:
 		/** default constructor */
-		CDistance();
+		Distance();
 
 		/** init distance
 		 *
@@ -94,8 +94,8 @@ class CDistance : public CSGObject
 		 * @param rhs features of right-hand side
 		 * @return if init was successful
 		 */
-		CDistance(CFeatures* lhs, CFeatures* rhs);
-		virtual ~CDistance();
+		Distance(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
+		virtual ~Distance();
 
 		/** get distance function for lhs feature vector a
 		  * and rhs feature vector b
@@ -173,8 +173,8 @@ class CDistance : public CSGObject
 			int32_t i_start;
 
 			if (symmetric)
-				i_start = (int32_t)CMath::floor(
-				    n - std::sqrt(CMath::sq((float64_t)n) - offs));
+				i_start = (int32_t)Math::floor(
+				    n - std::sqrt(Math::sq((float64_t)n) - offs));
 			else
 				i_start=(int32_t) (offs/int64_t(n));
 
@@ -190,7 +190,7 @@ class CDistance : public CSGObject
 		 * @param rhs features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
 
 		/** cleanup distance
 		 *
@@ -202,25 +202,25 @@ class CDistance : public CSGObject
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<File> loader);
 
 		/** save kernel matrix
 		 *
 		 * @param writer File object via which to save data
 		 */
-		void save(CFile* writer);
+		void save(std::shared_ptr<File> writer);
 
 		/** get left-hand side features used in distance matrix
 		 *
 		 * @return left-hand side features
 		 */
-		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; };
+		inline std::shared_ptr<Features> get_lhs() {  return lhs; };
 
 		/** get right-hand side features used in distance matrix
 		 *
 		 * @return right-hand side features
 		 */
-		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
+		inline std::shared_ptr<Features> get_rhs() {  return rhs; };
 
 		/** replace right-hand side features used in distance matrix
 		 *
@@ -230,7 +230,7 @@ class CDistance : public CSGObject
 		 * @param rhs features of right-hand side
 		 * @return replaced right-hand side features
 		 */
-		virtual CFeatures* replace_rhs(CFeatures* rhs);
+		virtual std::shared_ptr<Features> replace_rhs(std::shared_ptr<Features> rhs);
 
 		/** replace left-hand side features used in distance matrix
 		 *
@@ -240,7 +240,7 @@ class CDistance : public CSGObject
 		 * @param lhs features of right-hand side
 		 * @return replaced left-hand side features
 		 */
-		virtual CFeatures* replace_lhs(CFeatures* lhs);
+		virtual std::shared_ptr<Features> replace_lhs(std::shared_ptr<Features> lhs);
 
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();
@@ -376,7 +376,7 @@ class CDistance : public CSGObject
 		 * @param r right hand side features
 		 * @return true if the features are compatible
 		 */
-		virtual bool check_compatibility(CFeatures* l, CFeatures* r);
+		virtual bool check_compatibility(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	private:
 		void init();
@@ -393,9 +393,9 @@ class CDistance : public CSGObject
 		bool precompute_matrix;
 
 		/// feature vectors to occur on the left hand side
-		CFeatures* lhs;
+		std::shared_ptr<Features> lhs;
 		/// feature vectors to occur on the right hand side
-		CFeatures* rhs;
+		std::shared_ptr<Features> rhs;
 
 		/** number of feature vectors on the left hand side */
 		int32_t num_lhs;

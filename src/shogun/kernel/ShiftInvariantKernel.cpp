@@ -34,32 +34,32 @@
 
 using namespace shogun;
 
-CShiftInvariantKernel::CShiftInvariantKernel() : CKernel(0)
+ShiftInvariantKernel::ShiftInvariantKernel() : Kernel(0)
 {
 	register_params();
 }
 
-CShiftInvariantKernel::CShiftInvariantKernel(CFeatures *l, CFeatures *r) : CKernel(l, r, 0)
+ShiftInvariantKernel::ShiftInvariantKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r) : Kernel(l, r, 0)
 {
 	register_params();
 	init(l, r);
 }
 
-CShiftInvariantKernel::~CShiftInvariantKernel()
+ShiftInvariantKernel::~ShiftInvariantKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CShiftInvariantKernel::init(CFeatures* l, CFeatures* r)
+bool ShiftInvariantKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	require(m_distance, "The distance instance cannot be NULL!");
-	CKernel::init(l,r);
+	Kernel::init(l,r);
 	m_distance->init(l, r);
 	return init_normalizer();
 }
 
-void CShiftInvariantKernel::precompute_distance()
+void ShiftInvariantKernel::precompute_distance()
 {
 	require(m_distance, "The distance instance cannot be NULL!");
 	require(m_distance->init(lhs, rhs), "Could not initialize the distance instance!");
@@ -67,8 +67,8 @@ void CShiftInvariantKernel::precompute_distance()
 	SGMatrix<float32_t> dist_mat=m_distance->get_distance_matrix<float32_t>();
 	if (m_precomputed_distance==NULL)
 	{
-		m_precomputed_distance=new CCustomDistance();
-		SG_REF(m_precomputed_distance);
+		m_precomputed_distance=std::make_shared<CustomDistance>();
+		
 	}
 
 	if (lhs==rhs)
@@ -77,21 +77,21 @@ void CShiftInvariantKernel::precompute_distance()
 		m_precomputed_distance->set_full_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 }
 
-void CShiftInvariantKernel::cleanup()
+void ShiftInvariantKernel::cleanup()
 {
-	SG_UNREF(m_precomputed_distance);
+	
 	m_precomputed_distance=NULL;
-	CKernel::cleanup();
+	Kernel::cleanup();
 	m_distance->cleanup();
 }
 
-EDistanceType CShiftInvariantKernel::get_distance_type() const
+EDistanceType ShiftInvariantKernel::get_distance_type() const
 {
 	require(m_distance, "The distance instance cannot be NULL!");
 	return m_distance->get_distance_type();
 }
 
-float64_t CShiftInvariantKernel::distance(int32_t a, int32_t b) const
+float64_t ShiftInvariantKernel::distance(int32_t a, int32_t b) const
 {
 	require(m_distance, "The distance instance cannot be NULL!");
 	if (m_precomputed_distance!=NULL)
@@ -100,26 +100,23 @@ float64_t CShiftInvariantKernel::distance(int32_t a, int32_t b) const
 		return m_distance->distance(a, b);
 }
 
-void CShiftInvariantKernel::register_params()
+void ShiftInvariantKernel::register_params()
 {
-	SG_ADD((CSGObject**) &m_distance, "m_distance", "Distance to be used.");
-	SG_ADD((CSGObject**) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_distance, "m_distance", "Distance to be used.");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.");
 
 	m_distance=NULL;
 	m_precomputed_distance=NULL;
 }
 
-void CShiftInvariantKernel::set_precomputed_distance(CCustomDistance* precomputed_distance)
+void ShiftInvariantKernel::set_precomputed_distance(std::shared_ptr<CustomDistance> precomputed_distance)
 {
 	require(precomputed_distance, "The precomputed distance instance cannot be NULL!");
-	SG_REF(precomputed_distance);
-	SG_UNREF(m_precomputed_distance);
 	m_precomputed_distance=precomputed_distance;
 }
 
-CCustomDistance* CShiftInvariantKernel::get_precomputed_distance() const
+std::shared_ptr<CustomDistance> ShiftInvariantKernel::get_precomputed_distance() const
 {
 	require(m_precomputed_distance, "The precomputed distance instance cannot be NULL!");
-	SG_REF(m_precomputed_distance);
 	return m_precomputed_distance;
 }

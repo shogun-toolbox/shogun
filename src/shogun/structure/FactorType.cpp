@@ -10,18 +10,18 @@
 
 using namespace shogun;
 
-CFactorType::CFactorType() : CSGObject()
+FactorType::FactorType() : SGObject()
 {
 	unstable(SOURCE_LOCATION);
 
 	init();
 }
 
-CFactorType::CFactorType(
+FactorType::FactorType(
 	int32_t id,
 	SGVector<int32_t> card,
 	SGVector<float64_t> w)
-	: CSGObject()
+	: SGObject()
 {
 	init();
 	m_type_id = id;
@@ -42,11 +42,11 @@ CFactorType::CFactorType(
 	}
 }
 
-CFactorType::~CFactorType()
+FactorType::~FactorType()
 {
 }
 
-void CFactorType::init()
+void FactorType::init()
 {
 	SG_ADD(&m_type_id, "type_id", "Factor type name");
 	SG_ADD(&m_cards, "cards", "Cardinalities");
@@ -60,42 +60,42 @@ void CFactorType::init()
 	m_num_assignments = 0;
 }
 
-int32_t CFactorType::get_type_id() const
+int32_t FactorType::get_type_id() const
 {
 	return m_type_id;
 }
 
-void CFactorType::set_type_id(int32_t id)
+void FactorType::set_type_id(int32_t id)
 {
 	m_type_id = id;
 }
 
-SGVector<float64_t> CFactorType::get_w()
+SGVector<float64_t> FactorType::get_w()
 {
 	return m_w;
 }
 
-const SGVector<float64_t> CFactorType::get_w() const
+const SGVector<float64_t> FactorType::get_w() const
 {
 	return m_w;
 }
 
-void CFactorType::set_w(SGVector<float64_t> w)
+void FactorType::set_w(SGVector<float64_t> w)
 {
 	m_w = w.clone();
 }
 
-int32_t CFactorType::get_w_dim() const
+int32_t FactorType::get_w_dim() const
 {
 	return m_w.size();
 }
 
-const SGVector<int32_t> CFactorType::get_cardinalities() const
+const SGVector<int32_t> FactorType::get_cardinalities() const
 {
 	return m_cards;
 }
 
-void CFactorType::set_cardinalities(SGVector<int32_t> cards)
+void FactorType::set_cardinalities(SGVector<int32_t> cards)
 {
 	m_cards = cards.clone();
 	init_card();
@@ -110,17 +110,17 @@ void CFactorType::set_cardinalities(SGVector<int32_t> cards)
 	}
 }
 
-int32_t CFactorType::get_num_vars()
+int32_t FactorType::get_num_vars()
 {
 	return m_cards.size();
 }
 
-int32_t CFactorType::get_num_assignments() const
+int32_t FactorType::get_num_assignments() const
 {
 	return m_num_assignments;
 }
 
-void CFactorType::init_card()
+void FactorType::init_card()
 {
 	m_num_assignments = 1;
 	m_cumprod_cards.resize_vector(m_cards.size());
@@ -131,30 +131,30 @@ void CFactorType::init_card()
 	}
 }
 
-CTableFactorType::CTableFactorType()
-	: CFactorType()
+TableFactorType::TableFactorType()
+	: FactorType()
 {
 }
 
-CTableFactorType::CTableFactorType(
+TableFactorType::TableFactorType(
 	int32_t id,
 	SGVector<int32_t> card,
 	SGVector<float64_t> w)
-	: CFactorType(id, card, w)
+	: FactorType(id, card, w)
 {
 }
 
-CTableFactorType::~CTableFactorType()
+TableFactorType::~TableFactorType()
 {
 }
 
-int32_t CTableFactorType::state_from_index(int32_t ei, int32_t var_index) const
+int32_t TableFactorType::state_from_index(int32_t ei, int32_t var_index) const
 {
 	ASSERT(var_index < get_cardinalities().size());
 	return ((ei / m_cumprod_cards[var_index]) % m_cards[var_index]);
 }
 
-SGVector<int32_t> CTableFactorType::assignment_from_index(int32_t ei) const
+SGVector<int32_t> TableFactorType::assignment_from_index(int32_t ei) const
 {
 	SGVector<int32_t> assig(get_cardinalities().size());
 	for (int32_t vi = 0; vi < get_cardinalities().size(); ++vi)
@@ -163,7 +163,7 @@ SGVector<int32_t> CTableFactorType::assignment_from_index(int32_t ei) const
 	return assig;
 }
 
-int32_t CTableFactorType::index_from_assignment(const SGVector<int32_t> assig) const
+int32_t TableFactorType::index_from_assignment(const SGVector<int32_t> assig) const
 {
 	ASSERT(assig.size() == get_cardinalities().size());
 	int32_t index = 0;
@@ -173,7 +173,7 @@ int32_t CTableFactorType::index_from_assignment(const SGVector<int32_t> assig) c
 	return index;
 }
 
-int32_t CTableFactorType::index_from_new_state(
+int32_t TableFactorType::index_from_new_state(
 	int32_t old_ei, int32_t var_index, int32_t var_state) const
 {
 	ASSERT(var_index < get_cardinalities().size());
@@ -183,7 +183,7 @@ int32_t CTableFactorType::index_from_new_state(
 		+ var_state * m_cumprod_cards[var_index]);
 }
 
-int32_t CTableFactorType::index_from_universe_assignment(
+int32_t TableFactorType::index_from_universe_assignment(
 	const SGVector<int32_t> assig,
 	const SGVector<int32_t> var_index) const
 {
@@ -199,7 +199,7 @@ int32_t CTableFactorType::index_from_universe_assignment(
 	return index;
 }
 
-void CTableFactorType::compute_energies(
+void TableFactorType::compute_energies(
 	const SGVector<float64_t> factor_data,
 	SGVector<float64_t>& energies) const
 {
@@ -231,7 +231,7 @@ void CTableFactorType::compute_energies(
 	}
 }
 
-void CTableFactorType::compute_energies(
+void TableFactorType::compute_energies(
 	const SGSparseVector<float64_t> factor_data_sparse,
 	SGVector<float64_t>& energies) const
 {
@@ -269,7 +269,7 @@ void CTableFactorType::compute_energies(
 	}
 }
 
-void CTableFactorType::compute_gradients(
+void TableFactorType::compute_gradients(
 	const SGVector<float64_t> factor_data,
 	const SGVector<float64_t> marginals,
 	SGVector<float64_t>& parameter_gradient,
@@ -302,7 +302,7 @@ void CTableFactorType::compute_gradients(
 	}
 }
 
-void CTableFactorType::compute_gradients(
+void TableFactorType::compute_gradients(
 	const SGSparseVector<float64_t> factor_data_sparse,
 	const SGVector<float64_t> marginals,
 	SGVector<float64_t>& parameter_gradient,

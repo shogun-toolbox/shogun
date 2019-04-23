@@ -33,17 +33,16 @@
 #include <shogun/base/Parameter.h>
 using namespace shogun;
 
-void AdaptMomentumCorrection::set_momentum_correction(MomentumCorrection* correction)
+void AdaptMomentumCorrection::set_momentum_correction(std::shared_ptr<MomentumCorrection> correction)
 {
 	require(correction,"MomentumCorrection must not NULL");
-	require(correction != this, "MomentumCorrection can not be itself");
-	SG_REF(m_momentum_correction);
+	require(correction.get() != this, "MomentumCorrection can not be itself");
 	m_momentum_correction=correction;
 }
 
 AdaptMomentumCorrection::~AdaptMomentumCorrection()
 {
-	SG_UNREF(m_momentum_correction);
+
 };
 
 bool AdaptMomentumCorrection::is_initialized()
@@ -124,7 +123,7 @@ void AdaptMomentumCorrection::init()
 	m_descend_rate=SGVector<float64_t>();
 	m_adapt_rate=0;
 	m_rate_min=0;
-	m_rate_max=CMath::INFTY;
+	m_rate_max=Math::INFTY;
 	m_init_descend_rate=1.0;
 
 	SG_ADD(&m_adapt_rate, "AdaptMomentumCorrection__m_adapt_rate",
@@ -137,6 +136,6 @@ void AdaptMomentumCorrection::init()
 		"m_init_descend_rate in AdaptMomentumCorrection");
 	SG_ADD(&m_descend_rate, "AdaptMomentumCorrection__m_descend_rate",
 		"m_descend_rate in AdaptMomentumCorrection");
-	SG_ADD((CSGObject **)&m_momentum_correction, "AdaptMomentumCorrection__m_momentum_correction",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_momentum_correction, "AdaptMomentumCorrection__m_momentum_correction",
 		"m_momentum_correction in AdaptMomentumCorrection");
 }

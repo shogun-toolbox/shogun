@@ -33,43 +33,43 @@
 
 using namespace shogun;
 
-float64_t CExponentialLoss::loss(float64_t prediction, float64_t label)
+float64_t ExponentialLoss::loss(float64_t prediction, float64_t label)
 {
 	return loss(prediction*label);
 }
 
-float64_t CExponentialLoss::loss(float64_t z)
+float64_t ExponentialLoss::loss(float64_t z)
 {
 	return std::exp(-z);
 }
 
-float64_t CExponentialLoss::first_derivative(float64_t prediction, float64_t label)
+float64_t ExponentialLoss::first_derivative(float64_t prediction, float64_t label)
 {
 	return -label*loss(prediction,label);
 }
 
-float64_t CExponentialLoss::first_derivative(float64_t z)
+float64_t ExponentialLoss::first_derivative(float64_t z)
 {
 	return -loss(z);
 }
 
-float64_t CExponentialLoss::second_derivative(float64_t prediction, float64_t label)
+float64_t ExponentialLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return label*label*loss(prediction,label);
 }
 
-float64_t CExponentialLoss::second_derivative(float64_t z)
+float64_t ExponentialLoss::second_derivative(float64_t z)
 {
 	return loss(z);
 }
 
-float64_t CExponentialLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+float64_t ExponentialLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return 0;
 }
 
-float64_t CExponentialLoss::get_square_grad(float64_t prediction, float64_t label)
+float64_t ExponentialLoss::get_square_grad(float64_t prediction, float64_t label)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return 0;

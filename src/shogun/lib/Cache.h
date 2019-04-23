@@ -26,7 +26,7 @@ namespace shogun
  * the maximal number of entries in cache)
  *
  */
-template<class T> class CCache : public CSGObject
+template<class T> class Cache : public SGObject
 {
 	/** cache entry */
 	struct TEntry
@@ -41,7 +41,7 @@ template<class T> class CCache : public CSGObject
 
 	public:
 	 /** default constructor  */
-	CCache() :CSGObject()
+	Cache() :SGObject()
 	{
 		unstable(SOURCE_LOCATION);
 
@@ -65,8 +65,8 @@ template<class T> class CCache : public CSGObject
 	 * @param obj_size object size
 	 * @param num_entries number of cached objects
 	 */
-	CCache(int64_t cache_size, int64_t obj_size, int64_t num_entries)
-	: CSGObject()
+	Cache(int64_t cache_size, int64_t obj_size, int64_t num_entries)
+	: SGObject()
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
@@ -81,7 +81,7 @@ template<class T> class CCache : public CSGObject
 		}
 
 		entry_size=obj_size;
-		nr_cache_lines=CMath::min((int64_t) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
+		nr_cache_lines=Math::min((int64_t) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
 		io::info("creating {} cache lines (total size: {} byte)", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=SG_MALLOC(T, obj_size*nr_cache_lines);
@@ -111,7 +111,7 @@ template<class T> class CCache : public CSGObject
 		set_generic<T>();
 	}
 
-	virtual ~CCache()
+	virtual ~Cache()
 	{
 		SG_FREE(cache_block);
 		SG_FREE(lookup_table);

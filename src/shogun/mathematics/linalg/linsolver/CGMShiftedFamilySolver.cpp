@@ -20,22 +20,22 @@ using namespace Eigen;
 namespace shogun
 {
 
-CCGMShiftedFamilySolver::CCGMShiftedFamilySolver()
-	: CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>()
+CGMShiftedFamilySolver::CGMShiftedFamilySolver()
+	: IterativeShiftedLinearFamilySolver<float64_t, complex128_t>()
 {
 }
 
-CCGMShiftedFamilySolver::CCGMShiftedFamilySolver(bool store_residuals)
-	: CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>(store_residuals)
+CGMShiftedFamilySolver::CGMShiftedFamilySolver(bool store_residuals)
+	: IterativeShiftedLinearFamilySolver<float64_t, complex128_t>(store_residuals)
 {
 }
 
-CCGMShiftedFamilySolver::~CCGMShiftedFamilySolver()
+CGMShiftedFamilySolver::~CGMShiftedFamilySolver()
 {
 }
 
-SGVector<float64_t> CCGMShiftedFamilySolver::solve(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+SGVector<float64_t> CGMShiftedFamilySolver::solve(
+	std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> shifts(1);
 	shifts[0]=0.0;
@@ -45,8 +45,8 @@ SGVector<float64_t> CCGMShiftedFamilySolver::solve(
 	return solve_shifted_weighted(A, b, shifts, weights).get_real();
 }
 
-SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
+SGVector<complex128_t> CGMShiftedFamilySolver::solve_shifted_weighted(
+	std::shared_ptr<LinearOperator<float64_t>> A, SGVector<float64_t> b,
 	SGVector<complex128_t> shifts, SGVector<complex128_t> weights, bool negate)
 {
 	SG_TRACE("Entering");
@@ -99,7 +99,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		m_relative_tolerence, m_absolute_tolerence);
 
 	// start the timer
-	CTime time;
+	Time time;
 	time.start();
 
 	// set the residuals to zero

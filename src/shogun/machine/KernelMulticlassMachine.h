@@ -16,15 +16,15 @@
 namespace shogun
 {
 
-class CFeatures;
-class CKernel;
+class Features;
+class Kernel;
 
 /** @brief generic kernel multiclass */
-class CKernelMulticlassMachine : public CMulticlassMachine
+class KernelMulticlassMachine : public MulticlassMachine
 {
 	public:
 		/** default constructor  */
-		CKernelMulticlassMachine();
+		KernelMulticlassMachine();
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
@@ -32,10 +32,10 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 * @param machine kernel machine
 		 * @param labs labels
 		 */
-		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CMachine* machine, CLabels* labs);
+		KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~CKernelMulticlassMachine();
+		virtual ~KernelMulticlassMachine();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -47,13 +47,13 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param k kernel
 		 */
-		void set_kernel(CKernel* k);
+		void set_kernel(std::shared_ptr<Kernel> k);
 
 		/** get kernel
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel() const;
+		std::shared_ptr<Kernel> get_kernel() const;
 
 		/** Stores feature data of underlying model.
 		 *
@@ -66,16 +66,16 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 	protected:
 
 		/** init machine for training with kernel init */
-		virtual bool init_machine_for_train(CFeatures* data);
+		virtual bool init_machine_for_train(std::shared_ptr<Features> data);
 
 		/** init machines for applying with kernel init */
-		virtual bool init_machines_for_apply(CFeatures* data);
+		virtual bool init_machines_for_apply(std::shared_ptr<Features> data);
 
 		/** check kernel availability */
 		virtual bool is_ready();
 
 		/** construct kernel machine from given kernel machine */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) const;
+		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const;
 
 		/** return number of rhs feature vectors */
 		virtual int32_t get_num_rhs_vectors() const;
@@ -92,7 +92,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 	protected:
 
 		/** kernel */
-		CKernel* m_kernel;
+		std::shared_ptr<Kernel> m_kernel;
 
 };
 }

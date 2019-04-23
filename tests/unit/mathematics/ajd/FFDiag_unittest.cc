@@ -37,7 +37,7 @@ TEST(CFFDiag, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(uniform_int_dist(prng, {1,5}));
+			tmp(j,j) *= Math::abs(uniform_int_dist(prng, {1,5}));
 
 	}
 
@@ -53,7 +53,7 @@ TEST(CFFDiag, diagonalize)
 	}
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CFFDiag::diagonalize(C);
+	SGMatrix<float64_t> V = FFDiag::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);

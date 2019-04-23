@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, 
+ * Authors: Chiyuan Zhang, Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -21,7 +21,7 @@
 namespace shogun
 {
 
-class CBaseMulticlassMachine;
+class BaseMulticlassMachine;
 
 /** RelaxedTree refer to a tree-style multiclass classifier proposed in
  * the following paper.
@@ -30,38 +30,38 @@ class CBaseMulticlassMachine;
  *   Hierarchy for Large-scale Visual Recognition. In IEEE International
  *   Conference on Computer Vision (ICCV), 2011. (Oral presentation)
  */
-class CRelaxedTree: public CTreeMachine<RelaxedTreeNodeData>
+class RelaxedTree: public TreeMachine<RelaxedTreeNodeData>
 {
 public:
 	/** constructor */
-	CRelaxedTree();
+	RelaxedTree();
 
 	/** destructor */
-	virtual ~CRelaxedTree();
+	virtual ~RelaxedTree();
 
 	/** get name */
 	virtual const char* get_name() const { return "RelaxedTree"; }
 
 	/** apply machine to data in means of multiclass classification problem */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** set features
 	 * @param feats features
 	 */
-	void set_features(CDenseFeatures<float64_t> *feats)
+	void set_features(std::shared_ptr<DenseFeatures<float64_t> >feats)
 	{
-		SG_REF(feats);
-		SG_UNREF(m_feats);
+
+
 		m_feats = feats;
 	}
 
 	/** set kernel
 	 * @param kernel the kernel to be used
 	 */
-	virtual void set_kernel(CKernel *kernel)
+	virtual void set_kernel(std::shared_ptr<Kernel >kernel)
 	{
-		SG_REF(kernel);
-		SG_UNREF(m_kernel);
+
+
 		m_kernel = kernel;
 	}
 
@@ -69,22 +69,22 @@ public:
 	 *
 	 * @param lab labels
 	 */
-	virtual void set_labels(CLabels* lab)
+	virtual void set_labels(std::shared_ptr<Labels> lab)
 	{
-		CMulticlassLabels *mlab = dynamic_cast<CMulticlassLabels *>(lab);
+		auto mlab = multiclass_labels(lab);
 		require(lab, "requires MulticlassLabes");
 
-		CMachine::set_labels(mlab);
+		Machine::set_labels(mlab);
 		m_num_classes = mlab->get_num_classes();
 	}
 
 	/** set machine for confusion matrix
 	 * @param machine the multiclass machine for initializing the confusion matrix
 	 */
-	void set_machine_for_confusion_matrix(CMachine* machine)
+	void set_machine_for_confusion_matrix(std::shared_ptr<Machine> machine)
 	{
-		SG_REF(machine);
-		SG_UNREF(m_machine_for_confusion_matrix);
+
+
 		m_machine_for_confusion_matrix = machine;
 	}
 
@@ -175,9 +175,9 @@ public:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train(CFeatures* data=NULL)
+	virtual bool train(std::shared_ptr<Features> data=NULL)
 	{
-		return CMachine::train(data);
+		return Machine::train(data);
 	}
 
 	/** entry type */
@@ -197,21 +197,21 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data);
+	virtual bool train_machine(std::shared_ptr<Features> data);
 
 	/** train node */
-	bnode_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	std::shared_ptr<bnode_t> train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	/** init node */
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	/** train node with initialization */
-	SGVector<int32_t> train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CSVM *svm);
+	SGVector<int32_t> train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, std::shared_ptr<SVM >svm);
 
 	/** compute score */
-	float64_t compute_score(SGVector<int32_t> mu, CSVM *svm);
+	float64_t compute_score(SGVector<int32_t> mu, std::shared_ptr<SVM >svm);
 	/** color label space */
-	SGVector<int32_t> color_label_space(CSVM *svm, SGVector<int32_t> classes);
+	SGVector<int32_t> color_label_space(std::shared_ptr<SVM >svm, SGVector<int32_t> classes);
 	/** evaluate binary model K */
-	SGVector<float64_t> eval_binary_model_K(CSVM *svm);
+	SGVector<float64_t> eval_binary_model_K(std::shared_ptr<SVM >svm);
 
 	/** enforce balance constraints upper */
 	void enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
@@ -229,11 +229,11 @@ protected:
 	/** svm epsilon */
 	float64_t m_svm_epsilon;
 	/** kernel */
-	CKernel *m_kernel;
+	std::shared_ptr<Kernel >m_kernel;
 	/** features */
-	CDenseFeatures<float64_t> *m_feats;
+	std::shared_ptr<DenseFeatures<float64_t> >m_feats;
 	/** machine for confusion matrix computation */
-	CMachine* m_machine_for_confusion_matrix;
+	std::shared_ptr<Machine> m_machine_for_confusion_matrix;
 	/** number of classes */
 	int32_t m_num_classes;
 };

@@ -55,13 +55,12 @@ public:
 		writer.value8b(lsb);
 	}
 
-	void on_object(Writer& writer, CSGObject** v)
+	void on_object(Writer& writer, std::shared_ptr<SGObject>* v)
 	{
 		if (*v)
 		{
 			SG_DEBUG("writing SGObject: {}", (*v)->get_name());
-			SG_REF(*v);
-			write_object(writer, this, wrap<CSGObject>(*v));
+			write_object(writer, this, *v);
 		}
 		else
 		{
@@ -93,15 +92,15 @@ struct OutputStreamAdapter
 		return written_bytes;
 	}
 
-	Some<COutputStream> m_stream;
+	std::shared_ptr<OutputStream> m_stream;
 	size_t written_bytes = 0;
 };
 
 // cannot use context because of circular dependency :(
 template<typename Writer>
-void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CSGObject> o) noexcept(false)
+void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> o) noexcept(false)
 {
-	pre_serialize(o.get());
+	pre_serialize(o);
 	writer.value8b(sizeof(o.get()));
 	string name(o->get_name());
 	writer.text1b(name, 64);
@@ -120,24 +119,24 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, Some<CS
 		writer.text1b(p.first, 64);
 		p.second->get_value().visit(visitor);
 	}
-	post_serialize(o.get());
+	post_serialize(o);
 }
 
 using OutputAdapter = AdapterWriter<OutputStreamAdapter, bitsery::DefaultConfig>;
-using BitserySerializer = BasicSerializer<OutputAdapter>;
+using BitserySer = BasicSerializer<OutputAdapter>;
 
-CBitserySerializer::CBitserySerializer() : CSerializer()
+BitserySerializer::BitserySerializer() : Serializer()
 {
 }
 
-CBitserySerializer::~CBitserySerializer()
+BitserySerializer::~BitserySerializer()
 {
 }
 
-void CBitserySerializer::write(Some<CSGObject> object) noexcept(false)
+void BitserySerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
- 	BitserySerializer serializer {std::move(adapter)};
- 	BitseryWriterVisitor<BitserySerializer> writer_visitor(serializer);
+ 	BitserySer serializer {std::move(adapter)};
+ 	BitseryWriterVisitor<BitserySer> writer_visitor(serializer);
  	write_object(serializer, addressof(writer_visitor), object);
 }

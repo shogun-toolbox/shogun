@@ -19,7 +19,7 @@ namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
 /** @brief CplexSVM a SVM solver implementation based on cplex (unfinished). */
-IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
+IGNORE_IN_CLASSLIST class CCPLEXSVM : public SVM
 {
 	public:
 		CCPLEXSVM();
@@ -36,7 +36,7 @@ IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(Features* data=NULL);
 };
 }
 #endif

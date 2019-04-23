@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief class SOBI
  *
@@ -30,15 +30,15 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 45(2), 434-444.
  *
  */
-class CSOBI: public CICAConverter
+class SOBI: public ICAConverter
 {
 	public:
 
 		/** constructor */
-		CSOBI();
+		SOBI();
 
 		/** destructor */
-		virtual ~CSOBI();
+		virtual ~SOBI();
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -63,7 +63,7 @@ class CSOBI: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/some.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/SGVector.h>
@@ -20,7 +19,7 @@
 
 namespace shogun
 {
-	class CBinaryLabels;
+	class BinaryLabels;
 
 	/** @brief The class Labels models labels, i.e. class assignments of
 	 * objects.
@@ -45,17 +44,17 @@ namespace shogun
 	 * add_subset_in_place().
 	 * The latter does not allow to remove such modifications one-by-one.
 	 */
-	class CLabels : public CSGObject
+	class Labels : public SGObject
 	{
 	public:
 		/** default constructor */
-		CLabels();
+		Labels();
 
 		/** copy constructor */
-		CLabels(const CLabels& orig);
+		Labels(const Labels& orig);
 
 		/** destructor */
-		virtual ~CLabels();
+		virtual ~Labels();
 
 		virtual bool is_valid() const = 0;
 
@@ -110,7 +109,7 @@ namespace shogun
 		/**
 		 * @return subset stack
 		 */
-		virtual CSubsetStack* get_subset_stack();
+		virtual std::shared_ptr<SubsetStack> get_subset_stack();
 
 		/** set the confidence value for a particular label
 		 *
@@ -143,14 +142,14 @@ namespace shogun
 		 *
 		 * @return labels object
 		 */
-		virtual CLabels* duplicate() const
+		virtual std::shared_ptr<Labels> duplicate() const
 		{
 			not_implemented(SOURCE_LOCATION);;
 			return nullptr;
 		}
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CLabels* shallow_subset_copy()
+		virtual std::shared_ptr<Labels> shallow_subset_copy()
 		{
 			not_implemented(SOURCE_LOCATION);;
 			return NULL;
@@ -162,7 +161,7 @@ namespace shogun
 
 	protected:
 		/** subset class to enable subset support for this class */
-		CSubsetStack* m_subset_stack;
+		std::shared_ptr<SubsetStack> m_subset_stack;
 
 		/** current active value vector */
 		SGVector<float64_t> m_current_values;

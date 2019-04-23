@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CFile::CFile() : CSGObject()
+File::File() : SGObject()
 {
 	file=NULL;
 	filename=NULL;
@@ -26,7 +26,7 @@ CFile::CFile() : CSGObject()
 	task='\0';
 }
 
-CFile::CFile(FILE* f, const char* name) : CSGObject()
+File::File(FILE* f, const char* name) : SGObject()
 {
 	file=f;
 	filename=NULL;
@@ -38,7 +38,7 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 }
 
 #ifdef HAVE_FDOPEN
-CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
+File::File(int fd, const char* mode, const char* name) : SGObject()
 {
 	file=fdopen(fd, mode);
 	filename=NULL;
@@ -50,7 +50,7 @@ CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
 }
 #endif
 
-CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
+File::File(const char* fname, char rw, const char* name) : SGObject()
 {
 	variable_name=NULL;
 	task=rw;
@@ -74,7 +74,7 @@ CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
-void CFile::get_vector(bool*& vector, int32_t& len)
+void File::get_vector(bool*& vector, int32_t& len)
 {
 	int32_t* int_vector;
 	get_vector(int_vector, len);
@@ -88,7 +88,7 @@ void CFile::get_vector(bool*& vector, int32_t& len)
 	SG_FREE(int_vector);
 }
 
-void CFile::set_vector(const bool* vector, int32_t len)
+void File::set_vector(const bool* vector, int32_t len)
 {
 	int32_t* int_vector = SG_MALLOC(int32_t, len);
 	for (int32_t i=0;i<len;i++)
@@ -102,7 +102,7 @@ void CFile::set_vector(const bool* vector, int32_t len)
 	SG_FREE(int_vector);
 }
 
-void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
+void File::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	uint8_t * byte_matrix;
 	get_matrix(byte_matrix,num_feat,num_vec);
@@ -119,7 +119,7 @@ void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 	SG_FREE(byte_matrix);
 }
 
-void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
+void File::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 {
 	uint8_t * byte_matrix = SG_MALLOC(uint8_t, num_feat*num_vec);
 	for(int32_t i = 0;i < num_vec;i++)
@@ -133,7 +133,7 @@ void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 	SG_FREE(byte_matrix);
 }
 
-void CFile::get_string_list(
+void File::get_string_list(
 		SGVector<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
@@ -153,7 +153,7 @@ void CFile::get_string_list(
 	SG_FREE(strs);
 }
 
-void CFile::set_string_list(const SGVector<bool>* strings, int32_t num_str)
+void File::set_string_list(const SGVector<bool>* strings, int32_t num_str)
 {
 	SGVector<int8_t> * strs = SG_MALLOC(SGVector<int8_t>, num_str);
 
@@ -169,31 +169,31 @@ void CFile::set_string_list(const SGVector<bool>* strings, int32_t num_str)
 	SG_FREE(strs);
 }
 
-CFile::~CFile()
+File::~File()
 {
 	close();
 }
 
-void CFile::set_variable_name(const char* name)
+void File::set_variable_name(const char* name)
 {
 	SG_FREE(variable_name);
 	variable_name=get_strdup(name);
 }
 
-char* CFile::get_variable_name()
+char* File::get_variable_name()
 {
 	return get_strdup(variable_name);
 }
 
 #define SPARSE_VECTOR_GETTER(type)										\
-void CFile::set_sparse_vector(											\
+void File::set_sparse_vector(											\
 			const SGSparseVectorEntry<type>* entries, int32_t num_feat)	\
 {																		\
 	SGSparseVector<type> v((SGSparseVectorEntry<type>*) entries, num_feat, false);	\
 	set_sparse_matrix(&v, 0, 1);										\
 }																		\
 																		\
-void CFile::get_sparse_vector(											\
+void File::get_sparse_vector(											\
 			SGSparseVectorEntry<type>*& entries, int32_t& num_feat)		\
 {																		\
 	SGSparseVector<type>* v;											\
@@ -221,7 +221,7 @@ SPARSE_VECTOR_GETTER(uint64_t)
 #undef SPARSE_VECTOR_GETTER
 
 
-char* CFile::read_whole_file(char* fname, size_t& len)
+char* File::read_whole_file(char* fname, size_t& len)
 {
     FILE* tmpf=fopen(fname, "r");
     ASSERT(tmpf)

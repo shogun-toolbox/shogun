@@ -11,13 +11,13 @@ namespace shogun
 {
 	namespace io
 	{
-		class CBitseryDeserializer : public CDeserializer
+		class BitseryDeserializer : public Deserializer
 		{
 		public:
-			CBitseryDeserializer();
-			~CBitseryDeserializer() override;
-			Some<CSGObject> read_object() override;
-			void read(CSGObject* _this) override;
+			BitseryDeserializer();
+			~BitseryDeserializer() override;
+			std::shared_ptr<SGObject> read_object() override;
+			void read(std::shared_ptr<SGObject> _this) override;
 
 			const char* get_name() const override
 			{

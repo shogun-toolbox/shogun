@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Wu Lin, Heiko Strathmann, Roman Votyakov, Viktor Gal, 
- *          Weijie Lin, Fernando Iglesias, Sergey Lisitsyn, Bjoern Esser, 
+ * Authors: Jacob Walker, Wu Lin, Heiko Strathmann, Roman Votyakov, Viktor Gal,
+ *          Weijie Lin, Fernando Iglesias, Sergey Lisitsyn, Bjoern Esser,
  *          Soeren Sonnenburg
  */
 
@@ -27,14 +27,14 @@ class GradientModelSelectionCostFunction: public FirstOrderCostFunction
 {
 public:
 	GradientModelSelectionCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~GradientModelSelectionCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CGradientModelSelection *obj)
+	virtual ~GradientModelSelectionCostFunction() {  }
+	void set_target(std::shared_ptr<GradientModelSelection >obj)
 	{
 		require(obj,"Obj must set");
 		if(m_obj!=obj)
 		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+
+
 			m_obj=obj;
 		}
 	}
@@ -42,7 +42,7 @@ public:
 	{
 		if(is_unref)
 		{
-			SG_UNREF(m_obj);
+
 		}
 		m_obj=NULL;
 	}
@@ -82,7 +82,7 @@ private:
 	void init()
 	{
 		m_obj=NULL;
-		SG_ADD((CSGObject **)&m_obj, "GradientModelSelectionCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<SGObject>*)&m_obj, "GradientModelSelectionCostFunction__m_obj",
 			"obj in GradientModelSelectionCostFunction");
 		m_func_data = NULL;
 		m_val = SGVector<float64_t>();
@@ -95,7 +95,7 @@ private:
 			"grad in GradientModelSelectionCostFunction");
 	}
 
-	CGradientModelSelection *m_obj;
+	std::shared_ptr<GradientModelSelection >m_obj;
 	void* m_func_data;
 	SGVector<float64_t> m_val;
 	SGVector<float64_t> m_grad;
@@ -106,16 +106,16 @@ private:
 struct nlopt_params
 {
 	/** pointer to current combination */
-	CParameterCombination* current_combination;
+	std::shared_ptr<ParameterCombination> current_combination;
 
 	/** pointer to parmeter dictionary */
-	CMap<TParameter*, CSGObject*>* parameter_dictionary;
+	std::shared_ptr<CMap<TParameter*, SGObject*>> parameter_dictionary;
 
 	/** do we want to print the state? */
 	bool print_state;
 };
 
-float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
+float64_t GradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
 {
 	require(func_data!=NULL, "func_data must set");
 	require(model_vars.vlen==model_grads.vlen, "length of variable ({}) and gradient ({}) must equal",
@@ -123,8 +123,8 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	nlopt_params* params=(nlopt_params*)func_data;
 
-	CParameterCombination* current_combination=params->current_combination;
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=params->parameter_dictionary;
+	auto current_combination=params->current_combination;
+	auto parameter_dictionary=params->parameter_dictionary;
 	bool print_state=params->print_state;
 
 	index_t offset=0;
@@ -132,10 +132,10 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	// set parameters from vector model_vars
 	for (auto i : SG_PROGRESS(range(parameter_dictionary->get_num_elements())))
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameter_dictionary->get_node_ptr(i);
 
 		TParameter* param=node->key;
-		CSGObject* parent=node->data;
+		auto parent=node->data;
 
 		if (param->m_datatype.m_ctype==CT_VECTOR ||
 				param->m_datatype.m_ctype==CT_SGVECTOR ||
@@ -162,20 +162,17 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 	}
 
 	// apply current combination to the machine
-	CMachine* machine=m_machine_eval->get_machine();
+	auto machine=m_machine_eval->get_machine();
 	current_combination->apply_to_machine(machine);
 	if (print_state)
 	{
 		io::print("Current combination\n");
 		current_combination->print_tree();
 	}
-	SG_UNREF(machine);
 
 	// evaluate the machine
-	CEvaluationResult* evaluation_result=m_machine_eval->evaluate();
-	CGradientResult* gradient_result = evaluation_result->as<CGradientResult>();
-	SG_REF(gradient_result);
-	SG_UNREF(evaluation_result);
+	auto evaluation_result=m_machine_eval->evaluate();
+	auto gradient_result = evaluation_result->as<GradientResult>();
 
 	if (print_state)
 	{
@@ -188,7 +185,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 
 	float64_t cost = SGVector<float64_t>::sum(value);
 
-	if (CMath::is_nan(cost) || std::isinf(cost))
+	if (Math::is_nan(cost) || std::isinf(cost))
 	{
 		if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
 			return cost;
@@ -196,23 +193,22 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 			return -cost;
 	}
 
-	CMap<TParameter*, SGVector<float64_t> >* gradient=gradient_result->get_gradient();
-	CMap<TParameter*, CSGObject*>* gradient_dictionary=
-		gradient_result->get_paramter_dictionary();
-	SG_UNREF(gradient_result);
+	auto gradient=gradient_result->get_gradient();
+	auto gradient_dictionary=gradient_result->get_paramter_dictionary();
+
 
 	offset=0;
 
 	// set derivative for each parameter from parameter dictionary
 	for (index_t i=0; i<parameter_dictionary->get_num_elements(); i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameter_dictionary->get_node_ptr(i);
 
 		SGVector<float64_t> derivative;
 
 		for (index_t j=0; j<gradient_dictionary->get_num_elements(); j++)
 		{
-			CMapNode<TParameter*, CSGObject*>* gradient_node=
+			CMapNode<TParameter*, SGObject*>* gradient_node=
 				gradient_dictionary->get_node_ptr(j);
 
 			if (gradient_node->data==node->data &&
@@ -230,9 +226,6 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 		offset+=derivative.vlen;
 	}
 
-	SG_UNREF(gradient);
-	SG_UNREF(gradient_dictionary);
-
 	if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
 	{
 		return cost;
@@ -246,50 +239,48 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-void CGradientModelSelection::set_minimizer(FirstOrderMinimizer* minimizer)
+void GradientModelSelection::set_minimizer(std::shared_ptr<FirstOrderMinimizer> minimizer)
 {
 	require(minimizer!=NULL, "Minimizer must set");
-	SG_REF(minimizer);
-	SG_UNREF(m_mode_minimizer);
 	m_mode_minimizer=minimizer;
 }
 
 
-CGradientModelSelection::CGradientModelSelection() : CModelSelection()
+GradientModelSelection::GradientModelSelection() : ModelSelection()
 {
 	init();
 }
 
-CGradientModelSelection::CGradientModelSelection(CMachineEvaluation* machine_eval,
-		CModelSelectionParameters* model_parameters)
-		: CModelSelection(machine_eval, model_parameters)
+GradientModelSelection::GradientModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+		std::shared_ptr<ModelSelectionParameters> model_parameters)
+		: ModelSelection(machine_eval, model_parameters)
 {
 	init();
 }
 
-CGradientModelSelection::~CGradientModelSelection()
+GradientModelSelection::~GradientModelSelection()
 {
-	SG_UNREF(m_mode_minimizer);
+
 }
 
-void CGradientModelSelection::init()
+void GradientModelSelection::init()
 {
-	m_mode_minimizer = new CLBFGSMinimizer();
-	SG_REF(m_mode_minimizer);
+	m_mode_minimizer = std::make_shared<LBFGSMinimizer>();
 
-	SG_ADD((CSGObject **)&m_mode_minimizer,
+
+	SG_ADD((std::shared_ptr<SGObject>*)&m_mode_minimizer,
 		"mode_minimizer", "Minimizer used in mode selection");
 
 }
 
-CParameterCombination* CGradientModelSelection::select_model(bool print_state)
+std::shared_ptr<ParameterCombination> GradientModelSelection::select_model(bool print_state)
 {
 	if (!m_model_parameters)
 	{
-		CMachine* machine=m_machine_eval->get_machine();
+		auto machine=m_machine_eval->get_machine();
 
-		CParameterCombination* current_combination=new CParameterCombination(machine);
-		SG_REF(current_combination);
+		auto current_combination=std::make_shared<ParameterCombination>(machine);
+
 
 		if (print_state)
 		{
@@ -301,8 +292,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		index_t total_variables=current_combination->get_parameters_length();
 
 		// build parameter->value map
-		CMap<TParameter*, SGVector<float64_t> >* argument=
-			new CMap<TParameter*, SGVector<float64_t> >();
+		auto argument=
+			std::make_shared<CMap<TParameter*, SGVector<float64_t>>>();
 		current_combination->build_parameter_values_map(argument);
 
 		//  unroll current parameter combination into vector
@@ -317,11 +308,11 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			offset+=node->data.vlen;
 		}
 
-		SG_UNREF(argument);
+
 
 		// build parameter->sgobject map from current parameter combination
-		CMap<TParameter*, CSGObject*>* parameter_dictionary=
-			new CMap<TParameter*, CSGObject*>();
+		auto parameter_dictionary=
+			std::make_shared<CMap<TParameter*, SGObject*>>();
 		current_combination->build_parameter_parent_map(parameter_dictionary);
 
 		//data for computing the gradient
@@ -344,19 +335,15 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			}
 		}
 
-		GradientModelSelectionCostFunction *cost_fun=new GradientModelSelectionCostFunction();
-		cost_fun->set_target(this);
+		auto cost_fun=std::make_shared<GradientModelSelectionCostFunction>();
+		cost_fun->set_target(shared_from_this()->as<GradientModelSelection>());
 		cost_fun->set_variables(model_vars);
 		cost_fun->set_func_data(&params);
-		bool cleanup=false;
-		if(this->ref_count()>1)
-			cleanup=true;
 
 		m_mode_minimizer->set_cost_function(cost_fun);
 		m_mode_minimizer->minimize();
 		m_mode_minimizer->unset_cost_function(false);
-		cost_fun->unset_target(cleanup);
-		SG_UNREF(cost_fun);
+
 
 		if (print_state)
 		{
@@ -364,8 +351,6 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			current_combination->print_tree();
 		}
 
-		SG_UNREF(machine);
-		SG_UNREF(parameter_dictionary);
 
 		return current_combination;
 	}

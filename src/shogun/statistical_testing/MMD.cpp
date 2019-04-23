@@ -43,58 +43,56 @@ using namespace internal;
 using std::unique_ptr;
 using std::shared_ptr;
 
-struct CMMD::Self
+struct MMD::Self
 {
 	Self()
 	{
 		num_null_samples = DEFAULT_NUM_NULL_SAMPLES;
 		stype = DEFAULT_STYPE;
 		null_approximation_method = DEFAULT_NULL_APPROXIMATION_METHOD;
-		strategy = new CKernelSelectionStrategy();
-		SG_REF(strategy);
+		strategy=std::make_shared<KernelSelectionStrategy>();
 	}
 
 	~Self()
 	{
-		SG_UNREF(strategy);
 	}
 
 	index_t num_null_samples;
 	EStatisticType stype;
 	ENullApproximationMethod null_approximation_method;
-	CKernelSelectionStrategy* strategy;
+	std::shared_ptr<KernelSelectionStrategy> strategy;
 
 	static constexpr index_t DEFAULT_NUM_NULL_SAMPLES = 250;
 	static constexpr EStatisticType DEFAULT_STYPE = ST_UNBIASED_FULL;
 	static constexpr ENullApproximationMethod DEFAULT_NULL_APPROXIMATION_METHOD = NAM_PERMUTATION;
 };
 
-CMMD::CMMD() : RandomMixin<CTwoSampleTest>()
+MMD::MMD() : RandomMixin<TwoSampleTest>()
 {
 	init();
 }
 
-void CMMD::init()
+void MMD::init()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::initParallel();
 #endif
-	self=unique_ptr<Self>(new Self());
+	self=std::make_unique<Self>();
 	watch_param("strategy", &(self->strategy));
 }
 
-CMMD::~CMMD()
+MMD::~MMD()
 {
 	cleanup();
 }
 
-void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted)
+void MMD::set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted)
 {
 	self->strategy->use_method(method)
 		.use_weighted(weighted);
 }
 
-void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs,
+void MMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs,
 	index_t num_folds, float64_t alpha)
 {
 	self->strategy->use_method(method)
@@ -103,62 +101,62 @@ void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t 
 		.use_alpha(alpha);
 }
 
-CKernelSelectionStrategy const * CMMD::get_kernel_selection_strategy() const
+KernelSelectionStrategy const* MMD::get_kernel_selection_strategy() const
 {
-	return self->strategy;
+	return self->strategy.get();
 }
 
-void CMMD::add_kernel(CKernel* kernel)
+void MMD::add_kernel(std::shared_ptr<Kernel> kernel)
 {
 	self->strategy->add_kernel(kernel);
 }
 
-void CMMD::select_kernel()
+void MMD::select_kernel()
 {
 	SG_TRACE("Entering!");
 	auto& data_mgr=get_data_mgr();
 	data_mgr.set_train_mode(true);
-	CMMD::set_kernel(self->strategy->select_kernel(this));
+	MMD::set_kernel(self->strategy->select_kernel(shared_from_this()->as<MMD>()));
 	data_mgr.set_train_mode(false);
 	SG_TRACE("Leaving!");
 }
 
-void CMMD::cleanup()
+void MMD::cleanup()
 {
 	get_kernel_mgr().restore_kernel_at(0);
 }
 
-void CMMD::set_num_null_samples(index_t null_samples)
+void MMD::set_num_null_samples(index_t null_samples)
 {
 	self->num_null_samples=null_samples;
 }
 
-index_t CMMD::get_num_null_samples() const
+index_t MMD::get_num_null_samples() const
 {
 	return self->num_null_samples;
 }
 
-void CMMD::set_statistic_type(EStatisticType stype)
+void MMD::set_statistic_type(EStatisticType stype)
 {
 	self->stype=stype;
 }
 
-EStatisticType CMMD::get_statistic_type() const
+EStatisticType MMD::get_statistic_type() const
 {
 	return self->stype;
 }
 
-void CMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
+void MMD::set_null_approximation_method(ENullApproximationMethod nmethod)
 {
 	self->null_approximation_method=nmethod;
 }
 
-ENullApproximationMethod CMMD::get_null_approximation_method() const
+ENullApproximationMethod MMD::get_null_approximation_method() const
 {
 	return self->null_approximation_method;
 }
 
-const char* CMMD::get_name() const
+const char* MMD::get_name() const
 {
 	return "MMD";
 }

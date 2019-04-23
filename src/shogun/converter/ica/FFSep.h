@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief class FFSep
  *
@@ -29,15 +29,15 @@ class CFeatures;
  * The Journal of Machine Learning Research, 5, 777-800.
  *
  */
-class CFFSep: public CICAConverter
+class FFSep: public ICAConverter
 {
 	public:
 
 		/** constructor */
-		CFFSep();
+		FFSep();
 
 		/** destructor */
-		virtual ~CFFSep();
+		virtual ~FFSep();
 
 
 		/** getter for tau parameter
@@ -62,7 +62,7 @@ class CFFSep: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
 
 	private:
 

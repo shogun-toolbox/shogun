@@ -14,74 +14,74 @@
 
 using namespace shogun;
 
-CLabels::CLabels()
-	: CSGObject()
+Labels::Labels()
+	: SGObject()
 {
 	init();
 }
 
-CLabels::CLabels(const CLabels& orig)
-    : CSGObject(orig), m_current_values(orig.m_current_values)
+Labels::Labels(const Labels& orig)
+    : SGObject(orig), m_current_values(orig.m_current_values)
 {
 	init();
 
 	if (orig.m_subset_stack != NULL)
 	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack = new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
+
+		m_subset_stack = std::make_shared<SubsetStack>(*orig.m_subset_stack);
+
 	}
 }
 
-CLabels::~CLabels()
+Labels::~Labels()
 {
-	SG_UNREF(m_subset_stack);
+
 }
 
-void CLabels::init()
+void Labels::init()
 {
-	SG_ADD((CSGObject **)&m_subset_stack, "subset_stack",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_subset_stack, "subset_stack",
 	       "Current subset stack");
 	SG_ADD(
 	    &m_current_values, "current_values", "current active value vector");
-	m_subset_stack = new CSubsetStack();
-	SG_REF(m_subset_stack);
+	m_subset_stack = std::make_shared<SubsetStack>();
+
 }
 
-void CLabels::add_subset(SGVector<index_t> subset)
+void Labels::add_subset(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset(subset);
 }
 
-void CLabels::add_subset_in_place(SGVector<index_t> subset)
+void Labels::add_subset_in_place(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset_in_place(subset);
 }
 
-void CLabels::remove_subset()
+void Labels::remove_subset()
 {
 	m_subset_stack->remove_subset();
 }
 
-void CLabels::remove_all_subsets()
+void Labels::remove_all_subsets()
 {
 	m_subset_stack->remove_all_subsets();
 }
 
-CSubsetStack* CLabels::get_subset_stack()
+std::shared_ptr<SubsetStack> Labels::get_subset_stack()
 {
-	SG_REF(m_subset_stack);
+
 	return m_subset_stack;
 }
 
-float64_t CLabels::get_value(int32_t idx)
+float64_t Labels::get_value(int32_t idx)
 {
 	ASSERT(m_current_values.vector && idx < get_num_labels())
 	int32_t real_num = m_subset_stack->subset_idx_conversion(idx);
 	return m_current_values.vector[real_num];
 }
 
-void CLabels::set_value(float64_t value, int32_t idx)
+void Labels::set_value(float64_t value, int32_t idx)
 {
 
 	require(m_current_values.vector, "{}::set_value({}, {}): No values vector"
@@ -93,7 +93,7 @@ void CLabels::set_value(float64_t value, int32_t idx)
 	m_current_values.vector[real_num] = value;
 }
 
-void CLabels::set_values(SGVector<float64_t> values)
+void Labels::set_values(SGVector<float64_t> values)
 {
 	if (m_current_values.vlen != 0 && m_current_values.vlen != get_num_labels())
 	{
@@ -105,7 +105,7 @@ void CLabels::set_values(SGVector<float64_t> values)
 	m_current_values = values;
 }
 
-SGVector<float64_t> CLabels::get_values() const
+SGVector<float64_t> Labels::get_values() const
 {
 	return m_current_values;
 }

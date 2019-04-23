@@ -200,7 +200,7 @@
         "LongRealMatrix": "SGMatrix<floatmax_t>",
         "ComplexMatrix": "SGMatrix<complex128_t>",
         "RealDistance": "RealDistance<float64_t>",
-        "RealDenseDistance": "CDenseDistance<float64_t>"
+        "RealDenseDistance": "DenseDistance<float64_t>"
     },
 
     /** Translation rules for expressions

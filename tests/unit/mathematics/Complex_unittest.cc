@@ -12,15 +12,15 @@
 
 using namespace shogun;
 
-TEST(CMath, complex_test)
+TEST(Math, complex_test)
 {
 	complex128_t a(5.0, 6.0), result;
 
-	EXPECT_NEAR(CMath::abs(a), 7.81024967590665439412, 1E-14);
+	EXPECT_NEAR(Math::abs(a), 7.81024967590665439412, 1E-14);
 	result = std::log(a);
 	EXPECT_NEAR(result.real(), 2.05543693208665567695, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.87605805059819341629, 1E-14);
-	result=CMath::log10(a);
+	result=Math::log10(a);
 	EXPECT_NEAR(result.real(), 0.89266491750538345951, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.38046717720171513433, 1E-14);
 	result = std::exp(a);
@@ -30,13 +30,13 @@ TEST(CMath, complex_test)
 	result = std::sqrt(a);
 	EXPECT_NEAR(result.real(), 2.53083481048315883655, 1E-14);
 	EXPECT_NEAR(result.imag(), 1.18537961765559618499, 1E-14);
-	result=CMath::pow(a, 0.25);
+	result=Math::pow(a, 0.25);
 	EXPECT_NEAR(result.real(), 1.63179612745502011784, 1E-14);
 	EXPECT_NEAR(result.imag(), 0.36321314829455331186, 1E-14);
-	result=CMath::pow(1.5, a);
+	result=Math::pow(1.5, a);
 	EXPECT_NEAR(result.real(), -5.76473627294186652392, 1E-14);
 	EXPECT_NEAR(result.imag(), 4.94296012182258248657, 1E-14);
-	result=CMath::pow(a, a/10.0);
+	result=Math::pow(a, a/10.0);
 	EXPECT_NEAR(result.real(), -0.16575427581944451871, 1E-14);
 	EXPECT_NEAR(result.imag(), 1.64382444391412629869, 1E-14);
 
@@ -66,5 +66,5 @@ TEST(CMath, complex_test)
 	{
 		vec[i]=i%2==0? a : complex128_t(0.0);
 	}
-	EXPECT_EQ(CMath::get_num_nonzero(vec.vector, 10), 5);
+	EXPECT_EQ(Math::get_num_nonzero(vec.vector, 10), 5);
 }

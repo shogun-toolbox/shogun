@@ -24,14 +24,14 @@ namespace shogun
  *   classify objects in cluttered scenes. Pattern Recognition Letters, 2007.
  *
  */
-class CECOCForestEncoder: public CECOCDiscriminantEncoder
+class ECOCForestEncoder: public ECOCDiscriminantEncoder
 {
 public:
     /** constructor */
-    CECOCForestEncoder();
+    ECOCForestEncoder();
 
     /** destructor */
-    virtual ~CECOCForestEncoder() {}
+    virtual ~ECOCForestEncoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCForestEncoder"; }

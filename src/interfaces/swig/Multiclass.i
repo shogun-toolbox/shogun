@@ -4,65 +4,72 @@
  * Authors: Heiko Strathmann, Saloni Nigam, Sergey Lisitsyn
  */
 
-/* Remove C Prefix */
-%rename(BalancedConditionalProbabilityTree) CBalancedConditionalProbabilityTree;
-%rename(ConditionalProbabilityTree) CConditionalProbabilityTree;
-%rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
-%rename(RelaxedTree) CRelaxedTree;
-%rename(TreeMachineNode) CTreeMachineNode;
-%rename(ID3ClassifierTree) CID3ClassifierTree;
-%rename(C45ClassifierTree) CC45ClassifierTree;
-%rename(CARTree) CCARTree;
-%rename(CHAIDTree) CCHAIDTree;
+%shared_ptr(shogun::TreeMachineNode)
+%shared_ptr(shogun::TreeMachine<shogun::ConditionalProbabilityTreeNodeData>)
+%shared_ptr(shogun::TreeMachine<shogun::RelaxedTreeNodeData>)
+%shared_ptr(shogun::TreeMachine<id3TreeNodeData>)
+%shared_ptr(shogun::TreeMachine<C45TreeNodeData>)
+%shared_ptr(shogun::TreeMachine<CARTreeNodeData>)
+%shared_ptr(shogun::TreeMachine<CHAIDTreeNodeData>)
+%shared_ptr(shogun::TreeMachine<id3TreeNodeData>)
 
-%rename(RejectionStrategy) CRejectionStrategy;
-%rename(ThresholdRejectionStrategy) CThresholdRejectionStrategy;
-%rename(DixonQTestRejectionStrategy) CDixonQTestRejectionStrategy;
-%rename(MulticlassStrategy) CMulticlassStrategy;
-%rename(MulticlassOneVsRestStrategy) CMulticlassOneVsRestStrategy;
-%rename(MulticlassOneVsOneStrategy) CMulticlassOneVsOneStrategy;
-%rename(BaseMulticlassMachine) CBaseMulticlassMachine;
-%rename(MulticlassMachine) CMulticlassMachine;
-%rename(NativeMulticlassMachine) CNativeMulticlassMachine;
-%rename(LinearMulticlassMachine) CLinearMulticlassMachine;
-%rename(KernelMulticlassMachine) CKernelMulticlassMachine;
-%rename(MulticlassSVM) CMulticlassSVM;
-%rename(MKLMulticlass) CMKLMulticlass;
+%shared_ptr(shogun::BalancedConditionalProbabilityTree)
+%shared_ptr(shogun::ConditionalProbabilityTree)
+%shared_ptr(shogun::RandomConditionalProbabilityTree)
+%shared_ptr(shogun::RelaxedTree)
 
-%newobject apply_multilabel_output();
+%shared_ptr(shogun::ID3ClassifierTree)
+%shared_ptr(shogun::C45ClassifierTree)
+%shared_ptr(shogun::CARTree)
+%shared_ptr(shogun::CHAIDTree)
 
-%rename(ECOCStrategy) CECOCStrategy;
-%rename(ECOCEncoder) CECOCEncoder;
-%rename(ECOCDecoder) CECOCDecoder;
-%rename(ECOCOVREncoder) CECOCOVREncoder;
-%rename(ECOCOVOEncoder) CECOCOVOEncoder;
-%rename(ECOCRandomSparseEncoder) CECOCRandomSparseEncoder;
-%rename(ECOCRandomDenseEncoder) CECOCRandomDenseEncoder;
-%rename(ECOCDiscriminantEncoder) CECOCDiscriminantEncoder;
-%rename(ECOCForestEncoder) CECOCForestEncoder;
-%rename(ECOCSimpleDecoder) CECOCSimpleDecoder;
-%rename(ECOCHDDecoder) CECOCHDDecoder;
-%rename(ECOCIHDDecoder) CECOCIHDDecoder;
-%rename(ECOCEDDecoder) CECOCEDDecoder;
-%rename(ECOCAEDDecoder) CECOCAEDDecoder;
-%rename(ECOCLLBDecoder) CECOCLLBDecoder;
+%shared_ptr(shogun::RejectionStrategy)
+%shared_ptr(shogun::ThresholdRejectionStrategy)
+%shared_ptr(shogun::DixonQTestRejectionStrategy)
+%shared_ptr(shogun::MulticlassStrategy)
+%shared_ptr(shogun::MulticlassOneVsRestStrategy)
+%shared_ptr(shogun::MulticlassOneVsOneStrategy)
+%shared_ptr(shogun::BaseMulticlassMachine)
+%shared_ptr(shogun::MulticlassMachine)
+%shared_ptr(shogun::NativeMulticlassMachine)
+%shared_ptr(shogun::LinearMulticlassMachine)
+%shared_ptr(shogun::KernelMulticlassMachine)
+%shared_ptr(shogun::MulticlassSVM)
+%shared_ptr(shogun::MKLMulticlass)
+
+%shared_ptr(shogun::ECOCStrategy)
+%shared_ptr(shogun::ECOCEncoder)
+%shared_ptr(shogun::ECOCDecoder)
+%shared_ptr(shogun::ECOCOVREncoder)
+%shared_ptr(shogun::ECOCOVOEncoder)
+%shared_ptr(shogun::ECOCRandomSparseEncoder)
+%shared_ptr(shogun::ECOCRandomDenseEncoder)
+%shared_ptr(shogun::ECOCDiscriminantEncoder)
+%shared_ptr(shogun::ECOCForestEncoder)
+%shared_ptr(shogun::ECOCSimpleDecoder)
+%shared_ptr(shogun::ECOCHDDecoder)
+%shared_ptr(shogun::ECOCIHDDecoder)
+%shared_ptr(shogun::ECOCEDDecoder)
+%shared_ptr(shogun::ECOCAEDDecoder)
+%shared_ptr(shogun::ECOCLLBDecoder)
 
 #ifdef USE_GPL_SHOGUN
-%rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
-%rename(MulticlassLogisticRegression) CMulticlassLogisticRegression;
-%rename(MulticlassOCAS) CMulticlassOCAS;
+%shared_ptr(shogun::MulticlassTreeGuidedLogisticRegression)
+%shared_ptr(shogun::MulticlassLogisticRegression)
+%shared_ptr(shogun::MulticlassOCAS)
 #endif //USE_GPL_SHOGUN
-%rename(MulticlassSVM) CMulticlassSVM;
+%shared_ptr(shogun::MulticlassSVM)
+%shared_ptr(shogun::MulticlassLibLinear)
 
-%rename(LaRank) CLaRank;
-%rename(ScatterSVM) CScatterSVM;
-%rename(GMNPSVM) CGMNPSVM;
-%rename(KNN) CKNN;
-%rename(GaussianNaiveBayes) CGaussianNaiveBayes;
-%rename(QDA) CQDA;
-%rename(MCLDA) CMCLDA;
+%shared_ptr(shogun::LaRank)
+%shared_ptr(shogun::ScatterSVM)
+%shared_ptr(shogun::GMNPSVM)
+%shared_ptr(shogun::KNN)
+%shared_ptr(shogun::GaussianNaiveBayes)
+%shared_ptr(shogun::QDA)
+%shared_ptr(shogun::MCLDA)
 
-%rename(ShareBoost) CShareBoost;
+%shared_ptr(shogun::ShareBoost)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/BaseMulticlassMachine.h>
@@ -71,16 +78,16 @@
 %include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
 namespace shogun
 {
-    %template(TreeMachineWithConditionalProbabilityTreeNodeData) CTreeMachine<ConditionalProbabilityTreeNodeData>;
-    %template(TreeMachineWithRelaxedTreeNodeData) CTreeMachine<RelaxedTreeNodeData>;
-    %template(TreeMachineWithID3TreeNodeData) CTreeMachine<id3TreeNodeData>;
-    %template(TreeMachineWithC45TreeNodeData) CTreeMachine<C45TreeNodeData>;
-    %template(TreeMachineWithCARTreeNodeData) CTreeMachine<CARTreeNodeData>;
-    %template(TreeMachineWithCHAIDTreeNodeData) CTreeMachine<CHAIDTreeNodeData>;
+    %template(TreeMachineWithConditionalProbabilityTreeNodeData) TreeMachine<ConditionalProbabilityTreeNodeData>;
+    %template(TreeMachineWithRelaxedTreeNodeData) TreeMachine<RelaxedTreeNodeData>;
+    %template(TreeMachineWithID3TreeNodeData) TreeMachine<id3TreeNodeData>;
+    %template(TreeMachineWithC45TreeNodeData) TreeMachine<C45TreeNodeData>;
+    %template(TreeMachineWithCARTreeNodeData) TreeMachine<CARTreeNodeData>;
+    %template(TreeMachineWithCHAIDTreeNodeData) TreeMachine<CHAIDTreeNodeData>;
 
     /** Instantiate RandomMixin */
-    %template(SeedableTreeMachine) shogun::Seedable<CTreeMachine<CARTreeNodeData>>;
-    %template(RandomMixinTreeMachine) RandomMixin<CTreeMachine<CARTreeNodeData>, std::mt19937_64>;
+    %template(SeedableTreeMachine) shogun::Seedable<TreeMachine<CARTreeNodeData>>;
+    %template(RandomMixinTreeMachine) RandomMixin<TreeMachine<CARTreeNodeData>, std::mt19937_64>;
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>

@@ -33,11 +33,11 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
+class PolyMatchWordStringKernel: public StringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CPolyMatchWordStringKernel();
+		PolyMatchWordStringKernel();
 
 		/** constructor
 		 *
@@ -45,7 +45,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordStringKernel(int32_t size, int32_t degree, bool inhomogene);
+		PolyMatchWordStringKernel(int32_t size, int32_t degree, bool inhomogene);
 
 		/** constructor
 		 *
@@ -54,9 +54,9 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t degree, bool inhomogene);
+		PolyMatchWordStringKernel(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, int32_t degree, bool inhomogene);
 
-		virtual ~CPolyMatchWordStringKernel();
+		virtual ~PolyMatchWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -64,7 +64,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

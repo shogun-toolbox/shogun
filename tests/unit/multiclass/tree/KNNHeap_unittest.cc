@@ -35,7 +35,7 @@ using namespace shogun;
 
 TEST(KNNHeap, heap_formation)
 {
-	CKNNHeap* heap=new CKNNHeap(5);
+	auto heap=std::make_shared<KNNHeap>(5);
 	heap->push(1,30);
 	heap->push(2,20);
 	heap->push(3,10);
@@ -53,5 +53,4 @@ TEST(KNNHeap, heap_formation)
 	EXPECT_EQ(sorted[3],4);
 	EXPECT_EQ(sorted[4],5);
 
-	delete(heap);
 }

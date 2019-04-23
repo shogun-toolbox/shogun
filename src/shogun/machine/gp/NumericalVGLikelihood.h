@@ -57,12 +57,12 @@ template<class C> class SGMatrix;
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
  * \f]
  */
-class CNumericalVGLikelihood : public CVariationalGaussianLikelihood
+class NumericalVGLikelihood : public VariationalGaussianLikelihood
 {
 public:
-	CNumericalVGLikelihood();
+	NumericalVGLikelihood();
 
-	virtual ~CNumericalVGLikelihood();
+	virtual ~NumericalVGLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
@@ -79,7 +79,7 @@ public:
 	 *
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab);
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using numerical integration
@@ -126,7 +126,7 @@ public:
 
 protected:
 
-	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
+	/** The function used to initialize m_likelihood defined in VariationalLikelihood
 	 * Note that for some compiler removing this line will issue an error
 	 * */
 	virtual void init_likelihood()=0;

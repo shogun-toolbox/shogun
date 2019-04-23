@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Weijie Lin, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Weijie Lin,
  *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Thoralf Klein
  */
 
@@ -18,14 +18,14 @@
 
 using namespace shogun;
 
-CSVM::CSVM(int32_t num_sv)
-: CKernelMachine()
+SVM::SVM(int32_t num_sv)
+: KernelMachine()
 {
 	set_defaults(num_sv);
 }
 
-CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
-: CKernelMachine()
+SVM::SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: KernelMachine()
 {
 	set_defaults();
 	set_C(C,C);
@@ -33,12 +33,12 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 	set_kernel(k);
 }
 
-CSVM::~CSVM()
+SVM::~SVM()
 {
-	SG_UNREF(mkl);
+
 }
 
-void CSVM::set_defaults(int32_t num_sv)
+void SVM::set_defaults(int32_t num_sv)
 {
 	SG_ADD(&C1, "C1", "", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "", ParameterProperties::HYPER);
@@ -50,7 +50,7 @@ void CSVM::set_defaults(int32_t num_sv)
 	SG_ADD(&objective, "objective", "", ParameterProperties::HYPER);
 	SG_ADD(&qpsize, "qpsize", "", ParameterProperties::HYPER);
 	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.", ParameterProperties::SETTING);
-	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.");
+	SG_ADD((std::shared_ptr<SGObject>*) &mkl, "mkl", "MKL object that svm optimizers need.");
 	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.", ParameterProperties::MODEL);
 
 	callback=NULL;
@@ -76,7 +76,7 @@ void CSVM::set_defaults(int32_t num_sv)
 		create_new_model(num_sv);
 }
 
-bool CSVM::load(FILE* modelfl)
+bool SVM::load(FILE* modelfl)
 {
 	bool result=true;
 	char char_buffer[1024];
@@ -192,7 +192,7 @@ bool CSVM::load(FILE* modelfl)
 	return result;
 }
 
-bool CSVM::save(FILE* modelfl)
+bool SVM::save(FILE* modelfl)
 {
 	SG_SET_LOCALE_C;
 
@@ -209,7 +209,7 @@ bool CSVM::save(FILE* modelfl)
 
 	for(int32_t i=0; i<get_num_support_vectors(); i++)
 		fprintf(modelfl,"\t[%+10.16e,%d];\n",
-				CSVM::get_alpha(i), get_support_vector(i));
+				SVM::get_alpha(i), get_support_vector(i));
 
 	fprintf(modelfl, "];\n");
 
@@ -218,27 +218,28 @@ bool CSVM::save(FILE* modelfl)
 	return true ;
 }
 
-void CSVM::set_callback_function(CMKL* m, bool (*cb)
-		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
+void SVM::set_callback_function(std::shared_ptr<MKL> m, bool (*cb)
+		(std::shared_ptr<MKL> mkl, const float64_t* sumw, const float64_t suma))
 {
-	SG_REF(m);
-	SG_UNREF(mkl);
+
+
 	mkl=m;
 
 	callback=cb;
 }
 
-float64_t CSVM::compute_svm_dual_objective()
+float64_t SVM::compute_svm_dual_objective()
 {
 	int32_t n=get_num_support_vectors();
 
 	if (m_labels && kernel)
 	{
+		auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 		objective=0;
 		for (int32_t i=0; i<n; i++)
 		{
 			int32_t ii=get_support_vector(i);
-			objective-=get_alpha(i)*((CBinaryLabels*) m_labels)->get_label(ii);
+			objective-=get_alpha(i)*(binary_labels->get_label(ii));
 
 			for (int32_t j=0; j<n; j++)
 			{
@@ -253,7 +254,7 @@ float64_t CSVM::compute_svm_dual_objective()
 	return objective;
 }
 
-float64_t CSVM::compute_svm_primal_objective()
+float64_t SVM::compute_svm_primal_objective()
 {
 	int32_t n=get_num_support_vectors();
 	float64_t regularizer=0;
@@ -264,6 +265,7 @@ float64_t CSVM::compute_svm_primal_objective()
 	if (m_labels && kernel)
 	{
 		float64_t C2_tmp=get_C1();
+		auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 		if(C2>0)
 		{
 			C2_tmp=get_C2();
@@ -278,7 +280,7 @@ float64_t CSVM::compute_svm_primal_objective()
 				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 
-			loss-=(C1*(-((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 + C2_tmp*(((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-((CBinaryLabels*) m_labels)->get_label(ii)*apply_one(ii));
+			loss-=(C1*(-(binary_labels->get_label(ii)+1)/2.0 + C2_tmp*(binary_labels->get_label(ii)+1)/2.0 )*Math::max(0.0, 1.0-binary_labels->get_label(ii)*apply_one(ii)));
 		}
 
 	}
@@ -288,7 +290,7 @@ float64_t CSVM::compute_svm_primal_objective()
 	return regularizer+loss;
 }
 
-float64_t* CSVM::get_linear_term_array()
+float64_t* SVM::get_linear_term_array()
 {
 	if (m_linear_term.vlen==0)
 		return NULL;
@@ -300,7 +302,7 @@ float64_t* CSVM::get_linear_term_array()
 	return a;
 }
 
-void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
+void SVM::set_linear_term(const SGVector<float64_t>& linear_term)
 {
 	ASSERT(linear_term.vector)
 
@@ -318,7 +320,7 @@ void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
 	m_linear_term=linear_term;
 }
 
-SGVector<float64_t> CSVM::get_linear_term()
+SGVector<float64_t> SVM::get_linear_term()
 {
 	return m_linear_term;
 }

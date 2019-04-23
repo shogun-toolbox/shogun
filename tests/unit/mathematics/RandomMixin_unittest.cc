@@ -10,11 +10,11 @@
 
 using namespace shogun;
 
-class MockNonRandom : public CMockObject
+class MockNonRandom : public MockObject
 {
 };
 
-class MockRandom : public RandomMixin<CMockObject>
+class MockRandom : public RandomMixin<MockObject>
 {
 public:
 	auto sample() -> decltype(m_prng())
@@ -28,10 +28,10 @@ class OneLevelNested : public MockRandom
 public:
 	OneLevelNested()
 	{
-		obj1 = new MockRandom();
+		obj1 = std::make_shared<MockRandom>();
 		obj2 = nullptr;
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -41,16 +41,12 @@ public:
 
 	~OneLevelNested()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	MockRandom* obj1;
-	MockRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<MockRandom> obj1;
+	std::shared_ptr<MockRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 class OneLevelNestedNonRandom : public MockNonRandom
@@ -58,10 +54,10 @@ class OneLevelNestedNonRandom : public MockNonRandom
 public:
 	OneLevelNestedNonRandom()
 	{
-		obj1 = new MockRandom();
+		obj1 = std::make_shared<MockRandom>();
 		obj2 = nullptr;
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -71,16 +67,12 @@ public:
 
 	~OneLevelNestedNonRandom()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	MockRandom* obj1;
-	MockRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<MockRandom> obj1;
+	std::shared_ptr<MockRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 class TwoLevelNested : public MockRandom
@@ -88,10 +80,10 @@ class TwoLevelNested : public MockRandom
 public:
 	TwoLevelNested()
 	{
-		obj1 = new OneLevelNested();
-		obj2 = new OneLevelNestedNonRandom();
-		obj3 = new MockRandom();
-		obj4 = new MockNonRandom();
+		obj1 = std::make_shared<OneLevelNested>();
+		obj2 = std::make_shared<OneLevelNestedNonRandom>();
+		obj3 = std::make_shared<MockRandom>();
+		obj4 = std::make_shared<MockNonRandom>();
 
 		watch_param("obj1", &obj1);
 		watch_param("obj2", &obj2);
@@ -101,16 +93,12 @@ public:
 
 	~TwoLevelNested()
 	{
-		delete obj1;
-		delete obj2;
-		delete obj3;
-		delete obj4;
 	}
 
-	OneLevelNested* obj1;
-	OneLevelNestedNonRandom* obj2;
-	MockRandom* obj3;
-	MockNonRandom* obj4;
+	std::shared_ptr<OneLevelNested> obj1;
+	std::shared_ptr<OneLevelNestedNonRandom> obj2;
+	std::shared_ptr<MockRandom> obj3;
+	std::shared_ptr<MockNonRandom> obj4;
 };
 
 TEST(RandomMixin, reproducibility_test)

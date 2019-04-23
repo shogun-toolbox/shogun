@@ -19,21 +19,21 @@
 namespace shogun
 {
 /** @brief the scatter kernel normalizer */
-class CScatterKernelNormalizer: public CKernelNormalizer
+class ScatterKernelNormalizer: public KernelNormalizer
 {
 
 public:
 	/** default constructor  */
-	CScatterKernelNormalizer() : CKernelNormalizer()
+	ScatterKernelNormalizer() : KernelNormalizer()
 	{
 		init();
 	}
 
 	/** default constructor
 	 */
-	CScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
-			CLabels* labels,CKernelNormalizer* normalizer=NULL)
-		: CKernelNormalizer()
+	ScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
+			std::shared_ptr<Labels> labels,std::shared_ptr<KernelNormalizer> normalizer=NULL)
+		: KernelNormalizer()
 	{
 		init();
 
@@ -42,14 +42,14 @@ public:
 		m_const_offdiag=const_offdiag;
 
 		ASSERT(labels)
-		SG_REF(labels);
-		m_labels=labels;
+
 		ASSERT(labels->get_label_type()==LT_MULTICLASS)
+		m_labels = labels->as<MulticlassLabels>();
 		labels->ensure_valid();
 
-		if (normalizer==NULL)
-			normalizer=new CIdentityKernelNormalizer();
-		SG_REF(normalizer);
+		if (!normalizer)
+			normalizer=std::make_shared<IdentityKernelNormalizer>();
+
 		m_normalizer=normalizer;
 
 		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag={:g}"
@@ -59,15 +59,15 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~CScatterKernelNormalizer()
+	virtual ~ScatterKernelNormalizer()
 	{
-		SG_UNREF(m_labels);
-		SG_UNREF(m_normalizer);
+
+
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 		m_normalizer->init(k);
 		return true;
@@ -104,12 +104,12 @@ public:
 
 		if (m_testing_class>=0)
 		{
-			if (((CMulticlassLabels*) m_labels)->get_label(idx_lhs) == m_testing_class)
+			if (m_labels->get_label(idx_lhs) == m_testing_class)
 				c=m_const_diag;
 		}
 		else
 		{
-			if (((CMulticlassLabels*) m_labels)->get_label(idx_lhs) == ((CMulticlassLabels*) m_labels)->get_label(idx_rhs))
+			if (m_labels->get_label(idx_lhs) == m_labels->get_label(idx_rhs))
 				c=m_const_diag;
 
 		}
@@ -160,8 +160,8 @@ private:
 		SG_ADD(&m_const_offdiag, "m_const_offdiag",
 				"Factor to multiply to off-diagonal elements.", ParameterProperties::HYPER);
 
-		SG_ADD((CSGObject**) &m_labels, "m_labels", "Labels");
-		SG_ADD((CSGObject**) &m_normalizer, "m_normalizer", "Kernel normalizer.",
+		SG_ADD((std::shared_ptr<SGObject>*) &m_labels, "m_labels", "Labels");
+		SG_ADD((std::shared_ptr<SGObject>*) &m_normalizer, "m_normalizer", "Kernel normalizer.",
 		    ParameterProperties::HYPER);
 	}
 
@@ -173,10 +173,10 @@ protected:
 	float64_t m_const_offdiag;
 
 	/** labels **/
-	CLabels* m_labels;
+	std::shared_ptr<MulticlassLabels> m_labels;
 
 	/** labels **/
-	CKernelNormalizer* m_normalizer;
+	std::shared_ptr<KernelNormalizer> m_normalizer;
 
 	/** upon testing which class to test for */
 	int32_t m_testing_class;

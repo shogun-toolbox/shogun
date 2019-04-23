@@ -13,26 +13,26 @@ namespace shogun
 
 class CRKSFunctions;
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures()
-	: RandomMixin<CDotFeatures>()
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures()
+	: RandomMixin<DotFeatures>()
 {
 	init(NULL, 0);
 }
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K)
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
+	std::shared_ptr<DotFeatures> dataset, int32_t K)
 {
 	init(dataset, K);
 }
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K, SGMatrix<float64_t> coeff)
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
+	std::shared_ptr<DotFeatures> dataset, int32_t K, SGMatrix<float64_t> coeff)
 {
 	init(dataset, K);
 	random_coeff = coeff;
 }
 
-SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients()
+SGMatrix<float64_t> RandomKitchenSinksDotFeatures::generate_random_coefficients()
 {
 	SGVector<float64_t> vec = generate_random_parameter_vector();
 	SGMatrix<float64_t> random_params(vec.vlen, num_samples);
@@ -48,46 +48,46 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients
 	return random_params;
 }
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(CFile* loader)
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(std::shared_ptr<File> loader)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	const CRandomKitchenSinksDotFeatures& orig)
+RandomKitchenSinksDotFeatures::RandomKitchenSinksDotFeatures(
+	const RandomKitchenSinksDotFeatures& orig)
 {
 	init(orig.feats, orig.num_samples);
 	random_coeff = orig.random_coeff;
 }
 
-CRandomKitchenSinksDotFeatures::~CRandomKitchenSinksDotFeatures()
+RandomKitchenSinksDotFeatures::~RandomKitchenSinksDotFeatures()
 {
-	SG_UNREF(feats);
+
 }
 
-void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
+void RandomKitchenSinksDotFeatures::init(std::shared_ptr<DotFeatures> dataset,
 	int32_t K)
 {
 	feats = dataset;
-	SG_REF(feats);
+
 
 	num_samples = K;
 
-	SG_ADD((CSGObject** ) &feats, "feats", "Features to work on");
+	SG_ADD((std::shared_ptr<SGObject>* ) &feats, "feats", "Features to work on");
 	SG_ADD(
 		&random_coeff, "random_coeff", "Random function parameters");
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const
+int32_t RandomKitchenSinksDotFeatures::get_dim_feature_space() const
 {
 	return num_samples;
 }
 
-float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
+float64_t RandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 	int32_t vec_idx2) const
 {
 	ASSERT(typeid(*this) == typeid(*df));
-	CRandomKitchenSinksDotFeatures* other = (CRandomKitchenSinksDotFeatures* ) df;
+	auto other = std::static_pointer_cast<RandomKitchenSinksDotFeatures>(df);
 	ASSERT(get_dim_feature_space()==other->get_dim_feature_space());
 
 	float64_t dot_product = 0;
@@ -103,7 +103,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df
 	return dot_product;
 }
 
-float64_t CRandomKitchenSinksDotFeatures::dot(
+float64_t RandomKitchenSinksDotFeatures::dot(
 	int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	SG_TRACE("entering dense_dot()");
@@ -120,7 +120,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(
 	return dot_product;
 }
 
-void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
+void RandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 	int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	SG_TRACE("Entering add_to_dense()");
@@ -131,74 +131,74 @@ void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 		float64_t tmp_dot = dot(vec_idx1, i);
 		tmp_dot = post_dot(tmp_dot, i);
 		if (abs_val)
-			vec2[i] += CMath::abs(alpha * tmp_dot);
+			vec2[i] += Math::abs(alpha * tmp_dot);
 		else
 			vec2[i] += alpha * tmp_dot;
 	}
 	SG_TRACE("Leaving add_to_dense()");
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t RandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return num_samples;
 }
 
-void* CRandomKitchenSinksDotFeatures::get_feature_iterator(int32_t vector_index)
+void* RandomKitchenSinksDotFeatures::get_feature_iterator(int32_t vector_index)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
-bool CRandomKitchenSinksDotFeatures::get_next_feature(int32_t& index,
+bool RandomKitchenSinksDotFeatures::get_next_feature(int32_t& index,
 	float64_t& value, void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);;
 	return false;
 }
 
-void CRandomKitchenSinksDotFeatures::free_feature_iterator(void* iterator)
+void RandomKitchenSinksDotFeatures::free_feature_iterator(void* iterator)
 {
 	not_implemented(SOURCE_LOCATION);;
 }
 
-EFeatureType CRandomKitchenSinksDotFeatures::get_feature_type() const
+EFeatureType RandomKitchenSinksDotFeatures::get_feature_type() const
 {
 	return F_DREAL;
 }
 
-EFeatureClass CRandomKitchenSinksDotFeatures::get_feature_class() const
+EFeatureClass RandomKitchenSinksDotFeatures::get_feature_class() const
 {
 	return C_DENSE;
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_num_vectors() const
+int32_t RandomKitchenSinksDotFeatures::get_num_vectors() const
 {
 	return feats->get_num_vectors();
 }
 
-const char* CRandomKitchenSinksDotFeatures::get_name() const
+const char* RandomKitchenSinksDotFeatures::get_name() const
 {
 	return "RandomKitchenSinksDotFeatures";
 }
 
-CFeatures* CRandomKitchenSinksDotFeatures::duplicate() const
+std::shared_ptr<Features> RandomKitchenSinksDotFeatures::duplicate() const
 {
 	not_implemented(SOURCE_LOCATION);;
 	return NULL;
 }
 
-SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::get_random_coefficients()
+SGMatrix<float64_t> RandomKitchenSinksDotFeatures::get_random_coefficients()
 {
 	return random_coeff;
 }
 
-float64_t CRandomKitchenSinksDotFeatures::dot(index_t vec_idx, index_t par_idx) const
+float64_t RandomKitchenSinksDotFeatures::dot(index_t vec_idx, index_t par_idx) const
 {
 	auto vec2 = random_coeff.get_column(par_idx).slice(0, feats->get_dim_feature_space());
 	return feats->dot(vec_idx, vec2);
 }
 
-float64_t CRandomKitchenSinksDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
+float64_t RandomKitchenSinksDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	return dot_result;
 }

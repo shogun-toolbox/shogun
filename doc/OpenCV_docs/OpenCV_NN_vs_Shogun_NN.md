@@ -224,15 +224,15 @@ As usual, we start with creating a ```DenseFeatures``` object with the training 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
     shogun_traindata = linalg::transpose_matrix(shogun_traindata);
-    CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
+    auto shogun_trainfeatures = std::make_shared<DenseFeatures<float64_t>>(shogun_traindata);
 ```
 
 
 The training responses are in an object of type ```MulticlassLabels```.
 ```CPP
-    CDenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
+    auto shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
-    CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
+    auto labels = std::make_shared<MulticlassLabels>(shogun_vector_response);
 ```
 
 
@@ -240,13 +240,13 @@ Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGFactory::get_sgmatrix<float64_t>(testdata);
     shogun_testdata = linalg::transpose_matrix(shogun_testdata);
-    CDenseFeatures<float64_t>* testfeatures = new CDenseFeatures<float64_t>(shogun_testdata);
+    auto testfeatures = std::make_shared<CDenseFeatures<float64_t>>(shogun_testdata);
 ```
 
 
 To use Neural Networks in **Shogun** the following things need to be done:
 
-* Prepare a ```CDynamicObjectArray``` of ```CNeuralLayer```-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order the layers appear in the array. So, if layer ```j``` takes its input from layer ```i```, then ```i``` must be less than ```j```.
+* Prepare a ```DynamicObjectArray``` of ```NeuralLayer```-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order the layers appear in the array. So, if layer ```j``` takes its input from layer ```i```, then ```i``` must be less than ```j```.
 
 * Specify how the layers are connected together. This can be done using either ```connect()``` or ```quick_connect()```.
 
@@ -264,23 +264,23 @@ To use Neural Networks in **Shogun** the following things need to be done:
 ---
 * Let us start with the first step.
 
-We will be preparing a ```CDynamicObjectArray```. It creates an array that can be used like a list or an array.
+We will be preparing a ```DynamicObjectArray```. It creates an array that can be used like a list or an array.
 We then append information related to the number of neurons per layer in the respective order.
 
 Here I have created a ```3``` layered network. The input layer consists of ```6``` neurons which is equal to number of features.
 The hidden layer has ```10``` neurons and similarly the output layer has ```4``` neurons which is equal to the number of classes.
 
 ```CPP
-    CDynamicObjectArray* layers = new CDynamicObjectArray();
-    layers->append_element(new CNeuralInputLayer(6));
-    layers->append_element(new CNeuralLogisticLayer(10));
-    layers->append_element(new CNeuralLogisticLayer(4));
+    DynamicObjectArray* layers = new DynamicObjectArray();
+    layers->append_element(new NeuralInputLayer(6));
+    layers->append_element(new NeuralLogisticLayer(10));
+    layers->append_element(new NeuralLogisticLayer(4));
 ```
 
 * Here we have to make a connection between the three layers that we formed above. To connect each neuron of one layer to each one of the layer suceeding it, we can directly use ```quick_connect()```. However If particular connections are to be made separately, we may have to use ```connect()```.
 
 ```CPP
-    CNeuralNetwork* network = new CNeuralNetwork(layers);
+    NeuralNetwork* network = new NeuralNetwork(layers);
     network->quick_connect();
 ```
 
@@ -309,7 +309,7 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
 * Test it!
 
 ```CPP
-    CMulticlassLabels* predictions = network->apply_multiclass(testfeatures);
+    MulticlassLabels* predictions = network->apply_multiclass(testfeatures);
     k=0;
     for (int32_t i=0; i<mytraindataidx.cols; i++ )
     {

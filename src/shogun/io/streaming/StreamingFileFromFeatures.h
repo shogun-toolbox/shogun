@@ -13,17 +13,17 @@
 
 namespace shogun
 {
-class CFeatures;
+class Features;
 
 /** @brief Class StreamingFileFromFeatures to read vector-by-vector
- * from a CFeatures object.
+ * from a Features object.
  *
- * The object must be initialized with another CFeatures object.
+ * The object must be initialized with another Features object.
  * It is upto the derived class to implement specialized functions
  * to return the vector.
  *
  * Only a subset of the functions defined in StreamingFile.h need
- * to be implemented, as appropriate for the CFeatures object
+ * to be implemented, as appropriate for the Features object
  * which the class works with.
  *
  * For example, a derived class based on DenseFeatures should only
@@ -31,40 +31,40 @@ class CFeatures;
  * StringFeatures should only implement the get_(type)*_string()
  * functions.
  */
-class CStreamingFileFromFeatures: public CStreamingFile
+class StreamingFileFromFeatures: public StreamingFile
 {
 public:
 	/**
 	 * Default constructor
 	 */
-	CStreamingFileFromFeatures();
+	StreamingFileFromFeatures();
 
 	/**
-	 * Constructor taking a CFeatures object as argument
+	 * Constructor taking a Features object as argument
 	 *
 	 * @param feat features object
 	 */
-	CStreamingFileFromFeatures(CFeatures* feat);
+	StreamingFileFromFeatures(std::shared_ptr<Features> feat);
 
 	/**
-	 * Constructor taking a CFeatures object and labels as arguments
+	 * Constructor taking a Features object and labels as arguments
 	 *
 	 * @param feat features object
 	 * @param lab labels as float64_t*
 	 */
-	CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab);
+	StreamingFileFromFeatures(std::shared_ptr<Features> feat, float64_t* lab);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFileFromFeatures();
+	virtual ~StreamingFileFromFeatures();
 
 	/**
 	 * Set the features object
 	 *
 	 * @param feat features object as argument
 	 */
-	virtual void set_features(CFeatures* feat)
+	virtual void set_features(std::shared_ptr<Features> feat)
 	{
 		ASSERT(feat)
 		features=feat;
@@ -92,7 +92,7 @@ public:
 protected:
 
 	/// Features object
-	CFeatures* features;
+	std::shared_ptr<Features> features;
 
 	/// Labels (if applicable)
 	float64_t* labels;

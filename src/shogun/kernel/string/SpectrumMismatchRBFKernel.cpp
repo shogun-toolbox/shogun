@@ -27,17 +27,17 @@
 
 using namespace shogun;
 
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel() :
-		CStringKernel<char>(0)
+SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel() :
+		StringKernel<char>(0)
 {
 	init();
 	register_params();
 }
 
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(int32_t size,
+SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel(int32_t size,
 		float64_t* AA_matrix_, int32_t nr, int32_t nc, int32_t degree_,
 		int32_t max_mismatch_, float64_t width_) :
-		CStringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
+		StringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
 				max_mismatch_), width(width_)
 {
 	init();
@@ -46,11 +46,11 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(int32_t size,
 	register_params();
 }
 
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_,
+SpectrumMismatchRBFKernel::SpectrumMismatchRBFKernel(std::shared_ptr<StringFeatures<char>> l,
+		std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
 		int32_t nr, int32_t nc, int32_t degree_, int32_t max_mismatch_,
 		float64_t width_) :
-		CStringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
+		StringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
 				max_mismatch_), width(width_)
 {
 	target_letter_0=-1;
@@ -60,50 +60,50 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
 	register_params();
 }
 
-CSpectrumMismatchRBFKernel::~CSpectrumMismatchRBFKernel()
+SpectrumMismatchRBFKernel::~SpectrumMismatchRBFKernel()
 {
 	cleanup();
-	SG_UNREF(kernel_matrix);
+
 }
 
-bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
+bool SpectrumMismatchRBFKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	int32_t lhs_changed=(lhs!=l);
 	int32_t rhs_changed=(rhs!=r);
 
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 
 	SG_DEBUG("lhs_changed: {}", lhs_changed)
 	SG_DEBUG("rhs_changed: {}", rhs_changed)
 
-	CStringFeatures<char>* sf_l=(CStringFeatures<char>*)l;
-	CStringFeatures<char>* sf_r=(CStringFeatures<char>*)r;
+	auto sf_l=std::static_pointer_cast<StringFeatures<char>>(l);
+	auto sf_r=std::static_pointer_cast<StringFeatures<char>>(r);
 
-	SG_UNREF(alphabet);
+
 	alphabet=sf_l->get_alphabet();
-	CAlphabet* ralphabet=sf_r->get_alphabet();
+	auto ralphabet=sf_r->get_alphabet();
 
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties&=((uint64_t)(-1))^(KP_LINADD|KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
-	SG_UNREF(ralphabet);
+
 
 	compute_all();
 
 	return init_normalizer();
 }
 
-void CSpectrumMismatchRBFKernel::cleanup()
+void SpectrumMismatchRBFKernel::cleanup()
 {
 
-	SG_UNREF(alphabet);
+
 	alphabet=NULL;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CSpectrumMismatchRBFKernel::AA_helper(std::string &path,
+float64_t SpectrumMismatchRBFKernel::AA_helper(std::string &path,
 		const char* joint_seq, unsigned int index)
 {
 	float64_t diff=0.0;
@@ -122,7 +122,7 @@ float64_t CSpectrumMismatchRBFKernel::AA_helper(std::string &path,
 	return exp(-diff/width);
 }
 
-void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
+void SpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 		std::vector<struct joint_list_struct> &joint_list, std::string path,
 		unsigned int d)
 {
@@ -175,7 +175,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 			}
 			else
 			{
-				CDynamicArray<float64_t> feats;
+				DynamicArray<float64_t> feats;
 				feats.resize_array(kernel_matrix->get_dim1());
 				feats.set_const(0);
 
@@ -227,7 +227,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 	}
 }
 
-void CSpectrumMismatchRBFKernel::compute_all()
+void SpectrumMismatchRBFKernel::compute_all()
 {
 	std::string joint_seq;
 	std::vector<struct joint_list_struct> joint_list;
@@ -239,12 +239,12 @@ void CSpectrumMismatchRBFKernel::compute_all()
 		for (int j=0; j<lhs->get_num_vectors(); j++)
 			kernel_matrix->set_element(0, i, j);
 
+	auto sf_lhs = std::static_pointer_cast<StringFeatures<char>>(lhs);
 	for (int i=0; i<lhs->get_num_vectors(); i++)
 	{
 		int32_t alen;
 		bool free_avec;
-		char* avec=((CStringFeatures<char>*)lhs)->get_feature_vector(i, alen,
-				free_avec);
+		char* avec=sf_lhs->get_feature_vector(i, alen, free_avec);
 
 		for (int apos=0; apos+degree-1<alen; apos++)
 		{
@@ -257,18 +257,18 @@ void CSpectrumMismatchRBFKernel::compute_all()
 		}
 		joint_seq+=std::string(avec, alen);
 
-		((CStringFeatures<char>*)lhs)->free_feature_vector(avec, i, free_avec);
+		sf_lhs->free_feature_vector(avec, i, free_avec);
 	}
 
 	compute_helper_all(joint_seq.c_str(), joint_list, "", 0);
 }
 
-float64_t CSpectrumMismatchRBFKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t SpectrumMismatchRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	return kernel_matrix->element(idx_a, idx_b);
 }
 
-bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
+bool SpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 		int32_t nr, int32_t nc)
 {
 	if (AA_matrix_)
@@ -285,7 +285,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 	return false;
 }
 
-bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
+bool SpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 {
 	max_mismatch=max;
 
@@ -295,31 +295,31 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 		return true;
 }
 
-void CSpectrumMismatchRBFKernel::register_params()
+void SpectrumMismatchRBFKernel::register_params()
 {
 	SG_ADD(&degree, "degree", "degree of the kernel", ParameterProperties::HYPER);
 	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix");
 	SG_ADD(&width, "width", "width of Gaussian", ParameterProperties::HYPER);
 	SG_ADD(&target_letter_0, "target_letter_0", "target letter 0");
 	SG_ADD(&initialized, "initialized", "the mark of initialization status");
-	SG_ADD((CSGObject** )&kernel_matrix, "kernel_matrix",
+	SG_ADD((std::shared_ptr<SGObject>* )&kernel_matrix, "kernel_matrix",
 			"the kernel matrix with its length "
 					"defined by the number of vectors of the string features");
 }
 
-void CSpectrumMismatchRBFKernel::register_alphabet()
+void SpectrumMismatchRBFKernel::register_alphabet()
 {
-	SG_ADD((CSGObject** )&alphabet, "alphabet", "the alphabet used by kernel");
+	SG_ADD((std::shared_ptr<SGObject>* )&alphabet, "alphabet", "the alphabet used by kernel");
 }
 
-void CSpectrumMismatchRBFKernel::init()
+void SpectrumMismatchRBFKernel::init()
 {
 	alphabet=NULL;
 	degree=0;
 	max_mismatch=0;
 	width=0.0;
-	kernel_matrix=new CDynamicArray<float64_t>();
-	SG_REF(kernel_matrix);
+	kernel_matrix=std::make_shared<DynamicArray<float64_t>>();
+
 	initialized=false;
 	target_letter_0=0;
 }

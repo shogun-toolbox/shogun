@@ -47,44 +47,40 @@ protected:
 
 	void init()
 	{
-		machine = new T();
-		SG_REF(machine)
-
 		this->generate_data(this->machine->get_machine_problem_type());
 
-		if (auto* casted = dynamic_cast<CKernelMachine*>(machine))
-			casted->set_kernel(new CGaussianKernel());
-		if (auto* casted = dynamic_cast<CDistanceMachine*>(machine))
-			casted->set_distance(new CEuclideanDistance());
-
-		auto ss = new CCrossValidationSplitting(labels, 5);
-		CEvaluation* ec = nullptr;
+		if constexpr (std::is_base_of_v<KernelMachine, T>)
+		{
+			auto m = std::make_shared<T>();
+			m->set_kernel(std::make_shared<GaussianKernel>());
+			machine = m;
+		}
+		if constexpr (std::is_base_of_v<DistanceMachine, T>)
+		{
+			auto m = std::make_shared<T>();
+			m->set_distance(std::make_shared<EuclideanDistance>());
+			machine = m;
+		}
+		this->generate_data(this->machine->get_machine_problem_type());
+		auto ss = std::make_shared<CrossValidationSplitting>(labels, 5);
+		std::shared_ptr<Evaluation> ec = nullptr;
 		switch (machine->get_machine_problem_type())
 		{
 		case PT_BINARY:
-			ec = new CAccuracyMeasure();
+			ec = std::make_shared<AccuracyMeasure>();
 			break;
 		case PT_MULTICLASS:
-			ec = new CMulticlassAccuracy();
+			ec = std::make_shared<MulticlassAccuracy>();
 			break;
 		case PT_REGRESSION:
-			ec = new CMeanSquaredError();
+			ec = std::make_shared<MeanSquaredError>();
 			break;
 		default:
 			not_implemented(SOURCE_LOCATION);
 			break;
 		}
-		cv = new CCrossValidation(machine, features, labels, ss, ec);
+		cv = std::make_shared<CrossValidation>(machine, features, labels, ss, ec);
 		cv->set_num_runs(3);
-		SG_REF(cv);
-	}
-
-	void clean()
-	{
-		SG_UNREF(features)
-		SG_UNREF(labels)
-		SG_UNREF(machine)
-		SG_UNREF(cv);
 	}
 
 	void TearDown()
@@ -97,7 +93,6 @@ protected:
 		this->cv->put("seed", 1);
 		env()->set_num_threads(1);
 		auto result = cv->evaluate()->get<float64_t>("mean");
-		clean();
 		return result;
 	}
 
@@ -107,7 +102,6 @@ protected:
 		this->cv->put("seed", 1);
 		env()->set_num_threads(4);
 		auto result = cv->evaluate()->get<float64_t>("mean");
-		clean();
 		return result;
 	}
 
@@ -124,7 +118,7 @@ protected:
 		SGMatrix<float64_t> X(D,N);
 		for (auto i : range(D*N))
 			X.matrix[i] = randn(prng);
-		features = new CDenseFeatures<float64_t>(X);
+		features = std::make_shared<DenseFeatures<float64_t>>(X);
 
 		SGVector<float64_t> y_reg(N);
 		SGVector<float64_t> y_binary(N);
@@ -152,38 +146,35 @@ protected:
 		case PT_BINARY:
 		case PT_CLASS:
 		{
-			labels = new CBinaryLabels(y_binary);
+			labels = std::make_shared<BinaryLabels>(y_binary);
 			break;
 		}
 
 		case PT_MULTICLASS:
 		{
-			labels = new CMulticlassLabels(y_mc);
+			labels = std::make_shared<MulticlassLabels>(y_mc);
 			break;
 		}
 
 		case PT_REGRESSION:
-			labels = new CRegressionLabels(y_reg);
+			labels = std::make_shared<RegressionLabels>(y_reg);
 			break;
 
 		default:
 			error("Unsupported problem type: {}", pt);
 			FAIL();
 		}
-
-		SG_REF(features)
-		SG_REF(labels)
 	}
 
-	CFeatures* features;
-	CLabels* labels;
-	CCrossValidation* cv;
-	T* machine;
+	std::shared_ptr<Features> features;
+	std::shared_ptr<Labels> labels;
+	std::shared_ptr<CrossValidation> cv;
+	std::shared_ptr<T> machine;
 };
 
-typedef ::testing::Types<CLibSVM, CPerceptron, CLibLinear,
-		CMulticlassLibLinear, CLinearRidgeRegression, CKNN,
-		CKernelRidgeRegression, CLibLinearRegression>
+typedef ::testing::Types<LibSVM, Perceptron, LibLinear,
+		MulticlassLibLinear, LinearRidgeRegression, KNN,
+		KernelRidgeRegression, LibLinearRegression>
 MachineTypes;
 
 TYPED_TEST_CASE(CrossValidationTests, MachineTypes);

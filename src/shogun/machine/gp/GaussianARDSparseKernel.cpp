@@ -34,56 +34,56 @@
 
 using namespace shogun;
 
-CGaussianARDSparseKernel::CGaussianARDSparseKernel() : CGaussianARDKernel()
+GaussianARDSparseKernel::GaussianARDSparseKernel() : GaussianARDKernel()
 {
 	initialize_sparse_kernel();
 }
-void CGaussianARDSparseKernel::initialize_sparse_kernel()
+void GaussianARDSparseKernel::initialize_sparse_kernel()
 {
 }
 
-CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
+GaussianARDSparseKernel::~GaussianARDSparseKernel()
 {
 }
 
 using namespace Eigen;
 
-CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
-		: CGaussianARDKernel(size)
+GaussianARDSparseKernel::GaussianARDSparseKernel(int32_t size)
+		: GaussianARDKernel(size)
 {
 	initialize_sparse_kernel();
 }
 
-CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)
-		: CGaussianARDKernel(l, r, size)
+GaussianARDSparseKernel::GaussianARDSparseKernel(std::shared_ptr<DotFeatures> l,
+		std::shared_ptr<DotFeatures> r, int32_t size)
+		: GaussianARDKernel(l, r, size)
 {
 	initialize_sparse_kernel();
 }
 
-CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<GaussianARDSparseKernel> GaussianARDSparseKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{
-		error("Provided kernel is not of type CGaussianARDSparseKernel!");
+		error("Provided kernel is not of type GaussianARDSparseKernel!");
 	}
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDSparseKernel*)kernel;
+
+	return kernel->as<GaussianARDSparseKernel>();
 }
 
-SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(
+SGVector<float64_t> GaussianARDSparseKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {
 	require(param, "Param not set");
 	if (!strcmp(param->m_name, "inducing_features"))
-		return CKernel::get_parameter_gradient_diagonal(param, index);
+		return Kernel::get_parameter_gradient_diagonal(param, index);
 	else
-		return CGaussianARDKernel::get_parameter_gradient_diagonal(param, index);
+		return GaussianARDKernel::get_parameter_gradient_diagonal(param, index);
 }
 
-SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
+SGMatrix<float64_t> GaussianARDSparseKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
 	require(param, "Param not set");
@@ -94,8 +94,8 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		require(index>=0 && index<num_lhs,"Index ({}) is out of bound ({})",
 			index, num_rhs);
 		int32_t idx_l=index;
-		//Note that CDotKernel requires lhs and rhs are CDotFeatures pointers
-		//This Kernel is a subclass of CDotKernel
+		//Note that DotKernel requires lhs and rhs are DotFeatures pointers
+		//This Kernel is a subclass of DotKernel
 		SGVector<float64_t> left_vec=get_feature_vector(idx_l, lhs);
 		SGMatrix<float64_t> res(left_vec.vlen, num_rhs);
 
@@ -142,6 +142,6 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 	}
 	else
 	{
-		return CGaussianARDKernel::get_parameter_gradient(param, index);
+		return GaussianARDKernel::get_parameter_gradient(param, index);
 	}
 }

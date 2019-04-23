@@ -39,7 +39,7 @@ namespace shogun
 /** @brief structure to store data of a node of
  * C4.5 tree. This can be used as a template type in
  * TreeMachineNode class. Ex: C4.5 algorithm uses nodes
- * of type CTreeMachineNode<C45TreeNodeData>
+ * of type TreeMachineNode<C45TreeNodeData>
  */
 struct C45TreeNodeData
 {

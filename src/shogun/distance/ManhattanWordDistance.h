@@ -17,19 +17,19 @@
 namespace shogun
 {
 /** @brief class ManhattanWordDistance */
-class CManhattanWordDistance: public CStringDistance<uint16_t>
+class ManhattanWordDistance: public StringDistance<uint16_t>
 {
 	public:
 		/** default constructor */
-		CManhattanWordDistance();
+		ManhattanWordDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CManhattanWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r);
-		virtual ~CManhattanWordDistance();
+		ManhattanWordDistance(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r);
+		virtual ~ManhattanWordDistance();
 
 		/** init distance
 		 *
@@ -37,7 +37,7 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

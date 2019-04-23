@@ -104,7 +104,7 @@ enum EPCAMemoryMode
  *
  * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
-class CPCA : public CDensePreprocessor<float64_t>
+class PCA : public DensePreprocessor<float64_t>
 {
 	public:
 
@@ -116,7 +116,7 @@ class CPCA : public CDensePreprocessor<float64_t>
 		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default]
 		 * @param mem_mode memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6,
+		PCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6,
 					EPCAMethod method=AUTO, EPCAMemoryMode mem_mode=MEM_REALLOCATE);
 
 		/** special constructor for FIXED_NUMBER mode
@@ -125,12 +125,12 @@ class CPCA : public CDensePreprocessor<float64_t>
 		 * @param do_whitening normalize columns(eigenvectors) in transformation matrix
 		 * @param mem memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
-		CPCA(EPCAMethod method, bool do_whitening=false, EPCAMemoryMode mem=MEM_REALLOCATE);
+		PCA(EPCAMethod method, bool do_whitening=false, EPCAMemoryMode mem=MEM_REALLOCATE);
 
 		/** destructor */
-		virtual ~CPCA();
+		virtual ~PCA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/** cleanup */
 		virtual void cleanup();

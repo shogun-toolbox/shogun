@@ -23,26 +23,22 @@ TEST(QDA, train_and_apply)
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
-	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS,prng);
+	feat = DataGenerator::generate_gaussians(NUM,CLASSES,DIMS,prng);
 	for( int i = 0 ; i < CLASSES ; ++i )
 		for( int j = 0 ; j < NUM ; ++j )
 			lab[i*NUM+j] = double(i);
 
-	CMulticlassLabels* labels = new CMulticlassLabels(lab);
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
+	auto labels = std::make_shared<MulticlassLabels>(lab);
+	auto features = std::make_shared<DenseFeatures< float64_t >>(feat);
 
-	CQDA* qda = new CQDA(features, labels);
-	SG_REF(qda);
+	auto qda = std::make_shared<QDA>(features, labels);
+
 	qda->train();
 
-	CMulticlassLabels* output = qda->apply()->as<CMulticlassLabels>();
-	SG_REF(output);
-
+	auto output = qda->apply()->as<MulticlassLabels>();
 	// Test
 	for ( index_t i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));
 
-	SG_UNREF(output);
-	SG_UNREF(qda);
 }
 #endif // HAVE_LAPACK

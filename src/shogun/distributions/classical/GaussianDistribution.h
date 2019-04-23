@@ -58,11 +58,11 @@ namespace shogun
  * \f$\Sigma=LL^T\f$.
  */
 
-class CGaussianDistribution: public RandomMixin<CProbabilityDistribution>
+class GaussianDistribution: public RandomMixin<ProbabilityDistribution>
 {
 public:
 	/** Default constructor */
-	CGaussianDistribution();
+	GaussianDistribution();
 
 	/** Constructor for which takes Gaussian mean and its covariance matrix.
 	 * It is also possible to pass a precomputed matrix factor of the specified
@@ -73,11 +73,11 @@ public:
 	 * @param cov_is_factor whether cov is a factor of the covariance or not
 	 * (default is false). If false, the factorization is explicitly computed
 	 */
-	CGaussianDistribution(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
+	GaussianDistribution(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 			bool cov_is_factor=false);
 
 	/** Destructor */
-	virtual ~CGaussianDistribution();
+	virtual ~GaussianDistribution();
 
 	/** Samples from the distribution multiple times
 	 *
@@ -125,8 +125,8 @@ public:
 	static float64_t univariate_log_pdf(float64_t sample, float64_t mu = 0.0, float64_t sigma2 = 1.0)
 	{
 		require(sigma2 > 0, "Variance should be positive");
-		return -0.5 * (CMath::pow(sample - mu, 2) / sigma2 +
-			           std::log(2.0 * CMath::PI) + std::log(sigma2));
+		return -0.5 * (Math::pow(sample - mu, 2) / sigma2 +
+			           std::log(2.0 * Math::PI) + std::log(sigma2));
 	}
 private:
 

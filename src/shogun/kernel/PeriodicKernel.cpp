@@ -32,20 +32,20 @@
 
 using namespace shogun;
 
-CPeriodicKernel::CPeriodicKernel() : CDotKernel()
+PeriodicKernel::PeriodicKernel() : DotKernel()
 {
 	init();
 }
 
-CPeriodicKernel::CPeriodicKernel(float64_t ls, float64_t p, int32_t s) : CDotKernel(s)
+PeriodicKernel::PeriodicKernel(float64_t ls, float64_t p, int32_t s) : DotKernel(s)
 {
 	init();
 	set_length_scale(ls);
 	set_period(p);
 }
 
-CPeriodicKernel::CPeriodicKernel(CDotFeatures* l, CDotFeatures* r, float64_t ls,
-	float64_t p, int32_t s) : CDotKernel(s)
+PeriodicKernel::PeriodicKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r, float64_t ls,
+	float64_t p, int32_t s) : DotKernel(s)
 {
 	init();
 	set_length_scale(ls);
@@ -53,8 +53,8 @@ CPeriodicKernel::CPeriodicKernel(CDotFeatures* l, CDotFeatures* r, float64_t ls,
 	init(l,r);
 }
 
-void CPeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
-	CDotFeatures* df)
+void PeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
+	std::shared_ptr<DotFeatures> df)
 {
 	int32_t num_vec=df->get_num_vectors();
 	buf=SGVector<float64_t>(num_vec);
@@ -63,14 +63,14 @@ void CPeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
 		buf[i]=df->dot(i,df, i);
 }
 
-bool CPeriodicKernel::init(CFeatures* l, CFeatures* r)
+bool PeriodicKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	precompute_squared();
 	return init_normalizer();
 }
 
-float64_t CPeriodicKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t PeriodicKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	/* Periodic kernel defined as by David Duvenaud in
 	 http://mlg.eng.cam.ac.uk/duvenaud/cookbook/index.html
@@ -79,15 +79,15 @@ float64_t CPeriodicKernel::compute(int32_t idx_a, int32_t idx_b)
 	*/
 	float64_t sin_term = std::sin(M_PI * distance(idx_a, idx_b) / m_period);
 	return std::exp(
-	    -2 * CMath::pow(sin_term, 2) / CMath::pow(m_length_scale, 2));
+	    -2 * Math::pow(sin_term, 2) / Math::pow(m_length_scale, 2));
 }
 
-void CPeriodicKernel::precompute_squared()
+void PeriodicKernel::precompute_squared()
 {
 	if (!lhs || !rhs)
 		return;
 
-	CDotFeatures* dotlhs=dynamic_cast<CDotFeatures*>(lhs);
+	auto dotlhs=std::dynamic_pointer_cast<DotFeatures>(lhs);
 	require(dotlhs!=NULL, "Left-hand-side features must be of type CDotFeatures");
 
 	precompute_squared_helper(m_sq_lhs, dotlhs);
@@ -96,14 +96,14 @@ void CPeriodicKernel::precompute_squared()
 		m_sq_rhs=m_sq_lhs;
 	else
 	{
-		CDotFeatures *dotrhs=dynamic_cast<CDotFeatures*>(rhs);
+		auto dotrhs=std::dynamic_pointer_cast<DotFeatures>(rhs);
 		require(dotrhs!=NULL, "Left-hand-side features must be of type CDotFeatures");
 
 		precompute_squared_helper(m_sq_rhs, dotrhs);
 	}
 }
 
-SGMatrix<float64_t> CPeriodicKernel::get_parameter_gradient(
+SGMatrix<float64_t> PeriodicKernel::get_parameter_gradient(
 	const TParameter* param, index_t index)
 {
 	require(lhs, "Left-hand-side features not set!");
@@ -151,7 +151,7 @@ SGMatrix<float64_t> CPeriodicKernel::get_parameter_gradient(
 	}
 }
 
-void CPeriodicKernel::init()
+void PeriodicKernel::init()
 {
 	set_length_scale(1.0);
 	set_period(1.0);
@@ -166,7 +166,7 @@ void CPeriodicKernel::init()
 		"Vector of dot products of each right-hand-side vector with itself.");
 }
 
-float64_t CPeriodicKernel::distance(int32_t idx_a, int32_t idx_b)
+float64_t PeriodicKernel::distance(int32_t idx_a, int32_t idx_b)
 {
-	return sqrt(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b));
+	return sqrt(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2*DotKernel::compute(idx_a,idx_b));
 }

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Jacob Walker, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Jacob Walker,
  *          Yuyu Zhang, Roman Votyakov
  */
 
@@ -15,27 +15,27 @@
 
 namespace shogun
 {
-class CModelSelectionParameters;
+class ModelSelectionParameters;
 
 /** @brief Model selection class which searches for the best model by a grid-
- * search. See CModelSelection for details.
+ * search. See ModelSelection for details.
  */
-class CGridSearchModelSelection : public CModelSelection
+class GridSearchModelSelection : public ModelSelection
 {
 public:
 	/** constructor */
-	CGridSearchModelSelection();
+	GridSearchModelSelection();
 
 	/** constructor
 	 *
 	 * @param machine_eval machine evaluation object
 	 * @param model_parameters parameters
 	 */
-	CGridSearchModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters);
+	GridSearchModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+			std::shared_ptr<ModelSelectionParameters> model_parameters);
 
 	/** destructor */
-	virtual ~CGridSearchModelSelection();
+	virtual ~GridSearchModelSelection();
 
 	/** method to select model via grid search
 	 *
@@ -43,7 +43,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false);
+	virtual std::shared_ptr<ParameterCombination> select_model(bool print_state=false);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const { return "GridSearchModelSelection"; }

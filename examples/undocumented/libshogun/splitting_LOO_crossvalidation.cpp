@@ -16,15 +16,15 @@ int main(int argc, char **argv)
 
 	while (runs-->0)
 	{
-		num_labels=CMath::random(10, 50);
+		num_labels=Math::random(10, 50);
 
 		//SG_SPRINT("num_labels=%d\n\n", num_labels);
 
 		/* build labels */
-		CRegressionLabels* labels=new CRegressionLabels(num_labels);
+		RegressionLabels* labels=new RegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, CMath::random(-10.0, 10.0));
+			labels->set_label(i, Math::random(-10.0, 10.0));
 		//	SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 
 		}
@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 		}
 
 		/* clean up */
-		SG_UNREF(splitting);
 	}
 
 

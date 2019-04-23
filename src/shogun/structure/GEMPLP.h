@@ -35,7 +35,7 @@ namespace shogun
  * http://cs.nyu.edu/~dsontag/code/mplp_ver2.tgz
  * http://cs.nyu.edu/~dsontag/code/mplp_ver1.tgz
  */
-class CGEMPLP: public CMAPInferImpl
+class GEMPLP: public MAPInferImpl
 {
 public:
 	/** Parameter for GEMPLP */
@@ -61,17 +61,17 @@ public:
 
 public:
 	/** Constructor */
-	CGEMPLP();
+	GEMPLP();
 
 	/** Constructor
 	 *
 	 * @param fg factor graph
 	 * @param param parameters
 	 */
-	CGEMPLP(CFactorGraph* fg, Parameter param = Parameter());
+	GEMPLP(std::shared_ptr<FactorGraph> fg, Parameter param = Parameter());
 
 	/** Destructor */
-	virtual ~CGEMPLP();
+	virtual ~GEMPLP();
 
 	/** @return class name */
 	virtual const char* get_name() const
@@ -123,13 +123,13 @@ public:
 	 * @param factor factor which contains energy
 	 * @return potential of the region in MPLP
 	 */
-	SGNDArray<float64_t> convert_energy_to_potential(CFactor* factor);
+	SGNDArray<float64_t> convert_energy_to_potential(std::shared_ptr<Factor> factor);
 
 public:
 	/** GEMPLP parameter */
 	Parameter m_param;
 	/** all factors in the graph*/
-	CDynamicObjectArray* m_factors;
+	std::shared_ptr<DynamicObjectArray> m_factors;
 	/** all intersections */
 	std::vector<SGVector<int32_t> > m_all_intersections;
 	/** the intersection indices (node indices) on each region */

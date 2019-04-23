@@ -16,10 +16,10 @@ using namespace shogun;
 using namespace shogun::io;
 using namespace std;
 
-class CDummyOutputStream : public COutputStream
+class DummyOutputStream : public OutputStream
 {
 public:
-	CDummyOutputStream() : COutputStream(), m_buffer() {}
+	DummyOutputStream() : OutputStream(), m_buffer() {}
 
 	error_condition close() override { return {}; }
 	error_condition flush() override { return {}; }
@@ -46,10 +46,10 @@ private:
 	string m_buffer;
 };
 
-class CDummyInputStream : public CInputStream
+class DummyInputStream : public InputStream
 {
 public:
-	CDummyInputStream(const string& buffer) : CInputStream(), m_buffer(buffer)
+	DummyInputStream(const string& buffer) : InputStream(), m_buffer(buffer)
 	{
 		m_current_pos = m_buffer.cbegin();
 	}
@@ -123,23 +123,23 @@ template <typename T>
 class SerializationTest : public ::testing::Test {};
 
 using SerializerTypes = ::testing::Types<
-	pair<CJsonSerializer, CJsonDeserializer>,
-	pair<CBitserySerializer, CBitseryDeserializer>>;
+	pair<JsonSerializer, JsonDeserializer>,
+	pair<BitserySerializer, BitseryDeserializer>>;
 TYPED_TEST_CASE(SerializationTest, SerializerTypes);
 
 TYPED_TEST(SerializationTest, serialize)
 {
 	SGMatrix<float64_t> data {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
-	auto df = new CDenseFeatures<float64_t>(data);
-	auto obj = some<CGaussianKernel>(df, df, 2.0);
+	auto df = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto obj = std::make_shared<GaussianKernel>(df, df, 2.0);
 
-	auto serializer = some<typename TypeParam::first_type>();
-	auto stream = some<CDummyOutputStream>();
+	auto serializer = std::make_shared<typename TypeParam::first_type>();
+	auto stream = std::make_shared<DummyOutputStream>();
 	serializer->attach(stream);
 	serializer->write(obj);
 
-	auto deserializer = some<typename TypeParam::second_type>();
-	auto istream = some<CDummyInputStream>(stream->buffer());
+	auto deserializer = std::make_shared<typename TypeParam::second_type>();
+	auto istream = std::make_shared<DummyInputStream>(stream->buffer());
 	deserializer->attach(istream);
 	auto deser_obj = deserializer->read_object();
 

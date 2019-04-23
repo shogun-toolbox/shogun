@@ -23,7 +23,7 @@ namespace shogun
 		class SGIO;	
 	}
 	class SGLinalg;
-	class CSignal;
+	class Signal;
 
 	class ShogunEnv : public io::FileSystemRegistry, public Parallel, public Version
 	{
@@ -50,7 +50,7 @@ namespace shogun
 		float64_t fequals_epsilon();
 
 		/** Globally over-ride the floating point epsilon for CMath::fequals.
-		 * Hack required for CSGObject::equals checks for certain serialization
+		 * Hack required for SGObject::equals checks for certain serialization
 		 * formats.
 		 * @param fequals_epsilon new epsilon to use
 		 */
@@ -61,7 +61,7 @@ namespace shogun
 		bool fequals_tolerant();
 
 		/** Globally enable linient check for CMath::fequals.
-		 * Hack required for CSGObject::equals checks for certain serialization
+		 * Hack required for SGObject::equals checks for certain serialization
 		 * formats.
 		 * @param fequals_tolerant whether or not to use tolerant check
 		 */
@@ -78,7 +78,7 @@ namespace shogun
 		 *
 		 * @return linalg object
 		 */
-		CSignal* signal();
+		Signal* signal();
 #endif
 
 	private:
@@ -91,7 +91,7 @@ namespace shogun
 		void init_from_env();
 
 		std::unique_ptr<io::SGIO> sg_io;
-		std::unique_ptr<CSignal> sg_signal;
+		std::unique_ptr<Signal> sg_signal;
 		std::unique_ptr<SGLinalg> sg_linalg;
 		float64_t sg_fequals_epsilon;
 		bool sg_fequals_tolerant;

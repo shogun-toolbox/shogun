@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Yuyu Zhang, Evan Shelhamer, Ariane Paola Gomes, 
+ * Authors: Soeren Sonnenburg, Yuyu Zhang, Evan Shelhamer, Ariane Paola Gomes,
  *          Sergey Lisitsyn
  */
 
@@ -30,19 +30,19 @@ namespace shogun
  * Tanimoto coefficient</a>
  * @see CCosineDistance
  */
-class CTanimotoDistance: public CDenseDistance<float64_t>
+class TanimotoDistance: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CTanimotoDistance();
+		TanimotoDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CTanimotoDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CTanimotoDistance();
+		TanimotoDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~TanimotoDistance();
 
 		/** init distance
 		 *
@@ -50,7 +50,7 @@ class CTanimotoDistance: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

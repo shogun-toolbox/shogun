@@ -41,7 +41,7 @@
 
 using namespace shogun;
 
-CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
+CrossValidationFoldStorage::CrossValidationFoldStorage() : EvaluationResult()
 {
 	m_current_run_index = 0;
 	m_current_fold_index = 0;
@@ -59,8 +59,8 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
 	    &m_trained_machine, "trained_machine",
 	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_result, "predicted_labels", "The test result of this fold",
-	    ParameterProperties::HYPER);
+	    &m_test_result, "predicted_labels",
+	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_test_true_result, "ground_truth_labels",
 	    "The true test result for this fold", ParameterProperties::HYPER);
@@ -77,9 +77,6 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
 
 CrossValidationFoldStorage::~CrossValidationFoldStorage()
 {
-	SG_UNREF(m_test_result);
-	SG_UNREF(m_test_true_result);
-	SG_UNREF(m_trained_machine);
 }
 
 void CrossValidationFoldStorage::post_update_results()
@@ -90,16 +87,14 @@ void CrossValidationFoldStorage::print_result()
 {
 }
 
-CSGObject* CrossValidationFoldStorage::create_empty() const
+std::shared_ptr<SGObject> CrossValidationFoldStorage::create_empty() const
 {
-	auto clone = new CrossValidationFoldStorage();
-	SG_REF(clone)
-	return clone;
+	return std::make_shared<CrossValidationFoldStorage>();
 }
 
 /** CrossValidationStorage **/
 
-CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
+CrossValidationStorage::CrossValidationStorage() : EvaluationResult()
 {
 	m_num_runs = 0;
 	m_num_folds = 0;
@@ -121,9 +116,6 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 
 CrossValidationStorage::~CrossValidationStorage()
 {
-	SG_UNREF(m_original_labels);
-	for (auto i : m_folds_results)
-		SG_UNREF(i)
 }
 
 void CrossValidationStorage::post_init()
@@ -131,10 +123,9 @@ void CrossValidationStorage::post_init()
 }
 
 void CrossValidationStorage::append_fold_result(
-    CrossValidationFoldStorage* result)
+    std::shared_ptr<CrossValidationFoldStorage> result)
 {
-	auto cloned = dynamic_cast<CrossValidationFoldStorage*>(result->clone());
-	SG_REF(cloned)
+	auto cloned = result->clone()->as<CrossValidationFoldStorage>();
 	m_folds_results.push_back(cloned);
 }
 
@@ -142,9 +133,7 @@ void CrossValidationStorage::print_result()
 {
 }
 
-CSGObject* CrossValidationStorage::create_empty() const
+std::shared_ptr<SGObject> CrossValidationStorage::create_empty() const
 {
-	auto clone = new CrossValidationStorage();
-	SG_REF(clone)
-	return clone;
+	return std::make_shared<CrossValidationStorage>();
 }

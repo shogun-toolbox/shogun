@@ -31,7 +31,7 @@ namespace shogun
 		E_UNLABELLED = 2
 	};
 
-/** @brief Class CInputParser is a templated class used to
+/** @brief Class InputParser is a templated class used to
  * maintain the reading/parsing/providing of examples.
  *
  * Parsing is done in a thread separate from the learner.
@@ -43,13 +43,13 @@ namespace shogun
  * through the set_read_vector* functions)
  *
  * The template type should be the type of feature vector the
- * parser should return. Eg. CInputParser<float32_t> means it
+ * parser should return. Eg. InputParser<float32_t> means it
  * will expect a float32_t* vector to be returned from the get_vector
  * function. Other parameters returned are length of feature vector
  * and the label, if applicable.
  *
  * If the vectors cannot be directly represented as say float32_t*
- * one can instantiate eg. CInputParser<VwExample> and it looks for
+ * one can instantiate eg. InputParser<VwExample> and it looks for
  * a get_vector function which returns a VwExample, which may contain
  * any kind of data, including label, vector, weights, etc. It is then
  * up to the external algorithm to handle such objects.
@@ -57,13 +57,13 @@ namespace shogun
  * The parser should first be started with a call to the start_parser()
  * function which starts a new thread for continuous parsing of examples.
  *
- * Parsing is done through the CParseBuffer object, which in its
+ * Parsing is done through the ParseBuffer object, which in its
  * current implementation is a ring of a specified number of examples.
- * It is the task of the CInputParser object to ensure that this ring
+ * It is the task of the InputParser object to ensure that this ring
  * is being updated with new parsed examples.
  *
- * CInputParser provides mainly the get_next_example function which
- * returns the next example from the CParseBuffer object to the caller
+ * InputParser provides mainly the get_next_example function which
+ * returns the next example from the ParseBuffer object to the caller
  * (usually a StreamingFeatures object). When one is done using
  * the example, finalize_example() should be called, leaving the
  * spot free for a new example to be loaded.
@@ -72,14 +72,14 @@ namespace shogun
  * exit_parser() may be used to cancel the parse thread if needed.
  *
  * Options are provided for automatic SG_FREEing of example objects
- * after each finalize_example() and also on CInputParser destruction.
+ * after each finalize_example() and also on InputParser destruction.
  * They are set through the set_free_vector* functions.
  * Do not free vectors on finalize_example() if you intend to reuse the
  * same vector memory locations for different examples.
  * Do not free vectors on destruction if you are bound to free them
  * manually later.
  */
-template <class T> class CInputParser
+template <class T> class InputParser
 {
 public:
 
@@ -87,13 +87,13 @@ public:
      * Constructor
      *
      */
-    CInputParser();
+    InputParser();
 
     /**
      * Destructor
      *
      */
-    ~CInputParser();
+    ~InputParser();
 
     /**
      * Initializer
@@ -102,11 +102,11 @@ public:
      * is_example_used is initialized to EMPTY.
      * example_type is LABELLED by default.
      *
-     * @param input_file CStreamingFile object
+     * @param input_file StreamingFile object
      * @param is_labelled Whether example is labelled or not (bool), optional
      * @param size Size of the buffer in number of examples
      */
-    void init(CStreamingFile* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE);
+    void init(std::shared_ptr<StreamingFile> input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE);
 
     /**
      * Test if parser is running.
@@ -134,7 +134,7 @@ public:
      *
      * The argument is a function pointer to that function.
      */
-    void set_read_vector(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len));
+    void set_read_vector(void (StreamingFile::*func_ptr)(T* &vec, int32_t &len));
 
     /**
      * Sets the function used for reading a vector and
@@ -147,7 +147,7 @@ public:
      *
      * The argument is a function pointer to that function.
      */
-    void set_read_vector_and_label(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label));
+    void set_read_vector_and_label(void (StreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label));
 
     /**
      * Gets feature vector, length and label.
@@ -301,7 +301,7 @@ protected:
      *
      * It is called while reading a vector.
      */
-    void (CStreamingFile::*read_vector) (T* &vec, int32_t &len);
+    void (StreamingFile::*read_vector) (T* &vec, int32_t &len);
 
     /**
      * This is the function pointer to the function to
@@ -309,16 +309,16 @@ protected:
      *
      * It is called while reading a vector and a label.
      */
-    void (CStreamingFile::*read_vector_and_label) (T* &vec, int32_t &len, float64_t &label);
+    void (StreamingFile::*read_vector_and_label) (T* &vec, int32_t &len, float64_t &label);
 
-    /// Input source, CStreamingFile object
-    CStreamingFile* input_source;
+    /// Input source, StreamingFile object
+    std::shared_ptr<StreamingFile> input_source;
 
     /// Thread in which the parser runs
 	std::thread parse_thread;
 
     /// The ring of examples, stored as they are parsed
-    CParseBuffer<T>* examples_ring;
+    std::shared_ptr<ParseBuffer<T>> examples_ring;
 
     /// Number of features in dataset (max of 'seen' features upto point of access)
     int32_t number_of_features;
@@ -359,21 +359,21 @@ protected:
 };
 
 template <class T>
-    void CInputParser<T>::set_read_vector(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len))
+    void InputParser<T>::set_read_vector(void (StreamingFile::*func_ptr)(T* &vec, int32_t &len))
 {
     // Set read_vector to point to the function passed as arg
     read_vector=func_ptr;
 }
 
 template <class T>
-    void CInputParser<T>::set_read_vector_and_label(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label))
+    void InputParser<T>::set_read_vector_and_label(void (StreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label))
 {
     // Set read_vector_and_label to point to the function passed as arg
     read_vector_and_label=func_ptr;
 }
 
 template <class T>
-    CInputParser<T>::CInputParser()
+    InputParser<T>::InputParser()
 {
 	examples_ring = nullptr;
 	parsing_done=true;
@@ -382,24 +382,16 @@ template <class T>
 }
 
 template <class T>
-    CInputParser<T>::~CInputParser()
+    InputParser<T>::~InputParser()
 {
-	SG_UNREF(examples_ring);
 }
 
 template <class T>
-    void CInputParser<T>::init(CStreamingFile* input_file, bool is_labelled, int32_t size)
+    void InputParser<T>::init(std::shared_ptr<StreamingFile> input_file, bool is_labelled, int32_t size)
 {
     input_source = input_file;
-
-    if (is_labelled == true)
-        example_type = E_LABELLED;
-    else
-        example_type = E_UNLABELLED;
-
-	SG_UNREF(examples_ring);
-    examples_ring = new CParseBuffer<T>(size);
-    SG_REF(examples_ring);
+    example_type = is_labelled ? E_LABELLED : E_UNLABELLED;
+    examples_ring = std::make_shared<ParseBuffer<T>>(size);
 
     parsing_done = false;
     reading_done = false;
@@ -415,21 +407,21 @@ template <class T>
 }
 
 template <class T>
-    void CInputParser<T>::set_free_vector_after_release(bool free_vec)
+    void InputParser<T>::set_free_vector_after_release(bool free_vec)
 {
     free_after_release=free_vec;
 }
 
 template <class T>
-    void CInputParser<T>::set_free_vectors_on_destruct(bool destroy)
+    void InputParser<T>::set_free_vectors_on_destruct(bool destroy)
 {
 	examples_ring->set_free_vectors_on_destruct(destroy);
 }
 
 template <class T>
-    void CInputParser<T>::start_parser()
+    void InputParser<T>::start_parser()
 {
-	SG_TRACE("entering CInputParser::start_parser()");
+	SG_TRACE("entering InputParser::start_parser()");
     if (is_running())
     {
         error("Parser thread is already running! Multiple parse threads not supported.");
@@ -441,21 +433,21 @@ template <class T>
 	keep_running.store(true, std::memory_order_release);
 	parse_thread = std::thread(&parse_loop_entry_point, this);
 
-    SG_TRACE("leaving CInputParser::start_parser()");
+    SG_TRACE("leaving InputParser::start_parser()");
 }
 
 template <class T>
-    void* CInputParser<T>::parse_loop_entry_point(void* params)
+    void* InputParser<T>::parse_loop_entry_point(void* params)
 {
-    ((CInputParser *) params)->main_parse_loop(params);
+    ((InputParser *) params)->main_parse_loop(params);
 
     return NULL;
 }
 
 template <class T>
-    bool CInputParser<T>::is_running()
+    bool InputParser<T>::is_running()
 {
-	SG_TRACE("entering CInputParser::is_running()");
+	SG_TRACE("entering InputParser::is_running()");
     bool ret;
 	std::lock_guard<std::mutex> lock(examples_state_lock);
 
@@ -467,16 +459,16 @@ template <class T>
     else
         ret = false;
 
-    SG_TRACE("leaving CInputParser::is_running(), returning {}", ret);
+    SG_TRACE("leaving InputParser::is_running(), returning {}", ret);
     return ret;
 }
 
 template <class T>
-    int32_t CInputParser<T>::get_vector_and_label(T* &feature_vector,
+    int32_t InputParser<T>::get_vector_and_label(T* &feature_vector,
                               int32_t &length,
                               float64_t &label)
 {
-    (input_source->*read_vector_and_label)(feature_vector, length, label);
+    (input_source.get()->*read_vector_and_label)(feature_vector, length, label);
 
     if (length < 1)
     {
@@ -488,10 +480,10 @@ template <class T>
 }
 
 template <class T>
-    int32_t CInputParser<T>::get_vector_only(T* &feature_vector,
+    int32_t InputParser<T>::get_vector_only(T* &feature_vector,
                          int32_t &length)
 {
-    (input_source->*read_vector)(feature_vector, length);
+    (input_source.get()->*read_vector)(feature_vector, length);
 
     if (length < 1)
     {
@@ -503,16 +495,16 @@ template <class T>
 }
 
 template <class T>
-    void CInputParser<T>::copy_example_into_buffer(Example<T>* ex)
+    void InputParser<T>::copy_example_into_buffer(Example<T>* ex)
 {
     examples_ring->copy_example(ex);
 }
 
-template <class T> void* CInputParser<T>::main_parse_loop(void* params)
+template <class T> void* InputParser<T>::main_parse_loop(void* params)
 {
     // Read the examples into current_* objects
     // Instead of allocating mem for new objects each time
-    CInputParser* this_obj = (CInputParser *) params;
+    InputParser* this_obj = (InputParser *) params;
     this->input_source = this_obj->input_source;
 
     while (keep_running.load(std::memory_order_acquire))
@@ -555,7 +547,7 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
     return NULL;
 }
 
-template <class T> Example<T>* CInputParser<T>::retrieve_example()
+template <class T> Example<T>* InputParser<T>::retrieve_example()
 {
     /* This function should be guarded by mutexes while calling  */
     Example<T> *ex;
@@ -585,7 +577,7 @@ template <class T> Example<T>* CInputParser<T>::retrieve_example()
     return ex;
 }
 
-template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
+template <class T> int32_t InputParser<T>::get_next_example(T* &fv,
         int32_t &length, float64_t &label)
 {
     /* if reading is done, no more examples can be fetched. return 0
@@ -632,7 +624,7 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
 }
 
 template <class T>
-    int32_t CInputParser<T>::get_next_example(T* &fv, int32_t &length)
+    int32_t InputParser<T>::get_next_example(T* &fv, int32_t &length)
 {
     float64_t label_dummy;
 
@@ -640,21 +632,21 @@ template <class T>
 }
 
 template <class T>
-    void CInputParser<T>::finalize_example()
+    void InputParser<T>::finalize_example()
 {
     examples_ring->finalize_example(free_after_release);
 }
 
-template <class T> void CInputParser<T>::end_parser()
+template <class T> void InputParser<T>::end_parser()
 {
-	SG_TRACE("entering CInputParser::end_parser");
+	SG_TRACE("entering InputParser::end_parser");
 	SG_TRACE("joining parse thread");
 	if (parse_thread.joinable())
 		parse_thread.join();
-    SG_TRACE("leaving CInputParser::end_parser");
+    SG_TRACE("leaving InputParser::end_parser");
 }
 
-template <class T> void CInputParser<T>::exit_parser()
+template <class T> void InputParser<T>::exit_parser()
 {
 	SG_TRACE("cancelling parse thread");
 	keep_running.store(false, std::memory_order_release);

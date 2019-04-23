@@ -70,13 +70,13 @@ struct MessageEdge
 };
 
 /** If tree structure, do exact inference, otherwise loopy belief propagation */
-IGNORE_IN_CLASSLIST class CBeliefPropagation : public CMAPInferImpl
+IGNORE_IN_CLASSLIST class BeliefPropagation : public MAPInferImpl
 {
 public:
-	CBeliefPropagation();
-	CBeliefPropagation(CFactorGraph* fg);
+	BeliefPropagation();
+	BeliefPropagation(std::shared_ptr<FactorGraph> fg);
 
-	virtual ~CBeliefPropagation();
+	virtual ~BeliefPropagation();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "BeliefPropagation"; }
@@ -95,17 +95,17 @@ protected:
  * Foundations and Trends in Computer Graphics and Vision series
  * of now publishers, 2011.
  */
-IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation
+IGNORE_IN_CLASSLIST class TreeMaxProduct : public BeliefPropagation
 {
 	typedef std::unordered_map<uint32_t, uint32_t> msg_map_type;
 	typedef std::unordered_map<uint32_t, std::set<uint32_t> > msgset_map_type;
 	typedef std::unordered_multimap<int32_t, int32_t> var_factor_map_type;
 
 public:
-	CTreeMaxProduct();
-	CTreeMaxProduct(CFactorGraph* fg);
+	TreeMaxProduct();
+	TreeMaxProduct(std::shared_ptr<FactorGraph> fg);
 
-	virtual ~CTreeMaxProduct();
+	virtual ~TreeMaxProduct();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "TreeMaxProduct"; }

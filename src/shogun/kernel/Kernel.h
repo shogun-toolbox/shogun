@@ -25,9 +25,9 @@
 
 namespace shogun
 {
-	class CFile;
-	class CFeatures;
-	class CKernelNormalizer;
+	class File;
+	class Features;
+	class KernelNormalizer;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
 	/** kernel cache element */
@@ -124,7 +124,7 @@ enum EKernelProperty
 	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
 
-class CSVM;
+class SVM;
 
 /** @brief The Kernel base class.
  *
@@ -151,20 +151,20 @@ class CSVM;
  * the kernel type get_kernel_type()). A good example to look at is the
  * GaussianKernel.
  */
-class CKernel : public CSGObject
+class Kernel : public SGObject
 {
-	friend class CVarianceKernelNormalizer;
-	friend class CSqrtDiagKernelNormalizer;
-	friend class CAvgDiagKernelNormalizer;
-	friend class CRidgeKernelNormalizer;
-	friend class CFirstElementKernelNormalizer;
-	friend class CMultitaskKernelNormalizer;
-	friend class CMultitaskKernelMklNormalizer;
-	friend class CMultitaskKernelMaskNormalizer;
-	friend class CMultitaskKernelMaskPairNormalizer;
-	friend class CTanimotoKernelNormalizer;
-	friend class CDiceKernelNormalizer;
-	friend class CZeroMeanCenterKernelNormalizer;
+	friend class VarianceKernelNormalizer;
+	friend class SqrtDiagKernelNormalizer;
+	friend class AvgDiagKernelNormalizer;
+	friend class RidgeKernelNormalizer;
+	friend class FirstElementKernelNormalizer;
+	friend class MultitaskKernelNormalizer;
+	friend class MultitaskKernelMklNormalizer;
+	friend class MultitaskKernelMaskNormalizer;
+	friend class MultitaskKernelMaskPairNormalizer;
+	friend class TanimotoKernelNormalizer;
+	friend class DiceKernelNormalizer;
+	friend class ZeroMeanCenterKernelNormalizer;
 
 	friend class CStreamingKernel;
 
@@ -173,14 +173,14 @@ class CKernel : public CSGObject
 		/** default constructor
 		 *
 		 */
-		CKernel();
+		Kernel();
 
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CKernel(int32_t size);
+		Kernel(int32_t size);
 
 		/** constructor
 		 *
@@ -188,9 +188,9 @@ class CKernel : public CSGObject
 		 * @param r features for right-hand side
 		 * @param size cache size
 		 */
-		CKernel(CFeatures* l, CFeatures* r, int32_t size);
+		Kernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, int32_t size);
 
-		virtual ~CKernel();
+		virtual ~Kernel();
 
 		/** get kernel function for lhs feature vector a
 		 * and rhs feature vector b
@@ -226,13 +226,13 @@ class CKernel : public CSGObject
 		SGVector<float64_t> get_kernel_diagonal(SGVector<float64_t>
 				preallocated=SGVector<float64_t>())
 		{
-			require(lhs, "CKernel::get_kernel_diagonal(): Left-handside "
+			require(lhs, "Kernel::get_kernel_diagonal(): Left-handside "
 					"features missing!");
 
-			require(rhs, "CKernel::get_kernel_diagonal(): Right-handside "
+			require(rhs, "Kernel::get_kernel_diagonal(): Right-handside "
 						"features missing!");
 
-			int32_t length=CMath::min(lhs->get_num_vectors(),rhs->get_num_vectors());
+			int32_t length=Math::min(lhs->get_num_vectors(),rhs->get_num_vectors());
 
 			/* allocate space if necessary */
 			if (!preallocated.vector)
@@ -454,19 +454,19 @@ class CKernel : public CSGObject
 		 *  @param rhs features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
 
 		/** set the current kernel normalizer
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(CKernelNormalizer* normalizer);
+		virtual bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer);
 
 		/** obtain the current kernel normalizer
 		 *
 		 * @return the kernel normalizer
 		 */
-		virtual CKernelNormalizer* get_normalizer() const;
+		virtual std::shared_ptr<KernelNormalizer> get_normalizer() const;
 
 		/** initialize the current kernel normalizer
 		 *  @return if init was successful
@@ -476,7 +476,7 @@ class CKernel : public CSGObject
 		/** clean up your kernel
 		 *
 		 * base method only removes lhs and rhs
-		 * overload to add further cleanup but make sure CKernel::cleanup() is
+		 * overload to add further cleanup but make sure Kernel::cleanup() is
 		 * called
 		 */
 		virtual void cleanup();
@@ -485,25 +485,25 @@ class CKernel : public CSGObject
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<File> loader);
 
 		/** save kernel matrix
 		 *
 		 * @param writer File object via which to save data
 		 */
-		void save(CFile* writer);
+		void save(std::shared_ptr<File> writer);
 
 		/** get left-hand side of features used in kernel
 		 *
 		 * @return features of left-hand side
 		 */
-		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; }
+		inline std::shared_ptr<Features> get_lhs() {  return lhs; }
 
 		/** get right-hand side of features used in kernel
 		 *
 		 * @return features of right-hand side
 		 */
-		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; }
+		inline std::shared_ptr<Features> get_rhs() {  return rhs; }
 
 		/** get number of vectors of lhs features
 		 *
@@ -772,7 +772,7 @@ class CKernel : public CSGObject
 		 * @param svm svm model
 		 * @return if initializing was successful
 		 */
-		bool init_optimization_svm(CSVM * svm) ;
+		bool init_optimization_svm(std::shared_ptr<SVM> svm) ;
 
 		/** compute optimized
 		 *
@@ -868,11 +868,10 @@ class CKernel : public CSGObject
 
 		/** Obtains a kernel from a generic SGObject with error checking. Note
 		 * that if passing NULL, result will be NULL
-		 * @param kernel Object to cast to CKernel, is *not* SG_REFed
-		 * @return object casted to CKernel, NULL if not possible
+		 * @param kernel Object to cast to Kernel, is *not* SG_REFed
+		 * @return object casted to Kernel, NULL if not possible
 		 */
-		static CKernel* obtain_from_generic(CSGObject* kernel);
-
+		static std::shared_ptr<Kernel> obtain_from_generic(std::shared_ptr<SGObject> kernel);
 	protected:
 		/** set property
 		 *
@@ -921,8 +920,8 @@ class CKernel : public CSGObject
 			int32_t i_start;
 
 			if (symmetric)
-				i_start = (int32_t)CMath::floor(
-				    n - std::sqrt(CMath::sq((float64_t)n) - offs));
+				i_start = (int32_t)Math::floor(
+				    n - std::sqrt(Math::sq((float64_t)n) - offs));
 			else
 				i_start=(int32_t) (offs/int64_t(n));
 
@@ -1012,7 +1011,7 @@ class CKernel : public CSGObject
 		struct S_KTHREAD_PARAM
 		{
 			/** kernel */
-			CKernel* kernel;
+			Kernel* kernel;
 			/** kernel cache */
 			KERNEL_CACHE* kernel_cache;
 			/** cache */
@@ -1057,9 +1056,9 @@ class CKernel : public CSGObject
 		KERNELCACHE_ELEM* kernel_matrix;
 
 		/// feature vectors to occur on left hand side
-		CFeatures* lhs;
+		std::shared_ptr<Features> lhs;
 		/// feature vectors to occur on right hand side
-		CFeatures* rhs;
+		std::shared_ptr<Features> rhs;
 
 		/// lhs
 		bool lhs_equals_rhs;
@@ -1084,7 +1083,7 @@ class CKernel : public CSGObject
 
 		/** normalize the kernel(i,j) function based on this normalization
 		 * function */
-		CKernelNormalizer* normalizer;
+		std::shared_ptr<KernelNormalizer> normalizer;
 };
 
 }

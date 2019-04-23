@@ -20,14 +20,14 @@ using namespace shogun;
 
 const int32_t NAA=20;                                  /* Number of amino-acids */
 const int32_t NLET=26;                                 /* Number of letters in the alphabet */
-const char* CLocalAlignmentStringKernel::aaList="ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
+const char* LocalAlignmentStringKernel::aaList="ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
 
 /*****************/
 /* SW parameters */
 /*****************/
 
 /* mutation matrix */
-const int32_t CLocalAlignmentStringKernel::blosum[] = {
+const int32_t LocalAlignmentStringKernel::blosum[] = {
   6,
  -2,   8,
  -2,  -1,   9,
@@ -78,19 +78,19 @@ const float64_t SCALING=0.1;           /* Factor to scale all SW parameters */
 const float64_t LOG0=-10000;          /* log(0) */
 const float64_t INTSCALE=1000.0;      /* critical for speed and precise computation*/
 
-int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
+int32_t LocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
-CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
-: CStringKernel<char>(size)
+LocalAlignmentStringKernel::LocalAlignmentStringKernel(int32_t size)
+: StringKernel<char>(size)
 {
 	init();
 	init_static_variables();
 }
 
-CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r,
+LocalAlignmentStringKernel::LocalAlignmentStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 	float64_t opening, float64_t extension)
-: CStringKernel<char>()
+: StringKernel<char>()
 {
 	init();
 	m_opening=opening;
@@ -99,19 +99,19 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
 	init(l, r);
 }
 
-CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
+LocalAlignmentStringKernel::~LocalAlignmentStringKernel()
 {
 	cleanup();
 }
 
-bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
+bool LocalAlignmentStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	initialized=true;
 	return init_normalizer();
 }
 
-void CLocalAlignmentStringKernel::cleanup()
+void LocalAlignmentStringKernel::cleanup()
 {
 	SG_FREE(scaled_blosum);
 	scaled_blosum=NULL;
@@ -121,20 +121,20 @@ void CLocalAlignmentStringKernel::cleanup()
 	SG_FREE(aaIndex);
 	aaIndex=NULL;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
 /* LogSum - default log funciotion. fast, but not exact */
 /* LogSum2 - precise, but slow. Note that these two functions need different figure types  */
 
-void CLocalAlignmentStringKernel::init_logsum(){
+void LocalAlignmentStringKernel::init_logsum(){
 	int32_t i;
 	for (i=0; i<LOGSUM_TBL; i++)
 		logsum_lookup[i]=int32_t(INTSCALE*
 				(log(1.+exp((float32_t)-i/INTSCALE))));
 }
 
-int32_t CLocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
+int32_t LocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
 {
 	int32_t diff;
 	static int32_t firsttime=1;
@@ -157,7 +157,7 @@ int32_t CLocalAlignmentStringKernel::LogSum(int32_t p1, int32_t p2)
 }
 
 
-float32_t CLocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
+float32_t LocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
 {
 	if (p1>p2)
 		return (p1-p2>50.) ? p1 : p1+log(1.+exp(p2-p1));
@@ -166,7 +166,7 @@ float32_t CLocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
 }
 
 
-void CLocalAlignmentStringKernel::init_static_variables()
+void LocalAlignmentStringKernel::init_static_variables()
      /* Initialize all static variables. This function should be called once before computing the first pair HMM score */
 {
 	int32_t i;
@@ -196,7 +196,7 @@ void CLocalAlignmentStringKernel::init_static_variables()
 /* Implementation of the
  * convolution kernel which generalizes the Smith-Waterman algorithm
  */
-float64_t CLocalAlignmentStringKernel::LAkernelcompute(
+float64_t LocalAlignmentStringKernel::LAkernelcompute(
 	int32_t* aaX, int32_t* aaY, /* the two amino-acid sequences (as sequences of indexes in [0..NAA-1] indicating the position of the amino-acid in the variable 'aaList') */
 	int32_t nX, int32_t nY /* the lengths of both sequences */)
 {
@@ -345,15 +345,15 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
 
 /* Return the log-probability of two sequences x and y under a pair HMM model */
 /* x and y are strings of aminoacid letters, e.g., "AABRS" */
-float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
+float64_t LocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 {
 	int32_t *aax, *aay;  /* to convert x and y into sequences of amino-acid indexes */
 	int32_t lx=0, ly=0;       /* lengths of x and y */
 	int32_t i, j;
 
 	bool free_x, free_y;
-	char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);
-	char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly, free_y);
+	char* x=std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_x, lx, free_x);
+	char* y=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_y, ly, free_y);
 	ASSERT(x && y)
 
 	if ( (lx<1) || (ly<1) )
@@ -385,15 +385,15 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 	SG_FREE(aax);
 	SG_FREE(aay);
 
-	((CStringFeatures<char>*)lhs)->free_feature_vector(x, idx_x, free_x);
-	((CStringFeatures<char>*)rhs)->free_feature_vector(y, idx_y, free_y);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(x, idx_x, free_x);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(y, idx_y, free_y);
 
 	return result;
 }
 
-void CLocalAlignmentStringKernel::init()
+void LocalAlignmentStringKernel::init()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
 	initialized=false;
 	isAA=NULL;

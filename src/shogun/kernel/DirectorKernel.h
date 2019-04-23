@@ -18,36 +18,36 @@
 namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
+IGNORE_IN_CLASSLIST class DirectorKernel: public Kernel
 {
 	public:
 		/** default constructor
 		 *
 		 */
-		CDirectorKernel()
-		: CKernel(), external_features(false)
+		DirectorKernel()
+		: Kernel(), external_features(false)
 		{
 		}
 
 		/**
 		 */
-		CDirectorKernel(bool is_external_features)
-		: CKernel(), external_features(is_external_features)
+		DirectorKernel(bool is_external_features)
+		: Kernel(), external_features(is_external_features)
 		{
 		}
 
 		/** constructor
 		 *
 		 */
-		CDirectorKernel(int32_t size, bool is_external_features)
-		: CKernel(size), external_features(is_external_features)
+		DirectorKernel(int32_t size, bool is_external_features)
+		: Kernel(size), external_features(is_external_features)
 		{
 		}
 
 		/** default constructor
 		 *
 		 */
-		virtual ~CDirectorKernel()
+		virtual ~DirectorKernel()
 		{
 			cleanup();
 		}
@@ -58,32 +58,32 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 		{
 			if (env()->get_num_threads()!=1)
 			{
 				io::warn("Enforcing to use only one thread due to restrictions of directors");
 				env()->set_num_threads(1);
 			}
-			return CKernel::init(l, r);
+			return Kernel::init(l, r);
 		}
 
 		/** set the current kernel normalizer
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(CKernelNormalizer* normalizer)
+		virtual bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer)
 		{
-			return CKernel::set_normalizer(normalizer);
+			return Kernel::set_normalizer(normalizer);
 		}
 
 		/** obtain the current kernel normalizer
 		 *
 		 * @return the kernel normalizer
 		 */
-		virtual CKernelNormalizer* get_normalizer()
+		virtual std::shared_ptr<KernelNormalizer> get_normalizer()
 		{
-			return CKernel::get_normalizer();
+			return Kernel::get_normalizer();
 		}
 
 		/** initialize the current kernel normalizer
@@ -91,18 +91,18 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool init_normalizer()
 		{
-			return CKernel::init_normalizer();
+			return Kernel::init_normalizer();
 		}
 
 		/** clean up your kernel
 		 *
 		 * base method only removes lhs and rhs
-		 * overload to add further cleanup but make sure CKernel::cleanup() is
+		 * overload to add further cleanup but make sure Kernel::cleanup() is
 		 * called
 		 */
 		virtual void cleanup()
 		{
-			CKernel::cleanup();
+			Kernel::cleanup();
 		}
 
 		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
@@ -118,7 +118,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual SGVector<float64_t> get_kernel_col(int32_t j)
 		{
-			return CKernel::get_kernel_col(j);
+			return Kernel::get_kernel_col(j);
 		}
 
 		/**
@@ -128,7 +128,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual SGVector<float64_t> get_kernel_row(int32_t i)
 		{
-			return CKernel::get_kernel_row(i);
+			return Kernel::get_kernel_row(i);
 		}
 
 		/** get number of vectors of lhs features
@@ -137,7 +137,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual int32_t get_num_vec_lhs()
 		{
-			return CKernel::get_num_vec_lhs();
+			return Kernel::get_num_vec_lhs();
 		}
 
 		/** get number of vectors of rhs features
@@ -146,7 +146,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual int32_t get_num_vec_rhs()
 		{
-			return CKernel::get_num_vec_rhs();
+			return Kernel::get_num_vec_rhs();
 		}
 
 		/** set number of vectors of lhs features
@@ -174,7 +174,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		virtual bool has_features()
 		{
 			if (!external_features)
-				return CKernel::has_features();
+				return Kernel::has_features();
 			else
 				return true;
 		}
@@ -182,19 +182,19 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** remove lhs and rhs from kernel */
 		virtual void remove_lhs_and_rhs()
 		{
-			CKernel::remove_lhs_and_rhs();
+			Kernel::remove_lhs_and_rhs();
 		}
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs()
 		{
-			CKernel::remove_lhs();
+			Kernel::remove_lhs();
 		}
 
 		/** remove rhs from kernel */
 		virtual void remove_rhs()
 		{
-			CKernel::remove_rhs();
+			Kernel::remove_rhs();
 		}
 
 		/** return what type of kernel we are
@@ -226,7 +226,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void clear_normal()
 		{
-			CKernel::clear_normal();
+			Kernel::clear_normal();
 		}
 
 		/** add vector*factor to 'virtual' normal vector
@@ -236,7 +236,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void add_to_normal(int32_t vector_idx, float64_t weight)
 		{
-			CKernel::add_to_normal(vector_idx, weight);
+			Kernel::add_to_normal(vector_idx, weight);
 		}
 
 		/** set optimization type
@@ -245,7 +245,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void set_optimization_type(EOptimizationType t)
 		{
-			CKernel::set_optimization_type(t);
+			Kernel::set_optimization_type(t);
 		}
 
 		/** initialize optimization
@@ -258,7 +258,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		virtual bool init_optimization(
 			int32_t count, int32_t *IDX, float64_t *weights)
 		{
-			return CKernel::init_optimization(count, IDX, weights);
+			return Kernel::init_optimization(count, IDX, weights);
 		}
 
 		/** delete optimization
@@ -267,7 +267,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool delete_optimization()
 		{
-			return CKernel::delete_optimization();
+			return Kernel::delete_optimization();
 		}
 
 		/** compute optimized
@@ -277,7 +277,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual float64_t compute_optimized(int32_t vector_idx)
 		{
-			return CKernel::compute_optimized(vector_idx);
+			return Kernel::compute_optimized(vector_idx);
 		}
 
 		/** computes output for a batch of examples in an optimized fashion
@@ -293,7 +293,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
 			float64_t factor=1.0)
 		{
-			CKernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
+			Kernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
 		}
 
 		/** get number of subkernels
@@ -302,7 +302,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual int32_t get_num_subkernels()
 		{
-			return CKernel::get_num_subkernels();
+			return Kernel::get_num_subkernels();
 		}
 
 		/** compute by subkernel
@@ -313,7 +313,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		virtual void compute_by_subkernel(
 			int32_t vector_idx, float64_t * subkernel_contrib)
 		{
-			CKernel::compute_by_subkernel(vector_idx, subkernel_contrib);
+			Kernel::compute_by_subkernel(vector_idx, subkernel_contrib);
 		}
 
 		/** get subkernel weights
@@ -323,7 +323,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual const float64_t* get_subkernel_weights(int32_t& num_weights)
 		{
-			return CKernel::get_subkernel_weights(num_weights);
+			return Kernel::get_subkernel_weights(num_weights);
 		}
 
 		/** set subkernel weights
@@ -332,7 +332,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> weights)
 		{
-			CKernel::set_subkernel_weights(weights);
+			Kernel::set_subkernel_weights(weights);
 		}
 
 		/** Can (optionally) be overridden to pre-initialize some member
@@ -345,7 +345,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void load_serializable_pre() noexcept(false)
 		{
-			CKernel::load_serializable_pre();
+			Kernel::load_serializable_pre();
 		}
 
 		/** Can (optionally) be overridden to post-initialize some member
@@ -358,7 +358,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void load_serializable_post() noexcept(false)
 		{
-			CKernel::load_serializable_post();
+			Kernel::load_serializable_post();
 		}
 
 		/** Can (optionally) be overridden to pre-initialize some member
@@ -371,7 +371,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void save_serializable_pre() noexcept(false)
 		{
-			CKernel::save_serializable_pre();
+			Kernel::save_serializable_pre();
 		}
 
 		/** Can (optionally) be overridden to post-initialize some member
@@ -384,7 +384,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual void save_serializable_post() noexcept(false)
 		{
-			CKernel::save_serializable_post();
+			Kernel::save_serializable_post();
 		}
 
 protected:
@@ -403,7 +403,7 @@ protected:
 
 		virtual void register_params()
 		{
-			CKernel::register_params();
+			Kernel::register_params();
 		}
 
 	protected:

@@ -35,18 +35,18 @@ void gen_rand_data(float64_t* & feat, float64_t* & lab,const int32_t num,const i
 			lab[i]=-1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat[i*dims+j]=CMath::random(0.0,1.0)+dist;
+				feat[i*dims+j]=Math::random(0.0,1.0)+dist;
 		}
 		else
 		{
 			lab[i]=1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat[i*dims+j]=CMath::random(0.0,1.0)-dist;
+				feat[i*dims+j]=Math::random(0.0,1.0)-dist;
 		}
 	}
-	CMath::display_vector(lab,num);
-	CMath::display_matrix(feat,dims, num);
+	Math::display_vector(lab,num);
+	Math::display_matrix(feat,dims, num);
 }
 
 int main()
@@ -100,16 +100,14 @@ int main()
 	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
 
 	// create train labels
-	CLabels* labelstr=new CLabels();
+	Labels* labelstr=new Labels();
 	labelstr->set_labels(labtr, numtr);
-	SG_REF(labelstr);
 
 	// create train features
 	a=time(NULL);
 	std::cout << "initializing shogun train feature"<<std::endl;
 
-	CDenseFeatures<float64_t>* featurestr1 = new CDenseFeatures<float64_t>(feature_cache);
-	SG_REF(featurestr1);
+	DenseFeatures<float64_t>* featurestr1 = new DenseFeatures<float64_t>(feature_cache);
 
 
 	featurestr1->set_feature_matrix(feattr, dims, numtr);
@@ -120,13 +118,11 @@ int main()
 	// create gaussian kernel
 //	std::cout << "computing gaussian train kernel"<<std::endl;
 
-	CGaussianKernel* kerneltr1 = new CGaussianKernel(kernel_cache, rbf_width);
-	SG_REF(kerneltr1);
+	GaussianKernel* kerneltr1 = new GaussianKernel(kernel_cache, rbf_width);
 	kerneltr1->init(featurestr1, featurestr1);
 
 	// create svm via libsvm and train
 	CLibSVM* svm1 = new CLibSVM(svm_C, kerneltr1, labelstr);
-	SG_REF(svm1);
 	svm1->set_epsilon(svm_eps);
 
 	a=time(NULL);
@@ -141,8 +137,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun test feature"<<std::endl;
 
-	CDenseFeatures<float64_t>* featureste1 = new CDenseFeatures<float64_t>(feature_cache);
-	SG_REF(featureste1);
+	DenseFeatures<float64_t>* featureste1 = new DenseFeatures<float64_t>(feature_cache);
 
 
 	featureste1->set_feature_matrix(featte, dims, numte);
@@ -151,8 +146,7 @@ int main()
 	//std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
 
 	//std::cout << "computing gaussian test kernel"<<std::endl;
-	CGaussianKernel* kernelte1 = new CGaussianKernel(kernel_cache, rbf_width);
-	SG_REF(kernelte1);
+	GaussianKernel* kernelte1 = new GaussianKernel(kernel_cache, rbf_width);
 	kernelte1->init(featurestr1, featureste1);
 	svm1->set_kernel(kernelte1);
 
@@ -183,7 +177,6 @@ int main()
 	std::cout << "initializing preprocessor"<<std::endl;
 
 	CRandomFourierGaussPreproc *rfgauss=new CRandomFourierGaussPreproc;
-	SG_REF(rfgauss);
 
 	env()->io()->set_loglevel(MSG_DEBUG);
 
@@ -204,8 +197,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun train feature again"<<std::endl;
 
-	CDenseFeatures<float64_t>* featurestr2 = new CDenseFeatures<float64_t>(feature_cache);
-	SG_REF(featurestr2);
+	DenseFeatures<float64_t>* featurestr2 = new DenseFeatures<float64_t>(feature_cache);
 	featurestr2->set_feature_matrix(feattr2, dims, numtr);
 
 	std::cout << "finished"<<std::endl;
@@ -241,13 +233,11 @@ int main()
 	// create linear kernel
 	//std::cout << "computing linear train kernel over preprocessed features"<<std::endl;
 
-	CLinearKernel* kerneltr2 = new CLinearKernel();
-	SG_REF(kerneltr2);
+	LinearKernel* kerneltr2 = new LinearKernel();
 	kerneltr2->init(featurestr2, featurestr2);
 
 	// create svm via libsvm and train
 	CLibSVM* svm2 = new CLibSVM(svm_C, kerneltr2, labelstr);
-	SG_REF(svm2);
 	svm2->set_epsilon(svm_eps);
 	a=time(NULL);
 	std::cout << "training SVM over linear kernel over preprocessed features"<<std::endl;
@@ -261,8 +251,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun test feature again"<<std::endl;
 
-	CDenseFeatures<float64_t>* featureste2 = new CDenseFeatures<float64_t>(feature_cache);
-	SG_REF(featureste2);
+	DenseFeatures<float64_t>* featureste2 = new DenseFeatures<float64_t>(feature_cache);
 	featureste2->set_feature_matrix(featte2, dims, numte);
 	std::cout << "finished"<<std::endl;
 	//b=time(NULL);
@@ -273,7 +262,6 @@ int main()
 	// use preprocessor
 	// **************************************************************
 	CRandomFourierGaussPreproc *rfgauss2=new CRandomFourierGaussPreproc;
-	SG_REF(rfgauss2);
 
 	env()->io()->set_loglevel(MSG_DEBUG);
 
@@ -290,8 +278,7 @@ int main()
 
 	//std::cout << "computing linear test kernel over preprocessed features"<<std::endl;
 
-	CLinearKernel* kernelte2 = new CLinearKernel();
-	SG_REF(kernelte2);
+	LinearKernel* kernelte2 = new LinearKernel();
 	kernelte2->init(featurestr2, featureste2);
 	//std::cout << "finished"<<std::endl;
 	//b=time(NULL);
@@ -325,12 +312,12 @@ int main()
 	float64_t avg_scorediff=0;
 	for(int32_t i=0; i< numte ;++i)
 	{
-		if( (int32_t)CMath::sign(scoreste1[i]) != (int32_t)CMath::sign(scoreste2[i]))
+		if( (int32_t)Math::sign(scoreste1[i]) != (int32_t)Math::sign(scoreste2[i]))
 		{
 			++num_labeldiffs;
 		}
-		avg_scorediff+=CMath::abs(scoreste1[i]-scoreste2[i])/numte;
-		std::cout<< "at sample i"<< i <<" label 1= " << CMath::sign(scoreste1[i]) <<" label 2= " << CMath::sign(scoreste2[i])<< " scorediff " << scoreste1[i] << " - " <<scoreste2[i] <<" = " << CMath::abs(scoreste1[i]-scoreste2[i])<<std::endl;
+		avg_scorediff+=Math::abs(scoreste1[i]-scoreste2[i])/numte;
+		std::cout<< "at sample i"<< i <<" label 1= " << Math::sign(scoreste1[i]) <<" label 2= " << Math::sign(scoreste2[i])<< " scorediff " << scoreste1[i] << " - " <<scoreste2[i] <<" = " << Math::abs(scoreste1[i]-scoreste2[i])<<std::endl;
 	}
 	std::cout << "usedwidth for rbf kernel"<<	kerneltr1->get_width() << " " <<	kernelte1->get_width()<<std::endl;
 
@@ -390,8 +377,7 @@ std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist
 // now the same with a new preprocessor to show the usage of set_randomcoefficients
 // ********************************************8
 
-	CDenseFeatures<float64_t>* featureste3 = new CDenseFeatures<float64_t>(feature_cache);
-	SG_REF(featureste3);
+	DenseFeatures<float64_t>* featureste3 = new DenseFeatures<float64_t>(feature_cache);
 	featureste3->set_feature_matrix(featte3, dims, numte);
 	std::cout << "finished"<<std::endl;
 	//b=time(NULL);
@@ -419,8 +405,7 @@ std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist
 
 	//std::cout << "computing linear test kernel over preprocessed features"<<std::endl;
 
-	CLinearKernel* kernelte3 = new CLinearKernel();
-	SG_REF(kernelte3);
+	LinearKernel* kernelte3 = new LinearKernel();
 	kernelte2->init(featurestr2, featureste3);
 	//std::cout << "finished"<<std::endl;
 	//b=time(NULL);
@@ -454,40 +439,17 @@ std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist
 	avg_scorediff=0;
 	for(int32_t i=0; i< numte ;++i)
 	{
-		if( (int32_t)CMath::sign(scoreste1[i]) != (int32_t)CMath::sign(scoreste3[i]))
+		if( (int32_t)Math::sign(scoreste1[i]) != (int32_t)Math::sign(scoreste3[i]))
 		{
 			++num_labeldiffs;
 		}
-		avg_scorediff+=CMath::abs(scoreste1[i]-scoreste3[i])/numte;
-		std::cout<< "at sample i"<< i <<" label 1= " << CMath::sign(scoreste1[i]) <<" label 2= " << CMath::sign(scoreste3[i])<< " scorediff " << scoreste1[i] << " - " <<scoreste3[i] <<" = " << CMath::abs(scoreste1[i]-scoreste3[i])<<std::endl;
+		avg_scorediff+=Math::abs(scoreste1[i]-scoreste3[i])/numte;
+		std::cout<< "at sample i"<< i <<" label 1= " << Math::sign(scoreste1[i]) <<" label 2= " << Math::sign(scoreste3[i])<< " scorediff " << scoreste1[i] << " - " <<scoreste3[i] <<" = " << Math::abs(scoreste1[i]-scoreste3[i])<<std::endl;
 	}
 
 std::cout<< "number of different labels between gaussian kernel and rfgauss "<< num_labeldiffs<< " out of "<< numte << " labels "<<std::endl;
 std::cout<< "average test sample SVM output score difference between gaussian kernel and rfgauss "<< avg_scorediff<<std::endl;
 std::cout<< "classification errors gaussian kernel and rfgauss  "<< err1 << " " <<err3<<std::endl;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	SG_FREE(randomcoeff_additive2);
 	SG_FREE(randomcoeff_multiplicative2);
@@ -497,20 +459,5 @@ std::cout<< "classification errors gaussian kernel and rfgauss  "<< err1 << " " 
 	SG_FREE(kertr1);
 	SG_FREE(kertr2);
 
-	SG_UNREF(labelstr);
-	SG_UNREF(kerneltr1);
-	SG_UNREF(kerneltr2);
-	SG_UNREF(kernelte1);
-	SG_UNREF(kernelte2);
-	SG_UNREF(kernelte3);
-	SG_UNREF(featurestr1);
-	SG_UNREF(featurestr2);
-	SG_UNREF(featureste1);
-	SG_UNREF(featureste2);
-	SG_UNREF(featureste3);
-	SG_UNREF(svm1);
-	SG_UNREF(svm2);
-	SG_UNREF(rfgauss);
-	SG_UNREF(rfgauss2);
 	return 0;
 }

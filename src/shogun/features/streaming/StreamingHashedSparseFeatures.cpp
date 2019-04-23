@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser,
  *          Sergey Lisitsyn, Viktor Gal
  */
 
@@ -13,26 +13,25 @@ namespace shogun
 {
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures()
+StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures()
 {
 	init(NULL, false, 0, 0, false, true);
 }
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CStreamingFile* file,
+StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures(std::shared_ptr<StreamingFile> file,
 	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatures<ST>* dot_features,
+StreamingHashedSparseFeatures<ST>::StreamingHashedSparseFeatures(std::shared_ptr<SparseFeatures<ST>> dot_features,
 	int32_t d, bool use_quadr, bool keep_lin_terms, float64_t* lab)
 {
 	ASSERT(dot_features);
 
-	CStreamingFileFromSparseFeatures<ST>* file =
-			new CStreamingFileFromSparseFeatures<ST>(dot_features, lab);
+	auto file = std::make_shared<StreamingFileFromSparseFeatures<ST>>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
@@ -43,12 +42,12 @@ CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatur
 }
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::~CStreamingHashedSparseFeatures()
+StreamingHashedSparseFeatures<ST>::~StreamingHashedSparseFeatures()
 {
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
+void StreamingHashedSparseFeatures<ST>::init(std::shared_ptr<StreamingFile> file, bool is_labelled,
 	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
@@ -64,7 +63,7 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 	if (file)
 	{
 		working_file = file;
-		SG_REF(working_file);
+
 		parser.init(file, is_labelled, size);
 		seekable = false;
 	}
@@ -78,18 +77,18 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 }
 
 template <class ST>
-float32_t CStreamingHashedSparseFeatures<ST>::dot(CStreamingDotFeatures* df)
+float32_t StreamingHashedSparseFeatures<ST>::dot(std::shared_ptr<StreamingDotFeatures> df)
 {
 	ASSERT(df);
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(strcmp(df->get_name(),get_name())==0)
 
-	CStreamingHashedSparseFeatures<ST>* hdf = (CStreamingHashedSparseFeatures<ST>* ) df;
+	auto hdf = std::static_pointer_cast<StreamingHashedSparseFeatures<ST>>(df);
 	return current_vector.sparse_dot(hdf->current_vector);
 }
 
 template <class ST>
-float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, int32_t vec2_len)
+float32_t StreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == dim);
 
@@ -101,88 +100,88 @@ float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, i
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::add_to_dense_vec(float32_t alpha, float32_t* vec2,
+void StreamingHashedSparseFeatures<ST>::add_to_dense_vec(float32_t alpha, float32_t* vec2,
 	int32_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2_len == dim);
 
 	if (abs_val)
-		alpha = CMath::abs(alpha);
+		alpha = Math::abs(alpha);
 
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 		vec2[current_vector.features[i].feat_index] += alpha * current_vector.features[i].entry;
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_dim_feature_space() const
+int32_t StreamingHashedSparseFeatures<ST>::get_dim_feature_space() const
 {
 	return dim;
 }
 
 template <class ST>
-const char* CStreamingHashedSparseFeatures<ST>::get_name() const
+const char* StreamingHashedSparseFeatures<ST>::get_name() const
 {
 	return "StreamingHashedSparseFeatures";
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
+int32_t StreamingHashedSparseFeatures<ST>::get_num_vectors() const
 {
 	return 1;
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::set_vector_reader()
+void StreamingHashedSparseFeatures<ST>::set_vector_reader()
 {
 	SG_DEBUG("called inside set_vector_reader");
-	parser.set_read_vector(&CStreamingFile::get_sparse_vector);
+	parser.set_read_vector(&StreamingFile::get_sparse_vector);
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::set_vector_and_label_reader()
+void StreamingHashedSparseFeatures<ST>::set_vector_and_label_reader()
 {
-	parser.set_read_vector_and_label(&CStreamingFile::get_sparse_vector_and_label);
+	parser.set_read_vector_and_label(&StreamingFile::get_sparse_vector_and_label);
 }
 
 template <class ST>
-EFeatureType CStreamingHashedSparseFeatures<ST>::get_feature_type() const
+EFeatureType StreamingHashedSparseFeatures<ST>::get_feature_type() const
 {
 	return F_UINT;
 }
 
 template <class ST>
-EFeatureClass CStreamingHashedSparseFeatures<ST>::get_feature_class() const
+EFeatureClass StreamingHashedSparseFeatures<ST>::get_feature_class() const
 {
 	return C_STREAMING_SPARSE;
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::start_parser()
+void StreamingHashedSparseFeatures<ST>::start_parser()
 {
 	if (!parser.is_running())
 		parser.start_parser();
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::end_parser()
+void StreamingHashedSparseFeatures<ST>::end_parser()
 {
 	parser.end_parser();
 }
 
 template <class ST>
-float64_t CStreamingHashedSparseFeatures<ST>::get_label()
+float64_t StreamingHashedSparseFeatures<ST>::get_label()
 {
 	return current_label;
 }
 
 template <class ST>
-bool CStreamingHashedSparseFeatures<ST>::get_next_example()
+bool StreamingHashedSparseFeatures<ST>::get_next_example()
 {
 	SGSparseVector<ST> tmp;
 	if (parser.get_next_example(tmp.features,
 		tmp.num_feat_entries, current_label))
 	{
-		current_vector = CHashedSparseFeatures<ST>::hash_vector(tmp, dim,
+		current_vector = HashedSparseFeatures<ST>::hash_vector(tmp, dim,
 				use_quadratic, keep_linear_terms);
 		tmp.features = NULL;
 		tmp.num_feat_entries = -1;
@@ -192,34 +191,34 @@ bool CStreamingHashedSparseFeatures<ST>::get_next_example()
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::release_example()
+void StreamingHashedSparseFeatures<ST>::release_example()
 {
 	parser.finalize_example();
 }
 
 template <class ST>
-int32_t CStreamingHashedSparseFeatures<ST>::get_num_features()
+int32_t StreamingHashedSparseFeatures<ST>::get_num_features()
 {
 	return dim;
 }
 
 template <class ST>
-SGSparseVector<ST> CStreamingHashedSparseFeatures<ST>::get_vector()
+SGSparseVector<ST> StreamingHashedSparseFeatures<ST>::get_vector()
 {
 	return current_vector;
 }
 
-template class CStreamingHashedSparseFeatures<bool>;
-template class CStreamingHashedSparseFeatures<char>;
-template class CStreamingHashedSparseFeatures<int8_t>;
-template class CStreamingHashedSparseFeatures<uint8_t>;
-template class CStreamingHashedSparseFeatures<int16_t>;
-template class CStreamingHashedSparseFeatures<uint16_t>;
-template class CStreamingHashedSparseFeatures<int32_t>;
-template class CStreamingHashedSparseFeatures<uint32_t>;
-template class CStreamingHashedSparseFeatures<int64_t>;
-template class CStreamingHashedSparseFeatures<uint64_t>;
-template class CStreamingHashedSparseFeatures<float32_t>;
-template class CStreamingHashedSparseFeatures<float64_t>;
-template class CStreamingHashedSparseFeatures<floatmax_t>;
+template class StreamingHashedSparseFeatures<bool>;
+template class StreamingHashedSparseFeatures<char>;
+template class StreamingHashedSparseFeatures<int8_t>;
+template class StreamingHashedSparseFeatures<uint8_t>;
+template class StreamingHashedSparseFeatures<int16_t>;
+template class StreamingHashedSparseFeatures<uint16_t>;
+template class StreamingHashedSparseFeatures<int32_t>;
+template class StreamingHashedSparseFeatures<uint32_t>;
+template class StreamingHashedSparseFeatures<int64_t>;
+template class StreamingHashedSparseFeatures<uint64_t>;
+template class StreamingHashedSparseFeatures<float32_t>;
+template class StreamingHashedSparseFeatures<float64_t>;
+template class StreamingHashedSparseFeatures<floatmax_t>;
 }

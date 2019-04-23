@@ -18,7 +18,7 @@ See Chapter 20 in :cite:`barber2012bayesian` for a detailed introduction.
 Example
 -------
 
-We start by creating CDenseFeatures (here 64 bit floats aka RealFeatures) as
+We start by creating DenseFeatures (here 64 bit floats aka RealFeatures) as
 
 .. sgexample:: gaussian_mixture_models.sg:create_features
 

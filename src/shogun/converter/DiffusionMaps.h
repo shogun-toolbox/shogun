@@ -14,8 +14,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CKernel;
+class Features;
+class Kernel;
 
 /** @brief class DiffusionMaps used to preprocess given data
  * using Diffusion Maps dimensionality
@@ -32,26 +32,26 @@ class CKernel;
  * sg('create_converter','diffusion_maps',t,width);
  *
  */
-class CDiffusionMaps: public CEmbeddingConverter
+class DiffusionMaps: public EmbeddingConverter
 {
 public:
 
 	/** constructor */
-	CDiffusionMaps();
+	DiffusionMaps();
 
 	/** destructor */
-	virtual ~CDiffusionMaps();
+	virtual ~DiffusionMaps();
 
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 	/** embed distance
 	 * @param distance to use for embedding
 	 * @return embedding simple features
 	 */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
 
 	/** setter for t parameter
 	 * @param t t value

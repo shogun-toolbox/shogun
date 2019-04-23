@@ -29,7 +29,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/distributions/MixtureModel.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/features/DenseFeatures.h>
@@ -53,20 +52,20 @@ TEST(MixtureModel,gaussian_mixture_model)
 	for (int32_t i=100;i<400;i++)
 		data(0,i)=normal_dist(prng)+10;
 
-	auto feats=some<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto comps=some<CDynamicObjectArray>();
+	auto comps=std::make_shared<DynamicObjectArray>();
 	SGVector<float64_t> mean1(1);
 	mean1[0]=5;
 	SGMatrix<float64_t> cov1(1,1);
 	cov1(0,0)=5;
-	auto g1=some<CGaussian>(mean1,cov1,DIAG);
+	auto g1=std::make_shared<Gaussian>(mean1,cov1,DIAG);
 
 	SGVector<float64_t> mean2(1);
 	mean2[0]=4;
 	SGMatrix<float64_t> cov2(1,1);
 	cov2(0,0)=3;
-	auto g2=some<CGaussian>(mean2,cov2,DIAG);
+	auto g2=std::make_shared<Gaussian>(mean2,cov2,DIAG);
 
 	comps->push_back(g1);
 	comps->push_back(g2);
@@ -75,11 +74,11 @@ TEST(MixtureModel,gaussian_mixture_model)
 	weights[0]=0.5;
 	weights[1]=0.5;
 
-	auto mix=some<CMixtureModel>(comps,weights);
+	auto mix=std::make_shared<MixtureModel>(comps,weights);
 	mix->train(feats);
 
-	CDistribution* distr = comps->get_element(0)->as<CDistribution>();
-	CGaussian* outg = distr->as<CGaussian>();
+	auto distr = comps->get_element(0)->as<Distribution>();
+	auto outg = distr->as<Gaussian>();
 	SGVector<float64_t> m=outg->get_mean();
 	SGMatrix<float64_t> cov=outg->get_cov();
 
@@ -87,8 +86,8 @@ TEST(MixtureModel,gaussian_mixture_model)
 	EXPECT_NEAR(m[0],10.00922977,eps);
 	EXPECT_NEAR(cov(0,0),0.96363983,eps);
 
-	distr = comps->get_element(1)->as<CDistribution>();
-	outg = distr->as<CGaussian>();
+	distr = comps->get_element(1)->as<Distribution>();
+	outg = distr->as<Gaussian>();
 	m=outg->get_mean();
 	cov=outg->get_cov();
 

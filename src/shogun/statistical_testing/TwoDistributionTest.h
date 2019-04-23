@@ -37,50 +37,50 @@
 namespace shogun
 {
 
-class CDistance;
-class CCustomDistance;
+class Distance;
+class CustomDistance;
 
 /**
  * @brief Class TwoDistributionTest is the base class for the statistical
  * hypothesis testing with samples from two distributions, \f$mathbf{P}\f$
  * and \f$\mathbf{Q}\f$.
  *
- * \sa {CTwoSampleTest}
+ * \sa {TwoSampleTest}
  */
-class CTwoDistributionTest : public CHypothesisTest
+class TwoDistributionTest : public HypothesisTest
 {
 public:
 	/** Default constructor */
-	CTwoDistributionTest();
+	TwoDistributionTest();
 
 	/** Destrutor */
-	virtual ~CTwoDistributionTest();
+	virtual ~TwoDistributionTest();
 
 	/**
 	 * Method that initializes the samples from \f$\mathbf{P}\f$. This method
 	 * is kept virtual for the sub-classes to perform additional initialization
 	 * tasks that have to be performed every time features are set/updated.
 	 *
-	 * @param samples_from_p The CFeatures instance representing the samples
+	 * @param samples_from_p The Features instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
-	virtual void set_p(CFeatures* samples_from_p);
+	virtual void set_p(std::shared_ptr<Features> samples_from_p);
 
 	/** @return The samples from \f$\mathbf{P}\f$. */
-	CFeatures* get_p() const;
+	std::shared_ptr<Features> get_p() const;
 
 	/**
 	 * Method that initializes the samples from \f$\mathbf{Q}\f$. This method
 	 * is kept virtual for the sub-classes to perform additional initialization
 	 * tasks that have to be performed every time features are set/updated.
 	 *
-	 * @param samples_from_q The CFeatures instance representing the samples
+	 * @param samples_from_q The Features instance representing the samples
 	 * from \f$\mathbf{Q}\f$.
 	 */
-	virtual void set_q(CFeatures* samples_from_q);
+	virtual void set_q(std::shared_ptr<Features> samples_from_q);
 
 	/** @return The samples from \f$\mathbf{Q}\f$. */
-	CFeatures* get_q() const;
+	std::shared_ptr<Features> get_q() const;
 
 	/**
 	 * Method that initializes the number of samples to be drawn from distribution
@@ -89,7 +89,7 @@ public:
 	 * other types of features, the number of samples is set internally from the
 	 * features object itself, therefore this method should not be used.
 	 *
-	 * @param num_samples_from_p The CFeatures instance representing the samples
+	 * @param num_samples_from_p The Features instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
 	void set_num_samples_p(index_t num_samples_from_p);
@@ -104,7 +104,7 @@ public:
 	 * other types of features, the number of samples is set internally from the
 	 * features object itself, therefore this method should not be used.
 	 *
-	 * @param num_samples_from_q The CFeatures instance representing the samples
+	 * @param num_samples_from_q The Features instance representing the samples
 	 * from \f$\mathbf{Q}\f$.
 	 */
 	void set_num_samples_q(index_t num_samples_from_q);
@@ -118,10 +118,10 @@ public:
 	 *
 	 * @param distance The distance instance used for pre-computing the pair-wise
 	 * distance.
-	 * @return A newly created CCustomDistance instance representing the
+	 * @return A newly created CustomDistance instance representing the
 	 * pre-computed pair-wise distance between the samples.
 	 */
-	CCustomDistance* compute_distance(CDistance* distance);
+	std::shared_ptr<CustomDistance> compute_distance(std::shared_ptr<Distance> distance);
 
 	/**
 	 * Method that pre-computes the pair-wise distance between the joint samples using
@@ -130,10 +130,10 @@ public:
 	 *
 	 * @param distance The distance instance used for pre-computing the pair-wise
 	 * distance.
-	 * @return A newly created CCustomDistance instance representing the
+	 * @return A newly created CustomDistance instance representing the
 	 * pre-computed pair-wise distance between the joint samples.
 	 */
-	CCustomDistance* compute_joint_distance(CDistance* distance);
+	std::shared_ptr<CustomDistance> compute_joint_distance(std::shared_ptr<Distance> distance);
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

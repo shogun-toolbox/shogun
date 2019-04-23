@@ -16,21 +16,21 @@
 
 namespace shogun
 {
-template <class ST> class CDenseFeatures;
+template <class ST> class DenseFeatures;
 
 /** @brief Template class DensePreprocessor, base class for preprocessors (cf.
- * CPreprocessor) that apply to CDenseFeatures (i.e. rectangular dense matrices)
+ * Preprocessor) that apply to DenseFeatures (i.e. rectangular dense matrices)
  *
  * Two new functions apply_to_feature_vector and apply_to_matrix() are defined
  * in this interface need to be implemented in each particular preprocessor
- * operating on CDenseFeatures. For examples see e.g. CLogPlusOne or CPCACut.
+ * operating on DenseFeatures. For examples see e.g. CLogPlusOne or CPCACut.
  */
-template <class ST> class CDensePreprocessor : public CPreprocessor
+template <class ST> class DensePreprocessor : public Preprocessor
 {
 	public:
 		/** constructor
 		 */
-		CDensePreprocessor();
+		DensePreprocessor();
 
 		/** Apply transformation to dense features.
 		 *
@@ -38,7 +38,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @param inplace whether transform in place
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** Apply inverse transformation to dense features.
 		 *
@@ -47,8 +47,8 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @return the result feature object after inverse applying the
 		 * preprocessor
 		 */
-		virtual CFeatures*
-		inverse_transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features>
+		inverse_transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix

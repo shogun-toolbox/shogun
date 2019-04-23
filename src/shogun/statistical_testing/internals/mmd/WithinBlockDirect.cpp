@@ -48,7 +48,7 @@ float32_t WithinBlockDirect::operator()(const SGMatrix<float32_t>& km)
 	map.diagonal().setZero();
 
 	auto term_1=map.array().square().sum();
-	auto term_2=CMath::sq(map.array().sum());
+	auto term_2=Math::sq(map.array().sum());
 	auto term_3=(map*map).array().sum();
 
 	map.diagonal()=diag;

@@ -30,22 +30,22 @@ using namespace shogun;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-const int32_t CHMM::GOTN= (1<<1);
-const int32_t CHMM::GOTM= (1<<2);
-const int32_t CHMM::GOTO= (1<<3);
-const int32_t CHMM::GOTa= (1<<4);
-const int32_t CHMM::GOTb= (1<<5);
-const int32_t CHMM::GOTp= (1<<6);
-const int32_t CHMM::GOTq= (1<<7);
+const int32_t HMM::GOTN= (1<<1);
+const int32_t HMM::GOTM= (1<<2);
+const int32_t HMM::GOTO= (1<<3);
+const int32_t HMM::GOTa= (1<<4);
+const int32_t HMM::GOTb= (1<<5);
+const int32_t HMM::GOTp= (1<<6);
+const int32_t HMM::GOTq= (1<<7);
 
-const int32_t CHMM::GOTlearn_a= (1<<1);
-const int32_t CHMM::GOTlearn_b= (1<<2);
-const int32_t CHMM::GOTlearn_p= (1<<3);
-const int32_t CHMM::GOTlearn_q= (1<<4);
-const int32_t CHMM::GOTconst_a= (1<<5);
-const int32_t CHMM::GOTconst_b= (1<<6);
-const int32_t CHMM::GOTconst_p= (1<<7);
-const int32_t CHMM::GOTconst_q= (1<<8);
+const int32_t HMM::GOTlearn_a= (1<<1);
+const int32_t HMM::GOTlearn_b= (1<<2);
+const int32_t HMM::GOTlearn_p= (1<<3);
+const int32_t HMM::GOTlearn_q= (1<<4);
+const int32_t HMM::GOTconst_a= (1<<5);
+const int32_t HMM::GOTconst_b= (1<<6);
+const int32_t HMM::GOTconst_p= (1<<7);
+const int32_t HMM::GOTconst_q= (1<<8);
 
 enum E_STATE
 {
@@ -74,7 +74,7 @@ enum E_STATE
 const char Model::FIX_DISALLOWED=0 ;
 const char Model::FIX_ALLOWED=1 ;
 const char Model::FIX_DEFAULT=-1 ;
-const float64_t Model::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
+const float64_t Model::DISALLOWED_PENALTY=Math::ALMOST_NEG_INFTY ;
 #endif
 
 Model::Model()
@@ -139,7 +139,7 @@ Model::~Model()
 
 }
 
-CHMM::CHMM()
+HMM::HMM()
 {
 	N=0;
 	M=0;
@@ -180,8 +180,8 @@ CHMM::CHMM()
 	mem_initialized = false;
 }
 
-CHMM::CHMM(CHMM* h)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+HMM::HMM(std::shared_ptr<HMM> h)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	io::info("hmm is using {} separate tables",  env()->get_num_threads());
@@ -194,8 +194,8 @@ CHMM::CHMM(CHMM* h)
 	set_observations(h->p_observations);
 }
 
-CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+HMM::HMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -208,10 +208,10 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 	status=initialize_hmm(p_model, p_PSEUDO);
 }
 
-CHMM::CHMM(
-	CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M,
+HMM::HMM(
+	std::shared_ptr<StringFeatures<uint16_t>> obs, int32_t p_N, int32_t p_M,
 	float64_t p_PSEUDO)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -225,8 +225,8 @@ CHMM::CHMM(
 	set_observations(obs);
 }
 
-CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+HMM::HMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=0;
@@ -275,10 +275,10 @@ CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 //	this->invalidate_model();
 }
 
-CHMM::CHMM(
+HMM::HMM(
 	int32_t p_N, float64_t* p, float64_t* q, int32_t num_trans,
 	float64_t* a_trans)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
 
@@ -385,8 +385,8 @@ CHMM::CHMM(
 }
 
 
-CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
-: RandomMixin<CDistribution>(), iterations(150), epsilon(1e-4), conv_it(5)
+HMM::HMM(FILE* model_file, float64_t p_PSEUDO)
+: RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	io::info("hmm is using {} separate tables",  env()->get_num_threads());
@@ -395,9 +395,9 @@ CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 	status=initialize_hmm(NULL, p_PSEUDO, model_file);
 }
 
-CHMM::~CHMM()
+HMM::~HMM()
 {
-	SG_UNREF(p_observations);
+
 
 	if (trans_list_forward_cnt)
 	  SG_FREE(trans_list_forward_cnt);
@@ -485,7 +485,7 @@ CHMM::~CHMM()
 	}
 }
 
-bool CHMM::train(CFeatures* data)
+bool HMM::train(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -494,12 +494,12 @@ bool CHMM::train(CFeatures* data)
 		{
 			error("Expected features of class string type word");
 		}
-		set_observations((CStringFeatures<uint16_t>*) data);
+		set_observations(std::static_pointer_cast<StringFeatures<uint16_t>>(data));
 	}
 	return baum_welch_viterbi_train(BW_NORMAL);
 }
 
-bool CHMM::alloc_state_dependend_arrays()
+bool HMM::alloc_state_dependend_arrays()
 {
 
 	if (!transition_matrix_a && !observation_matrix_b &&
@@ -545,7 +545,7 @@ bool CHMM::alloc_state_dependend_arrays()
 			set_observations(p_observations);
 		else
 			set_observation_nocache(p_observations);
-		SG_UNREF(p_observations);
+
 	}
 
 	this->invalidate_model();
@@ -556,7 +556,7 @@ bool CHMM::alloc_state_dependend_arrays()
 			(end_state_distribution_q != NULL));
 }
 
-void CHMM::free_state_dependend_arrays()
+void HMM::free_state_dependend_arrays()
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	if (arrayN1 && arrayN2)
@@ -594,7 +594,7 @@ void CHMM::free_state_dependend_arrays()
 	end_state_distribution_q=NULL;
 }
 
-bool CHMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
+bool HMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;
@@ -683,7 +683,7 @@ bool CHMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
+float64_t HMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* alpha_new;
 	T_ALPHA_BETA_TABLE* alpha;
@@ -721,11 +721,11 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 			for (int32_t j=0; j<N; j++)
 			{
 				int32_t i, num = trans_list_forward_cnt[j] ;
-				float64_t sum=-CMath::INFTY;
+				float64_t sum=-Math::INFTY;
 				for (i=0; i < num; i++)
 				{
 					int32_t ii = trans_list_forward[j][i] ;
-					sum = CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii,j));
+					sum = Math::logarithmic_sum(sum, alpha[ii] + get_a(ii,j));
 				} ;
 
 				alpha_new[j]= sum + get_b(j, p_observations->get_feature(dimension,t));
@@ -748,11 +748,11 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 		if (time<p_observations->get_vector_length(dimension))
 		{
 			int32_t i, num=trans_list_forward_cnt[state];
-			float64_t sum=-CMath::INFTY;
+			float64_t sum=-Math::INFTY;
 			for (i=0; i<num; i++)
 			{
 				int32_t ii = trans_list_forward[state][i] ;
-				sum= CMath::logarithmic_sum(sum, alpha[ii] + get_a(ii, state));
+				sum= Math::logarithmic_sum(sum, alpha[ii] + get_a(ii, state));
 			} ;
 
 			return sum + get_b(state, p_observations->get_feature(dimension,time));
@@ -762,9 +762,9 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 			// termination
 			int32_t i ;
 			float64_t sum ;
-			sum=-CMath::INFTY;
+			sum=-Math::INFTY;
 			for (i=0; i<N; i++)						//sum over all paths
-				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));	//to get model probability
+				sum=Math::logarithmic_sum(sum, alpha[i] + get_q(i));	//to get model probability
 
 			if (!ALPHA_CACHE(dimension).table)
 				return sum;
@@ -787,7 +787,7 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 //forward algorithm
 //calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time > T
-float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
+float64_t HMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* alpha_new;
 	T_ALPHA_BETA_TABLE* alpha;
@@ -826,18 +826,18 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				int32_t i ;
 #ifdef USE_LOGSUMARRAY
 				for (i=0; i<(N>>1); i++)
-					ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,j),
+					ARRAYS(dimension)[i]=Math::logarithmic_sum(alpha[i<<1] + get_a(i<<1,j),
 							alpha[(i<<1)+1] + get_a((i<<1)+1,j));
 				if (N%2==1)
 					alpha_new[j]=get_b(j, p_observations->get_feature(dimension,t))+
-						CMath::logarithmic_sum(alpha[N-1]+get_a(N-1,j),
-								CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+						Math::logarithmic_sum(alpha[N-1]+get_a(N-1,j),
+								Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 				else
-					alpha_new[j]=get_b(j, p_observations->get_feature(dimension,t))+CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+					alpha_new[j]=get_b(j, p_observations->get_feature(dimension,t))+Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-				float64_t sum=-CMath::INFTY;
+				float64_t sum=-Math::INFTY;
 				for (i=0; i<N; i++)
-					sum= CMath::logarithmic_sum(sum, alpha[i] + get_a(i,j));
+					sum= Math::logarithmic_sum(sum, alpha[i] + get_a(i,j));
 
 				alpha_new[j]= sum + get_b(j, p_observations->get_feature(dimension,t));
 #endif //USE_LOGSUMARRAY
@@ -862,18 +862,18 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			int32_t i;
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
-				ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_a(i<<1,state),
+				ARRAYS(dimension)[i]=Math::logarithmic_sum(alpha[i<<1] + get_a(i<<1,state),
 						alpha[(i<<1)+1] + get_a((i<<1)+1,state));
 			if (N%2==1)
 				return get_b(state, p_observations->get_feature(dimension,time))+
-					CMath::logarithmic_sum(alpha[N-1]+get_a(N-1,state),
-							CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+					Math::logarithmic_sum(alpha[N-1]+get_a(N-1,state),
+							Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 			else
-				return get_b(state, p_observations->get_feature(dimension,time))+CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+				return get_b(state, p_observations->get_feature(dimension,time))+Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			float64_t sum=-CMath::INFTY;
+			float64_t sum=-Math::INFTY;
 			for (i=0; i<N; i++)
-				sum= CMath::logarithmic_sum(sum, alpha[i] + get_a(i, state));
+				sum= Math::logarithmic_sum(sum, alpha[i] + get_a(i, state));
 
 			return sum + get_b(state, p_observations->get_feature(dimension,time));
 #endif //USE_LOGSUMARRAY
@@ -885,17 +885,17 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 			float64_t sum ;
 #ifdef USE_LOGSUMARRAY
 			for (i=0; i<(N>>1); i++)
-				ARRAYS(dimension)[i]=CMath::logarithmic_sum(alpha[i<<1] + get_q(i<<1),
+				ARRAYS(dimension)[i]=Math::logarithmic_sum(alpha[i<<1] + get_q(i<<1),
 						alpha[(i<<1)+1] + get_q((i<<1)+1));
 			if (N%2==1)
-				sum=CMath::logarithmic_sum(alpha[N-1]+get_q(N-1),
-						CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+				sum=Math::logarithmic_sum(alpha[N-1]+get_q(N-1),
+						Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 			else
-				sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+				sum=Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			sum=-CMath::INFTY;
+			sum=-Math::INFTY;
 			for (i=0; i<N; i++)			                      //sum over all paths
-				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
+				sum=Math::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
 #endif //USE_LOGSUMARRAY
 
 			if (!ALPHA_CACHE(dimension).table)
@@ -919,7 +919,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 //backward algorithm
 //calculates Pr[O_t+1,O_t+2, ..., O_T| q_time=S_i, lambda] for 0<= time <= T-1
 //Pr[O|lambda] for time >= T
-float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
+float64_t HMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 {
   T_ALPHA_BETA_TABLE* beta_new;
   T_ALPHA_BETA_TABLE* beta;
@@ -957,11 +957,11 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	  for (int32_t i=0; i<N; i++)
 	    {
 	      int32_t j, num=trans_list_backward_cnt[i] ;
-	      float64_t sum=-CMath::INFTY;
+	      float64_t sum=-Math::INFTY;
 	      for (j=0; j<num; j++)
 		{
 		  int32_t jj = trans_list_backward[i][j] ;
-		  sum= CMath::logarithmic_sum(sum, get_a(i, jj) + get_b(jj, p_observations->get_feature(dimension,t)) + beta[jj]);
+		  sum= Math::logarithmic_sum(sum, get_a(i, jj) + get_b(jj, p_observations->get_feature(dimension,t)) + beta[jj]);
 		} ;
 	      beta_new[i]=sum;
 	    }
@@ -982,11 +982,11 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
       if (time>=0)
 	{
 	  int32_t j, num=trans_list_backward_cnt[state] ;
-	  float64_t sum=-CMath::INFTY;
+	  float64_t sum=-Math::INFTY;
 	  for (j=0; j<num; j++)
 	    {
 	      int32_t jj = trans_list_backward[state][j] ;
-	      sum= CMath::logarithmic_sum(sum, get_a(state, jj) + get_b(jj, p_observations->get_feature(dimension,time+1))+beta[jj]);
+	      sum= Math::logarithmic_sum(sum, get_a(state, jj) + get_b(jj, p_observations->get_feature(dimension,time+1))+beta[jj]);
 	    } ;
 	  return sum;
 	}
@@ -994,9 +994,9 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	{
 	  if (BETA_CACHE(dimension).table)
 	    {
-	      float64_t sum=-CMath::INFTY;
+	      float64_t sum=-Math::INFTY;
 	      for (int32_t j=0; j<N; j++)
-		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
+		sum= Math::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      BETA_CACHE(dimension).sum=sum;
 	      BETA_CACHE(dimension).dimension=dimension;
 	      BETA_CACHE(dimension).updated=true;
@@ -1008,9 +1008,9 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	    }
 	  else
 	    {
-	      float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
+	      float64_t sum=-Math::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
 	      for (int32_t j=0; j<N; j++)
-		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
+		sum= Math::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      return sum;
 	    }
 	}
@@ -1018,7 +1018,7 @@ float64_t CHMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 }
 
 
-float64_t CHMM::backward_comp_old(
+float64_t HMM::backward_comp_old(
 	int32_t time, int32_t state, int32_t dimension)
 {
 	T_ALPHA_BETA_TABLE* beta_new;
@@ -1059,18 +1059,18 @@ float64_t CHMM::backward_comp_old(
 				int32_t j ;
 #ifdef USE_LOGSUMARRAY
 				for (j=0; j<(N>>1); j++)
-					ARRAYS(dimension)[j]=CMath::logarithmic_sum(
+					ARRAYS(dimension)[j]=Math::logarithmic_sum(
 							get_a(i, j<<1) + get_b(j<<1, p_observations->get_feature(dimension,t)) + beta[j<<1],
 							get_a(i, (j<<1)+1) + get_b((j<<1)+1, p_observations->get_feature(dimension,t)) + beta[(j<<1)+1]);
 				if (N%2==1)
-					beta_new[i]=CMath::logarithmic_sum(get_a(i, N-1) + get_b(N-1, p_observations->get_feature(dimension,t)) + beta[N-1],
-							CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+					beta_new[i]=Math::logarithmic_sum(get_a(i, N-1) + get_b(N-1, p_observations->get_feature(dimension,t)) + beta[N-1],
+							Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 				else
-					beta_new[i]=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+					beta_new[i]=Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-				float64_t sum=-CMath::INFTY;
+				float64_t sum=-Math::INFTY;
 				for (j=0; j<N; j++)
-					sum= CMath::logarithmic_sum(sum, get_a(i, j) + get_b(j, p_observations->get_feature(dimension,t)) + beta[j]);
+					sum= Math::logarithmic_sum(sum, get_a(i, j) + get_b(j, p_observations->get_feature(dimension,t)) + beta[j]);
 
 				beta_new[i]=sum;
 #endif //USE_LOGSUMARRAY
@@ -1094,18 +1094,18 @@ float64_t CHMM::backward_comp_old(
 			int32_t j ;
 #ifdef USE_LOGSUMARRAY
 			for (j=0; j<(N>>1); j++)
-				ARRAYS(dimension)[j]=CMath::logarithmic_sum(
+				ARRAYS(dimension)[j]=Math::logarithmic_sum(
 						get_a(state, j<<1) + get_b(j<<1, p_observations->get_feature(dimension,time+1)) + beta[j<<1],
 						get_a(state, (j<<1)+1) + get_b((j<<1)+1, p_observations->get_feature(dimension,time+1)) + beta[(j<<1)+1]);
 			if (N%2==1)
-				return CMath::logarithmic_sum(get_a(state, N-1) + get_b(N-1, p_observations->get_feature(dimension,time+1)) + beta[N-1],
-						CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+				return Math::logarithmic_sum(get_a(state, N-1) + get_b(N-1, p_observations->get_feature(dimension,time+1)) + beta[N-1],
+						Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 			else
-				return CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+				return Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-			float64_t sum=-CMath::INFTY;
+			float64_t sum=-Math::INFTY;
 			for (j=0; j<N; j++)
-				sum= CMath::logarithmic_sum(sum, get_a(state, j) + get_b(j, p_observations->get_feature(dimension,time+1))+beta[j]);
+				sum= Math::logarithmic_sum(sum, get_a(state, j) + get_b(j, p_observations->get_feature(dimension,time+1))+beta[j]);
 
 			return sum;
 #endif //USE_LOGSUMARRAY
@@ -1116,17 +1116,17 @@ float64_t CHMM::backward_comp_old(
 			{
 #ifdef USE_LOGSUMARRAY//AAA
 				for (int32_t j=0; j<(N>>1); j++)
-					ARRAYS(dimension)[j]=CMath::logarithmic_sum(get_p(j<<1) + get_b(j<<1, p_observations->get_feature(dimension,0))+beta[j<<1],
+					ARRAYS(dimension)[j]=Math::logarithmic_sum(get_p(j<<1) + get_b(j<<1, p_observations->get_feature(dimension,0))+beta[j<<1],
 							get_p((j<<1)+1) + get_b((j<<1)+1, p_observations->get_feature(dimension,0))+beta[(j<<1)+1]) ;
 				if (N%2==1)
-					BETA_CACHE(dimension).sum=CMath::logarithmic_sum(get_p(N-1) + get_b(N-1, p_observations->get_feature(dimension,0))+beta[N-1],
-							CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
+					BETA_CACHE(dimension).sum=Math::logarithmic_sum(get_p(N-1) + get_b(N-1, p_observations->get_feature(dimension,0))+beta[N-1],
+							Math::logarithmic_sum_array(ARRAYS(dimension), N>>1)) ;
 				else
-					BETA_CACHE(dimension).sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
+					BETA_CACHE(dimension).sum=Math::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
-				float64_t sum=-CMath::INFTY;
+				float64_t sum=-Math::INFTY;
 				for (int32_t j=0; j<N; j++)
-					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
+					sum= Math::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				BETA_CACHE(dimension).sum=sum;
 #endif //USE_LOGSUMARRAY
 				BETA_CACHE(dimension).dimension=dimension;
@@ -1139,9 +1139,9 @@ float64_t CHMM::backward_comp_old(
 			}
 			else
 			{
-				float64_t sum=-CMath::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
+				float64_t sum=-Math::INFTY; // apply LOG_SUM_ARRAY -- no cache ... does not make very sense anyway...
 				for (int32_t j=0; j<N; j++)
-					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
+					sum= Math::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 				return sum;
 			}
 		}
@@ -1150,7 +1150,7 @@ float64_t CHMM::backward_comp_old(
 
 //calculates probability  of best path through the model lambda AND path itself
 //using viterbi algorithm
-float64_t CHMM::best_path(int32_t dimension)
+float64_t HMM::best_path(int32_t dimension)
 {
 	if (!p_observations)
 		return -1;
@@ -1193,7 +1193,7 @@ float64_t CHMM::best_path(int32_t dimension)
 		}
 
 #ifdef USE_PATHDEBUG
-		float64_t worst=-CMath::INFTY/4 ;
+		float64_t worst=-Math::INFTY/4 ;
 #endif
 		//recursion
 		for (int32_t t=1; t<p_observations->get_vector_length(dimension); t++)
@@ -1233,7 +1233,7 @@ float64_t CHMM::best_path(int32_t dimension)
 				if (delta_new[jj]>best)
 					best=delta_new[jj] ;
 
-			if (best<-CMath::INFTY/2)
+			if (best<-Math::INFTY/2)
 			{
 				SG_DEBUG("worst case at {}: {:e}:{:e}", t, best, worst)
 				worst=best ;
@@ -1278,7 +1278,7 @@ float64_t CHMM::best_path(int32_t dimension)
 }
 
 #ifndef USE_HMMPARALLEL
-float64_t CHMM::model_probability_comp()
+float64_t HMM::model_probability_comp()
 {
 	//for faster calculation cache model probability
 	mod_prob=0 ;
@@ -1394,11 +1394,11 @@ void CHMM::ab_buf_comp(
 		//estimate a
 		for (j=0; j<N; j++)
 		{
-			a_sum=-CMath::INFTY;
+			a_sum=-Math::INFTY;
 
 			for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 			{
-				a_sum= CMath::logarithmic_sum(a_sum, forward(t,i,dim)+
+				a_sum= Math::logarithmic_sum(a_sum, forward(t,i,dim)+
 						get_a(i,j)+get_b(j,p_observations->get_feature(dim,t+1))+backward(t+1,j,dim));
 			}
 			a_buf[N*i+j]=a_sum-dimmodprob ;
@@ -1407,12 +1407,12 @@ void CHMM::ab_buf_comp(
 		//estimate b
 		for (j=0; j<M; j++)
 		{
-			b_sum=-CMath::INFTY;
+			b_sum=-Math::INFTY;
 
 			for (t=0; t<p_observations->get_vector_length(dim); t++)
 			{
 				if (p_observations->get_feature(dim,t)==j)
-					b_sum=CMath::logarithmic_sum(b_sum, forward(t,i,dim)+backward(t, i, dim));
+					b_sum=Math::logarithmic_sum(b_sum, forward(t,i,dim)+backward(t, i, dim));
 			}
 
 			b_buf[M*i+j]=b_sum-dimmodprob ;
@@ -1421,7 +1421,7 @@ void CHMM::ab_buf_comp(
 }
 
 //estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* hmm)
+void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 {
 	int32_t i,j,cpu;
 	float64_t fullmodprob=0;	//for all dims
@@ -1429,22 +1429,22 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	{
-	  if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	  if (hmm->get_p(i)>Math::ALMOST_NEG_INFTY)
 	    set_p(i,log(PSEUDO));
 	  else
 	    set_p(i,hmm->get_p(i));
-	  if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	  if (hmm->get_q(i)>Math::ALMOST_NEG_INFTY)
 	    set_q(i,log(PSEUDO));
 	  else
 	    set_q(i,hmm->get_q(i));
 
 	  for (j=0; j<N; j++)
-	    if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	    if (hmm->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 	      set_a(i,j, log(PSEUDO));
 	    else
 	      set_a(i,j,hmm->get_a(i,j));
 	  for (j=0; j<M; j++)
-	    if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+	    if (hmm->get_b(i,j)>Math::ALMOST_NEG_INFTY)
 	      set_b(i,j, log(PSEUDO));
 	    else
 	      set_b(i,j,hmm->get_b(i,j));
@@ -1487,16 +1487,16 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 		for (i=0; i<N; i++)
 		{
 			//estimate initial+end state distribution numerator
-			set_p(i, CMath::logarithmic_sum(get_p(i), params[cpu].p_buf[i]));
-			set_q(i, CMath::logarithmic_sum(get_q(i), params[cpu].q_buf[i]));
+			set_p(i, Math::logarithmic_sum(get_p(i), params[cpu].p_buf[i]));
+			set_q(i, Math::logarithmic_sum(get_q(i), params[cpu].q_buf[i]));
 
 			//estimate numerator for a
 			for (j=0; j<N; j++)
-				set_a(i,j, CMath::logarithmic_sum(get_a(i,j), params[cpu].a_buf[N*i+j]));
+				set_a(i,j, Math::logarithmic_sum(get_a(i,j), params[cpu].a_buf[N*i+j]));
 
 			//estimate numerator for b
 			for (j=0; j<M; j++)
-				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
+				set_b(i,j, Math::logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
 		}
 
 		fullmodprob+=params[cpu].ret;
@@ -1526,7 +1526,7 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 #else // USE_HMMPARALLEL
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* estimate)
+void HMM::estimate_model_baum_welch(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1536,22 +1536,22 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	{
-		if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
+		if (estimate->get_p(i)>Math::ALMOST_NEG_INFTY)
 			set_p(i,log(PSEUDO));
 		else
 			set_p(i,estimate->get_p(i));
-		if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
+		if (estimate->get_q(i)>Math::ALMOST_NEG_INFTY)
 			set_q(i,log(PSEUDO));
 		else
 			set_q(i,estimate->get_q(i));
 
 		for (j=0; j<N; j++)
-			if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (estimate->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 				set_a(i,j, log(PSEUDO));
 			else
 				set_a(i,j,estimate->get_a(i,j));
 		for (j=0; j<M; j++)
-			if (estimate->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (estimate->get_b(i,j)>Math::ALMOST_NEG_INFTY)
 				set_b(i,j, log(PSEUDO));
 			else
 				set_b(i,j,estimate->get_b(i,j));
@@ -1567,8 +1567,8 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 		for (i=0; i<N; i++)
 		{
 			//estimate initial+end state distribution numerator
-			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
+			set_p(i, Math::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+			set_q(i, Math::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 
 			int32_t num = trans_list_backward_cnt[i] ;
 
@@ -1576,28 +1576,28 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 			for (j=0; j<num; j++)
 			{
 				int32_t jj = trans_list_backward[i][j] ;
-				a_sum=-CMath::INFTY;
+				a_sum=-Math::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 				{
-					a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+					a_sum= Math::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
 							estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
 				}
-				set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
+				set_a(i,jj, Math::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
 			}
 
 			//estimate b
 			for (j=0; j<M; j++)
 			{
-				b_sum=-CMath::INFTY;
+				b_sum=-Math::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim); t++)
 				{
 					if (p_observations->get_feature(dim,t)==j)
-						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
+						b_sum=Math::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 				}
 
-				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+				set_b(i,j, Math::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
 			}
 		}
 	}
@@ -1612,7 +1612,7 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
+void HMM::estimate_model_baum_welch_old(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1622,22 +1622,22 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	  {
-	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_p(i)>Math::ALMOST_NEG_INFTY)
 	      set_p(i,log(PSEUDO));
 	    else
 	      set_p(i,estimate->get_p(i));
-	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_q(i)>Math::ALMOST_NEG_INFTY)
 	      set_q(i,log(PSEUDO));
 	    else
 	      set_q(i,estimate->get_q(i));
 
 	    for (j=0; j<N; j++)
-	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 		set_a(i,j, log(PSEUDO));
 	      else
 		set_a(i,j,estimate->get_a(i,j));
 	    for (j=0; j<M; j++)
-	      if (estimate->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_b(i,j)>Math::ALMOST_NEG_INFTY)
 		set_b(i,j, log(PSEUDO));
 	      else
 		set_b(i,j,estimate->get_b(i,j));
@@ -1653,34 +1653,34 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 	    for (i=0; i<N; i++)
 	      {
 		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
+		set_p(i, Math::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+		set_q(i, Math::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 
 		//estimate a
 		for (j=0; j<N; j++)
 		  {
-		    a_sum=-CMath::INFTY;
+		    a_sum=-Math::INFTY;
 
 		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 		      {
-			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+			a_sum= Math::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
 						    estimate->get_a(i,j)+estimate->get_b(j,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,j,dim));
 		      }
-		    set_a(i,j, CMath::logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
+		    set_a(i,j, Math::logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
 		  }
 
 		//estimate b
 		for (j=0; j<M; j++)
 		  {
-		    b_sum=-CMath::INFTY;
+		    b_sum=-Math::INFTY;
 
 		    for (t=0; t<p_observations->get_vector_length(dim); t++)
 		      {
 			if (p_observations->get_feature(dim,t)==j)
-			  b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
+			  b_sum=Math::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 		      }
 
-		    set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+		    set_b(i,j, Math::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
 		  }
 	      }
 	  }
@@ -1697,7 +1697,7 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 // optimize only p, q, a but not b
-void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
+void HMM::estimate_model_baum_welch_trans(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum;	//numerator
@@ -1707,17 +1707,17 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	  {
-	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_p(i)>Math::ALMOST_NEG_INFTY)
 	      set_p(i,log(PSEUDO));
 	    else
 	      set_p(i,estimate->get_p(i));
-	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_q(i)>Math::ALMOST_NEG_INFTY)
 	      set_q(i,log(PSEUDO));
 	    else
 	      set_q(i,estimate->get_q(i));
 
 	    for (j=0; j<N; j++)
-	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 		set_a(i,j, log(PSEUDO));
 	      else
 		set_a(i,j,estimate->get_a(i,j));
@@ -1735,22 +1735,22 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 	    for (i=0; i<N; i++)
 	      {
 		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
-		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
+		set_p(i, Math::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+		set_q(i, Math::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 
 		int32_t num = trans_list_backward_cnt[i] ;
 		//estimate a
 		for (j=0; j<num; j++)
 		  {
 		    int32_t jj = trans_list_backward[i][j] ;
-		    a_sum=-CMath::INFTY;
+		    a_sum=-Math::INFTY;
 
 		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 		      {
-			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+			a_sum= Math::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
 						    estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
 		      }
-		    set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
+		    set_a(i,jj, Math::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
 		  }
 	      }
 	  }
@@ -1767,12 +1767,12 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
+void HMM::estimate_model_baum_welch_defined(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,old_i,k,t,dim;
 	float64_t a_sum_num, b_sum_num;		//numerator
 	float64_t a_sum_denom, b_sum_denom;	//denominator
-	float64_t dimmodprob=-CMath::INFTY;	//model probability for dim
+	float64_t dimmodprob=-Math::INFTY;	//model probability for dim
 	float64_t fullmodprob=0;			//for all dims
 	float64_t* A=ARRAYN1(0);
 	float64_t* B=ARRAYN2(0);
@@ -1845,10 +1845,10 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 
 		//estimate initial+end state distribution numerator
 		for (k=0; (i=model->get_learn_p(k))!=-1; k++)
-			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->forward(0,i,dim)+estimate->backward(0,i,dim) - dimmodprob ) );
+			set_p(i, Math::logarithmic_sum(get_p(i), estimate->forward(0,i,dim)+estimate->backward(0,i,dim) - dimmodprob ) );
 
 		for (k=0; (i=model->get_learn_q(k))!=-1; k++)
-			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+
+			set_q(i, Math::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+
 						estimate->backward(p_observations->get_vector_length(dim)-1, i, dim)  - dimmodprob ) );
 
 		//estimate a
@@ -1860,23 +1860,23 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 			if (old_i!=i)
 			{
 				old_i=i;
-				a_sum_denom=-CMath::INFTY;
+				a_sum_denom=-Math::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
-					a_sum_denom= CMath::logarithmic_sum(a_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
+					a_sum_denom= Math::logarithmic_sum(a_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
 
-				A[i]= CMath::logarithmic_sum(A[i], a_sum_denom-dimmodprob);
+				A[i]= Math::logarithmic_sum(A[i], a_sum_denom-dimmodprob);
 			}
 
 			j=model->get_learn_a(k,1);
-			a_sum_num=-CMath::INFTY;
+			a_sum_num=-Math::INFTY;
 			for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 			{
-				a_sum_num= CMath::logarithmic_sum(a_sum_num, estimate->forward(t,i,dim)+
+				a_sum_num= Math::logarithmic_sum(a_sum_num, estimate->forward(t,i,dim)+
 						estimate->get_a(i,j)+estimate->get_b(j,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,j,dim));
 			}
 
-			set_a(i,j, CMath::logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
+			set_a(i,j, Math::logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
 		}
 
 		//estimate  b
@@ -1889,23 +1889,23 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 			if (old_i!=i)
 			{
 				old_i=i;
-				b_sum_denom=-CMath::INFTY;
+				b_sum_denom=-Math::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim); t++)
-					b_sum_denom= CMath::logarithmic_sum(b_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
+					b_sum_denom= Math::logarithmic_sum(b_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
 
-				B[i]= CMath::logarithmic_sum(B[i], b_sum_denom-dimmodprob);
+				B[i]= Math::logarithmic_sum(B[i], b_sum_denom-dimmodprob);
 			}
 
 			j=model->get_learn_b(k,1);
-			b_sum_num=-CMath::INFTY;
+			b_sum_num=-Math::INFTY;
 			for (t=0; t<p_observations->get_vector_length(dim); t++)
 			{
 				if (p_observations->get_feature(dim,t)==j)
-					b_sum_num=CMath::logarithmic_sum(b_sum_num, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
+					b_sum_num=Math::logarithmic_sum(b_sum_num, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 			}
 
-			set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
+			set_b(i,j, Math::logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
 		}
 	}
 #ifdef USE_HMMPARALLEL
@@ -1943,7 +1943,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using viterbi algorithm
-void CHMM::estimate_model_viterbi(CHMM* estimate)
+void HMM::estimate_model_viterbi(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,t;
 	float64_t sum;
@@ -2070,7 +2070,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 }
 
 // estimate parameters listed in learn_x
-void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
+void HMM::estimate_model_viterbi_defined(std::shared_ptr<HMM> estimate)
 {
 	int32_t i,j,k,t;
 	float64_t sum;
@@ -2252,14 +2252,14 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 //------------------------------------------------------------------------------------//
 
 //to give an idea what the model looks like
-void CHMM::output_model(bool verbose)
+void HMM::output_model(bool verbose)
 {
 	int32_t i,j;
 	float64_t checksum;
 
 	//generic info
 	io::info("log(Pr[O|model])={:e}, #states: {}, #observationssymbols: {}, #observations: {}x{}",
-			(float64_t)((p_observations) ? model_probability() : -CMath::INFTY),
+			(float64_t)((p_observations) ? model_probability() : -Math::INFTY),
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
@@ -2271,7 +2271,7 @@ void CHMM::output_model(bool verbose)
 			checksum= get_q(i);
 			for (j=0; j<N; j++)
 			{
-				checksum= CMath::logarithmic_sum(checksum, get_a(i,j));
+				checksum= Math::logarithmic_sum(checksum, get_a(i,j));
 
 				io::info("a({:02},{:02})={:1.4f} ",i,j, (float32_t) exp(get_a(i,j)));
 
@@ -2286,10 +2286,10 @@ void CHMM::output_model(bool verbose)
 
 		// distribution of start states p
 		io::info("\ndistribution of start states");
-		checksum=-CMath::INFTY;
+		checksum=-Math::INFTY;
 		for (i=0; i<N; i++)
 		{
-			checksum= CMath::logarithmic_sum(checksum, get_p(i));
+			checksum= Math::logarithmic_sum(checksum, get_p(i));
 			io::info("p({:02})={:1.4f} ",i, (float32_t) exp(get_p(i)));
 			if (i % 4 == 3)
 				io::print("\n");
@@ -2301,10 +2301,10 @@ void CHMM::output_model(bool verbose)
 
 		// distribution of terminal states p
 		io::info("\ndistribution of terminal states");
-		checksum=-CMath::INFTY;
+		checksum=-Math::INFTY;
 		for (i=0; i<N; i++)
 		{
-			checksum= CMath::logarithmic_sum(checksum, get_q(i));
+			checksum= Math::logarithmic_sum(checksum, get_q(i));
 			io::info("q({:02})={:1.4f} ",i, (float32_t) exp(get_q(i)));
 			if (i % 4 == 3)
 				io::info("");
@@ -2318,10 +2318,10 @@ void CHMM::output_model(bool verbose)
 		io::info("\ndistribution of observations given the state");
 		for (i=0; i<N; i++)
 		{
-			checksum=-CMath::INFTY;
+			checksum=-Math::INFTY;
 			for (j=0; j<M; j++)
 			{
-				checksum=CMath::logarithmic_sum(checksum, get_b(i,j));
+				checksum=Math::logarithmic_sum(checksum, get_b(i,j));
 				io::info("b({:02},{:02})={:1.4f} ",i,j, (float32_t) exp(get_b(i,j)));
 				if (j % 4 == 3)
 					io::print("\n");
@@ -2336,7 +2336,7 @@ void CHMM::output_model(bool verbose)
 }
 
 //to give an idea what the model looks like
-void CHMM::output_model_defined(bool verbose)
+void HMM::output_model_defined(bool verbose)
 {
 	int32_t i,j;
 	if (!model)
@@ -2344,7 +2344,7 @@ void CHMM::output_model_defined(bool verbose)
 
 	//generic info
 	io::info("log(Pr[O|model])={:e}, #states: {}, #observationssymbols: {}, #observations: {}x{}",
-			(float64_t)((p_observations) ? model_probability() : -CMath::INFTY),
+			(float64_t)((p_observations) ? model_probability() : -Math::INFTY),
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
@@ -2391,7 +2391,7 @@ void CHMM::output_model_defined(bool verbose)
 //------------------------------------------------------------------------------------//
 
 //convert model to log probabilities
-void CHMM::convert_to_log()
+void HMM::convert_to_log()
 {
 	int32_t i,j;
 
@@ -2400,7 +2400,7 @@ void CHMM::convert_to_log()
 		if (get_p(i)!=0)
 			set_p(i, log(get_p(i)));
 		else
-			set_p(i, -CMath::INFTY);;
+			set_p(i, -Math::INFTY);;
 	}
 
 	for (i=0; i<N; i++)
@@ -2408,7 +2408,7 @@ void CHMM::convert_to_log()
 		if (get_q(i)!=0)
 			set_q(i, log(get_q(i)));
 		else
-			set_q(i, -CMath::INFTY);;
+			set_q(i, -Math::INFTY);;
 	}
 
 	for (i=0; i<N; i++)
@@ -2418,7 +2418,7 @@ void CHMM::convert_to_log()
 			if (get_a(i,j)!=0)
 				set_a(i,j, log(get_a(i,j)));
 			else
-				set_a(i,j, -CMath::INFTY);
+				set_a(i,j, -Math::INFTY);
 		}
 	}
 
@@ -2429,7 +2429,7 @@ void CHMM::convert_to_log()
 			if (get_b(i,j)!=0)
 				set_b(i,j, log(get_b(i,j)));
 			else
-				set_b(i,j, -CMath::INFTY);
+				set_b(i,j, -Math::INFTY);
 		}
 	}
 	loglikelihood=true;
@@ -2438,7 +2438,7 @@ void CHMM::convert_to_log()
 }
 
 //init model with random values
-void CHMM::init_model_random()
+void HMM::init_model_random()
 {
 	const float64_t MIN_RAND=23e-3;
 	UniformRealDistribution<float64_t> uniform_real_dist(MIN_RAND, 1.0);
@@ -2505,7 +2505,7 @@ void CHMM::init_model_random()
 }
 
 //init model according to const_x
-void CHMM::init_model_defined()
+void HMM::init_model_defined()
 {
 	int32_t i,j,k,r;
 	float64_t sum;
@@ -2660,7 +2660,7 @@ void CHMM::init_model_defined()
 	invalidate_model();
 }
 
-void CHMM::clear_model()
+void HMM::clear_model()
 {
 	int32_t i,j;
 	for (i=0; i<N; i++)
@@ -2676,7 +2676,7 @@ void CHMM::clear_model()
 	}
 }
 
-void CHMM::clear_model_defined()
+void HMM::clear_model_defined()
 {
 	int32_t i,j,k;
 
@@ -2699,7 +2699,7 @@ void CHMM::clear_model_defined()
 	}
 }
 
-void CHMM::copy_model(CHMM* l)
+void HMM::copy_model(std::shared_ptr<HMM> l)
 {
 	int32_t i,j;
 	for (i=0; i<N; i++)
@@ -2715,7 +2715,7 @@ void CHMM::copy_model(CHMM* l)
 	}
 }
 
-void CHMM::invalidate_model()
+void HMM::invalidate_model()
 {
 	//initialize pat/mod_prob/alpha/beta cache as not calculated
 	this->mod_prob=0.0;
@@ -2755,7 +2755,7 @@ void CHMM::invalidate_model()
 	      trans_list_forward_cnt[j]= 0 ;
 	      trans_list_forward[j]= SG_MALLOC(T_STATES, N);
 	      for (int32_t i=0; i<N; i++)
-		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+		if (get_a(i,j)>Math::ALMOST_NEG_INFTY)
 		  {
 		    trans_list_forward[j][trans_list_forward_cnt[j]]=i ;
 		    trans_list_forward_cnt[j]++ ;
@@ -2770,7 +2770,7 @@ void CHMM::invalidate_model()
 	      trans_list_backward_cnt[i]= 0 ;
 	      trans_list_backward[i]= SG_MALLOC(T_STATES, N);
 	      for (int32_t j=0; j<N; j++)
-		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+		if (get_a(i,j)>Math::ALMOST_NEG_INFTY)
 		  {
 		    trans_list_backward[i][trans_list_backward_cnt[i]]=j ;
 		    trans_list_backward_cnt[i]++ ;
@@ -2802,7 +2802,7 @@ void CHMM::invalidate_model()
 #endif // USE_HMMPARALLEL_STRUCTURES
 }
 
-void CHMM::open_bracket(FILE* file)
+void HMM::open_bracket(FILE* file)
 {
 	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!='['))	//skip possible spaces and end if '[' occurs
@@ -2823,7 +2823,7 @@ void CHMM::open_bracket(FILE* file)
 	ungetc(value, file);
 }
 
-void CHMM::close_bracket(FILE* file)
+void HMM::close_bracket(FILE* file)
 {
 	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!=']'))	//skip possible spaces and end if ']' occurs
@@ -2836,7 +2836,7 @@ void CHMM::close_bracket(FILE* file)
 		error_in_line(line, "expected \"]\" in input file");
 }
 
-bool CHMM::comma_or_space(FILE* file)
+bool HMM::comma_or_space(FILE* file)
 {
 	int32_t value;
 	while (((value=fgetc(file)) != EOF) && (value!=',') && (value!=';') && (value!=']'))	 //skip possible spaces and end if ',' or ';' occurs
@@ -2863,7 +2863,7 @@ bool CHMM::comma_or_space(FILE* file)
 	return true ;
 }
 
-bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
+bool HMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
 {
 	signed char value;
 
@@ -2887,16 +2887,16 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
 		switch (value)
 		{
 			case 'A':
-				value='0' +CAlphabet::B_A;
+				value='0' +Alphabet::B_A;
 				break;
 			case 'C':
-				value='0' +CAlphabet::B_C;
+				value='0' +Alphabet::B_C;
 				break;
 			case 'G':
-				value='0' +CAlphabet::B_G;
+				value='0' +Alphabet::B_G;
 				break;
 			case 'T':
-				value='0' +CAlphabet::B_T;
+				value='0' +Alphabet::B_T;
 				break;
 		};
 
@@ -2910,16 +2910,16 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
 			switch (value)
 			{
 				case 'A':
-					value='0' +CAlphabet::B_A;
+					value='0' +Alphabet::B_A;
 					break;
 				case 'C':
-					value='0' +CAlphabet::B_C;
+					value='0' +Alphabet::B_C;
 					break;
 				case 'G':
-					value='0' +CAlphabet::B_G;
+					value='0' +Alphabet::B_G;
 					break;
 				case 'T':
-					value='0' +CAlphabet::B_T;
+					value='0' +Alphabet::B_T;
 					break;
 				case '1': case '2': case'3': case '4': case'5':
 				case '6': case '7': case'8': case '9': case '0': break ;
@@ -2972,7 +2972,7 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
    ];
    */
 
-bool CHMM::load_model(FILE* file)
+bool HMM::load_model(FILE* file)
 {
 	int32_t received_params=0;	//a,b,p,N,M,O
 
@@ -3271,7 +3271,7 @@ bool CHMM::load_model(FILE* file)
 	const_p[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	const_q[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	*/
-bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
+bool HMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 {
 	if (model)
 		delete model ;
@@ -3976,11 +3976,11 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
    ];
    */
 
-bool CHMM::save_model(FILE* file)
+bool HMM::save_model(FILE* file)
 {
 	bool result=false;
 	int32_t i,j;
-	const float32_t NAN_REPLACEMENT = (float32_t) CMath::ALMOST_NEG_INFTY ;
+	const float32_t NAN_REPLACEMENT = (float32_t) Math::ALMOST_NEG_INFTY ;
 
 	if (file)
 	{
@@ -3992,13 +3992,13 @@ bool CHMM::save_model(FILE* file)
 		for (i=0; i<N; i++)
 		{
 			if (i<N-1) {
-				if (CMath::is_finite(get_p(i)))
+				if (Math::is_finite(get_p(i)))
 					fprintf(file, "%e,", (double)get_p(i));
 				else
 					fprintf(file, "%f,", NAN_REPLACEMENT);
 			}
 			else {
-				if (CMath::is_finite(get_p(i)))
+				if (Math::is_finite(get_p(i)))
 					fprintf(file, "%e", (double)get_p(i));
 				else
 					fprintf(file, "%f", NAN_REPLACEMENT);
@@ -4009,13 +4009,13 @@ bool CHMM::save_model(FILE* file)
 		for (i=0; i<N; i++)
 		{
 			if (i<N-1) {
-				if (CMath::is_finite(get_q(i)))
+				if (Math::is_finite(get_q(i)))
 					fprintf(file, "%e,", (double)get_q(i));
 				else
 					fprintf(file, "%f,", NAN_REPLACEMENT);
 			}
 			else {
-				if (CMath::is_finite(get_q(i)))
+				if (Math::is_finite(get_q(i)))
 					fprintf(file, "%e", (double)get_q(i));
 				else
 					fprintf(file, "%f", NAN_REPLACEMENT);
@@ -4030,13 +4030,13 @@ bool CHMM::save_model(FILE* file)
 			for (j=0; j<N; j++)
 			{
 				if (j<N-1) {
-					if (CMath::is_finite(get_a(i,j)))
+					if (Math::is_finite(get_a(i,j)))
 						fprintf(file, "%e,", (double)get_a(i,j));
 					else
 						fprintf(file, "%f,", NAN_REPLACEMENT);
 				}
 				else {
-					if (CMath::is_finite(get_a(i,j)))
+					if (Math::is_finite(get_a(i,j)))
 						fprintf(file, "%e];\n", (double)get_a(i,j));
 					else
 						fprintf(file, "%f];\n", NAN_REPLACEMENT);
@@ -4053,13 +4053,13 @@ bool CHMM::save_model(FILE* file)
 			for (j=0; j<M; j++)
 			{
 				if (j<M-1) {
-					if (CMath::is_finite(get_b(i,j)))
+					if (Math::is_finite(get_b(i,j)))
 						fprintf(file, "%e,",  (double)get_b(i,j));
 					else
 						fprintf(file, "%f,", NAN_REPLACEMENT);
 				}
 				else {
-					if (CMath::is_finite(get_b(i,j)))
+					if (Math::is_finite(get_b(i,j)))
 						fprintf(file, "%e];\n", (double)get_b(i,j));
 					else
 						fprintf(file, "%f];\n", NAN_REPLACEMENT);
@@ -4072,7 +4072,7 @@ bool CHMM::save_model(FILE* file)
 	return result;
 }
 
-T_STATES* CHMM::get_path(int32_t dim, float64_t& prob)
+T_STATES* HMM::get_path(int32_t dim, float64_t& prob)
 {
 	T_STATES* result = NULL;
 
@@ -4085,7 +4085,7 @@ T_STATES* CHMM::get_path(int32_t dim, float64_t& prob)
 	return result;
 }
 
-bool CHMM::save_path(FILE* file)
+bool HMM::save_path(FILE* file)
 {
 	bool result=false;
 
@@ -4109,7 +4109,7 @@ bool CHMM::save_path(FILE* file)
 	return result;
 }
 
-bool CHMM::save_likelihood_bin(FILE* file)
+bool HMM::save_likelihood_bin(FILE* file)
 {
 	bool result=false;
 
@@ -4126,7 +4126,7 @@ bool CHMM::save_likelihood_bin(FILE* file)
 	return result;
 }
 
-bool CHMM::save_likelihood(FILE* file)
+bool HMM::save_likelihood(FILE* file)
 {
 	bool result=false;
 
@@ -4147,7 +4147,7 @@ bool CHMM::save_likelihood(FILE* file)
 
 #define FLOATWRITE(file, value) { float32_t rrr=float32_t(value); fwrite(&rrr, sizeof(float32_t), 1, file); num_floats++;}
 
-bool CHMM::save_model_bin(FILE* file)
+bool HMM::save_model_bin(FILE* file)
 {
 	int32_t i,j,q, num_floats=0 ;
 	if (!model)
@@ -4155,7 +4155,7 @@ bool CHMM::save_model_bin(FILE* file)
 		if (file)
 		{
 			// write id
-			FLOATWRITE(file, (float32_t)CMath::INFTY);
+			FLOATWRITE(file, (float32_t)Math::INFTY);
 			FLOATWRITE(file, (float32_t) 1);
 
 			//derivates log(dp),log(dq)
@@ -4179,7 +4179,7 @@ bool CHMM::save_model_bin(FILE* file)
 			io::info("wrote {} parameters for b",N*M);
 
 			// write id
-			FLOATWRITE(file, (float32_t)CMath::INFTY);
+			FLOATWRITE(file, (float32_t)Math::INFTY);
 			FLOATWRITE(file, (float32_t) 3);
 
 			// write number of parameters
@@ -4197,7 +4197,7 @@ bool CHMM::save_model_bin(FILE* file)
 		{
 			int32_t num_p, num_q, num_a, num_b ;
 			// write id
-			FLOATWRITE(file, (float32_t)CMath::INFTY);
+			FLOATWRITE(file, (float32_t)Math::INFTY);
 			FLOATWRITE(file, (float32_t) 2);
 
 			for (i=0; model->get_learn_p(i)>=0; i++)
@@ -4234,7 +4234,7 @@ bool CHMM::save_model_bin(FILE* file)
 			io::info("wrote {} parameters for b",num_b);
 
 			// write id
-			FLOATWRITE(file, (float32_t)CMath::INFTY);
+			FLOATWRITE(file, (float32_t)Math::INFTY);
 			FLOATWRITE(file, (float32_t) 3);
 
 			// write number of parameters
@@ -4249,7 +4249,7 @@ bool CHMM::save_model_bin(FILE* file)
 	return true ;
 }
 
-bool CHMM::save_path_derivatives(FILE* logfile)
+bool HMM::save_path_derivatives(FILE* logfile)
 {
 	int32_t dim,i,j;
 
@@ -4296,7 +4296,7 @@ bool CHMM::save_path_derivatives(FILE* logfile)
 	return true ;
 }
 
-bool CHMM::save_path_derivatives_bin(FILE* logfile)
+bool HMM::save_path_derivatives_bin(FILE* logfile)
 {
 	bool result=false;
 	int32_t dim,i,j,q;
@@ -4379,7 +4379,7 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 	return result;
 }
 
-bool CHMM::save_model_derivatives_bin(FILE* file)
+bool HMM::save_model_derivatives_bin(FILE* file)
 {
 	bool result=false;
 	int32_t dim,i,j,q ;
@@ -4500,7 +4500,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	return result;
 }
 
-bool CHMM::save_model_derivatives(FILE* file)
+bool HMM::save_model_derivatives(FILE* file)
 {
 	bool result=false;
 	int32_t dim,i,j;
@@ -4548,7 +4548,7 @@ bool CHMM::save_model_derivatives(FILE* file)
 	return result;
 }
 
-bool CHMM::check_model_derivatives_combined()
+bool HMM::check_model_derivatives_combined()
 {
 	//	bool result=false;
 	const float64_t delta=5e-4 ;
@@ -4618,7 +4618,7 @@ bool CHMM::check_model_derivatives_combined()
 	return true ;
 }
 
-bool CHMM::check_model_derivatives()
+bool HMM::check_model_derivatives()
 {
 	bool result=false;
 	const float64_t delta=3e-4 ;
@@ -4826,7 +4826,7 @@ bool CHMM::check_path_derivatives()
 #endif // USE_HMMDEBUG
 
 //normalize model (sum to one constraint)
-void CHMM::normalize(bool keep_dead_states)
+void HMM::normalize(bool keep_dead_states)
 {
 	int32_t i,j;
 	const float64_t INF=-1e10;
@@ -4834,15 +4834,15 @@ void CHMM::normalize(bool keep_dead_states)
 
 	for (i=0; i<N; i++)
 	{
-		sum_p=CMath::logarithmic_sum(sum_p, get_p(i));
+		sum_p=Math::logarithmic_sum(sum_p, get_p(i));
 
 		float64_t sum_b =INF;
 		float64_t sum_a =get_q(i);
 
 		for (j=0; j<N; j++)
-			sum_a=CMath::logarithmic_sum(sum_a, get_a(i,j));
+			sum_a=Math::logarithmic_sum(sum_a, get_a(i,j));
 
-		if (sum_a>CMath::ALMOST_NEG_INFTY/N || (!keep_dead_states) )
+		if (sum_a>Math::ALMOST_NEG_INFTY/N || (!keep_dead_states) )
 		{
 			for (j=0; j<N; j++)
 				set_a(i,j, get_a(i,j)-sum_a);
@@ -4850,7 +4850,7 @@ void CHMM::normalize(bool keep_dead_states)
 		}
 
 		for (j=0; j<M; j++)
-			sum_b=CMath::logarithmic_sum(sum_b, get_b(i,j));
+			sum_b=Math::logarithmic_sum(sum_b, get_b(i,j));
 		for (j=0; j<M; j++)
 			set_b(i,j, get_b(i,j)-sum_b);
 	}
@@ -4861,7 +4861,7 @@ void CHMM::normalize(bool keep_dead_states)
 	invalidate_model();
 }
 
-bool CHMM::append_model(CHMM* app_model)
+bool HMM::append_model(std::shared_ptr<HMM> app_model)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N();
@@ -4880,14 +4880,14 @@ bool CHMM::append_model(CHMM* app_model)
 		//clear n_x
 		for (i=0; i<N+num_states; i++)
 		{
-			n_p[i]=-CMath::INFTY;
-			n_q[i]=-CMath::INFTY;
+			n_p[i]=-Math::INFTY;
+			n_q[i]=-Math::INFTY;
 
 			for (j=0; j<N+num_states; j++)
-				n_a[(N+num_states)*i+j]=-CMath::INFTY;
+				n_a[(N+num_states)*i+j]=-Math::INFTY;
 
 			for (j=0; j<M; j++)
-				n_b[M*i+j]=-CMath::INFTY;
+				n_b[M*i+j]=-Math::INFTY;
 		}
 
 		//copy models first
@@ -4924,7 +4924,7 @@ bool CHMM::append_model(CHMM* app_model)
 		for (i=0; i<N; i++)
 		{
 			for (j=N; j<N+num_states; j++)
-				n_a[(N+num_states)*j + i]=CMath::logarithmic_sum(get_q(i)+app_model->get_p(j-N), n_a[(N+num_states)*j + i]);
+				n_a[(N+num_states)*j + i]=Math::logarithmic_sum(get_q(i)+app_model->get_p(j-N), n_a[(N+num_states)*j + i]);
 		}
 
 		free_state_dependend_arrays();
@@ -4953,7 +4953,7 @@ bool CHMM::append_model(CHMM* app_model)
 	return result;
 }
 
-bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
+bool HMM::append_model(std::shared_ptr<HMM> app_model, float64_t* cur_out, float64_t* app_out)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N()+2;
@@ -4970,14 +4970,14 @@ bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 		//clear n_x
 		for (i=0; i<N+num_states; i++)
 		{
-			n_p[i]=-CMath::INFTY;
-			n_q[i]=-CMath::INFTY;
+			n_p[i]=-Math::INFTY;
+			n_q[i]=-Math::INFTY;
 
 			for (j=0; j<N+num_states; j++)
-				n_a[(N+num_states)*j+i]=-CMath::INFTY;
+				n_a[(N+num_states)*j+i]=-Math::INFTY;
 
 			for (j=0; j<M; j++)
-				n_b[M*i+j]=-CMath::INFTY;
+				n_b[M*i+j]=-Math::INFTY;
 		}
 
 		//copy models first
@@ -5061,7 +5061,7 @@ bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 }
 
 
-void CHMM::add_states(int32_t num_states, float64_t default_value)
+void HMM::add_states(int32_t num_states, float64_t default_value)
 {
 	int32_t i,j;
 	const float64_t MIN_RAND=1e-2; //this is the range of the random values for the new variables
@@ -5122,35 +5122,35 @@ void CHMM::add_states(int32_t num_states, float64_t default_value)
 	normalize();
 }
 
-void CHMM::chop(float64_t value)
+void HMM::chop(float64_t value)
 {
 	for (int32_t i=0; i<N; i++)
 	{
 		int32_t j;
 
 		if (exp(get_p(i)) < value)
-			set_p(i, CMath::ALMOST_NEG_INFTY);
+			set_p(i, Math::ALMOST_NEG_INFTY);
 
 		if (exp(get_q(i)) < value)
-			set_q(i, CMath::ALMOST_NEG_INFTY);
+			set_q(i, Math::ALMOST_NEG_INFTY);
 
 		for (j=0; j<N; j++)
 		{
 			if (exp(get_a(i,j)) < value)
-				set_a(i,j, CMath::ALMOST_NEG_INFTY);
+				set_a(i,j, Math::ALMOST_NEG_INFTY);
 		}
 
 		for (j=0; j<M; j++)
 		{
 			if (exp(get_b(i,j)) < value)
-				set_b(i,j, CMath::ALMOST_NEG_INFTY);
+				set_b(i,j, Math::ALMOST_NEG_INFTY);
 		}
 	}
 	normalize();
 	invalidate_model();
 }
 
-bool CHMM::linear_train(bool right_align)
+bool HMM::linear_train(bool right_align)
 {
 	if (p_observations)
 	{
@@ -5267,11 +5267,11 @@ bool CHMM::linear_train(bool right_align)
 		return false;
 }
 
-void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
+void HMM::set_observation_nocache(std::shared_ptr<StringFeatures<uint16_t>> obs)
 {
 	ASSERT(obs)
 	p_observations=obs;
-	SG_REF(obs);
+
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
@@ -5309,16 +5309,16 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 	invalidate_model();
 }
 
-void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
+void HMM::set_observations(std::shared_ptr<StringFeatures<uint16_t>> obs, std::shared_ptr<HMM> lambda)
 {
 	ASSERT(obs)
-	SG_REF(obs);
+
 	p_observations=obs;
 
 	/* from Distribution, necessary for calls to base class methods, like
 	 * get_log_likelihood_sample():
 	 */
-	SG_REF(obs);
+
 	features=obs;
 
 	SG_DEBUG("num symbols alphabet: {}", obs->get_alphabet()->get_num_symbols())
@@ -5454,7 +5454,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	invalidate_model();
 }
 
-bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
+bool HMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 {
 	if (p_observations && window_width>0 &&
 			( sequence_number<0 || sequence_number < p_observations->get_num_vectors()))
@@ -5512,7 +5512,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 		return false;
 }
 
-float64_t CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t HMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	if (num_param<N)
 		return model_derivative_p(num_param, num_example);
@@ -5537,7 +5537,7 @@ float64_t CHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return -1;
 }
 
-float64_t CHMM::get_log_model_parameter(int32_t num_param)
+float64_t HMM::get_log_model_parameter(int32_t num_param)
 {
 	if (num_param<N)
 		return get_p(num_param);
@@ -5554,7 +5554,7 @@ float64_t CHMM::get_log_model_parameter(int32_t num_param)
 
 
 //convergence criteria  -tobeadjusted-
-bool CHMM::converged(float64_t x, float64_t y)
+bool HMM::converged(float64_t x, float64_t y)
 {
 	float64_t diff=y-x;
 	float64_t absdiff=fabs(diff);
@@ -5579,20 +5579,20 @@ bool CHMM::converged(float64_t x, float64_t y)
 	}
 }
 
-bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
+bool HMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 {
-	CHMM* estimate=new CHMM(this);
-	CHMM* working=this;
-	float64_t prob_max=-CMath::INFTY;
-	float64_t prob=-CMath::INFTY;
-	float64_t prob_train=CMath::ALMOST_NEG_INFTY;
+	auto estimate=std::shared_ptr<HMM>(this);
+	auto working=std::shared_ptr<HMM>(this);
+	float64_t prob_max=-Math::INFTY;
+	float64_t prob=-Math::INFTY;
+	float64_t prob_train=Math::ALMOST_NEG_INFTY;
 	iteration_count=iterations;
 
 	// TODO: replace with the new signal
-	// while (!converged(prob, prob_train) && (!CSignal::cancel_computations()))
+	// while (!converged(prob, prob_train) && (!Signal::cancel_computations()))
 	while (!converged(prob, prob_train))
 	{
-		CMath::swap(working, estimate);
+		working.swap(estimate);
 		prob=prob_train;
 
 		switch (type) {
@@ -5613,13 +5613,10 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 			prob_max=prob_train;
 	}
 
-	if (estimate == this)
+	if (estimate.get() == this)
 	{
 		estimate->copy_model(working);
-		delete working;
 	}
-	else
-		delete estimate;
 
 	return true;
 }

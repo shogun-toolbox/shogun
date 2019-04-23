@@ -53,9 +53,9 @@ using namespace mmd;
 using std::shared_ptr;
 using std::unique_ptr;
 
-struct CQuadraticTimeMMD::Self
+struct QuadraticTimeMMD::Self
 {
-	Self(CQuadraticTimeMMD&, CQuadraticTimeMMD::prng_type& prng);
+	Self(QuadraticTimeMMD&, QuadraticTimeMMD::prng_type& prng);
 
 	void init_statistic_job();
 	void init_permutation_job();
@@ -67,13 +67,9 @@ struct CQuadraticTimeMMD::Self
 	SGVector<float64_t> sample_null_permutation();
 	SGVector<float64_t> gamma_fit_null();
 
-	CQuadraticTimeMMD& owner;
-	CMultiKernelQuadraticTimeMMD* multi_kernel;
-
-	~Self()
-	{
-		SG_UNREF(multi_kernel);
-	}
+	~Self() {}
+	QuadraticTimeMMD& owner;
+	shared_ptr<MultiKernelQuadraticTimeMMD> multi_kernel;
 
 	/**
 	 * Whether to precompute the kernel matrix. by default this is true.
@@ -104,20 +100,20 @@ struct CQuadraticTimeMMD::Self
 	PermutationMMD permutation_job;
 
 	NormalDistribution<float64_t> normal_dist;
-	CQuadraticTimeMMD::prng_type& prng;
+	QuadraticTimeMMD::prng_type& prng;
 
 	static constexpr bool DEFAULT_PRECOMPUTE = true;
 	static constexpr index_t DEFAULT_NUM_EIGENVALUES = 10;
 };
 
-CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd, CQuadraticTimeMMD::prng_type& _prng) : owner(mmd), prng(_prng)
+QuadraticTimeMMD::Self::Self(QuadraticTimeMMD& mmd, QuadraticTimeMMD::prng_type& _prng) : owner(mmd), prng(_prng)
 {
 	is_kernel_initialized=false;
 	precompute=DEFAULT_PRECOMPUTE;
 	num_eigenvalues=DEFAULT_NUM_EIGENVALUES;
 }
 
-void CQuadraticTimeMMD::Self::init_statistic_job()
+void QuadraticTimeMMD::Self::init_statistic_job()
 {
 	require(owner.get_num_samples_p()>0,
 		"Number of samples from P (was {}) has to be > 0!", owner.get_num_samples_p());
@@ -129,7 +125,7 @@ void CQuadraticTimeMMD::Self::init_statistic_job()
 	statistic_job.m_stype=owner.get_statistic_type();
 }
 
-void CQuadraticTimeMMD::Self::init_variance_h1_job()
+void QuadraticTimeMMD::Self::init_variance_h1_job()
 {
 	require(owner.get_num_samples_p()>0,
 		"Number of samples from P (was {}) has to be > 0!", owner.get_num_samples_p());
@@ -140,7 +136,7 @@ void CQuadraticTimeMMD::Self::init_variance_h1_job()
 	variance_h1_job.m_n_y=owner.get_num_samples_q();
 }
 
-void CQuadraticTimeMMD::Self::init_permutation_job()
+void QuadraticTimeMMD::Self::init_permutation_job()
 {
 	require(owner.get_num_samples_p()>0,
 		"Number of samples from P (was {}) has to be > 0!", owner.get_num_samples_p());
@@ -155,7 +151,7 @@ void CQuadraticTimeMMD::Self::init_permutation_job()
 	permutation_job.m_num_null_samples=owner.get_num_null_samples();
 }
 
-void CQuadraticTimeMMD::Self::init_kernel()
+void QuadraticTimeMMD::Self::init_kernel()
 {
 	ASSERT(owner.get_kernel());
 	if (!is_kernel_initialized)
@@ -170,7 +166,7 @@ void CQuadraticTimeMMD::Self::init_kernel()
 	}
 }
 
-SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
+SGMatrix<float32_t> QuadraticTimeMMD::Self::get_kernel_matrix()
 {
 	ASSERT(precompute);
 	ASSERT(owner.get_kernel());
@@ -184,33 +180,33 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	}
 
 	ASSERT(owner.get_kernel()->get_kernel_type()==K_CUSTOM);
-	auto precomputed_kernel=static_cast<CCustomKernel*>(owner.get_kernel());
+	auto precomputed_kernel=std::dynamic_pointer_cast<CustomKernel>(owner.get_kernel());
 	return precomputed_kernel->get_float32_kernel_matrix();
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
+QuadraticTimeMMD::QuadraticTimeMMD() : MMD()
 {
 	init();
 }
 
-void CQuadraticTimeMMD::init()
+void QuadraticTimeMMD::init()
 {
-	self=unique_ptr<Self>(new Self(*this, m_prng));
-	self->multi_kernel = new CMultiKernelQuadraticTimeMMD(this);
-	SG_REF(self->multi_kernel);
+	self=std::make_unique<Self>(*this, m_prng);
+	self->multi_kernel = shared_ptr<MultiKernelQuadraticTimeMMD>(
+		new MultiKernelQuadraticTimeMMD(this));	
 	watch_param("multi_kernel", &(self->multi_kernel));
 }
 
-CQuadraticTimeMMD::~CQuadraticTimeMMD()
+QuadraticTimeMMD::~QuadraticTimeMMD()
 {
-	CMMD::cleanup();
+	MMD::cleanup();
 }
 
-void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
+void QuadraticTimeMMD::set_p(std::shared_ptr<Features> samples_from_p)
 {
 	if (samples_from_p!=get_p())
 	{
-		CTwoDistributionTest::set_p(samples_from_p);
+		TwoDistributionTest::set_p(samples_from_p);
 		get_kernel_mgr().restore_kernel_at(0);
 		self->is_kernel_initialized=false;
 		self->multi_kernel->invalidate_precomputed_distance();
@@ -228,11 +224,11 @@ void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
 	}
 }
 
-void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
+void QuadraticTimeMMD::set_q(std::shared_ptr<Features> samples_from_q)
 {
 	if (samples_from_q!=get_q())
 	{
-		CTwoDistributionTest::set_q(samples_from_q);
+		TwoDistributionTest::set_q(samples_from_q);
 		get_kernel_mgr().restore_kernel_at(0);
 		self->is_kernel_initialized=false;
 		self->multi_kernel->invalidate_precomputed_distance();
@@ -250,9 +246,9 @@ void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
 	}
 }
 
-CFeatures* CQuadraticTimeMMD::get_p_and_q()
+std::shared_ptr<Features> QuadraticTimeMMD::get_p_and_q()
 {
-	CFeatures* samples_p_and_q=nullptr;
+	std::shared_ptr<Features> samples_p_and_q=nullptr;
 	require(get_p(), "Samples from P are not set!");
 	require(get_q(), "Samples from Q are not set!");
 
@@ -261,8 +257,8 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	auto samples=data_mgr.next();
 	if (!samples.empty())
 	{
-		CFeatures *samples_p=samples[0][0];
-		CFeatures *samples_q=samples[1][0];
+		std::shared_ptr<Features> samples_p=samples[0][0];
+		std::shared_ptr<Features> samples_q=samples[1][0];
 		samples_p_and_q=samples_p->create_merged_copy(samples_q);
 		samples.clear();
 	}
@@ -274,12 +270,12 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	return samples_p_and_q;
 }
 
-void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
+void QuadraticTimeMMD::set_kernel(std::shared_ptr<Kernel> kernel)
 {
 	if (kernel!=get_kernel())
 	{
 		// removing any pre-computed kernel is done in the base already
-		CTwoSampleTest::set_kernel(kernel);
+		TwoSampleTest::set_kernel(kernel);
 		self->is_kernel_initialized=false;
 
 		if (kernel->get_kernel_type()==K_CUSTOM)
@@ -294,9 +290,9 @@ void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
 	}
 }
 
-void CQuadraticTimeMMD::select_kernel()
+void QuadraticTimeMMD::select_kernel()
 {
-	CMMD::select_kernel();
+	MMD::select_kernel();
 	self->is_kernel_initialized=false;
 
 	ASSERT(get_kernel());
@@ -308,7 +304,7 @@ void CQuadraticTimeMMD::select_kernel()
 	}
 }
 
-float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
+float64_t QuadraticTimeMMD::normalize_statistic(float64_t statistic) const
 {
 	const index_t Nx=get_num_samples_p();
 	const index_t Ny=get_num_samples_q();
@@ -316,7 +312,7 @@ float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
 }
 
 
-float64_t CQuadraticTimeMMD::compute_statistic()
+float64_t QuadraticTimeMMD::compute_statistic()
 {
 	SG_TRACE("Entering");
 	require(get_kernel(), "Kernel is not set!");
@@ -344,7 +340,7 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 	return statistic;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
+SGVector<float64_t> QuadraticTimeMMD::Self::sample_null_permutation()
 {
 	SG_TRACE("Entering");
 	require(owner.get_kernel(), "Kernel is not set!");
@@ -375,7 +371,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
 	return null_samples;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
+SGVector<float64_t> QuadraticTimeMMD::Self::sample_null_spectrum()
 {
 	SG_TRACE("Entering");
 	require(owner.get_kernel(), "Kernel is not set!");
@@ -414,7 +410,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 		for (index_t j=0; j<num_eigenvalues; ++j)
 		{
 			float64_t z_j=normal_dist(prng);
-			float64_t multiple=CMath::sq(z_j);
+			float64_t multiple=Math::sq(z_j);
 
 			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
 			float64_t eigenvalue_estimate=eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
@@ -432,7 +428,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 	return null_samples;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
+SGVector<float64_t> QuadraticTimeMMD::Self::gamma_fit_null()
 {
 	SG_TRACE("Entering");
 
@@ -485,14 +481,14 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 			to_add+=kernel_matrix(m+i, m+j);
 			to_add-=kernel_matrix(i, m+j);
 			to_add-=kernel_matrix(m+i, j);
-			var_mmd+=CMath::pow(to_add, 2);
+			var_mmd+=Math::pow(to_add, 2);
 		}
 	}
 
 	var_mmd*=2.0/m/(m-1)*1.0/m/(m-1);
 
 	/* parameters for gamma distribution */
-	float64_t a=CMath::pow(mean_mmd, 2)/var_mmd;
+	float64_t a=Math::pow(mean_mmd, 2)/var_mmd;
 	float64_t b=var_mmd*m/mean_mmd;
 
 	result[0]=a;
@@ -502,7 +498,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 	return result;
 }
 
-float64_t CQuadraticTimeMMD::compute_variance_h0()
+float64_t QuadraticTimeMMD::compute_variance_h0()
 {
 	require(get_kernel(), "Kernel is not set!");
 	require(self->precompute,
@@ -513,7 +509,7 @@ float64_t CQuadraticTimeMMD::compute_variance_h0()
 	return self->variance_h0_job(kernel_matrix);
 }
 
-float64_t CQuadraticTimeMMD::compute_variance_h1()
+float64_t QuadraticTimeMMD::compute_variance_h1()
 {
 	require(get_kernel(), "Kernel is not set!");
 	self->init_kernel();
@@ -535,7 +531,7 @@ float64_t CQuadraticTimeMMD::compute_variance_h1()
 	return variance_estimate;
 }
 
-float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
+float64_t QuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	require(get_kernel(), "Kernel is not set!");
 	float64_t result=0;
@@ -544,17 +540,17 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		case NAM_MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=self->gamma_fit_null();
-			result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
+			result=Statistics::gamma_cdf(statistic, params[0], params[1]);
 			break;
 		}
 		default:
-			result=CHypothesisTest::compute_p_value(statistic);
+			result=HypothesisTest::compute_p_value(statistic);
 		break;
 	}
 	return result;
 }
 
-float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
+float64_t QuadraticTimeMMD::compute_threshold(float64_t alpha)
 {
 	require(get_kernel(), "Kernel is not set!");
 	float64_t result=0;
@@ -563,17 +559,17 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		case NAM_MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=self->gamma_fit_null();
-			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
+			result=Statistics::gamma_inverse_cdf(alpha, params[0], params[1]);
 			break;
 		}
 		default:
-			result=CHypothesisTest::compute_threshold(alpha);
+			result=HypothesisTest::compute_threshold(alpha);
 			break;
 	}
 	return result;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::sample_null()
+SGVector<float64_t> QuadraticTimeMMD::sample_null()
 {
 	require(get_kernel(), "Kernel is not set!");
 	SGVector<float64_t> null_samples;
@@ -590,24 +586,22 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	return null_samples;
 }
 
-CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
+std::shared_ptr<MultiKernelQuadraticTimeMMD> QuadraticTimeMMD::multikernel()
 {
-	CMultiKernelQuadraticTimeMMD* result = self->multi_kernel;
-	SG_REF(result);
-	return result;
+	return self->multi_kernel;
 }
 
-void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)
+void QuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)
 {
 	self->num_eigenvalues=num_eigenvalues;
 }
 
-index_t CQuadraticTimeMMD::spectrum_get_num_eigenvalues() const
+index_t QuadraticTimeMMD::spectrum_get_num_eigenvalues() const
 {
 	return self->num_eigenvalues;
 }
 
-void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
+void QuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 {
 	if (self->precompute && !precompute)
 	{
@@ -626,17 +620,17 @@ void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 	self->precompute=precompute;
 }
 
-void CQuadraticTimeMMD::save_permutation_inds(bool save_inds)
+void QuadraticTimeMMD::save_permutation_inds(bool save_inds)
 {
 	self->permutation_job.m_save_inds=save_inds;
 }
 
-SGMatrix<index_t> CQuadraticTimeMMD::get_permutation_inds() const
+SGMatrix<index_t> QuadraticTimeMMD::get_permutation_inds() const
 {
 	return self->permutation_job.m_all_inds;
 }
 
-const char* CQuadraticTimeMMD::get_name() const
+const char* QuadraticTimeMMD::get_name() const
 {
 	return "QuadraticTimeMMD";
 }

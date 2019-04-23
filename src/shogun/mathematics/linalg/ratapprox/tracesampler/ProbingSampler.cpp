@@ -25,15 +25,15 @@ using namespace ColPack;
 namespace shogun
 {
 
-CProbingSampler::CProbingSampler() : RandomMixin<CTraceSampler>()
+ProbingSampler::ProbingSampler() : RandomMixin<TraceSampler>()
 {
 	init();
 }
 
-CProbingSampler::CProbingSampler(
-	CSparseMatrixOperator<float64_t>* matrix_operator, int64_t power,
+ProbingSampler::ProbingSampler(
+	std::shared_ptr<SparseMatrixOperator<float64_t>> matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
-	: RandomMixin<CTraceSampler>(matrix_operator->get_dimension())
+	: RandomMixin<TraceSampler>(matrix_operator->get_dimension())
 {
 	init();
 
@@ -41,11 +41,9 @@ CProbingSampler::CProbingSampler(
 	m_matrix_operator=matrix_operator;
 	m_ordering=ordering;
 	m_coloring=coloring;
-
-	SG_REF(m_matrix_operator);
 }
 
-void CProbingSampler::init()
+void ProbingSampler::init()
 {
 	m_matrix_operator=NULL;
 	m_power=1;
@@ -53,6 +51,7 @@ void CProbingSampler::init()
 	m_coloring=DISTANCE_TWO;
 	m_is_precomputed=false;
 
+/*
 	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
 		" from coloring");
 
@@ -61,27 +60,27 @@ void CProbingSampler::init()
 	SG_ADD(&m_is_precomputed, "is_precomputed",
 		"flag that is true if already precomputed");
 
-	SG_ADD((CSGObject**)&m_matrix_operator, "matrix_operator",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_matrix_operator, "matrix_operator",
 		"the sparse-matrix linear opeator for coloring");
+		*/
 }
 
-CProbingSampler::~CProbingSampler()
+ProbingSampler::~ProbingSampler()
 {
-	SG_UNREF(m_matrix_operator);
 }
 
-void CProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
+void ProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
 {
 	m_coloring_vector=coloring_vector;
 	m_is_precomputed=true;
 }
 
-SGVector<int32_t> CProbingSampler::get_coloring_vector() const
+SGVector<int32_t> ProbingSampler::get_coloring_vector() const
 {
 	return m_coloring_vector;
 }
 
-void CProbingSampler::precompute()
+void ProbingSampler::precompute()
 {
 	SG_TRACE("Entering");
 
@@ -184,7 +183,7 @@ void CProbingSampler::precompute()
 	SG_TRACE("Leaving");
 }
 
-SGVector<float64_t> CProbingSampler::sample(index_t idx) const
+SGVector<float64_t> ProbingSampler::sample(index_t idx) const
 {
 	require(idx<m_num_samples, "Given index ({}) must be smaller than "
 			"number of samples to draw ({})", idx, m_num_samples);

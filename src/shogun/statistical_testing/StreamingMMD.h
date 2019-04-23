@@ -42,8 +42,8 @@ namespace shogun
 {
 
 /** forward declarations */
-class CKernel;
-class CKernelSelectionStrategy;
+class Kernel;
+class KernelSelectionStrategy;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
 
@@ -57,7 +57,7 @@ class WeightedMaxTestPower;
 
 }
 
-class CStreamingMMD : public CMMD
+class StreamingMMD : public MMD
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
@@ -66,8 +66,8 @@ class CStreamingMMD : public CMMD
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 
-	CStreamingMMD();
-	virtual ~CStreamingMMD();
+	StreamingMMD();
+	virtual ~StreamingMMD();
 
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
@@ -97,7 +97,7 @@ protected:
 	virtual float64_t normalize_statistic(float64_t statistic) const=0;
 	virtual const float64_t normalize_variance(float64_t variance) const=0;
 	bool use_gpu() const;
-	std::shared_ptr<CKernelSelectionStrategy> get_strategy();
+	std::shared_ptr<KernelSelectionStrategy> get_strategy();
 private:
 	struct Self;
 	std::unique_ptr<Self> self;

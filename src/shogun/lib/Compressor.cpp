@@ -31,13 +31,13 @@
 
 using namespace shogun;
 
-CCompressor::CCompressor()
-	:CSGObject(), compression_type(UNCOMPRESSED)
+Compressor::Compressor()
+	:SGObject(), compression_type(UNCOMPRESSED)
 {
 	unstable(SOURCE_LOCATION);
 }
 
-void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
+void Compressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 		uint8_t* &compressed, uint64_t &compressed_size, int32_t level)
 {
 	uint64_t initial_buffer_size=0;
@@ -202,7 +202,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 		compressed = SG_REALLOC(uint8_t, compressed, initial_buffer_size, compressed_size);
 }
 
-void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
+void Compressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 		uint8_t* uncompressed, uint64_t& uncompressed_size)
 {
 	if (compressed_size==0)

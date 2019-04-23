@@ -28,7 +28,7 @@ enum E_SVM_TYPE
 #endif
 
 /** @brief class SVMOcas */
-class CSVMOcas : public CLinearMachine
+class SVMOcas : public LinearMachine
 {
 	public:
 
@@ -36,13 +36,13 @@ class CSVMOcas : public CLinearMachine
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */
-		CSVMOcas();
+		SVMOcas();
 
 		/** constructor
 		 *
 		 * @param type a E_SVM_TYPE
 		 */
-		CSVMOcas(E_SVM_TYPE type);
+		SVMOcas(E_SVM_TYPE type);
 
 		/** constructor
 		 *
@@ -50,10 +50,10 @@ class CSVMOcas : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSVMOcas(
-			float64_t C, CFeatures* traindat,
-			CLabels* trainlab);
-		virtual ~CSVMOcas();
+		SVMOcas(
+			float64_t C, std::shared_ptr<Features> traindat,
+			std::shared_ptr<Labels> trainlab);
+		virtual ~SVMOcas();
 
 		/** get classifier type
 		 *
@@ -187,7 +187,7 @@ class CSVMOcas : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void init();

@@ -15,15 +15,15 @@ namespace shogun
 	/**
 	 * This class implements a logger which prints all observed updates.
 	 */
-	class CParameterObserverLogger : public ParameterObserver
+	class ParameterObserverLogger : public ParameterObserver
 	{
 
 	public:
-		CParameterObserverLogger();
+		ParameterObserverLogger();
 
-		CParameterObserverLogger(std::vector<std::string>& parameters);
+		ParameterObserverLogger(std::vector<std::string>& parameters);
 
-		virtual ~CParameterObserverLogger();
+		virtual ~ParameterObserverLogger();
 
 		virtual void on_error(std::exception_ptr ptr);
 

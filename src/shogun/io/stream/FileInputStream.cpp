@@ -3,15 +3,15 @@
 using namespace std;
 using namespace shogun::io;
 
-CFileInputStream::CFileInputStream(RandomAccessFile* src, bool free):
-	CInputStream(), m_src(src), m_free(free), m_pos(0) {}
-CFileInputStream::~CFileInputStream()
+FileInputStream::FileInputStream(RandomAccessFile* src, bool free):
+	InputStream(), m_src(src), m_free(free), m_pos(0) {}
+FileInputStream::~FileInputStream()
 {
 	if (m_free)
 		delete m_src;
 }
 
-error_condition CFileInputStream::read(string* buffer, int64_t size)
+error_condition FileInputStream::read(string* buffer, int64_t size)
 {
 	if (size < 0)
 		return make_error_condition(errc::invalid_argument);
@@ -33,7 +33,7 @@ error_condition CFileInputStream::read(string* buffer, int64_t size)
 
 static constexpr int64_t kMaxSkipSize = 8 * 1024 * 1024;
 
-error_condition CFileInputStream::skip(int64_t bytes)
+error_condition FileInputStream::skip(int64_t bytes)
 {
 	if (bytes < 0)
 		return make_error_condition(errc::invalid_argument);
@@ -69,12 +69,12 @@ error_condition CFileInputStream::skip(int64_t bytes)
 	return {};
 }
 
-int64_t CFileInputStream::tell() const
+int64_t FileInputStream::tell() const
 {
 	return m_pos;
 }
 
-void CFileInputStream::reset()
+void FileInputStream::reset()
 {
 	m_pos = 0;
 }

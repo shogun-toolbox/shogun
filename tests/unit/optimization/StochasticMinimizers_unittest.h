@@ -45,7 +45,7 @@ class RegressionForTestCostFunction: public FirstOrderSAGCostFunction
 public:
 	RegressionForTestCostFunction();
 	virtual ~RegressionForTestCostFunction();
-	void set_target(CRegressionExample *obj);
+	void set_target(std::shared_ptr<CRegressionExample> obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
@@ -57,7 +57,7 @@ public:
 private:
 	index_t m_idx;
 	void init();
-	CRegressionExample* m_obj;
+	std::shared_ptr<CRegressionExample> m_obj;
 };
 
 class ClassificationForTestCostFunction: public FirstOrderSAGCostFunction
@@ -98,7 +98,7 @@ public:
 	virtual const char* get_name() const { return "ClassificationForTestCostFunction2"; }
 };
 
-class CRegressionExample: public CSGObject
+class CRegressionExample: public SGObject
 {
 friend class RegressionForTestCostFunction;
 public:

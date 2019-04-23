@@ -21,12 +21,12 @@ namespace shogun
  * @see CTaskGroup
  * @see CTaskTree
  */
-class CTask : public CSGObject
+class Task : public SGObject
 {
 public:
 
 	/** default constructor */
-	CTask();
+	Task();
 
 	/** constructor from range
 	 * @param min_index smallest index of the task
@@ -34,7 +34,7 @@ public:
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CTask(index_t min_index, index_t max_index,
+	Task(index_t min_index, index_t max_index,
 	      float64_t weight=1.0, const char* name="task");
 
 	/** constructor from indices
@@ -42,10 +42,10 @@ public:
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CTask(SGVector<index_t> indices, float64_t weight=1.0, const char* name="task");
+	Task(SGVector<index_t> indices, float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	virtual ~CTask();
+	virtual ~Task();
 
 	/** is contiguous
 	 *
@@ -94,13 +94,13 @@ public:
 	 *
 	 * @param sub_task subtask to add
 	 */
-	void add_subtask(CTask* sub_task);
+	void add_subtask(std::shared_ptr<Task> sub_task);
 
 	/** get all subtasks of the task
 	 *
 	 * @return subtasks of the task
 	 */
-	CList* get_subtasks();
+	std::shared_ptr<List> get_subtasks();
 
 	/** get number of subtasks
 	 *
@@ -122,7 +122,7 @@ private:
 protected:
 
 	/** subtasks */
-	CList* m_subtasks;
+	std::shared_ptr<List> m_subtasks;
 
 	/** name of the block */
 	const char* m_name;

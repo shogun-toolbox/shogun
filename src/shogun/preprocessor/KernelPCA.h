@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Michele Mazzoni, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Michele Mazzoni,
  *          Evgeniy Andreev, Evan Shelhamer
  */
 
@@ -17,8 +17,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CKernel;
+class Features;
+class Kernel;
 
 /** @brief Preprocessor KernelPCA performs kernel principal component analysis
  *
@@ -28,33 +28,33 @@ class CKernel;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8744
  *
  */
-class CKernelPCA : public CPreprocessor
+class KernelPCA : public Preprocessor
 {
 public:
 		/** default constructor
 		 */
-		CKernelPCA();
+		KernelPCA();
 
 		/** constructor
 		 * @param k kernel to be used
 		 */
-		CKernelPCA(CKernel* k);
+		KernelPCA(std::shared_ptr<Kernel> k);
 
-		virtual ~CKernelPCA();
+		virtual ~KernelPCA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<Features> features);
 
 		/** Apply transformation to features. In-place mode is not supported.
 		 *	@param features features to transform
 		 *	@param inplace whether transform in place
 		 *	@return the result feature object after applying the transformer
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/// cleanup
 		virtual void cleanup();
 
-		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
+		virtual SGMatrix<float64_t> apply_to_feature_matrix(std::shared_ptr<Features> features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
@@ -63,7 +63,7 @@ public:
 		/** apply to string features
 		 * @param features
 		 */
-		virtual CDenseFeatures<float64_t>* apply_to_string_features(CFeatures* features);
+		virtual std::shared_ptr<DenseFeatures<float64_t>> apply_to_string_features(std::shared_ptr<Features> features);
 
 		/** get transformation matrix, i.e. eigenvectors
 		 *
@@ -104,12 +104,12 @@ public:
 		/** setter for kernel
 		 * @param kernel kernel to set
 		 */
-		void set_kernel(CKernel* kernel);
+		void set_kernel(std::shared_ptr<Kernel> kernel);
 
 		/** getter for kernel
 		 * @return kernel
 		 */
-		CKernel* get_kernel() const;
+		std::shared_ptr<Kernel> get_kernel() const;
 
 	protected:
 
@@ -119,7 +119,7 @@ public:
 	protected:
 
 		/** features used by init. needed for apply */
-		CFeatures* m_init_features;
+		std::shared_ptr<Features> m_init_features;
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;
@@ -131,7 +131,7 @@ public:
 		int32_t m_target_dim;
 
 		/** kernel to be used */
-		CKernel* m_kernel;
+		std::shared_ptr<Kernel> m_kernel;
 };
 }
 #endif

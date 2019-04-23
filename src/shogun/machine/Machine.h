@@ -25,8 +25,8 @@
 namespace shogun
 {
 
-class CFeatures;
-class CLabels;
+class Features;
+class Labels;
 
 /** classifier type */
 enum EMachineType
@@ -124,7 +124,7 @@ enum EProblemType
 
 /** @brief A generic learning machine interface.
  *
- * A machine takes as input CFeatures and CLabels (by default).
+ * A machine takes as input Features and Labels (by default).
  * Later subclasses may specialize the machine to e.g. require labels
  * and a kernel or labels and (real-valued) features.
  *
@@ -132,16 +132,16 @@ enum EProblemType
  * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
  */
-class CMachine : public CStoppableSGObject
+class Machine : public StoppableSGObject
 {
-	friend class CPipeline;
+	friend class Pipeline;
 
 	public:
 		/** constructor */
-		CMachine();
+		Machine();
 
 		/** destructor */
-		virtual ~CMachine();
+		virtual ~Machine();
 
 		/** train machine
 		 *
@@ -152,7 +152,7 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** apply machine to data
 		 * if data is not specified apply to the current features
@@ -160,30 +160,30 @@ class CMachine : public CStoppableSGObject
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual std::shared_ptr<Labels> apply(std::shared_ptr<Features> data=NULL);
 
 		/** apply machine to data in means of binary classification problem */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 		/** apply machine to data in means of regression problem */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 		/** apply machine to data in means of multiclass classification problem */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 		/** apply machine to data in means of SO classification problem */
-		virtual CStructuredLabels* apply_structured(CFeatures* data=NULL);
+		virtual std::shared_ptr<StructuredLabels> apply_structured(std::shared_ptr<Features> data=NULL);
 		/** apply machine to data in means of latent problem */
-		virtual CLatentLabels* apply_latent(CFeatures* data=NULL);
+		virtual std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data=NULL);
 
 		/** set labels
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(CLabels* lab);
+		virtual void set_labels(std::shared_ptr<Labels> lab);
 
 		/** get labels
 		 *
 		 * @return labels
 		 */
-		virtual CLabels* get_labels();
+		virtual std::shared_ptr<Labels> get_labels();
 
 		/** set maximum training time
 		 *
@@ -248,20 +248,20 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL)
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL)
 		{
 			error(
 			    "train_machine is not yet implemented for {}!", get_name());
 			return false;
 		}
 
-		virtual bool train_dense(CFeatures* data)
+		virtual bool train_dense(std::shared_ptr<Features> data)
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;
 		}
 
-		virtual bool train_string(CFeatures* data)
+		virtual bool train_string(std::shared_ptr<Features> data)
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;
@@ -285,7 +285,7 @@ class CMachine : public CStoppableSGObject
 		/** Continue Training
 		 *
 		 * This method can be used to continue a prematurely stopped
-		 * call to CMachine::train.
+		 * call to Machine::train.
 		 * This is available for Iterative models and throws an error
 		 * if the feature is not supported. 
 		 *
@@ -303,7 +303,7 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @param lab the labels being checked, guaranteed to be non-NULL
 		 */
-		virtual bool is_label_valid(CLabels *lab) const
+		virtual bool is_label_valid(std::shared_ptr<Labels >lab) const
 		{
 			return true;
 		}
@@ -313,7 +313,7 @@ class CMachine : public CStoppableSGObject
 		float64_t m_max_train_time;
 
 		/** labels */
-		CLabels* m_labels;
+		std::shared_ptr<Labels> m_labels;
 
 		/** solver type */
 		ESolverType m_solver_type;

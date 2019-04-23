@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Heiko Strathmann, Vladislav Horbatiuk, 
+ * Authors: Viktor Gal, Heiko Strathmann, Vladislav Horbatiuk,
  *          Soeren Sonnenburg
  */
 
@@ -9,42 +9,39 @@
 
 using namespace shogun;
 
-CLatentFeatures::CLatentFeatures()
+LatentFeatures::LatentFeatures():LatentFeatures(10)
+{
+}
+
+LatentFeatures::LatentFeatures(int32_t num_samples)
 {
 	init();
-	m_samples = new CDynamicObjectArray(10);
-	SG_REF(m_samples);
+	m_samples = std::make_shared<DynamicObjectArray>(num_samples);
+
 }
 
-CLatentFeatures::CLatentFeatures(int32_t num_samples)
+LatentFeatures::~LatentFeatures()
 {
-	init();
-	m_samples = new CDynamicObjectArray(num_samples);
-	SG_REF(m_samples);
+
 }
 
-CLatentFeatures::~CLatentFeatures()
+std::shared_ptr<Features> LatentFeatures::duplicate() const
 {
-	SG_UNREF(m_samples);
+	return std::make_shared<LatentFeatures>(*this);
 }
 
-CFeatures* CLatentFeatures::duplicate() const
-{
-	return new CLatentFeatures(*this);
-}
-
-EFeatureType CLatentFeatures::get_feature_type() const
+EFeatureType LatentFeatures::get_feature_type() const
 {
 	return F_ANY;
 }
 
-EFeatureClass CLatentFeatures::get_feature_class() const
+EFeatureClass LatentFeatures::get_feature_class() const
 {
 	return C_LATENT;
 }
 
 
-int32_t CLatentFeatures::get_num_vectors() const
+int32_t LatentFeatures::get_num_vectors() const
 {
 	if (m_samples == NULL)
 		return 0;
@@ -52,7 +49,7 @@ int32_t CLatentFeatures::get_num_vectors() const
 		return m_samples->get_array_size();
 }
 
-bool CLatentFeatures::add_sample(CData* example)
+bool LatentFeatures::add_sample(std::shared_ptr<Data> example)
 {
 	ASSERT(m_samples != NULL)
 	if (m_samples != NULL)
@@ -64,26 +61,26 @@ bool CLatentFeatures::add_sample(CData* example)
 		return false;
 }
 
-CData* CLatentFeatures::get_sample(index_t idx)
+std::shared_ptr<Data> LatentFeatures::get_sample(index_t idx)
 {
 	ASSERT(m_samples != NULL)
 	if (idx < 0 || idx >= this->get_num_vectors())
 		error("Out of index!");
 
-	return (CData*) m_samples->get_element(idx);
+	return m_samples->get_element<Data>(idx);
 
 }
 
-void CLatentFeatures::init()
+void LatentFeatures::init()
 {
-	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_samples, "samples", "Array of examples");
 }
 
-CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)
+std::shared_ptr<LatentFeatures> LatentFeatures::obtain_from_generic(std::shared_ptr<Features> base_feats)
 {
 	ASSERT(base_feats != NULL)
 	if (base_feats->get_feature_class() == C_LATENT)
-		return (CLatentFeatures*) base_feats;
+		return std::static_pointer_cast<LatentFeatures>(base_feats);
 	else
 		error("base_labels must be of dynamic type CLatentLabels");
 

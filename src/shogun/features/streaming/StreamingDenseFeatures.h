@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Vladislav Horbatiuk, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Vladislav Horbatiuk,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 #ifndef _STREAMINGDENSEFEATURES__H__
@@ -23,8 +23,8 @@ namespace shogun
  * and current_label. Call get_next_example() followed by get_current_vector()
  * to iterate through the stream.
  */
-template<class T> class CStreamingDenseFeatures:
-	public CStreamingDotFeatures
+template<class T> class StreamingDenseFeatures:
+	public StreamingDotFeatures
 {
 public:
 
@@ -35,7 +35,7 @@ public:
 	 * CStreamingFile::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
-	CStreamingDenseFeatures();
+	StreamingDenseFeatures();
 
 	/**
 	 * Constructor taking args.
@@ -45,7 +45,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingDenseFeatures(CStreamingFile* file, bool is_labelled,
+	StreamingDenseFeatures(std::shared_ptr<StreamingFile> file, bool is_labelled,
 			int32_t size);
 
 	/**
@@ -55,7 +55,7 @@ public:
 	 * @param dense_features DenseFeatures object of same type
 	 * @param lab labels array, float64_t*
 	 */
-	CStreamingDenseFeatures(CDenseFeatures<T>* dense_features, float64_t* lab=
+	StreamingDenseFeatures(std::shared_ptr<DenseFeatures<T>> dense_features, float64_t* lab=
 			NULL);
 
 	/**
@@ -63,7 +63,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~CStreamingDenseFeatures();
+	~StreamingDenseFeatures();
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -162,14 +162,14 @@ public:
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
 	 *
-	 * Currently only works if it is a CStreamingDenseFeatures object.
+	 * Currently only works if it is a StreamingDenseFeatures object.
 	 * It takes the dot product of the current_vectors of both objects.
 	 *
 	 * @param df CStreamingDotFeatures object.
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures >df);
 
 	/**
 	 * Dot product with another dense vector.
@@ -261,10 +261,10 @@ public:
 	 * from the underlying stream. The object is not SG_REF'ed.
 	 *
 	 * @param num_elements num elements to save from stream
-	 * @return CFeatures object of underlying type, might contain less data if
+	 * @return Features object of underlying type, might contain less data if
 	 * the stream did end (warning is written)
 	 */
-	virtual CFeatures* get_streamed_features(index_t num_elements);
+	virtual std::shared_ptr<Features> get_streamed_features(index_t num_elements);
 
 private:
 	/**
@@ -280,7 +280,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(std::shared_ptr<StreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 
@@ -288,7 +288,7 @@ protected:
 	float32_t combined_weight;
 
 	/// The parser object, which reads from input and returns parsed example objects.
-	CInputParser<T> parser;
+	InputParser<T> parser;
 
 	/// The current example's feature vector as an SGVector<T>
 	SGVector<T> current_vector;

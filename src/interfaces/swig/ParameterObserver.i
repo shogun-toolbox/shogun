@@ -3,6 +3,8 @@
  *
  * Authors: Giovanni De Toni
  */
+%shared_ptr(shogun::ParameterObserverInterface)
+%shared_ptr(shogun::ParameterObserverCV)
 
 %{
     #include <shogun/lib/observers/ParameterObserver.h>

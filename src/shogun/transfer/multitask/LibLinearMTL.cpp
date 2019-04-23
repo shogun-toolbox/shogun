@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn, 
+ * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn,
  *          Soeren Sonnenburg, Bjoern Esser
  */
 
@@ -23,15 +23,15 @@
 using namespace shogun;
 
 
-	CLibLinearMTL::CLibLinearMTL()
-: RandomMixin<CLinearMachine>()
+	LibLinearMTL::LibLinearMTL()
+: RandomMixin<LinearMachine>()
 {
 	init();
 }
 
-CLibLinearMTL::CLibLinearMTL(
-		float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: RandomMixin<CLinearMachine>()
+LibLinearMTL::LibLinearMTL(
+		float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+: RandomMixin<LinearMachine>()
 {
 	init();
 	C1=C;
@@ -44,7 +44,7 @@ CLibLinearMTL::CLibLinearMTL(
 }
 
 
-void CLibLinearMTL::init()
+void LibLinearMTL::init()
 {
 	use_bias=false;
 	C1=1;
@@ -60,11 +60,11 @@ void CLibLinearMTL::init()
 
 }
 
-CLibLinearMTL::~CLibLinearMTL()
+LibLinearMTL::~LibLinearMTL()
 {
 }
 
-bool CLibLinearMTL::train_machine(CFeatures* data)
+bool LibLinearMTL::train_machine(std::shared_ptr<Features> data)
 {
 
 	ASSERT(m_labels)
@@ -72,9 +72,9 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
+			error("Specified features are not of type DotFeatures");
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<DotFeatures>());
 	}
 	ASSERT(features)
 	m_labels->ensure_valid();
@@ -114,8 +114,9 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	prob.y=SG_MALLOC(float64_t, prob.l);
 	prob.use_bias=use_bias;
 
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<prob.l; i++)
-		prob.y[i]=((CBinaryLabels*)m_labels)->get_label(i);
+		prob.y[i]=bl->get_label(i);
 
 	int pos = 0;
 	int neg = 0;
@@ -177,7 +178,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 
-void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps, double Cp, double Cn)
+void LibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 
 
@@ -194,8 +195,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 	int active_size = l;
 	// PG: projected gradient, for shrinking and stopping
 	double PG;
-	double PGmax_old = CMath::INFTY;
-	double PGmin_old = -CMath::INFTY;
+	double PGmax_old = Math::INFTY;
+	double PGmin_old = -Math::INFTY;
 	double PGmax_new, PGmin_new;
 
 	// matrix W
@@ -207,7 +208,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 	// default solver_type: L2R_L2LOSS_SVC_DUAL
 	double diag[3] = {0.5/Cn, 0, 0.5/Cp};
-	double upper_bound[3] = {CMath::INFTY, 0, CMath::INFTY};
+	double upper_bound[3] = {Math::INFTY, 0, Math::INFTY};
 	if(true)
 	{
 		diag[0] = 0;
@@ -249,7 +250,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 	}
 
 	auto pb = SG_PROGRESS(range(10));
-	CTime start_time;
+	Time start_time;
 	UniformIntDistribution<int> uniform_int_dist;
 	while (iter < max_iterations)
 	{
@@ -257,13 +258,13 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 			break;
 
-		PGmax_new = -CMath::INFTY;
-		PGmin_new = CMath::INFTY;
+		PGmax_new = -Math::INFTY;
+		PGmin_new = Math::INFTY;
 
 		for (i=0; i<active_size; i++)
 		{
 			int j = uniform_int_dist(m_prng, {i, active_size-1});
-			CMath::swap(index[i], index[j]);
+			Math::swap(index[i], index[j]);
 		}
 
 		for (s=0;s<active_size;s++)
@@ -304,7 +305,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 				if (G > PGmax_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -316,7 +317,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 				if (G < PGmin_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -326,8 +327,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 			else
 				PG = G;
 
-			PGmax_new = CMath::max(PGmax_new, PG);
-			PGmin_new = CMath::min(PGmin_new, PG);
+			PGmax_new = Math::max(PGmax_new, PG);
+			PGmin_new = Math::min(PGmin_new, PG);
 
 			if(fabs(PG) > 1.0e-12)
 			{
@@ -335,7 +336,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 				double alpha_old = alphas[i];
 
 				// project onto feasible set
-				alphas[i] = CMath::min(CMath::max(alphas[i] - G/QD[i], 0.0), C);
+				alphas[i] = Math::min(Math::max(alphas[i] - G/QD[i], 0.0), C);
 				d = (alphas[i] - alpha_old)*yi;
 
 				// update corresponding weight vector
@@ -351,7 +352,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
 		pb.print_absolute(
-		    gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
+		    gap, -Math::log10(gap), -Math::log10(1), -Math::log10(eps));
 
 		if(gap <= eps)
 		{
@@ -360,17 +361,17 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 			else
 			{
 				active_size = l;
-				PGmax_old = CMath::INFTY;
-				PGmin_old = -CMath::INFTY;
+				PGmax_old = Math::INFTY;
+				PGmin_old = -Math::INFTY;
 				continue;
 			}
 		}
 		PGmax_old = PGmax_new;
 		PGmin_old = PGmin_new;
 		if (PGmax_old <= 0)
-			PGmax_old = CMath::INFTY;
+			PGmax_old = Math::INFTY;
 		if (PGmin_old >= 0)
-			PGmin_old = -CMath::INFTY;
+			PGmin_old = -Math::INFTY;
 	}
 
 	pb.complete_absolute();
@@ -390,7 +391,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 }
 
 
-float64_t CLibLinearMTL::compute_primal_obj()
+float64_t LibLinearMTL::compute_primal_obj()
 {
 	/* python protype
 	   num_param = param.shape[0]
@@ -468,14 +469,15 @@ return obj
 	}
 
 	// loss
+	auto bl = binary_labels(m_labels);
 	for(int32_t i=0; i<num_vec; i++)
 	{
 		int32_t ti = task_indicator_lhs[i];
 		SGVector<float64_t> w_t = W.get_column(ti);
-		float64_t residual = ((CBinaryLabels*)m_labels)->get_label(i) * features->dot(i, w_t);
+		float64_t residual = bl->get_label(i) * features->dot(i, w_t);
 
 		// hinge loss
-		obj += C1 * CMath::max(0.0, 1 - residual);
+		obj += C1 * Math::max(0.0, 1 - residual);
 
 	}
 
@@ -484,7 +486,7 @@ return obj
 	return obj;
 }
 
-float64_t CLibLinearMTL::compute_dual_obj()
+float64_t LibLinearMTL::compute_dual_obj()
 {
 	/* python prototype
 	   num_xt = len(xt)
@@ -548,8 +550,8 @@ return obj
 			const float64_t ts = task_similarity_matrix(ti_i, ti_j);
 
 			// compute objective
-			tmp_val2 -= 0.5 * alphas[i] * alphas[j] * ts * ((CBinaryLabels*)m_labels)->get_label(i) *
-				((CBinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
+			tmp_val2 -= 0.5 * alphas[i] * alphas[j] * ts * ((BinaryLabels*)m_labels)->get_label(i) *
+				((BinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
 		}
 	}
 	*/
@@ -559,7 +561,7 @@ return obj
 }
 
 
-float64_t CLibLinearMTL::compute_duality_gap()
+float64_t LibLinearMTL::compute_duality_gap()
 {
 	return 0.0;
 }

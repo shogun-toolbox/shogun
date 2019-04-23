@@ -15,8 +15,8 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
-class CCGMShiftedFamilySolver;
+template<class T> class LinearOperator;
+class CGMShiftedFamilySolver;
 
 /** @brief Implementaion of rational approximation of a operator-function times
  * vector where the operator function is log of a linear operator. Each complex
@@ -24,11 +24,11 @@ class CCGMShiftedFamilySolver;
  * log times vector expression are solved at once with a shifted linear-family
  * solver.
  */
-class CLogRationalApproximationCGM : public CRationalApproximation
+class LogRationalApproximationCGM : public RationalApproximation
 {
 public:
 	/** default constructor */
-	CLogRationalApproximationCGM();
+	LogRationalApproximationCGM();
 
 	/**
 	 * Constructor. Number of shifts will be computed using a specified accuracy.
@@ -41,14 +41,14 @@ public:
 	 * @param desired_accuracy desired error bound on approximation. Computes
 	 * the number of shifts automatically
 	 */
-	CLogRationalApproximationCGM(
-		CLinearOperator<float64_t>* linear_operator,
-		CEigenSolver* eigen_solver,
-		CCGMShiftedFamilySolver* linear_solver,
+	LogRationalApproximationCGM(
+		std::shared_ptr<LinearOperator<float64_t>> linear_operator,
+		std::shared_ptr<EigenSolver> eigen_solver,
+		std::shared_ptr<CGMShiftedFamilySolver> linear_solver,
 		float64_t desired_accuracy);
 
 	/** destructor */
-	virtual ~CLogRationalApproximationCGM();
+	virtual ~LogRationalApproximationCGM();
 
 	/**
 	 * method that solves the result for a sample
@@ -63,7 +63,7 @@ public:
 
 private:
 	/** the linear solver for solving complex systems */
-	CCGMShiftedFamilySolver* m_linear_solver;
+	std::shared_ptr<CGMShiftedFamilySolver> m_linear_solver;
 
 	/** initialize with default values and register params */
 	void init();

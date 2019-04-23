@@ -10,8 +10,8 @@
 
 using namespace shogun;
 
-CTDistributedStochasticNeighborEmbedding::CTDistributedStochasticNeighborEmbedding() :
-		CEmbeddingConverter()
+TDistributedStochasticNeighborEmbedding::TDistributedStochasticNeighborEmbedding() :
+		EmbeddingConverter()
 {
 	// Default values
 	m_perplexity = 30.0;
@@ -19,53 +19,51 @@ CTDistributedStochasticNeighborEmbedding::CTDistributedStochasticNeighborEmbeddi
 	init();
 }
 
-void CTDistributedStochasticNeighborEmbedding::init()
+void TDistributedStochasticNeighborEmbedding::init()
 {
 	SG_ADD(&m_perplexity, "perplexity", "perplexity");
 	SG_ADD(&m_theta, "theta", "learning rate");
 }
 
-CTDistributedStochasticNeighborEmbedding::~CTDistributedStochasticNeighborEmbedding()
+TDistributedStochasticNeighborEmbedding::~TDistributedStochasticNeighborEmbedding()
 {
 }
 
-const char* CTDistributedStochasticNeighborEmbedding::get_name() const
+const char* TDistributedStochasticNeighborEmbedding::get_name() const
 {
 	return "TDistributedStochasticNeighborEmbedding";
 }
 
-void CTDistributedStochasticNeighborEmbedding::set_theta(const float64_t theta)
+void TDistributedStochasticNeighborEmbedding::set_theta(const float64_t theta)
 {
 
 	m_theta = theta;
 }
 
-float64_t CTDistributedStochasticNeighborEmbedding::get_theta() const
+float64_t TDistributedStochasticNeighborEmbedding::get_theta() const
 {
 	return m_theta;
 }
 
-void CTDistributedStochasticNeighborEmbedding::set_perplexity(const float64_t perplexity)
+void TDistributedStochasticNeighborEmbedding::set_perplexity(const float64_t perplexity)
 {
 	m_perplexity = perplexity;
 }
 
-float64_t CTDistributedStochasticNeighborEmbedding::get_perplexity() const
+float64_t TDistributedStochasticNeighborEmbedding::get_perplexity() const
 {
 	return m_perplexity;
 }
 
-CFeatures* CTDistributedStochasticNeighborEmbedding::transform(
-    CFeatures* features, bool inplace)
+std::shared_ptr<Features> TDistributedStochasticNeighborEmbedding::transform(
+    std::shared_ptr<Features> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.sne_theta = m_theta;
 	parameters.sne_perplexity = m_perplexity;
-	parameters.features = (CDotFeatures*)features;
-
+	parameters.features = (DotFeatures*)features.get();
 	parameters.method = SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
 }
 

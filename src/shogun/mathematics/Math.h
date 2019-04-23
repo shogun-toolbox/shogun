@@ -87,7 +87,7 @@ template <class T1, class T2> struct thread_qsort
 #define COMPLEX128_ERROR_ONEARG(function)	\
 static inline complex128_t function(complex128_t a)	\
 {	\
-	error("CMath::{}():: Not supported for complex128_t",\
+	error("Math::{}():: Not supported for complex128_t",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }
@@ -102,17 +102,17 @@ namespace shogun
 {
 /** @brief Class which collects generic mathematical functions
  */
-class CMath : public CSGObject
+class Math : public SGObject
 {
 	public:
 		/**@name Constructor/Destructor.
 		*/
 		//@{
 		///Constructor - initializes log-table
-		CMath();
+		Math();
 
 		///Destructor - frees logtable
-		virtual ~CMath();
+		virtual ~Math();
 		//@}
 
 #ifndef SWIG // SWIG should skip this part
@@ -282,7 +282,7 @@ class CMath : public CSGObject
 			static inline bool fequals_abs(const T& a, const T& b,
 				const float64_t eps)
 			{
-				const T diff = CMath::abs<T>((a-b));
+				const T diff = Math::abs<T>((a-b));
 				return (diff < eps);
 			}
 
@@ -304,22 +304,22 @@ class CMath : public CSGObject
 			    float64_t eps = std::max(
 					eps_,env()->fequals_epsilon());
 
-			    const T absA = CMath::abs<T>(a);
-			    const T absB = CMath::abs<T>(b);
-			    const T diff = CMath::abs<T>((a - b));
+			    const T absA = Math::abs<T>(a);
+			    const T absB = Math::abs<T>(b);
+			    const T diff = Math::abs<T>((a - b));
 
 			    // Handle this separately since NAN is unordered
-			    if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
+			    if (Math::is_nan((float64_t)a) && Math::is_nan((float64_t)b))
 				    return true;
 
 				// Required for JSON Serialization Tests
 			    if (env()->fequals_tolerant())
-				    return CMath::fequals_abs<T>(a, b, eps);
+				    return Math::fequals_abs<T>(a, b, eps);
 
 			    // handles float32_t and float64_t separately
 			    T comp = (std::is_same<float32_t, T>::value)
-			                 ? CMath::F_MIN_NORM_VAL32
-			                 : CMath::F_MIN_NORM_VAL64;
+			                 ? Math::F_MIN_NORM_VAL32
+			                 : Math::F_MIN_NORM_VAL64;
 
 			    if (a == b)
 				    return true;
@@ -826,7 +826,7 @@ class CMath : public CSGObject
 				if (size==2)
 				{
 					if (output[0] > output [1])
-						CMath::swap(output[0],output[1]);
+						Math::swap(output[0],output[1]);
 					return;
 				}
 				//T split=output[random(0,size-1)];
@@ -844,7 +844,7 @@ class CMath : public CSGObject
 
 					if (left<=right)
 					{
-						CMath::swap(output[left],output[right]);
+						Math::swap(output[left],output[right]);
 						left++;
 						right--;
 					}
@@ -905,7 +905,7 @@ class CMath : public CSGObject
 		/// byte not implemented for complex128_t
 		static inline uint8_t byte(complex128_t word, uint16_t p)
 		{
-			error("CMath::byte():: Not supported for complex128_t");
+			error("Math::byte():: Not supported for complex128_t");
 			return uint8_t(0);
 		}
 
@@ -1016,7 +1016,7 @@ class CMath : public CSGObject
 		/// radix_sort_helper not implemented for complex128_t
 		static void radix_sort_helper(complex128_t* array, int32_t size, uint16_t i)
 		{
-			error("CMath::radix_sort_helper():: Not supported for complex128_t");
+			error("Math::radix_sort_helper():: Not supported for complex128_t");
 		}
 
 #ifndef SWIG // SWIG should skip this part
@@ -1144,7 +1144,7 @@ class CMath : public CSGObject
 		static void display_bits(complex128_t word,
 			int32_t width=8*sizeof(complex128_t))
 		{
-			error("CMath::display_bits():: Not supported for complex128_t");
+			error("Math::display_bits():: Not supported for complex128_t");
 		}
 
 		/** Performs a quicksort on an array output of length size
@@ -1162,7 +1162,7 @@ class CMath : public CSGObject
 		template <class T>
 			static void qsort_index(complex128_t* output, T* index, uint32_t size)
 			{
-				error("CMath::qsort_index():: Not supported for complex128_t");
+				error("Math::qsort_index():: Not supported for complex128_t");
 			}
 
 		/** Performs a quicksort on an array output of length size
@@ -1182,7 +1182,7 @@ class CMath : public CSGObject
 			static void qsort_backword_index(
 				complex128_t* output, T* index, uint32_t size)
 			{
-				error("CMath::qsort_backword_index():: \
+				error("Math::qsort_backword_index():: \
 					Not supported for complex128_t");
 			}
 
@@ -1216,7 +1216,7 @@ class CMath : public CSGObject
 			inline static void parallel_qsort_index(complex128_t* output, T* index,
 				uint32_t size, int32_t n_threads, int32_t limit=0)
 			{
-				error("CMath::parallel_qsort_index():: Not supported for complex128_t");
+				error("Math::parallel_qsort_index():: Not supported for complex128_t");
 			}
 
 		/// helper function for parallel_qsort_index.
@@ -1235,7 +1235,7 @@ class CMath : public CSGObject
 		/// complex128_t cannot be used as index
 		static void min(float64_t* output, complex128_t* index, int32_t size)
 		{
-			error("CMath::min():: Not supported for complex128_t");
+			error("Math::min():: Not supported for complex128_t");
 		}
 
 		/** Finds the n smallest elements in output and puts these elements as the
@@ -1249,7 +1249,7 @@ class CMath : public CSGObject
 		static void nmin(float64_t* output, complex128_t* index,
 			int32_t size, int32_t n)
 		{
-			error("CMath::nmin():: Not supported for complex128_t");
+			error("Math::nmin():: Not supported for complex128_t");
 		}
 
 
@@ -1284,7 +1284,7 @@ class CMath : public CSGObject
 		/// binary_search_helper not implemented for complex128_t
 		static int32_t binary_search_helper(complex128_t* output, int32_t size, complex128_t elem)
 		{
-			error("CMath::binary_search_helper():: Not supported for complex128_t");
+			error("Math::binary_search_helper():: Not supported for complex128_t");
 			return int32_t(0);
 		}
 
@@ -1306,7 +1306,7 @@ class CMath : public CSGObject
 		/// binary_search not implemented for complex128_t
 		static inline int32_t binary_search(complex128_t* output, int32_t size, complex128_t elem)
 		{
-			error("CMath::binary_search():: Not supported for complex128_t");
+			error("Math::binary_search():: Not supported for complex128_t");
 			return int32_t(-1);
 		}
 
@@ -1352,7 +1352,7 @@ class CMath : public CSGObject
 		/// binary_search not implemented for complex128_t
 		static inline int32_t binary_search(complex128_t** vector, index_t length, complex128_t* elem)
 		{
-			error("CMath::binary_search():: Not supported for complex128_t");
+			error("Math::binary_search():: Not supported for complex128_t");
 			return int32_t(-1);
 		}
 
@@ -1379,7 +1379,7 @@ class CMath : public CSGObject
 		static int32_t binary_search_max_lower_equal(complex128_t* output,
 			int32_t size, complex128_t elem)
 		{
-			error("CMath::binary_search_max_lower_equal():: \
+			error("Math::binary_search_max_lower_equal():: \
 				Not supported for complex128_t");
 			return int32_t(-1);
 		}
@@ -1419,14 +1419,14 @@ class CMath : public CSGObject
 		/// returns range of logtable
 		inline static uint32_t get_log_range()
 		{
-			return CMath::LOGRANGE;
+			return Math::LOGRANGE;
 		}
 
 #ifdef USE_LOGCACHE
 		/// returns range of logtable
 		inline static uint32_t get_log_accuracy()
 		{
-			return CMath::LOGACCURACY;
+			return Math::LOGACCURACY;
 		}
 #endif
 
@@ -1450,10 +1450,10 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!CMath::is_finite(p))
+			if (!Math::is_finite(p))
 				return q;
 
-			if (!CMath::is_finite(q))
+			if (!Math::is_finite(q))
 			{
 				io::warn("INVALID second operand to logsum({},{}) expect undefined results", p, q);
 				return NOT_A_NUMBER;
@@ -1478,9 +1478,9 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!CMath::is_finite(p))
+			if (!Math::is_finite(p))
 				return q;
-			if (!CMath::is_finite(q))
+			if (!Math::is_finite(q))
 				return p;
 			diff = p - q;
 			if (diff > 0)
@@ -1567,7 +1567,7 @@ class CMath : public CSGObject
 
 //implementations of template functions
 template <class T1,class T2>
-void* CMath::parallel_qsort_index(void* p)
+void* Math::parallel_qsort_index(void* p)
 	{
 		struct thread_qsort<T1,T2>* ps=(thread_qsort<T1,T2>*) p;
 		T1* output=ps->output;
@@ -1676,7 +1676,7 @@ void* CMath::parallel_qsort_index(void* p)
 	}
 
 	template <class T1,class T2>
-void CMath::qsort_index(T1* output, T2* index, uint32_t size)
+void Math::qsort_index(T1* output, T2* index, uint32_t size)
 {
 	if (size<=1)
 		return;
@@ -1720,7 +1720,7 @@ void CMath::qsort_index(T1* output, T2* index, uint32_t size)
 }
 
 	template <class T1,class T2>
-void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
+void Math::qsort_backward_index(T1* output, T2* index, int32_t size)
 {
 	if (size<=1)
 		return;
@@ -1765,7 +1765,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
 }
 
 	template <class T>
-void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
+void Math::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
 	if (6 * n * size < 13 * size * std::log(size))
 		for (int32_t i=0; i<n; i++)
@@ -1776,7 +1776,7 @@ void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 
 /* move the smallest entry in the array to the beginning */
 	template <class T>
-void CMath::min(float64_t* output, T* index, int32_t size)
+void Math::min(float64_t* output, T* index, int32_t size)
 {
 	if (size<=1)
 		return;
@@ -1796,9 +1796,9 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 
 #define COMPLEX128_ERROR_ONEARG_T(function)	\
 template <> \
-inline complex128_t CMath::function<complex128_t>(complex128_t a)	\
+inline complex128_t Math::function<complex128_t>(complex128_t a)	\
 {	\
-	error("CMath::{}():: Not supported for complex128_t",\
+	error("Math::{}():: Not supported for complex128_t",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
 }

@@ -186,14 +186,14 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			strings.back().vlen = len;
 
 			const char *str = StringValuePtr(arr);
-			max_len = shogun::CMath::max(len, max_len);
+			max_len = shogun::Math::max(len, max_len);
 
 			sg_memcpy(strings.back().vector, str, len + 1);
 		}
 		else {
 			if (TYPE(arr) == T_ARRAY) {
 				len = RARRAY_LEN(arr);
-				max_len = shogun::CMath::max(len, max_len);
+				max_len = shogun::Math::max(len, max_len);
 				strings.emplace_back(len);
 
 				for (j = 0; j < len; j++) {

@@ -44,14 +44,14 @@
 namespace shogun
 {
 
-	class CMachine;
-	class CLabels;
+	class Machine;
+	class Labels;
 	class CEvaluation;
 
 	/**
 	 * Store information about a single fold run.
 	 */
-	class CrossValidationFoldStorage : public CEvaluationResult
+	class CrossValidationFoldStorage : public EvaluationResult
 	{
 	public:
 		CrossValidationFoldStorage();
@@ -78,7 +78,7 @@ namespace shogun
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationFoldStorage object SG_REF'ed
 		 */
-		virtual CSGObject* create_empty() const;
+		virtual std::shared_ptr<SGObject> create_empty() const;
 
 		/** Current run index is written here */
 		index_t m_current_run_index;
@@ -93,13 +93,13 @@ namespace shogun
 		SGVector<index_t> m_test_indices;
 
 		/** Trained machine */
-		CMachine* m_trained_machine;
+		std::shared_ptr<Machine> m_trained_machine;
 
 		/** Test results */
-		CLabels* m_test_result;
+		std::shared_ptr<Labels> m_test_result;
 
 		/** Ground truth */
-		CLabels* m_test_true_result;
+		std::shared_ptr<Labels> m_test_true_result;
 
 		/** Evaluation result for this fold */
 		float64_t m_evaluation_result;
@@ -108,7 +108,7 @@ namespace shogun
 	/**
 	 * This class store some information about CrossValidation runs.
 	 */
-	class CrossValidationStorage : public CEvaluationResult
+	class CrossValidationStorage : public EvaluationResult
 	{
 	public:
 		/** Constructor */
@@ -135,7 +135,7 @@ namespace shogun
 		 * Append a fold result to this storage
 		 * @param result the result of a fold
 		 */
-		virtual void append_fold_result(CrossValidationFoldStorage* result);
+		virtual void append_fold_result(std::shared_ptr<CrossValidationFoldStorage> result);
 
 	protected:
 		/**
@@ -143,7 +143,7 @@ namespace shogun
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationStorage object SG_REF'ed
 		 */
-		virtual CSGObject* create_empty() const;
+		virtual std::shared_ptr<SGObject> create_empty() const;
 
 		/** number of runs is initialised here */
 		index_t m_num_runs;
@@ -152,10 +152,10 @@ namespace shogun
 		index_t m_num_folds;
 
 		/** Original labels */
-		CLabels* m_original_labels;
+		std::shared_ptr<Labels> m_original_labels;
 
 		/** Vector with all the folds results */
-		std::vector<CEvaluationResult*> m_folds_results;
+		std::vector<std::shared_ptr<CrossValidationFoldStorage>> m_folds_results;
 	};
 }
 

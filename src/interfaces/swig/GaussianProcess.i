@@ -5,52 +5,52 @@
  */
 
 /* Remove C Prefix */
-%rename(MeanFunction) CMeanFunction;
-%rename(ZeroMean) CZeroMean;
-%rename(ConstMean) CConstMean;
+%shared_ptr(shogun::MeanFunction)
+%shared_ptr(shogun::ZeroMean)
+%shared_ptr(shogun::ConstMean)
 
-%rename(Inference) CInference;
-%rename(ExactInferenceMethod) CExactInferenceMethod;
-%rename(LaplaceInference) CLaplaceInference;
-%rename(SparseInference) CSparseInference;
-%rename(SingleSparseInference) CSingleSparseInference;
-%rename(SingleFITCInference) CSingleFITCInference;
-%rename(SingleLaplaceInferenceMethod) CSingleLaplaceInferenceMethod;
-%rename(MultiLaplaceInferenceMethod) CMultiLaplaceInferenceMethod;
-%rename(FITCInferenceMethod) CFITCInferenceMethod;
-%rename(SingleFITCLaplaceInferenceMethod) CSingleFITCLaplaceInferenceMethod;
-%rename(VarDTCInferenceMethod) CVarDTCInferenceMethod;
-%rename(EPInferenceMethod) CEPInferenceMethod;
+%shared_ptr(shogun::Inference)
+%shared_ptr(shogun::ExactInferenceMethod)
+%shared_ptr(shogun::LaplaceInference)
+%shared_ptr(shogun::SparseInference)
+%shared_ptr(shogun::SingleSparseInference)
+%shared_ptr(shogun::SingleFITCInference)
+%shared_ptr(shogun::SingleLaplaceInferenceMethod)
+%shared_ptr(shogun::MultiLaplaceInferenceMethod)
+%shared_ptr(shogun::FITCInferenceMethod)
+%shared_ptr(shogun::SingleFITCLaplaceInferenceMethod)
+%shared_ptr(shogun::VarDTCInferenceMethod)
+%shared_ptr(shogun::EPInferenceMethod)
 
-%rename(LikelihoodModel) CLikelihoodModel;
-%rename(ProbitLikelihood) CProbitLikelihood;
-%rename(LogitLikelihood) CLogitLikelihood;
-%rename(SoftMaxLikelihood) CSoftMaxLikelihood;
-%rename(GaussianLikelihood) CGaussianLikelihood;
-%rename(StudentsTLikelihood) CStudentsTLikelihood;
+%shared_ptr(shogun::LikelihoodModel)
+%shared_ptr(shogun::ProbitLikelihood)
+%shared_ptr(shogun::LogitLikelihood)
+%shared_ptr(shogun::SoftMaxLikelihood)
+%shared_ptr(shogun::GaussianLikelihood)
+%shared_ptr(shogun::StudentsTLikelihood)
 
-%rename(VariationalLikelihood) CVariationalLikelihood;
-%rename(VariationalGaussianLikelihood) CVariationalGaussianLikelihood;
-%rename(NumericalVGLikelihood) CNumericalVGLikelihood;
-%rename(DualVariationalGaussianLikelihood) CDualVariationalGaussianLikelihood;
-%rename(LogitVGLikelihood) CLogitVGLikelihood;
-%rename(LogitVGPiecewiseBoundLikelihood) CLogitVGPiecewiseBoundLikelihood;
-%rename(LogitDVGLikelihood) CLogitDVGLikelihood;
-%rename(ProbitVGLikelihood) CProbitVGLikelihood;
-%rename(StudentsTVGLikelihood) CStudentsTVGLikelihood;
+%shared_ptr(shogun::VariationalLikelihood)
+%shared_ptr(shogun::VariationalGaussianLikelihood)
+%shared_ptr(shogun::NumericalVGLikelihood)
+%shared_ptr(shogun::DualVariationalGaussianLikelihood)
+%shared_ptr(shogun::LogitVGLikelihood)
+%shared_ptr(shogun::LogitVGPiecewiseBoundLikelihood)
+%shared_ptr(shogun::LogitDVGLikelihood)
+%shared_ptr(shogun::ProbitVGLikelihood)
+%shared_ptr(shogun::StudentsTVGLikelihood)
 
-%rename(KLInference) CKLInference;
-%rename(KLLowerTriangularInference) CKLLowerTriangularInference;
-%rename(KLCovarianceInferenceMethod) CKLCovarianceInferenceMethod;
-%rename(KLDiagonalInferenceMethod) CKLDiagonalInferenceMethod;
-%rename(KLCholeskyInferenceMethod) CKLCholeskyInferenceMethod;
-%rename(KLDualInferenceMethod) CKLDualInferenceMethod;
+%shared_ptr(shogun::KLInference)
+%shared_ptr(shogun::KLLowerTriangularInference)
+%shared_ptr(shogun::KLCovarianceInferenceMethod)
+%shared_ptr(shogun::KLDiagonalInferenceMethod)
+%shared_ptr(shogun::KLCholeskyInferenceMethod)
+%shared_ptr(shogun::KLDualInferenceMethod)
 
-%rename(KLDualInferenceMethodMinimizer) CKLDualInferenceMethodMinimizer;
+%shared_ptr(shogun::KLDualInferenceMethodMinimizer)
 
-%rename(GaussianProcessMachine) CGaussianProcessMachine;
-%rename(GaussianProcessClassification) CGaussianProcessClassification;
-%rename(GaussianProcessRegression) CGaussianProcessRegression;
+%shared_ptr(shogun::GaussianProcessMachine)
+%shared_ptr(shogun::GaussianProcessClassification)
+%shared_ptr(shogun::GaussianProcessRegression)
 
 
 /* These functions return new Objects */

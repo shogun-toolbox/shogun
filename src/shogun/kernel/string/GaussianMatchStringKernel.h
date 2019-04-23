@@ -29,18 +29,18 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CGaussianMatchStringKernel: public CStringKernel<char>
+class GaussianMatchStringKernel: public StringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CGaussianMatchStringKernel();
+		GaussianMatchStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param width width
 		 */
-		CGaussianMatchStringKernel(int32_t size, float64_t width);
+		GaussianMatchStringKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
@@ -48,11 +48,11 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @param width width
 		 */
-		CGaussianMatchStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+		GaussianMatchStringKernel(
+			std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			float64_t width);
 
-		virtual ~CGaussianMatchStringKernel();
+		virtual ~GaussianMatchStringKernel();
 
 		/** initialize kernel
 		 *
@@ -60,7 +60,7 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

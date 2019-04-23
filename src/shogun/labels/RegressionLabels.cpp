@@ -5,50 +5,48 @@
 
 using namespace shogun;
 
-CRegressionLabels::CRegressionLabels() : CDenseLabels()
+RegressionLabels::RegressionLabels() : DenseLabels()
 {
 }
 
-CRegressionLabels::CRegressionLabels(int32_t num_labels) : CDenseLabels(num_labels)
+RegressionLabels::RegressionLabels(int32_t num_labels) : DenseLabels(num_labels)
 {
 }
 
-CRegressionLabels::CRegressionLabels(const SGVector<float64_t> src) : CDenseLabels()
+RegressionLabels::RegressionLabels(const SGVector<float64_t> src) : DenseLabels()
 {
 	set_labels(src);
 }
 
-CRegressionLabels::CRegressionLabels(CFile* loader) : CDenseLabels(loader)
+RegressionLabels::RegressionLabels(std::shared_ptr<File> loader) : DenseLabels(loader)
 {
 }
 
-ELabelType CRegressionLabels::get_label_type() const
+ELabelType RegressionLabels::get_label_type() const
 {
 	return LT_REGRESSION;
 }
 
-CLabels* CRegressionLabels::shallow_subset_copy()
+std::shared_ptr<Labels> RegressionLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
-	shallow_copy_labels=new CRegressionLabels(m_labels.size());
-	SG_REF(shallow_copy_labels);
+	auto shallow_copy_labels=std::make_shared<RegressionLabels>(m_labels.size());
 
-	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
+	shallow_copy_labels->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
 	return shallow_copy_labels;
 }
 
-CLabels* CRegressionLabels::duplicate() const
+std::shared_ptr<Labels> RegressionLabels::duplicate() const
 {
-	return new CRegressionLabels(*this);
+	return std::make_shared<RegressionLabels>(*this);
 }
 
 namespace shogun
 {
-	Some<CRegressionLabels> regression_labels(CLabels* orig)
+	std::shared_ptr<RegressionLabels> regression_labels(std::shared_ptr<Labels> orig)
 	{
 		require(orig, "No labels provided.");
 		try
@@ -56,11 +54,10 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_REGRESSION:
-				return Some<CRegressionLabels>::from_raw(
-				    orig->as<CRegressionLabels>());
+				return std::static_pointer_cast<RegressionLabels>(orig);
 			case LT_BINARY:
-				return some<CRegressionLabels>(
-					orig->as<CBinaryLabels>()->get_labels());
+				return std::make_shared<RegressionLabels>(
+					(std::static_pointer_cast<BinaryLabels>(orig))->get_labels());
 			default:
 				not_implemented(SOURCE_LOCATION);
 			}
@@ -72,6 +69,6 @@ namespace shogun
 			    orig->get_name());
 		}
 
-		return Some<CRegressionLabels>::from_raw(nullptr);
+		return nullptr;
 	}
 } // namespace shogun

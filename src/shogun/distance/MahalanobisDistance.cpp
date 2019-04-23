@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Michele Mazzoni, Viktor Gal, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Michele Mazzoni, Viktor Gal,
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
@@ -16,33 +16,33 @@
 
 using namespace shogun;
 
-CMahalanobisDistance::CMahalanobisDistance() : CRealDistance()
+MahalanobisDistance::MahalanobisDistance() : RealDistance()
 {
 	init();
 }
 
-CMahalanobisDistance::CMahalanobisDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CRealDistance()
+MahalanobisDistance::MahalanobisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+: RealDistance()
 {
 	init();
 	init(l, r);
 }
 
-CMahalanobisDistance::~CMahalanobisDistance()
+MahalanobisDistance::~MahalanobisDistance()
 {
 	cleanup();
 }
 
-bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
+bool MahalanobisDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	// FIXME: See comments in
 	// https://github.com/shogun-toolbox/shogun/pull/4085#discussion_r166254024
-	require(CRealDistance::init(l, r), "MahalanobisDistance initialization failed.");
+	require(RealDistance::init(l, r), "MahalanobisDistance initialization failed.");
 
 	SGMatrix<float64_t> cov;
 
-	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(l);
-	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(r);
+	auto feat_l = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(l);
+	auto feat_r = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(r);
 
 	if ( l == r)
 	{
@@ -52,7 +52,7 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	else
 	{
 		mean = feat_l->compute_mean(feat_l, feat_r);
-		cov = CDotFeatures::compute_cov(feat_l, feat_r);
+		cov = DotFeatures::compute_cov(feat_l, feat_r);
 	}
 
 	auto num_features = cov.num_rows;
@@ -64,14 +64,14 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CMahalanobisDistance::cleanup()
+void MahalanobisDistance::cleanup()
 {
 }
 
-float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t MahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(lhs);
-	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(rhs);
+	auto feat_l = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(lhs);
+	auto feat_r = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(rhs);
 
 	SGVector<float64_t> bvec = feat_r->get_feature_vector(idx_b);
 
@@ -105,7 +105,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 		return std::sqrt(result);
 }
 
-void CMahalanobisDistance::init()
+void MahalanobisDistance::init()
 {
 	disable_sqrt=false;
 	use_mean=false;

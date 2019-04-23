@@ -16,9 +16,9 @@ int main(int argc, char **argv)
 
 	while (runs-->0)
 	{
-		num_labels=CMath::random(5, 100);
-		num_classes=CMath::random(2, 10);
-		num_subsets=CMath::random(1, 10);
+		num_labels=Math::random(5, 100);
+		num_classes=Math::random(2, 10);
+		num_subsets=Math::random(1, 10);
 
 		/* this will throw an error */
 		if (num_labels<num_subsets)
@@ -28,10 +28,10 @@ int main(int argc, char **argv)
 				num_labels, num_classes, num_subsets);
 
 		/* build labels */
-		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
+		MulticlassLabels* labels=new MulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, CMath::random()%num_classes);
+			labels->set_label(i, Math::random()%num_classes);
 			SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 		}
 		SG_SPRINT("\n");
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
 		SGVector<float64_t>::display_vector(classes.vector, classes.vlen, "classes");
 
 		/* build splitting strategy */
-		CStratifiedCrossValidationSplitting* splitting=
-				new CStratifiedCrossValidationSplitting(labels, num_subsets);
+		StratifiedCrossValidationSplitting* splitting=
+				new StratifiedCrossValidationSplitting(labels, num_subsets);
 
 		/* build index sets (twice to ensure memory is not leaking) */
 		splitting->build_subsets();
@@ -93,12 +93,11 @@ int main(int argc, char **argv)
 
 				/* at most one difference */
 				SG_SPRINT("number in subset %d: %d\n", j, temp_count);
-				ASSERT(CMath::abs(temp_count-count)<=1);
+				ASSERT(Math::abs(temp_count-count)<=1);
 			}
 		}
 
 		/* clean up */
-		SG_UNREF(splitting);
 	}
 
 	return 0;

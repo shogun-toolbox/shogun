@@ -92,38 +92,38 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_expection)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<LogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> fi = lik->get_variational_expection();
 
 	// comparison of the result with result from the Matlab code
-	abs_tolerance = CMath::get_abs_tolerance(-0.6456754556952, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.6456754556952, rel_tolerance);
 	EXPECT_NEAR(fi[0],  -0.6456754556952,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.4788252132355, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.4788252132355, rel_tolerance);
 	EXPECT_NEAR(fi[1],  -0.4788252132355,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.3376385737846, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.3376385737846, rel_tolerance);
 	EXPECT_NEAR(fi[2],  -0.3376385737846,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.1355429430892, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.1355429430892, rel_tolerance);
 	EXPECT_NEAR(fi[3],  -0.1355429430892,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0291926624830, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0291926624830, rel_tolerance);
 	EXPECT_NEAR(fi[4],  -0.0291926624830,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-8.0024833587412, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-8.0024833587412, rel_tolerance);
 	EXPECT_NEAR(fi[5],  -8.0024833587412,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-16.0003769229306, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-16.0003769229306, rel_tolerance);
 	EXPECT_NEAR(fi[6],  -16.0003769229306,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-32.0001965353636, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-32.0001965353636, rel_tolerance);
 	EXPECT_NEAR(fi[7],  -32.0001965353636,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-64.0001887120000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-64.0001887120000, rel_tolerance);
 	EXPECT_NEAR(fi[8],  -64.0001887120000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-128.0001894653420, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-128.0001894653420, rel_tolerance);
 	EXPECT_NEAR(fi[9],  -128.0001894653420,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
@@ -170,9 +170,9 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<LogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
@@ -180,30 +180,30 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	SGVector<float64_t> gvi = lik->get_variational_first_derivative(s2_param);
 
 	// comparison of the result with result from the Matlab code
-	abs_tolerance = CMath::get_abs_tolerance(-0.124427581470330, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.124427581470330, rel_tolerance);
 	EXPECT_NEAR(gvi[0],  -0.124427581470330,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.116464777495544, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.116464777495544, rel_tolerance);
 	EXPECT_NEAR(gvi[1],  -0.116464777495544,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.095944910771785, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.095944910771785, rel_tolerance);
 	EXPECT_NEAR(gvi[2],  -0.095944910771785,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.053928836060417, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.053928836060417, rel_tolerance);
 	EXPECT_NEAR(gvi[3],  -0.053928836060417,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.013150889239670, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.013150889239670, rel_tolerance);
 	EXPECT_NEAR(gvi[4],  -0.013150889239670,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.001100858445787, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.001100858445787, rel_tolerance);
 	EXPECT_NEAR(gvi[5],  -0.001100858445787,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000067933801262, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000067933801262, rel_tolerance);
 	EXPECT_NEAR(gvi[6],  -0.000067933801262,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000001623384590, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000001623384590, rel_tolerance);
 	EXPECT_NEAR(gvi[7],  -0.000001623384590,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.00000000000000220044, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.00000000000000220044, rel_tolerance);
 	EXPECT_NEAR(gvi[8],  -0.00000000000000220044, abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.000000017317396, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.000000017317396, rel_tolerance);
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
@@ -249,9 +249,9 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<LogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
@@ -259,29 +259,29 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	SGVector<float64_t> gmi = lik->get_variational_first_derivative(mu_param);
 
 	// comparison of the result with result from the Matlab code
-	abs_tolerance = CMath::get_abs_tolerance(0.474998473339850, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.474998473339850, rel_tolerance);
 	EXPECT_NEAR(gmi[0],  0.474998473339850,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.378585673900550, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.378585673900550, rel_tolerance);
 	EXPECT_NEAR(gmi[1],  0.378585673900550,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.279385305091804, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.279385305091804, rel_tolerance);
 	EXPECT_NEAR(gmi[2],  0.279385305091804,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.125526678446964, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.125526678446964, rel_tolerance);
 	EXPECT_NEAR(gmi[3],  0.125526678446964,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.028103686914264, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.028103686914264, rel_tolerance);
 	EXPECT_NEAR(gmi[4],  0.028103686914264,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.997696157382387, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.997696157382387, rel_tolerance);
 	EXPECT_NEAR(gmi[5],  -0.997696157382387,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.999836111483197, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.999836111483197, rel_tolerance);
 	EXPECT_NEAR(gmi[6],  -0.999836111483197,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.999994859133653, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.999994859133653, rel_tolerance);
 	EXPECT_NEAR(gmi[7],  -0.999994859133653,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.999999999999995, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.999999999999995, rel_tolerance);
 	EXPECT_NEAR(gmi[8],  -0.999999999999995,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.999999835858964, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.999999835858964, rel_tolerance);
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 

@@ -16,25 +16,25 @@ using namespace Eigen;
 namespace shogun
 {
 
-CDirectEigenSolver::CDirectEigenSolver()
-	: CEigenSolver()
+DirectEigenSolver::DirectEigenSolver()
+	: EigenSolver()
 {
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CDirectEigenSolver::CDirectEigenSolver(
-	CDenseMatrixOperator<float64_t>* linear_operator)
-	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
+DirectEigenSolver::DirectEigenSolver(
+	std::shared_ptr<DenseMatrixOperator<float64_t>> linear_operator)
+	: EigenSolver(linear_operator->as<LinearOperator<float64_t>>())
 {
 	SG_TRACE("{} created ({})", this->get_name(), fmt::ptr(this));
 }
 
-CDirectEigenSolver::~CDirectEigenSolver()
+DirectEigenSolver::~DirectEigenSolver()
 {
 	SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 }
 
-void CDirectEigenSolver::compute()
+void DirectEigenSolver::compute()
 {
 	if (m_is_computed_min && m_is_computed_max)
 	{
@@ -42,8 +42,8 @@ void CDirectEigenSolver::compute()
 		return;
 	}
 
-	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto op
+		=m_linear_operator->as<DenseMatrixOperator<float64_t>>();
 	require(op, "Linear operator is not of CDenseMatrixOperator type!");
 
 	SGMatrix<float64_t> m=op->get_matrix_operator();

@@ -33,26 +33,26 @@ namespace shogun
  * and Nucleic Acids, 1998
  *
  * */
-class CLinearHMM : public CDistribution
+class LinearHMM : public Distribution
 {
 	public:
 		/** default constructor  */
-		CLinearHMM();
+		LinearHMM();
 
 		/** constructor
 		 *
 		 * @param f features to use
 		 */
-		CLinearHMM(CStringFeatures<uint16_t>* f);
+		LinearHMM(std::shared_ptr<StringFeatures<uint16_t>> f);
 
 		/** constructor
 		 *
 		 * @param p_num_features number of features
 		 * @param p_num_symbols number of symbols in features
 		 */
-		CLinearHMM(int32_t p_num_features, int32_t p_num_symbols);
+		LinearHMM(int32_t p_num_features, int32_t p_num_symbols);
 
-		virtual ~CLinearHMM();
+		virtual ~LinearHMM();
 
 		/** estimate LinearHMM distribution
 		 *
@@ -62,7 +62,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** alternative train distribution
 		 *
@@ -215,7 +215,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual void set_features(CFeatures* f);
+		virtual void set_features(std::shared_ptr<Features> f);
 
 	protected:
 		virtual void load_serializable_post() noexcept(false);

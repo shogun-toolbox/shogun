@@ -43,11 +43,11 @@ namespace shogun
  * connected to all the input features that a network receives (default) or
  * connected to just a small part of those features
  */
-class CNeuralInputLayer : public CNeuralLayer
+class NeuralInputLayer : public NeuralLayer
 {
 public:
 	/** default constructor */
-	CNeuralInputLayer();
+	NeuralInputLayer();
 
 	/** Constuctor
 	 *
@@ -57,7 +57,7 @@ public:
 	 * i.e the activations of the layer are copied from
 	 * input_features[start_index:start_index+num_neurons]
 	 */
-	CNeuralInputLayer(int32_t num_neurons, int32_t start_index = 0);
+	NeuralInputLayer(int32_t num_neurons, int32_t start_index = 0);
 
 	/** Constructs an input layer that deals with images (for convolutional nets).
 	 * Sets the number of neurons to width*height*num_channels
@@ -72,10 +72,10 @@ public:
 	 * i.e the activations of the layer are copied from
 	 * input_features[start_index:start_index+num_neurons]
 	 */
-	CNeuralInputLayer(int32_t width, int32_t height, int32_t num_channels,
+	NeuralInputLayer(int32_t width, int32_t height, int32_t num_channels,
 		int32_t start_index = 0);
 
-	virtual ~CNeuralInputLayer() {}
+	virtual ~NeuralInputLayer() {}
 
 	/** Returns true */
 	virtual bool is_input() { return true; }

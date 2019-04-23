@@ -34,14 +34,14 @@
 
 using namespace shogun;
 
-CEMMixtureModel::CEMMixtureModel()
-: CEMBase <MixModelData>()
+EMMixtureModel::EMMixtureModel()
+: EMBase <MixModelData>()
 { }
 
-CEMMixtureModel::~CEMMixtureModel()
+EMMixtureModel::~EMMixtureModel()
 { }
 
-float64_t CEMMixtureModel::expectation_step()
+float64_t EMMixtureModel::expectation_step()
 {
 	float64_t log_likelihood=0;
 	// for each data point
@@ -51,13 +51,13 @@ float64_t CEMMixtureModel::expectation_step()
 		// for each component
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
 		{
-			CDistribution* jth_component=data.components->get_element(j)->as<CDistribution>();
+			auto jth_component=data.components->get_element<Distribution>(j);
 			alpha_ij[j] = std::log(data.weights[j]) +
 			              jth_component->get_log_likelihood_example(i);
-			SG_UNREF(jth_component);
+
 		};
 
-		float64_t normalize=CMath::log_sum_exp(alpha_ij);
+		float64_t normalize=Math::log_sum_exp(alpha_ij);
 		log_likelihood+=normalize;
 
 		// fill row of alpha
@@ -68,13 +68,13 @@ float64_t CEMMixtureModel::expectation_step()
 	return log_likelihood;
 }
 
-void CEMMixtureModel::maximization_step()
+void EMMixtureModel::maximization_step()
 {
 	// for each component
 	float64_t sum_weights=0;
 	for (int32_t j=0;j<data.alpha.num_cols;j++)
 	{
-		CDistribution* jth_component=data.components->get_element(j)->as<CDistribution>();
+		auto jth_component=data.components->get_element<Distribution>(j);
 
 		// update mean covariance of components
 		SGVector<float64_t> alpha_j(data.alpha.matrix+j*data.alpha.num_rows, data.alpha.num_rows, false);
@@ -84,7 +84,7 @@ void CEMMixtureModel::maximization_step()
 		sum_weights+=weight_j;
 		data.weights[j]=weight_j;
 
-		SG_UNREF(jth_component);
+
 	}
 
 	// update weights - normalization

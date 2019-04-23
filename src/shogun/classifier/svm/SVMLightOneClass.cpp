@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Viktor Gal,
  *          Bjoern Esser, Evangelos Anagnostopoulos
  */
 
@@ -32,19 +32,19 @@ extern "C" {
 
 using namespace shogun;
 
-CSVMLightOneClass::CSVMLightOneClass(float64_t C, CKernel* k)
-: CSVMLight()
+SVMLightOneClass::SVMLightOneClass(float64_t C, std::shared_ptr<Kernel> k)
+: SVMLight()
 {
 	set_C(C,C);
 	set_kernel(k);
 }
 
-CSVMLightOneClass::CSVMLightOneClass()
-: CSVMLight()
+SVMLightOneClass::SVMLightOneClass()
+: SVMLight()
 {
 }
 
-bool CSVMLightOneClass::train_machine(CFeatures* data)
+bool SVMLightOneClass::train_machine(std::shared_ptr<Features> data)
 {
 	//certain setup params
 	mkl_converged=false;
@@ -86,10 +86,10 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	int32_t num_vec=kernel->get_num_vec_lhs();
 	io::info("num_vec={}", num_vec);
 
-	SG_UNREF(m_labels);
-	m_labels=new CBinaryLabels(num_vec);
-	SG_REF(m_labels);
-	((CBinaryLabels*) m_labels)->set_to_one();
+
+	m_labels=std::make_shared<BinaryLabels>(num_vec);
+
+	std::static_pointer_cast<BinaryLabels>(m_labels)->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
@@ -115,12 +115,12 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
+		for (index_t k_idx=0; k_idx<(std::static_pointer_cast<CombinedKernel>(kernel))->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn =  ((CCombinedKernel*) kernel)->get_kernel(k_idx);
+			auto kn =  (std::static_pointer_cast<CombinedKernel>(kernel))->get_kernel(k_idx);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
-			SG_UNREF(kn);
+
 		}
 	}
 

@@ -18,7 +18,7 @@
 namespace shogun
 {
 template <class ST> class CStringFeatures;
-class CCompressor;
+class Compressor;
 
 /** @brief Preprocessor that decompresses compressed strings.
  *
@@ -30,18 +30,18 @@ class CCompressor;
  * Then avoiding expensive disk i/o strings are on-the-fly decompressed.
  *
  */
-template <class ST> class CDecompressString : public CStringPreprocessor<ST>
+template <class ST> class DecompressString : public StringPreprocessor<ST>
 {
 	public:
 		/** default constructor  */
-		CDecompressString();
+		DecompressString();
 
 		/** constructor
 		 */
-		CDecompressString(E_COMPRESSION_TYPE ct);
+		DecompressString(E_COMPRESSION_TYPE ct);
 
 		/** destructor */
-		virtual ~CDecompressString();
+		virtual ~DecompressString();
 
 		/// cleanup
 		virtual void cleanup();
@@ -65,7 +65,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 		virtual void apply_to_string_list(std::vector<SGVector<ST>>& string_list);
 
 		/** compressor used to decompress strings */
-		CCompressor* compressor;
+		std::shared_ptr<Compressor> compressor;
 };
 }
 #endif

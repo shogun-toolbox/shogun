@@ -51,35 +51,35 @@ TEST_F(NeuralLeakyRectifiedLayerTest, compute_activations)
 	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	CNeuralInputLayer* input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize leaky rectified linear layer
-	CNeuralLeakyRectifiedLinearLayer layer(9);
-	layer.set_alpha(0.02);
+	auto layer = std::make_shared<NeuralLeakyRectifiedLinearLayer>(9);
+	layer->set_alpha(0.02);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
-	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
+	    init_linear_layer(layer, input_indices, x.num_cols, 1.0, false);
 
 	// get the layer's activations
-	SGMatrix<float64_t> A = layer.get_activations();
+	SGMatrix<float64_t> A = layer->get_activations();
 
 	// manually compute the layer's activations
 	auto biases =
-	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	    SGVector<float64_t>(params.vector, layer->get_num_neurons(), 0);
 	auto weights = SGMatrix<float64_t>(
-	    params.vector, layer.get_num_neurons(), x.num_rows,
-	    layer.get_num_neurons());
-	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
+	    params.vector, layer->get_num_neurons(), x.num_rows,
+	    layer->get_num_neurons());
+	SGMatrix<float64_t> A_ref(layer->get_num_neurons(), x.num_cols);
 	shogun::linalg::add_vector(
 	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
 
 	for (int32_t idx = 0; idx < A_ref.num_rows * A_ref.num_cols; idx++)
 	{
 		A_ref[idx] =
-		    CMath::max<float64_t>(layer.get_alpha() * A_ref[idx], A_ref[idx]);
+		    Math::max<float64_t>(layer->get_alpha() * A_ref[idx], A_ref[idx]);
 	}
 
 	// compare

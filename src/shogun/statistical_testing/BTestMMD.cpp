@@ -41,30 +41,30 @@
 using namespace shogun;
 using namespace internal;
 
-CBTestMMD::CBTestMMD() : CStreamingMMD()
+BTestMMD::BTestMMD() : StreamingMMD()
 {
 }
 
-CBTestMMD::~CBTestMMD()
+BTestMMD::~BTestMMD()
 {
 }
 
-void CBTestMMD::set_blocksize(index_t blocksize)
+void BTestMMD::set_blocksize(index_t blocksize)
 {
 	get_data_mgr().set_blocksize(blocksize);
 }
 
-void CBTestMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+void BTestMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	get_data_mgr().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
-const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estimation_method() const
+const std::function<float32_t(SGMatrix<float32_t>)> BTestMMD::get_direct_estimation_method() const
 {
 	return mmd::WithinBlockDirect();
 }
 
-float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
+float64_t BTestMMD::normalize_statistic(float64_t statistic) const
 {
 	const DataManager& data_mgr=get_data_mgr();
 	const index_t Nx=data_mgr.num_samples_at(0);
@@ -75,15 +75,15 @@ float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 	       (Nx + Ny);
 }
 
-const float64_t CBTestMMD::normalize_variance(float64_t variance) const
+const float64_t BTestMMD::normalize_variance(float64_t variance) const
 {
 	const DataManager& data_mgr=get_data_mgr();
 	const index_t Bx=data_mgr.blocksize_at(0);
 	const index_t By=data_mgr.blocksize_at(1);
-	return variance*CMath::sq(Bx*By/float64_t(Bx+By));
+	return variance*Math::sq(Bx*By/float64_t(Bx+By));
 }
 
-float64_t CBTestMMD::compute_p_value(float64_t statistic)
+float64_t BTestMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 	switch (get_null_approximation_method())
@@ -92,19 +92,19 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 		{
 			float64_t sigma_sq=compute_variance();
 		    float64_t std_dev = std::sqrt(sigma_sq);
-		    result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		    result = 1.0 - Statistics::normal_cdf(statistic, std_dev);
 		    break;
 	    }
 	    default:
 	    {
-		    result = CHypothesisTest::compute_p_value(statistic);
+		    result = HypothesisTest::compute_p_value(statistic);
 		    break;
 	    }
 	}
 	return result;
 }
 
-float64_t CBTestMMD::compute_threshold(float64_t alpha)
+float64_t BTestMMD::compute_threshold(float64_t alpha)
 {
 	float64_t result=0;
 	switch (get_null_approximation_method())
@@ -114,19 +114,19 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 			float64_t sigma_sq=compute_variance();
 		    float64_t std_dev = std::sqrt(sigma_sq);
 		    result =
-		        1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		        1.0 - Statistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
 		    break;
 	    }
 	    default:
 	    {
-		    result = CHypothesisTest::compute_threshold(alpha);
+		    result = HypothesisTest::compute_threshold(alpha);
 		    break;
 	    }
 	}
 	return result;
 }
 
-const char* CBTestMMD::get_name() const
+const char* BTestMMD::get_name() const
 {
 	return "BTestMMD";
 }

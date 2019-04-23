@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Jacob Walker, Saurabh Mahindre, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Jacob Walker, Saurabh Mahindre, Yuyu Zhang,
  *          Roman Votyakov
  */
 
@@ -18,17 +18,17 @@
 namespace shogun
 {
 
-	class CMachineEvaluation;
-	class CCrossValidationOutput;
+	class MachineEvaluation;
+	class CrossValidationOutput;
 	class CrossValidationStorage;
-	class CList;
+	class List;
 
 	/** @brief type to encapsulate the results of an evaluation run.
 	 */
-	class CCrossValidationResult : public CEvaluationResult
+	class CrossValidationResult : public EvaluationResult
 	{
 	public:
-		CCrossValidationResult()
+		CrossValidationResult()
 		{
 			SG_ADD(&mean, "mean", "Mean of results");
 			SG_ADD(
@@ -123,11 +123,11 @@ namespace shogun
 	 * HP Laboratories.] for details on this subject.
 	 *
 	 */
-	class CCrossValidation : public Seedable<CMachineEvaluation>
+	class CrossValidation : public Seedable<MachineEvaluation>
 	{
 	public:
 		/** constructor */
-		CCrossValidation();
+		CrossValidation();
 
 		/** constructor
 		 * @param machine learning machine to use
@@ -137,10 +137,10 @@ namespace shogun
 		 * @param evaluation_criterion evaluation criterion to use
 		 * evaluation
 		 */
-		CCrossValidation(
-		    CMachine* machine, CFeatures* features, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion);
+		CrossValidation(
+			std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
+			std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+			std::shared_ptr<Evaluation> evaluation_criterion);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
@@ -148,13 +148,13 @@ namespace shogun
 		 * @param splitting_strategy splitting strategy to use
 		 * @param evaluation_criterion evaluation criterion to use
 		 */
-		CCrossValidation(
-		    CMachine* machine, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion);
+		CrossValidation(
+		    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
+		    std::shared_ptr<SplittingStrategy> splitting_strategy,
+		    std::shared_ptr<Evaluation> evaluation_criterion);
 
 		/** destructor */
-		virtual ~CCrossValidation();
+		virtual ~CrossValidation();
 
 		/** setter for the number of runs to use for evaluation */
 		void set_num_runs(int32_t num_runs);
@@ -173,7 +173,7 @@ namespace shogun
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		virtual CEvaluationResult* evaluate_impl() const override;
+		virtual std::shared_ptr<EvaluationResult> evaluate_impl() const override;
 
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then

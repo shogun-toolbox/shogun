@@ -11,11 +11,10 @@ int main(int argc, char** argv)
 {
 	FILE* fin=fopen("../data/label_train_multiclass_digits.dat", "r");
 
-	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters['\n']=1;
-	SG_REF(tokenizer);
 
-	CLineReader* reader=new CLineReader(fin, tokenizer);
+	auto reader=std::make_shared<LineReader>(fin, tokenizer);
 
 	int lines_count=0;
 	SGVector<char> tmp_string;
@@ -31,8 +30,6 @@ int main(int argc, char** argv)
 	SG_SPRINT("total lines: %d\n", lines_count);
 
 	tmp_string=SGVector<char>();
-	SG_UNREF(reader);
-	SG_UNREF(tokenizer);
 
 	fclose(fin);
 

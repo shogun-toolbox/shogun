@@ -10,17 +10,17 @@
 
 using namespace shogun;
 
-CMultilabelAccuracy::CMultilabelAccuracy()
-    : CEvaluation()
+MultilabelAccuracy::MultilabelAccuracy()
+    : Evaluation()
 {
 }
 
-CMultilabelAccuracy::~CMultilabelAccuracy()
+MultilabelAccuracy::~MultilabelAccuracy()
 {
 }
 
-float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
-        CLabels* ground_truth)
+float64_t MultilabelAccuracy::evaluate(std::shared_ptr<Labels> predicted,
+        std::shared_ptr<Labels> ground_truth)
 {
     require(predicted->get_label_type() == LT_SPARSE_MULTILABEL,
             "predicted label should be of multilabels type");
@@ -29,8 +29,8 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
     require(ground_truth->get_label_type() == predicted->get_label_type(),
             "predicted labels and actual labels should be of same type");
 
-    CMultilabelLabels* m_predicted = (CMultilabelLabels*) predicted;
-    CMultilabelLabels* m_ground_truth = (CMultilabelLabels*) ground_truth;
+    auto m_predicted = std::static_pointer_cast<MultilabelLabels>(predicted);
+    auto m_ground_truth = std::static_pointer_cast<MultilabelLabels>(ground_truth);
 
     require(m_predicted->get_num_labels() == m_ground_truth->get_num_labels(),
             "predicted labels and actual labels should have same number of labels");

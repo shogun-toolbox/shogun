@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Viktor Gal, Thoralf Klein, Heiko Strathmann, 
+ * Authors: Soumyajit De, Viktor Gal, Thoralf Klein, Heiko Strathmann,
  *          Bjoern Esser, Shubham Shukla, Pan Deng
  */
 #include <gtest/gtest.h>
@@ -37,20 +37,20 @@ TEST(RationalApproximation, precompute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
-	SG_REF(eig_solver);
 
-	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
-	SG_REF(linear_solver);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
-	CLogRationalApproximationIndividual* op_func =
-	    new CLogRationalApproximationIndividual(
+
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
+
+
+	auto op_func =
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
-	        (CLinearSolver<complex128_t, float64_t>*)linear_solver, 0);
-	SG_REF(op_func);
+	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
+
 	op_func->set_num_shifts(5);
 
 	op_func->precompute();
@@ -88,10 +88,10 @@ TEST(RationalApproximation, precompute)
 	EXPECT_NEAR(map_weights.norm(), map_ref_weights.norm(), 1E-12);
 #endif
 
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
 }
 
 TEST(RationalApproximation, trace_accuracy)
@@ -107,27 +107,27 @@ TEST(RationalApproximation, trace_accuracy)
 	}
 
 	// create the operator
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
+
 
 	// create the eigen solver for finding max/min eigenvalues
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
-	SG_REF(eig_solver);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
+
 
 	// create the direct linear solver for solving the systems that generates from
 	// rational approximation of the operator function
-	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
-	SG_REF(linear_solver);
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
+
 
 	// compute the number of shifts to assure a given accuracy
 	float64_t accuracy=1E-19;
 
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
-	CLogRationalApproximationIndividual* op_func =
-	    new CLogRationalApproximationIndividual(
+	auto op_func =
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver, linear_solver, accuracy);
-	SG_REF(op_func);
+
 
 	op_func->precompute();
 	float64_t result = 0.0;
@@ -159,10 +159,10 @@ TEST(RationalApproximation, trace_accuracy)
 	EXPECT_NEAR(result, trace_log_m, 1E-07);
 #endif
 
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
 }
 
 TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
@@ -174,42 +174,42 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	m(1,0)=0.0;
 	m(1,1)=100000.0;
 
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
-	SG_REF(eig_solver);
 
-	CDirectLinearSolverComplex* dense_solver=new CDirectLinearSolverComplex();
-	SG_REF(dense_solver);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
-	CConjugateOrthogonalCGSolver *sparse_solver
-		=new CConjugateOrthogonalCGSolver();
 
-	CLogRationalApproximationIndividual* op_func =
-	    new CLogRationalApproximationIndividual(
+	auto dense_solver=std::make_shared<DirectLinearSolverComplex>();
+
+
+	auto sparse_solver
+		=std::make_shared<ConjugateOrthogonalCGSolver>();
+
+	auto op_func =
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
-	        (CLinearSolver<complex128_t, float64_t>*)dense_solver, 0);
-	SG_REF(op_func);
+	        dense_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
+
 	op_func->set_num_shifts(4);
 
 	op_func->precompute();
 
 	SGVector<complex128_t> shifts=op_func->get_shifts();
 
-	CNormalSampler* trace_sampler=new CNormalSampler(size);
+	auto trace_sampler=std::make_shared<NormalSampler>(size);
 	trace_sampler->precompute();
 
 	// create complex copies of operators, complex_dense/sparse
-	CDenseMatrixOperator<complex128_t>* complex_dense
-		=static_cast<CDenseMatrixOperator<complex128_t>*>(*op);
+	auto complex_dense
+		=std::shared_ptr<DenseMatrixOperator<complex128_t>>(static_cast<DenseMatrixOperator<complex128_t>*>(*op));
 
 	for (index_t i=0; i<shifts.vlen; ++i)
 	{
 		SGVector<float64_t> sample=trace_sampler->sample(0);
 
-		CDenseMatrixOperator<complex128_t>* shifted_dense
-			=new CDenseMatrixOperator<complex128_t>(*complex_dense);
+		auto shifted_dense
+			=std::make_shared<DenseMatrixOperator<complex128_t>>(*complex_dense);
 
 		SGVector<complex128_t> diag=shifted_dense->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
@@ -219,10 +219,10 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 		SGMatrix<complex128_t> shifted_m=shifted_dense->get_matrix_operator();
 
-		CSparseFeatures<complex128_t> feat(shifted_m);
+		SparseFeatures<complex128_t> feat(shifted_m);
 		SGSparseMatrix<complex128_t> shifted_sm=feat.get_sparse_feature_matrix();
-		CSparseMatrixOperator<complex128_t>* shifted_sparse
-			=new CSparseMatrixOperator<complex128_t>(shifted_sm);
+		auto shifted_sparse
+			=std::make_shared<SparseMatrixOperator<complex128_t>>(shifted_sm);
 
 		SGVector<complex128_t> xd=dense_solver->solve(shifted_dense, sample);
 		SGVector<complex128_t> xs=sparse_solver->solve(shifted_sparse, sample);
@@ -232,17 +232,17 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 1E-10);
 
-		SG_UNREF(shifted_dense);
-		SG_UNREF(shifted_sparse);
+
+
 	}
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(complex_dense);
-	SG_UNREF(eig_solver);
-	SG_UNREF(dense_solver);
-	SG_UNREF(sparse_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
+
+
+
 }
 
 TEST(RationalApproximation, trace_accuracy_cg_m)
@@ -259,26 +259,26 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	}
 
 	// create the operator
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
-	SG_REF(op);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
+
 
 	// create the eigen solver for finding max/min eigenvalues
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
-	SG_REF(eig_solver);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
+
 
 	// create the direct linear solver for solving the systems that generates from
 	// rational approximation of the operator function
-	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
-	SG_REF(linear_solver);
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
+
 
 	// compute the number of shifts to assure a given accuracy
 	float64_t accuracy=1E-19;
 
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
-	CLogRationalApproximationCGM* op_func = new CLogRationalApproximationCGM(
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
-	SG_REF(op_func);
+
 
 	op_func->precompute();
 	float64_t result = 0.0;
@@ -310,9 +310,9 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	EXPECT_NEAR(result, trace_log_m, 1E-07);
 #endif
 
-	SG_UNREF(eig_solver);
-	SG_UNREF(linear_solver);
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
+
+
 }
 #endif //USE_GPL_SHOGUN

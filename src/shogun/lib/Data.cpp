@@ -8,12 +8,12 @@
 
 using namespace shogun;
 
-CData::CData()
+Data::Data()
 {
 
 }
 
-CData::~CData()
+Data::~Data()
 {
 
 }

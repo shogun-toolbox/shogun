@@ -34,21 +34,21 @@
 
 namespace shogun
 {
-CLBFGSMinimizer::CLBFGSMinimizer()
+LBFGSMinimizer::LBFGSMinimizer()
 	:FirstOrderMinimizer()
 {
 	init();
 }
 
-CLBFGSMinimizer::~CLBFGSMinimizer()
+LBFGSMinimizer::~LBFGSMinimizer()
 {
 }
 
-CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
+LBFGSMinimizer::LBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun)
 	:FirstOrderMinimizer(fun)
 {
-	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
-		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
+	auto bound_constraints_fun
+		=std::dynamic_pointer_cast<FirstOrderBoundConstraintsCostFunction>(m_fun);
 	if(m_fun && bound_constraints_fun)
 	{
 		io::warn("The minimizer does not support constrained minimization. All constraints will be ignored.");
@@ -56,48 +56,48 @@ CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
 	init();
 }
 
-void CLBFGSMinimizer::init()
+void LBFGSMinimizer::init()
 {
 	set_lbfgs_parameters();
 	m_min_step=1e-6;
 	m_xtol=1e-6;
-	SG_ADD(&m_linesearch_id, "CLBFGSMinimizer__m_linesearch_id",
-		"linesearch_id in CLBFGSMinimizer");
-	SG_ADD(&m_m, "CLBFGSMinimizer__m_m",
-		"m in CLBFGSMinimizer");
-	SG_ADD(&m_max_linesearch, "CLBFGSMinimizer__m_max_linesearch",
-		"max_linesearch in CLBFGSMinimizer");
-	SG_ADD(&m_max_iterations, "CLBFGSMinimizer__m_max_iterations",
-		"max_iterations in CLBFGSMinimizer");
-	SG_ADD(&m_delta, "CLBFGSMinimizer__m_delta",
-		"delta in CLBFGSMinimizer");
-	SG_ADD(&m_past, "CLBFGSMinimizer__m_past",
-		"past in CLBFGSMinimizer");
-	SG_ADD(&m_epsilon, "CLBFGSMinimizer__m_epsilon",
-		"epsilon in CLBFGSMinimizer");
-	SG_ADD(&m_min_step, "CLBFGSMinimizer__m_min_step",
-		"min_step in CLBFGSMinimizer");
-	SG_ADD(&m_max_step, "CLBFGSMinimizer__m_max_step",
-		"max_step in CLBFGSMinimizer");
-	SG_ADD(&m_ftol, "CLBFGSMinimizer__m_ftol",
-		"ftol in CLBFGSMinimizer");
-	SG_ADD(&m_wolfe, "CLBFGSMinimizer__m_wolfe",
-		"wolfe in CLBFGSMinimizer");
-	SG_ADD(&m_gtol, "CLBFGSMinimizer__m_gtol",
-		"gtol in CLBFGSMinimizer");
-	SG_ADD(&m_xtol, "CLBFGSMinimizer__m_xtol",
-		"xtol in CLBFGSMinimizer");
-	SG_ADD(&m_orthantwise_c, "CLBFGSMinimizer__m_orthantwise_c",
-		"orthantwise_c in CLBFGSMinimizer");
-	SG_ADD(&m_orthantwise_start, "CLBFGSMinimizer__m_orthantwise_start",
-		"orthantwise_start in CLBFGSMinimizer");
-	SG_ADD(&m_orthantwise_end, "CLBFGSMinimizer__m_orthantwise_end",
-		"orthantwise_end in CLBFGSMinimizer");
-	SG_ADD(&m_target_variable, "CLBFGSMinimizer__m_target_variable",
-		"m_target_variable in CLBFGSMinimizer");
+	SG_ADD(&m_linesearch_id, "LBFGSMinimizer__m_linesearch_id",
+		"linesearch_id in LBFGSMinimizer");
+	SG_ADD(&m_m, "LBFGSMinimizer__m_m",
+		"m in LBFGSMinimizer");
+	SG_ADD(&m_max_linesearch, "LBFGSMinimizer__m_max_linesearch",
+		"max_linesearch in LBFGSMinimizer");
+	SG_ADD(&m_max_iterations, "LBFGSMinimizer__m_max_iterations",
+		"max_iterations in LBFGSMinimizer");
+	SG_ADD(&m_delta, "LBFGSMinimizer__m_delta",
+		"delta in LBFGSMinimizer");
+	SG_ADD(&m_past, "LBFGSMinimizer__m_past",
+		"past in LBFGSMinimizer");
+	SG_ADD(&m_epsilon, "LBFGSMinimizer__m_epsilon",
+		"epsilon in LBFGSMinimizer");
+	SG_ADD(&m_min_step, "LBFGSMinimizer__m_min_step",
+		"min_step in LBFGSMinimizer");
+	SG_ADD(&m_max_step, "LBFGSMinimizer__m_max_step",
+		"max_step in LBFGSMinimizer");
+	SG_ADD(&m_ftol, "LBFGSMinimizer__m_ftol",
+		"ftol in LBFGSMinimizer");
+	SG_ADD(&m_wolfe, "LBFGSMinimizer__m_wolfe",
+		"wolfe in LBFGSMinimizer");
+	SG_ADD(&m_gtol, "LBFGSMinimizer__m_gtol",
+		"gtol in LBFGSMinimizer");
+	SG_ADD(&m_xtol, "LBFGSMinimizer__m_xtol",
+		"xtol in LBFGSMinimizer");
+	SG_ADD(&m_orthantwise_c, "LBFGSMinimizer__m_orthantwise_c",
+		"orthantwise_c in LBFGSMinimizer");
+	SG_ADD(&m_orthantwise_start, "LBFGSMinimizer__m_orthantwise_start",
+		"orthantwise_start in LBFGSMinimizer");
+	SG_ADD(&m_orthantwise_end, "LBFGSMinimizer__m_orthantwise_end",
+		"orthantwise_end in LBFGSMinimizer");
+	SG_ADD(&m_target_variable, "LBFGSMinimizer__m_target_variable",
+		"m_target_variable in LBFGSMinimizer");
 }
 
-void CLBFGSMinimizer::set_lbfgs_parameters(
+void LBFGSMinimizer::set_lbfgs_parameters(
 		int32_t m,
 		int32_t max_linesearch,
 		ELBFGSLineSearch linesearch,
@@ -133,14 +133,14 @@ void CLBFGSMinimizer::set_lbfgs_parameters(
 	m_orthantwise_end = orthantwise_end;
 }
 
-void CLBFGSMinimizer::init_minimization()
+void LBFGSMinimizer::init_minimization()
 {
 	require(m_fun, "Cost function not set!");
 	m_target_variable=m_fun->obtain_variable_reference();
 	require(m_target_variable.vlen>0,"Target variable from cost function must not empty!");
 }
 
-float64_t CLBFGSMinimizer::minimize()
+float64_t LBFGSMinimizer::minimize()
 {
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_param.m = m_m;
@@ -164,7 +164,7 @@ float64_t CLBFGSMinimizer::minimize()
 
 	float64_t cost=0.0;
 	int32_t error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
-		&cost, CLBFGSMinimizer::evaluate,
+		&cost, LBFGSMinimizer::evaluate,
 		NULL, this, &lbfgs_param);
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
@@ -176,18 +176,18 @@ float64_t CLBFGSMinimizer::minimize()
 	return cost;
 }
 
-float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
+float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 	float64_t *gradient, const int32_t dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CLBFGSMinimizer * obj_prt
-		= static_cast<CLBFGSMinimizer *>(obj);
+	auto obj_prt =
+		(LBFGSMinimizer*)(obj);
 
 	require(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL");
 
 	float64_t cost=obj_prt->m_fun->get_cost();
 
-	if (CMath::is_nan(cost) || std::isinf(cost))
+	if (Math::is_nan(cost) || std::isinf(cost))
 		return cost;
 
 	//get the gradient wrt variable_new

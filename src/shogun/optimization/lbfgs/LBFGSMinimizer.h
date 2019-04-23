@@ -37,23 +37,23 @@ namespace shogun
 {
 
 /** @brief The class wraps the Shogun's C-style LBFGS minimizer  */
-class CLBFGSMinimizer: public FirstOrderMinimizer
+class LBFGSMinimizer: public FirstOrderMinimizer
 {
 public:
 	/*  Default constructor */
-	CLBFGSMinimizer();
+	LBFGSMinimizer();
 
 	/** Constructor
 	 * @param fun cost function (user have to manully delete the pointer)
 	 */
-	CLBFGSMinimizer(FirstOrderCostFunction *fun);
+	LBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun);
 
 	/*  Destructor */
-	virtual ~CLBFGSMinimizer();
+	virtual ~LBFGSMinimizer();
 
 	/** returns the name of the class
 	 *
-	 * @return name CLBFGSMinimizer
+	 * @return name LBFGSMinimizer
 	 */
 	virtual const char* get_name() const { return "LBFGSMinimizer"; }
 

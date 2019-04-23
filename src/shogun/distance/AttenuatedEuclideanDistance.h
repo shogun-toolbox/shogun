@@ -33,19 +33,19 @@ namespace shogun
  * \f]
  *
  */
-class CAttenuatedEuclideanDistance: public CRealDistance
+class AttenuatedEuclideanDistance: public RealDistance
 {
 	public:
 		/** default constructor */
-		CAttenuatedEuclideanDistance();
+		AttenuatedEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CAttenuatedEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CAttenuatedEuclideanDistance();
+		AttenuatedEuclideanDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~AttenuatedEuclideanDistance();
 
 		/** init distance
 		 *
@@ -53,7 +53,7 @@ class CAttenuatedEuclideanDistance: public CRealDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -10,14 +10,14 @@
 
 using namespace shogun;
 
-CTOPFeatures::CTOPFeatures()
+TOPFeatures::TOPFeatures()
 {
 	init();
 }
 
-CTOPFeatures::CTOPFeatures(
-	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
-: CDenseFeatures<float64_t>(size)
+TOPFeatures::TOPFeatures(
+	int32_t size, std::shared_ptr<HMM> p, std::shared_ptr<HMM> n, bool neglin, bool poslin)
+: DenseFeatures<float64_t>(size)
 {
 	init();
 	neglinear=neglin;
@@ -26,8 +26,8 @@ CTOPFeatures::CTOPFeatures(
 	set_models(p,n);
 }
 
-CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
-: CDenseFeatures<float64_t>(orig)
+TOPFeatures::TOPFeatures(const TOPFeatures &orig)
+: DenseFeatures<float64_t>(orig)
 {
 	init();
 	pos=orig.pos;
@@ -36,7 +36,7 @@ CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
 	poslinear=orig.poslinear;
 }
 
-CTOPFeatures::~CTOPFeatures()
+TOPFeatures::~TOPFeatures()
 {
 	SG_FREE(pos_relevant_indizes.idx_p);
 	SG_FREE(pos_relevant_indizes.idx_q);
@@ -52,15 +52,15 @@ CTOPFeatures::~CTOPFeatures()
 	SG_FREE(neg_relevant_indizes.idx_b_cols);
 	SG_FREE(neg_relevant_indizes.idx_b_rows);
 
-	SG_UNREF(pos);
-	SG_UNREF(neg);
+	
+	
 }
 
-void CTOPFeatures::set_models(CHMM* p, CHMM* n)
+void TOPFeatures::set_models(std::shared_ptr<HMM> p, std::shared_ptr<HMM> n)
 {
 	ASSERT(p && n)
-	SG_REF(p);
-	SG_REF(n);
+	
+	
 
 	pos=p;
 	neg=n;
@@ -78,7 +78,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	SG_DEBUG("pos_feat=[{},{},{},{}],neg_feat=[{},{},{},{}] -> {} features", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features)
 }
 
-float64_t* CTOPFeatures::compute_feature_vector(
+float64_t* TOPFeatures::compute_feature_vector(
 	int32_t num, int32_t &len, float64_t* target) const
 {
 	float64_t* featurevector=target;
@@ -94,7 +94,7 @@ float64_t* CTOPFeatures::compute_feature_vector(
 	return featurevector;
 }
 
-void CTOPFeatures::compute_feature_vector(
+void TOPFeatures::compute_feature_vector(
 	float64_t* featurevector, int32_t num, int32_t& len) const
 {
 	int32_t i,j,p=0,x=num;
@@ -183,7 +183,7 @@ void CTOPFeatures::compute_feature_vector(
 	}
 }
 
-float64_t* CTOPFeatures::set_feature_matrix()
+float64_t* TOPFeatures::set_feature_matrix()
 {
 	int32_t len=0;
 
@@ -221,7 +221,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
+bool TOPFeatures::compute_relevant_indizes(std::shared_ptr<HMM> hmm, T_HMM_INDIZES* hmm_idx)
 {
 	int32_t i=0;
 	int32_t j=0;
@@ -233,21 +233,21 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	for (i=0; i<hmm->get_N(); i++)
 	{
-		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
+		if (hmm->get_p(i)>Math::ALMOST_NEG_INFTY)
 			hmm_idx->num_p++;
 
-		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
+		if (hmm->get_q(i)>Math::ALMOST_NEG_INFTY)
 			hmm_idx->num_q++;
 
 		for (j=0; j<hmm->get_N(); j++)
 		{
-			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (hmm->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 				hmm_idx->num_a++;
 		}
 
 		for (j=0; j<pos->get_M(); j++)
 		{
-			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (hmm->get_b(i,j)>Math::ALMOST_NEG_INFTY)
 				hmm_idx->num_b++;
 		}
 	}
@@ -288,13 +288,13 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	for (i=0; i<hmm->get_N(); i++)
 	{
-		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
+		if (hmm->get_p(i)>Math::ALMOST_NEG_INFTY)
 		{
 			ASSERT(idx_p < hmm_idx->num_p)
 			hmm_idx->idx_p[idx_p++]=i;
 		}
 
-		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
+		if (hmm->get_q(i)>Math::ALMOST_NEG_INFTY)
 		{
 			ASSERT(idx_q < hmm_idx->num_q)
 			hmm_idx->idx_q[idx_q++]=i;
@@ -302,7 +302,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 		for (j=0; j<hmm->get_N(); j++)
 		{
-			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (hmm->get_a(i,j)>Math::ALMOST_NEG_INFTY)
 			{
 				ASSERT(idx_a < hmm_idx->num_a)
 				hmm_idx->idx_a_rows[idx_a]=i;
@@ -312,7 +312,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 		for (j=0; j<pos->get_M(); j++)
 		{
-			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (hmm->get_b(i,j)>Math::ALMOST_NEG_INFTY)
 			{
 				ASSERT(idx_b < hmm_idx->num_b)
 				hmm_idx->idx_b_rows[idx_b]=i;
@@ -324,7 +324,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	return true;
 }
 
-int32_t CTOPFeatures::compute_num_features()
+int32_t TOPFeatures::compute_num_features()
 {
 	int32_t num=0;
 
@@ -353,7 +353,7 @@ int32_t CTOPFeatures::compute_num_features()
 	return num;
 }
 
-void CTOPFeatures::init()
+void TOPFeatures::init()
 {
 	pos = NULL;
 	neg = NULL;
@@ -365,8 +365,8 @@ void CTOPFeatures::init()
 
 	unset_generic();
 	//TODO serialize HMMs
-	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
-	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	//m_parameters->add((std::shared_ptr<SGObject>*) &pos, "pos", "HMM for positive class.");
+	//m_parameters->add((std::shared_ptr<SGObject>*) &neg, "neg", "HMM for negative class.");
 	SG_ADD(
 	    &neglinear, "neglinear", "If negative HMM is a LinearHMM");
 	SG_ADD(

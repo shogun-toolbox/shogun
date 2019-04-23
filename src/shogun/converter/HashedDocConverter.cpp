@@ -7,7 +7,6 @@
 #include <shogun/converter/HashedDocConverter.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/Hash.h>
-#include <shogun/lib/DynamicArray.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -16,29 +15,29 @@ using namespace shogun;
 
 namespace shogun
 {
-CHashedDocConverter::CHashedDocConverter() : CConverter()
+HashedDocConverter::HashedDocConverter() : Converter()
 {
 	init(NULL, 16, false, 1, 0);
 }
 
-CHashedDocConverter::CHashedDocConverter(int32_t hash_bits, bool normalize,
-	int32_t n_grams, int32_t skips) : CConverter()
+HashedDocConverter::HashedDocConverter(int32_t hash_bits, bool normalize,
+	int32_t n_grams, int32_t skips) : Converter()
 {
 	init(NULL, hash_bits, normalize, n_grams, skips);
 }
 
-CHashedDocConverter::CHashedDocConverter(CTokenizer* tzer,
-	int32_t hash_bits, bool normalize, int32_t n_grams, int32_t skips) : CConverter()
+HashedDocConverter::HashedDocConverter(std::shared_ptr<Tokenizer> tzer,
+	int32_t hash_bits, bool normalize, int32_t n_grams, int32_t skips) : Converter()
 {
 	init(tzer, hash_bits, normalize, n_grams, skips);
 }
 
-CHashedDocConverter::~CHashedDocConverter()
+HashedDocConverter::~HashedDocConverter()
 {
-	SG_UNREF(tokenizer);
+
 }
 
-void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normalize,
+void HashedDocConverter::init(std::shared_ptr<Tokenizer> tzer, int32_t hash_bits, bool normalize,
 	int32_t n_grams, int32_t skips)
 {
 	num_bits = hash_bits;
@@ -48,7 +47,7 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 
 	if (tzer==NULL)
 	{
-		CDelimiterTokenizer* tk = new CDelimiterTokenizer();
+		auto tk = std::make_shared<DelimiterTokenizer>();
 		tk->delimiters[(uint8_t) ' '] = 1;
 		tk->delimiters[(uint8_t) '\t'] = 1;
 		tokenizer = tk;
@@ -56,7 +55,6 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 	else
 		tokenizer = tzer;
 
-	SG_REF(tokenizer);
 	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash");
 	SG_ADD(&ngrams, "ngrams", "Number of consecutive tokens");
 	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip");
@@ -64,22 +62,22 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 	SG_ADD(&tokenizer, "tokenizer", "Tokenizer");
 }
 
-const char* CHashedDocConverter::get_name() const
+const char* HashedDocConverter::get_name() const
 {
 	return "HashedDocConverter";
 }
 
-CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features> HashedDocConverter::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	ASSERT(features);
 	if (strcmp(features->get_name(), "StringFeatures")!=0)
 		error(
-			"CHashedConverter::transform() : CFeatures object passed is "
-			"not of type CStringFeatures.");
+			"HashedConverter::transform() : Features object passed is "
+			"not of type StringFeatures.");
 
-	CStringFeatures<char>* s_features = (CStringFeatures<char>*) features;
+	auto s_features = std::static_pointer_cast<StringFeatures<char>>(features);
 
-	int32_t dim = CMath::pow(2, num_bits);
+	int32_t dim = Math::pow(2, num_bits);
 	SGSparseMatrix<float64_t> matrix(dim,features->get_num_vectors());
 	for (index_t vec_idx=0; vec_idx<s_features->get_num_vectors(); vec_idx++)
 	{
@@ -88,15 +86,16 @@ CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
 		s_features->free_feature_vector(doc, vec_idx);
 	}
 
-	return (CFeatures*) new CSparseFeatures<float64_t>(matrix);
+	return std::make_shared<SparseFeatures<float64_t>>(matrix);
 }
 
-SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
+SGSparseVector<float64_t> HashedDocConverter::apply(SGVector<char> document)
 {
 	ASSERT(document.size()>0)
 	const int32_t array_size = 1024*1024;
 	/** the array will contain all the hashes generated from the tokens */
-	CDynamicArray<uint32_t> hashed_indices(array_size);
+	std::vector<uint32_t> hashed_indices;
+	hashed_indices.reserve(array_size);
 
 	/** this vector will maintain the current n+k active tokens
 	 * in a circular manner */
@@ -116,7 +115,7 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	while (hashes_end<ngrams-1+tokens_to_skip && tokenizer->has_next())
 	{
 		index_t end = tokenizer->next_token_idx(token_start);
-		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &document.vector[token_start],
+		uint32_t token_hash = Hash::MurmurHash3((uint8_t* ) &document.vector[token_start],
 				end-token_start, seed);
 		cached_hashes[hashes_end++] = token_hash;
 	}
@@ -125,15 +124,15 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	while (tokenizer->has_next())
 	{
 		index_t end = tokenizer->next_token_idx(token_start);
-		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &document.vector[token_start],
+		uint32_t token_hash = Hash::MurmurHash3((uint8_t* ) &document.vector[token_start],
 				end-token_start, seed);
 		cached_hashes[hashes_end] = token_hash;
 
-		CHashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start, len,
+		HashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start, len,
 				ngram_indices, num_bits, ngrams, tokens_to_skip);
 
 		for (index_t i=0; i<ngram_indices.vlen; i++)
-			hashed_indices.append_element(ngram_indices[i]);
+			hashed_indices.push_back(ngram_indices[i]);
 
 		hashes_start++;
 		hashes_end++;
@@ -149,11 +148,11 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 		while (hashes_start!=hashes_end)
 		{
 			len--;
-			index_t max_idx = CHashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start,
+			index_t max_idx = HashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start,
 					len, ngram_indices, num_bits, ngrams, tokens_to_skip);
 
 			for (index_t i=0; i<max_idx; i++)
-				hashed_indices.append_element(ngram_indices[i]);
+				hashed_indices.push_back(ngram_indices[i]);
 
 			hashes_start++;
 			if (hashes_start==cached_hashes.vlen)
@@ -174,17 +173,17 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	return sparse_doc_rep;
 }
 
-SGSparseVector<float64_t> CHashedDocConverter::create_hashed_representation(CDynamicArray<uint32_t>& hashed_indices)
+SGSparseVector<float64_t> HashedDocConverter::create_hashed_representation(std::vector<uint32_t>& hashed_indices)
 {
 	int32_t num_nnz_features = count_distinct_indices(hashed_indices);
 
 	SGSparseVector<float64_t> sparse_doc_rep(num_nnz_features);
 	index_t sparse_idx = 0;
-	for (index_t i=0; i<hashed_indices.get_num_elements(); i++)
+	for (size_t i=0; i<hashed_indices.size(); i++)
 	{
 		sparse_doc_rep.features[sparse_idx].feat_index = hashed_indices[i];
 		sparse_doc_rep.features[sparse_idx].entry = 1;
-		while ( (i+1<hashed_indices.get_num_elements()) &&
+		while ( (i+1<hashed_indices.size()) &&
 				(hashed_indices[i+1]==hashed_indices[i]) )
 		{
 			sparse_doc_rep.features[sparse_idx].entry++;
@@ -195,7 +194,7 @@ SGSparseVector<float64_t> CHashedDocConverter::create_hashed_representation(CDyn
 	return sparse_doc_rep;
 }
 
-index_t CHashedDocConverter::generate_ngram_hashes(SGVector<uint32_t>& hashes, index_t hashes_start,
+index_t HashedDocConverter::generate_ngram_hashes(SGVector<uint32_t>& hashes, index_t hashes_start,
 	index_t len, SGVector<index_t>& ngram_hashes, int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip)
 {
 	index_t h_idx = 0;
@@ -218,16 +217,16 @@ index_t CHashedDocConverter::generate_ngram_hashes(SGVector<uint32_t>& hashes, i
 	return h_idx;
 }
 
-int32_t CHashedDocConverter::count_distinct_indices(CDynamicArray<uint32_t>& hashed_indices)
+int32_t HashedDocConverter::count_distinct_indices(std::vector<uint32_t>& hashed_indices)
 {
-	CMath::qsort(hashed_indices.get_array(), hashed_indices.get_num_elements());
+	std::sort(hashed_indices.begin(), hashed_indices.end());
 
 	/** Counting nnz features */
 	int32_t num_nnz_features = 0;
-	for (index_t i=0; i<hashed_indices.get_num_elements(); i++)
+	for (size_t i=0; i<hashed_indices.size(); i++)
 	{
 		num_nnz_features++;
-		while ( (i+1<hashed_indices.get_num_elements()) &&
+		while ( (i+1<hashed_indices.size()) &&
 				(hashed_indices[i+1]==hashed_indices[i]) )
 		{
 			i++;
@@ -236,12 +235,12 @@ int32_t CHashedDocConverter::count_distinct_indices(CDynamicArray<uint32_t>& has
 	return num_nnz_features;
 }
 
-void CHashedDocConverter::set_normalization(bool normalize)
+void HashedDocConverter::set_normalization(bool normalize)
 {
 	should_normalize = normalize;
 }
 
-void CHashedDocConverter::set_k_skip_n_grams(int32_t k, int32_t n)
+void HashedDocConverter::set_k_skip_n_grams(int32_t k, int32_t n)
 {
 	tokens_to_skip = k;
 	ngrams = n;

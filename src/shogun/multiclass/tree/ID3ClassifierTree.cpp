@@ -38,60 +38,57 @@
 
 using namespace shogun;
 
-CID3ClassifierTree::CID3ClassifierTree()
-: CTreeMachine<id3TreeNodeData>()
+ID3ClassifierTree::ID3ClassifierTree()
+: TreeMachine<id3TreeNodeData>()
 {
 }
 
-CID3ClassifierTree::~CID3ClassifierTree()
+ID3ClassifierTree::~ID3ClassifierTree()
 {
 }
 
-CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass(std::shared_ptr<Features> data)
 {
 	require(data, "Data required for classification in apply_multiclass");
 
-	node_t* current = get_root();
-	CMulticlassLabels* ret = apply_multiclass_from_current_node((CDenseFeatures<float64_t>*) data, current);
-
-	SG_UNREF(current);
-	return ret;
+	auto current = get_root()->as<node_t>();
+	return apply_multiclass_from_current_node(data->as<DenseFeatures<float64_t>>(), current);
 }
 
-bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data,
-			CMulticlassLabels* validation_labels, float64_t epsilon)
+bool ID3ClassifierTree::prune_tree(std::shared_ptr<DenseFeatures<float64_t>> validation_data,
+			std::shared_ptr<MulticlassLabels> validation_labels, float64_t epsilon)
 {
-	node_t* current = get_root();
+	auto current = get_root();
 	prune_tree_machine(validation_data, validation_labels, current, epsilon);
 
-	SG_UNREF(current);
+
 	return true;
 }
 
-bool CID3ClassifierTree::train_machine(CFeatures* data)
+bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE, "Dense data required for training");
 
-	int32_t num_features = (dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_features();
+	int32_t num_features = data->as<DenseFeatures<float64_t>>()->get_num_features();
 	SGVector<int32_t> feature_ids = SGVector<int32_t>(num_features);
 	feature_ids.range_fill();
 
-	set_root(id3train(data, dynamic_cast<CMulticlassLabels*>(m_labels), feature_ids, 0));
+	set_root(id3train(data, multiclass_labels(m_labels), feature_ids, 0));
 
 	return true;
 }
 
-CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
-	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
+std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(std::shared_ptr<Features> data,
+	std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
-	node_t* node = new node_t();
-	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
+	auto node = std::make_shared<node_t>();
+	auto feats = data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs = feats->get_num_vectors();
 
 	// set class_label for the node as the mode of occurring multiclass labels
 	SGVector<float64_t> labels = class_labels->get_labels_copy();
-	CMath::qsort(labels);
+	Math::qsort(labels);
 
 	int32_t most_label = labels[0];
 	int32_t most_num = 1;
@@ -144,7 +141,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	for (int32_t i=0; i<num_vecs; i++)
 		best_feature_values[i] = (feats->get_feature_vector(i))[best_feature_index];
 
-	CMulticlassLabels* best_feature_labels = new CMulticlassLabels(best_feature_values);
+	auto best_feature_labels = std::make_shared<MulticlassLabels>(best_feature_values);
 	SGVector<float64_t> best_labels_unique = best_feature_labels->get_unique_labels();
 
 	for (int32_t i=0; i<best_labels_unique.vlen; i++)
@@ -190,32 +187,32 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 				new_feature_id_vector[++cnt] = feature_id_vector[j];
 		}
 
-		CMulticlassLabels* new_class_labels = new CMulticlassLabels(new_labels_vector);
-		CDenseFeatures<float64_t>* new_data = new CDenseFeatures<float64_t>(mat);
+		auto new_class_labels = std::make_shared<MulticlassLabels>(new_labels_vector);
+		auto new_data = std::make_shared<DenseFeatures<float64_t>>(mat);
 
-		node_t* child = id3train(new_data, new_class_labels, new_feature_id_vector, level+1);
+		auto child = id3train(new_data, new_class_labels, new_feature_id_vector, level+1);
 		child->data.transit_if_feature_value = active_feature_value;
 		node->data.attribute_id = feature_id_vector[best_feature_index];
 		node->add_child(child);
 
-		SG_UNREF(new_class_labels);
-		SG_UNREF(new_data);
+
+
 	}
 
-	SG_UNREF(best_feature_labels);
+
 
 	return node;
 }
 
-float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data,
-								CMulticlassLabels* class_labels)
+float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data,
+								std::shared_ptr<MulticlassLabels> class_labels)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
 		"Dense data required for information gain calculation");
 
 	float64_t gain = 0;
-	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
+	auto feats = data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs = feats->get_num_vectors();
 
 	// get attribute values for attribute
@@ -224,7 +221,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 	for (int32_t i=0; i<num_vecs; i++)
 		attribute_values[i] = (feats->get_feature_vector(i))[attr_no];
 
-	CMulticlassLabels* attribute_labels = new CMulticlassLabels(attribute_values);
+	auto attribute_labels = std::make_shared<MulticlassLabels>(attribute_values);
 	SGVector<float64_t> attr_val_unique = attribute_labels->get_unique_labels();
 
 	for (int32_t i=0; i<attr_val_unique.vlen; i++)
@@ -247,22 +244,22 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 				sub_class[count++] = class_labels->get_label(j);
 		}
 
-		CMulticlassLabels* sub_labels = new CMulticlassLabels(sub_class);
+		auto sub_labels = std::make_shared<MulticlassLabels>(sub_class);
 		float64_t sub_entropy = entropy(sub_labels);
 		gain += sub_entropy*(attr_count-0.f)/(num_vecs-0.f);
 
-		SG_UNREF(sub_labels);
+
 	}
 
 	float64_t data_entropy = entropy(class_labels);
 	gain = data_entropy-gain;
 
-	SG_UNREF(attribute_labels);
+
 
 	return gain;
 }
 
-float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
+float64_t ID3ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels)
 {
 	SGVector<float64_t> log_ratios = SGVector<float64_t>
 			(labels->get_unique_labels().size());
@@ -283,20 +280,20 @@ float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 			log_ratios[i] = std::log(log_ratios[i]);
 	}
 
-	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);
+	return Statistics::entropy(log_ratios.vector, log_ratios.vlen);
 }
 
-void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
-		CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon)
+void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64_t>> feats,
+		std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
 {
 	SGMatrix<float64_t> feature_matrix = feats->get_feature_matrix();
-	CDynamicObjectArray* children = current->get_children();
+	auto children = current->get_children();
 
 	for (int32_t i=0; i<children->get_num_elements(); i++)
 	{
 		// count number of feature vectors which transit into the child
 		int32_t count = 0;
-		node_t* child = dynamic_cast<node_t*>(children->get_element(i));
+		auto child = children->get_element<node_t>(i);
 
 		for (int32_t j=0; j<feature_matrix.num_cols; j++)
 		{
@@ -321,44 +318,34 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 			}
 		}
 
-		auto feats_train = wrap(view(feats, subset));
-		auto gt_train = wrap(view(gnd_truth, subset));
+		auto feats_train = view(feats, subset);
+		auto gt_train = view(gnd_truth, subset);
 
 		// prune the child subtree
 		prune_tree_machine(feats_train, gt_train, child, epsilon);
-
-		SG_UNREF(child);
 	}
+	auto predicted_unpruned = apply_multiclass_from_current_node(feats, current);
 
-	SG_UNREF(children);
-
-	CMulticlassLabels* predicted_unpruned = apply_multiclass_from_current_node(feats, current);
-	SG_REF(predicted_unpruned);
 	SGVector<float64_t> pruned_labels = SGVector<float64_t>(feature_matrix.num_cols);
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 		pruned_labels[i] = current->data.class_label;
 
-	CMulticlassLabels* predicted_pruned = new CMulticlassLabels(pruned_labels);
-	SG_REF(predicted_pruned);
+	auto predicted_pruned = std::make_shared<MulticlassLabels>(pruned_labels);
 
-	CMulticlassAccuracy* accuracy = new CMulticlassAccuracy();
+
+	auto accuracy = std::make_shared<MulticlassAccuracy>();
 	float64_t unpruned_accuracy = accuracy->evaluate(predicted_unpruned, gnd_truth);
 	float64_t pruned_accuracy = accuracy->evaluate(predicted_pruned, gnd_truth);
 
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
-		CDynamicObjectArray* null_children = new CDynamicObjectArray();
+		auto null_children = std::make_shared<DynamicObjectArray>();
 		current->set_children(null_children);
-		SG_UNREF(null_children);
 	}
-
-	SG_UNREF(accuracy);
-	SG_UNREF(predicted_pruned);
-	SG_UNREF(predicted_unpruned);
 }
 
-CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats,
-											node_t* current)
+std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
+											std::shared_ptr<node_t> current)
 {
 	require(feats, "Features should not be NULL");
 	require(current, "Current node should not be NULL");
@@ -371,9 +358,9 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDense
 	{
 		// choose the current subtree as the entry point
 		SGVector<float64_t> sample = feats->get_feature_vector(i);
-		node_t* node = current;
-		SG_REF(node);
-		CDynamicObjectArray* children = node->get_children();
+		auto node = current;
+
+		auto children = node->get_children();
 
 		// traverse the subtree until leaf node is reached
 		while (children->get_num_elements())
@@ -381,22 +368,20 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDense
 			bool flag = false;
 			for (int32_t j=0; j<children->get_num_elements(); j++)
 			{
-				node_t* child = dynamic_cast<node_t*>(children->get_element(j));
+				auto child = children->get_element<node_t>(j);
 				if (child->data.transit_if_feature_value
 						== sample[node->data.attribute_id])
 				{
 					flag = true;
 
-					SG_UNREF(node);
+
 					node = child;
 
-					SG_UNREF(children);
+
 					children = node->get_children();
 
 					break;
 				}
-
-				SG_UNREF(child);
 			}
 
 			if (!flag)
@@ -405,11 +390,7 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDense
 
 		// class_label of leaf node is the class to which chosen vector belongs
 		labels[i] = node->data.class_label;
-
-		SG_UNREF(node);
-		SG_UNREF(children);
 	}
 
-	CMulticlassLabels* ret = new CMulticlassLabels(labels);
-	return ret;
+	return std::make_shared<MulticlassLabels>(labels);
 }

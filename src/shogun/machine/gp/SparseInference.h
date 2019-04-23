@@ -68,11 +68,11 @@ namespace shogun
  * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{Sparse}\f$.
  *
  */
-class CSparseInference: public CInference
+class SparseInference: public Inference
 {
 public:
 	/** default constructor */
-	CSparseInference();
+	SparseInference();
 
 	/** constructor
 	 *
@@ -83,11 +83,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSparseInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	SparseInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CSparseInference();
+	virtual ~SparseInference();
 
 	/** return what type of inference we are
 	 *
@@ -105,10 +105,10 @@ public:
 	 *
 	 * @param feat features to set
 	 */
-	virtual void set_inducing_features(CFeatures* feat)
+	virtual void set_inducing_features(std::shared_ptr<Features> feat)
 	{
 		require(feat,"Input inducing features must be not empty");
-		CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(feat);
+		auto lat_type=std::dynamic_pointer_cast<DotFeatures>(feat);
 		require(lat_type, "Inducing features ({}) must be"
 			" DotFeatures or one of its subclasses", feat->get_name());
 		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
@@ -118,13 +118,11 @@ public:
 	 *
 	 * @return features
 	 */
-	virtual CFeatures* get_inducing_features()
+	virtual std::shared_ptr<Features> get_inducing_features()
 	{
 		SGMatrix<float64_t> out(m_inducing_features.matrix,
 			m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-		CFeatures* inducing_features=new CDenseFeatures<float64_t>(out);
-		SG_REF(inducing_features);
-		return inducing_features;
+		return std::make_shared<DenseFeatures<float64_t>>(out);
 	}
 
 	/** get alpha vector
@@ -219,7 +217,7 @@ protected:
 	 * 1. The type of the gradient wrt inducing features is float64_t, which is used to update inducing features
 	 * 2. Reason 1 implies that the type of inducing features can be float64_t while the type of features does not required
 	 * as float64_t
-	 * 3. Reason 2 implies that the type of features must be a subclass of CDotFeatures, which can represent features as
+	 * 3. Reason 2 implies that the type of features must be a subclass of DotFeatures, which can represent features as
 	 * float64_t
 	 */
 	virtual void convert_features();

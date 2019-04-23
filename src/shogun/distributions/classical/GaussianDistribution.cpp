@@ -15,14 +15,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CGaussianDistribution::CGaussianDistribution() : RandomMixin<CProbabilityDistribution>()
+GaussianDistribution::GaussianDistribution() : RandomMixin<ProbabilityDistribution>()
 {
 	init();
 }
 
-CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
+GaussianDistribution::GaussianDistribution(SGVector<float64_t> mean,
 		SGMatrix<float64_t> cov, bool cov_is_factor) :
-				RandomMixin<CProbabilityDistribution>(mean.vlen)
+				RandomMixin<ProbabilityDistribution>(mean.vlen)
 {
 	require(cov.num_rows==cov.num_cols, "Covariance must be square but is "
 			"{}x{}", cov.num_rows, cov.num_cols);
@@ -60,12 +60,12 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		m_L=cov;
 }
 
-CGaussianDistribution::~CGaussianDistribution()
+GaussianDistribution::~GaussianDistribution()
 {
 
 }
 
-SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
+SGMatrix<float64_t> GaussianDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
 	require(num_samples>0, "Number of samples ({}) must be positive",
@@ -105,7 +105,7 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	return samples;
 }
 
-SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
+SGVector<float64_t> GaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
 {
 	require(samples.num_cols>0, "Number of samples must be positive, but is {}",
 			samples.num_cols);
@@ -115,7 +115,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 	/* for easier to read code */
 	index_t num_samples=samples.num_cols;
 
-	float64_t const_part = -0.5 * m_dimension * std::log(2 * CMath::PI);
+	float64_t const_part = -0.5 * m_dimension * std::log(2 * Math::PI);
 
 	/* determinant is product of diagonal elements of triangular matrix */
 	float64_t log_det_part=0;
@@ -163,7 +163,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 
 }
 
-void CGaussianDistribution::init()
+void GaussianDistribution::init()
 {
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.");
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "

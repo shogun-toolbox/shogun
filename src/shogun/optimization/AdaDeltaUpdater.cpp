@@ -132,7 +132,7 @@ void AdaDeltaUpdater::update_variable(SGVector<float64_t> variable_reference,
 	}
 	if(m_correction)
 	{
-		MomentumCorrection* momentum_correction=dynamic_cast<MomentumCorrection *>(m_correction);
+		auto momentum_correction=std::dynamic_pointer_cast<MomentumCorrection>(m_correction);
 		if(momentum_correction)
 		{
 			if(!momentum_correction->is_initialized())

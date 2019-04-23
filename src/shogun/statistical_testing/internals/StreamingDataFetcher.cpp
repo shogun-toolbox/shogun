@@ -38,19 +38,19 @@
 using namespace shogun;
 using namespace internal;
 
-StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples)
+StreamingDataFetcher::StreamingDataFetcher(std::shared_ptr<StreamingFeatures> samples)
 : DataFetcher(), parser_running(false)
 {
 	require(samples!=nullptr, "Samples cannot be null!");
 	m_samples=samples;
-	SG_REF(m_samples);
+
 	m_num_samples=0;
 }
 
 StreamingDataFetcher::~StreamingDataFetcher()
 {
 	end();
-	SG_UNREF(m_samples);
+
 }
 
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
@@ -103,9 +103,9 @@ void StreamingDataFetcher::start()
 	}
 }
 
-CFeatures* StreamingDataFetcher::next()
+std::shared_ptr<Features> StreamingDataFetcher::next()
 {
-	CFeatures* next_samples=nullptr;
+	std::shared_ptr<Features> next_samples=nullptr;
 	// figure out how many samples to fetch in this burst
 	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
 	auto num_more_samples=get_num_samples()-num_already_fetched;
@@ -113,7 +113,7 @@ CFeatures* StreamingDataFetcher::next()
 	{
 		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
 		next_samples=m_samples->get_streamed_features(num_samples_this_burst);
-		SG_REF(next_samples);
+
 		m_block_details.m_next_block_index+=m_block_details.m_num_blocks_per_burst;
 	}
 	return next_samples;

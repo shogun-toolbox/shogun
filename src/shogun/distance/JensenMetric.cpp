@@ -12,39 +12,39 @@
 
 using namespace shogun;
 
-CJensenMetric::CJensenMetric() : CDenseDistance<float64_t>()
+JensenMetric::JensenMetric() : DenseDistance<float64_t>()
 {
 }
 
-CJensenMetric::CJensenMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CDenseDistance<float64_t>()
+JensenMetric::JensenMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+: DenseDistance<float64_t>()
 {
 	init(l, r);
 }
 
-CJensenMetric::~CJensenMetric()
+JensenMetric::~JensenMetric()
 {
 	cleanup();
 }
 
-bool CJensenMetric::init(CFeatures* l, CFeatures* r)
+bool JensenMetric::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	return CDenseDistance<float64_t>::init(l,r);
+	return DenseDistance<float64_t>::init(l,r);
 }
 
-void CJensenMetric::cleanup()
+void JensenMetric::cleanup()
 {
 }
 
-float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
+float64_t JensenMetric::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen)
 
@@ -65,8 +65,8 @@ float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 
 	return result;

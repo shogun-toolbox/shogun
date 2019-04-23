@@ -61,10 +61,10 @@ TEST(Kernel, sum_symmetric_block_no_diag)
 	// create random data
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats, feats, 2);
 	float64_t sum=kernel->sum_symmetric_block(0, num_feats);
 
 	// check with the kernel matrix explicitely
@@ -77,9 +77,6 @@ TEST(Kernel, sum_symmetric_block_no_diag)
 	}
 
 	EXPECT_NEAR(sum, km_sum, 1E-13);
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, sum_symmetric_block_with_diag)
@@ -91,10 +88,10 @@ TEST(Kernel, sum_symmetric_block_with_diag)
 	// create random data
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats, feats, 2);
 	float64_t sum=kernel->sum_symmetric_block(0, num_feats, false);
 
 	// check with the kernel matrix explicitely
@@ -107,9 +104,6 @@ TEST(Kernel, sum_symmetric_block_with_diag)
 	}
 
 	EXPECT_NEAR(sum, km_sum, 1E-13);
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, sum_block_with_diag)
@@ -124,11 +118,11 @@ TEST(Kernel, sum_block_with_diag)
 
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim, prng);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim, prng);
-	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats_p, feats_q, 2);
 	float64_t sum=kernel->sum_block(0, 0, num_feats_p, num_feats_q);
 
 	// check with the kernel rows and cols explicitly
@@ -141,9 +135,6 @@ TEST(Kernel, sum_block_with_diag)
 	}
 
 	EXPECT_NEAR(sum, km_sum, 1E-13);
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, sum_block_no_diag)
@@ -158,14 +149,14 @@ TEST(Kernel, sum_block_no_diag)
 
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim, prng);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim, prng);
-	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
-	float64_t sum=kernel->sum_block(0, 0, num_feats_p, num_feats_q, true);
+	auto kernel=std::make_shared<GaussianKernel>(feats_p, feats_q, 2);
+	float64_t sum = kernel->sum_block(0, 0, num_feats_p, num_feats_q, true);
 
-	// check with the kernel rows and cols explicitly
+	// check with the kernel matrix explicitely
 	SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 	float64_t km_sum=0.0;
 	for (index_t i=0; i<km.num_rows; i++)
@@ -175,39 +166,6 @@ TEST(Kernel, sum_block_no_diag)
 	}
 
 	EXPECT_NEAR(sum, km_sum, 1E-13);
-
-	// cleanup
-	SG_UNREF(kernel);
-}
-
-TEST(Kernel, row_wise_sum_symmetric_block_no_diag)
-{
-	const int32_t seed = 100;
-	const index_t num_feats=10;
-	const index_t dim=3;
-
-	// create random data
-	std::mt19937_64 prng(seed);
-	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
-
-	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
-	SGVector<float64_t> row_wise_sum_vec=kernel->row_wise_sum_symmetric_block(0,
-			num_feats);
-
-	// check with the kernel matrix explicitely
-	SGMatrix<float64_t> km=kernel->get_kernel_matrix();
-	for (index_t i=0; i<km.num_rows; i++)
-	{
-		float64_t row_wise_sum=0.0;
-		for (index_t j=0; j<km.num_cols; ++j)
-			row_wise_sum+=i==j? 0 : km(i, j);
-		EXPECT_NEAR(row_wise_sum_vec[i], row_wise_sum, 1E-15);
-	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, row_wise_sum_symmetric_block_with_diag)
@@ -219,10 +177,10 @@ TEST(Kernel, row_wise_sum_symmetric_block_with_diag)
 	// create random data
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats, feats, 2);
 	SGVector<float64_t> row_wise_sum_vec=kernel->row_wise_sum_symmetric_block(0,
 			num_feats, false);
 
@@ -235,9 +193,6 @@ TEST(Kernel, row_wise_sum_symmetric_block_with_diag)
 			row_wise_sum+=km(i, j);
 		EXPECT_NEAR(row_wise_sum_vec[i], row_wise_sum, 1E-15);
 	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_no_diag)
@@ -249,10 +204,10 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_no_diag)
 	// create random data
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats, feats, 2);
 	SGMatrix<float64_t> row_wise_sum_mat=
 		kernel->row_wise_sum_squared_sum_symmetric_block(0, num_feats);
 
@@ -271,9 +226,6 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_no_diag)
 		EXPECT_NEAR(row_wise_sum_mat(i, 0), row_wise_sum, 1E-15);
 		EXPECT_NEAR(row_wise_sum_mat(i, 1), row_wise_squared_sum, 1E-15);
 	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_with_diag)
@@ -285,10 +237,10 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_with_diag)
 	// create random data
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim, prng);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats, feats, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats, feats, 2);
 	SGMatrix<float64_t> row_wise_sum_mat=
 		kernel->row_wise_sum_squared_sum_symmetric_block(0, num_feats, false);
 
@@ -307,9 +259,6 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_with_diag)
 		EXPECT_NEAR(row_wise_sum_mat(i, 0), row_wise_sum, 1E-15);
 		EXPECT_NEAR(row_wise_sum_mat(i, 1), row_wise_squared_sum, 1E-15);
 	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, row_col_wise_sum_block_with_diag)
@@ -324,11 +273,11 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim, prng);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim, prng);
 
-	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats_p, feats_q, 2);
 	SGVector<float64_t> row_col_wise_sum=kernel->row_col_wise_sum_block(0, 0,
 			num_feats_p, num_feats_q);
 
@@ -349,9 +298,6 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 			col_wise_sum+=km(j, i);
 		EXPECT_NEAR(col_wise_sum, row_col_wise_sum[i+num_feats_p], 1E-14);
 	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, row_col_wise_sum_block_no_diag)
@@ -366,11 +312,11 @@ TEST(Kernel, row_col_wise_sum_block_no_diag)
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim, prng);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim, prng);
 
-	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats_p, feats_q, 2);
 	SGVector<float64_t> row_col_wise_sum=kernel->row_col_wise_sum_block(0, 0,
 			num_feats_p, num_feats_q, true);
 
@@ -391,18 +337,15 @@ TEST(Kernel, row_col_wise_sum_block_no_diag)
 			col_wise_sum+=i==j ? 0 :km(j, i);
 		EXPECT_NEAR(col_wise_sum, row_col_wise_sum[i+num_feats_p], 1E-15);
 	}
-
-	// cleanup
-	SG_UNREF(kernel);
 }
 
 TEST(Kernel, gaussian_kernel_width_constructor)
 {
 	float64_t width = 5;
-	CGaussianKernel* kernel=new CGaussianKernel(width);
+	auto kernel=std::make_shared<GaussianKernel>(width);
 	EXPECT_EQ(kernel->get_cache_size(), 10);
 	EXPECT_EQ(kernel->get_width(), width);
-	SG_UNREF(kernel);
+
 }
 
 TEST(Kernel, gaussian_get_kernel_matrix)
@@ -415,15 +358,15 @@ TEST(Kernel, gaussian_get_kernel_matrix)
 	std::mt19937_64 prng(seed);
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim, prng);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim, prng);
-	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	// initialize a Gaussian kernel of width 1
-	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
+	auto kernel=std::make_shared<GaussianKernel>(feats_p, feats_q, 2);
 	SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 	for (index_t i=0; i<km.num_rows; i++)
 		for (index_t j=0; j<km.num_cols; ++j)
 			EXPECT_NEAR(kernel->kernel(i,j), km(i, j), 1E-15);
 
-	SG_UNREF(kernel);
+
 }

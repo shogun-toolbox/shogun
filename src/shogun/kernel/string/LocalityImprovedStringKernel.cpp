@@ -12,15 +12,15 @@
 
 using namespace shogun;
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel()
-: CStringKernel<char>()
+LocalityImprovedStringKernel::LocalityImprovedStringKernel()
+: StringKernel<char>()
 {
 	init();
 }
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
+LocalityImprovedStringKernel::LocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
-: CStringKernel<char>(size)
+: StringKernel<char>(size)
 {
 	init();
 
@@ -31,10 +31,10 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	SG_DEBUG("LIK with parms: l={}, id={}, od={} created!", l, id, od)
 }
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len,
+LocalityImprovedStringKernel::LocalityImprovedStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t len,
 	int32_t id, int32_t od)
-: CStringKernel<char>()
+: StringKernel<char>()
 {
 	init();
 
@@ -47,24 +47,24 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	init(l, r);
 }
 
-CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()
+LocalityImprovedStringKernel::~LocalityImprovedStringKernel()
 {
 	cleanup();
 }
 
-bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
+bool LocalityImprovedStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l,r);
+	StringKernel<char>::init(l,r);
 	return init_normalizer();
 }
 
-float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t LocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen && alen>0)
 
@@ -89,14 +89,14 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 	SG_FREE(match);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return pow(outer_sum, outer_degree + 1);
 }
 
-void CLocalityImprovedStringKernel::init()
+void LocalityImprovedStringKernel::init()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
 	length = 0;
 	inner_degree = 0;

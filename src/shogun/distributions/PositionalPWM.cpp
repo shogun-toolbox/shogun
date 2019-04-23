@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-CPositionalPWM::CPositionalPWM() : CDistribution(),
+PositionalPWM::PositionalPWM() : Distribution(),
 	m_sigma(0), m_mean(0)
 {
 	m_pwm = SGMatrix<float64_t>();
@@ -21,22 +21,22 @@ CPositionalPWM::CPositionalPWM() : CDistribution(),
 	register_params();
 }
 
-CPositionalPWM::~CPositionalPWM()
+PositionalPWM::~PositionalPWM()
 {
 }
 
-bool CPositionalPWM::train(CFeatures* data)
+bool PositionalPWM::train(std::shared_ptr<Features> data)
 {
 	not_implemented(SOURCE_LOCATION);
 	return true;
 }
 
-int32_t CPositionalPWM::get_num_model_parameters()
+int32_t PositionalPWM::get_num_model_parameters()
 {
 	return m_pwm.num_rows*m_pwm.num_cols+2;
 }
 
-float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
+float64_t PositionalPWM::get_log_model_parameter(int32_t num_param)
 {
 	ASSERT(num_param>0 && num_param<=m_pwm.num_rows*m_pwm.num_cols+2)
 
@@ -50,19 +50,19 @@ float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
 		return std::log(m_mean);
 }
 
-float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t PositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0;
 }
 
-float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
+float64_t PositionalPWM::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features)
 	ASSERT(features->get_feature_class() == C_STRING)
 	ASSERT(features->get_feature_type()==F_BYTE)
 
-	CStringFeatures<uint8_t>* strs=(CStringFeatures<uint8_t>*) features;
+	auto strs=std::dynamic_pointer_cast<StringFeatures<uint8_t>>(features);
 
 	float64_t lik=0;
 	int32_t len=0;
@@ -80,11 +80,11 @@ float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 	return lik;
 }
 
-float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
+float64_t PositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
 {
 	ASSERT(m_pwm.num_cols == len)
 	float64_t score = std::log(1 / (m_sigma * std::sqrt(2 * M_PI))) -
-	                  CMath::sq(pos - m_mean) / (2 * CMath::sq(m_sigma));
+	                  Math::sq(pos - m_mean) / (2 * Math::sq(m_sigma));
 
 	for (int32_t i=0; i<m_pwm.num_cols; i++)
 		score+=m_pwm[m_pwm.num_rows*i+window[i]];
@@ -92,11 +92,11 @@ float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len
 	return score;
 }
 
-void CPositionalPWM::compute_w(int32_t num_pos)
+void PositionalPWM::compute_w(int32_t num_pos)
 {
 	ASSERT(m_pwm.num_rows>0 && m_pwm.num_cols>0)
 
-	int32_t m_w_rows = CMath::pow(m_pwm.num_rows, m_pwm.num_cols);
+	int32_t m_w_rows = Math::pow(m_pwm.num_rows, m_pwm.num_cols);
 	int32_t m_w_cols = num_pos;
 
 	m_w = SGMatrix<float64_t>(m_w_cols,m_w_rows);
@@ -122,7 +122,7 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	}
 }
 
-void CPositionalPWM::register_params()
+void PositionalPWM::register_params()
 {
 	SG_ADD(&m_poim, "poim", "POIM Scoring Matrix");
 	SG_ADD(&m_w, "w", "Scoring Matrix");
@@ -131,32 +131,32 @@ void CPositionalPWM::register_params()
 	SG_ADD(&m_mean, "mean", "Mean.");
 }
 
-void CPositionalPWM::compute_scoring(int32_t max_degree)
+void PositionalPWM::compute_scoring(int32_t max_degree)
 {
 	int32_t num_feat=m_w.num_cols;
 	int32_t num_sym=0;
 	int32_t order=m_pwm.num_rows;
 	int32_t num_words=m_pwm.num_cols;
 
-	CAlphabet* alpha=new CAlphabet(DNA);
-	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>(alpha);
+	auto alpha=std::make_shared<Alphabet>(DNA);
+	auto str= std::make_shared<StringFeatures<uint16_t>>(alpha);
 	int32_t num_bits=alpha->get_num_bits();
 	str->compute_symbol_mask_table(num_bits);
 
 	for (int32_t i=0; i<order; i++)
-		num_sym+=CMath::pow((int32_t) num_words,i+1);
+		num_sym+=Math::pow((int32_t) num_words,i+1);
 
 	m_poim = SGVector<float64_t>(num_feat*num_sym);
 	memset(m_poim.vector,0, size_t(num_feat)*size_t(num_sym));
 
 	uint32_t kmer_mask=0;
-	uint32_t words=CMath::pow((int32_t) num_words,(int32_t) order);
+	uint32_t words=Math::pow((int32_t) num_words,(int32_t) order);
 	int32_t offset=0;
 
 	for (int32_t o=0; o<max_degree; o++)
 	{
 		float64_t* contrib=&m_poim[offset];
-		offset+=CMath::pow((int32_t) num_words,(int32_t) o+1);
+		offset+=Math::pow((int32_t) num_words,(int32_t) o+1);
 
 		kmer_mask=(kmer_mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
 
@@ -188,7 +188,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 			}
 
 			float64_t marginalizer=
-				1.0/CMath::pow((int32_t) num_words,(int32_t) m_sym);
+				1.0/Math::pow((int32_t) num_words,(int32_t) m_sym);
 
 			for (uint32_t i=0; i<words; i++)
 			{
@@ -200,7 +200,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 				}
 				else
 				{
-					for (uint32_t j=0; j< (uint32_t) CMath::pow((int32_t) num_words, (int32_t) o_sym); j++)
+					for (uint32_t j=0; j< (uint32_t) Math::pow((int32_t) num_words, (int32_t) o_sym); j++)
 					{
 						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
 						contrib[c]+=m_w[m_w.num_cols*il+i]*marginalizer;
@@ -211,12 +211,12 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	}
 }
 
-SGMatrix<float64_t> CPositionalPWM::get_scoring(int32_t d)
+SGMatrix<float64_t> PositionalPWM::get_scoring(int32_t d)
 {
 	int32_t offs=0;
 	for (int32_t i=0; i<d-1; i++)
-		offs+=CMath::pow((int32_t) m_w.num_rows,i+1);
-	int32_t rows=CMath::pow((int32_t) m_w.num_rows,d);
+		offs+=Math::pow((int32_t) m_w.num_rows,i+1);
+	int32_t rows=Math::pow((int32_t) m_w.num_rows,d);
 	int32_t cols=m_w.num_cols;
 	float64_t* scoring_matrix = SG_MALLOC(float64_t, rows*cols);
 	sg_memcpy(scoring_matrix,m_poim.vector+offs,rows*cols*sizeof(float64_t));

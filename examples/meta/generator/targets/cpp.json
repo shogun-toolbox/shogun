@@ -1,5 +1,5 @@
 {
-    "Program": "#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\nusing namespace shogun::io;\n\nint main(int, char*[])\n{\n\n$program\nreturn 0;\n}\n",
+    "Program": "#include <memory>\n${dependencies}\n\nusing namespace shogun;\nusing namespace shogun::io;\n\nint main(int, char*[])\n{\n\n$program\nreturn 0;\n}\n",
     "Dependencies": {
         "IncludeAllClasses": true,
         "IncludeEnums": true,
@@ -10,8 +10,8 @@
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
-        "Construct": "auto $name = some<C$typeName>($arguments)$kwargs",
-        "Copy": "auto $name = wrap($expr)$kwargs",
+        "Construct": "auto $name = std::make_shared<$typeName>($arguments)$kwargs",
+        "Copy": "auto $name = $expr$kwargs",
         "KeywordArguments": {
             "List": ";\n$elements",
             "Element": "$name->put(\"$keyword\", $expr)",
@@ -93,7 +93,7 @@
         "LongRealMatrix": "SGMatrix<floatmax_t>",
         "ComplexMatrix": "SGMatrix<complex128_t>",
         "RealDistance": "RealDistance<float64_t>",
-        "RealDenseDistance": "CDenseDistance<float64_t>"
+        "RealDenseDistance": "DenseDistance<float64_t>"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
@@ -119,7 +119,7 @@
             "get_option": "$object->get<std::string>($arguments)",
             "get_string": "$object->get<std::string>($arguments)"
         },
-        "StaticCall": "C$typeName::$method($arguments)",
+        "StaticCall": "$typeName::$method($arguments)",
         "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$typeName::$value"

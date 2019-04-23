@@ -33,13 +33,13 @@
 
 using namespace shogun;
 
-CKernel::CKernel() : CSGObject()
+Kernel::Kernel() : SGObject()
 {
 	init();
 	register_params();
 }
 
-CKernel::CKernel(int32_t size) : CSGObject()
+Kernel::Kernel(int32_t size) : SGObject()
 {
 	init();
 
@@ -51,7 +51,7 @@ CKernel::CKernel(int32_t size) : CSGObject()
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
+Kernel::Kernel(std::shared_ptr<Features> p_lhs, std::shared_ptr<Features> p_rhs, int32_t size) : SGObject()
 {
 	init();
 
@@ -60,22 +60,22 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 
 	cache_size=size;
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	set_normalizer(std::make_shared<IdentityKernelNormalizer>());
 	init(p_lhs, p_rhs);
 	register_params();
 }
 
-CKernel::~CKernel()
+Kernel::~Kernel()
 {
 	if (get_is_initialized())
 		error("Kernel still initialized on destruction.");
 
 	remove_lhs_and_rhs();
-	SG_UNREF(normalizer);
+
 }
 
 #ifdef USE_SVMLIGHT
-void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
+void Kernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {
 	if (size<10)
 		size=10;
@@ -88,11 +88,11 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 }
 #endif //USE_SVMLIGHT
 
-bool CKernel::init(CFeatures* l, CFeatures* r)
+bool Kernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	//make sure features were indeed supplied
-	require(l, "CKernel::init({}, {}): Left hand side features required!", fmt::ptr(l), fmt::ptr(r));
-	require(r, "CKernel::init({}, {}): Right hand side features required!", fmt::ptr(l), fmt::ptr(r));
+	require(l, "Kernel::init({}, {}): Left hand side features required!", fmt::ptr(l.get()), fmt::ptr(r.get()));
+	require(r, "Kernel::init({}, {}): Right hand side features required!", fmt::ptr(l.get()), fmt::ptr(r.get()));
 
 	//make sure features are compatible
 	if (l->support_compatible_class())
@@ -112,11 +112,10 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-	SG_REF(l);
+
 	if (l==r)
 		lhs_equals_rhs=true;
-	else // l!=r
-		SG_REF(r);
+
 
 	lhs=l;
 	rhs=r;
@@ -127,34 +126,34 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
 
-	SG_TRACE("leaving CKernel::init({}, {})", fmt::ptr(l), fmt::ptr(r));
+	SG_TRACE("leaving Kernel::init({}, {})", fmt::ptr(l.get()), fmt::ptr(r.get()));
 	return true;
 }
 
-bool CKernel::set_normalizer(CKernelNormalizer* n)
+bool Kernel::set_normalizer(std::shared_ptr<KernelNormalizer> n)
 {
-	SG_REF(n);
+
 	if (lhs && rhs)
 		n->init(this);
 
-	SG_UNREF(normalizer);
+
 	normalizer=n;
 
 	return (normalizer!=NULL);
 }
 
-CKernelNormalizer* CKernel::get_normalizer() const
+std::shared_ptr<KernelNormalizer> Kernel::get_normalizer() const
 {
-	SG_REF(normalizer)
+
 	return normalizer;
 }
 
-bool CKernel::init_normalizer()
+bool Kernel::init_normalizer()
 {
 	return normalizer->init(this);
 }
 
-void CKernel::cleanup()
+void Kernel::cleanup()
 {
 	remove_lhs_and_rhs();
 }
@@ -162,7 +161,7 @@ void CKernel::cleanup()
 #ifdef USE_SVMLIGHT
 /****************************** Cache handling *******************************/
 
-void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
+void Kernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 {
 	int32_t totdoc=get_num_vec_lhs();
 	if (totdoc<=0)
@@ -219,7 +218,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	kernel_cache.time=0;
 }
 
-void CKernel::get_kernel_row(
+void Kernel::get_kernel_row(
 	int32_t docnum, int32_t *active2dnum, float64_t *buffer, bool full_line)
 {
 	int32_t i,j;
@@ -283,7 +282,7 @@ void CKernel::get_kernel_row(
 
 
 // Fills cache for the row m
-void CKernel::cache_kernel_row(int32_t m)
+void Kernel::cache_kernel_row(int32_t m)
 {
 	int32_t j,k,l;
 	KERNELCACHE_ELEM *cache;
@@ -322,7 +321,7 @@ void CKernel::cache_kernel_row(int32_t m)
 }
 
 
-void* CKernel::cache_multiple_kernel_row_helper(void* p)
+void* Kernel::cache_multiple_kernel_row_helper(void* p)
 {
 	int32_t j,k,l;
 	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
@@ -357,7 +356,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 }
 
 // Fills cache for the rows in key
-void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
+void Kernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
 	int32_t nthreads=env()->get_num_threads();
 
@@ -453,7 +452,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 // remove numshrink columns in the cache
 // which correspond to examples marked
-void CKernel::kernel_cache_shrink(
+void Kernel::kernel_cache_shrink(
 	int32_t totdoc, int32_t numshrink, int32_t *after)
 {
 	ASSERT(totdoc > 0);
@@ -512,7 +511,7 @@ void CKernel::kernel_cache_shrink(
 
 }
 
-void CKernel::kernel_cache_reset_lru()
+void Kernel::kernel_cache_reset_lru()
 {
 	int32_t maxlru=0,k;
 
@@ -525,7 +524,7 @@ void CKernel::kernel_cache_reset_lru()
 	}
 }
 
-void CKernel::kernel_cache_cleanup()
+void Kernel::kernel_cache_cleanup()
 {
 	SG_FREE(kernel_cache.index);
 	SG_FREE(kernel_cache.occu);
@@ -537,7 +536,7 @@ void CKernel::kernel_cache_cleanup()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
-int32_t CKernel::kernel_cache_malloc()
+int32_t Kernel::kernel_cache_malloc()
 {
   int32_t i;
 
@@ -553,7 +552,7 @@ int32_t CKernel::kernel_cache_malloc()
   return(-1);
 }
 
-void CKernel::kernel_cache_free(int32_t cacheidx)
+void Kernel::kernel_cache_free(int32_t cacheidx)
 {
 	kernel_cache.occu[cacheidx]=0;
 	kernel_cache.elems--;
@@ -561,7 +560,7 @@ void CKernel::kernel_cache_free(int32_t cacheidx)
 
 // remove least recently used cache
 // element
-int32_t CKernel::kernel_cache_free_lru()
+int32_t Kernel::kernel_cache_free_lru()
 {
   int32_t k,least_elem=-1,least_time;
 
@@ -586,7 +585,7 @@ int32_t CKernel::kernel_cache_free_lru()
 
 // Get a free cache entry. In case cache is full, the lru
 // element is removed.
-KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
+KERNELCACHE_ELEM* Kernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 {
 	int32_t result;
 	if((result = kernel_cache_malloc()) == -1) {
@@ -604,13 +603,13 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 }
 #endif //USE_SVMLIGHT
 
-void CKernel::load(CFile* loader)
+void Kernel::load(std::shared_ptr<File> loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void CKernel::save(CFile* writer)
+void Kernel::save(std::shared_ptr<File> writer)
 {
 	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
@@ -618,14 +617,14 @@ void CKernel::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
-void CKernel::remove_lhs_and_rhs()
+void Kernel::remove_lhs_and_rhs()
 {
 	if (rhs!=lhs)
-		SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 	lhs_equals_rhs=false;
@@ -635,11 +634,11 @@ void CKernel::remove_lhs_and_rhs()
 #endif //USE_SVMLIGHT
 }
 
-void CKernel::remove_lhs()
+void Kernel::remove_lhs()
 {
 	if (rhs==lhs)
 		rhs=NULL;
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 	lhs_equals_rhs=false;
@@ -649,10 +648,10 @@ void CKernel::remove_lhs()
 }
 
 /// takes all necessary steps if the rhs is removed from kernel
-void CKernel::remove_rhs()
+void Kernel::remove_rhs()
 {
 	if (rhs!=lhs)
-		SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 	lhs_equals_rhs=false;
@@ -664,7 +663,7 @@ void CKernel::remove_rhs()
 
 #define ENUM_CASE(n) case n: io::info(#n " "); break;
 
-void CKernel::list_kernel()
+void Kernel::list_kernel()
 {
 	io::info("{} - \"{}\" weight={:1.2f} OPT:{}", fmt::ptr(this), get_name(),
 			get_combined_kernel_weight(),
@@ -784,67 +783,67 @@ void CKernel::list_kernel()
 }
 #undef ENUM_CASE
 
-bool CKernel::init_optimization(
+bool Kernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)
 {
    error("kernel does not support linadd optimization");
 	return false ;
 }
 
-bool CKernel::delete_optimization()
+bool Kernel::delete_optimization()
 {
    error("kernel does not support linadd optimization");
 	return false;
 }
 
-float64_t CKernel::compute_optimized(int32_t vector_idx)
+float64_t Kernel::compute_optimized(int32_t vector_idx)
 {
    error("kernel does not support linadd optimization");
 	return 0;
 }
 
-void CKernel::compute_batch(
+void Kernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
    error("kernel does not support batch computation");
 }
 
-void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
+void Kernel::add_to_normal(int32_t vector_idx, float64_t weight)
 {
    error("kernel does not support linadd optimization, add_to_normal not implemented");
 }
 
-void CKernel::clear_normal()
+void Kernel::clear_normal()
 {
    error("kernel does not support linadd optimization, clear_normal not implemented");
 }
 
-int32_t CKernel::get_num_subkernels()
+int32_t Kernel::get_num_subkernels()
 {
 	return 1;
 }
 
-void CKernel::compute_by_subkernel(
+void Kernel::compute_by_subkernel(
 	int32_t vector_idx, float64_t * subkernel_contrib)
 {
    error("kernel compute_by_subkernel not implemented");
 }
 
-const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
+const float64_t* Kernel::get_subkernel_weights(int32_t &num_weights)
 {
 	num_weights=1 ;
 	return &combined_kernel_weight ;
 }
 
-SGVector<float64_t> CKernel::get_subkernel_weights()
+SGVector<float64_t> Kernel::get_subkernel_weights()
 {
 	int num_weights = 1;
 	const float64_t* weight = get_subkernel_weights(num_weights);
 	return SGVector<float64_t>(const_cast<float64_t*>(weight),1,false);
 }
 
-void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
+void Kernel::set_subkernel_weights(const SGVector<float64_t> weights)
 {
 	ASSERT(weights.vector)
 	if (weights.vlen!=1)
@@ -853,13 +852,13 @@ void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 	combined_kernel_weight = weights.vector[0] ;
 }
 
-CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
+std::shared_ptr<Kernel> Kernel::obtain_from_generic(std::shared_ptr<SGObject> kernel)
 {
 	if (kernel)
 	{
-		CKernel* casted=dynamic_cast<CKernel*>(kernel);
-		require(casted, "CKernel::obtain_from_generic(): Error, provided object"
-				" of class \"{}\" is not a subclass of CKernel!",
+		auto casted=std::dynamic_pointer_cast<Kernel>(kernel);
+		require(casted, "Kernel::obtain_from_generic(): Error, provided object"
+				" of class \"{}\" is not a subclass of Kernel!",
 				kernel->get_name());
 		return casted;
 	}
@@ -867,7 +866,7 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 		return NULL;
 }
 
-bool CKernel::init_optimization_svm(CSVM * svm)
+bool Kernel::init_optimization_svm(std::shared_ptr<SVM > svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
@@ -885,30 +884,30 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	return ret;
 }
 
-void CKernel::load_serializable_post() noexcept(false)
+void Kernel::load_serializable_post() noexcept(false)
 {
-	CSGObject::load_serializable_post();
+	SGObject::load_serializable_post();
 	if (lhs_equals_rhs)
 		rhs=lhs;
 }
 
-void CKernel::save_serializable_pre() noexcept(false)
+void Kernel::save_serializable_pre() noexcept(false)
 {
-	CSGObject::save_serializable_pre();
+	SGObject::save_serializable_pre();
 
 	if (lhs_equals_rhs)
 		rhs=NULL;
 }
 
-void CKernel::save_serializable_post() noexcept(false)
+void Kernel::save_serializable_post() noexcept(false)
 {
-	CSGObject::save_serializable_post();
+	SGObject::save_serializable_post();
 
 	if (lhs_equals_rhs)
 		rhs=lhs;
 }
 
-void CKernel::register_params()
+void Kernel::register_params()
 {
 	SG_ADD(&cache_size, "cache_size", "Cache size in MB.");
 	SG_ADD(
@@ -940,7 +939,7 @@ void CKernel::register_params()
 }
 
 
-void CKernel::init()
+void Kernel::init()
 {
 	cache_size=10;
 	kernel_matrix=NULL;
@@ -959,7 +958,7 @@ void CKernel::init()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	set_normalizer(std::make_shared<IdentityKernelNormalizer>());
 }
 
 namespace shogun
@@ -968,7 +967,7 @@ namespace shogun
 template <class T> struct K_THREAD_PARAM
 {
 	/** kernel */
-	CKernel* kernel;
+	Kernel* kernel;
 	/** start (unit row) */
 	int32_t start;
 	/** end (unit row) */
@@ -990,7 +989,7 @@ template <class T> struct K_THREAD_PARAM
 };
 }
 
-float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
+float64_t Kernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 		bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -1041,7 +1040,7 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 	return sum;
 }
 
-float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
+float64_t Kernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 		index_t block_size_row, index_t block_size_col, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -1086,7 +1085,7 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 	return sum;
 }
 
-SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
+SGVector<float64_t> Kernel::row_wise_sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -1140,7 +1139,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 	return row_sum;
 }
 
-SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
+SGMatrix<float64_t> Kernel::row_wise_sum_squared_sum_symmetric_block(index_t
 		block_begin, index_t block_size, bool no_diag)
 {
 	SG_TRACE("Entering");
@@ -1199,7 +1198,7 @@ SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 	return row_sum;
 }
 
-SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
+SGVector<float64_t> Kernel::row_col_wise_sum_block(index_t block_begin_row,
 		index_t block_begin_col, index_t block_size_row,
 		index_t block_size_col, bool no_diag)
 {
@@ -1253,12 +1252,12 @@ SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
 	return sum;
 }
 
-template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
+template <class T> void* Kernel::get_kernel_matrix_helper(void* p)
 {
 	K_THREAD_PARAM<T>* params= (K_THREAD_PARAM<T>*) p;
 	int32_t i_start=params->start;
 	int32_t i_end=params->end;
-	CKernel* k=params->kernel;
+	Kernel* k=params->kernel;
 	T* result=params->result;
 	bool symmetric=params->symmetric;
 	int32_t n=params->n;
@@ -1293,7 +1292,7 @@ template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 				pb->print_progress();
 
 				// TODO: replace with the new signal
-				// if (CSignal::cancel_computations())
+				// if (Signal::cancel_computations())
 				//	break;
 			}
 		}
@@ -1304,7 +1303,7 @@ template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 }
 
 template <class T>
-SGMatrix<T> CKernel::get_kernel_matrix()
+SGMatrix<T> Kernel::get_kernel_matrix()
 {
 	T* result = NULL;
 
@@ -1340,7 +1339,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 		params.symmetric=symmetric;
 		params.verbose=false;
 		params.pb = &pb;
-		CKernel::get_kernel_matrix_helper<T>((void*)&params);
+		Kernel::get_kernel_matrix_helper<T>((void*)&params);
 	}
 
 	if (total_num % num_threads != 0)
@@ -1355,7 +1354,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 		params.symmetric=symmetric;
 		params.verbose=false;
 		params.pb = &pb;
-		CKernel::get_kernel_matrix_helper<T>((void*)&params);
+		Kernel::get_kernel_matrix_helper<T>((void*)&params);
 	}
 
 	pb.complete();
@@ -1364,8 +1363,8 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 }
 
 
-template SGMatrix<float64_t> CKernel::get_kernel_matrix<float64_t>();
-template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
+template SGMatrix<float64_t> Kernel::get_kernel_matrix<float64_t>();
+template SGMatrix<float32_t> Kernel::get_kernel_matrix<float32_t>();
 
-template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
-template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
+template void* Kernel::get_kernel_matrix_helper<float64_t>(void* p);
+template void* Kernel::get_kernel_matrix_helper<float32_t>(void* p);

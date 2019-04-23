@@ -9,16 +9,16 @@
 
 using namespace shogun;
 
-CDisjointSet::CDisjointSet()
-	: CSGObject()
+DisjointSet::DisjointSet()
+	: SGObject()
 {
 	unstable(SOURCE_LOCATION);
 
 	init();
 }
 
-CDisjointSet::CDisjointSet(int32_t num_elements)
-	: CSGObject()
+DisjointSet::DisjointSet(int32_t num_elements)
+	: SGObject()
 {
 	init();
 	m_num_elements = num_elements;
@@ -26,7 +26,7 @@ CDisjointSet::CDisjointSet(int32_t num_elements)
 	m_rank = SGVector<int32_t>(num_elements);
 }
 
-void CDisjointSet::init()
+void DisjointSet::init()
 {
 	SG_ADD(&m_num_elements, "num_elements", "Number of elements");
 	SG_ADD(&m_parent, "parent", "Parent pointers");
@@ -37,7 +37,7 @@ void CDisjointSet::init()
 	m_num_elements = -1;
 }
 
-void CDisjointSet::make_sets()
+void DisjointSet::make_sets()
 {
 	require(m_num_elements > 0, "{}::make_sets(): m_num_elements <= 0.", get_name());
 
@@ -45,7 +45,7 @@ void CDisjointSet::make_sets()
 	m_rank.zero();
 }
 
-int32_t CDisjointSet::find_set(int32_t x)
+int32_t DisjointSet::find_set(int32_t x)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 
@@ -56,7 +56,7 @@ int32_t CDisjointSet::find_set(int32_t x)
 	return m_parent[x];
 }
 
-int32_t CDisjointSet::link_set(int32_t xroot, int32_t yroot)
+int32_t DisjointSet::link_set(int32_t xroot, int32_t yroot)
 {
 	ASSERT(xroot >= 0 && xroot < m_num_elements);
 	ASSERT(yroot >= 0 && yroot < m_num_elements);
@@ -79,7 +79,7 @@ int32_t CDisjointSet::link_set(int32_t xroot, int32_t yroot)
 	}
 }
 
-bool CDisjointSet::union_set(int32_t x, int32_t y)
+bool DisjointSet::union_set(int32_t x, int32_t y)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 	ASSERT(y >= 0 && y < m_num_elements);
@@ -94,7 +94,7 @@ bool CDisjointSet::union_set(int32_t x, int32_t y)
 	return false;
 }
 
-bool CDisjointSet::is_same_set(int32_t x, int32_t y)
+bool DisjointSet::is_same_set(int32_t x, int32_t y)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 	ASSERT(y >= 0 && y < m_num_elements);
@@ -105,7 +105,7 @@ bool CDisjointSet::is_same_set(int32_t x, int32_t y)
 	return false;
 }
 
-int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
+int32_t DisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 {
 	require(m_num_elements > 0, "{}::get_unique_labeling(): m_num_elements <= 0.", get_name());
 
@@ -131,19 +131,19 @@ int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 	return unilabel;
 }
 
-int32_t CDisjointSet::get_num_sets()
+int32_t DisjointSet::get_num_sets()
 {
 	require(m_num_elements > 0, "{}::get_num_sets(): m_num_elements <= 0.", get_name());
 
 	return get_unique_labeling(SGVector<int32_t>(m_num_elements));
 }
 
-bool CDisjointSet::get_connected()
+bool DisjointSet::get_connected()
 {
 	return m_is_connected;
 }
 
-void CDisjointSet::set_connected(bool is_connected)
+void DisjointSet::set_connected(bool is_connected)
 {
 	m_is_connected = is_connected;
 }

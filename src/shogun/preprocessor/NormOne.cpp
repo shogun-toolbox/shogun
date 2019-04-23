@@ -15,22 +15,22 @@
 
 using namespace shogun;
 
-CNormOne::CNormOne()
-: CDensePreprocessor<float64_t>()
+NormOne::NormOne()
+: DensePreprocessor<float64_t>()
 {
 }
 
-CNormOne::~CNormOne()
+NormOne::~NormOne()
 {
 }
 
 /// clean up allocated memory
-void CNormOne::cleanup()
+void NormOne::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CNormOne::load(FILE* f)
+bool NormOne::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -38,14 +38,14 @@ bool CNormOne::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CNormOne::save(FILE* f)
+bool NormOne::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-SGMatrix<float64_t> CNormOne::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> NormOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	for (auto i : range(matrix.num_cols))
 	{
@@ -58,7 +58,7 @@ SGMatrix<float64_t> CNormOne::apply_to_matrix(SGMatrix<float64_t> matrix)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CNormOne::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> NormOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	return linalg::scale(vector, 1.0 / linalg::norm(vector));
 }

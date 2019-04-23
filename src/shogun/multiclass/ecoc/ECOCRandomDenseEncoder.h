@@ -18,11 +18,11 @@ namespace shogun
 /** Generate random ECOC codebook containing +1 and -1, and
  * select the best one.
  */
-class CECOCRandomDenseEncoder: public RandomMixin<CECOCEncoder>
+class ECOCRandomDenseEncoder: public RandomMixin<ECOCEncoder>
 {
 public:
 	/** Default constructor */
-	CECOCRandomDenseEncoder();
+	ECOCRandomDenseEncoder();
 
     /** constructor
      * @param maxiter max number of iterations
@@ -31,10 +31,10 @@ public:
      *
      * @see get_default_code_length
      */
-    CECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone);
+    ECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone);
 
     /** destructor */
-    virtual ~CECOCRandomDenseEncoder() {}
+    virtual ~ECOCRandomDenseEncoder() {}
 
     /** set probability
      * @param pposone probability of +1
@@ -61,7 +61,7 @@ public:
     int32_t get_default_code_length(int32_t num_classes) const
     {
 		return static_cast<int32_t>(
-			CMath::round(10 * std::log(static_cast<float64_t>(num_classes))));
+			Math::round(10 * std::log(static_cast<float64_t>(num_classes))));
 	}
 
 protected:

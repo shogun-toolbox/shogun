@@ -27,13 +27,13 @@ TEST(ConjugateGradientSolver, solve)
 	for (index_t i=0; i<size; ++i)
 		m(i,i)=(i+1)*10000;
 
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t>* A
-		=new CSparseMatrixOperator<float64_t>(mat);
+	auto A
+		=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
 
-	CConjugateGradientSolver linear_solver;
+	ConjugateGradientSolver linear_solver;
 
 	SGVector<float64_t> b(size);
 	b.set_const(0.01);
@@ -44,7 +44,7 @@ TEST(ConjugateGradientSolver, solve)
 	Map<MatrixXd> map_m(m.matrix, m.num_rows, m.num_cols);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 
-	EXPECT_NEAR(CMath::abs((map_x-map_m.llt().solve(map_b)).norm()), 0.0, 1E-5);
+	EXPECT_NEAR(Math::abs((map_x-map_m.llt().solve(map_b)).norm()), 0.0, 1E-5);
 
-	SG_UNREF(A);
+
 }

@@ -5,8 +5,8 @@
  */
 
 /* Remove C Prefix */
-%rename(LMNNStatistics) CLMNNStatistics;
-%rename(LMNN) CLMNN;
+%shared_ptr(shogun::LMNNStatistics)
+%shared_ptr(shogun::LMNN)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/metric/LMNN.h>

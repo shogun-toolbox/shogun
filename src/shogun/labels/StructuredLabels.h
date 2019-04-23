@@ -19,12 +19,12 @@
 namespace shogun {
 
 /** @brief Base class of the labels used in Structured Output (SO) problems */
-class CStructuredLabels : public CLabels
+class StructuredLabels : public Labels
 {
 
 	public:
 		/** default constructor */
-		CStructuredLabels();
+		StructuredLabels();
 
 		/** constructor
 		 *
@@ -34,10 +34,10 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param num_labels number of labels to pre-allocate
 		 */
-		CStructuredLabels(int32_t num_labels);
+		StructuredLabels(int32_t num_labels);
 
 		/** destructor */
-		virtual ~CStructuredLabels() override;
+		virtual ~StructuredLabels() override;
 
 		virtual bool is_valid() const override;
 
@@ -57,7 +57,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(CStructuredData* label);
+		virtual void add_label(std::shared_ptr<StructuredData> label);
 
 		/** get labels
 		 *
@@ -65,7 +65,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		CDynamicObjectArray* get_labels() const;
+		std::shared_ptr<DynamicObjectArray> get_labels() const;
 
 		/** get label object for specified index
 		 *
@@ -73,7 +73,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual std::shared_ptr<StructuredData> get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -85,7 +85,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(int32_t idx, std::shared_ptr<StructuredData> label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
@@ -113,16 +113,16 @@ class CStructuredLabels : public CLabels
 		void init();
 
 		/** ensure that the correct structured data type is used */
-		void ensure_valid_sdt(CStructuredData* label);
+		void ensure_valid_sdt(std::shared_ptr<StructuredData> label);
 
 	protected:
 		/** the vector of labels */
-		CDynamicObjectArray* m_labels;
+		std::shared_ptr<DynamicObjectArray> m_labels;
 
 		/** the structured data type the labels are composed of */
 		EStructuredDataType m_sdt;
 
-}; /* class CStructuredLabels */
+}; /* class StructuredLabels */
 
 } /* namespace shogun */
 

@@ -47,7 +47,7 @@ namespace shogun
  * with \f$c_i=y_i+ \epsilon\f$ and \f$c_i^*=-y_i+ \epsilon\f$
  *
  * This implementation supports multiple kernel learning, i.e. if a
- * CCombinedKernel is used the weights
+ * CombinedKernel is used the weights
  * \f$\beta\f$ in \f$ k_{combined}({\bf x}, {\bf x'}) = \sum_{m=0}^M \beta_m k_m({\bf x}, {\bf x'})\f$
  * can be determined in training (cf. Large Scale Multiple Kernel Learning
  * Sonnenburg, Raetsch, Schaefer, Schoelkopf 2006).
@@ -56,14 +56,14 @@ namespace shogun
  * string kernels and the linear kernel), which will result in significant
  * speedups.
  */
-class CSVRLight: public CSVMLight
+class SVRLight: public SVMLight
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** default constructor */
-		CSVRLight();
+		SVRLight();
 
 		/** constructor
 		 *
@@ -72,10 +72,10 @@ class CSVRLight: public CSVMLight
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CSVRLight(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
+		SVRLight(float64_t C, float64_t epsilon, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~CSVRLight();
+		virtual ~SVRLight();
 
 		/** get classifier type
 		 *
@@ -228,7 +228,7 @@ class CSVRLight: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** number of train elements */
 		int32_t num_vectors;

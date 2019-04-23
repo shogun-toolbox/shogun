@@ -31,7 +31,7 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 //# define VERSION       "V3.50 -- correct??"
 //# define VERSION_DATE  "01.11.00 -- correct??"
 
@@ -56,7 +56,7 @@ int32_t    *index;
 /** number of training documents */
 int32_t    totdoc;
 /** kernel */
-CKernel* kernel;
+std::shared_ptr<Kernel> kernel;
 
 /* the following values are not written to file */
 /** leave-one-out estimates */
@@ -222,11 +222,11 @@ struct SHRINK_STATE
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class SVMlight */
-class CSVMLight : public CSVM
+class SVMLight : public SVM
 {
  public:
   /** default constructor */
-  CSVMLight();
+  SVMLight();
 
   /** constructor
    *
@@ -234,8 +234,8 @@ class CSVMLight : public CSVM
    * @param k kernel
    * @param lab labels
    */
-  CSVMLight(float64_t C, CKernel* k, CLabels* lab);
-  virtual ~CSVMLight();
+  SVMLight(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+  virtual ~SVMLight();
 
   /** init SVM */
   void init();
@@ -646,7 +646,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
  protected:
   /** model */

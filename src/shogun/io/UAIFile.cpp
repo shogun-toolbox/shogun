@@ -11,51 +11,51 @@
 
 using namespace shogun;
 
-CUAIFile::CUAIFile()
+UAIFile::UAIFile()
 {
     init();
 }
 
-CUAIFile::CUAIFile(FILE* f, const char* name) :
-    CFile(f, name)
+UAIFile::UAIFile(FILE* f, const char* name) :
+    File(f, name)
 {
     init();
     init_with_defaults();
 }
 
 #ifdef HAVE_FDOPEN
-CUAIFile::CUAIFile(int fd, const char* mode, const char* name) :
-    CFile(fd, mode, name)
+UAIFile::UAIFile(int fd, const char* mode, const char* name) :
+    File(fd, mode, name)
 {
     init();
     init_with_defaults();
 }
 #endif
 
-CUAIFile::CUAIFile(const char* fname, char rw, const char* name) :
-    CFile(fname, rw, name)
+UAIFile::UAIFile(const char* fname, char rw, const char* name) :
+    File(fname, rw, name)
 {
     init();
     init_with_defaults();
 }
 
-CUAIFile::~CUAIFile()
+UAIFile::~UAIFile()
 {
-    SG_UNREF(m_tokenizer);
-    SG_UNREF(m_line_tokenizer);
-    SG_UNREF(m_parser);
-    SG_UNREF(m_line_reader);
+
+
+
+
 
     SG_FREE(m_factors_table);
     SG_FREE(m_factors_scope);
 }
 
-void CUAIFile::init()
+void UAIFile::init()
 {
-    SG_ADD((CSGObject**)&m_line_reader, "line_reader", "line reader used to read lines from file");
-    SG_ADD((CSGObject**)&m_parser, "parser", "parser used to parse file");
-    SG_ADD((CSGObject**)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file");
-    SG_ADD((CSGObject**)&m_tokenizer, "tokenizer", "tokenizer used to parse file");
+    SG_ADD((std::shared_ptr<SGObject>*)&m_line_reader, "line_reader", "line reader used to read lines from file");
+    SG_ADD((std::shared_ptr<SGObject>*)&m_parser, "parser", "parser used to parse file");
+    SG_ADD((std::shared_ptr<SGObject>*)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file");
+    SG_ADD((std::shared_ptr<SGObject>*)&m_tokenizer, "tokenizer", "tokenizer used to parse file");
     SG_ADD(&m_delimiter, "delimiter", "delimiter used in get_vector function");
 
     SG_ADD(&m_num_vars, "num_vars", "number of variables");
@@ -81,28 +81,28 @@ void CUAIFile::init()
     m_factors_scope = NULL;
 }
 
-void CUAIFile::init_with_defaults()
+void UAIFile::init_with_defaults()
 {
     m_delimiter=' ';
 
-    m_tokenizer=new CDelimiterTokenizer(true);
+    m_tokenizer=std::make_shared<DelimiterTokenizer>(true);
     m_tokenizer->delimiters[m_delimiter]=1;
-    SG_REF(m_tokenizer);
 
-    m_line_tokenizer=new CDelimiterTokenizer(true);
+
+    m_line_tokenizer=std::make_shared<DelimiterTokenizer>(true);
     m_line_tokenizer->delimiters['\n']=1;
-    SG_REF(m_line_tokenizer);
 
-    m_parser=new CParser();
+
+    m_parser=std::make_shared<Parser>();
     m_parser->set_tokenizer(m_tokenizer);
-    SG_REF(m_parser);
 
-    m_line_reader=new CLineReader(file, m_line_tokenizer);
-    SG_REF(m_line_reader);
+
+    m_line_reader=std::make_shared<LineReader>(file, m_line_tokenizer);
+
 }
 
 #define GET_VECTOR(read_func, sg_type)                                         \
-	void CUAIFile::get_vector(sg_type*& vector, int32_t& len)                  \
+	void UAIFile::get_vector(sg_type*& vector, int32_t& len)                  \
 	{                                                                          \
 		SG_SET_LOCALE_C;                                                       \
                                                                                \
@@ -145,7 +145,7 @@ GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
 #define SET_VECTOR(format, sg_type) \
-void CUAIFile::set_vector(const sg_type* vector, int32_t len) \
+void UAIFile::set_vector(const sg_type* vector, int32_t len) \
 { \
     SG_SET_LOCALE_C; \
     \
@@ -171,7 +171,7 @@ SET_VECTOR(SCNi16, int16_t)
 SET_VECTOR(SCNu16, uint16_t)
 #undef SET_VECTOR
 
-void CUAIFile::parse()
+void UAIFile::parse()
 {
     if (!file)
         error("No file specified");
@@ -221,7 +221,7 @@ void CUAIFile::parse()
     }
 }
 
-void CUAIFile::set_net_type(const char* net_type)
+void UAIFile::set_net_type(const char* net_type)
 {
     require ((strncmp(net_type, "BAYES", 5) == 0 || strncmp(net_type, "MARKOV", 6) == 0),
         "Network type should be either MARKOV or BAYES");
@@ -233,13 +233,13 @@ void CUAIFile::set_net_type(const char* net_type)
     fprintf(file, "%s\n", net_type);
 }
 
-void CUAIFile::set_num_vars(int32_t num_vars)
+void UAIFile::set_num_vars(int32_t num_vars)
 {
     m_num_vars = num_vars;
     fprintf(file, "%d\n", num_vars);
 }
 
-void CUAIFile::set_vars_card(SGVector<int32_t> vars_card)
+void UAIFile::set_vars_card(SGVector<int32_t> vars_card)
 {
     require (m_num_vars == vars_card.vlen,
         "Variables mismatch. Expected {} variables, got {} variables",
@@ -249,13 +249,13 @@ void CUAIFile::set_vars_card(SGVector<int32_t> vars_card)
     set_vector(vars_card.vector, vars_card.vlen);
 }
 
-void CUAIFile::set_num_factors(int32_t num_factors)
+void UAIFile::set_num_factors(int32_t num_factors)
 {
     m_num_factors = num_factors;
     fprintf(file, "%d\n", num_factors);
 }
 
-void CUAIFile::set_factors_scope(int num_factors,
+void UAIFile::set_factors_scope(int num_factors,
                                  const SGVector<int32_t>* factors_scope)
 {
     require(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
@@ -273,7 +273,7 @@ void CUAIFile::set_factors_scope(int num_factors,
     }
 }
 
-void CUAIFile::set_factors_table(int32_t num_factors,
+void UAIFile::set_factors_table(int32_t num_factors,
                                  const SGVector<float64_t>* factors_table)
 {
     require(num_factors == m_num_factors, "Factors mismatch. Expected {} factors; \
@@ -290,7 +290,7 @@ void CUAIFile::set_factors_table(int32_t num_factors,
     }
 }
 
-void CUAIFile::get_preamble(SGVector<char>& net_type,
+void UAIFile::get_preamble(SGVector<char>& net_type,
                             int32_t& num_vars,
                             SGVector<int32_t>& vars_card,
                             int32_t& num_factors,
@@ -306,7 +306,7 @@ void CUAIFile::get_preamble(SGVector<char>& net_type,
         factors_scope[i] = m_factors_scope[i];
 }
 
-void CUAIFile::get_factors_table(SGVector<float64_t>*& factors_table)
+void UAIFile::get_factors_table(SGVector<float64_t>*& factors_table)
 {
     factors_table = new SGVector<float64_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)

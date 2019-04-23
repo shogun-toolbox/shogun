@@ -9,11 +9,11 @@
 
 using namespace shogun;
 
-CLOOCrossValidationSplitting::CLOOCrossValidationSplitting() :
-	CCrossValidationSplitting()
+LOOCrossValidationSplitting::LOOCrossValidationSplitting() :
+	CrossValidationSplitting()
 {}
 
-CLOOCrossValidationSplitting::CLOOCrossValidationSplitting(
-		CLabels* labels) :
-	CCrossValidationSplitting(labels, labels->get_num_labels())
+LOOCrossValidationSplitting::LOOCrossValidationSplitting(
+		std::shared_ptr<Labels> labels) :
+	CrossValidationSplitting(labels, labels->get_num_labels())
 {}

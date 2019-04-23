@@ -9,13 +9,13 @@
 
 using namespace shogun;
 
-float64_t CClusteringAccuracy::evaluate_impl(CLabels* predicted, CLabels* ground_truth)
+float64_t ClusteringAccuracy::evaluate_impl(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
-	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
-	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();
+	SGVector<int32_t> predicted_ilabels=multiclass_labels(predicted)->get_int_labels();
+	SGVector<int32_t> groundtruth_ilabels=multiclass_labels(ground_truth)->get_int_labels();
 	int32_t correct=0;
 	for (int32_t i=0; i < predicted_ilabels.vlen; ++i)
 	{

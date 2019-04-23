@@ -561,7 +561,7 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %}
 
-/* CFeatures to ... */
+/* Features to ... */
 %define FEATURES_BY_TYPECODE(obj, f, type, typecode)
 	switch (typecode) {
 	case F_BOOL:
@@ -601,7 +601,7 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 		obj=SWIG_NewPointerObj(f, $descriptor(type<floatmax_t> *), SWIG_POINTER_EXCEPTION);
 		break;
 	default:
-		obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+		obj=SWIG_NewPointerObj(f, $descriptor(shogun::Features*), SWIG_POINTER_EXCEPTION);
 		break;
 	}
 %enddef

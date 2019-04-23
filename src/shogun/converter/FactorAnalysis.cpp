@@ -10,8 +10,8 @@
 
 using namespace shogun;
 
-CFactorAnalysis::CFactorAnalysis() :
-		CEmbeddingConverter()
+FactorAnalysis::FactorAnalysis() :
+		EmbeddingConverter()
 {
 	// Sentinel value, it will be set appropriately if not modified by set_max_iteration
 	m_max_iteration = 0;
@@ -19,50 +19,50 @@ CFactorAnalysis::CFactorAnalysis() :
 	init();
 }
 
-void CFactorAnalysis::init()
+void FactorAnalysis::init()
 {
 	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
 	SG_ADD(&m_epsilon, "epsilon", "convergence parameter");
 }
 
-CFactorAnalysis::~CFactorAnalysis()
+FactorAnalysis::~FactorAnalysis()
 {
 }
 
-const char* CFactorAnalysis::get_name() const
+const char* FactorAnalysis::get_name() const
 {
 	return "FactorAnalysis";
 }
 
-void CFactorAnalysis::set_max_iteration(const int32_t max_iteration)
+void FactorAnalysis::set_max_iteration(const int32_t max_iteration)
 {
 	m_max_iteration = max_iteration;
 }
 
-int32_t CFactorAnalysis::get_max_iteration() const
+int32_t FactorAnalysis::get_max_iteration() const
 {
 	return m_max_iteration;
 }
 
-void CFactorAnalysis::set_epsilon(const float64_t epsilon)
+void FactorAnalysis::set_epsilon(const float64_t epsilon)
 {
 	m_epsilon = epsilon;
 }
 
-float64_t CFactorAnalysis::get_epsilon() const
+float64_t FactorAnalysis::get_epsilon() const
 {
 	return m_epsilon;
 }
 
-CFeatures* CFactorAnalysis::transform(CFeatures* features, bool inplace)
+std::shared_ptr<Features> FactorAnalysis::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.max_iteration = m_max_iteration;
-	parameters.features = (CDotFeatures*)features;
+	parameters.features = (DotFeatures*)features.get();
 	parameters.fa_epsilon = m_epsilon;
 	parameters.method = SHOGUN_FACTOR_ANALYSIS;
 	parameters.target_dimension = m_target_dim;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
+
 }
 

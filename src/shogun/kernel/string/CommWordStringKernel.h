@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser,
  *          Viktor Gal
  */
 
@@ -41,26 +41,26 @@ namespace shogun
  * direct maps.
  *
  */
-class CCommWordStringKernel : public CStringKernel<uint16_t>
+class CommWordStringKernel : public StringKernel<uint16_t>
 {
-	friend class CVarianceKernelNormalizer;
-	friend class CSqrtDiagKernelNormalizer;
-	friend class CAvgDiagKernelNormalizer;
-	friend class CRidgeKernelNormalizer;
-	friend class CFirstElementKernelNormalizer;
-	friend class CTanimotoKernelNormalizer;
-	friend class CDiceKernelNormalizer;
+	friend class VarianceKernelNormalizer;
+	friend class SqrtDiagKernelNormalizer;
+	friend class AvgDiagKernelNormalizer;
+	friend class RidgeKernelNormalizer;
+	friend class FirstElementKernelNormalizer;
+	friend class TanimotoKernelNormalizer;
+	friend class DiceKernelNormalizer;
 
 	public:
 		/** default constructor  */
-		CCommWordStringKernel();
+		CommWordStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CCommWordStringKernel(int32_t size, bool use_sign);
+		CommWordStringKernel(int32_t size, bool use_sign);
 
 		/** constructor
 		 *
@@ -69,11 +69,11 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param use_sign if sign shall be used
 		 * @param size cache size
 		 */
-		CCommWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
+		CommWordStringKernel(
+			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
 			bool use_sign=false, int32_t size=10);
 
-		virtual ~CCommWordStringKernel();
+		virtual ~CommWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -81,7 +81,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

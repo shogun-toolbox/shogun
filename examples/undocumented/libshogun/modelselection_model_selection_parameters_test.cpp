@@ -14,11 +14,11 @@
 
 using namespace shogun;
 
-CModelSelectionParameters* build_complex_example_tree()
+ModelSelectionParameters* build_complex_example_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c=new CModelSelectionParameters("C");
+	ModelSelectionParameters* c=new ModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(1.0, 1.0, R_EXP);
 
@@ -28,40 +28,40 @@ CModelSelectionParameters* build_complex_example_tree()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	power_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_power_kernel=
-			new CModelSelectionParameters("kernel", power_kernel);
+	ModelSelectionParameters* param_power_kernel=
+			new ModelSelectionParameters("kernel", power_kernel);
 
 	root->append_child(param_power_kernel);
 
-	CModelSelectionParameters* param_power_kernel_degree=
-			new CModelSelectionParameters("degree");
+	ModelSelectionParameters* param_power_kernel_degree=
+			new ModelSelectionParameters("degree");
 	param_power_kernel_degree->build_values(1.0, 1.0, R_EXP);
 	param_power_kernel->append_child(param_power_kernel_degree);
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
-	CModelSelectionParameters* param_power_kernel_metric1=
-			new CModelSelectionParameters("distance", m_metric);
+	ModelSelectionParameters* param_power_kernel_metric1=
+			new ModelSelectionParameters("distance", m_metric);
 
 	param_power_kernel->append_child(param_power_kernel_metric1);
 
-	CModelSelectionParameters* param_power_kernel_metric1_k=
-			new CModelSelectionParameters("k");
+	ModelSelectionParameters* param_power_kernel_metric1_k=
+			new ModelSelectionParameters("k");
 	param_power_kernel_metric1_k->build_values(1.0, 12.0, R_LINEAR);
 	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+	GaussianKernel* gaussian_kernel=new GaussianKernel();
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	gaussian_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters("kernel", gaussian_kernel);
+	ModelSelectionParameters* param_gaussian_kernel=
+			new ModelSelectionParameters("kernel", gaussian_kernel);
 
 	root->append_child(param_gaussian_kernel);
 
-	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("log_width");
+	ModelSelectionParameters* param_gaussian_kernel_width=
+			new ModelSelectionParameters("log_width");
 	param_gaussian_kernel_width->build_values(
 	    0.0, 0.5 * std::log(2.0), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
@@ -72,64 +72,64 @@ CModelSelectionParameters* build_complex_example_tree()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	ds_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
+	ModelSelectionParameters* param_ds_kernel=new ModelSelectionParameters("kernel",
 			ds_kernel);
 
 	root->append_child(param_ds_kernel);
 
-	CModelSelectionParameters* param_ds_kernel_delta=
-			new CModelSelectionParameters("delta");
+	ModelSelectionParameters* param_ds_kernel_delta=
+			new ModelSelectionParameters("delta");
 	param_ds_kernel_delta->build_values(1.0, 2.0, R_EXP);
 	param_ds_kernel->append_child(param_ds_kernel_delta);
 
-	CModelSelectionParameters* param_ds_kernel_theta=
-			new CModelSelectionParameters("theta");
+	ModelSelectionParameters* param_ds_kernel_theta=
+			new ModelSelectionParameters("theta");
 	param_ds_kernel_theta->build_values(1.0, 2.0, R_EXP);
 	param_ds_kernel->append_child(param_ds_kernel_theta);
 
 	return root;
 }
 
-CModelSelectionParameters* build_sgobject_no_childs_tree()
+ModelSelectionParameters* build_sgobject_no_childs_tree()
 {
 	CPowerKernel* power_kernel=new CPowerKernel();
-	CModelSelectionParameters* param_power_kernel=
-			new CModelSelectionParameters("kernel", power_kernel);
+	ModelSelectionParameters* param_power_kernel=
+			new ModelSelectionParameters("kernel", power_kernel);
 
 	return param_power_kernel;
 }
 
-CModelSelectionParameters* build_leaf_node_tree()
+ModelSelectionParameters* build_leaf_node_tree()
 {
-	CModelSelectionParameters* c_1=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* c_1=new ModelSelectionParameters("C1");
 	c_1->build_values(1.0, 1.0, R_EXP);
 
 	return c_1;
 }
 
-CModelSelectionParameters* build_root_no_childs_tree()
+ModelSelectionParameters* build_root_no_childs_tree()
 {
-	return new CModelSelectionParameters();
+	return new ModelSelectionParameters();
 }
 
-CModelSelectionParameters* build_root_value_childs_tree()
+ModelSelectionParameters* build_root_value_childs_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
-	CModelSelectionParameters* c_1=new CModelSelectionParameters("C1");
+	ModelSelectionParameters* c_1=new ModelSelectionParameters("C1");
 	root->append_child(c_1);
 	c_1->build_values(1.0, 1.0, R_EXP);
 
-	CModelSelectionParameters* c_2=new CModelSelectionParameters("C2");
+	ModelSelectionParameters* c_2=new ModelSelectionParameters("C2");
 	root->append_child(c_2);
 	c_2->build_values(1.0, 1.0, R_EXP);
 
 	return root;
 }
 
-CModelSelectionParameters* build_root_sg_object_child_tree()
+ModelSelectionParameters* build_root_sg_object_child_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 
@@ -137,17 +137,17 @@ CModelSelectionParameters* build_root_sg_object_child_tree()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	power_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_power_kernel=
-			new CModelSelectionParameters("kernel", power_kernel);
+	ModelSelectionParameters* param_power_kernel=
+			new ModelSelectionParameters("kernel", power_kernel);
 
 	root->append_child(param_power_kernel);
 
 	return root;
 }
 
-CModelSelectionParameters* build_root_sg_object_child_value_child_tree()
+ModelSelectionParameters* build_root_sg_object_child_value_child_tree()
 {
-	CModelSelectionParameters* root=new CModelSelectionParameters();
+	ModelSelectionParameters* root=new ModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 
@@ -155,10 +155,10 @@ CModelSelectionParameters* build_root_sg_object_child_value_child_tree()
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	power_kernel->print_modsel_params();
 
-	CModelSelectionParameters* param_power_kernel=
-			new CModelSelectionParameters("kernel", power_kernel);
+	ModelSelectionParameters* param_power_kernel=
+			new ModelSelectionParameters("kernel", power_kernel);
 
-	CModelSelectionParameters* c=new CModelSelectionParameters("C");
+	ModelSelectionParameters* c=new ModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(1.0, 1.0, R_EXP);
 
@@ -167,12 +167,12 @@ CModelSelectionParameters* build_root_sg_object_child_value_child_tree()
 	return root;
 }
 
-void test_get_combinations(CModelSelectionParameters* tree)
+void test_get_combinations(ModelSelectionParameters* tree)
 {
 	tree->print_tree();
 
 	/* build combinations of parameter trees */
-	CDynamicObjectArray* combinations=tree->get_combinations();
+	DynamicObjectArray* combinations=tree->get_combinations();
 
 	/* print and directly delete them all */
 	SG_SPRINT("----------------------------------\n");
@@ -181,50 +181,34 @@ void test_get_combinations(CModelSelectionParameters* tree)
 		CParameterCombination* combination=(CParameterCombination*)
 				combinations->get_element(i);
 		combination->print_tree();
-		SG_UNREF(combination);
 	}
 
-	SG_UNREF(combinations);
 }
 
 int main(int argc, char **argv)
 {
-	CModelSelectionParameters* tree;
+	ModelSelectionParameters* tree;
 
 	tree=build_root_no_childs_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_leaf_node_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_sgobject_no_childs_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_root_value_childs_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_root_sg_object_child_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_root_sg_object_child_value_child_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	tree=build_complex_example_tree();
-	SG_REF(tree);
 	test_get_combinations(tree);
-	SG_UNREF(tree);
 
 	return 0;
 }

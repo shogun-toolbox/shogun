@@ -14,23 +14,21 @@ TEST(CircularBufferTest, constructor)
 {
 	int buffer_size=1024;
 
-	CCircularBuffer* buffer;
-
 	// default constructor
 	// buffer should be 0-sized
 	// w/o available and contained elements
-	buffer=new CCircularBuffer();
+	auto buffer=std::make_shared<CircularBuffer>();
 	EXPECT_EQ(0, buffer->available());
 	EXPECT_EQ(0, buffer->num_bytes_contained());
-	SG_UNREF(buffer);
+
 
 	// constructor with parameters
 	// now some elements are available
 	// but still none are contained
-	buffer=new CCircularBuffer(buffer_size);
+	buffer=std::make_shared<CircularBuffer>(buffer_size);
 	EXPECT_EQ(buffer_size, buffer->available());
 	EXPECT_EQ(0, buffer->num_bytes_contained());
-	SG_UNREF(buffer);
+
 }
 
 TEST(CircularBufferTest, push_pop)
@@ -38,20 +36,19 @@ TEST(CircularBufferTest, push_pop)
 	int buffer_size=64;
 	int result;
 
-	CCircularBuffer* buffer;
 	SGVector<char> test_string((char*)"CircularBuffer", 14, false);
 	SGVector<char> tmp_string;
 
 	// default constructor
 	// we cannot push to 0-sized buffer
-	buffer=new CCircularBuffer();
+	auto buffer=std::make_shared<CircularBuffer>();
 	result=buffer->push(test_string);
 	EXPECT_EQ(0, result);
-	SG_UNREF(buffer);
+
 
 	// push
 	// try write to buffer and check state
-	buffer=new CCircularBuffer(buffer_size);
+	buffer=std::make_shared<CircularBuffer>(buffer_size);
 	result=buffer->push(test_string);
 	EXPECT_EQ(test_string.vlen, result);
 	EXPECT_EQ(buffer_size-test_string.vlen, buffer->available());
@@ -68,7 +65,7 @@ TEST(CircularBufferTest, push_pop)
 		EXPECT_EQ(test_string.vector[i], tmp_string.vector[i]);
 	}
 
-	SG_UNREF(buffer);
+
 }
 
 TEST(CircularBufferTest, stress_test)
@@ -80,17 +77,14 @@ TEST(CircularBufferTest, stress_test)
 	int repeat=1024;
 	int buffer_size=64;
 
-	CCircularBuffer* buffer;
-	CDelimiterTokenizer* tokenizer;
-
 	SGVector<char> tmp_string;
 	SGVector<char> test_string((char*)"all your bayes are belong to us! ", 33, false);
 
-	buffer=new CCircularBuffer(buffer_size);
+	auto buffer=std::make_shared<CircularBuffer>(buffer_size);
 
-	tokenizer=new CDelimiterTokenizer();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' ']=1;
-	SG_REF(tokenizer);
+
 
 	buffer->set_tokenizer(tokenizer);
 
@@ -114,6 +108,6 @@ TEST(CircularBufferTest, stress_test)
 	EXPECT_EQ(buffer_size, buffer->available());
 	EXPECT_EQ(0, buffer->num_bytes_contained());
 
-	SG_UNREF(buffer);
-	SG_UNREF(tokenizer);
+
+
 }

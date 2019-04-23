@@ -100,7 +100,7 @@ namespace shogun
 				{
 				}
 
-				void on(CSGObject** v) override
+				void on(std::shared_ptr<SGObject>* v) override
 				{
 					static_cast<T*>(this)->on_object(m_s, v);
 				}

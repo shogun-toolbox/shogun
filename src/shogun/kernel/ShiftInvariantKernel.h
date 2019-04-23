@@ -52,14 +52,14 @@ namespace internal
  * \f]
  * For example, Gaussian (RBF) kernel is a shfit invariant kernel.
  */
-class CShiftInvariantKernel: public CKernel
+class ShiftInvariantKernel: public Kernel
 {
 
 	friend class internal::KernelManager;
 
 public:
 	/** Default constructor.  */
-	CShiftInvariantKernel();
+	ShiftInvariantKernel();
 
 	/**
 	 * Constructor that initializes the kernel with two feature instances.
@@ -67,10 +67,10 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 */
-	CShiftInvariantKernel(CFeatures *l, CFeatures *r);
+	ShiftInvariantKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r);
 
 	/** Destructor. */
-	virtual ~CShiftInvariantKernel();
+	virtual ~ShiftInvariantKernel();
 
 	/**
 	 * Initialize kernel.
@@ -79,7 +79,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/** Method that precomputes the distance */
 	virtual void precompute_distance();
@@ -132,24 +132,24 @@ protected:
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b) const;
 
 	/** Distance instance for the kernel. MUST be initialized by the subclasses */
-	CDistance* m_distance;
+	std::shared_ptr<Distance> m_distance;
 
 private:
 	/** Registers the parameters (serialization support). */
 	virtual void register_params();
 
 	/** Precomputed distance instance */
-	CCustomDistance* m_precomputed_distance;
+	std::shared_ptr<CustomDistance> m_precomputed_distance;
 
 	/**
 	 * Method that sets a precomputed distance.
 	 *
 	 * @param precomputed_distance The precomputed distance object.
 	 */
-	void set_precomputed_distance(CCustomDistance* precomputed_distance);
+	void set_precomputed_distance(std::shared_ptr<CustomDistance> precomputed_distance);
 
 	/** @return the precomputed distance. */
-	CCustomDistance* get_precomputed_distance() const;
+	std::shared_ptr<CustomDistance> get_precomputed_distance() const;
 
 };
 

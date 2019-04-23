@@ -13,14 +13,14 @@
 
 using namespace shogun;
 
-COligoStringKernel::COligoStringKernel()
-  : CStringKernel<char>()
+OligoStringKernel::OligoStringKernel()
+  : StringKernel<char>()
 {
 	init();
 }
 
-COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
-: CStringKernel<char>(cache_sz)
+OligoStringKernel::OligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
+: StringKernel<char>(cache_sz)
 {
 	init();
 
@@ -28,10 +28,10 @@ COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float
 	width=w;
 }
 
-COligoStringKernel::COligoStringKernel(
-		CStringFeatures<char>* l, CStringFeatures<char>* r,
+OligoStringKernel::OligoStringKernel(
+		std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 		int32_t kmer_len, float64_t w)
-: CStringKernel<char>()
+: StringKernel<char>()
 {
 	init();
 
@@ -41,25 +41,25 @@ COligoStringKernel::COligoStringKernel(
 	init(l, r);
 }
 
-COligoStringKernel::~COligoStringKernel()
+OligoStringKernel::~OligoStringKernel()
 {
 	cleanup();
 }
 
-void COligoStringKernel::cleanup()
+void OligoStringKernel::cleanup()
 {
 	gauss_table=SGVector<float64_t>();
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-bool COligoStringKernel::init(CFeatures* l, CFeatures* r)
+bool OligoStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	cleanup();
 
-	CStringKernel<char>::init(l,r);
-	int32_t max_len=CMath::max(
-			((CStringFeatures<char>*) l)->get_max_vector_length(),
-			((CStringFeatures<char>*) r)->get_max_vector_length()
+	StringKernel<char>::init(l,r);
+	int32_t max_len=Math::max(
+			std::static_pointer_cast<StringFeatures<char>>(l)->get_max_vector_length(),
+			std::static_pointer_cast<StringFeatures<char>>(r)->get_max_vector_length()
 			);
 
 	require(k>0, "k must be >0");
@@ -69,7 +69,7 @@ bool COligoStringKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void COligoStringKernel::encodeOligo(
+void OligoStringKernel::encodeOligo(
 	const std::string& sequence, uint32_t k_mer_length,
 	const std::string& allowed_characters,
 	std::vector< std::pair<int32_t, float64_t> >& values)
@@ -127,7 +127,7 @@ void COligoStringKernel::encodeOligo(
 	}
 }
 
-void COligoStringKernel::getSequences(
+void OligoStringKernel::getSequences(
 	const std::vector<std::string>& sequences, uint32_t k_mer_length,
 	const std::string& allowed_characters,
 	std::vector< std::vector< std::pair<int32_t, float64_t> > >& encoded_sequences)
@@ -143,16 +143,16 @@ void COligoStringKernel::getSequences(
 	}
 }
 
-void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
+void OligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 {
 	gauss_table=SGVector<float64_t>(sequence_length);
 
 	gauss_table[0] = 1;
 	for (uint32_t i = 1; i < sequence_length; i++)
-		gauss_table[i] = exp(-CMath::sq((float64_t) i) / width);
+		gauss_table[i] = exp(-Math::sq((float64_t) i) / width);
 }
 
-float64_t COligoStringKernel::kernelOligoFast(
+float64_t OligoStringKernel::kernelOligoFast(
 	const std::vector< std::pair<int32_t, float64_t> >& x,
 	const std::vector< std::pair<int32_t, float64_t> >& y,
 	int32_t max_distance)
@@ -231,7 +231,7 @@ float64_t COligoStringKernel::kernelOligoFast(
 	return result;
 }
 
-float64_t COligoStringKernel::kernelOligo(
+float64_t OligoStringKernel::kernelOligo(
 		const std::vector< std::pair<int32_t, float64_t> >&    x,
 		const std::vector< std::pair<int32_t, float64_t> >&    y)
 {
@@ -246,7 +246,7 @@ float64_t COligoStringKernel::kernelOligo(
 	{
 		if (x[i1].second == y[i2].second)
 		{
-			result += exp(-CMath::sq(x[i1].first - y[i2].first) / width);
+			result += exp(-Math::sq(x[i1].first - y[i2].first) / width);
 
 			if (((uint32_t) i1+1) < x_size && x[i1].second == x[i1 + 1].second)
 			{
@@ -278,29 +278,29 @@ float64_t COligoStringKernel::kernelOligo(
 	return result;
 }
 
-float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t OligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_a, free_b;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_a);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_b);
+	char* avec=std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_a);
+	char* bvec=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_b);
 	std::vector< std::pair<int32_t, float64_t> > aenc;
 	std::vector< std::pair<int32_t, float64_t> > benc;
 	encodeOligo(std::string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(std::string(bvec, alen), k, "ACGT", benc);
 	//float64_t result=kernelOligo(aenc, benc);
 	float64_t result=kernelOligoFast(aenc, benc);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_a);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_b);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_a);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_b);
 	return result;
 }
 
-void COligoStringKernel::init()
+void OligoStringKernel::init()
 {
 	k=0;
 	width=0.0;
 
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
 	SG_ADD(&k, "k", "K-mer length.", ParameterProperties::HYPER);
 	SG_ADD(&width, "width", "Width of Gaussian.", ParameterProperties::HYPER);

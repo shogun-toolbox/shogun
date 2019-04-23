@@ -22,7 +22,7 @@ using namespace shogun;
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPLib::CGMNPLib()
+GMNPLib::GMNPLib()
 {
 	unstable(SOURCE_LOCATION);
 
@@ -42,10 +42,10 @@ CGMNPLib::CGMNPLib()
 	m_num_classes = 0;
 }
 
-CGMNPLib::CGMNPLib(
-	float64_t* vector_y, CKernel* kernel, int32_t num_data,
+GMNPLib::GMNPLib(
+	float64_t* vector_y, std::shared_ptr<Kernel> kernel, int32_t num_data,
 	int32_t num_virt_data, int32_t num_classes, float64_t reg_const)
-: CSGObject()
+: SGObject()
 {
   m_num_classes=num_classes;
   m_num_virt_data=num_virt_data;
@@ -55,7 +55,7 @@ CGMNPLib::CGMNPLib(
   m_kernel = kernel;
 
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
-  Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
+  Cache_Size = Math::min(Cache_Size, (int64_t) num_data);
 
   io::info("using {} kernel cache lines", Cache_Size);
   ASSERT(Cache_Size>=2)
@@ -85,7 +85,7 @@ CGMNPLib::CGMNPLib(
 	  diag_H[i] = kernel_fce(i,i);
 }
 
-CGMNPLib::~CGMNPLib()
+GMNPLib::~GMNPLib()
 {
 	for(int32_t i = 0; i < Cache_Size; i++ )
 		SG_FREE(kernel_columns[i]);
@@ -103,7 +103,7 @@ CGMNPLib::~CGMNPLib()
   Returns pointer at a-th column of the kernel matrix.
   This function maintains FIFO cache of kernel columns.
 ------------------------------------------------------------ */
-float64_t* CGMNPLib::get_kernel_col( int32_t a )
+float64_t* GMNPLib::get_kernel_col( int32_t a )
 {
   float64_t *col_ptr;
   int32_t i;
@@ -136,7 +136,7 @@ float64_t* CGMNPLib::get_kernel_col( int32_t a )
   Computes index of input example and its class label from
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
-void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
+void GMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
 {
    *index = i / (m_num_classes-1);
 
@@ -154,7 +154,7 @@ void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
-float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
+float64_t* GMNPLib::get_col( int32_t a, int32_t b )
 {
   int32_t i;
   float64_t *col_ptr;
@@ -202,7 +202,7 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
                   tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 
-int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
+int8_t GMNPLib::gmnp_imdm(float64_t *vector_c,
             int32_t dim,
             int32_t tmax,
             float64_t tolabs,
@@ -285,7 +285,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= Math::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th ) exitflag = 3;
   else exitflag = -1;
 
@@ -361,14 +361,14 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1;
-    else if( UB-LB <= CMath::abs(UB)*tolrel) exitflag = 2;
+    else if( UB-LB <= Math::abs(UB)*tolrel) exitflag = 2;
     else if(LB > th ) exitflag = 3;
     else if(t >= tmax) exitflag = 0;
 
     /* print info */
 	pb.print_absolute(
-		CMath::abs((UB - LB) / UB), -CMath::log10(CMath::abs(UB - LB)),
-		-CMath::log10(1.0), -CMath::log10(tolrel));
+		Math::abs((UB - LB) / UB), -Math::log10(Math::abs(UB - LB)),
+		-Math::log10(1.0), -Math::log10(tolrel));
 
 	if (verb && (t % verb) == 0)
 	{
@@ -426,7 +426,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   Retures (a,b)-th element of the virtual kernel matrix
   of size [num_virt_data x num_virt_data].
 ------------------------------------------------------------ */
-float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
+float64_t GMNPLib::kernel_fce( int32_t a, int32_t b )
 {
   float64_t value;
   int32_t i1,c1,i2,c2;

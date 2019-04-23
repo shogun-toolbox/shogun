@@ -23,17 +23,17 @@ namespace shogun
  * k({\bf x},{\bf x'})= \sum_{i=0}^{l} \frac{x_i}{2} \log_2\frac{x_i+x'_i}{x_i} + \frac{x'_i}{2} \log_2\frac{x_i+x'_i}{x'_i}
  * \f]
  * */
-class CJensenShannonKernel: public CDotKernel
+class JensenShannonKernel: public DotKernel
 {
 	public:
 		/** default constructor  */
-		CJensenShannonKernel();
+		JensenShannonKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CJensenShannonKernel(int32_t size);
+		JensenShannonKernel(int32_t size);
 
 		/** constructor
 		 *
@@ -41,11 +41,11 @@ class CJensenShannonKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @param size cache size
 		 */
-		CJensenShannonKernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		JensenShannonKernel(
+			std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 			int32_t size=10);
 
-		virtual ~CJensenShannonKernel();
+		virtual ~JensenShannonKernel();
 
 		/** initialize kernel
 		 *
@@ -53,7 +53,7 @@ class CJensenShannonKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

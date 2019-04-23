@@ -11,49 +11,49 @@
 using namespace shogun;
 using namespace Eigen;
 
-CCustomMahalanobisDistance::CCustomMahalanobisDistance() : CRealDistance()
+CustomMahalanobisDistance::CustomMahalanobisDistance() : RealDistance()
 {
 	register_params();
 }
 
-CCustomMahalanobisDistance::CCustomMahalanobisDistance(CFeatures* l, CFeatures* r, SGMatrix<float64_t> m)
-: CRealDistance()
+CustomMahalanobisDistance::CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, SGMatrix<float64_t> m)
+: RealDistance()
 {
 	register_params();
-	CRealDistance::init(l, r);
+	RealDistance::init(l, r);
 	m_mahalanobis_matrix = m;
 }
 
-void CCustomMahalanobisDistance::register_params()
+void CustomMahalanobisDistance::register_params()
 {
 	SG_ADD(&m_mahalanobis_matrix, "m_mahalanobis_matrix", "Mahalanobis matrix");
 }
 
-CCustomMahalanobisDistance::~CCustomMahalanobisDistance()
+CustomMahalanobisDistance::~CustomMahalanobisDistance()
 {
 	cleanup();
 }
 
-void CCustomMahalanobisDistance::cleanup()
+void CustomMahalanobisDistance::cleanup()
 {
 }
 
-const char* CCustomMahalanobisDistance::get_name() const
+const char* CustomMahalanobisDistance::get_name() const
 {
 	return "CustomMahalanobisDistance";
 }
 
-EDistanceType CCustomMahalanobisDistance::get_distance_type()
+EDistanceType CustomMahalanobisDistance::get_distance_type()
 {
 	return D_CUSTOMMAHALANOBIS;
 }
 
-float64_t CCustomMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CustomMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	// Get feature vectors that will be used to compute the distance; casts
 	// are safe, features are checked to be dense in DenseDistance::init
-	SGVector<float64_t> avec = static_cast<CDenseFeatures<float64_t>*>(lhs)->get_feature_vector(idx_a);
-	SGVector<float64_t> bvec = static_cast<CDenseFeatures<float64_t>*>(rhs)->get_feature_vector(idx_b);
+	SGVector<float64_t> avec = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(lhs)->get_feature_vector(idx_a);
+	SGVector<float64_t> bvec = std::dynamic_pointer_cast<DenseFeatures<float64_t>>(rhs)->get_feature_vector(idx_b);
 
 	require(avec.vlen == bvec.vlen, "In CCustomMahalanobisDistance::compute the "
 			"feature vectors must have the same number of elements");

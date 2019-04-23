@@ -13,14 +13,14 @@
 
 using namespace shogun;
 
-CPolyMatchStringKernel::CPolyMatchStringKernel()
-: CStringKernel<char>()
+PolyMatchStringKernel::PolyMatchStringKernel()
+: StringKernel<char>()
 {
 	init();
 }
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(int32_t size, int32_t d, bool i)
-: CStringKernel<char>(size)
+PolyMatchStringKernel::PolyMatchStringKernel(int32_t size, int32_t d, bool i)
+: StringKernel<char>(size)
 {
 	init();
 
@@ -28,9 +28,9 @@ CPolyMatchStringKernel::CPolyMatchStringKernel(int32_t size, int32_t d, bool i)
 	inhomogene=i;
 }
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d, bool i)
-: CStringKernel<char>(10)
+PolyMatchStringKernel::PolyMatchStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r, int32_t d, bool i)
+: StringKernel<char>(10)
 {
 	init();
 
@@ -40,29 +40,29 @@ CPolyMatchStringKernel::CPolyMatchStringKernel(
 	init(l, r);
 }
 
-CPolyMatchStringKernel::~CPolyMatchStringKernel()
+PolyMatchStringKernel::~PolyMatchStringKernel()
 {
 	cleanup();
 }
 
-bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
+bool PolyMatchStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CPolyMatchStringKernel::cleanup()
+void PolyMatchStringKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t PolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t i, alen, blen, sum;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen)
 	for (i = 0, sum = inhomogene; i<alen; i++)
@@ -75,17 +75,17 @@ float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	if (rescaling)
 		result/=alen;
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-	return CMath::pow(result , degree);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	return Math::pow(result , degree);
 }
 
-void CPolyMatchStringKernel::init()
+void PolyMatchStringKernel::init()
 {
 	degree=0;
 	inhomogene=false;
 	rescaling=false;
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
 	SG_ADD(&degree, "degree", "Degree of poly-kernel.", ParameterProperties::HYPER);
 	SG_ADD(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.");

@@ -35,53 +35,52 @@
 #include <shogun/statistical_testing/internals/TestTypes.h>
 
 using namespace shogun;
-using namespace internal;
 
-struct CTwoSampleTest::Self
+struct TwoSampleTest::Self
 {
 	Self(index_t num_kernels);
-	KernelManager kernel_mgr;
+	internal::KernelManager kernel_mgr;
 };
 
-CTwoSampleTest::Self::Self(index_t num_kernels) : kernel_mgr(num_kernels)
+TwoSampleTest::Self::Self(index_t num_kernels) : kernel_mgr(num_kernels)
 {
 }
 
-CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest()
+TwoSampleTest::TwoSampleTest() : TwoDistributionTest()
 {
-	self=std::unique_ptr<Self>(new Self(TwoSampleTest::num_kernels));
+	self=std::unique_ptr<Self>(new Self(internal::TwoSampleTest::num_kernels));
 
 	// FIXME: remove and rather register the kernel itself
-	watch_method("kernel", &CTwoSampleTest::get_kernel);
+	watch_method("kernel", &TwoSampleTest::get_kernel);
 }
 
-CTwoSampleTest::~CTwoSampleTest()
+TwoSampleTest::~TwoSampleTest()
 {
 }
 
-void CTwoSampleTest::set_kernel(CKernel* kernel)
+void TwoSampleTest::set_kernel(std::shared_ptr<Kernel> kernel)
 {
 	require(kernel, "Kernel cannot be NULL!");
 	self->kernel_mgr.kernel_at(0)=kernel;
 	self->kernel_mgr.restore_kernel_at(0);
 }
 
-CKernel* CTwoSampleTest::get_kernel() const
+std::shared_ptr<Kernel> TwoSampleTest::get_kernel() const
 {
 	return get_kernel_mgr().kernel_at(0);
 }
 
-const char* CTwoSampleTest::get_name() const
+const char* TwoSampleTest::get_name() const
 {
 	return "TwoSampleTest";
 }
 
-KernelManager& CTwoSampleTest::get_kernel_mgr()
+internal::KernelManager& TwoSampleTest::get_kernel_mgr()
 {
 	return self->kernel_mgr;
 }
 
-const KernelManager& CTwoSampleTest::get_kernel_mgr() const
+const internal::KernelManager& TwoSampleTest::get_kernel_mgr() const
 {
 	return self->kernel_mgr;
 }

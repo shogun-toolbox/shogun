@@ -12,34 +12,32 @@ int main(){
 
 	// create some data
 	SGMatrix<float64_t> matrix(num_feat, num_vec);
-	CMath::range_fill_vector(matrix.matrix, num_feat*num_vec);
+	Math::range_fill_vector(matrix.matrix, num_feat*num_vec);
 
 	// Create features ; shogun will now own the matrix created
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
+	DenseFeatures<float64_t>* features=new DenseFeatures<float64_t>(matrix);
 
-	CMath::display_matrix(matrix.matrix,num_feat,num_vec);
+	Math::display_matrix(matrix.matrix,num_feat,num_vec);
 
 	//Create labels
-	CLabels* labels=new CLabels(num_vec);
+	Labels* labels=new Labels(num_vec);
 	for (index_t i=0; i<num_vec; ++i)
 		labels->set_label(i, i%num_class);
 
 	//Create Euclidean Distance
-	CEuclideanDistance* distance = new CEuclideanDistance(features,features);
+	EuclideanDistance* distance = new EuclideanDistance(features,features);
 
 	//Create Nearest Centroid
 	CNearestCentroid* nearest_centroid = new CNearestCentroid(distance, labels);
 	nearest_centroid->train();
 
 //	classify on training examples
-	CLabels* output=nearest_centroid->apply();
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(),
+	Labels* output=nearest_centroid->apply();
+	Math::display_vector(output->get_labels().vector, output->get_num_labels(),
 			"batch output");
 
-	SG_UNREF(output);
 
 	// free up memory
-	SG_UNREF(nearest_centroid);
 
 	return 0;
 }

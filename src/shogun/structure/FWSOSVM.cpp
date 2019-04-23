@@ -11,18 +11,18 @@
 
 using namespace shogun;
 
-CFWSOSVM::CFWSOSVM()
-: CLinearStructuredOutputMachine()
+FWSOSVM::FWSOSVM()
+: LinearStructuredOutputMachine()
 {
 	init();
 }
 
-CFWSOSVM::CFWSOSVM(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
+FWSOSVM::FWSOSVM(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs,
 		bool do_line_search,
 		bool verbose)
-: CLinearStructuredOutputMachine(model, labs)
+: LinearStructuredOutputMachine(model, labs)
 {
 	require(model != NULL && labs != NULL,
 		"{}::CFWSOSVM(): model and labels cannot be NULL!", get_name());
@@ -36,7 +36,7 @@ CFWSOSVM::CFWSOSVM(
 	m_verbose = verbose;
 }
 
-void CFWSOSVM::init()
+void FWSOSVM::init()
 {
 	SG_ADD(&m_lambda, "lambda", "Regularization constant");
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations");
@@ -51,16 +51,16 @@ void CFWSOSVM::init()
 	m_ell = 0;
 }
 
-CFWSOSVM::~CFWSOSVM()
+FWSOSVM::~FWSOSVM()
 {
 }
 
-EMachineType CFWSOSVM::get_classifier_type()
+EMachineType FWSOSVM::get_classifier_type()
 {
 	return CT_FWSOSVM;
 }
 
-bool CFWSOSVM::train_machine(CFeatures* data)
+bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 {
 	SG_TRACE("Entering CFWSOSVM::train_machine.");
 	if (data)
@@ -75,7 +75,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
-	int32_t N = m_labels->as<CStructuredLabels>()->get_num_labels();
+	int32_t N = m_labels->as<StructuredLabels>()->get_num_labels();
 
 	SG_DEBUG("M={}, N ={}.", M, N);
 
@@ -90,10 +90,10 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 	{
 		if (m_helper != NULL)
-			SG_UNREF(m_helper);
 
-		m_helper = new CSOSVMHelper();
-		SG_REF(m_helper);
+
+		m_helper = std::shared_ptr<SOSVMHelper>();
+
 	}
 
 	// Main loop
@@ -110,7 +110,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) solve the loss-augmented inference for point si
-			CResultSet* result = m_model->argmax(m_w, si);
+			auto result = m_model->argmax(m_w, si);
 
 			// 2) get the subgradient
 			// psi_i(y) := phi(x_i,y_i) - phi(x_i, y_pred)
@@ -141,7 +141,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			w_s.add(psi_i);
 			ell_s += loss_i;
 
-			SG_UNREF(result);
+
 
 		} // end si
 
@@ -156,10 +156,10 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		// Debug: compute primal and dual objectives and training error
 		if (m_verbose)
 		{
-			float64_t primal = CSOSVMHelper::primal_objective(m_w, m_model, m_lambda);
-			float64_t dual = CSOSVMHelper::dual_objective(m_w, m_ell, m_lambda);
-			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
-			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
+			float64_t primal = SOSVMHelper::primal_objective(m_w, m_model, m_lambda);
+			float64_t dual = SOSVMHelper::dual_objective(m_w, m_ell, m_lambda);
+			ASSERT(Math::fequals_abs(primal - dual, dual_gap, 1e-12));
+			float64_t train_error = SOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
 			io::print("pass {} (iteration {}), primal = {}, dual = {}, duality gap = {}, train_error = {} \n",
 				pi, k, primal, dual, dual_gap, train_error);
@@ -203,42 +203,42 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CFWSOSVM::get_lambda() const
+float64_t FWSOSVM::get_lambda() const
 {
 	return m_lambda;
 }
 
-void CFWSOSVM::set_lambda(float64_t lbda)
+void FWSOSVM::set_lambda(float64_t lbda)
 {
 	m_lambda = lbda;
 }
 
-int32_t CFWSOSVM::get_num_iter() const
+int32_t FWSOSVM::get_num_iter() const
 {
 	return m_num_iter;
 }
 
-void CFWSOSVM::set_num_iter(int32_t num_iter)
+void FWSOSVM::set_num_iter(int32_t num_iter)
 {
 	m_num_iter = num_iter;
 }
 
-float64_t CFWSOSVM::get_gap_threshold() const
+float64_t FWSOSVM::get_gap_threshold() const
 {
 	return m_gap_threshold;
 }
 
-void CFWSOSVM::set_gap_threshold(float64_t gap_threshold)
+void FWSOSVM::set_gap_threshold(float64_t gap_threshold)
 {
 	m_gap_threshold = gap_threshold;
 }
 
-float64_t CFWSOSVM::get_ell() const
+float64_t FWSOSVM::get_ell() const
 {
 	return m_ell;
 }
 
-void CFWSOSVM::set_ell(float64_t ell)
+void FWSOSVM::set_ell(float64_t ell)
 {
 	m_ell = ell;
 }

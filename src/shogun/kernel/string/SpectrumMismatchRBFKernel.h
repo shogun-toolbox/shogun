@@ -35,11 +35,11 @@ struct joint_list_struct
 #endif
 
 /** @brief spectrum mismatch rbf kernel */
-class CSpectrumMismatchRBFKernel: public CStringKernel<char>
+class SpectrumMismatchRBFKernel: public StringKernel<char>
 {
 public:
 	/** default constructor  */
-	CSpectrumMismatchRBFKernel();
+	SpectrumMismatchRBFKernel();
 
 	/** constructor
 	 *
@@ -51,7 +51,7 @@ public:
 	 * @param max_mismatch
 	 * @param width
 	 */
-	CSpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix_, int32_t nr_,
+	SpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix_, int32_t nr_,
 			int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
 
 	/** constructor
@@ -66,13 +66,13 @@ public:
 	 * @param max_mismatch
 	 * @param width
 	 */
-	CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
-			CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_,
+	SpectrumMismatchRBFKernel(std::shared_ptr<StringFeatures<char>> l,
+			std::shared_ptr<StringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
 			int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch,
 			float64_t width);
 
 	/** destructor */
-	virtual ~CSpectrumMismatchRBFKernel();
+	virtual ~SpectrumMismatchRBFKernel();
 
 	/** initialize kernel
 	 *
@@ -80,7 +80,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/** clean up kernel */
 	virtual void cleanup();
@@ -206,7 +206,7 @@ protected:
 
 protected:
 	/** alphabet of features */
-	CAlphabet* alphabet;
+	std::shared_ptr<Alphabet> alphabet;
 	/** degree */
 	int32_t degree;
 	/** maximum mismatch */
@@ -220,7 +220,7 @@ protected:
 	bool initialized;
 
 	/** kernel matrix */
-	CDynamicArray<float64_t>* kernel_matrix; // 2d
+	std::shared_ptr<DynamicArray<float64_t>> kernel_matrix; // 2d
 	/** kernel matrix length */
 	int32_t kernel_matrix_length;
 	/** target letter 0 */

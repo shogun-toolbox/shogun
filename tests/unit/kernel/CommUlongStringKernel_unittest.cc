@@ -36,23 +36,23 @@ TEST(CommUlongStringKernel, kernel_matrix)
 	list.push_back(string_2);
 	list.push_back(string_3);
 
-	auto s_feats = some<CStringFeatures<char>>(list, RAWBYTE);
+	auto s_feats = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
 
 	auto alphabet = s_feats->get_alphabet();
-	auto l_feats = some<CStringFeatures<uint64_t>>(alphabet);
+	auto l_feats = std::make_shared<StringFeatures<uint64_t>>(alphabet);
 	l_feats->obtain_from_char(s_feats, 5-1, 5, 0, false);
-	auto preproc = some<CSortUlongString>();
+	auto preproc = std::make_shared<SortUlongString>();
 	preproc->fit(l_feats);
 	l_feats =
-	    wrap(preproc->transform(l_feats)->as<CStringFeatures<uint64_t>>());
+	    preproc->transform(l_feats)->as<StringFeatures<uint64_t>>();
 
-	auto kernel = some<CCommUlongStringKernel>(l_feats, l_feats);
-	auto normalizer = some<CIdentityKernelNormalizer>();
+	auto kernel = std::make_shared<CommUlongStringKernel>(l_feats, l_feats);
+	auto normalizer = std::make_shared<IdentityKernelNormalizer>();
 	kernel->set_normalizer(normalizer);
 
 
 	auto h_feats =
-	    some<CHashedDocDotFeatures>(20, s_feats, new CNGramTokenizer(5), false);
+	    std::make_shared<HashedDocDotFeatures>(20, s_feats, std::make_shared<NGramTokenizer>(5), false);
 
 	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
 

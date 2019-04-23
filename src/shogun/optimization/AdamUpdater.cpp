@@ -151,12 +151,12 @@ void AdamUpdater::update_variable(SGVector<float64_t> variable_reference,
 	m_log_scale_pre_iteration =
 	    m_log_learning_rate +
 	    0.5 * std::log(
-	              1.0 - CMath::pow(
+	              1.0 - Math::pow(
 	                        m_decay_factor_second_moment,
 	                        (float64_t)m_iteration_counter)) -
 	    std::log(
 	        1.0 -
-	        CMath::pow(
+	        Math::pow(
 	            m_decay_factor_first_moment, (float64_t)m_iteration_counter));
 
 	DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction,

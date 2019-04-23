@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Evgeniy Andreev, Bjoern Esser, Soeren Sonnenburg, 
- *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer, 
+ * Authors: Jiaolong Xu, Evgeniy Andreev, Bjoern Esser, Soeren Sonnenburg,
+ *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer,
  *          Abhinav Agarwalla
  */
 
@@ -15,9 +15,9 @@
 namespace shogun
 {
 
-class CDelimiterTokenizer;
-class CLineReader;
-class CParser;
+class DelimiterTokenizer;
+class LineReader;
+class Parser;
 template <class ST> class SGVector;
 template <class T> class SGSparseVector;
 
@@ -28,18 +28,18 @@ template <class T> class SGSparseVector;
  *     dim 2    - value 100.2
  *     dim 1000 - value   1.3
  */
-class CLibSVMFile : public CFile
+class LibSVMFile : public File
 {
 public:
 	/** default constructor */
-	CLibSVMFile();
+	LibSVMFile();
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CLibSVMFile(FILE* f, const char* name=NULL);
+	LibSVMFile(FILE* f, const char* name=NULL);
 
 	/** constructor
 	 *
@@ -47,10 +47,10 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CLibSVMFile(const char* fname, char rw='r', const char* name=NULL);
+	LibSVMFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
-	virtual ~CLibSVMFile();
+	virtual ~LibSVMFile();
 
 #ifndef SWIG // SWIG should skip this part
 	/** @name Sparse Matrix Access Functions
@@ -342,22 +342,22 @@ private:
 	char m_delimiter_label;
 
 	/** object for reading lines from file */
-	CLineReader* m_line_reader;
+	std::shared_ptr<LineReader> m_line_reader;
 
 	/** parser of lines */
-	CParser* m_parser;
+	std::shared_ptr<Parser> m_parser;
 
 	/** tokenizer for line_reader */
-	CDelimiterTokenizer* m_line_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_line_tokenizer;
 
 	/** delimiter for parsing lines */
-	CDelimiterTokenizer* m_whitespace_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_whitespace_tokenizer;
 
 	/** delimiter for parsing sparse entries */
-	CDelimiterTokenizer* m_delimiter_feat_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_delimiter_feat_tokenizer;
 
 	/** delimiter for parsing multiple labels */
-	CDelimiterTokenizer* m_delimiter_label_tokenizer;
+	std::shared_ptr<DelimiterTokenizer> m_delimiter_label_tokenizer;
    };
 
 }

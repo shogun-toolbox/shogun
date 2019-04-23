@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, 
- *          Sergey Lisitsyn, Soumyajit De, Shashwat Lal Das, Fernando Iglesias, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev,
+ *          Sergey Lisitsyn, Soumyajit De, Shashwat Lal Das, Fernando Iglesias,
  *          Bjoern Esser, Wu Lin
  */
 
@@ -16,26 +16,25 @@
 
 using namespace shogun;
 
-CFeatures::CFeatures(int32_t size)
-: CSGObject()
+Features::Features(int32_t size)
+: SGObject()
 {
 	init();
 	cache_size = size;
 }
 
-CFeatures::CFeatures(const CFeatures& orig)
-: CSGObject(orig)
+Features::Features(const Features& orig)
+: SGObject(orig)
 {
 	init();
 
-	// TODO this should be a shallow copy
-	auto old_preproc = preproc;
-	preproc = make_clone(preproc);
-	SG_UNREF(old_preproc);
+	// Call to init creates new preproc arrays.
+	// FIXME: make_clone?
+	preproc = orig.preproc;
 }
 
-CFeatures::CFeatures(CFile* loader)
-: CSGObject()
+Features::Features(std::shared_ptr<File> loader)
+: SGObject()
 {
 	init();
 
@@ -43,104 +42,99 @@ CFeatures::CFeatures(CFile* loader)
 	io::info("Feature object loaded ({})",fmt::ptr(this));
 }
 
-CFeatures::~CFeatures()
+Features::~Features()
 {
 	clean_preprocessors();
-	SG_UNREF(m_subset_stack);
-	SG_UNREF(preproc);
 }
 
-void CFeatures::init()
+void Features::init()
 {
 	set_default_mask(ParameterProperties::READONLY);
 
 	SG_ADD(&properties, "properties", "Feature properties");
 	SG_ADD(&cache_size, "cache_size", "Size of cache in MB");
 
-	SG_ADD((CSGObject**) &preproc, "preproc", "Array of preprocessors.");
+	SG_ADD(&preproc, "preproc", "Array of preprocessors.");
 
-	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_subset_stack, "subset_stack", "Stack of subsets");
 
-	m_subset_stack=new CSubsetStack();
-	SG_REF(m_subset_stack);
+	m_subset_stack=std::make_shared<SubsetStack>();
+
 
 	properties = FP_NONE;
 	cache_size = 0;
-	preproc = new CDynamicObjectArray();
-	SG_REF(preproc);
 }
 
-void CFeatures::add_preprocessor(CPreprocessor* p)
+void Features::add_preprocessor(std::shared_ptr<Preprocessor> p)
 {
 	ASSERT(p)
 
-	preproc->push_back(p);
+	preproc.push_back(p);
 }
 
-CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
+std::shared_ptr<Preprocessor> Features::get_preprocessor(int32_t num) const
 {
-	if (num<preproc->get_num_elements() && num>=0)
+	if (num<preproc.size() && num>=0)
 	{
-	  return (CPreprocessor*) preproc->get_element(num);
+	  return preproc[num];
 	}
 	else
 		return NULL;
 }
 
-void CFeatures::clean_preprocessors()
+void Features::clean_preprocessors()
 {
-	preproc->reset_array();
+	preproc.clear();
 }
 
-void CFeatures::del_preprocessor(int32_t num)
+void Features::del_preprocessor(int32_t num)
 {
-	if (num<preproc->get_num_elements() && num>=0)
+	if (num<preproc.size() && num>=0)
 	{
-		preproc->delete_element(num);
+		preproc.erase(preproc.cbegin()+num);
 	}
 }
 
-void CFeatures::list_preprocessors()
+void Features::list_preprocessors()
 {
-	int32_t num_preproc = preproc->get_num_elements();
-
-	for (int32_t i=0; i<num_preproc; i++)
+	index_t i = 0;
+	for (const auto& v: preproc)
 	{
-		io::info("preproc[{}]={}", i, preproc->get_element(i)->get_name());
+		io::info("preproc[{}]={}\n", i++, v->get_name());
 	}
 }
 
-int32_t CFeatures::get_num_preprocessors() const
+int32_t Features::get_num_preprocessors() const
 {
-	return preproc->get_num_elements();
+	return preproc.size();
 }
 
-int32_t CFeatures::get_cache_size() const
+int32_t Features::get_cache_size() const
 {
 	return cache_size;
 }
 
-bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
+bool Features::reshape(int32_t num_features, int32_t num_vectors)
 {
 	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
-void CFeatures::load(CFile* loader)
+void Features::load(std::shared_ptr<File> loader)
 {
 	SG_SET_LOCALE_C;
 	not_implemented(SOURCE_LOCATION);
 	SG_RESET_LOCALE;
 }
 
-void CFeatures::save(CFile* writer)
+void Features::save(std::shared_ptr<File> writer)
 {
 	SG_SET_LOCALE_C;
 	not_implemented(SOURCE_LOCATION);
 	SG_RESET_LOCALE;
 }
 
-bool CFeatures::check_feature_compatibility(CFeatures* f) const
+bool Features::check_feature_compatibility(std::shared_ptr<Features> f) const
 {
 	bool result=false;
 
@@ -152,67 +146,67 @@ bool CFeatures::check_feature_compatibility(CFeatures* f) const
 	return result;
 }
 
-bool CFeatures::has_property(EFeatureProperty p) const
+bool Features::has_property(EFeatureProperty p) const
 {
 	return (properties & p) != 0;
 }
 
-void CFeatures::set_property(EFeatureProperty p)
+void Features::set_property(EFeatureProperty p)
 {
 	properties |= p;
 }
 
-void CFeatures::unset_property(EFeatureProperty p)
+void Features::unset_property(EFeatureProperty p)
 {
 	properties &= (properties | p) ^ p;
 }
 
-void CFeatures::add_subset(SGVector<index_t> subset)
+void Features::add_subset(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset(subset);
 	subset_changed_post();
 }
 
-void CFeatures::add_subset_in_place(SGVector<index_t> subset)
+void Features::add_subset_in_place(SGVector<index_t> subset)
 {
 	m_subset_stack->add_subset_in_place(subset);
 	subset_changed_post();
 }
 
-void CFeatures::remove_subset()
+void Features::remove_subset()
 {
 	m_subset_stack->remove_subset();
 	subset_changed_post();
 }
 
-void CFeatures::remove_all_subsets()
+void Features::remove_all_subsets()
 {
 	m_subset_stack->remove_all_subsets();
 	subset_changed_post();
 }
 
-CSubsetStack* CFeatures::get_subset_stack()
+std::shared_ptr<SubsetStack> Features::get_subset_stack()
 {
-	SG_REF(m_subset_stack);
+
 	return m_subset_stack;
 }
 
-CFeatures* CFeatures::copy_subset(SGVector<index_t> indices) const
+std::shared_ptr<Features> Features::copy_subset(SGVector<index_t> indices) const
 {
 	error("{}::copy_subset(): copy_subset and therefore model storage of "
-			"CMachine (required for cross-validation and model-selection is "
+			"Machine (required for cross-validation and model-selection is "
 			"not yet implemented yet. Ask developers!", get_name());
 	return NULL;
 }
 
-CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims) const
+std::shared_ptr<Features> Features::copy_dimension_subset(SGVector<index_t> dims) const
 {
 	io::warn("{}::copy_dimension_subset():: Is not yet implemented!",
 			get_name());
 	return NULL;
 }
 
-bool CFeatures::get_feature_class_compatibility(EFeatureClass rhs) const
+bool Features::get_feature_class_compatibility(EFeatureClass rhs) const
 {
 	if (this->get_feature_class()==rhs)
 		return true;

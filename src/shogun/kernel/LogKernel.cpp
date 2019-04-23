@@ -9,49 +9,49 @@
 
 using namespace shogun;
 
-CLogKernel::CLogKernel(): CKernel(0), m_distance(NULL), m_degree(1.8)
+LogKernel::LogKernel(): Kernel(0), m_distance(NULL), m_degree(1.8)
 {
 	init();
 }
 
-CLogKernel::CLogKernel(int32_t cache, float64_t degree, CDistance* dist)
-: CKernel(cache), m_distance(dist), m_degree(degree)
+LogKernel::LogKernel(int32_t cache, float64_t degree, std::shared_ptr<Distance> dist)
+: Kernel(cache), m_distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 }
 
-CLogKernel::CLogKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist)
-: CKernel(10), m_distance(dist), m_degree(degree)
+LogKernel::LogKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t degree, std::shared_ptr<Distance> dist)
+: Kernel(10), m_distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init(l, r);
 }
 
-CLogKernel::~CLogKernel()
+LogKernel::~LogKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CLogKernel::init(CFeatures* l, CFeatures* r)
+bool LogKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(m_distance)
-	CKernel::init(l,r);
+	Kernel::init(l,r);
 	m_distance->init(l,r);
 	return init_normalizer();
 }
 
-void CLogKernel::init()
+void LogKernel::init()
 {
 	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", ParameterProperties::HYPER);
 	SG_ADD(&m_distance, "distance", "Distance to be used.", ParameterProperties::HYPER);
 }
 
-float64_t CLogKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t LogKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = m_distance->distance(idx_a, idx_b);
 	float64_t temp = pow(dist, m_degree);

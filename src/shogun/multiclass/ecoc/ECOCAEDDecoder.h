@@ -21,14 +21,14 @@ namespace shogun
  * AED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2 |b_i^j|}
  * \f]
  */
-class CECOCAEDDecoder: public CECOCSimpleDecoder
+class ECOCAEDDecoder: public ECOCSimpleDecoder
 {
 public:
     /** constructor */
-    CECOCAEDDecoder() {}
+    ECOCAEDDecoder() {}
 
     /** destructor */
-    virtual ~CECOCAEDDecoder() {}
+    virtual ~ECOCAEDDecoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCAEDDecoder"; }
@@ -46,7 +46,7 @@ protected:
     {
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)
-            dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * CMath::abs(code[i]);
+            dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * Math::abs(code[i]);
 		return std::sqrt(dist);
 	}
 };

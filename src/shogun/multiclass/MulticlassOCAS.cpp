@@ -15,7 +15,7 @@ using namespace shogun;
 
 struct mocas_data
 {
-	CDotFeatures* features;
+	std::shared_ptr<DotFeatures> features;
 	float64_t* W;
 	float64_t* oldW;
 	float64_t* full_A;
@@ -27,8 +27,8 @@ struct mocas_data
 	float64_t* new_a;
 };
 
-CMulticlassOCAS::CMulticlassOCAS() :
-	CLinearMulticlassMachine()
+MulticlassOCAS::MulticlassOCAS() :
+	LinearMulticlassMachine()
 {
 	register_parameters();
 	set_C(1.0);
@@ -38,8 +38,8 @@ CMulticlassOCAS::CMulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-CMulticlassOCAS::CMulticlassOCAS(float64_t C, CFeatures* train_features, CLabels* train_labels) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), train_features->as<CDotFeatures>(), NULL, train_labels), m_C(C)
+MulticlassOCAS::MulticlassOCAS(float64_t C, std::shared_ptr<Features> train_features, std::shared_ptr<Labels> train_labels) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL, train_labels), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);
@@ -48,7 +48,7 @@ CMulticlassOCAS::CMulticlassOCAS(float64_t C, CFeatures* train_features, CLabels
 	set_buf_size(5000);
 }
 
-void CMulticlassOCAS::register_parameters()
+void MulticlassOCAS::register_parameters()
 {
 	SG_ADD(&m_C, "m_C", "regularization constant", ParameterProperties::HYPER);
 	SG_ADD(&m_epsilon, "m_epsilon", "solver relative tolerance");
@@ -57,14 +57,14 @@ void CMulticlassOCAS::register_parameters()
 	SG_ADD(&m_buf_size, "m_buf_size", "buffer size");
 }
 
-CMulticlassOCAS::~CMulticlassOCAS()
+MulticlassOCAS::~MulticlassOCAS()
 {
 }
 
-bool CMulticlassOCAS::train_machine(CFeatures* data)
+bool MulticlassOCAS::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(m_features)
 	ASSERT(m_labels)
@@ -76,7 +76,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	SGVector<float64_t> labels = ((CMulticlassLabels*) m_labels)->get_labels();
+	SGVector<float64_t> labels = multiclass_labels(m_labels)->get_labels();
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;
@@ -101,12 +101,12 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	ocas_return_value_T value =
 	msvm_ocas_solver(C, labels.vector, nY, nData, TolRel, TolAbs,
 	                 QPBound, MaxTime, BufSize, Method,
-	                 &CMulticlassOCAS::msvm_full_compute_W,
-	                 &CMulticlassOCAS::msvm_update_W,
-	                 &CMulticlassOCAS::msvm_full_add_new_cut,
-	                 &CMulticlassOCAS::msvm_full_compute_output,
-	                 &CMulticlassOCAS::msvm_sort_data,
-	                 &CMulticlassOCAS::msvm_print,
+	                 &MulticlassOCAS::msvm_full_compute_W,
+	                 &MulticlassOCAS::msvm_update_W,
+	                 &MulticlassOCAS::msvm_full_add_new_cut,
+	                 &MulticlassOCAS::msvm_full_compute_output,
+	                 &MulticlassOCAS::msvm_sort_data,
+	                 &MulticlassOCAS::msvm_print,
 	                 &user_data);
 
 	SG_DEBUG("Number of iterations [nIter] = {} ",value.nIter)
@@ -125,13 +125,13 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	SG_DEBUG("QP exit flag [qp_exitflag] = {} ",value.qp_exitflag)
 	SG_DEBUG("Exit flag [exitflag] = {} ",value.exitflag)
 
-	m_machines->reset_array();
+	m_machines.clear();
 	for (int32_t i=0; i<num_classes; i++)
 	{
-		CLinearMachine* machine = new CLinearMachine();
+		auto machine = std::make_shared<LinearMachine>();
 		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features,false).clone());
 
-		m_machines->push_back(machine);
+		m_machines.push_back(machine);
 	}
 
 	SG_FREE(user_data.W);
@@ -143,7 +143,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
+float64_t MulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 {
 	float64_t* oldW = ((mocas_data*)user_data)->oldW;
 	uint32_t nY = ((mocas_data*)user_data)->nY;
@@ -158,7 +158,7 @@ float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 	return sq_norm_W;
 }
 
-void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW,
+void MulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW,
                                           float64_t *alpha, uint32_t nSel, void* user_data)
 {
 	float64_t* full_A = ((mocas_data*)user_data)->full_A;
@@ -187,7 +187,7 @@ void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_Wo
 	return;
 }
 
-int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut,
+int MulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut,
                                            uint32_t nSel, void* user_data)
 {
 	float64_t* full_A = ((mocas_data*)user_data)->full_A;
@@ -196,7 +196,7 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 	uint32_t nData = ((mocas_data*)user_data)->nData;
 	SGVector<float64_t> new_a(((mocas_data*)user_data)->new_a, nDim*nY, false);
-	CDotFeatures* features = ((mocas_data*)user_data)->features;
+	auto features = ((mocas_data*)user_data)->features;
 
 	float64_t sq_norm_a;
 	uint32_t i, j, y, y2;
@@ -233,14 +233,14 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
 	return 0;
 }
 
-int CMulticlassOCAS::msvm_full_compute_output(float64_t *output, void* user_data)
+int MulticlassOCAS::msvm_full_compute_output(float64_t *output, void* user_data)
 {
 	float64_t* W = ((mocas_data*)user_data)->W;
 	uint32_t nY = ((mocas_data*)user_data)->nY;
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 	uint32_t nData = ((mocas_data*)user_data)->nData;
 	float64_t* output_values = ((mocas_data*)user_data)->output_values;
-	CDotFeatures* features = ((mocas_data*)user_data)->features;
+	auto features = ((mocas_data*)user_data)->features;
 
 	uint32_t i, y;
 
@@ -254,13 +254,13 @@ int CMulticlassOCAS::msvm_full_compute_output(float64_t *output, void* user_data
 	return 0;
 }
 
-int CMulticlassOCAS::msvm_sort_data(float64_t* vals, float64_t* data, uint32_t size)
+int MulticlassOCAS::msvm_sort_data(float64_t* vals, float64_t* data, uint32_t size)
 {
-	CMath::qsort_index(vals, data, size);
+	Math::qsort_index(vals, data, size);
 	return 0;
 }
 
-void CMulticlassOCAS::msvm_print(ocas_return_value_T value)
+void MulticlassOCAS::msvm_print(ocas_return_value_T value)
 {
 }
 

@@ -17,20 +17,20 @@ See :cite:`gretton2012kernel` for a detailed introduction.
 Example
 -------
 
-Imagine we have samples from :math:`p` and :math:`q`, here in the form of CDenseFeatures (here 64 bit floats aka RealFeatures).
+Imagine we have samples from :math:`p` and :math:`q`, here in the form of DenseFeatures (here 64 bit floats aka RealFeatures).
 
 .. sgexample:: quadratic_time_maximum_mean_discrepancy.sg:create_features
 
-We create an instance of :sgclass:`CQuadraticTimeMMD`, passing it data the kernel.
+We create an instance of :sgclass:`QuadraticTimeMMD`, passing it data the kernel.
 
 .. sgexample:: quadratic_time_maximum_mean_discrepancy.sg:create_instance
 
-We can select multiple ways to compute the test statistic, see :sgclass:`CQuadraticTimeMMD` for details. 
+We can select multiple ways to compute the test statistic, see :sgclass:`QuadraticTimeMMD` for details. 
 The biased statistic is computed as
 
 .. sgexample:: quadratic_time_maximum_mean_discrepancy.sg:estimate_mmd
 
-There are multiple ways to perform the actual hypothesis test, see :sgclass:`CQuadraticTimeMMD` for details.
+There are multiple ways to perform the actual hypothesis test, see :sgclass:`QuadraticTimeMMD` for details.
 The permutation version simulates from :math:`H_0` via repeatedly permuting the samples from :math:`p` and :math:`q`.
 We can perform the test via computing a test threshold for a given :math:`\alpha`, or by directly computing a p-value.
 
@@ -40,7 +40,7 @@ We can perform the test via computing a test threshold for a given :math:`\alpha
 Multiple kernels
 ----------------
 
-It is possible to perform all operations (computing statistics, performing test, etc) for multiple kernels at once, via the :sgclass:`CMultiKernelQuadraticTimeMMD` interface.
+It is possible to perform all operations (computing statistics, performing test, etc) for multiple kernels at once, via the :sgclass:`MultiKernelQuadraticTimeMMD` interface.
 
 .. sgexample:: quadratic_time_maximum_mean_discrepancy.sg:multi_kernel
 
@@ -76,7 +76,7 @@ If all kernels have the same type, we can convert the result into that type, for
 
 Note that in order to extract particular kernel parameters, we need to cast the kernel to its actual type.
 
-Similarly, a convex combination of kernels, in the form of :sgclass:`CCombinedKernel` can be learned and extracted as
+Similarly, a convex combination of kernels, in the form of :sgclass:`CombinedKernel` can be learned and extracted as
 
 .. sgexample:: quadratic_time_maximum_mean_discrepancy.sg:select_kernel_combined
 

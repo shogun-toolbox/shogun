@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Heiko Strathmann, Saurabh Goyal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Heiko Strathmann, Saurabh Goyal,
  *          Sergey Lisitsyn
  */
 
@@ -11,90 +11,90 @@
 
 using namespace shogun;
 
-CANOVAKernel::CANOVAKernel(): CDotKernel(0), cardinality(1.0)
+ANOVAKernel::ANOVAKernel(): DotKernel(0), cardinality(1.0)
 {
 	register_params();
 }
 
-CANOVAKernel::CANOVAKernel(int32_t cache, int32_t d)
-: CDotKernel(cache), cardinality(d)
+ANOVAKernel::ANOVAKernel(int32_t cache, int32_t d)
+: DotKernel(cache), cardinality(d)
 {
 	register_params();
 }
 
-CANOVAKernel::CANOVAKernel(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache)
-  : CDotKernel(cache), cardinality(d)
+ANOVAKernel::ANOVAKernel(
+	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r, int32_t d, int32_t cache)
+  : DotKernel(cache), cardinality(d)
 {
 	register_params();
 	init(l, r);
 }
 
-CANOVAKernel::~CANOVAKernel()
+ANOVAKernel::~ANOVAKernel()
 {
 	cleanup();
 }
 
-bool CANOVAKernel::init(CFeatures* l, CFeatures* r)
+bool ANOVAKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	cleanup();
 
-	bool result = CDotKernel::init(l,r);
+	bool result = DotKernel::init(l,r);
 
 	init_normalizer();
 	return result;
 }
 
-float64_t CANOVAKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t ANOVAKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	return compute_rec1(idx_a, idx_b);
 }
 
-float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
+float64_t ANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive1(avec, bvec, alen);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
 
-float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
+float64_t ANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive2(avec, bvec, alen);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
 
-void CANOVAKernel::register_params()
+void ANOVAKernel::register_params()
 {
 	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", ParameterProperties::HYPER);
 }
 
 
-float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
+float64_t ANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
 {
 	int32_t DP_len=(cardinality+1)*(len+1);
 	float64_t* DP = SG_MALLOC(float64_t, DP_len);
@@ -126,7 +126,7 @@ float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int
 	return result;
 }
 
-float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
+float64_t ANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
 {
 	float64_t* KD = SG_MALLOC(float64_t, cardinality+1);
 	float64_t* KS = SG_MALLOC(float64_t, cardinality+1);
@@ -173,7 +173,7 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 	return result;
 }
 
-CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<ANOVAKernel> ANOVAKernel::obtain_from_generic(std::shared_ptr<Kernel> kernel)
 {
 	if (!kernel)
 		return NULL;
@@ -183,6 +183,6 @@ CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
 				kernel->get_kernel_type());
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CANOVAKernel*)kernel;
+
+	return std::static_pointer_cast<ANOVAKernel>(kernel);
 }

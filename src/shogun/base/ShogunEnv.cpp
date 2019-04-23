@@ -35,7 +35,7 @@ ShogunEnv::ShogunEnv()
 {
 	sg_io = std::make_unique<io::SGIO>();
 	sg_linalg = std::make_unique<SGLinalg>();
-	sg_signal = std::make_unique<CSignal>();
+	sg_signal = std::make_unique<Signal>();
 
 	sg_fequals_epsilon = 0.0;
 	sg_fequals_tolerant = false;
@@ -47,9 +47,9 @@ ShogunEnv::ShogunEnv()
 
 ShogunEnv::~ShogunEnv()
 {
-	delete CSignal::m_subscriber;
-	delete CSignal::m_observable;
-	delete CSignal::m_subject;
+	delete Signal::m_subscriber;
+	delete Signal::m_observable;
+	delete Signal::m_subject;
 
 #ifdef HAVE_PROTOBUF
 	::google::protobuf::ShutdownProtobufLibrary();
@@ -126,7 +126,7 @@ bool ShogunEnv::fequals_tolerant()
 	return sg_fequals_tolerant;
 }
 
-CSignal* ShogunEnv::signal()
+Signal* ShogunEnv::signal()
 {
 	return sg_signal.get();
 }

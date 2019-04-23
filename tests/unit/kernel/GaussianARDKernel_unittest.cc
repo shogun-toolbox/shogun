@@ -75,19 +75,19 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=2.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 	float64_t weight=0.5;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -98,7 +98,7 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
 		{
-			abs_tolerance=CMath::get_abs_tolerance(mat2(i,j),rel_tolerance);
+			abs_tolerance=Math::get_abs_tolerance(mat2(i,j),rel_tolerance);
 			EXPECT_NEAR(mat(i,j),mat2(i,j),abs_tolerance);
 		}
 	}
@@ -113,16 +113,16 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
 		{
-			abs_tolerance=CMath::get_abs_tolerance(mat2(i,j),rel_tolerance);
+			abs_tolerance=Math::get_abs_tolerance(mat2(i,j),rel_tolerance);
 			EXPECT_NEAR(mat(i,j),mat2(i,j),abs_tolerance);
 		}
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }
 
 TEST(GaussianARDKernel_scalar,get_parameter_gradient)
@@ -158,19 +158,19 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=4.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 	float64_t weight=1.0;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -184,7 +184,7 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
 		{
-			abs_tolerance=CMath::get_abs_tolerance(-mat2(i,j),rel_tolerance);
+			abs_tolerance=Math::get_abs_tolerance(-mat2(i,j),rel_tolerance);
 			EXPECT_NEAR(mat(i,j),-mat2(i,j),abs_tolerance);
 		}
 	}
@@ -198,16 +198,16 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	{
 		for(int32_t j=0;j<mat.num_cols;j++)
 		{
-			abs_tolerance=CMath::get_abs_tolerance(-mat2(i,j),rel_tolerance);
+			abs_tolerance=Math::get_abs_tolerance(-mat2(i,j),rel_tolerance);
 			EXPECT_NEAR(mat(i,j),-mat2(i,j),abs_tolerance);
 		}
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }
 
 TEST(GaussianARDKernel_vector,get_kernel_matrix)
@@ -243,11 +243,11 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	lat_feat_train(1,1)=2;
 	lat_feat_train(1,2)=-5;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 
 	float64_t weight1=6.0;
 	float64_t weight2=3.0;
@@ -256,8 +256,8 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(features_train)
+
+
 	kernel->init(features_train, latent_features_train);
 
 	//result from GPML 3.5
@@ -269,46 +269,46 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	//0.889607966835858   0.006010671270288   0.031352436711192
 
 	SGMatrix<float64_t> mat=kernel->get_kernel_matrix();
-	abs_tolerance = CMath::get_abs_tolerance(0.483748918128241, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.483748918128241, rel_tolerance);
 	EXPECT_NEAR(mat(0,0),  0.483748918128241,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000268463258484, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000268463258484, rel_tolerance);
 	EXPECT_NEAR(mat(0,1),  0.000268463258484,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.235348892827356, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.235348892827356, rel_tolerance);
 	EXPECT_NEAR(mat(0,2),  0.235348892827356,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.676321622589282, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.676321622589282, rel_tolerance);
 	EXPECT_NEAR(mat(1,0),  0.676321622589282,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000172691024978, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000172691024978, rel_tolerance);
 	EXPECT_NEAR(mat(1,1),  0.000172691024978,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001624066485753, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001624066485753, rel_tolerance);
 	EXPECT_NEAR(mat(1,2),  0.001624066485753,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.379307967154712, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.379307967154712, rel_tolerance);
 	EXPECT_NEAR(mat(2,0),  0.379307967154712,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000301388413582, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000301388413582, rel_tolerance);
 	EXPECT_NEAR(mat(2,1),  0.000301388413582,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000236847574321, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000236847574321, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  0.000236847574321,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.163638175047594, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.163638175047594, rel_tolerance);
 	EXPECT_NEAR(mat(3,0),  0.163638175047594,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000074274235677, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000074274235677, rel_tolerance);
 	EXPECT_NEAR(mat(3,1),  0.000074274235677,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.471639781078544, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.471639781078544, rel_tolerance);
 	EXPECT_NEAR(mat(3,2),  0.471639781078544,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.392276838870544, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.392276838870544, rel_tolerance);
 	EXPECT_NEAR(mat(4,0),  0.392276838870544,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.038462421551295, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.038462421551295, rel_tolerance);
 	EXPECT_NEAR(mat(4,1),  0.038462421551295,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.004574637837373, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004574637837373, rel_tolerance);
 	EXPECT_NEAR(mat(4,2),  0.004574637837373,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.889607966835858, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.889607966835858, rel_tolerance);
 	EXPECT_NEAR(mat(5,0),  0.889607966835858,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.006010671270288, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.006010671270288, rel_tolerance);
 	EXPECT_NEAR(mat(5,1),  0.006010671270288,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.031352436711192, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.031352436711192, rel_tolerance);
 	EXPECT_NEAR(mat(5,2),  0.031352436711192,  abs_tolerance);
 
 
@@ -319,31 +319,31 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	//0.025208965963144   0.000436766814255   1.000000000000000
 
 	mat=kernel->get_kernel_matrix();
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(0,0),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.001138802761346, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001138802761346, rel_tolerance);
 	EXPECT_NEAR(mat(0,1),  0.001138802761346,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.025208965963144, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.025208965963144, rel_tolerance);
 	EXPECT_NEAR(mat(0,2),  0.025208965963144,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.001138802761346, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.001138802761346, rel_tolerance);
 	EXPECT_NEAR(mat(1,0),  0.001138802761346,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(1,1),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000436766814255, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000436766814255, rel_tolerance);
 	EXPECT_NEAR(mat(1,2),  0.000436766814255,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.025208965963144, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.025208965963144, rel_tolerance);
 	EXPECT_NEAR(mat(2,0),  0.025208965963144,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000436766814255, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000436766814255, rel_tolerance);
 	EXPECT_NEAR(mat(2,1),  0.000436766814255,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
@@ -372,10 +372,10 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	lat_feat_train2(1,1)=2;
 	lat_feat_train2(1,2)=-5;
 
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
+	auto latent_features_train2=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train2);
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -390,8 +390,8 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(latent_features_train2)
+
+
 
 	kernel->init(latent_features_train, latent_features_train2);
 	//result from GPML 3.5
@@ -399,31 +399,31 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	//0.702682587860637   1.000000000000000   0.053362341348083
 	//0.004907454025841   0.053362341348083   1.000000000000000
 	SGMatrix<float64_t> mat=kernel->get_kernel_matrix();
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(0,0),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.702682587860637, rel_tolerance);
 	EXPECT_NEAR(mat(0,1),  0.702682587860637,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004907454025841, rel_tolerance);
 	EXPECT_NEAR(mat(0,2),  0.004907454025841,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.702682587860637, rel_tolerance);
 	EXPECT_NEAR(mat(1,0),  0.702682587860637,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(1,1),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.053362341348083, rel_tolerance);
 	EXPECT_NEAR(mat(1,2),  0.053362341348083,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004907454025841, rel_tolerance);
 	EXPECT_NEAR(mat(2,0),  0.004907454025841,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.053362341348083, rel_tolerance);
 	EXPECT_NEAR(mat(2,1),  0.053362341348083,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(latent_features_train2)
+
+
+
 }
 
 TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
@@ -459,11 +459,11 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	lat_feat_train(1,1)=2;
 	lat_feat_train(1,2)=-5;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -478,8 +478,8 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(features_train)
+
+
 	kernel->init(features_train, latent_features_train);
 
 	//result from GPML 3.5
@@ -492,46 +492,46 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 
 	SGMatrix<float64_t> mat=kernel->get_kernel_matrix();
 
-	abs_tolerance = CMath::get_abs_tolerance(0.394350178890907, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.394350178890907, rel_tolerance);
 	EXPECT_NEAR(mat(0,0),  0.394350178890907,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.871562091809855, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.871562091809855, rel_tolerance);
 	EXPECT_NEAR(mat(0,1),  0.871562091809855,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.165480906152021, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.165480906152021, rel_tolerance);
 	EXPECT_NEAR(mat(0,2),  0.165480906152021,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.592382640849672, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.592382640849672, rel_tolerance);
 	EXPECT_NEAR(mat(1,0),  0.592382640849672,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.176215460003241, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.176215460003241, rel_tolerance);
 	EXPECT_NEAR(mat(1,1),  0.176215460003241,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000103321679752, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000103321679752, rel_tolerance);
 	EXPECT_NEAR(mat(1,2),  0.000103321679752,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.248938103583867, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.248938103583867, rel_tolerance);
 	EXPECT_NEAR(mat(2,0),  0.248938103583867,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.043100670101141, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.043100670101141, rel_tolerance);
 	EXPECT_NEAR(mat(2,1),  0.043100670101141,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000005310787411, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000005310787411, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  0.000005310787411,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.093436892436847, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.093436892436847, rel_tolerance);
 	EXPECT_NEAR(mat(3,0),  0.093436892436847,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.408865150874797, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.408865150874797, rel_tolerance);
 	EXPECT_NEAR(mat(3,1),  0.408865150874797,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.555930926275610, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.555930926275610, rel_tolerance);
 	EXPECT_NEAR(mat(3,2),  0.555930926275610,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.891287769081377, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.891287769081377, rel_tolerance);
 	EXPECT_NEAR(mat(4,0),  0.891287769081377,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.418582374577455, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.418582374577455, rel_tolerance);
 	EXPECT_NEAR(mat(4,1),  0.418582374577455,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.000915039915173, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.000915039915173, rel_tolerance);
 	EXPECT_NEAR(mat(4,2),  0.000915039915173,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.994999180183564, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.994999180183564, rel_tolerance);
 	EXPECT_NEAR(mat(5,0),  0.994999180183564,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.760525767334597, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.760525767334597, rel_tolerance);
 	EXPECT_NEAR(mat(5,1),  0.760525767334597,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.006768257533514, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.006768257533514, rel_tolerance);
 	EXPECT_NEAR(mat(5,2),  0.006768257533514,  abs_tolerance);
 
 	kernel->init(latent_features_train, latent_features_train);
@@ -540,31 +540,31 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	//0.702682587860637   1.000000000000000   0.053362341348083
 	//0.004907454025841   0.053362341348083   1.000000000000000
 	mat=kernel->get_kernel_matrix();
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(0,0),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.702682587860637, rel_tolerance);
 	EXPECT_NEAR(mat(0,1),  0.702682587860637,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004907454025841, rel_tolerance);
 	EXPECT_NEAR(mat(0,2),  0.004907454025841,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.702682587860637, rel_tolerance);
 	EXPECT_NEAR(mat(1,0),  0.702682587860637,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(1,1),  1.000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.053362341348083, rel_tolerance);
 	EXPECT_NEAR(mat(1,2),  0.053362341348083,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.004907454025841, rel_tolerance);
 	EXPECT_NEAR(mat(2,0),  0.004907454025841,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.053362341348083, rel_tolerance);
 	EXPECT_NEAR(mat(2,1),  0.053362341348083,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(1.000000000000000, rel_tolerance);
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel,get_kernel_diagonal)
@@ -600,10 +600,10 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -618,8 +618,8 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 
@@ -629,7 +629,7 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 
 	for(int32_t i=0;i<vec.vlen;i++)
 	{
-		abs_tolerance=CMath::get_abs_tolerance(vec2[i],rel_tolerance);
+		abs_tolerance=Math::get_abs_tolerance(vec2[i],rel_tolerance);
 		EXPECT_NEAR(vec[i],vec2[i],abs_tolerance);
 	}
 
@@ -641,14 +641,14 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 
 	for(int32_t i=0;i<vec.vlen;i++)
 	{
-		abs_tolerance=CMath::get_abs_tolerance(vec2[i],rel_tolerance);
+		abs_tolerance=Math::get_abs_tolerance(vec2[i],rel_tolerance);
 		EXPECT_NEAR(vec[i],vec2[i],abs_tolerance);
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
@@ -684,19 +684,19 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=4.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<GaussianARDKernel>(10);
 	float64_t weight=1.0;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<GaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -708,7 +708,7 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	SGVector<float64_t> vec2=kernel2->get_parameter_gradient_diagonal(width_param2);
 	for(int32_t j=0;j<vec.vlen;j++)
 	{
-		abs_tolerance=CMath::get_abs_tolerance(-vec2[j],rel_tolerance);
+		abs_tolerance=Math::get_abs_tolerance(-vec2[j],rel_tolerance);
 		EXPECT_NEAR(vec[j],-vec2[j],abs_tolerance);
 	}
 
@@ -719,13 +719,13 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	vec2=kernel2->get_parameter_gradient_diagonal(width_param2);
 	for(int32_t j=0;j<vec.vlen;j++)
 	{
-		abs_tolerance=CMath::get_abs_tolerance(-vec2[j],rel_tolerance);
+		abs_tolerance=Math::get_abs_tolerance(-vec2[j],rel_tolerance);
 		EXPECT_NEAR(vec[j],-vec2[j],abs_tolerance);
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }

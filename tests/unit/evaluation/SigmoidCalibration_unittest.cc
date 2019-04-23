@@ -34,10 +34,10 @@ TEST(SigmoidCalibrationTest, binary_calibration)
 	labs.vector[8] = -1;
 	labs.vector[9] = -1;
 
-	CBinaryLabels* predictions = new CBinaryLabels(preds);
-	CBinaryLabels* labels = new CBinaryLabels(labs);
-	SG_REF(predictions)
-	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
+	auto predictions = std::make_shared<BinaryLabels>(preds);
+	auto labels = std::make_shared<BinaryLabels>(labs);
+
+	auto sigmoid_calibration = std::make_shared<SigmoidCalibration>();
 	auto calibrated = sigmoid_calibration->fit_binary(predictions, labels);
 	EXPECT_EQ(calibrated, true);
 	auto calibrated_labels = sigmoid_calibration->calibrate_binary(predictions);
@@ -53,11 +53,6 @@ TEST(SigmoidCalibrationTest, binary_calibration)
 	EXPECT_EQ(values[7], 0.656628663983293337);
 	EXPECT_EQ(values[8], 0.124359200656053326);
 	EXPECT_EQ(values[9], 0.718534704684106407);
-
-	SG_UNREF(sigmoid_calibration)
-	SG_UNREF(predictions)
-	SG_UNREF(labels)
-	SG_UNREF(calibrated_labels)
 }
 
 TEST(SigmoidCalibrationTest, multiclass_calibration)
@@ -75,8 +70,8 @@ TEST(SigmoidCalibrationTest, multiclass_calibration)
 
 	SGVector<float64_t> tgt({0, 0, 0, 0, 1, 2, 0, 1, 1, 1});
 
-	CMulticlassLabels* predictions = new CMulticlassLabels(tgt);
-	CMulticlassLabels* targets = new CMulticlassLabels(tgt);
+	auto predictions = std::make_shared<MulticlassLabels>(tgt);
+	auto targets = std::make_shared<MulticlassLabels>(tgt);
 	predictions->allocate_confidences_for(num_class);
 
 	for (index_t i = 0; i < num_vec; i++)
@@ -90,7 +85,7 @@ TEST(SigmoidCalibrationTest, multiclass_calibration)
 
 		predictions->set_multiclass_confidences(i, confs);
 	}
-	auto calibration_method = new CSigmoidCalibration();
+	auto calibration_method = std::make_shared<SigmoidCalibration>();
 
 	auto calibrated = calibration_method->fit_multiclass(predictions, targets);
 
@@ -114,9 +109,4 @@ TEST(SigmoidCalibrationTest, multiclass_calibration)
 			EXPECT_NEAR(vals[j], expected_probs[i * num_class + j], 1E-5);
 		}
 	}
-
-	SG_UNREF(predictions);
-	SG_UNREF(targets);
-	SG_UNREF(calibration_method);
-	SG_UNREF(calib_result);
 }

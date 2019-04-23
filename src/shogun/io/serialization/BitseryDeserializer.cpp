@@ -49,14 +49,10 @@ public:
 		SG_DEBUG("read floatmax_t with value {}", *v);
 	}
 
-	void on_object(S& s, CSGObject** v)
+	void on_object(S& s, std::shared_ptr<SGObject>* v)
 	{
 		SG_DEBUG("reading SGObject: ");
-		if (*v != nullptr)
-			SG_UNREF(*v);
 		*v = object_reader(s, this);
-		if (*v != nullptr)
-			SG_REF(*v);
 	}
 
 private:
@@ -94,13 +90,13 @@ struct InputStreamAdapter
 		// ignore
 	}
 
-	Some<CInputStream> m_stream;
+	std::shared_ptr<InputStream> m_stream;
 	string m_buffer;
 	error_condition m_status;
 };
 
 template<typename Reader>
-CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, CSGObject* _this = nullptr)
+std::shared_ptr<SGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, std::shared_ptr<SGObject> _this = nullptr)
 {
 	size_t obj_magic;
 	reader.value8b(obj_magic);
@@ -111,7 +107,7 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	reader.text1b(obj_name, 64);
 	uint16_t primitive_type;
 	reader.value2b(primitive_type);
-	CSGObject* obj = nullptr;
+	std::shared_ptr<SGObject> obj = nullptr;
 	if (_this)
 	{
 		require(_this->get_name() == obj_name, "");
@@ -144,7 +140,6 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	{
 		io::warn("Error while deserializeing {}: ShogunException: "
 			"{}", obj_name.c_str(), e.what());
-		SG_UNREF(obj);
 		return nullptr;
 	}
 
@@ -152,28 +147,28 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 }
 
 using InputAdapter = AdapterReader<InputStreamAdapter, bitsery::DefaultConfig>;
-using BitseryDeserializer = BasicDeserializer<InputAdapter>;
+using BitseryDeser = BasicDeserializer<InputAdapter>;
 
-CBitseryDeserializer::CBitseryDeserializer() : CDeserializer()
+BitseryDeserializer::BitseryDeserializer() : Deserializer()
 {
 }
 
-CBitseryDeserializer::~CBitseryDeserializer()
+BitseryDeserializer::~BitseryDeserializer()
 {
 }
 
-Some<CSGObject> CBitseryDeserializer::read_object()
+std::shared_ptr<SGObject> BitseryDeserializer::read_object()
 {
 	InputStreamAdapter adapter { stream() };
-	BitseryDeserializer deser {std::move(adapter)};
-	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
-	return wrap<CSGObject>(object_reader(deser, addressof(reader_visitor)));
+	BitseryDeser deser {std::move(adapter)};
+	BitseryReaderVisitor<BitseryDeser> reader_visitor(deser);
+	return object_reader(deser, addressof(reader_visitor));
 }
 
-void CBitseryDeserializer::read(CSGObject* _this)
+void BitseryDeserializer::read(std::shared_ptr<SGObject> _this)
 {
 	InputStreamAdapter adapter { stream() };
-	BitseryDeserializer deser {std::move(adapter)};
-	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
+	BitseryDeser deser {std::move(adapter)};
+	BitseryReaderVisitor<BitseryDeser> reader_visitor(deser);
 	object_reader(deser, addressof(reader_visitor), _this);
 }

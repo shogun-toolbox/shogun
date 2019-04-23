@@ -14,15 +14,15 @@
 
 using namespace shogun;
 
-CLMNN::CLMNN()
+LMNN::LMNN()
 {
 	init();
 
-	m_statistics = new CLMNNStatistics();
-	SG_REF(m_statistics);
+	m_statistics = std::make_shared<LMNNStatistics>();
+
 }
 
-CLMNN::CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k)
+LMNN::LMNN(std::shared_ptr<Features> features, std::shared_ptr<MulticlassLabels> labels, int32_t k)
 {
 	init();
 
@@ -30,46 +30,46 @@ CLMNN::CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k)
 	m_labels = labels;
 	m_k = k;
 
-	SG_REF(m_features)
-	SG_REF(m_labels)
 
-	m_statistics = new CLMNNStatistics();
-	SG_REF(m_statistics);
+
+
+	m_statistics = std::make_shared<LMNNStatistics>();
+
 }
 
-CLMNN::~CLMNN()
+LMNN::~LMNN()
 {
-	SG_UNREF(m_features)
-	SG_UNREF(m_labels)
-	SG_UNREF(m_statistics);
+
+
+
 }
 
-const char* CLMNN::get_name() const
+const char* LMNN::get_name() const
 {
 	return "LMNN";
 }
 
-void CLMNN::train(SGMatrix<float64_t> init_transform)
+void LMNN::train(SGMatrix<float64_t> init_transform)
 {
-	SG_TRACE("Entering CLMNN::train().");
+	SG_TRACE("Entering LMNN::train().");
 
 	// Check training data and arguments, initializing, if necessary, init_transform
-	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform, m_k);
+	LMNNImpl::check_training_setup(m_features, m_labels, init_transform, m_k);
 
 	// Initializations
 
 	// cast is safe, check_training_setup ensures features are dense
-	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
-	CMulticlassLabels* y = multiclass_labels(m_labels);
+	auto x = m_features->as<DenseFeatures<float64_t>>();
+	auto y = multiclass_labels(m_labels);
 	SG_DEBUG("{} input vectors with {} dimensions.", x->get_num_vectors(), x->get_num_features());
 
 	auto& L = init_transform;
 	// Compute target or genuine neighbours
 	SG_DEBUG("Finding target nearest neighbors.")
-	SGMatrix<index_t> target_nn = CLMNNImpl::find_target_nn(x, y, m_k);
+	SGMatrix<index_t> target_nn = LMNNImpl::find_target_nn(x, y, m_k);
 	// Initialize (sub-)gradient
 	SG_DEBUG("Summing outer products for (sub-)gradient initialization.")
-	auto gradient = CLMNNImpl::sum_outer_products(x, target_nn);
+	auto gradient = LMNNImpl::sum_outer_products(x, target_nn);
 	linalg::scale(gradient, gradient, 1 - m_regularization);
 	// Value of the objective function at every iteration
 	SGVector<float64_t> obj(m_maxiter);
@@ -93,15 +93,15 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	{
 		// Find current set of impostors
 		SG_DEBUG("Finding impostors.")
-		cur_impostors = CLMNNImpl::find_impostors(x,y,L,target_nn,iter,m_correction);
+		cur_impostors = LMNNImpl::find_impostors(x,y,L,target_nn,iter,m_correction);
 		SG_DEBUG("Found {} impostors in the current set.", cur_impostors.size())
 
 		// (Sub-) gradient computation
 		SG_DEBUG("Updating gradient.")
-		CLMNNImpl::update_gradient(x, gradient, cur_impostors, prev_impostors, m_regularization);
+		LMNNImpl::update_gradient(x, gradient, cur_impostors, prev_impostors, m_regularization);
 		// Take gradient step
 		SG_DEBUG("Taking gradient step.")
-		CLMNNImpl::gradient_step(L, gradient, stepsize, m_diagonal);
+		LMNNImpl::gradient_step(L, gradient, stepsize, m_diagonal);
 
 		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
 		// plus the number of current impostors to account for the margin
@@ -111,10 +111,10 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		    linalg::trace_dot(linalg::matrix_prod(L, L, true, false), gradient);
 
 		// Correct step size
-		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
+		LMNNImpl::correct_stepsize(stepsize, obj, iter);
 
 		// Check termination criterion
-		stop = CLMNNImpl::check_termination(stepsize, obj, iter, m_maxiter, m_stepsize_threshold, m_obj_threshold);
+		stop = LMNNImpl::check_termination(stepsize, obj, iter, m_maxiter, m_stepsize_threshold, m_obj_threshold);
 
 		// Update iteration counter
 		iter = iter + 1;
@@ -141,126 +141,123 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	    SGMatrix<float64_t>::clone_matrix(L.matrix, nfeats, nfeats);
 	m_linear_transform = SGMatrix<float64_t>(cloned_data, nfeats, nfeats);
 
-	SG_TRACE("Leaving CLMNN::train().");
+	SG_TRACE("Leaving LMNN::train().");
 }
 
-SGMatrix<float64_t> CLMNN::get_linear_transform() const
+SGMatrix<float64_t> LMNN::get_linear_transform() const
 {
 	return m_linear_transform;
 }
 
-CDistance* CLMNN::get_distance() const
+std::shared_ptr<Distance> LMNN::get_distance() const
 {
 	// Compute Mahalanobis distance matrix M = L^T*L
 	auto M = linalg::matrix_prod(
 	    m_linear_transform, m_linear_transform, true, false);
 
 	// Create custom Mahalanobis distance with matrix M associated with the training features
-	auto distance = new CCustomMahalanobisDistance(m_features, m_features, M);
-	SG_REF(distance)
-
-	return distance;
+	return std::make_shared<CustomMahalanobisDistance>(m_features, m_features, M);
 }
 
-int32_t CLMNN::get_k() const
+int32_t LMNN::get_k() const
 {
 	return m_k;
 }
 
-void CLMNN::set_k(const int32_t k)
+void LMNN::set_k(const int32_t k)
 {
 	require(k>0, "The number of target neighbors per example must be larger than zero");
 	m_k = k;
 }
 
-float64_t CLMNN::get_regularization() const
+float64_t LMNN::get_regularization() const
 {
 	return m_regularization;
 }
 
-void CLMNN::set_regularization(const float64_t regularization)
+void LMNN::set_regularization(const float64_t regularization)
 {
 	m_regularization = regularization;
 }
 
-float64_t CLMNN::get_stepsize() const
+float64_t LMNN::get_stepsize() const
 {
 	return m_stepsize;
 }
 
-void CLMNN::set_stepsize(const float64_t stepsize)
+void LMNN::set_stepsize(const float64_t stepsize)
 {
 	require(stepsize>0, "The step size used in gradient descent must be larger than zero");
 	m_stepsize = stepsize;
 }
 
-float64_t CLMNN::get_stepsize_threshold() const
+float64_t LMNN::get_stepsize_threshold() const
 {
 	return m_stepsize_threshold;
 }
 
-void CLMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
+void LMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
 {
 	require(stepsize_threshold>0,
 			"The threshold for the step size must be larger than zero");
 	m_stepsize_threshold = stepsize_threshold;
 }
 
-int32_t CLMNN::get_maxiter() const
+int32_t LMNN::get_maxiter() const
 {
 	return m_maxiter;
 }
 
-void CLMNN::set_maxiter(const int32_t maxiter)
+void LMNN::set_maxiter(const int32_t maxiter)
 {
 	require(maxiter>0, "The number of maximum iterations must be larger than zero");
 	m_maxiter = maxiter;
 }
 
-int32_t CLMNN::get_correction() const
+int32_t LMNN::get_correction() const
 {
 	return m_correction;
 }
 
-void CLMNN::set_correction(const int32_t correction)
+void LMNN::set_correction(const int32_t correction)
 {
 	m_correction = correction;
 }
 
-float64_t CLMNN::get_obj_threshold() const
+float64_t LMNN::get_obj_threshold() const
 {
 	return m_obj_threshold;
 }
 
-void CLMNN::set_obj_threshold(const float64_t obj_threshold)
+void LMNN::set_obj_threshold(const float64_t obj_threshold)
 {
 	require(obj_threshold>0,
 			"The threshold for the objective must be larger than zero");
 	m_obj_threshold = obj_threshold;
 }
 
-bool CLMNN::get_diagonal() const
+bool LMNN::get_diagonal() const
 {
 	return m_diagonal;
 }
 
-void CLMNN::set_diagonal(const bool diagonal)
+void LMNN::set_diagonal(const bool diagonal)
 {
 	m_diagonal = diagonal;
 }
 
-CLMNNStatistics* CLMNN::get_statistics() const
+std::shared_ptr<LMNNStatistics> LMNN::get_statistics() const
 {
-	SG_REF(m_statistics);
+
 	return m_statistics;
 }
 
-void CLMNN::init()
+void LMNN::init()
 {
 	SG_ADD(&m_linear_transform, "linear_transform",
 			"Linear transform in matrix form");
-	SG_ADD((CSGObject**) &m_features, "features", "Training features");
-	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_features, "features", "Training features");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_labels, "labels", "Training labels");
 	SG_ADD(&m_k, "k", "Number of target neighbours per example");
 	SG_ADD(&m_regularization, "regularization", "Regularization",
 			ParameterProperties::HYPER);
@@ -271,7 +268,7 @@ void CLMNN::init()
 			"Iterations between exact impostors search");
 	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold");
 	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation");
-	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_statistics, "statistics", "Training statistics");
 
 	m_features = NULL;
 	m_labels = NULL;
@@ -286,23 +283,23 @@ void CLMNN::init()
 	m_statistics = NULL;
 }
 
-CLMNNStatistics::CLMNNStatistics()
+LMNNStatistics::LMNNStatistics()
 {
 	init();
 }
 
-CLMNNStatistics::~CLMNNStatistics()
+LMNNStatistics::~LMNNStatistics()
 {
 }
 
-const char* CLMNNStatistics::get_name() const
+const char* LMNNStatistics::get_name() const
 {
 	return "LMNNStatistics";
 }
 
-void CLMNNStatistics::resize(int32_t size)
+void LMNNStatistics::resize(int32_t size)
 {
-	require(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
+	require(size > 0, "The new size in LMNNStatistics::resize must be larger than zero."
 			 " Given value is {}.", size);
 
 	obj.resize_vector(size);
@@ -310,10 +307,10 @@ void CLMNNStatistics::resize(int32_t size)
 	num_impostors.resize_vector(size);
 }
 
-void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_iter,
+void LMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_iter,
 		uint32_t num_impostors_iter)
 {
-	require(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
+	require(iter >= 0 && iter < obj.vlen, "The iteration index in LMNNStatistics::set "
 			"must be larger or equal to zero and less than the size ({}). Given valu is {}.", obj.vlen, iter);
 
 	obj[iter] = obj_iter;
@@ -321,7 +318,7 @@ void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_i
 	num_impostors[iter] = num_impostors_iter;
 }
 
-void CLMNNStatistics::init()
+void LMNNStatistics::init()
 {
 	SG_ADD(&obj, "obj", "Objective at each iteration");
 	SG_ADD(&stepsize, "stepsize", "Step size at each iteration");

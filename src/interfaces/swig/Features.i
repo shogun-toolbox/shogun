@@ -13,15 +13,8 @@
 %feature("autodoc", "get_labels(self) -> numpy 1dim array of float") get_labels;
 #endif
 
-/* These functions return new Objects */
-%newobject get_transposed();
-%newobject create_merged_copy(CFeatures* other);
-%newobject copy_subset(SGVector<index_t> indices);
-%newobject copy_dimension_subset(SGVector<index_t> indices);
-%newobject get_streamed_features(index_t num_elements);
-
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%feature("director") shogun::CDirectorDotFeatures;
+%feature("director") shogun::DirectorDotFeatures;
 %feature("director:except") {
     if ($error != NULL) {
         throw Swig::DirectorMethodException();
@@ -35,55 +28,178 @@
 #define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 #endif
 
-/* Remove C Prefix */
-%rename(Alphabet) CAlphabet;
-%rename(Features) CFeatures;
-%rename(StreamingFeatures) CStreamingFeatures;
-%rename(DotFeatures) CDotFeatures;
-%rename(DirectorDotFeatures) CDirectorDotFeatures;
-%rename(BinnedDotFeatures) CBinnedDotFeatures;
-%rename(StreamingDotFeatures) CStreamingDotFeatures;
+%shared_ptr(shogun::Alphabet)
+%shared_ptr(shogun::Features)
+%shared_ptr(shogun::AttributeFeatures)
+%shared_ptr(shogun::StreamingFeatures)
+%shared_ptr(shogun::DotFeatures)
+%shared_ptr(shogun::DirectorDotFeatures)
+%shared_ptr(shogun::BinnedDotFeatures)
+%shared_ptr(shogun::StreamingDotFeatures)
 
-%rename(DummyFeatures) CDummyFeatures;
-%rename(IndexFeatures) CIndexFeatures;
-%rename(AttributeFeatures) CAttributeFeatures;
-%rename(CombinedFeatures) CCombinedFeatures;
-%rename(CombinedDotFeatures) CCombinedDotFeatures;
-%rename(HashedDocDotFeatures) CHashedDocDotFeatures;
-%rename(StreamingHashedDocDotFeatures) CStreamingHashedDocDotFeatures;
-%rename(RandomKitchenSinksDotFeatures) CRandomKitchenSinksDotFeatures;
-%rename(RandomFourierDotFeatures) CRandomFourierDotFeatures;
-%rename(Labels) CLabels;
+%shared_ptr(shogun::DummyFeatures)
+%shared_ptr(shogun::IndexFeatures)
+%shared_ptr(shogun::AttributeFeatures)
+%shared_ptr(shogun::CombinedFeatures)
+%shared_ptr(shogun::CombinedDotFeatures)
+%shared_ptr(shogun::HashedDocDotFeatures)
+%shared_ptr(shogun::StreamingHashedDocDotFeatures)
+%shared_ptr(shogun::RandomKitchenSinksDotFeatures)
+%shared_ptr(shogun::RandomFourierDotFeatures)
+%shared_ptr(shogun::Labels)
 
-PROTOCOLS_DENSELABELS(CDenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
-%rename(DenseLabels) CDenseLabels;
+PROTOCOLS_DENSELABELS(DenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
+%shared_ptr(shogun::DenseLabels)
 
-PROTOCOLS_DENSELABELS(CBinaryLabels, BinaryLabels, float64_t, "d\0", NPY_FLOAT64)
-%rename(BinaryLabels) CBinaryLabels;
+PROTOCOLS_DENSELABELS(BinaryLabels, BinaryLabels, float64_t, "d\0", NPY_FLOAT64)
+%shared_ptr(shogun::BinaryLabels)
 
-PROTOCOLS_DENSELABELS(CMulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY_FLOAT64)
-%rename(MulticlassLabels) CMulticlassLabels;
+PROTOCOLS_DENSELABELS(MulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY_FLOAT64)
+%shared_ptr(shogun::MulticlassLabels)
 
-PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
-%rename(RegressionLabels) CRegressionLabels;
+PROTOCOLS_DENSELABELS(RegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
+%shared_ptr(shogun::RegressionLabels)
 
-%rename(StructuredLabels) CStructuredLabels;
-%rename(LatentLabels) CLatentLabels;
-%rename(MultilabelLabels) CMultilabelLabels;
-%rename(RealFileFeatures) CRealFileFeatures;
-%rename(FKFeatures) CFKFeatures;
-%rename(TOPFeatures) CTOPFeatures;
-%rename(SNPFeatures) CSNPFeatures;
-%rename(WDFeatures) CWDFeatures;
-%rename(HashedWDFeatures) CHashedWDFeatures;
-%rename(HashedWDFeaturesTransposed) CHashedWDFeaturesTransposed;
-%rename(PolyFeatures) CPolyFeatures;
-%rename(SparsePolyFeatures) CSparsePolyFeatures;
-%rename(LBPPyrDotFeatures) CLBPPyrDotFeatures;
-%rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
-%rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
-%rename(DataGenerator) CDataGenerator;
-%rename(LatentFeatures) CLatentFeatures;
+%shared_ptr(shogun::StructuredLabels)
+%shared_ptr(shogun::LatentLabels)
+%shared_ptr(shogun::MultilabelLabels)
+%shared_ptr(shogun::RealFileFeatures)
+%shared_ptr(shogun::FKFeatures)
+%shared_ptr(shogun::TOPFeatures)
+%shared_ptr(shogun::SNPFeatures)
+%shared_ptr(shogun::WDFeatures)
+%shared_ptr(shogun::HashedWDFeatures)
+%shared_ptr(shogun::HashedWDFeaturesTransposed)
+%shared_ptr(shogun::PolyFeatures)
+%shared_ptr(shogun::SparsePolyFeatures)
+%shared_ptr(shogun::LBPPyrDotFeatures)
+%shared_ptr(shogun::ExplicitSpecFeatures)
+%shared_ptr(shogun::ImplicitWeightedSpecFeatures)
+%shared_ptr(shogun::DataGenerator)
+%shared_ptr(shogun::LatentFeatures)
+
+#ifdef USE_BOOL
+    %shared_ptr(shogun::StringFeatures<bool>)
+    %shared_ptr(shogun::StreamingStringFeatures<bool>)
+    %shared_ptr(shogun::StringFileFeatures<bool>)
+    %shared_ptr(shogun::SparseFeatures<bool>)
+    %shared_ptr(shogun::StreamingSparseFeatures<bool>)
+    %shared_ptr(shogun::StreamingDenseFeatures<bool>)
+    %shared_ptr(shogun::DenseSubsetFeatures<bool>)
+    %shared_ptr(shogun::MatrixFeatures<bool>)
+#endif
+#ifdef USE_CHAR
+    %shared_ptr(shogun::StringFeatures<char>)
+    %shared_ptr(shogun::StreamingStringFeatures<char>)
+    %shared_ptr(shogun::StringFileFeatures<char>)
+    %shared_ptr(shogun::SparseFeatures<char>)
+    %shared_ptr(shogun::StreamingSparseFeatures<char>)
+    %shared_ptr(shogun::StreamingDenseFeatures<char>)
+    %shared_ptr(shogun::DenseSubsetFeatures<char>)
+    %shared_ptr(shogun::MatrixFeatures<char>)
+#endif
+#ifdef USE_UINT8
+    %shared_ptr(shogun::StringFeatures<uint8_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<uint8_t>)
+    %shared_ptr(shogun::StringFileFeatures<uint8_t>)
+    %shared_ptr(shogun::SparseFeatures<uint8_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<uint8_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<uint8_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<uint8_t>)
+    %shared_ptr(shogun::MatrixFeatures<uint8_t>)
+#endif
+#ifdef USE_INT16
+    %shared_ptr(shogun::StringFeatures<int16_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<int16_t>)
+    %shared_ptr(shogun::StringFileFeatures<int16_t>)
+    %shared_ptr(shogun::SparseFeatures<int16_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<int16_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<int16_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<int16_t>)
+    %shared_ptr(shogun::MatrixFeatures<int16_t>)
+#endif
+#ifdef USE_UINT16
+    %shared_ptr(shogun::StringFeatures<uint16_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<uint16_t>)
+    %shared_ptr(shogun::StringFileFeatures<uint16_t>)
+    %shared_ptr(shogun::SparseFeatures<uint16_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<uint16_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<uint16_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<uint16_t>)
+    %shared_ptr(shogun::MatrixFeatures<uint16_t>)
+#endif
+#ifdef USE_INT32
+    %shared_ptr(shogun::StringFeatures<int32_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<int32_t>)
+    %shared_ptr(shogun::StringFileFeatures<int32_t>)
+    %shared_ptr(shogun::SparseFeatures<int32_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<int32_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<int32_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<int32_t>)
+    %shared_ptr(shogun::MatrixFeatures<int32_t>)
+#endif
+#ifdef USE_UINT32
+    %shared_ptr(shogun::StringFeatures<uint32_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<uint32_t>)
+    %shared_ptr(shogun::StringFileFeatures<uint32_t>)
+    %shared_ptr(shogun::SparseFeatures<uint32_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<uint32_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<uint32_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<uint32_t>)
+    %shared_ptr(shogun::MatrixFeatures<uint32_t>)
+#endif
+#ifdef USE_INT64
+    %shared_ptr(shogun::StringFeatures<int64_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<int64_t>)
+    %shared_ptr(shogun::StringFileFeatures<int64_t>)
+    %shared_ptr(shogun::SparseFeatures<int64_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<int64_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<int64_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<int64_t>)
+    %shared_ptr(shogun::MatrixFeatures<int64_t>)
+#endif
+#ifdef USE_UINT64
+    %shared_ptr(shogun::StringFeatures<uint64_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<uint64_t>)
+    %shared_ptr(shogun::StringFileFeatures<uint64_t>)
+    %shared_ptr(shogun::SparseFeatures<uint64_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<uint64_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<uint64_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<uint64_t>)
+    %shared_ptr(shogun::MatrixFeatures<uint64_t>)
+#endif
+#ifdef USE_FLOAT32
+    %shared_ptr(shogun::StringFeatures<float32_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<float32_t>)
+    %shared_ptr(shogun::StringFileFeatures<float32_t>)
+    %shared_ptr(shogun::SparseFeatures<float32_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<float32_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<float32_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<float32_t>)
+    %shared_ptr(shogun::MatrixFeatures<float32_t>)
+#endif
+#ifdef USE_FLOAT64
+    %shared_ptr(shogun::StringFeatures<float64_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<float64_t>)
+    %shared_ptr(shogun::StringFileFeatures<float64_t>)
+    %shared_ptr(shogun::SparseFeatures<float64_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<float64_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<float64_t>)
+    %shared_ptr(shogun::DenseFeatures<float64_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<float64_t>)
+    %shared_ptr(shogun::MatrixFeatures<float64_t>)
+    %shared_ptr(shogun::DenseFeatures<float64_t>);
+#endif
+#ifdef USE_FLOATMAX
+    %shared_ptr(shogun::StringFeatures<floatmax_t>)
+    %shared_ptr(shogun::StreamingStringFeatures<floatmax_t>)
+    %shared_ptr(shogun::StringFileFeatures<floatmax_t>)
+    %shared_ptr(shogun::SparseFeatures<floatmax_t>)
+    %shared_ptr(shogun::StreamingSparseFeatures<floatmax_t>)
+    %shared_ptr(shogun::StreamingDenseFeatures<floatmax_t>)
+    %shared_ptr(shogun::DenseSubsetFeatures<floatmax_t>)
+    %shared_ptr(shogun::MatrixFeatures<floatmax_t>)
+#endif
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
@@ -99,8 +215,8 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %include <shogun/features/DataGenerator.h>
 
 /* FIXME: DenseFeatures are still included/defined since certain classes
- * inherit from them (e.g. TOPKernel : CDenseFeatures<float64_t>), as otherwise
- * SWIG will not treat those as subclasses of CFeatures. Once all those classes
+ * inherit from them (e.g. TOPKernel : DenseFeatures<float64_t>), as otherwise
+ * SWIG will not treat those as subclasses of Features. Once all those classes
  * are instantiated w factories, this hack can be removed. In order prevent use
  * of RealFeatures etc, they are named differently (it only needs to be visible,
  * but is not used)
@@ -109,7 +225,7 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 namespace shogun
 {
 #ifdef USE_FLOAT64
-	%template(RealFeaturesDEPRECATED) CDenseFeatures<float64_t>;
+	%template(RealFeaturesDEPRECATED) DenseFeatures<float64_t>;
 #endif
 }
 
@@ -118,40 +234,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StringBoolFeatures) CStringFeatures<bool>;
+    %template(StringBoolFeatures) StringFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StringCharFeatures) CStringFeatures<char>;
+    %template(StringCharFeatures) StringFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StringByteFeatures) CStringFeatures<uint8_t>;
+    %template(StringByteFeatures) StringFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StringShortFeatures) CStringFeatures<int16_t>;
+    %template(StringShortFeatures) StringFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StringWordFeatures) CStringFeatures<uint16_t>;
+    %template(StringWordFeatures) StringFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StringIntFeatures) CStringFeatures<int32_t>;
+    %template(StringIntFeatures) StringFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StringUIntFeatures) CStringFeatures<uint32_t>;
+    %template(StringUIntFeatures) StringFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StringLongFeatures) CStringFeatures<int64_t>;
+    %template(StringLongFeatures) StringFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StringUlongFeatures) CStringFeatures<uint64_t>;
+    %template(StringUlongFeatures) StringFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StringShortRealFeatures) CStringFeatures<float32_t>;
+    %template(StringShortRealFeatures) StringFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StringRealFeatures) CStringFeatures<float64_t>;
+    %template(StringRealFeatures) StringFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
+    %template(StringLongRealFeatures) StringFeatures<floatmax_t>;
 #endif
 }
 
@@ -160,40 +276,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StreamingStringBoolFeatures) CStreamingStringFeatures<bool>;
+    %template(StreamingStringBoolFeatures) StreamingStringFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingStringCharFeatures) CStreamingStringFeatures<char>;
+    %template(StreamingStringCharFeatures) StreamingStringFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingStringByteFeatures) CStreamingStringFeatures<uint8_t>;
+    %template(StreamingStringByteFeatures) StreamingStringFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingStringShortFeatures) CStreamingStringFeatures<int16_t>;
+    %template(StreamingStringShortFeatures) StreamingStringFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingStringWordFeatures) CStreamingStringFeatures<uint16_t>;
+    %template(StreamingStringWordFeatures) StreamingStringFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingStringIntFeatures) CStreamingStringFeatures<int32_t>;
+    %template(StreamingStringIntFeatures) StreamingStringFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingStringUIntFeatures) CStreamingStringFeatures<uint32_t>;
+    %template(StreamingStringUIntFeatures) StreamingStringFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingStringLongFeatures) CStreamingStringFeatures<int64_t>;
+    %template(StreamingStringLongFeatures) StreamingStringFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingStringUlongFeatures) CStreamingStringFeatures<uint64_t>;
+    %template(StreamingStringUlongFeatures) StreamingStringFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingStringShortRealFeatures) CStreamingStringFeatures<float32_t>;
+    %template(StreamingStringShortRealFeatures) StreamingStringFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingStringRealFeatures) CStreamingStringFeatures<float64_t>;
+    %template(StreamingStringRealFeatures) StreamingStringFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingStringLongRealFeatures) CStreamingStringFeatures<floatmax_t>;
+    %template(StreamingStringLongRealFeatures) StreamingStringFeatures<floatmax_t>;
 #endif
 }
 
@@ -202,40 +318,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StringFileBoolFeatures) CStringFileFeatures<bool>;
+    %template(StringFileBoolFeatures) StringFileFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StringFileCharFeatures) CStringFileFeatures<char>;
+    %template(StringFileCharFeatures) StringFileFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StringFileByteFeatures) CStringFileFeatures<uint8_t>;
+    %template(StringFileByteFeatures) StringFileFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StringFileShortFeatures) CStringFileFeatures<int16_t>;
+    %template(StringFileShortFeatures) StringFileFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StringFileWordFeatures) CStringFileFeatures<uint16_t>;
+    %template(StringFileWordFeatures) StringFileFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StringFileIntFeatures) CStringFileFeatures<int32_t>;
+    %template(StringFileIntFeatures) StringFileFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StringFileUIntFeatures) CStringFileFeatures<uint32_t>;
+    %template(StringFileUIntFeatures) StringFileFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StringFileLongFeatures) CStringFileFeatures<int64_t>;
+    %template(StringFileLongFeatures) StringFileFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StringFileUlongFeatures) CStringFileFeatures<uint64_t>;
+    %template(StringFileUlongFeatures) StringFileFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StringFileShortRealFeatures) CStringFileFeatures<float32_t>;
+    %template(StringFileShortRealFeatures) StringFileFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StringFileRealFeatures) CStringFileFeatures<float64_t>;
+    %template(StringFileRealFeatures) StringFileFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StringFileLongRealFeatures) CStringFileFeatures<floatmax_t>;
+    %template(StringFileLongRealFeatures) StringFileFeatures<floatmax_t>;
 #endif
 }
 
@@ -244,40 +360,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(SparseBoolFeatures) CSparseFeatures<bool>;
+    %template(SparseBoolFeatures) SparseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(SparseCharFeatures) CSparseFeatures<char>;
+    %template(SparseCharFeatures) SparseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(SparseByteFeatures) CSparseFeatures<uint8_t>;
+    %template(SparseByteFeatures) SparseFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(SparseShortFeatures) CSparseFeatures<int16_t>;
+    %template(SparseShortFeatures) SparseFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(SparseWordFeatures) CSparseFeatures<uint16_t>;
+    %template(SparseWordFeatures) SparseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(SparseIntFeatures) CSparseFeatures<int32_t>;
+    %template(SparseIntFeatures) SparseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(SparseUIntFeatures) CSparseFeatures<uint32_t>;
+    %template(SparseUIntFeatures) SparseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(SparseLongFeatures) CSparseFeatures<int64_t>;
+    %template(SparseLongFeatures) SparseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(SparseUlongFeatures) CSparseFeatures<uint64_t>;
+    %template(SparseUlongFeatures) SparseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(SparseShortRealFeatures) CSparseFeatures<float32_t>;
+    %template(SparseShortRealFeatures) SparseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(SparseRealFeatures) CSparseFeatures<float64_t>;
+    %template(SparseRealFeatures) SparseFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(SparseLongRealFeatures) CSparseFeatures<floatmax_t>;
+    %template(SparseLongRealFeatures) SparseFeatures<floatmax_t>;
 #endif
 }
 
@@ -286,40 +402,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StreamingSparseBoolFeatures) CStreamingSparseFeatures<bool>;
+    %template(StreamingSparseBoolFeatures) StreamingSparseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingSparseCharFeatures) CStreamingSparseFeatures<char>;
+    %template(StreamingSparseCharFeatures) StreamingSparseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingSparseByteFeatures) CStreamingSparseFeatures<uint8_t>;
+    %template(StreamingSparseByteFeatures) StreamingSparseFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingSparseShortFeatures) CStreamingSparseFeatures<int16_t>;
+    %template(StreamingSparseShortFeatures) StreamingSparseFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingSparseWordFeatures) CStreamingSparseFeatures<uint16_t>;
+    %template(StreamingSparseWordFeatures) StreamingSparseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingSparseIntFeatures) CStreamingSparseFeatures<int32_t>;
+    %template(StreamingSparseIntFeatures) StreamingSparseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingSparseUIntFeatures) CStreamingSparseFeatures<uint32_t>;
+    %template(StreamingSparseUIntFeatures) StreamingSparseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingSparseLongFeatures) CStreamingSparseFeatures<int64_t>;
+    %template(StreamingSparseLongFeatures) StreamingSparseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingSparseUlongFeatures) CStreamingSparseFeatures<uint64_t>;
+    %template(StreamingSparseUlongFeatures) StreamingSparseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingSparseShortRealFeatures) CStreamingSparseFeatures<float32_t>;
+    %template(StreamingSparseShortRealFeatures) StreamingSparseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingSparseRealFeatures) CStreamingSparseFeatures<float64_t>;
+    %template(StreamingSparseRealFeatures) StreamingSparseFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingSparseLongRealFeatures) CStreamingSparseFeatures<floatmax_t>;
+    %template(StreamingSparseLongRealFeatures) StreamingSparseFeatures<floatmax_t>;
 #endif
 }
 
@@ -328,52 +444,52 @@ namespace shogun
 namespace shogun
  {
 #ifdef USE_BOOL
-    %template(StreamingBoolFeatures) CStreamingDenseFeatures<bool>;
+    %template(StreamingBoolFeatures) StreamingDenseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingCharFeatures) CStreamingDenseFeatures<char>;
+    %template(StreamingCharFeatures) StreamingDenseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingByteFeatures) CStreamingDenseFeatures<uint8_t>;
+    %template(StreamingByteFeatures) StreamingDenseFeatures<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingWordFeatures) CStreamingDenseFeatures<uint16_t>;
+    %template(StreamingWordFeatures) StreamingDenseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingShortFeatures) CStreamingDenseFeatures<int16_t>;
+    %template(StreamingShortFeatures) StreamingDenseFeatures<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingIntFeatures)  CStreamingDenseFeatures<int32_t>;
+    %template(StreamingIntFeatures)  StreamingDenseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingUIntFeatures)  CStreamingDenseFeatures<uint32_t>;
+    %template(StreamingUIntFeatures)  StreamingDenseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingLongIntFeatures)  CStreamingDenseFeatures<int64_t>;
+    %template(StreamingLongIntFeatures)  StreamingDenseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingULongIntFeatures)  CStreamingDenseFeatures<uint64_t>;
+    %template(StreamingULongIntFeatures)  StreamingDenseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingLongRealFeatures) CStreamingDenseFeatures<floatmax_t>;
+    %template(StreamingLongRealFeatures) StreamingDenseFeatures<floatmax_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingShortRealFeatures) CStreamingDenseFeatures<float32_t>;
+    %template(StreamingShortRealFeatures) StreamingDenseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingRealFeatures) CStreamingDenseFeatures<float64_t>;
+    %template(StreamingRealFeatures) StreamingDenseFeatures<float64_t>;
 
     /** Instantiate RandomMixin */
-    %template(SeedableStreamingDense) shogun::Seedable<shogun::CStreamingDenseFeatures<float64_t>>;
-    %template(RandomMixinStreamingDense) shogun::RandomMixin<shogun::CStreamingDenseFeatures<float64_t>, std::mt19937_64>;
+    %template(SeedableStreamingDense) shogun::Seedable<shogun::StreamingDenseFeatures<float64_t>>;
+    %template(RandomMixinStreamingDense) shogun::RandomMixin<shogun::StreamingDenseFeatures<float64_t>, std::mt19937_64>;
 #endif
 }
 
 /* these classes need the above typed CFeature definitions */
-%rename(MeanShiftDataGenerator) CMeanShiftDataGenerator;
+%shared_ptr(shogun::MeanShiftDataGenerator)
 %include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 
-%rename(GaussianBlobsDataGenerator) CGaussianBlobsDataGenerator;
+%shared_ptr(shogun::GaussianBlobsDataGenerator)
 %include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 
 /* Templated Class DenseSubsetFeatures */
@@ -381,40 +497,40 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(BoolSubsetFeatures) CDenseSubsetFeatures<bool>;
+    %template(BoolSubsetFeatures) DenseSubsetFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(CharSubsetFeatures) CDenseSubsetFeatures<char>;
+    %template(CharSubsetFeatures) DenseSubsetFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(ByteSubsetFeatures) CDenseSubsetFeatures<uint8_t>;
+    %template(ByteSubsetFeatures) DenseSubsetFeatures<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordSubsetFeatures) CDenseSubsetFeatures<uint16_t>;
+    %template(WordSubsetFeatures) DenseSubsetFeatures<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortSubsetFeatures) CDenseSubsetFeatures<int16_t>;
+    %template(ShortSubsetFeatures) DenseSubsetFeatures<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(IntSubsetFeatures)  CDenseSubsetFeatures<int32_t>;
+    %template(IntSubsetFeatures)  DenseSubsetFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(UIntSubsetFeatures)  CDenseSubsetFeatures<uint32_t>;
+    %template(UIntSubsetFeatures)  DenseSubsetFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(LongIntSubsetFeatures)  CDenseSubsetFeatures<int64_t>;
+    %template(LongIntSubsetFeatures)  DenseSubsetFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(ULongIntSubsetFeatures)  CDenseSubsetFeatures<uint64_t>;
+    %template(ULongIntSubsetFeatures)  DenseSubsetFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(LongRealSubsetFeatures) CDenseSubsetFeatures<floatmax_t>;
+    %template(LongRealSubsetFeatures) DenseSubsetFeatures<floatmax_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(ShortRealSubsetFeatures) CDenseSubsetFeatures<float32_t>;
+    %template(ShortRealSubsetFeatures) DenseSubsetFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(RealSubsetFeatures) CDenseSubsetFeatures<float64_t>;
+    %template(RealSubsetFeatures) DenseSubsetFeatures<float64_t>;
 #endif
 }
 
@@ -457,39 +573,39 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(BoolMatrixFeatures) CMatrixFeatures<bool>;
+    %template(BoolMatrixFeatures) MatrixFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(CharMatrixFeatures) CMatrixFeatures<char>;
+    %template(CharMatrixFeatures) MatrixFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(ByteMatrixFeatures) CMatrixFeatures<uint8_t>;
+    %template(ByteMatrixFeatures) MatrixFeatures<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordMatrixFeatures) CMatrixFeatures<uint16_t>;
+    %template(WordMatrixFeatures) MatrixFeatures<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortMatrixFeatures) CMatrixFeatures<int16_t>;
+    %template(ShortMatrixFeatures) MatrixFeatures<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(IntMatrixFeatures)  CMatrixFeatures<int32_t>;
+    %template(IntMatrixFeatures)  MatrixFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(UIntMatrixFeatures)  CMatrixFeatures<uint32_t>;
+    %template(UIntMatrixFeatures)  MatrixFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(LongIntMatrixFeatures)  CMatrixFeatures<int64_t>;
+    %template(LongIntMatrixFeatures)  MatrixFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(ULongIntMatrixFeatures)  CMatrixFeatures<uint64_t>;
+    %template(ULongIntMatrixFeatures)  MatrixFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(LongRealMatrixFeatures) CMatrixFeatures<floatmax_t>;
+    %template(LongRealMatrixFeatures) MatrixFeatures<floatmax_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(ShortRealMatrixFeatures) CMatrixFeatures<float32_t>;
+    %template(ShortRealMatrixFeatures) MatrixFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(RealMatrixFeatures) CMatrixFeatures<float64_t>;
+    %template(RealMatrixFeatures) MatrixFeatures<float64_t>;
 #endif
 }

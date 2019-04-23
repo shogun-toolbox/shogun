@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-	template <class T> class CDenseFeatures;
+	template <class T> class DenseFeatures;
 
 /** @brief class CanberraMetric
  *
@@ -31,19 +31,19 @@ namespace shogun
  *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$
  *  and \f$d(0,0)=0\f$.
  */
-class CCanberraMetric: public CDenseDistance<float64_t>
+class CanberraMetric: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CCanberraMetric();
+		CanberraMetric();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CCanberraMetric();
+		CanberraMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~CanberraMetric();
 
 		/** init distance
 		 *
@@ -51,7 +51,7 @@ class CCanberraMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

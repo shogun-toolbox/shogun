@@ -13,7 +13,7 @@ void test()
 {
 
 	SGMatrix<float64_t> data(3, 10);
-	CDenseFeatures<float64_t>* f=new CDenseFeatures<float64_t>(data);
+	auto f=std::make_shared<DenseFeatures<float64_t>>(data);
 	SGVector<float64_t>::range_fill_vector(data.matrix, data.num_cols*data.num_rows, 1.0);
 	SGMatrix<float64_t>::display_matrix(data.matrix, data.num_rows, data.num_cols,
 			"original feature data");
@@ -42,8 +42,8 @@ void test()
 	SGVector<index_t>::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
 			"indices that are to be copied");
 
-	CDenseFeatures<float64_t>* subset_copy=
-			(CDenseFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
+	auto subset_copy=
+			f->copy_subset(feature_copy_subset)->as<DenseFeatures<float64>>();
 
 	SGMatrix<float64_t> subset_copy_matrix=subset_copy->get_feature_matrix();
 	SGMatrix<float64_t>::display_matrix(subset_copy_matrix.matrix,
@@ -57,8 +57,6 @@ void test()
 		ASSERT(subset_copy_matrix.matrix[i]==data.matrix[idx]);
 	}
 
-	SG_UNREF(f);
-	SG_UNREF(subset_copy);
 }
 
 int main(int argc, char **argv)

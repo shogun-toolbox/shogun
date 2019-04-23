@@ -17,33 +17,33 @@ namespace shogun
 /** @brief The class RealFileFeatures implements a dense double-precision floating
  * point matrix <b>from a file</b>.
  *
- * It inherits its functionality from CDenseFeatures, which should be
+ * It inherits its functionality from DenseFeatures, which should be
  * consulted for further reference.
  */
-class CRealFileFeatures: public CDenseFeatures<float64_t>
+class RealFileFeatures: public DenseFeatures<float64_t>
 {
 	public:
 		/** default constructor */
-		CRealFileFeatures();
+		RealFileFeatures();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param file file to load features from
 		 */
-		CRealFileFeatures(int32_t size, FILE* file);
+		RealFileFeatures(int32_t size, FILE* file);
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param filename filename to load features from
 		 */
-		CRealFileFeatures(int32_t size, char* filename);
+		RealFileFeatures(int32_t size, char* filename);
 
 		/** copy constructor */
-		CRealFileFeatures(const CRealFileFeatures& orig);
+		RealFileFeatures(const RealFileFeatures& orig);
 
-		virtual ~CRealFileFeatures();
+		virtual ~RealFileFeatures();
 
 		/** load feature matrix
 		 *

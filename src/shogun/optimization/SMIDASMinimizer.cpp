@@ -45,7 +45,7 @@ SMIDASMinimizer::~SMIDASMinimizer()
 {
 }
 
-SMIDASMinimizer::SMIDASMinimizer(FirstOrderStochasticCostFunction *fun)
+SMIDASMinimizer::SMIDASMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun)
 	:SMDMinimizer(fun)
 {
 	init();
@@ -65,10 +65,10 @@ float64_t SMIDASMinimizer::minimize()
 			"The length ({}) of dual variable must match the length ({}) of variable",
 			m_dual_variable.vlen, variable_reference.vlen);
 	}
-	L1Penalty* penalty_type=dynamic_cast<L1Penalty*>(m_penalty_type);
+	auto penalty_type=std::dynamic_pointer_cast<L1Penalty>(m_penalty_type);
 	require(penalty_type,"For now only L1Penalty is supported. Please use the penalty for this minimizer");
 
-	FirstOrderStochasticCostFunction *fun=dynamic_cast<FirstOrderStochasticCostFunction *>(m_fun);
+	auto fun=m_fun->as<FirstOrderStochasticCostFunction>();
 	require(fun,"the cost function must be a stochastic cost function");
 	for(;m_cur_passes<m_num_passes;m_cur_passes++)
 	{
@@ -98,8 +98,8 @@ void SMIDASMinimizer::init()
 void SMIDASMinimizer::init_minimization()
 {
 	SMDMinimizer::init_minimization();
-	DescendUpdaterWithCorrection* updater=
-		dynamic_cast<DescendUpdaterWithCorrection*>(m_gradient_updater);
+	auto updater=
+		std::dynamic_pointer_cast<DescendUpdaterWithCorrection>(m_gradient_updater);
 
 	if(updater)
 	{
@@ -107,8 +107,8 @@ void SMIDASMinimizer::init_minimization()
 		{
 			io::warn("There is not theoretical guarantee when Descend Correction is enabled");
 		}
-		GradientDescendUpdater* gradient_updater=
-			dynamic_cast<GradientDescendUpdater* >(m_gradient_updater);
+		auto gradient_updater=
+			std::dynamic_pointer_cast<GradientDescendUpdater>(m_gradient_updater);
 		if(!gradient_updater)
 		{
 			io::warn("There is not theoretical guarantee when this updater is used");

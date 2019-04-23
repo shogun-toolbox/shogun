@@ -36,85 +36,82 @@
 
 using namespace shogun;
 
-const float64_t CC45ClassifierTree::MISSING=CMath::NOT_A_NUMBER;
+const float64_t C45ClassifierTree::MISSING=Math::NOT_A_NUMBER;
 
-CC45ClassifierTree::CC45ClassifierTree()
-: CTreeMachine<C45TreeNodeData>()
+C45ClassifierTree::C45ClassifierTree()
+: TreeMachine<C45TreeNodeData>()
 {
 	init();
 }
 
-CC45ClassifierTree::~CC45ClassifierTree()
+C45ClassifierTree::~C45ClassifierTree()
 {
 }
 
-CMulticlassLabels* CC45ClassifierTree::apply_multiclass(CFeatures* data)
+std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass(std::shared_ptr<Features> data)
 {
 	require(data, "Data required for classification in apply_multiclass");
 
 	// apply multiclass starting from root
-	node_t* current=get_root();
-	CMulticlassLabels* ret=apply_multiclass_from_current_node(dynamic_cast<CDenseFeatures<float64_t>*>(data), current, true);
-
-	SG_UNREF(current);
-	return ret;
+	auto current=get_root();
+	return apply_multiclass_from_current_node(data->as<DenseFeatures<float64_t>>(), current, true);
 }
 
-void CC45ClassifierTree::prune_tree(CFeatures* validation_data, CLabels* validation_labels, float64_t epsilon)
+void C45ClassifierTree::prune_tree(std::shared_ptr<Features> validation_data, std::shared_ptr<Labels> validation_labels, float64_t epsilon)
 {
-	node_t* current=get_root();
-	prune_tree_from_current_node(validation_data->as<CDenseFeatures<float64_t>>(),
-			validation_labels->as<CMulticlassLabels>(),current,epsilon);
+	auto current=get_root();
+	prune_tree_from_current_node(validation_data->as<DenseFeatures<float64_t>>(),
+			validation_labels->as<MulticlassLabels>(),current,epsilon);
 
-	SG_UNREF(current);
+
 }
 
-SGVector<float64_t> CC45ClassifierTree::get_certainty_vector() const
+SGVector<float64_t> C45ClassifierTree::get_certainty_vector() const
 {
 	return m_certainty;
 }
 
-void CC45ClassifierTree::set_weights(SGVector<float64_t> w)
+void C45ClassifierTree::set_weights(SGVector<float64_t> w)
 {
 	m_weights=w;
 	m_weights_set=true;
 }
 
-SGVector<float64_t> CC45ClassifierTree::get_weights() const
+SGVector<float64_t> C45ClassifierTree::get_weights() const
 {
 	return m_weights;
 }
 
-void CC45ClassifierTree::clear_weights()
+void C45ClassifierTree::clear_weights()
 {
 	m_weights=SGVector<float64_t>();
 	m_weights_set=false;
 }
 
-void CC45ClassifierTree::set_feature_types(SGVector<bool> ft)
+void C45ClassifierTree::set_feature_types(SGVector<bool> ft)
 {
 	m_nominal=ft;
 	m_types_set=true;
 }
 
-SGVector<bool> CC45ClassifierTree::get_feature_types() const
+SGVector<bool> C45ClassifierTree::get_feature_types() const
 {
 	return m_nominal;
 }
 
-void CC45ClassifierTree::clear_feature_types()
+void C45ClassifierTree::clear_feature_types()
 {
 	m_nominal=SGVector<bool>();
 	m_types_set=false;
 }
 
-bool CC45ClassifierTree::train_machine(CFeatures* data)
+bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
 
-	int32_t num_features=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_features();
-	int32_t num_vectors=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_vectors();
+	int32_t num_features=data->as<DenseFeatures<float64_t>>()->get_num_features();
+	int32_t num_vectors=data->as<DenseFeatures<float64_t>>()->get_num_vectors();
 
 	if (m_weights_set)
 	{
@@ -143,23 +140,23 @@ bool CC45ClassifierTree::train_machine(CFeatures* data)
 	SGVector<int32_t> feature_ids(num_features);
 	feature_ids.range_fill();
 
-	set_root(C45train(data, m_weights, dynamic_cast<CMulticlassLabels*>(m_labels), feature_ids, 0));
+	set_root(C45train(data, m_weights, multiclass_labels(m_labels), feature_ids, 0));
 
 	return true;
 }
 
-CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data, SGVector<float64_t> weights,
-	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
+std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(std::shared_ptr<Features> data, SGVector<float64_t> weights,
+	std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	require(data,"data matrix cannot be NULL");
 	require(class_labels,"class labels cannot be NULL");
-	node_t* node=new node_t();
-	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
+	auto node=std::make_shared<node_t>();
+	auto feats=data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs=feats->get_num_vectors();
 
 	// set class_label for the node as the mode of occurring multiclass labels
 	SGVector<float64_t> labels=class_labels->get_labels_copy();
-	CMath::qsort(labels);
+	Math::qsort(labels);
 
 	int32_t most_label=labels[0];
 	int32_t most_weight=weights[0];
@@ -244,25 +241,25 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		else
 		{
 			SGVector<float64_t> feature_values(num_vecs);
-			float64_t max_value=CMath::MIN_REAL_NUMBER;
+			float64_t max_value=Math::MIN_REAL_NUMBER;
 			for (int32_t k=0; k<num_vecs; k++)
 			{
 				feature_values[k]=(feats->get_feature_vector(k))[i];
 
-				if (!CMath::fequals(feature_values[k],MISSING,0) && feature_values[k]>max_value)
+				if (!Math::fequals(feature_values[k],MISSING,0) && feature_values[k]>max_value)
 					max_value=feature_values[k];
 			}
 
 			for (int32_t k=0;k<num_vecs;k++)
 			{
-				if (feature_values[k]!=max_value && !CMath::fequals(feature_values[k],MISSING,0))
+				if (feature_values[k]!=max_value && !Math::fequals(feature_values[k],MISSING,0))
 				{
 					// form temporary dense features to calculate gain (continuous->nominal conversion)
 					float64_t z=feature_values[k];
 					SGMatrix<float64_t> temp_feat_mat=SGMatrix<float64_t>(1,num_vecs);
 					for (int32_t l=0;l<num_vecs;l++)
 					{
-						if (CMath::fequals(feature_values[l],MISSING,0))
+						if (Math::fequals(feature_values[l],MISSING,0))
 							temp_feat_mat(0,l)=MISSING;
 						else if (feature_values[l]<=z)
 							temp_feat_mat(0,l)=0.;
@@ -270,7 +267,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 							temp_feat_mat(0,l)=1.;
 					}
 
-					CDenseFeatures<float64_t>* temp_feats=new CDenseFeatures<float64_t>(temp_feat_mat);
+					auto temp_feats=std::make_shared<DenseFeatures<float64_t>>(temp_feat_mat);
 					float64_t gain=informational_gain_attribute(0,temp_feats,weights,class_labels);
 					if (gain>max)
 					{
@@ -278,8 +275,6 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 						max=gain;
 						best_feature_index=i;
 					}
-
-					SG_UNREF(temp_feats);
 				}
 			}
 		}
@@ -295,7 +290,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		for(int32_t p=0;p<num_vecs;p++)
 		{
 			feature_cache[p]=feats->get_feature_vector(p)[best_feature_index];
-			if (CMath::fequals(feature_cache[p],MISSING,0))
+			if (Math::fequals(feature_cache[p],MISSING,0))
 				continue;
 
 			if (feature_cache[p]<=threshold)
@@ -315,7 +310,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	float64_t weight_missing=0.;
 	for (int32_t j=0;j<num_vecs;j++)
 	{
-		if (CMath::fequals(best_feature_values[j],MISSING,0))
+		if (Math::fequals(best_feature_values[j],MISSING,0))
 		{
 			num_missing++;
 			weight_missing+=weights[j];
@@ -326,7 +321,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	int32_t index=0;
 	for (int32_t j=0;j<num_vecs;j++)
 	{
-		if (!CMath::fequals(best_feature_values[j],MISSING,0))
+		if (!Math::fequals(best_feature_values[j],MISSING,0))
 			best_features_unique[index++]=best_feature_values[j];
 	}
 
@@ -341,7 +336,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 
 		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if (active_feature_value==best_feature_values[j] || CMath::fequals(best_feature_values[j],MISSING,0))
+			if (active_feature_value==best_feature_values[j] || Math::fequals(best_feature_values[j],MISSING,0))
 				num_cols++;
 		}
 
@@ -354,7 +349,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		for (int32_t j=0; j<num_vecs; j++)
 		{
 			SGVector<float64_t> sample=feats->get_feature_vector(j);
-			if (active_feature_value==sample[best_feature_index] || CMath::fequals(sample[best_feature_index],MISSING,0))
+			if (active_feature_value==sample[best_feature_index] || Math::fequals(sample[best_feature_index],MISSING,0))
 			{
 				int32_t idx=-1;
 				for (int32_t k=0; k<sample.size(); k++)
@@ -364,7 +359,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 				}
 
 				new_labels_vector[cnt]=class_labels->get_labels()[j];
-				if (!CMath::fequals(sample[best_feature_index],MISSING,0))
+				if (!Math::fequals(sample[best_feature_index],MISSING,0))
 					new_weights[cnt]=weights[j];
 				else
 					new_weights[cnt]=0.;
@@ -379,7 +374,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		cnt=0;
 		for (int32_t j=0;j<num_vecs;j++)
 		{
-			if (CMath::fequals(best_feature_values[j],MISSING,0))
+			if (Math::fequals(best_feature_values[j],MISSING,0))
 				new_weights[cnt++]=rec_weight;
 			else if (best_feature_values[j]==active_feature_value)
 				cnt++;
@@ -395,11 +390,11 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		}
 
 		// new data & label for child node
-		CMulticlassLabels* new_class_labels=new CMulticlassLabels(new_labels_vector);
-		CDenseFeatures<float64_t>* new_data=new CDenseFeatures<float64_t>(mat);
+		auto new_class_labels=std::make_shared<MulticlassLabels>(new_labels_vector);
+		auto new_data=std::make_shared<DenseFeatures<float64_t>>(mat);
 
 		// recursion over child nodes
-		node_t* child=C45train(new_data,new_weights,new_class_labels,new_feature_id_vector,level+1);
+		auto child=C45train(new_data,new_weights,new_class_labels,new_feature_id_vector,level+1);
 		node->data.attribute_id=feature_id_vector[best_feature_index];
 		if (m_nominal[feature_id_vector[best_feature_index]])
 			child->data.transit_if_feature_value=active_feature_value;
@@ -407,9 +402,6 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 			child->data.transit_if_feature_value=threshold;
 
 		node->add_child(child);
-
-		SG_UNREF(new_class_labels);
-		SG_UNREF(new_data);
 	}
 
 	// if continuous attribute - restoration required
@@ -423,15 +415,15 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	return node;
 }
 
-void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>* feats,
-		CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon)
+void C45ClassifierTree::prune_tree_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
+		std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
 {
 	// if leaf node then skip pruning
 	if (current->data.attribute_id==-1)
 		return;
 
 	SGMatrix<float64_t> feature_matrix=feats->get_feature_matrix();
-	CDynamicObjectArray* children=current->get_children();
+	auto children=current->get_children();
 
 	if (m_nominal[current->data.attribute_id])
 	{
@@ -439,7 +431,7 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		{
 			// count number of feature vectors which transit into the child
 			int32_t count=0;
-			node_t* child=dynamic_cast<node_t*>(children->get_element(i));
+			auto child=children->get_element<node_t>(i);
 
 			for (int32_t j=0; j<feature_matrix.num_cols; j++)
 			{
@@ -468,11 +460,9 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 			}
 
 			// prune the child subtree
-			auto feats_prune = wrap(view(feats, subset));
-			auto gt_prune = wrap(view(gnd_truth, subset));
+			auto feats_prune = view(feats, subset);
+			auto gt_prune = view(gnd_truth, subset);
 			prune_tree_from_current_node(feats_prune, gt_prune, child, epsilon);
-
-			SG_UNREF(child);
 		}
 	}
 	else
@@ -480,8 +470,8 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		require(children->get_num_elements()==2,"The chosen attribute in current node is continuous. Expected number of"
 					" children is 2 but current node has {} children.",children->get_num_elements());
 
-		node_t* left_child=dynamic_cast<node_t*>(children->get_element(0));
-		node_t* right_child=dynamic_cast<node_t*>(children->get_element(1));
+		auto left_child=children->get_element<node_t>(0);
+		auto right_child=children->get_element<node_t>(1);
 
 		int32_t count_left=0;
 		for (int32_t k=0;k<feature_matrix.num_cols;k++)
@@ -505,8 +495,8 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		// count_left is 0 if entire validation data in current node moves to only right child
 		if (count_left > 0)
 		{
-			auto feats_prune = wrap(view(feats, left_subset));
-			auto gt_prune = wrap(view(gnd_truth, left_subset));
+			auto feats_prune = view(feats, left_subset);
+			auto gt_prune = view(gnd_truth, left_subset);
 			// prune the left child subtree
 			prune_tree_from_current_node(
 			    feats_prune, gt_prune, left_child, epsilon);
@@ -515,63 +505,57 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 		// count_left is equal to num_cols if entire validation data in current node moves only to left child
 		if (count_left<feature_matrix.num_cols)
 		{
-			auto feats_prune = wrap(view(feats, right_subset));
-			auto gt_prune = wrap(view(gnd_truth, right_subset));
+			auto feats_prune = view(feats, right_subset);
+			auto gt_prune = view(gnd_truth, right_subset);
 
 			// prune the right child subtree
 			prune_tree_from_current_node(
 			    feats_prune, gt_prune, right_child, epsilon);
 		}
-
-		SG_UNREF(left_child);
-		SG_UNREF(right_child);
 	}
+	auto predicted_unpruned=apply_multiclass_from_current_node(feats, current);
 
-	SG_UNREF(children)
-
-	CMulticlassLabels* predicted_unpruned=apply_multiclass_from_current_node(feats, current);
-	SG_REF(predicted_unpruned);
 	SGVector<float64_t> pruned_labels=SGVector<float64_t>(feature_matrix.num_cols);
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 		pruned_labels[i]=current->data.class_label;
 
-	CMulticlassLabels* predicted_pruned=new CMulticlassLabels(pruned_labels);
-	SG_REF(predicted_pruned);
+	auto predicted_pruned=std::make_shared<MulticlassLabels>(pruned_labels);
 
-	CMulticlassAccuracy* accuracy=new CMulticlassAccuracy();
+
+	auto accuracy=std::make_shared<MulticlassAccuracy>();
 	float64_t unpruned_accuracy=accuracy->evaluate(predicted_unpruned, gnd_truth);
 	float64_t pruned_accuracy=accuracy->evaluate(predicted_pruned, gnd_truth);
 
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
-		CDynamicObjectArray* null_children=new CDynamicObjectArray();
+		auto null_children=std::make_shared<DynamicObjectArray>();
 		current->set_children(null_children);
-		SG_UNREF(null_children);
+
 	}
 
-	SG_UNREF(accuracy);
-	SG_UNREF(predicted_pruned);
-	SG_UNREF(predicted_unpruned);
+
+
+
 }
 
-float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data,
-				SGVector<float64_t> weights, CMulticlassLabels* class_labels)
+float64_t C45ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data,
+				SGVector<float64_t> weights, std::shared_ptr<MulticlassLabels> class_labels)
 {
 	require(data,"Data required for information gain calculation");
 	require(data->get_feature_class()==C_DENSE,
 		"Dense data required for information gain calculation");
 
 	float64_t gain=0;
-	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
+	auto feats=data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs=feats->get_num_vectors();
 	SGVector<float64_t> gain_attribute_values;
 	SGVector<float64_t> gain_weights=weights;
-	CMulticlassLabels* gain_labels=class_labels;
+	auto gain_labels=class_labels;
 
 	int32_t num_missing=0;
 	for (int32_t i=0;i<num_vecs;i++)
 	{
-		if (CMath::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+		if (Math::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
 			num_missing++;
 	}
 
@@ -589,7 +573,7 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 		int32_t index=0;
 		for (int32_t i=0; i<num_vecs; i++)
 		{
-			if (!CMath::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+			if (!Math::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
 			{
 				gain_attribute_values[index]=(feats->get_feature_vector(i))[attr_no];
 				gain_weights[index]=weights[i];
@@ -598,7 +582,7 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 		}
 
 		num_vecs-=num_missing;
-		gain_labels=new CMulticlassLabels(label_vector);
+		gain_labels=std::make_shared<MulticlassLabels>(label_vector);
 	}
 
 	float64_t total_weight=gain_weights.sum(gain_weights.vector,gain_weights.vlen);
@@ -634,11 +618,11 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 			}
 		}
 
-		CMulticlassLabels* sub_labels=new CMulticlassLabels(sub_class);
+		auto sub_labels=std::make_shared<MulticlassLabels>(sub_class);
 		float64_t sub_entropy=entropy(sub_labels,sub_weights);
 		gain += sub_entropy*weight_count/total_weight;
 
-		SG_UNREF(sub_labels);
+
 	}
 
 	float64_t data_entropy=entropy(gain_labels,gain_weights);
@@ -647,13 +631,13 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 	if (num_missing!=0)
 	{
 		gain*=(num_vecs-0.f)/(num_vecs+num_missing-0.f);
-		SG_UNREF(gain_labels);
+
 	}
 
 	return gain;
 }
 
-float64_t CC45ClassifierTree::entropy(CMulticlassLabels* labels, SGVector<float64_t> weights)
+float64_t C45ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels, SGVector<float64_t> weights)
 {
 	SGVector<float64_t> log_ratios(labels->get_unique_labels().size());
 	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
@@ -675,11 +659,11 @@ float64_t CC45ClassifierTree::entropy(CMulticlassLabels* labels, SGVector<float6
 		log_ratios[i] = std::log(log_ratios[i]);
 	}
 
-	return CStatistics::entropy(log_ratios.vector,log_ratios.vlen);
+	return Statistics::entropy(log_ratios.vector,log_ratios.vlen);
 }
 
-CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats,
-									node_t* current, bool set_certainty)
+std::shared_ptr<MulticlassLabels> C45ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
+									std::shared_ptr<node_t> current, bool set_certainty)
 {
 	require(feats, "Features should not be NULL");
 	require(current, "Current node should not be NULL");
@@ -694,9 +678,9 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 	{
 		// choose the current subtree as the entry point
 		SGVector<float64_t> sample=feats->get_feature_vector(i);
-		node_t* node=current;
-		SG_REF(node);
-		CDynamicObjectArray* children=node->get_children();
+		auto node=current;
+
+		auto children=node->get_children();
 
 		// traverse the subtree until leaf node is reached
 		while (children->get_num_elements())
@@ -707,27 +691,24 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 			{
 				for (int32_t j=0; j<children->get_num_elements(); j++)
 				{
-					CSGObject* el=children->get_element(j);
-					node_t* child=NULL;
-					if (el!=NULL)
-						child=dynamic_cast<node_t*>(el);
-					else
+					auto child=children->get_element<node_t>(j);
+					if (!child)
 						error("{} element of children is NULL",j);
 
 					if (child->data.transit_if_feature_value==sample[node->data.attribute_id])
 					{
 						flag=true;
 
-						SG_UNREF(node);
+
 						node=child;
 
-						SG_UNREF(children);
+
 						children=node->get_children();
 
 						break;
 					}
 
-					SG_UNREF(child);
+
 				}
 
 				if (!flag)
@@ -736,41 +717,35 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 			// if not nominal attribute check if greater or less than threshold
 			else
 			{
-				CSGObject* el=children->get_element(0);
-				node_t* left_child=NULL;
-				if (el!=NULL)
-					left_child=dynamic_cast<node_t*>(el);
-				else
+				auto left_child=children->get_element<node_t>(0);
+				if (!left_child)
 					error("left child is NULL");
 
-				el=children->get_element(1);
-				node_t* right_child=NULL;
-				if (el!=NULL)
-					right_child=dynamic_cast<node_t*>(el);
-				else
-					error("left child is NULL");
+				auto right_child=children->get_element<node_t>(1);
+				if (!right_child)
+					error("right child is NULL");
 
 				if (left_child->data.transit_if_feature_value>=sample[node->data.attribute_id])
 				{
-					SG_UNREF(node);
-					node=left_child;
-					SG_REF(left_child)
 
-					SG_UNREF(children);
+					node=left_child;
+
+
+
 					children=node->get_children();
 				}
 				else
 				{
-					SG_UNREF(node);
-					node=right_child;
-					SG_REF(right_child)
 
-					SG_UNREF(children);
+					node=right_child;
+
+
+
 					children=node->get_children();
 				}
 
-				SG_UNREF(left_child);
-				SG_UNREF(right_child);
+
+
 			}
 		}
 
@@ -779,16 +754,12 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 
 		if (set_certainty)
 			m_certainty[i]=(node->data.total_weight-node->data.weight_minus)/node->data.total_weight;
-
-		SG_UNREF(node);
-		SG_UNREF(children);
 	}
 
-	CMulticlassLabels* ret=new CMulticlassLabels(labels);
-	return ret;
+	return std::make_shared<MulticlassLabels>(labels);
 }
 
-void CC45ClassifierTree::init()
+void C45ClassifierTree::init()
 {
 	m_nominal=SGVector<bool>();
 	m_weights=SGVector<float64_t>();

@@ -47,11 +47,11 @@ namespace shogun
  * which are not hyper-parameters of the kernel.
  *
  * */
-class CGaussianARDSparseKernel: public CGaussianARDKernel
+class GaussianARDSparseKernel: public GaussianARDKernel
 {
 public:
 	/** default constructor */
-	CGaussianARDSparseKernel();
+	GaussianARDSparseKernel();
 
 	/** return what type of kernel we are
 	 *
@@ -66,7 +66,7 @@ public:
 	virtual const char* get_name() const { return "GaussianARDSparseKernel"; }
 
 	/** destructor */
-	virtual ~CGaussianARDSparseKernel();
+	virtual ~GaussianARDSparseKernel();
 
 private:
 	void initialize_sparse_kernel();
@@ -76,7 +76,7 @@ public:
 	 *
 	 * @param size cache size
 	 */
-	CGaussianARDSparseKernel(int32_t size);
+	GaussianARDSparseKernel(int32_t size);
 
 	/** constructor
 	 *
@@ -84,14 +84,14 @@ public:
 	 * @param r features of right-hand side
 	 * @param size cache size
 	 */
-	CGaussianARDSparseKernel(CDotFeatures* l, CDotFeatures* r,
+	GaussianARDSparseKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
 		int32_t size=10);
 
-	/** @param kernel is casted to CGaussianARDSparseKernel, error if not possible
+	/** @param kernel is casted to GaussianARDSparseKernel, error if not possible
 	 * is SG_REF'ed
-	 * @return casted CGaussianARDSparseKernel object
+	 * @return casted GaussianARDSparseKernel object
 	 */
-	static CGaussianARDSparseKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<GaussianARDSparseKernel> obtain_from_generic(std::shared_ptr<Kernel> kernel);
 
 	/** return derivative with respect to specified parameter
 	 *

@@ -37,19 +37,19 @@
 
 using namespace shogun;
 
-CNeuralSoftmaxLayer::CNeuralSoftmaxLayer() : CNeuralLinearLayer()
+NeuralSoftmaxLayer::NeuralSoftmaxLayer() : NeuralLinearLayer()
 {
 }
 
-CNeuralSoftmaxLayer::CNeuralSoftmaxLayer(int32_t num_neurons):
-CNeuralLinearLayer(num_neurons)
+NeuralSoftmaxLayer::NeuralSoftmaxLayer(int32_t num_neurons):
+NeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+void NeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
+		std::shared_ptr<DynamicObjectArray> layers)
 {
-	CNeuralLinearLayer::compute_activations(parameters, layers);
+	NeuralLinearLayer::compute_activations(parameters, layers);
 
 	// to avoid exponentiating large numbers, the maximum activation is
 	// subtracted from all the activations and the computations are done in the
@@ -73,7 +73,7 @@ void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
 	}
 }
 
-void CNeuralSoftmaxLayer::compute_local_gradients(SGMatrix<float64_t> targets)
+void NeuralSoftmaxLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows == 0)
 		error("Cannot be used as a hidden layer");
@@ -85,7 +85,7 @@ void CNeuralSoftmaxLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 	}
 }
 
-float64_t CNeuralSoftmaxLayer::compute_error(SGMatrix<float64_t> targets)
+float64_t NeuralSoftmaxLayer::compute_error(SGMatrix<float64_t> targets)
 {
 	int32_t len = m_num_neurons*m_batch_size;
 	float64_t sum = 0;

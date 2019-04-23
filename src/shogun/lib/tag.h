@@ -41,7 +41,7 @@ namespace shogun
 {
     /** @brief Acts as an identifier for a shogun object.
      * It contains type information and name of the object.
-     * Generally used to CSGObject::set() and CSGObject::get() parameters of a class.
+     * Generally used to SGObject::set() and SGObject::get() parameters of a class.
      */
     template <typename T>
     class Tag : public BaseTag

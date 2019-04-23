@@ -8,7 +8,7 @@
 
 using namespace shogun;
 
-CTask::CTask() : CSGObject()
+Task::Task() : SGObject()
 {
 	init();
 
@@ -16,9 +16,9 @@ CTask::CTask() : CSGObject()
 	m_name = "task";
 }
 
-CTask::CTask(index_t min_index, index_t max_index,
+Task::Task(index_t min_index, index_t max_index,
              float64_t weight, const char* name) :
-	CSGObject()
+	SGObject()
 {
 	init();
 
@@ -30,31 +30,31 @@ CTask::CTask(index_t min_index, index_t max_index,
 	m_name = name;
 }
 
-CTask::CTask(SGVector<index_t> indices,
+Task::Task(SGVector<index_t> indices,
              float64_t weight, const char* name) :
-	CSGObject()
+	SGObject()
 {
 	init();
 
 	m_indices = indices;
 }
 
-void CTask::init()
+void Task::init()
 {
-	m_subtasks = new CList(true);
-	SG_REF(m_subtasks);
+	m_subtasks = std::make_shared<List>(true);
 
-	SG_ADD((CSGObject**)&m_subtasks,"subtasks","subtasks of given task");
+
+	SG_ADD((std::shared_ptr<SGObject>*)&m_subtasks,"subtasks","subtasks of given task");
 	SG_ADD(&m_indices,"indices","indices of task");
 	SG_ADD(&m_weight,"weight","weight of task");
 }
 
-CTask::~CTask()
+Task::~Task()
 {
-	SG_UNREF(m_subtasks);
+
 }
 
-bool CTask::is_contiguous()
+bool Task::is_contiguous()
 {
 	require(m_indices.vlen>1,"Task indices vector must not be empty or contain only one element");
 	bool result = true;
@@ -70,7 +70,7 @@ bool CTask::is_contiguous()
 	return result;
 }
 
-void CTask::add_subtask(CTask* subtask)
+void Task::add_subtask(std::shared_ptr<Task> subtask)
 {
 	SGVector<index_t> subtask_indices = subtask->get_indices();
 	for (int32_t i=0; i<subtask_indices.vlen; i++)
@@ -90,13 +90,13 @@ void CTask::add_subtask(CTask* subtask)
 	m_subtasks->append_element(subtask);
 }
 
-CList* CTask::get_subtasks()
+std::shared_ptr<List> Task::get_subtasks()
 {
-	SG_REF(m_subtasks);
+
 	return m_subtasks;
 }
 
-int32_t CTask::get_num_subtasks()
+int32_t Task::get_num_subtasks()
 {
 	return m_subtasks->get_num_elements();
 }

@@ -30,19 +30,19 @@ namespace shogun
  * Cosine similarity </a>
  * @see CTanimotoDistance
  */
-class CCosineDistance: public CDenseDistance<float64_t>
+class CosineDistance: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CCosineDistance();
+		CosineDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCosineDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CCosineDistance();
+		CosineDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~CosineDistance();
 
 		/** init distance
 		 *
@@ -50,7 +50,7 @@ class CCosineDistance: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

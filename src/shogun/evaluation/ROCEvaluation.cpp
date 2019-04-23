@@ -10,20 +10,20 @@
 
 using namespace shogun;
 
-CROCEvaluation::CROCEvaluation() : CBinaryClassEvaluation(), m_computed(false)
+ROCEvaluation::ROCEvaluation() : BinaryClassEvaluation(), m_computed(false)
 {
 	m_ROC_graph = SGMatrix<float64_t>();
 	m_thresholds = SGVector<float64_t>();
-	watch_method("auROC", &CROCEvaluation::get_auROC);
-	watch_method("ROC", &CROCEvaluation::get_ROC);
-	watch_method("thresholds", &CROCEvaluation::get_thresholds);
+	watch_method("auROC", &ROCEvaluation::get_auROC);
+	watch_method("ROC", &ROCEvaluation::get_ROC);
+	watch_method("thresholds", &ROCEvaluation::get_thresholds);
 }
 
-CROCEvaluation::~CROCEvaluation()
+ROCEvaluation::~ROCEvaluation()
 {
 }
 
-float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t ROCEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	require(predicted, "No predicted labels provided.");
 	require(ground_truth, "No ground truth labels provided.");
@@ -36,19 +36,17 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	    "Given ground truth labels ({}) must be binary ({}).",
 	    ground_truth->get_label_type(), LT_BINARY);
 
-	return evaluate_roc(
-	    (CBinaryLabels*)predicted, (CBinaryLabels*)ground_truth);
+	return evaluate_roc(binary_labels(predicted),binary_labels(ground_truth));
 }
 
-float64_t CROCEvaluation::evaluate_roc(
-    CBinaryLabels* predicted, CBinaryLabels* ground_truth)
+float64_t ROCEvaluation::evaluate_roc(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	ground_truth->ensure_valid();
 
 	// assume threshold as negative infinity
-	float64_t threshold = CMath::ALMOST_NEG_INFTY;
+	float64_t threshold = Math::ALMOST_NEG_INFTY;
 	// false positive rate
 	float64_t fp = 0.0;
 	// true positive rate
@@ -72,7 +70,7 @@ float64_t CROCEvaluation::evaluate_roc(
 	for (i = 0; i < length; i++)
 		idxs[i] = i;
 
-	CMath::qsort_backward_index(labels, idxs.vector, idxs.vlen);
+	Math::qsort_backward_index(labels, idxs.vector, idxs.vlen);
 
 	// number of different predicted labels
 	int32_t diff_count = 1;
@@ -142,14 +140,14 @@ float64_t CROCEvaluation::evaluate_roc(
 
 	// calc auROC using area under curve
 	m_auROC =
-	    CMath::area_under_curve(m_ROC_graph.matrix, diff_count + 1, false);
+	    Math::area_under_curve(m_ROC_graph.matrix, diff_count + 1, false);
 
 	m_computed = true;
 
 	return m_auROC;
 }
 
-SGMatrix<float64_t> CROCEvaluation::get_ROC() const
+SGMatrix<float64_t> ROCEvaluation::get_ROC() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");
@@ -157,7 +155,7 @@ SGMatrix<float64_t> CROCEvaluation::get_ROC() const
 	return m_ROC_graph;
 }
 
-SGVector<float64_t> CROCEvaluation::get_thresholds() const
+SGVector<float64_t> ROCEvaluation::get_thresholds() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");
@@ -165,7 +163,7 @@ SGVector<float64_t> CROCEvaluation::get_thresholds() const
 	return m_thresholds;
 }
 
-float64_t CROCEvaluation::get_auROC() const
+float64_t ROCEvaluation::get_auROC() const
 {
 	if (!m_computed)
 		error("Uninitialized, please call evaluate first");

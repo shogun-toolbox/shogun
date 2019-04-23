@@ -27,17 +27,17 @@ namespace shogun
  * The Journal of Machine Learning Research, 5, 777-800.
  *
  */
-class CFFDiag : public CApproxJointDiagonalizer
+class FFDiag : public ApproxJointDiagonalizer
 {
 	public:
 
 		/** constructor */
-		CFFDiag()
+		FFDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CFFDiag()
+		virtual ~FFDiag()
 		{
 		}
 
@@ -50,7 +50,7 @@ class CFFDiag : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
 							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-							double eps=CMath::MACHINE_EPSILON,
+							double eps=Math::MACHINE_EPSILON,
 							int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C
@@ -62,7 +62,7 @@ class CFFDiag : public CApproxJointDiagonalizer
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=Math::MACHINE_EPSILON,
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);

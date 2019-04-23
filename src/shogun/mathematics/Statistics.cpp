@@ -30,21 +30,21 @@ using namespace shogun;
 #define M_SQRT1_2 0.707106781186547524401
 #endif
 
-float64_t CStatistics::variance(SGVector<float64_t> values)
+float64_t Statistics::variance(SGVector<float64_t> values)
 {
 	require(values.vlen>1, "Number of observations ({}) needs to be at least 1.",
 			values.vlen);
 
-	float64_t mean=CStatistics::mean(values);
+	float64_t mean=Statistics::mean(values);
 
 	float64_t sum_squared_diff=0;
 	for (index_t i=0; i<values.vlen; ++i)
-		sum_squared_diff+=CMath::pow(values.vector[i]-mean, 2);
+		sum_squared_diff+=Math::pow(values.vector[i]-mean, 2);
 
 	return sum_squared_diff/(values.vlen-1);
 }
 
-SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
+SGVector<float64_t> Statistics::matrix_mean(SGMatrix<float64_t> values,
 		bool col_wise)
 {
 	ASSERT(values.num_rows>0)
@@ -81,7 +81,7 @@ SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
 	return result;
 }
 
-SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
+SGVector<float64_t> Statistics::matrix_variance(SGMatrix<float64_t> values,
 		bool col_wise)
 {
 	ASSERT(values.num_rows>0)
@@ -89,7 +89,7 @@ SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 	ASSERT(values.matrix)
 
 	/* first compute mean */
-	SGVector<float64_t> mean=CStatistics::matrix_mean(values, col_wise);
+	SGVector<float64_t> mean=Statistics::matrix_mean(values, col_wise);
 
 	SGVector<float64_t> result;
 
@@ -100,7 +100,7 @@ SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 		{
 			result[j]=0;
 			for (index_t i=0; i<values.num_rows; ++i)
-				result[j]+=CMath::pow(values(i,j)-mean[j], 2);
+				result[j]+=Math::pow(values(i,j)-mean[j], 2);
 
 			result[j]/=(values.num_rows-1);
 		}
@@ -112,7 +112,7 @@ SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 		{
 			result[j]=0;
 			for (index_t i=0; i<values.num_cols; ++i)
-				result[j]+=CMath::pow(values(j,i)-mean[j], 2);
+				result[j]+=Math::pow(values(j,i)-mean[j], 2);
 
 			result[j]/=(values.num_cols-1);
 		}
@@ -121,22 +121,22 @@ SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 	return result;
 }
 
-float64_t CStatistics::std_deviation(SGVector<float64_t> values)
+float64_t Statistics::std_deviation(SGVector<float64_t> values)
 {
 	return std::sqrt(variance(values));
 }
 
-SGVector<float64_t> CStatistics::matrix_std_deviation(
+SGVector<float64_t> Statistics::matrix_std_deviation(
 		SGMatrix<float64_t> values, bool col_wise)
 {
-	SGVector<float64_t> var=CStatistics::matrix_variance(values, col_wise);
+	SGVector<float64_t> var=Statistics::matrix_variance(values, col_wise);
 	for (index_t i=0; i<var.vlen; ++i)
 		var[i] = std::sqrt(var[i]);
 
 	return var;
 }
 
-SGMatrix<float64_t> CStatistics::covariance_matrix(
+SGMatrix<float64_t> Statistics::covariance_matrix(
 		SGMatrix<float64_t> observations, bool in_place)
 {
 	int32_t D = observations.num_rows;
@@ -169,7 +169,7 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	return cov;
 }
 
-SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
+SGVector<float64_t> Statistics::fishers_exact_test_for_multiple_2x3_tables(
 		SGMatrix<float64_t> tables)
 {
 	SGMatrix<float64_t> table(NULL, 2, 3, false);
@@ -184,7 +184,7 @@ SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
 	return v;
 }
 
-float64_t CStatistics::fishers_exact_test_for_2x3_table(
+float64_t Statistics::fishers_exact_test_for_2x3_table(
 		SGMatrix<float64_t> table)
 {
 	ASSERT(table.num_rows==2)
@@ -199,7 +199,7 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	m[4]=table.matrix[4]+table.matrix[5];
 
 	float64_t n=SGVector<float64_t>::sum(m, m_len)/2.0;
-	int32_t x_len=2*3*CMath::sq(CMath::max(m, m_len));
+	int32_t x_len=2*3*Math::sq(Math::max(m, m_len));
 	float64_t* x=SG_MALLOC(float64_t, x_len);
 	SGVector<float64_t>::fill_vector(x, x_len, 0.0);
 
@@ -219,14 +219,14 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 
 	floatmax_t prob_table_log=log_nom-log_denom;
 
-	int32_t dim1=CMath::min(m[0], m[2]);
+	int32_t dim1=Math::min(m[0], m[2]);
 
 	//traverse all possible tables with given m
 	int32_t counter=0;
 	for (int32_t k=0; k<=dim1; k++)
 	{
-		for (int32_t l=CMath::max(0.0, m[0]-m[4]-k);
-				l<=CMath::min(m[0]-k, m[3]); l++)
+		for (int32_t l=Math::max(0.0, m[0]-m[4]-k);
+				l<=Math::min(m[0]-k, m[3]); l++)
 		{
 			x[0+0*2+counter*2*3]=k;
 			x[0+1*2+counter*2*3]=l;
@@ -243,7 +243,7 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 #ifdef DEBUG_FISHER_TABLE
 	io::print("counter={}\n", counter);
 	io::print("dim1={}\n", dim1);
-	io::print("l={:g}...{:g}\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]));
+	io::print("l={:g}...{:g}\n", Math::max(0.0,m[0]-m[4]-0), Math::min(m[0]-0, m[3]));
 	io::print("n={:g}\n", n);
 	io::print("prob_table_log=%.18Lg\n", prob_table_log);
 	io::print("log_denomf={:.18g}\n", log_denomf);
@@ -272,11 +272,11 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	display_vector(log_denom_vec, counter, "log_denom_vec");
 #endif // DEBUG_FISHER_TABLE
 
-	float64_t nonrand_p=-CMath::INFTY;
+	float64_t nonrand_p=-Math::INFTY;
 	for (int32_t i=0; i<counter; i++)
 	{
 		if (log_denom_vec[i]<=prob_table_log)
-			nonrand_p=CMath::logarithmic_sum(nonrand_p, log_denom_vec[i]);
+			nonrand_p=Math::logarithmic_sum(nonrand_p, log_denom_vec[i]);
 	}
 
 #ifdef DEBUG_FISHER_TABLE
@@ -292,7 +292,7 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	return nonrand_p;
 }
 
-float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
+float64_t Statistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 {
 	double e=0;
 
@@ -303,7 +303,7 @@ float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 	return (float64_t)e;
 }
 
-float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
+float64_t Statistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
 {
 	double e=0;
 
@@ -313,7 +313,7 @@ float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
 	return (float64_t)e;
 }
 
-float64_t CStatistics::entropy(float64_t* p, int32_t len)
+float64_t Statistics::entropy(float64_t* p, int32_t len)
 {
 	double e=0;
 
@@ -324,7 +324,7 @@ float64_t CStatistics::entropy(float64_t* p, int32_t len)
 }
 
 template <typename PRNG>
-SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N, PRNG& prng)
+SGVector<int32_t> Statistics::sample_indices(int32_t sample_size, int32_t N, PRNG& prng)
 {
 	require(sample_size<N,
 			"sample size should be less than number of indices");
@@ -347,13 +347,13 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N, PR
 	SG_FREE(idxs);
 
 	SGVector<int32_t> result=SGVector<int32_t>(permuted_idxs, sample_size);
-	CMath::qsort(result);
+	Math::qsort(result);
 	return result;
 }
 
-template SGVector<int32_t> CStatistics::sample_indices<std::mt19937_64>(int32_t sample_size, int32_t N, std::mt19937_64& prng);
+template SGVector<int32_t> Statistics::sample_indices<std::mt19937_64>(int32_t sample_size, int32_t N, std::mt19937_64& prng);
 
-float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
+float64_t Statistics::inverse_normal_cdf(float64_t p, float64_t mean,
 		float64_t std_deviation)
 {
 	require(p>=0, "p ({}); must be greater or equal to 0.", p);
@@ -379,7 +379,7 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
 	// double *sd, int *status, double *bound )
 }
 
-float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
+float64_t Statistics::chi2_cdf(float64_t x, float64_t k)
 {
 	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
 	require(k>0, "Degrees of freedom ({}) has to be positive.", k);
@@ -400,7 +400,7 @@ float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 	return output_p;
 }
 
-float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
+float64_t Statistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
 	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
 	require(a>=0, "a ({}) has to be greater or equal to 0.", a);
@@ -423,7 +423,7 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 	return output_p;
 }
 
-float64_t CStatistics::lnormal_cdf(float64_t x)
+float64_t Statistics::lnormal_cdf(float64_t x)
 {
 	/* Loosely based on logphi.m in
 	 * Gaussian Process Machine Learning Toolbox file logphi.m
@@ -448,8 +448,8 @@ float64_t CStatistics::lnormal_cdf(float64_t x)
 		-0.01621575378835404,
 		0.02629651521057465,
 		-0.001829764677455021,
-		2.0*(1.0-CMath::PI/3.0),
-		(4.0-CMath::PI)/3.0,
+		2.0*(1.0-Math::PI/3.0),
+		(4.0-Math::PI)/3.0,
 		1.0,
 		1.0
 	};
@@ -469,7 +469,7 @@ float64_t CStatistics::lnormal_cdf(float64_t x)
 	return std::log(normal_cdf(x));
 }
 
-float64_t CStatistics::erfc8_weighted_sum(float64_t x)
+float64_t Statistics::erfc8_weighted_sum(float64_t x)
 {
 	/* This is based on index 5725 in Hart et al */
 
@@ -513,12 +513,12 @@ float64_t CStatistics::erfc8_weighted_sum(float64_t x)
 	return num/den;
 }
 
-float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
+float64_t Statistics::normal_cdf(float64_t x, float64_t std_dev)
 {
 	return 0.5*(erfc(-x*M_SQRT1_2/std_dev));
 }
 
-float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
+float64_t Statistics::gamma_inverse_cdf(float64_t p, float64_t a,
 		float64_t b)
 {
 	require(p>=0, "p ({}) has to be greater or equal to 0.", p);
@@ -542,7 +542,7 @@ float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 	return output_x;
 }
 
-float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
+float64_t Statistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
 {
 	require(x>=0, "x ({}) has to be greater or equal to 0.", x);
 	require(d1>0, "d1 ({}) has to be positive.", d1);
@@ -563,7 +563,7 @@ float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2
 	return output_p;
 }
 
-float64_t CStatistics::dlgamma(float64_t x)
+float64_t Statistics::dlgamma(float64_t x)
 {
 	float64_t result=0.0;
 
@@ -571,7 +571,7 @@ float64_t CStatistics::dlgamma(float64_t x)
 	{
 		// use reflection formula
 		x=1.0-x;
-		result = CMath::PI / std::tan(CMath::PI * x);
+		result = Math::PI / std::tan(Math::PI * x);
 	}
 
 	// make x>7 for approximation
@@ -599,7 +599,7 @@ float64_t CStatistics::dlgamma(float64_t x)
 		-26.45616165999210241989};
 
 	float64_t power=1.0;
-	float64_t ix2=1.0/CMath::sq(x);
+	float64_t ix2=1.0/Math::sq(x);
 
 	// perform approximation
 	for (index_t i=0; i<10; i++)
@@ -611,7 +611,7 @@ float64_t CStatistics::dlgamma(float64_t x)
 	return result;
 }
 
-float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
+float64_t Statistics::log_det_general(const SGMatrix<float64_t> A)
 {
 	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
 	require(eigen_A.rows()==eigen_A.cols(),
@@ -657,7 +657,7 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 		}
 	}
 
-	float64_t result=CMath::INFTY;
+	float64_t result=Math::INFTY;
 
 	if (check_u==detP)
 		result=u.array().abs().log().sum();
@@ -665,7 +665,7 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 	return result;
 }
 
-float64_t CStatistics::log_det(SGMatrix<float64_t> m)
+float64_t Statistics::log_det(SGMatrix<float64_t> m)
 {
 	/* map the matrix to eigen3 to perform cholesky */
 	Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
@@ -688,7 +688,7 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 	return retval;
 }
 
-float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
+float64_t Statistics::log_det(const SGSparseMatrix<float64_t> m)
 {
 	typedef SparseMatrix<float64_t> MatrixType;
 	const MatrixType &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
@@ -709,7 +709,7 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 }
 
 template <typename PRNG>
-SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
+SGMatrix<float64_t> Statistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, PRNG& prng, int32_t N, bool precision_matrix)
 {
 	require(cov.num_rows>0, "Number of covariance rows must be positive!");
@@ -757,27 +757,27 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	return S;
 }
 
-template SGMatrix<float64_t> CStatistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
+template SGMatrix<float64_t> Statistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, std::mt19937_64& prng, int32_t N, bool precision_matrix);
 
 template <typename PRNG>
-SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
+SGMatrix<float64_t> Statistics::sample_from_gaussian(SGVector<float64_t> mean,
  SGSparseMatrix<float64_t> cov, PRNG& prng, int32_t N, bool precision_matrix)
 {
 	require(cov.num_vectors>0,
-		"CStatistics::sample_from_gaussian(): \
+		"Statistics::sample_from_gaussian(): \
 		Number of covariance rows must be positive!");
 	require(cov.num_features>0,
-		"CStatistics::sample_from_gaussian(): \
+		"Statistics::sample_from_gaussian(): \
 		Number of covariance cols must be positive!");
 	require(cov.sparse_matrix,
-		"CStatistics::sample_from_gaussian(): \
+		"Statistics::sample_from_gaussian(): \
 		Covariance is not initialized!");
 	require(cov.num_vectors==cov.num_features,
-		"CStatistics::sample_from_gaussian(): \
+		"Statistics::sample_from_gaussian(): \
 		Covariance should be square matrix!");
 	require(mean.vlen==cov.num_vectors,
-		"CStatistics::sample_from_gaussian(): \
+		"Statistics::sample_from_gaussian(): \
 		Mean and covariance dimension mismatch!");
 
 	int32_t dim=mean.vlen;
@@ -826,11 +826,11 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	return S;
 }
 
-template SGMatrix<float64_t> CStatistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
+template SGMatrix<float64_t> Statistics::sample_from_gaussian<std::mt19937_64>(SGVector<float64_t> mean,
 	SGSparseMatrix<float64_t> cov, std::mt19937_64& prng, int32_t N, bool precision_matrix);
 
 
-CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
+Statistics::SigmoidParamters Statistics::fit_sigmoid(
     SGVector<float64_t> scores, SGVector<float64_t> labels, index_t maxiter,
     float64_t minstep, float64_t sigma, float64_t epsilon)
 {
@@ -916,7 +916,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 		}
 
 		/* Stopping Criteria */
-		if (CMath::abs(g1) < epsilon && CMath::abs(g2) < epsilon)
+		if (Math::abs(g1) < epsilon && Math::abs(g2) < epsilon)
 			break;
 
 		/* Finding Newton direction: -inv(H') * g */
@@ -975,18 +975,18 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(
 
 	SG_DEBUG("fitted sigmoid: a={}, b={}", a, b)
 
-	CStatistics::SigmoidParamters result;
+	Statistics::SigmoidParamters result;
 	result.a = a;
 	result.b = b;
 
 	return result;
 }
 
-CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
+Statistics::SigmoidParamters Statistics::fit_sigmoid(SGVector<float64_t> scores)
 {
-	SG_TRACE("entering CStatistics::fit_sigmoid()");
+	SG_TRACE("entering Statistics::fit_sigmoid()");
 
-	require(scores.vector, "CStatistics::fit_sigmoid() requires "
+	require(scores.vector, "Statistics::fit_sigmoid() requires "
 			"scores vector!");
 
 	/* count prior0 and prior1 if needed */
@@ -1084,7 +1084,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 		}
 
 		/* Stopping Criteria */
-		if (CMath::abs(g1)<eps && CMath::abs(g2)<eps)
+		if (Math::abs(g1)<eps && Math::abs(g2)<eps)
 			break;
 
 		/* Finding Newton direction: -inv(H') * g */
@@ -1126,7 +1126,7 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 
 		if (stepsize<minstep)
 		{
-			io::warn("CStatistics::fit_sigmoid(): line search fails, A={}, "
+			io::warn("Statistics::fit_sigmoid(): line search fails, A={}, "
 					"B={}, g1={}, g2={}, dA={}, dB={}, gd={}",
 					a, b, g1, g2, dA, dB, gd);
 		}
@@ -1134,20 +1134,20 @@ CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> score
 
 	if (it>=maxiter-1)
 	{
-		io::warn("CStatistics::fit_sigmoid(): reaching maximal iterations,"
+		io::warn("Statistics::fit_sigmoid(): reaching maximal iterations,"
 				" g1={}, g2={}", g1, g2);
 	}
 
 	SG_DEBUG("fitted sigmoid: a={}, b={}", a, b)
 
-	CStatistics::SigmoidParamters result;
+	Statistics::SigmoidParamters result;
 	result.a=a;
 	result.b=b;
 
-	SG_TRACE("leaving CStatistics::fit_sigmoid()");
+	SG_TRACE("leaving Statistics::fit_sigmoid()");
 	return result;
 }
 
-const float64_t CStatistics::ERFC_CASE1=0.0492;
+const float64_t Statistics::ERFC_CASE1=0.0492;
 
-const float64_t CStatistics::ERFC_CASE2=-11.3137;
+const float64_t Statistics::ERFC_CASE2=-11.3137;

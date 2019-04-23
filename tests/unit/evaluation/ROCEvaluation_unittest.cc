@@ -13,8 +13,8 @@ using namespace shogun;
 TEST(ROCEvaluation,one)
 {
 	index_t num_labels=10;
-	CBinaryLabels* gt=new CBinaryLabels(num_labels);
-	CROCEvaluation* roc=new CROCEvaluation();
+	auto gt=std::make_shared<BinaryLabels>(num_labels);
+	auto roc=std::make_shared<ROCEvaluation>();
 
 	for (index_t i=0; i<num_labels; i++)
 	{
@@ -26,6 +26,6 @@ TEST(ROCEvaluation,one)
 	float64_t auc=roc->evaluate(gt, gt);
 	EXPECT_EQ(auc, 1);
 
-	SG_UNREF(roc);
-	SG_UNREF(gt);
+	
+	
 }

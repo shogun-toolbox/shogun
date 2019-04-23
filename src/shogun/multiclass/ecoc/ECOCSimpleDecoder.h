@@ -19,14 +19,14 @@ namespace shogun
  * the binary classification results and the codes to select
  * the class with the smallest distance.
  */
-class CECOCSimpleDecoder: public CECOCDecoder
+class ECOCSimpleDecoder: public ECOCDecoder
 {
 public:
     /** constructor */
-    CECOCSimpleDecoder() {}
+    ECOCSimpleDecoder() {}
 
     /** destructor */
-    virtual ~CECOCSimpleDecoder() {}
+    virtual ~ECOCSimpleDecoder() {}
 
     /** get name */
     virtual const char* get_name() const { return "ECOCSimpleDecoder"; }

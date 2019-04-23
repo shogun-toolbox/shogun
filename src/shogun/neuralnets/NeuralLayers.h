@@ -52,46 +52,46 @@ namespace shogun
  * a reference to the same object.
  *
  */
-class CNeuralLayers : public CSGObject
+class NeuralLayers : public SGObject
 {
 public:
 	/** default constructor */
-	CNeuralLayers();
+	NeuralLayers();
 
 	/** destructor */
-	virtual ~CNeuralLayers();
+	virtual ~NeuralLayers();
 
 	/** Adds input neural layer.
 	 *
-	 * @ref CNeuralInputLayer
+	 * @ref NeuralInputLayer
 	 *
 	 * @param size the size of input layer
 	 */
-	CNeuralLayers* input(int32_t size);
+	std::shared_ptr<NeuralLayers> input(int32_t size);
 
 	/** Adds logistic neural layer.
 	 *
-	 * @ref CNeuralLogisticLayer
+	 * @ref NeuralLogisticLayer
 	 *
 	 * @param size the size of logistic layer
 	 */
-	CNeuralLayers* logistic(int32_t size);
+	std::shared_ptr<NeuralLayers> logistic(int32_t size);
 
 	/** Adds linear neural layer.
 	 *
-	 * @ref CNeuralLinearLayer
+	 * @ref NeuralLinearLayer
 	 *
 	 * @param size the size of linear layer
 	 */
-	CNeuralLayers* linear(int32_t size);
+	std::shared_ptr<NeuralLayers> linear(int32_t size);
 
 	/** Adds rectified linear neural layer.
 	 *
-	 * @ref CNeuralRectifiedLinearLayer
+	 * @ref NeuralRectifiedLinearLayer
 	 *
 	 * @param size the size of rectified linear layer
 	 */
-	CNeuralLayers* rectified_linear(int32_t size);
+	std::shared_ptr<NeuralLayers> rectified_linear(int32_t size);
 
 	/** Adds leaky rectified linear neural layer.
 	 *
@@ -99,25 +99,25 @@ public:
 	 *
 	 * @param size the size of leaky rectified linear layer
 	 */
-	CNeuralLayers* leaky_rectified_linear(int32_t size);
+	std::shared_ptr<NeuralLayers> leaky_rectified_linear(int32_t size);
 
 	/** Adds softmax neural layer.
 	 *
-	 * @ref CNeuralSoftmaxLayer
+	 * @ref NeuralSoftmaxLayer
 	 *
 	 * @param size the size of softmax layer
 	 */
-	CNeuralLayers* softmax(int32_t size);
+	std::shared_ptr<NeuralLayers> softmax(int32_t size);
 
 	/** Adds custom neural layer.
 	 *
 	 * @param layer layer to add
 	 */
-	CNeuralLayers* with_layer(CNeuralLayer* layer);
+	std::shared_ptr<NeuralLayers> with_layer(std::shared_ptr<NeuralLayer> layer);
 
 	/** Finalizes
 	 */
-	CDynamicObjectArray* done();
+	std::shared_ptr<DynamicObjectArray> done();
 
 	/** Clears the constructed layers.
 	 */
@@ -132,7 +132,7 @@ public:
 	virtual const char* get_name() const;
 
 private:
-	CDynamicObjectArray* m_layers;
+	std::shared_ptr<DynamicObjectArray> m_layers;
 };
 
 }

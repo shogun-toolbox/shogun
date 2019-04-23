@@ -12,41 +12,41 @@
 
 using namespace shogun;
 
-CChiSquareDistance::CChiSquareDistance() : CDenseDistance<float64_t>()
+ChiSquareDistance::ChiSquareDistance() : DenseDistance<float64_t>()
 {
 }
 
-CChiSquareDistance::CChiSquareDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CDenseDistance<float64_t>()
+ChiSquareDistance::ChiSquareDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r)
+: DenseDistance<float64_t>()
 {
 	init(l, r);
 }
 
-CChiSquareDistance::~CChiSquareDistance()
+ChiSquareDistance::~ChiSquareDistance()
 {
 	cleanup();
 }
 
-bool CChiSquareDistance::init(CFeatures* l, CFeatures* r)
+bool ChiSquareDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	bool result=CDenseDistance<float64_t>::init(l,r);
+	bool result=DenseDistance<float64_t>::init(l,r);
 
 	return result;
 }
 
-void CChiSquareDistance::cleanup()
+void ChiSquareDistance::cleanup()
 {
 }
 
-float64_t CChiSquareDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t ChiSquareDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen)
 
@@ -62,8 +62,8 @@ float64_t CChiSquareDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

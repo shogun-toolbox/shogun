@@ -97,13 +97,11 @@ public:
 		}
 		~Iterator()
 		{
-			SG_UNREF(m_obj);
 		}
 
 		Iterator& operator=(const Iterator&) = delete;
 		Iterator& operator++()
 		{
-			SG_UNREF(m_obj);
 			do
 			{
 				++m_it;
@@ -116,7 +114,7 @@ public:
 
 			return *this;
 		}
-		CSGObject* operator*()
+		std::shared_ptr<SGObject> operator*()
 		{
 			return m_obj;
 		}
@@ -126,11 +124,9 @@ public:
 		}
 
 	private:
-		CSGObject* create_obj()
+		auto create_obj()
 		{
-			auto obj = shogun::create((*m_it).c_str(), sg_primitive_type<T>());
-			SG_REF(obj);
-			return obj;
+			return shogun::create((*m_it).c_str(), sg_primitive_type<T>());
 		}
 
 		void create_and_forward_if_necessary()
@@ -147,7 +143,7 @@ public:
 
 		std::set<std::string>::iterator m_it;
 		std::set<std::string>::iterator m_end;
-		CSGObject* m_obj;
+		std::shared_ptr<SGObject> m_obj;
 	};
 
 	Iterator begin() const

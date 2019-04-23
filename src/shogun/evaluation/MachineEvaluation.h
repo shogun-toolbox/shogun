@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Yuyu Zhang, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Yuyu Zhang,
  *          Soeren Sonnenburg, Giovanni De Toni
  */
 
@@ -16,21 +16,21 @@
 
 namespace shogun
 {
-	class CMachine;
-	class CFeatures;
-	class CLabels;
-	class CSplittingStrategy;
-	class CEvaluation;
+	class Machine;
+	class Features;
+	class Labels;
+	class SplittingStrategy;
+	class Evaluation;
 
 	/** @brief Machine Evaluation is an abstract class
 	 * that evaluates a machine according to some criterion.
 	 *
 	 */
-	class CMachineEvaluation : public CStoppableSGObject
+	class MachineEvaluation : public StoppableSGObject
 	{
 
 	public:
-		CMachineEvaluation();
+		MachineEvaluation();
 
 		/** constructor
 		 * @param machine learning machine to use
@@ -41,10 +41,10 @@ namespace shogun
 		 * @param autolock whether machine should be auto-locked before
 		 * evaluation
 		 */
-		CMachineEvaluation(
-		    CMachine* machine, CFeatures* features, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		MachineEvaluation(
+		    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
+		    std::shared_ptr<SplittingStrategy> splitting_strategy,
+		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
@@ -53,12 +53,12 @@ namespace shogun
 		 * @param evaluation_criterion evaluation criterion to use
 		 * @param autolock autolock
 		 */
-		CMachineEvaluation(
-		    CMachine* machine, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		MachineEvaluation(
+		    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
+		    std::shared_ptr<SplittingStrategy> splitting_strategy,
+		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
-		virtual ~CMachineEvaluation();
+		virtual ~MachineEvaluation();
 
 		/** @return in which direction is the best evaluation value? */
 		EEvaluationDirection get_evaluation_direction() const;
@@ -71,10 +71,10 @@ namespace shogun
 		 *
 		 * @return result of evaluation (already SG_REF'ed)
 		 */
-		virtual CEvaluationResult* evaluate() const;
+		virtual std::shared_ptr<EvaluationResult> evaluate() const;
 
 		/** @return underlying learning machine */
-		CMachine* get_machine() const;
+		std::shared_ptr<Machine> get_machine() const;
 
 	protected:
 		/** Initialize Object */
@@ -86,24 +86,24 @@ namespace shogun
 		 * before returning it.
 		 * @return the evaluation result
 		 */
-		virtual CEvaluationResult* evaluate_impl() const = 0;
+		virtual std::shared_ptr<EvaluationResult> evaluate_impl() const = 0;
 
 		/** connect the machine instance to the signal handler */
 	protected:
 		/** Machine to be Evaluated */
-		CMachine* m_machine;
+		std::shared_ptr<Machine> m_machine;
 
 		/** Features to be used*/
-		CFeatures* m_features;
+		std::shared_ptr<Features> m_features;
 
 		/** Labels for the features */
-		CLabels* m_labels;
+		std::shared_ptr<Labels> m_labels;
 
 		/** Splitting Strategy to be used */
-		CSplittingStrategy* m_splitting_strategy;
+		std::shared_ptr<SplittingStrategy> m_splitting_strategy;
 
 		/** Criterion for evaluation */
-		CEvaluation* m_evaluation_criterion;
+		std::shared_ptr<Evaluation> m_evaluation_criterion;
 	};
 
 } /* namespace shogun */

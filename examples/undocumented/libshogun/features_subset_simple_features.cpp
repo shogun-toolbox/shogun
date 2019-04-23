@@ -16,10 +16,10 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-void check_transposed(CDenseFeatures<int32_t>* features)
+void check_transposed(DenseFeatures<int32_t>* features)
 {
-	CDenseFeatures<int32_t>* transposed=features->get_transposed();
-	CDenseFeatures<int32_t>* double_transposed=transposed->get_transposed();
+	DenseFeatures<int32_t>* transposed=features->get_transposed();
+	DenseFeatures<int32_t>* double_transposed=transposed->get_transposed();
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
@@ -36,8 +36,6 @@ void check_transposed(CDenseFeatures<int32_t>* features)
 		double_transposed->free_feature_vector(new_vec, i);
 	}
 
-	SG_UNREF(transposed);
-	SG_UNREF(double_transposed);
 }
 
 const int32_t num_vectors=6;
@@ -45,7 +43,7 @@ const int32_t dim_features=6;
 
 void test()
 {
-	const int32_t num_subset_idx=CMath::random(1, num_vectors);
+	const int32_t num_subset_idx=Math::random(1, num_vectors);
 
 	/* create feature data matrix */
 	SGMatrix<int32_t> data(dim_features, num_vectors);
@@ -54,12 +52,11 @@ void test()
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		for (index_t j=0; j<dim_features; ++j)
-			data.matrix[i*dim_features+j]=CMath::random(-5, 5);
+			data.matrix[i*dim_features+j]=Math::random(-5, 5);
 	}
 
 	/* create simple features */
-	CDenseFeatures<int32_t>* features=new CDenseFeatures<int32_t> (data);
-	SG_REF(features);
+	DenseFeatures<int32_t>* features=new DenseFeatures<int32_t> (data);
 
 	/* print feature matrix */
 	SGMatrix<int32_t>::display_matrix(data.matrix, data.num_rows, data.num_cols,
@@ -68,7 +65,7 @@ void test()
 	/* create subset indices */
 	SGVector<index_t> subset_idx(num_subset_idx);
 	subset_idx.range_fill();
-	CMath::permute(subset_idx);
+	Math::permute(subset_idx);
 
 	/* print subset indices */
 	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
@@ -130,7 +127,6 @@ void test()
 		features->free_feature_vector(vec, i);
 	}
 
-	SG_UNREF(features);
 }
 
 int main(int argc, char **argv)

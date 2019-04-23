@@ -17,11 +17,11 @@
 namespace shogun
 {
 /** @brief class MPDSVM */
-class CMPDSVM : public CSVM
+class MPDSVM : public SVM
 {
 	public:
 		/** default constructor */
-		CMPDSVM();
+		MPDSVM();
 
 		/** constructor
 		 *
@@ -29,8 +29,8 @@ class CMPDSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMPDSVM(float64_t C, CKernel* k, CLabels* lab);
-		virtual ~CMPDSVM();
+		MPDSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		virtual ~MPDSVM();
 
 		/** get classifier type
 		 *
@@ -50,7 +50,7 @@ class CMPDSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** compute H
 		 *
@@ -60,8 +60,8 @@ class CMPDSVM : public CSVM
 		 */
 		inline float64_t compute_H(int32_t i, int32_t j)
 		{
-			return ((CBinaryLabels*) m_labels)->get_label(i)*
-				((CBinaryLabels*) m_labels)->get_label(j)*kernel->kernel(i,j);
+			return (std::static_pointer_cast<BinaryLabels>(m_labels))->get_label(i)*
+				(std::static_pointer_cast<BinaryLabels>(m_labels))->get_label(j)*kernel->kernel(i,j);
 		}
 
 		/** lock kernel row
@@ -85,7 +85,7 @@ class CMPDSVM : public CSVM
 				ASSERT(line)
 
 				for (int32_t j=0; j<m_labels->get_num_labels(); j++)
-					line[j]=(KERNELCACHE_ELEM) ((CBinaryLabels*) m_labels)->get_label(i)*((CBinaryLabels*) m_labels)->get_label(j)*kernel->kernel(i,j);
+					line[j]=(KERNELCACHE_ELEM) (std::static_pointer_cast<BinaryLabels>(m_labels))->get_label(i)*(std::static_pointer_cast<BinaryLabels>(m_labels))->get_label(j)*kernel->kernel(i,j);
 			}
 
 			return line;
@@ -101,7 +101,7 @@ class CMPDSVM : public CSVM
 		}
 
 		/** kernel cache */
-		CCache<KERNELCACHE_ELEM>* kernel_cache;
+		std::shared_ptr<Cache<KERNELCACHE_ELEM>> kernel_cache;
 };
 }
 #endif  /* _MPDSVM_H___ */

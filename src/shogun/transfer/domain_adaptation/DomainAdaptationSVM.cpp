@@ -18,36 +18,35 @@
 
 using namespace shogun;
 
-CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
+DomainAdaptationSVM::DomainAdaptationSVM() : SVMLight()
 {
 	init();
 }
 
-CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
+DomainAdaptationSVM::DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, k, lab)
 {
 	init();
 	init(pre_svm, B_param);
 }
 
-CDomainAdaptationSVM::~CDomainAdaptationSVM()
+DomainAdaptationSVM::~DomainAdaptationSVM()
 {
-	SG_UNREF(presvm);
 	SG_DEBUG("deleting DomainAdaptationSVM")
 }
 
 
-void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
+void DomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
 {
 	require(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
-	SG_REF(pre_svm);
+
 
 	this->presvm=pre_svm;
 	this->B=B_param;
 	this->train_factor=1.0;
 }
 
-bool CDomainAdaptationSVM::is_presvm_sane()
+bool DomainAdaptationSVM::is_presvm_sane()
 {
 	if (!presvm) {
 		error("presvm is null");
@@ -73,7 +72,7 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVM::train_machine(CFeatures* data)
+bool DomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 {
 
 	if (data)
@@ -93,15 +92,15 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	is_presvm_sane();
 
 	int32_t num_training_points = get_labels()->get_num_labels();
-	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
+	auto labels = binary_labels(get_labels());
 
 	float64_t* lin_term = SG_MALLOC(float64_t, num_training_points);
 
 	// grab current training features
-	CFeatures* train_data = get_kernel()->get_lhs();
+	auto train_data = get_kernel()->get_lhs();
 
 	// bias of parent SVM was set to zero in constructor, already contains B
-	CBinaryLabels* parent_svm_out = presvm->apply_binary(train_data);
+	auto parent_svm_out = presvm->apply_binary(train_data);
 
 	// pre-compute linear term
 	for (int32_t i=0; i<num_training_points; i++)
@@ -113,50 +112,50 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	this->set_linear_term(SGVector<float64_t>(lin_term, num_training_points));
 
 	//train SVM
-	bool success = CSVMLight::train_machine();
-	SG_UNREF(labels);
+	bool success = SVMLight::train_machine();
+
 
 	return success;
 
 }
 
 
-CSVM* CDomainAdaptationSVM::get_presvm()
+std::shared_ptr<SVM> DomainAdaptationSVM::get_presvm()
 {
-	SG_REF(presvm);
+
 	return presvm;
 }
 
 
-float64_t CDomainAdaptationSVM::get_B()
+float64_t DomainAdaptationSVM::get_B()
 {
 	return B;
 }
 
 
-float64_t CDomainAdaptationSVM::get_train_factor()
+float64_t DomainAdaptationSVM::get_train_factor()
 {
 	return train_factor;
 }
 
 
-void CDomainAdaptationSVM::set_train_factor(float64_t factor)
+void DomainAdaptationSVM::set_train_factor(float64_t factor)
 {
 	train_factor = factor;
 }
 
 
-CBinaryLabels* CDomainAdaptationSVM::apply_binary(CFeatures* data)
+std::shared_ptr<BinaryLabels> DomainAdaptationSVM::apply_binary(std::shared_ptr<Features> data)
 {
 	ASSERT(data)
 	ASSERT(presvm->get_bias()==0.0)
 
 	int32_t num_examples = data->get_num_vectors();
 
-	CBinaryLabels* out_current = CSVMLight::apply_binary(data);
+	auto out_current = SVMLight::apply_binary(data);
 
 	// recursive call if used on DomainAdaptationSVM object
-	CBinaryLabels* out_presvm = presvm->apply_binary(data);
+	auto out_presvm = presvm->apply_binary(data);
 
 	// combine outputs
 	SGVector<float64_t> out_combined(num_examples);
@@ -164,20 +163,20 @@ CBinaryLabels* CDomainAdaptationSVM::apply_binary(CFeatures* data)
 	{
 		out_combined[i] = out_current->get_value(i) + B*out_presvm->get_value(i);
 	}
-	SG_UNREF(out_current);
-	SG_UNREF(out_presvm);
 
-	return new CBinaryLabels(out_combined);
+
+
+	return std::make_shared<BinaryLabels>(out_combined);
 
 }
 
-void CDomainAdaptationSVM::init()
+void DomainAdaptationSVM::init()
 {
 	presvm = NULL;
 	B = 0;
 	train_factor = 1.0;
 
-	SG_ADD((CMachine**) &presvm, "presvm", "SVM to regularize against.");
+	SG_ADD((std::shared_ptr<SGObject>*) &presvm, "presvm", "SVM to regularize against.");
 	SG_ADD(&B, "B", "regularization parameter B.", ParameterProperties::HYPER);
 	SG_ADD(&train_factor, "train_factor",
 			"flag to switch off regularization in training.", ParameterProperties::HYPER);

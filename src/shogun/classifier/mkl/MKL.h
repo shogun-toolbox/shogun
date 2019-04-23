@@ -78,26 +78,26 @@ namespace shogun
  * where \f$\ell\f$ is a loss function. Here \f$\lambda\f$ controls the trade-off between the two regularization terms. \f$\lambda=0\f$ corresponds to \f$L_1\f$-MKL, whereas \f$\lambda=1\f$ corresponds to the uniform-weighted combination of kernels (\f$L_\infty\f$-MKL). This approach was studied by Shawe-Taylor (2008) "Kernel Learning for Novelty Detection" (NIPS MKL Workshop 2008) and Tomioka & Suzuki (2009) "Sparsity-accuracy trade-off in MKL" (NIPS MKL Workshop 2009).
  *
  */
-class CMKL : public CSVM
+class MKL : public SVM
 {
 	public:
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SIP
 		 */
-		CMKL(CSVM* s=NULL);
+		MKL(std::shared_ptr<SVM> s=NULL);
 
 		/** Destructor
 		 */
-		virtual ~CMKL();
+		virtual ~MKL();
 
-		virtual CSGObject* clone() const;
+		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const;
 
 		/** SVM to use as constraint generator in MKL SIP
 		 *
 		 * @param s svm
 		 */
-		inline void set_constraint_generator(CSVM* s)
+		inline void set_constraint_generator(std::shared_ptr<SVM> s)
 		{
 			set_svm(s);
 		}
@@ -106,10 +106,10 @@ class CMKL : public CSVM
 		 *
 		 * @param s svm
 		 */
-		inline void set_svm(CSVM* s)
+		inline void set_svm(std::shared_ptr<SVM> s)
 		{
-			SG_REF(s);
-			SG_UNREF(svm);
+			
+			
 			svm=s;
 		}
 
@@ -117,9 +117,9 @@ class CMKL : public CSVM
 		 *
 		 * @return svm
 		 */
-		inline CSVM* get_svm()
+		inline std::shared_ptr<SVM> get_svm()
 		{
-			SG_REF(svm);
+			
 			return svm;
 		}
 
@@ -212,7 +212,7 @@ class CMKL : public CSVM
 		 *
 		 * given sum of alphas, objectives for current alphas for each kernel
 		 * and current kernel weighting compute the corresponding optimal
-		 * kernel weighting (all via get/set_subkernel_weights in CCombinedKernel)
+		 * kernel weighting (all via get/set_subkernel_weights in CombinedKernel)
 		 *
 		 * @param sumw vector of 1/2*alpha'*K_j*alpha for each kernel j
 		 * @param suma scalar sum_i alpha_i etc.
@@ -226,7 +226,7 @@ class CMKL : public CSVM
 		 * @param sumw vector of 1/2*alpha'*K_j*alpha for each kernel j
 		 * @param suma scalar sum_i alpha_i etc.
 		 */
-		static bool perform_mkl_step_helper (CMKL* mkl,
+		static bool perform_mkl_step_helper (std::shared_ptr<MKL> mkl,
 				const float64_t* sumw, const float64_t suma)
 		{
 			return mkl->perform_mkl_step(sumw, suma);
@@ -256,7 +256,7 @@ class CMKL : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case
@@ -402,7 +402,7 @@ class CMKL : public CSVM
 
 	protected:
 		/** wrapper SVM */
-		CSVM* svm;
+		std::shared_ptr<SVM> svm;
 		/** C_mkl */
 		float64_t C_mkl;
 		/** norm used in mkl must be > 0 */
@@ -435,7 +435,7 @@ class CMKL : public CSVM
 		float64_t rho;
 
 		/** measures training time for use with get_max_train_time() */
-		CTime training_time_clock;
+		Time training_time_clock;
 
 		/** Opaque parameters of MKL */
 		class Self;

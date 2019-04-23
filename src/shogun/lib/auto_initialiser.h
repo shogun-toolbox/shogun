@@ -22,7 +22,7 @@ namespace shogun
 			static const char* const kDescription;
 
 		public:
-			explicit GammaFeatureNumberInit(CKernel* kernel)
+			explicit GammaFeatureNumberInit(Kernel* kernel)
 			    : AutoInit(kName, kDescription), m_kernel(kernel)
 			{
 			}
@@ -31,7 +31,7 @@ namespace shogun
 
 			Any operator()() override
 			{
-				require(m_kernel != nullptr, "m_kernel is not pointing to a CKernel object");
+				require(m_kernel != nullptr, "m_kernel is not pointing to a Kernel object");
 
 				auto lhs = m_kernel->get_lhs();
 				switch (lhs->get_feature_class())
@@ -39,7 +39,7 @@ namespace shogun
 					case EFeatureClass::C_DENSE:
 					case EFeatureClass::C_SPARSE:
 					{
-						auto dot_features = (CDotFeatures*)lhs;
+						auto dot_features = lhs->as<DotFeatures>();
 						return make_any(
 						    1.0 /
 						    (static_cast<float64_t>(
@@ -47,15 +47,18 @@ namespace shogun
 								dot_features->get_std(false)[0]));
 					}
 					default:
+					{
+						auto dot_features = lhs->as<DotFeatures>();
 						return make_any(
 							1.0 /
 							static_cast<float64_t>(
-								((CDotFeatures*)lhs)->get_dim_feature_space()));
+								dot_features->get_dim_feature_space()));
+					}
 				}
 			}
 
 		private:
-			CKernel* m_kernel;
+			Kernel* m_kernel;
 			SG_DELETE_COPY_AND_ASSIGN(GammaFeatureNumberInit);
 		};
 	} // namespace factory

@@ -25,19 +25,19 @@ namespace shogun
  *
  * @see <a href="http://en.wikipedia.org/wiki/Chebyshev_distance">Wikipedia: Chebyshev distance</a>
  */
-class CChebyshewMetric: public CDenseDistance<float64_t>
+class ChebyshewMetric: public DenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CChebyshewMetric();
+		ChebyshewMetric();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChebyshewMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CChebyshewMetric();
+		ChebyshewMetric(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~ChebyshewMetric();
 
 		/** init distance
 		 *
@@ -45,7 +45,7 @@ class CChebyshewMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

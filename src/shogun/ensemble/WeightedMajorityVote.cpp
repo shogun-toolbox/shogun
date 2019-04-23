@@ -11,27 +11,27 @@
 
 using namespace shogun;
 
-CWeightedMajorityVote::CWeightedMajorityVote()
-	: CCombinationRule()
+WeightedMajorityVote::WeightedMajorityVote()
+	: CombinationRule()
 {
 	init();
 	register_parameters();
 }
 
-CWeightedMajorityVote::CWeightedMajorityVote(SGVector<float64_t>& weights)
-	: CCombinationRule()
+WeightedMajorityVote::WeightedMajorityVote(SGVector<float64_t>& weights)
+	: CombinationRule()
 {
 	init();
 	register_parameters();
 	m_weights = weights;
 }
 
-CWeightedMajorityVote::~CWeightedMajorityVote()
+WeightedMajorityVote::~WeightedMajorityVote()
 {
 
 }
 
-SGVector<float64_t> CWeightedMajorityVote::combine(const SGMatrix<float64_t>& ensemble_result) const
+SGVector<float64_t> WeightedMajorityVote::combine(const SGMatrix<float64_t>& ensemble_result) const
 {
 	require(m_weights.vlen == ensemble_result.num_cols, "The number of results and weights does not match!");
 	SGVector<float64_t> mv(ensemble_result.num_rows);
@@ -44,22 +44,22 @@ SGVector<float64_t> CWeightedMajorityVote::combine(const SGMatrix<float64_t>& en
 	return mv;
 }
 
-float64_t CWeightedMajorityVote::combine(const SGVector<float64_t>& ensemble_result) const
+float64_t WeightedMajorityVote::combine(const SGVector<float64_t>& ensemble_result) const
 {
 	return weighted_combine(ensemble_result);
 }
 
-float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ensemble_result) const
+float64_t WeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ensemble_result) const
 {
 	require(m_weights.vlen == ensemble_result.vlen, "The number of results and weights does not match!");
 	std::map<index_t, float64_t> freq;
 	std::map<index_t, float64_t>::iterator it;
 	index_t max_label = -100;
-	float64_t max = CMath::ALMOST_NEG_INFTY;
+	float64_t max = Math::ALMOST_NEG_INFTY;
 
 	for (index_t i = 0; i < ensemble_result.vlen; ++i)
 	{
-		if (CMath::is_nan(ensemble_result[i]))
+		if (Math::is_nan(ensemble_result[i]))
 			continue;
 
 		it = freq.find(ensemble_result[i]);
@@ -86,22 +86,22 @@ float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ens
 	return max_label;
 }
 
-void CWeightedMajorityVote::set_weights(SGVector<float64_t>& w)
+void WeightedMajorityVote::set_weights(SGVector<float64_t>& w)
 {
 	m_weights = w;
 }
 
-SGVector<float64_t> CWeightedMajorityVote::get_weights() const
+SGVector<float64_t> WeightedMajorityVote::get_weights() const
 {
 	return m_weights;
 }
 
-void CWeightedMajorityVote::init()
+void WeightedMajorityVote::init()
 {
 	m_weights = SGVector<float64_t>();
 }
 
-void CWeightedMajorityVote::register_parameters()
+void WeightedMajorityVote::register_parameters()
 {
 	SG_ADD(&m_weights, "weights", "Weights for the majority vote", ParameterProperties::HYPER);
 }

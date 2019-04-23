@@ -49,13 +49,13 @@
 
 using namespace shogun;
 
-CDeepBeliefNetwork::CDeepBeliefNetwork() : RandomMixin<CSGObject>()
+DeepBeliefNetwork::DeepBeliefNetwork() : RandomMixin<SGObject>()
 {
 	init();
 }
 
-CDeepBeliefNetwork::CDeepBeliefNetwork(
-	int32_t num_visible_units, ERBMVisibleUnitType unit_type) : RandomMixin<CSGObject>()
+DeepBeliefNetwork::DeepBeliefNetwork(
+	int32_t num_visible_units, ERBMVisibleUnitType unit_type) : RandomMixin<SGObject>()
 {
 	init();
 	m_layer_sizes->append_element(num_visible_units);
@@ -63,18 +63,18 @@ CDeepBeliefNetwork::CDeepBeliefNetwork(
 	m_visible_units_type = unit_type;
 }
 
-CDeepBeliefNetwork::~CDeepBeliefNetwork()
+DeepBeliefNetwork::~DeepBeliefNetwork()
 {
-	SG_UNREF(m_layer_sizes);
+
 }
 
-void CDeepBeliefNetwork::add_hidden_layer(int32_t num_units)
+void DeepBeliefNetwork::add_hidden_layer(int32_t num_units)
 {
 	m_layer_sizes->append_element(num_units);
 	m_num_layers++;
 }
 
-void CDeepBeliefNetwork::initialize_neural_network(float64_t sigma)
+void DeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 {
 	m_bias_index_offsets = SGVector<int32_t>(m_num_layers);
 	m_weights_index_offsets = SGVector<int32_t>(m_num_layers-1);
@@ -135,7 +135,7 @@ void CDeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 	pt_gd_momentum.set_const(0.9);
 }
 
-void CDeepBeliefNetwork::set_batch_size(int32_t batch_size)
+void DeepBeliefNetwork::set_batch_size(int32_t batch_size)
 {
 	if (m_batch_size == batch_size) return;
 
@@ -149,7 +149,7 @@ void CDeepBeliefNetwork::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void CDeepBeliefNetwork::pre_train(CDenseFeatures< float64_t >* features)
+void DeepBeliefNetwork::pre_train(std::shared_ptr<DenseFeatures< float64_t >> features)
 {
 	for (int32_t k=0; k<m_num_layers-1; k++)
 	{
@@ -159,42 +159,42 @@ void CDeepBeliefNetwork::pre_train(CDenseFeatures< float64_t >* features)
 	}
 }
 
-void CDeepBeliefNetwork::pre_train(int32_t index,
-	CDenseFeatures< float64_t >* features)
+void DeepBeliefNetwork::pre_train(int32_t index,
+	std::shared_ptr<DenseFeatures< float64_t >> features)
 {
-	CRBM rbm(m_layer_sizes->element(index+1));
+	auto rbm = std::make_shared<RBM>(m_layer_sizes->element(index+1));
 	if (index == 0)
-		rbm.add_visible_group(m_layer_sizes->element(index), m_visible_units_type);
+		rbm->add_visible_group(m_layer_sizes->element(index), m_visible_units_type);
 	else
-		rbm.add_visible_group(m_layer_sizes->element(index), RBMVUT_BINARY);
-	rbm.initialize_neural_network(m_sigma);
+		rbm->add_visible_group(m_layer_sizes->element(index), RBMVUT_BINARY);
+	rbm->initialize_neural_network(m_sigma);
 
-	rbm.cd_num_steps = pt_cd_num_steps[index];
-	rbm.cd_persistent = pt_cd_persistent[index];
-	rbm.cd_sample_visible = pt_cd_sample_visible[index];
-	rbm.l2_coefficient = pt_l2_coefficient[index];
-	rbm.l1_coefficient = pt_l1_coefficient[index];
-	rbm.monitoring_interval = pt_monitoring_interval[index];
-	rbm.monitoring_method = ERBMMonitoringMethod(pt_monitoring_method[index]);
-	rbm.max_num_epochs = pt_max_num_epochs[index];
-	rbm.gd_mini_batch_size = pt_gd_mini_batch_size[index];
-	rbm.gd_learning_rate = pt_gd_learning_rate[index];
-	rbm.gd_learning_rate_decay = pt_gd_learning_rate_decay[index];
-	rbm.gd_momentum = pt_gd_momentum[index];
+	rbm->cd_num_steps = pt_cd_num_steps[index];
+	rbm->cd_persistent = pt_cd_persistent[index];
+	rbm->cd_sample_visible = pt_cd_sample_visible[index];
+	rbm->l2_coefficient = pt_l2_coefficient[index];
+	rbm->l1_coefficient = pt_l1_coefficient[index];
+	rbm->monitoring_interval = pt_monitoring_interval[index];
+	rbm->monitoring_method = ERBMMonitoringMethod(pt_monitoring_method[index]);
+	rbm->max_num_epochs = pt_max_num_epochs[index];
+	rbm->gd_mini_batch_size = pt_gd_mini_batch_size[index];
+	rbm->gd_learning_rate = pt_gd_learning_rate[index];
+	rbm->gd_learning_rate_decay = pt_gd_learning_rate_decay[index];
+	rbm->gd_momentum = pt_gd_momentum[index];
 
 	if (index > 0)
 	{
-		CDenseFeatures<float64_t>* transformed_features =
+		auto transformed_features =
 			transform(features, index);
-		rbm.train(transformed_features);
-		SG_UNREF(transformed_features);
+		rbm->train(transformed_features);
+
 	}
 	else
-		rbm.train(features);
+		rbm->train(features);
 
-	SGVector<float64_t> rbm_b = rbm.get_visible_bias();
-	SGVector<float64_t> rbm_c = rbm.get_hidden_bias();
-	SGMatrix<float64_t> rbm_w = rbm.get_weights();
+	SGVector<float64_t> rbm_b = rbm->get_visible_bias();
+	SGVector<float64_t> rbm_c = rbm->get_hidden_bias();
+	SGMatrix<float64_t> rbm_w = rbm->get_weights();
 
 	SGVector<float64_t> dbn_b = get_biases(index);
 	SGVector<float64_t> dbn_c = get_biases(index+1);
@@ -210,7 +210,7 @@ void CDeepBeliefNetwork::pre_train(int32_t index,
 		dbn_w[i] = rbm_w[i];
 }
 
-void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
+void DeepBeliefNetwork::train(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	require(features != NULL, "Invalid (NULL) feature pointer");
 	require(features->get_num_features()==m_layer_sizes->element(0),
@@ -249,20 +249,20 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 		pwake_states.set_matrix(i, SGMatrix<float64_t>(m_layer_sizes->element(i), m_batch_size));
 	}
 
-	CRBM top_rbm(m_layer_sizes->element(m_num_layers-1));
+	auto top_rbm = std::make_shared<RBM>(m_layer_sizes->element(m_num_layers-1));
 	if (m_num_layers > 2)
-		top_rbm.add_visible_group(m_layer_sizes->element(m_num_layers-2), RBMVUT_BINARY);
+		top_rbm->add_visible_group(m_layer_sizes->element(m_num_layers-2), RBMVUT_BINARY);
 	else
-		top_rbm.add_visible_group(m_layer_sizes->element(0), m_visible_units_type);
+		top_rbm->add_visible_group(m_layer_sizes->element(0), m_visible_units_type);
 
-	top_rbm.initialize_neural_network();
-	top_rbm.m_params = SGVector<float64_t>(
+	top_rbm->initialize_neural_network();
+	top_rbm->m_params = SGVector<float64_t>(
 		m_params.vector+m_bias_index_offsets[m_num_layers-2],
-		top_rbm.get_num_parameters(), false);
+		top_rbm->get_num_parameters(), false);
 
-	top_rbm.cd_num_steps = cd_num_steps;
-	top_rbm.cd_persistent = false;
-	top_rbm.set_batch_size(gd_mini_batch_size);
+	top_rbm->cd_num_steps = cd_num_steps;
+	top_rbm->cd_persistent = false;
+	top_rbm->set_batch_size(gd_mini_batch_size);
 
 	float64_t alpha = gd_learning_rate;
 
@@ -285,7 +285,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 				rec_params[k] += gd_momentum*rec_param_updates[k];
 			}
 
-			wake_sleep(inputs_batch, &top_rbm, sleep_states, wake_states,
+			wake_sleep(inputs_batch, top_rbm, sleep_states, wake_states,
 				psleep_states, pwake_states, m_params,
 				rec_params, gradients, rec_gradients);
 
@@ -305,7 +305,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 				SGMatrix<float64_t> reconstruction = sleep_states[0];
 				float64_t error = 0;
 				for (int32_t k=0; k<inputs_batch.num_rows*inputs_batch.num_cols; k++)
-					error += CMath::pow(reconstruction[k]-inputs_batch[k],2);
+					error += Math::pow(reconstruction[k]-inputs_batch[k],2);
 
 				error /= m_batch_size;
 
@@ -316,8 +316,8 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 	}
 }
 
-CDenseFeatures< float64_t >* CDeepBeliefNetwork::transform(
-	CDenseFeatures< float64_t >* features, int32_t i)
+std::shared_ptr<DenseFeatures< float64_t >> DeepBeliefNetwork::transform(
+	std::shared_ptr<DenseFeatures< float64_t >> features, int32_t i)
 {
 	if (i==-1)
 		i = m_num_layers-1;
@@ -330,10 +330,10 @@ CDenseFeatures< float64_t >* CDeepBeliefNetwork::transform(
 		transformed_feature_matrix = m;
 	}
 
-	return new CDenseFeatures<float64_t>(transformed_feature_matrix);
+	return std::make_shared<DenseFeatures<float64_t>>(transformed_feature_matrix);
 }
 
-CDenseFeatures<float64_t>* CDeepBeliefNetwork::sample(
+std::shared_ptr<DenseFeatures<float64_t>> DeepBeliefNetwork::sample(
 	int32_t num_gibbs_steps, int32_t batch_size)
 {
 	set_batch_size(batch_size);
@@ -349,10 +349,10 @@ CDenseFeatures<float64_t>* CDeepBeliefNetwork::sample(
 	for (int32_t i=m_num_layers-3; i>=0; i--)
 		down_step(i, m_params, m_states[i+1], m_states[i]);
 
-	return new CDenseFeatures<float64_t>(m_states[0]);
+	return std::make_shared<DenseFeatures<float64_t>>(m_states[0]);
 }
 
-void CDeepBeliefNetwork::reset_chain()
+void DeepBeliefNetwork::reset_chain()
 {
 	SGMatrix<float64_t> s = m_states[m_num_layers-2];
 
@@ -361,20 +361,20 @@ void CDeepBeliefNetwork::reset_chain()
 		s[i] = uniform_real_dist(m_prng) > 0.5;
 }
 
-CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
-	CNeuralLayer* output_layer, float64_t sigma)
+std::shared_ptr<NeuralNetwork> DeepBeliefNetwork::convert_to_neural_network(
+	std::shared_ptr<NeuralLayer> output_layer, float64_t sigma)
 {
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<DynamicObjectArray>();
 
-	layers->append_element(new CNeuralInputLayer(m_layer_sizes->element(0)));
+	layers->append_element(std::make_shared<NeuralInputLayer>(m_layer_sizes->element(0)));
 
 	for (int32_t i=1; i<m_num_layers; i++)
-		layers->append_element(new CNeuralLogisticLayer(m_layer_sizes->element(i)));
+		layers->append_element(std::make_shared<NeuralLogisticLayer>(m_layer_sizes->element(i)));
 
 	if (output_layer!=NULL)
 		layers->append_element(output_layer);
 
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->quick_connect();
 	network->initialize_neural_network(sigma);
@@ -394,7 +394,7 @@ CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
 	return network;
 }
 
-void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
+void DeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	SGMatrix< float64_t > input, SGMatrix< float64_t > result, bool sample_states)
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
@@ -445,7 +445,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	}
 }
 
-void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
+void DeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 	SGMatrix< float64_t > input, SGMatrix< float64_t > result, bool sample_states)
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
@@ -476,7 +476,7 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 	}
 }
 
-void CDeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, CRBM* top_rbm,
+void DeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, std::shared_ptr<RBM> top_rbm,
 	SGMatrixList<float64_t> sleep_states, SGMatrixList<float64_t> wake_states,
 	SGMatrixList<float64_t> psleep_states, SGMatrixList<float64_t> pwake_states,
 	SGVector<float64_t> gen_params,
@@ -550,7 +550,7 @@ void CDeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, CRBM* top_rbm,
 	}
 }
 
-SGMatrix< float64_t > CDeepBeliefNetwork::get_weights(int32_t index,
+SGMatrix< float64_t > DeepBeliefNetwork::get_weights(int32_t index,
 	SGVector< float64_t > p)
 {
 	if (p.vlen==0)
@@ -561,7 +561,7 @@ SGMatrix< float64_t > CDeepBeliefNetwork::get_weights(int32_t index,
 			m_layer_sizes->element(index+1), m_layer_sizes->element(index), false);
 }
 
-SGVector< float64_t > CDeepBeliefNetwork::get_biases(int32_t index,
+SGVector< float64_t > DeepBeliefNetwork::get_biases(int32_t index,
 	SGVector< float64_t > p)
 {
 	if (p.vlen==0)
@@ -572,7 +572,7 @@ SGVector< float64_t > CDeepBeliefNetwork::get_biases(int32_t index,
 			m_layer_sizes->element(index), false);;
 }
 
-void CDeepBeliefNetwork::init()
+void DeepBeliefNetwork::init()
 {
 	cd_num_steps = 1;
 	monitoring_interval = 10;
@@ -585,15 +585,15 @@ void CDeepBeliefNetwork::init()
 
 	m_visible_units_type = RBMVUT_BINARY;
 	m_num_layers = 0;
-	m_layer_sizes = new CDynamicArray<int32_t>();
-	SG_REF(m_layer_sizes);
+	m_layer_sizes = std::make_shared<DynamicArray<int32_t>>();
+
 	m_batch_size = 0;
 	m_num_params = 0;
 	m_sigma = 0.01;
 
 	SG_ADD(&m_num_layers, "num_layers", "Number of layers");
 	SG_ADD(
-	    (CSGObject**)&m_layer_sizes, "layer_sizes",
+	    (std::shared_ptr<SGObject>*)&m_layer_sizes, "layer_sizes",
 	    "Size of each hidden layer");
 
 	SG_ADD(&m_params, "params", "Parameters of the network");

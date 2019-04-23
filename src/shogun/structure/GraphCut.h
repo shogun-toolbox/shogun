@@ -99,17 +99,17 @@ struct GCNodePtr
  *
  * Currently, only binary lablel is supported, factor order <= 3
  */
-class CGraphCut : public CMAPInferImpl
+class GraphCut : public MAPInferImpl
 {
 public:
 	/** Constructor */
-	CGraphCut();
+	GraphCut();
 
 	/** Constructor
 	 *
 	 * @param fg factor graph
 	 */
-	CGraphCut(CFactorGraph* fg);
+	GraphCut(std::shared_ptr<FactorGraph> fg);
 
 	/** Constructor
 	 * This constructor is used for general s-t graph, the next steps to compute the max flow are:
@@ -120,10 +120,10 @@ public:
 	 * @param num_nodes number of nodes in the s-t graph (SOURCE and SINK nodes are not included)
 	 * @param num_edges number of edges in the s-t graph (the edges connecting to the SOURCE and SINK are not included)
 	 */
-	CGraphCut(int32_t num_nodes, int32_t num_edges);
+	GraphCut(int32_t num_nodes, int32_t num_edges);
 
 	/** Destructor */
-	virtual ~CGraphCut();
+	virtual ~GraphCut();
 
 	/** @return class name */
 	virtual const char* get_name() const
@@ -232,7 +232,7 @@ private:
 	 *
 	 * @param factor the factor to add
 	 */
-	void add_factor(CFactor* factor);
+	void add_factor(std::shared_ptr<Factor> factor);
 
 	/** Get the triple node id in s-t graph (for factor order = 3)
 	 *

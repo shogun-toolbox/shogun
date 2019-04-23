@@ -17,29 +17,27 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/io/Serializable.h>
 #include <shogun/util/converters.h>
 #include <shogun/mathematics/RandomNamespace.h>
 
-
 namespace shogun
 {
-/** @brief Dynamic array class for CSGObject pointers that creates an array
+/** @brief Dynamic array class for SGObject pointers that creates an array
  * that can be used like a list or an array.
  *
  * It grows and shrinks dynamically, while elements can be accessed
- * via index. It only stores CSGObject pointers, which ARE automagically
+ * via index. It only stores SGObject pointers, which ARE automagically
  * SG_REF'd/deleted.
  *
  */
-class CDynamicObjectArray : public CSGObject
+class DynamicObjectArray : public SGObject
 {
 	public:
 		/** default constructor */
-		CDynamicObjectArray()
-		: CSGObject(), m_array()
+		DynamicObjectArray()
+		: SGObject(), m_array()
 		{
 			dim1_size = 1;
 			dim2_size = 1;
@@ -51,8 +49,8 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim1 dimension 1
 		 * @param dim2 dimension 2
 		 */
-		CDynamicObjectArray(size_t dim1, size_t dim2 = 1)
-		: CSGObject()
+		DynamicObjectArray(size_t dim1, size_t dim2 = 1)
+		: SGObject()
 		{
 			dim1_size = dim1;
 			dim2_size = dim2;
@@ -60,17 +58,16 @@ class CDynamicObjectArray : public CSGObject
 			init();
 		}
 
-		CDynamicObjectArray(CSGObject** p_array, size_t dim1, size_t dim2, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(dim1*dim2)
+		DynamicObjectArray(std::shared_ptr<SGObject>* p_array, size_t dim1, size_t dim2, bool p_free_array=true, bool p_copy_array=false)
+		: SGObject(), m_array(p_array, p_array + dim1*dim2)
 		{
-			m_array.assign(p_array, p_array+(dim1*dim2));
 			dim1_size = dim1;
 			dim2_size = dim2;
 
 			init();
 		}
 
-		virtual ~CDynamicObjectArray() { unref_all(); }
+		virtual ~DynamicObjectArray() { }
 
 		/** get array size (including granularity buffer)
 		 *
@@ -97,21 +94,25 @@ class CDynamicObjectArray : public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGObject* get_element(size_t index) const
+		inline std::shared_ptr<SGObject> get_element(size_t index) const
 		{
-			auto elem = m_array[index];
-			SG_REF(elem);
-			return elem;
+			return m_array[index];
+		}
+
+		template<class T>
+		inline std::shared_ptr<T> get_element(size_t index) const
+		{
+			return std::dynamic_pointer_cast<T>(m_array[index]);
 		}
 
 		/** get array element at index
-		*
-		* @param idx1 index 1
-		* @param idx2 index 2
-		* @param idx3 index 3
-		* @return array element at index
-		*/
-		inline CSGObject* element(int32_t idx1, int32_t idx2=0, int32_t idx3=0) const
+		 *
+		 * @param idx1 index 1
+		 * @param idx2 index 2
+		 * @param idx3 index 3
+		 * @return array element at index
+		 */
+		inline std::shared_ptr<SGObject> element(int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
 			return get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
 		}
@@ -120,11 +121,19 @@ class CDynamicObjectArray : public CSGObject
 		 *
 		 * @return last array element
 		 */
-		inline CSGObject* get_last_element() const
+		inline std::shared_ptr<SGObject> get_last_element() const
 		{
-			auto e = m_array.back();
-			SG_REF(e);
-			return e;
+			return m_array.back();
+		}
+
+		/** get last array element
+		 *
+		 * @return last array element
+		 */
+		template<class T>
+		inline std::shared_ptr<T> get_last_element() const
+		{
+			return std::dynamic_pointer_cast<T>(m_array.back());
 		}
 
 		/** get array element at index
@@ -134,9 +143,9 @@ class CDynamicObjectArray : public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGObject* get_element_safe(size_t index) const
+		inline std::shared_ptr<SGObject> get_element_safe(int32_t index) const
 		{
-			if (index >= m_array.size())
+			if (index >= utils::safe_convert<index_t>(m_array.size()))
 			{
 				error("array index out of bounds ({} >= {})",
 						 index, m_array.size());
@@ -144,10 +153,18 @@ class CDynamicObjectArray : public CSGObject
 			return get_element(index);
 		}
 
-		inline CSGObject* at(int32_t index) const
+		template<class T>
+		inline std::shared_ptr<T> get_element_safe(int32_t index) const
+		{
+			return std::dynamic_pointer_cast<T>(get_element_safe(index));
+		}
+
+#ifndef SWIG
+		SG_FORCED_INLINE std::shared_ptr<SGObject> at(int32_t index) const
 		{
 			return get_element_safe(index);
 		}
+#endif
 
 		/** set array element at index
 		 *
@@ -157,17 +174,11 @@ class CDynamicObjectArray : public CSGObject
 		 * @param idx3 index 2
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CSGObject* e, size_t index)
+		inline bool set_element(std::shared_ptr<SGObject> e, size_t index)
 		{
-			CSGObject* old = nullptr;
-			if (index < m_array.size())
-				old = m_array[index];
-			else
+			if (index >= m_array.size())
 				m_array.resize(index);
-
-			SG_REF(e);
 			m_array[index] = e;
-			SG_UNREF(old);
 			return true;
 		}
 
@@ -177,9 +188,8 @@ class CDynamicObjectArray : public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(CSGObject* e, size_t index)
+		inline bool insert_element(std::shared_ptr<SGObject> e, int32_t index)
 		{
-			SG_REF(e);
 			m_array.insert(m_array.begin()+index, e);
 			return true;
 		}
@@ -187,29 +197,25 @@ class CDynamicObjectArray : public CSGObject
 		template <typename T, typename T2 = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 		inline bool append_element(T e, const char* name="")
 		{
-			auto serialized_element = new CSerializable<T>(e, name);
-			return append_element(serialized_element);
+			return append_element(std::make_shared<Serializable<T>>(e, name));
 		}
 
 		template <typename T>
 		inline bool append_element(SGVector<T> e, const char* name="")
 		{
-			auto serialized_element = new CVectorSerializable<T>(e, name);
-			return append_element(serialized_element);
+			return append_element(std::make_shared<VectorSerializable<T>>(e, name));
 		}
 
 		template <typename T>
 		inline bool append_element(SGMatrix<T> e, const char* name="")
 		{
-			auto serialized_element = new CMatrixSerializable<T>(e, name);
-			return append_element(serialized_element);
+			return append_element(std::make_shared<MatrixSerializable<T>>(e, name));
 		}
 
 		template <typename T>
 		inline bool append_element(const std::vector<SGVector<T>>& e, const char* name="")
 		{
-			auto serialized_element = new CVectorListSerializable<T>(e, name);
-			return append_element(serialized_element);
+			return append_element(std::make_shared<VectorListSerializable<T>>(e, name));
 		}
 
 		/** append array element to the end of array
@@ -217,10 +223,9 @@ class CDynamicObjectArray : public CSGObject
 		 * @param e element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(CSGObject* e)
+		inline bool append_element(std::shared_ptr<SGObject> e)
 		{
 			m_array.push_back(e);
-			SG_REF(e);
 			return true;
 		}
 
@@ -229,10 +234,9 @@ class CDynamicObjectArray : public CSGObject
 		 *
 		 * @param e element to append
 		 */
-		inline void push_back(CSGObject* e)
+		inline void push_back(std::shared_ptr<SGObject> e)
 		{
 			m_array.push_back(e);
-			SG_REF(e);
 		}
 
 		/** STD VECTOR compatible. Delete array element at the end
@@ -240,9 +244,6 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline void pop_back()
 		{
-			auto e = m_array.back();
-			SG_UNREF(e);
-
 			m_array.pop_back();
 		}
 
@@ -251,11 +252,9 @@ class CDynamicObjectArray : public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline CSGObject* back() const
+		inline std::shared_ptr<SGObject> back() const
 		{
-			auto e=m_array.back();
-			SG_REF(e);
-			return e;
+			return m_array.back();
 		}
 
 		/** find first occurence of array element and return its index
@@ -264,7 +263,7 @@ class CDynamicObjectArray : public CSGObject
 		 * @param elem element to search for
 		 * @return index of element or -1
 		 */
-		inline index_t find_element(CSGObject* elem) const
+		inline int32_t find_element(std::shared_ptr<SGObject> elem) const
 		{
 			auto it = std::find(m_array.begin(), m_array.end(), elem);
 			if (it != m_array.end())
@@ -283,20 +282,17 @@ class CDynamicObjectArray : public CSGObject
 			auto e=m_array[idx];
 			m_array.erase(std::remove(m_array.begin(), m_array.end(), e),
 				m_array.end());
-			SG_UNREF(e);
 			return true;
 		}
 
 		inline void clear_array()
 		{
-			unref_all();
 			m_array.assign(m_array.size(), nullptr);
 		}
 
 		/** resets the array */
 		inline void reset_array()
 		{
-			unref_all();
 			m_array.clear();
 		}
 
@@ -305,22 +301,15 @@ class CDynamicObjectArray : public CSGObject
 		 * @param orig original array
 		 * @return new array
 		 */
-		inline CDynamicObjectArray& operator=(CDynamicObjectArray& orig)
+		inline DynamicObjectArray& operator=(DynamicObjectArray& orig)
 		{
-			/* SG_REF all new elements (implicitly) */
-			for (auto& v: orig.m_array)
-				SG_REF(v);
-
-			/* unref after adding to avoid possible deletion */
-			unref_all();
-
 			/* copy pointer DynArray */
 			m_array=orig.m_array;
 			return *this;
 		}
 
 		/** @return underlying array of pointers */
-		inline CSGObject** get_array() { return m_array.data(); }
+		inline std::shared_ptr<SGObject>* get_array() { return m_array.data(); }
 
 #ifndef SWIG // SWIG should skip this part
 		inline auto begin()
@@ -348,7 +337,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		virtual void save_serializable_pre() noexcept(false)
 		{
-			CSGObject::save_serializable_pre();
+			SGObject::save_serializable_pre();
 			m_array.shrink_to_fit();
 		}
 
@@ -357,21 +346,14 @@ class CDynamicObjectArray : public CSGObject
 		virtual void init()
 		{
 			watch_param("array", &m_array);
+
 			SG_ADD(&dim1_size, "dim1_size", "Dimension 1");
 			SG_ADD(&dim2_size, "dim2_size", "Dimension 2");
 		}
 
-		/** de-reference all elements of this array once */
-		inline void unref_all()
-		{
-			/* SG_UNREF all my elements */
-			for (auto& o: m_array)
-				SG_UNREF(o);
-		}
-
 	private:
 		/** underlying array */
-		std::vector<CSGObject*> m_array;
+		std::vector<std::shared_ptr<SGObject>> m_array;
 
 		/** dimension 1 */
 		index_t dim1_size;

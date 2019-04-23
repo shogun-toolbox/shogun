@@ -38,8 +38,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
+class Kernel;
+class MMD;
 
 namespace internal
 {
@@ -47,7 +47,7 @@ namespace internal
 class MaxTestPower : public MaxMeasure
 {
 public:
-	MaxTestPower(KernelManager&, CMMD*);
+	MaxTestPower(KernelManager&, std::shared_ptr<MMD>);
 	MaxTestPower(const MaxTestPower& other)=delete;
 	~MaxTestPower();
 	MaxTestPower& operator=(const MaxTestPower& other)=delete;

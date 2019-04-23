@@ -11,8 +11,8 @@ using namespace shogun;
 
 void test_sigmoid_fitting()
 {
-	CBinaryLabels* labels=new CBinaryLabels(10);
-	CBinaryLabels* predictions = new CBinaryLabels(10);
+	BinaryLabels* labels=new BinaryLabels(10);
+	BinaryLabels* predictions = new BinaryLabels(10);
 	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));
 
 	for (index_t i=0; i<labels->get_num_labels(); ++i)
@@ -21,16 +21,12 @@ void test_sigmoid_fitting()
 		labels->set_value(i % 4 == 0 ? 1 : -1, i);
 	}
 	predictions->get_values().display_vector("scores");
-	CSigmoidCalibration* sigmoid_calibration = new CSigmoidCalibration();
+	SigmoidCalibration* sigmoid_calibration = new SigmoidCalibration();
 	sigmoid_calibration->fit_binary(predictions, labels);
-	CBinaryLabels* calibrated_labels =
+	BinaryLabels* calibrated_labels =
 	    sigmoid_calibration->calibrate_binary(predictions);
 	calibrated_labels->get_values().display_vector("probabilities");
 
-	SG_UNREF(predictions);
-	SG_UNREF(sigmoid_calibration);
-	SG_UNREF(calibrated_labels);
-	SG_UNREF(labels);
 }
 
 int main()

@@ -22,13 +22,13 @@ namespace shogun
  *  This Implementation is ported from the Olivier Chapelles fast newton based SVM solver, Which could be found here :http://mloss.org/software/view/30/
  *  For further information on this implementation of SVM refer to this paper: http://www.kyb.mpg.de/publications/attachments/neco_%5B0%5D.pdf
 */
-class CNewtonSVM : public CIterativeMachine<CLinearMachine>
+class NewtonSVM : public IterativeMachine<LinearMachine>
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor */
-		CNewtonSVM();
+		NewtonSVM();
 
 		/** constructor
 		 * @param C constant C
@@ -36,9 +36,9 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab, int32_t itr=20);
+		NewtonSVM(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab, int32_t itr=20);
 
-		virtual ~CNewtonSVM();
+		virtual ~NewtonSVM();
 
 		/** get classifier type
 		 *
@@ -93,7 +93,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<Features> data);
 		virtual void iteration();
 
 	private:

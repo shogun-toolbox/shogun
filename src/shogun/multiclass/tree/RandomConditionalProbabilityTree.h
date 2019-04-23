@@ -18,14 +18,14 @@ namespace shogun
 
 /** Conditional Probability Tree, decide subtree by a random strategy.
  */
-class CRandomConditionalProbabilityTree: public RandomMixin<CConditionalProbabilityTree>
+class RandomConditionalProbabilityTree: public RandomMixin<ConditionalProbabilityTree>
 {
 public:
     /** constructor */
-	CRandomConditionalProbabilityTree() : m_uniform_real_dist(0.0, 1.0) {}
+	RandomConditionalProbabilityTree() : m_uniform_real_dist(0.0, 1.0) {}
 
     /** destructor */
-	virtual ~CRandomConditionalProbabilityTree() {}
+	virtual ~RandomConditionalProbabilityTree() {}
 
     /** get name */
     virtual const char* get_name() const { return "RandomConditionalProbabilityTree"; }
@@ -36,7 +36,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
+	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex);
 
 private:
 	UniformRealDistribution<float64_t> m_uniform_real_dist;

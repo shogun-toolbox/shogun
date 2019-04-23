@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-class CCommWordStringKernel;
+class CommWordStringKernel;
 
 /** @brief The WeightedCommWordString kernel may be used to compute the weighted
  * spectrum kernel (i.e. a spectrum kernel for 1 to K-mers, where each k-mer
@@ -44,18 +44,18 @@ class CCommWordStringKernel;
  * direct maps.
  *
  */
-class CWeightedCommWordStringKernel: public CCommWordStringKernel
+class WeightedCommWordStringKernel: public CommWordStringKernel
 {
 	public:
 		/** default constructor  */
-		CWeightedCommWordStringKernel();
+		WeightedCommWordStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CWeightedCommWordStringKernel(int32_t size, bool use_sign);
+		WeightedCommWordStringKernel(int32_t size, bool use_sign);
 
 		/** constructor
 		 *
@@ -64,11 +64,11 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param use_sign if sign shall be used
 		 * @param size cache size
 		 */
-		CWeightedCommWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
+		WeightedCommWordStringKernel(
+			std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
 			bool use_sign=false, int32_t size=10);
 
-		virtual ~CWeightedCommWordStringKernel();
+		virtual ~WeightedCommWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -76,7 +76,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

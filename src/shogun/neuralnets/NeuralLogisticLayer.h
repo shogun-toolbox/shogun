@@ -46,19 +46,19 @@ namespace shogun
  * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is
  * used
  */
-class CNeuralLogisticLayer : public CNeuralLinearLayer
+class NeuralLogisticLayer : public NeuralLinearLayer
 {
 public:
 	/** default constructor */
-	CNeuralLogisticLayer();
+	NeuralLogisticLayer();
 
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralLogisticLayer(int32_t num_neurons);
+	NeuralLogisticLayer(int32_t num_neurons);
 
-	virtual ~CNeuralLogisticLayer() {}
+	virtual ~NeuralLogisticLayer() {}
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -70,7 +70,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<DynamicObjectArray> layers);
 
 	/** Computes
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]

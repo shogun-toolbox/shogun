@@ -59,17 +59,17 @@ namespace shogun
  * in the GPML toolbox.
  *
  * Warning: the time complexity of method,
- * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
+ * SingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
- * CKernel::get_parameter_gradient_diagonal(param, i).
+ * Kernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  */
-class CSingleFITCInference: public CSingleSparseInference
+class SingleFITCInference: public SingleSparseInference
 {
 public:
 	/** default constructor */
-	CSingleFITCInference();
+	SingleFITCInference();
 
 	/** constructor
 	 *
@@ -80,11 +80,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	SingleFITCInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CSingleFITCInference();
+	virtual ~SingleFITCInference();
 
 	/** returns the name of the inference method
 	 *

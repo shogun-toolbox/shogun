@@ -20,25 +20,25 @@ namespace shogun
  * and contains the application dependent logic to solve multiclass
  * classification within a generic SO framework.
  */
-class CMulticlassModel : public CStructuredModel
+class MulticlassModel : public StructuredModel
 {
 
 	public:
 		/** default constructor */
-		CMulticlassModel();
+		MulticlassModel();
 
 		/** constructor
 		 *
 		 * @param features
 		 * @param labels
 		 */
-		CMulticlassModel(CFeatures* features, CStructuredLabels* labels);
+		MulticlassModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels);
 
 		/** destructor */
-		virtual ~CMulticlassModel();
+		virtual ~MulticlassModel();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
+		virtual std::shared_ptr<StructuredLabels> structured_labels_factory(int32_t num_labels=0);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
@@ -58,7 +58,7 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -73,7 +73,7 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -82,7 +82,7 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
 
 		/** initialize the optimization problem
 		 *

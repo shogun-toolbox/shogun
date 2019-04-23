@@ -8,7 +8,6 @@
  *          Christopher Goldsworthy
  */
 
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/io/SGIO.h>
@@ -34,13 +33,13 @@
 
 namespace shogun {
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatures(size)
+template<class ST> DenseFeatures<ST>::DenseFeatures(int32_t size) : DotFeatures(size)
 {
 	init();
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & orig) :
-		CDotFeatures(orig)
+template<class ST> DenseFeatures<ST>::DenseFeatures(const DenseFeatures & orig) :
+		DotFeatures(orig)
 {
 	init();
 	set_feature_matrix(orig.feature_matrix);
@@ -48,34 +47,34 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & ori
 
 	if (orig.m_subset_stack != NULL)
 	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
+
+		m_subset_stack=std::make_shared<SubsetStack>(*orig.m_subset_stack);
+
 	}
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(SGMatrix<ST> matrix) :
-		CDotFeatures()
+template<class ST> DenseFeatures<ST>::DenseFeatures(SGMatrix<ST> matrix) :
+		DotFeatures()
 {
 	init();
 	set_feature_matrix(matrix);
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec) :
-		CDotFeatures()
+template<class ST> DenseFeatures<ST>::DenseFeatures(ST* src, int32_t num_feat, int32_t num_vec) :
+		DotFeatures()
 {
 	init();
 	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
-		CDotFeatures()
+template<class ST> DenseFeatures<ST>::DenseFeatures(std::shared_ptr<File> loader) :
+		DotFeatures()
 {
 	init();
 	load(loader);
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(CDotFeatures* features) :
-		CDotFeatures()
+template<class ST> DenseFeatures<ST>::DenseFeatures(std::shared_ptr<DotFeatures> features) :
+		DotFeatures()
 {
 	init();
 
@@ -96,23 +95,23 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(CDotFeatures* features) :
 	num_vectors = num_vec;
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<Features> DenseFeatures<ST>::duplicate() const
 {
-	return new CDenseFeatures<ST>(*this);
+	return std::make_shared<DenseFeatures>(*this);
 }
 
-template<class ST> CDenseFeatures<ST>::~CDenseFeatures()
+template<class ST> DenseFeatures<ST>::~DenseFeatures()
 {
 	free_features();
 }
 
-template<class ST> void CDenseFeatures<ST>::free_features()
+template<class ST> void DenseFeatures<ST>::free_features()
 {
 	free_feature_matrix();
-	SG_UNREF(feature_cache);
+
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
+template<class ST> void DenseFeatures<ST>::free_feature_matrix()
 {
 	m_subset_stack->remove_all_subsets();
 	feature_matrix=SGMatrix<ST>();
@@ -120,7 +119,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
 	num_features = 0;
 }
 
-template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree) const
+template<class ST> ST* DenseFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree) const
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
@@ -158,7 +157,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 		for (auto i = 0; i < get_num_preprocessors(); i++)
 		{
 			auto preprocessor =
-				get_preprocessor(i)->template as<CDensePreprocessor<ST>>();
+				get_preprocessor(i)->template as<DensePreprocessor<ST>>();
 			// temporary hack
 			SGVector<ST> applied =
 				preprocessor->apply_to_feature_vector(feat_vec);
@@ -176,7 +175,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 	return feat;
 }
 
-template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t num) const
+template<class ST> SGVector<ST> DenseFeatures<ST>::get_feature_vector(int32_t num) const
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
@@ -193,7 +192,7 @@ template<class ST> SGVector<ST> CDenseFeatures<ST>::get_feature_vector(int32_t n
 	return SGVector<ST>(vector, vlen, do_free);
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree) const
+template<class ST> void DenseFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree) const
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
@@ -202,13 +201,13 @@ template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, in
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num) const
+template<class ST> void DenseFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num) const
 {
 	free_feature_vector(vec.vector, num, false);
 	vec=SGVector<ST>();
 }
 
-template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
+template<class ST> void DenseFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
 		error("A subset is set, cannot call vector_subset");
@@ -239,7 +238,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 	}
 }
 
-template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t idx_len)
+template<class ST> void DenseFeatures<ST>::feature_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
 		error("A subset is set, cannot call feature_subset");
@@ -269,7 +268,7 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 }
 
 template <class ST>
-SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix() const
+SGMatrix<ST> DenseFeatures<ST>::get_feature_matrix() const
 {
 	if (!m_subset_stack->has_subsets())
 		return feature_matrix;
@@ -280,7 +279,7 @@ SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix() const
 }
 
 template <class ST>
-void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
+void DenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
 {
 	require(column_offset>=0, "Column offset ({}) cannot be negative!", column_offset);
 	require(!target.equals(feature_matrix), "Source and target feature matrices cannot be the same");
@@ -314,7 +313,7 @@ void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column
 	}
 }
 
-template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
+template<class ST> void DenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
 {
 	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
@@ -324,7 +323,7 @@ template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matr
 }
 
 template <class ST>
-ST* CDenseFeatures<ST>::get_feature_matrix(
+ST* DenseFeatures<ST>::get_feature_matrix(
 	int32_t& num_feat, int32_t& num_vec) const
 {
 	num_feat = num_features;
@@ -332,16 +331,16 @@ ST* CDenseFeatures<ST>::get_feature_matrix(
 	return feature_matrix.matrix;
 }
 
-template<class ST> CDenseFeatures<ST>* CDenseFeatures<ST>::get_transposed()
+template<class ST> std::shared_ptr<DenseFeatures<ST>> DenseFeatures<ST>::get_transposed()
 {
 	int32_t num_feat;
 	int32_t num_vec;
-	ST* fm = get_transposed(num_feat, num_vec);
+	auto fm = get_transposed(num_feat, num_vec);
 
-	return new CDenseFeatures<ST>(fm, num_feat, num_vec);
+	return std::make_shared<DenseFeatures>(fm, num_feat, num_vec);
 }
 
-template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int32_t &num_vec)
+template<class ST> ST* DenseFeatures<ST>::get_transposed(int32_t &num_feat, int32_t &num_vec)
 {
 	num_feat = get_num_vectors();
 	num_vec = num_features;
@@ -363,20 +362,20 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 	return fm;
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
+template<class ST> int32_t DenseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_num_features() const { return num_features; }
+template<class ST> int32_t DenseFeatures<ST>::get_num_features() const { return num_features; }
 
-template<class ST> void CDenseFeatures<ST>::set_num_features(int32_t num)
+template<class ST> void DenseFeatures<ST>::set_num_features(int32_t num)
 {
 	num_features = num;
 	initialize_cache();
 }
 
-template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
+template<class ST> void DenseFeatures<ST>::set_num_vectors(int32_t num)
 {
 	if (m_subset_stack->has_subsets())
 		error("A subset is set, cannot call set_num_vectors");
@@ -385,31 +384,31 @@ template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
 	initialize_cache();
 }
 
-template<class ST> void CDenseFeatures<ST>::initialize_cache()
+template<class ST> void DenseFeatures<ST>::initialize_cache()
 {
 	if (m_subset_stack->has_subsets())
 		error("A subset is set, cannot call initialize_cache");
 
 	if (num_features && num_vectors)
 	{
-		SG_UNREF(feature_cache);
-		feature_cache = new CCache<ST>(get_cache_size(), num_features,
+
+		feature_cache = std::make_shared<Cache<ST>>(get_cache_size(), num_features,
 				num_vectors);
-		SG_REF(feature_cache);
+
 	}
 }
 
-template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  { return C_DENSE; }
+template<class ST> EFeatureClass DenseFeatures<ST>::get_feature_class() const  { return C_DENSE; }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_dim_feature_space() const { return num_features; }
+template<class ST> int32_t DenseFeatures<ST>::get_dim_feature_space() const { return num_features; }
 
-template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
+template<class ST> float64_t DenseFeatures<ST>::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df,
 		int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CDenseFeatures<ST>* sf = (CDenseFeatures<ST>*) df;
+	auto sf = std::static_pointer_cast<DenseFeatures<ST>>(df);
 
 	int32_t len1, len2;
 	bool free1, free2;
@@ -427,7 +426,7 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 	return result;
 }
 
-template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+template<class ST> void DenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == num_features)
@@ -441,7 +440,7 @@ template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, in
 	if (abs_val)
 	{
 		for (int32_t i = 0; i < num_features; i++)
-			vec2[i] += alpha * CMath::abs(vec1[i]);
+			vec2[i] += alpha * Math::abs(vec1[i]);
 	}
 	else
 	{
@@ -453,7 +452,7 @@ template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, in
 }
 
 template<>
-void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+void DenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	ASSERT(vec2_len == num_features)
@@ -467,7 +466,7 @@ void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 	if (abs_val)
 	{
 		for (int32_t i = 0; i < num_features; i++)
-			vec2[i] += alpha * CMath::abs(vec1[i]);
+			vec2[i] += alpha * Math::abs(vec1[i]);
 	}
 	else
 	{
@@ -477,12 +476,12 @@ void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 	free_feature_vector(vec1, vec_idx1, vfree);
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
+template<class ST> int32_t DenseFeatures<ST>::get_nnz_features_for_vector(int32_t num) const
 {
 	return num_features;
 }
 
-template<class ST> void* CDenseFeatures<ST>::get_feature_iterator(int32_t vector_index)
+template<class ST> void* DenseFeatures<ST>::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=get_num_vectors())
 	{
@@ -498,7 +497,7 @@ template<class ST> void* CDenseFeatures<ST>::get_feature_iterator(int32_t vector
 	return iterator;
 }
 
-template<class ST> bool CDenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
+template<class ST> bool DenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
 		void* iterator)
 {
 	dense_feature_iterator* it = (dense_feature_iterator*) iterator;
@@ -511,7 +510,7 @@ template<class ST> bool CDenseFeatures<ST>::get_next_feature(int32_t& index, flo
 	return true;
 }
 
-template<class ST> void CDenseFeatures<ST>::free_feature_iterator(void* iterator)
+template<class ST> void DenseFeatures<ST>::free_feature_iterator(void* iterator)
 {
 	if (!iterator)
 		return;
@@ -521,7 +520,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_iterator(void* iterator
 	SG_FREE(it);
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
+template<class ST> std::shared_ptr<Features> DenseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
 {
 	SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
 
@@ -533,19 +532,17 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 				num_features*sizeof(ST));
 	}
 
-	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
-	SG_REF(result);
-	return result;
+	return std::make_shared<DenseFeatures>(feature_matrix_copy);
 }
 
 template<class ST>
-CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
+std::shared_ptr<Features> DenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
 {
 	SG_TRACE("Entering!");
 
 	// sanity checks
-	index_t max=CMath::max(dims.vector, dims.vlen);
-	index_t min=CMath::min(dims.vector, dims.vlen);
+	index_t max=Math::max(dims.vector, dims.vlen);
+	index_t min=Math::min(dims.vector, dims.vlen);
 	require(max<num_features && min>=0,
 			"Provided dimensions is in the range [{}, {}] but they "
 			"have to be within [0, {}]! But it ", min, max, num_features);
@@ -561,29 +558,26 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) con
 		}
 	}
 
-	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
-	SG_REF(result);
-
 	SG_TRACE("Leaving!");
-	return result;
+	return std::make_shared<DenseFeatures>(feature_matrix_copy);
 }
 
 template<class ST>
-CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
+std::shared_ptr<Features> DenseFeatures<ST>::shallow_subset_copy()
 {
-	CFeatures* shallow_copy_features=NULL;
+	std::shared_ptr<Features> shallow_copy_features=NULL;
 
 	SG_DEBUG("Using underlying feature matrix with {} dimensions and {} feature vectors!", num_features, num_vectors);
 	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
-	shallow_copy_features=new CDenseFeatures<ST>(shallow_copy_matrix);
-	SG_REF(shallow_copy_features);
+	shallow_copy_features=std::make_shared<DenseFeatures>(shallow_copy_matrix);
+
 	if (m_subset_stack->has_subsets())
 		shallow_copy_features->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
 	return shallow_copy_features;
 }
 
-template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
+template<class ST> ST* DenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
 		ST* target) const
 {
 	not_implemented(SOURCE_LOCATION);
@@ -591,7 +585,7 @@ template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, i
 	return NULL;
 }
 
-template<class ST> void CDenseFeatures<ST>::init()
+template<class ST> void DenseFeatures<ST>::init()
 {
 	num_vectors = 0;
 	num_features = 0;
@@ -609,7 +603,7 @@ template<class ST> void CDenseFeatures<ST>::init()
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\
-template<> EFeatureType CDenseFeatures<sg_type>::get_feature_type() const \
+template<> EFeatureType DenseFeatures<sg_type>::get_feature_type() const \
 {																			\
 	return f_type;															\
 }
@@ -631,7 +625,7 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 
 template <typename ST>
 float64_t
-CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
+DenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 {
 	SGVector<ST> vec1 = get_feature_vector(vec_idx1);
 	float64_t result = linalg::dot(vec2, vec1, linalg::allow_cast{});
@@ -639,7 +633,7 @@ CDenseFeatures<ST>::dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const
 	return result;
 }
 
-template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
+template<class ST> bool DenseFeatures<ST>::is_equal(std::shared_ptr<DenseFeatures> rhs)
 {
 	if ( num_features != rhs->num_features || num_vectors != rhs->num_vectors )
 		return false;
@@ -674,19 +668,16 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
+std::shared_ptr<Features> DenseFeatures<ST>::create_merged_copy(const std::vector<std::shared_ptr<Features>>& others) const
 {
 	SG_TRACE("Entering.");
 
-	require(others!=nullptr, "The list of other feature instances is not initialized!");
-
-	auto current=others->get_first_element();
+	require(others.size() > 0, "The list of other feature instances is not initialized!");
 	auto total_num_vectors=get_num_vectors();
-	auto unref_required=others->get_delete_data();
 
-	while (current!=nullptr)
+	for (auto current: others)
 	{
-		auto casted = dynamic_cast<const CDenseFeatures<ST>*>(current);
+		auto casted = current->as<DenseFeatures<ST>>();
 
 		require(casted!=nullptr, "Provided object's type ({}) must match own type ({})!",
 				current->get_name(), get_name());
@@ -695,11 +686,6 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 				casted->num_features, num_features);
 
 		total_num_vectors+=casted->get_num_vectors();
-
-		if (unref_required)
-			SG_UNREF(current);
-
-		current=others->get_next_element();
 	}
 
 	SGMatrix<ST> data(num_features, total_num_vectors);
@@ -707,36 +693,26 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 	copy_feature_matrix(data, num_copied);
 	num_copied+=get_num_vectors();
 
-	current=others->get_first_element();
-
-	while (current!=nullptr)
+	for (auto current: others)
 	{
-		auto casted = static_cast<const CDenseFeatures<ST>*>(current);
+		auto casted = current->as<DenseFeatures<ST>>();
 		casted->copy_feature_matrix(data, num_copied);
 		num_copied+=casted->get_num_vectors();
-
-		if (unref_required)
-			SG_UNREF(current);
-
-		current=others->get_next_element();
 	}
 
-	auto result=new CDenseFeatures<ST>(data);
-
 	SG_TRACE("Leaving.");
-	return result;
+	return std::make_shared<DenseFeatures>(data);
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other) const
+std::shared_ptr<Features> DenseFeatures<ST>::create_merged_copy(std::shared_ptr<Features> other) const
 {
-	auto list=some<CList>();
-	list->append_element(other);
-	return create_merged_copy(list);
+	std::vector<std::shared_ptr<Features>> v {other};
+	return create_merged_copy(v);
 }
 
 template<class ST>
-void CDenseFeatures<ST>::load(CFile* loader)
+void DenseFeatures<ST>::load(std::shared_ptr<File> loader)
 {
 	SGMatrix<ST> matrix;
 	matrix.load(loader);
@@ -744,21 +720,21 @@ void CDenseFeatures<ST>::load(CFile* loader)
 }
 
 template<class ST>
-void CDenseFeatures<ST>::save(CFile* writer)
+void DenseFeatures<ST>::save(std::shared_ptr<File> writer)
 {
 	feature_matrix.save(writer);
 }
 
-template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+template< class ST > std::shared_ptr<DenseFeatures< ST >> DenseFeatures< ST >::obtain_from_generic(std::shared_ptr<Features> base_features)
 {
 	require(base_features->get_feature_class() == C_DENSE,
-			"base_features must be of dynamic type CDenseFeatures");
+			"base_features must be of dynamic type DenseFeatures");
 
-	return (CDenseFeatures< ST >*) base_features;
+	return std::static_pointer_cast<DenseFeatures< ST >>(base_features);
 }
 
 template <typename ST>
-SGVector<ST> CDenseFeatures<ST>::sum() const
+SGVector<ST> DenseFeatures<ST>::sum() const
 {
 	// TODO optimize non batch mode, but get_feature_vector is non const :(
 	SGVector<ST> result = linalg::rowwise_sum(get_feature_matrix());
@@ -766,7 +742,7 @@ SGVector<ST> CDenseFeatures<ST>::sum() const
 }
 
 template <typename ST>
-SGVector<ST> CDenseFeatures<ST>::mean() const
+SGVector<ST> DenseFeatures<ST>::mean() const
 {
 	ASSERT_FLOATING_POINT
 
@@ -777,7 +753,7 @@ SGVector<ST> CDenseFeatures<ST>::mean() const
 }
 
 template <typename ST>
-SGVector<float64_t > CDenseFeatures<ST>::std(bool colwise) const
+SGVector<float64_t > DenseFeatures<ST>::std(bool colwise) const
 {
 	ASSERT_FLOATING_POINT
 
@@ -786,7 +762,7 @@ SGVector<float64_t > CDenseFeatures<ST>::std(bool colwise) const
 }
 
 template <typename ST>
-SGMatrix<ST> CDenseFeatures<ST>::cov() const
+SGMatrix<ST> DenseFeatures<ST>::cov() const
 {
 	// TODO optimize non batch mode, but get_feature_vector is non const :(
 	auto mat = get_feature_matrix();
@@ -794,7 +770,7 @@ SGMatrix<ST> CDenseFeatures<ST>::cov() const
 }
 
 template <typename ST>
-SGMatrix<ST> CDenseFeatures<ST>::gram() const
+SGMatrix<ST> DenseFeatures<ST>::gram() const
 {
 	// TODO optimize non batch mode, but get_feature_vector is non const :(
 	auto mat = get_feature_matrix();
@@ -802,7 +778,7 @@ SGMatrix<ST> CDenseFeatures<ST>::gram() const
 }
 
 template <typename ST>
-SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
+SGVector<ST> DenseFeatures<ST>::dot(const SGVector<ST>& other) const
 {
 	require(
 		get_num_vectors() == other.size(), "Number of feature vectors ({}) "
@@ -813,17 +789,17 @@ SGVector<ST> CDenseFeatures<ST>::dot(const SGVector<ST>& other) const
 	return linalg::matrix_prod(get_feature_matrix(), other, false);
 }
 
-template class CDenseFeatures<bool>;
-template class CDenseFeatures<char>;
-template class CDenseFeatures<int8_t>;
-template class CDenseFeatures<uint8_t>;
-template class CDenseFeatures<int16_t>;
-template class CDenseFeatures<uint16_t>;
-template class CDenseFeatures<int32_t>;
-template class CDenseFeatures<uint32_t>;
-template class CDenseFeatures<int64_t>;
-template class CDenseFeatures<uint64_t>;
-template class CDenseFeatures<float32_t>;
-template class CDenseFeatures<float64_t>;
-template class CDenseFeatures<floatmax_t>;
+template class DenseFeatures<bool>;
+template class DenseFeatures<char>;
+template class DenseFeatures<int8_t>;
+template class DenseFeatures<uint8_t>;
+template class DenseFeatures<int16_t>;
+template class DenseFeatures<uint16_t>;
+template class DenseFeatures<int32_t>;
+template class DenseFeatures<uint32_t>;
+template class DenseFeatures<int64_t>;
+template class DenseFeatures<uint64_t>;
+template class DenseFeatures<float32_t>;
+template class DenseFeatures<float64_t>;
+template class DenseFeatures<floatmax_t>;
 }

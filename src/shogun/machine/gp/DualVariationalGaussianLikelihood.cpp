@@ -41,20 +41,20 @@ using namespace Eigen;
 namespace shogun
 {
 
-CDualVariationalGaussianLikelihood::CDualVariationalGaussianLikelihood()
-	: CVariationalGaussianLikelihood()
+DualVariationalGaussianLikelihood::DualVariationalGaussianLikelihood()
+	: VariationalGaussianLikelihood()
 {
 	init();
 }
 
-CDualVariationalGaussianLikelihood::~CDualVariationalGaussianLikelihood()
+DualVariationalGaussianLikelihood::~DualVariationalGaussianLikelihood()
 {
 }
 
-CVariationalGaussianLikelihood* CDualVariationalGaussianLikelihood::get_variational_likelihood() const
+std::shared_ptr<VariationalGaussianLikelihood> DualVariationalGaussianLikelihood::get_variational_likelihood() const
 {
 	require(m_likelihood, "The likelihood model must not be NULL");
-	CVariationalGaussianLikelihood* var_lik=dynamic_cast<CVariationalGaussianLikelihood *>(m_likelihood);
+	auto var_lik=std::dynamic_pointer_cast<VariationalGaussianLikelihood>(m_likelihood);
 	require(var_lik,
 		"The likelihood model ({}) does NOT support variational guassian inference",
 		m_likelihood->get_name());
@@ -62,44 +62,44 @@ CVariationalGaussianLikelihood* CDualVariationalGaussianLikelihood::get_variatio
 	return var_lik;
 }
 
-SGVector<float64_t> CDualVariationalGaussianLikelihood::get_variational_expection()
+SGVector<float64_t> DualVariationalGaussianLikelihood::get_variational_expection()
 {
-	CVariationalLikelihood * var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	return var_lik->get_variational_expection();
 }
 
-void CDualVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
+void DualVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 {
-	CVariationalGaussianLikelihood * var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	var_lik->set_noise_factor(noise_factor);
 }
 
-SGVector<float64_t> CDualVariationalGaussianLikelihood::get_variational_first_derivative(const TParameter* param) const
+SGVector<float64_t> DualVariationalGaussianLikelihood::get_variational_first_derivative(const TParameter* param) const
 {
-	CVariationalLikelihood * var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	return var_lik->get_variational_first_derivative(param);
 }
 
-bool CDualVariationalGaussianLikelihood::supports_derivative_wrt_hyperparameter() const
+bool DualVariationalGaussianLikelihood::supports_derivative_wrt_hyperparameter() const
 {
-	CVariationalLikelihood * var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	return var_lik->supports_derivative_wrt_hyperparameter();
 }
 
-SGVector<float64_t> CDualVariationalGaussianLikelihood::get_first_derivative_wrt_hyperparameter(const TParameter* param) const
+SGVector<float64_t> DualVariationalGaussianLikelihood::get_first_derivative_wrt_hyperparameter(const TParameter* param) const
 {
-	CVariationalLikelihood * var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	return var_lik->get_first_derivative_wrt_hyperparameter(param);
 }
 
-bool CDualVariationalGaussianLikelihood::set_variational_distribution(
-	SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab)
+bool DualVariationalGaussianLikelihood::set_variational_distribution(
+	SGVector<float64_t> mu,	SGVector<float64_t> s2, std::shared_ptr<const Labels> lab)
 {
-	CVariationalGaussianLikelihood* var_lik=get_variational_likelihood();
+	auto var_lik=get_variational_likelihood();
 	return var_lik->set_variational_distribution(mu, s2, lab);
 }
 
-void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale)
+void DualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale)
 {
 	require((strict_scale>0 && strict_scale<1),
 		"The strict_scale ({}) should be between 0 and 1 exclusively.",
@@ -107,7 +107,7 @@ void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale
 	m_strict_scale=strict_scale;
 }
 
-float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGVector<float64_t> direction, const float64_t step) const
+float64_t DualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGVector<float64_t> direction, const float64_t step) const
 {
 	require(direction.vlen==m_lambda.vlen,
 		"The length ({}) of direction should be same as the length ({}) of dual parameters",
@@ -131,18 +131,18 @@ float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGV
 		if (direction[i]==0.0)
 			continue;
 
-		if (lower_bound!=-CMath::INFTY && attempt<lower_bound)
+		if (lower_bound!=-Math::INFTY && attempt<lower_bound)
 		{
-			adjust=(m_lambda[i]-lower_bound)/CMath::abs(direction[i]);
+			adjust=(m_lambda[i]-lower_bound)/Math::abs(direction[i]);
 			if (dual_lower_bound_strict())
 				adjust*=(1-m_strict_scale);
 			if (adjust<min_step)
 				min_step=adjust;
 		}
 
-		if (upper_bound!=CMath::INFTY && attempt>upper_bound)
+		if (upper_bound!=Math::INFTY && attempt>upper_bound)
 		{
-			adjust=(upper_bound-m_lambda[i])/CMath::abs(direction[i]);
+			adjust=(upper_bound-m_lambda[i])/Math::abs(direction[i]);
 			if (dual_upper_bound_strict())
 				adjust*=(1-m_strict_scale);
 			if (adjust<min_step)
@@ -153,7 +153,7 @@ float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGV
 	return min_step;
 }
 
-void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t> lambda,  const CLabels* lab)
+void DualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t> lambda, std::shared_ptr<const Labels> lab)
 {
 	require(lab, "Labels are required (lab should not be NULL)");
 
@@ -162,23 +162,23 @@ void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t>
 		"and number of labels ({}) should be the same",
 		lambda.vlen, lab->get_num_labels());
 	require(lab->get_label_type()==LT_BINARY,
-		"Labels ({}) must be type of CBinaryLabels",
+		"Labels ({}) must be type of BinaryLabels",
 		lab->get_name());
 
-	m_lab=(((CBinaryLabels*)lab)->get_labels()).clone();
+	m_lab=lab->as<BinaryLabels>()->get_labels().clone();
 
 	//Convert the input label to standard label used in the class
 	//Note that Shogun uses  -1 and 1 as labels and this class internally uses
 	//0 and 1 repectively.
 	for(index_t i = 0; i < m_lab.size(); ++i)
-		m_lab[i]=CMath::max(m_lab[i], 0.0);
+		m_lab[i]=Math::max(m_lab[i], 0.0);
 
 	m_lambda=lambda;
 
 	precompute();
 }
 
-bool CDualVariationalGaussianLikelihood::dual_parameters_valid() const
+bool DualVariationalGaussianLikelihood::dual_parameters_valid() const
 {
 	float64_t lower_bound=get_dual_lower_bound();
 	float64_t upper_bound=get_dual_upper_bound();
@@ -209,12 +209,12 @@ bool CDualVariationalGaussianLikelihood::dual_parameters_valid() const
 	return true;
 }
 
-void CDualVariationalGaussianLikelihood::precompute()
+void DualVariationalGaussianLikelihood::precompute()
 {
 	m_is_valid=dual_parameters_valid();
 }
 
-void CDualVariationalGaussianLikelihood::init()
+void DualVariationalGaussianLikelihood::init()
 {
 	SG_ADD(&m_lambda, "lambda",
 		"Dual parameter for variational s2");

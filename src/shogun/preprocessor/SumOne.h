@@ -26,14 +26,14 @@ namespace shogun
  * \f]
  *
  */
-class CSumOne : public CDensePreprocessor<float64_t>
+class SumOne : public DensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */
-		CSumOne();
+		SumOne();
 
 		/** destructor */
-		virtual ~CSumOne();
+		virtual ~SumOne();
 
 		/// cleanup
 		virtual void cleanup();

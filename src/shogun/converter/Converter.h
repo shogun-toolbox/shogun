@@ -20,19 +20,19 @@ namespace shogun
 /** @brief class Converter used to convert data
  *
  */
-class CConverter : public CTransformer
+class Converter : public Transformer
 {
 public:
 	/** constructor */
-	CConverter() : CTransformer(){};
+	Converter() : Transformer(){};
 
 	/** destructor */
-	virtual ~CConverter() {};
+	virtual ~Converter() {};
 
 	/** get name */
 	virtual const char* get_name() const { return "Converter"; }
 
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true) = 0;
+	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) = 0;
 };
 }
 #endif /* CONVERTER_H_ */

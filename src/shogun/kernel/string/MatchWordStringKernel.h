@@ -32,18 +32,18 @@ namespace shogun
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CMatchWordStringKernel: public CStringKernel<uint16_t>
+class MatchWordStringKernel: public StringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CMatchWordStringKernel();
+		MatchWordStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param d degree
 		 */
-		CMatchWordStringKernel(int32_t size, int32_t d);
+		MatchWordStringKernel(int32_t size, int32_t d);
 
 		/** constructor
 		 *
@@ -51,9 +51,9 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t degree);
+		MatchWordStringKernel(std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, int32_t degree);
 
-		virtual ~CMatchWordStringKernel();
+		virtual ~MatchWordStringKernel();
 
 		/** initialize kernel
 		 *
@@ -61,7 +61,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** return what type of kernel we are
 		 *

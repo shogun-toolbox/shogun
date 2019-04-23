@@ -21,11 +21,11 @@ namespace shogun
  * see DotFeatures for further discription
  *
  */
-class CSparsePolyFeatures : public CDotFeatures
+class SparsePolyFeatures : public DotFeatures
 {
 	public:
 		/** default constructor  */
-		CSparsePolyFeatures();
+		SparsePolyFeatures();
 
 		/** constructor
 		 *
@@ -35,9 +35,9 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param normalize normalize kernel
 		 * @param hash_bits number of bits in hashd feature space
 		 */
-		CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits);
+		SparsePolyFeatures(std::shared_ptr<SparseFeatures<float64_t>> feat, int32_t degree, bool normalize, int32_t hash_bits);
 
-		virtual ~CSparsePolyFeatures();
+		virtual ~SparsePolyFeatures();
 
 		/** copy constructor
 		 *
@@ -45,7 +45,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */
-		CSparsePolyFeatures(const CSparsePolyFeatures & orig);
+		SparsePolyFeatures(const SparsePolyFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
@@ -85,7 +85,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -139,7 +139,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		CFeatures* duplicate() const;
+		std::shared_ptr<Features> duplicate() const;
 
 		/**
 		 *
@@ -171,7 +171,7 @@ class CSparsePolyFeatures : public CDotFeatures
 
 	protected:
 		/** features in original space*/
-		CSparseFeatures<float64_t>* m_feat;
+		std::shared_ptr<SparseFeatures<float64_t>> m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
 		/** normalize */

@@ -45,19 +45,19 @@ namespace shogun
  * used.
  *
  */
-class CNeuralSoftmaxLayer : public CNeuralLinearLayer
+class NeuralSoftmaxLayer : public NeuralLinearLayer
 {
 public:
 	/** default constructor */
-	CNeuralSoftmaxLayer();
+	NeuralSoftmaxLayer();
 
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralSoftmaxLayer(int32_t num_neurons);
+	NeuralSoftmaxLayer(int32_t num_neurons);
 
-	virtual ~CNeuralSoftmaxLayer() {}
+	virtual ~NeuralSoftmaxLayer() {}
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -69,7 +69,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<DynamicObjectArray> layers);
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.

@@ -32,12 +32,12 @@
 
 using namespace shogun;
 
-CBallTree::CBallTree(int32_t leaf_size, EDistanceType d)
+BallTree::BallTree(int32_t leaf_size, EDistanceType d)
 : CNbodyTree(leaf_size,d)
 {
 }
 
-float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t BallTree::min_dist(std::shared_ptr<bnode_t> node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center=node->data.center;
@@ -45,10 +45,10 @@ float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 		dist+=add_dim_dist(center[i]-feat[i]);
 
 	dist=actual_dists(dist);
-	return CMath::max(0.0,dist-node->data.radius);
+	return Math::max(0.0,dist-node->data.radius);
 }
 
-float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t BallTree::min_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
@@ -57,10 +57,10 @@ float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 		dist+=add_dim_dist(center1[i]-center2[i]);
 
 	dist=actual_dists(dist);
-	return CMath::max(0.0,dist-nodeq->data.radius-noder->data.radius);
+	return Math::max(0.0,dist-nodeq->data.radius-noder->data.radius);
 }
 
-float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t BallTree::max_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
@@ -72,7 +72,7 @@ float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	return (dist+nodeq->data.radius+noder->data.radius);
 }
 
-void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+void BallTree::min_max_dist(float64_t* pt, std::shared_ptr<bnode_t> node, float64_t &lower,float64_t &upper, int32_t dim)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center=node->data.center;
@@ -80,11 +80,11 @@ void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,floa
 		dist+=add_dim_dist(center[i]-pt[i]);
 
 	dist=actual_dists(dist);
-	lower=CMath::max(0.0,dist-node->data.radius);
+	lower=Math::max(0.0,dist-node->data.radius);
 	upper=dist+node->data.radius;
 }
 
-void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
+void BallTree::init_node(std::shared_ptr<bnode_t> node, index_t start, index_t end)
 {
 	SGVector<float64_t> upper_bounds(m_data.num_rows);
 	SGVector<float64_t> lower_bounds(m_data.num_rows);
@@ -98,8 +98,8 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 		for (int32_t j=start+1;j<=end;j++)
 		{
 			float64_t data_pt=m_data(i,m_vec_id[j]);
-			upper_bounds[i]=CMath::max(upper_bounds[i],data_pt);
-			lower_bounds[i]=CMath::min(lower_bounds[i],data_pt);
+			upper_bounds[i]=Math::max(upper_bounds[i],data_pt);
+			lower_bounds[i]=Math::min(lower_bounds[i],data_pt);
 			center[i]+=data_pt;
 		}
 
@@ -108,7 +108,7 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 
 	float64_t radius=0;
 	for (int32_t i=start;i<=end;i++)
-		radius=CMath::max(distance(m_vec_id[i],center.vector,center.vlen),radius);
+		radius=Math::max(distance(m_vec_id[i],center.vector,center.vlen),radius);
 
 	node->data.radius=radius;
 	node->data.center=center;

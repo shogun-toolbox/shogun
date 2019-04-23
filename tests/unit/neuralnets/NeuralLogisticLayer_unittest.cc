@@ -52,27 +52,27 @@ TEST_F(NeuralLogisticLayerTest, compute_activations)
 	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	CNeuralInputLayer* input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize logistic layer
-	CNeuralLogisticLayer layer(9);
+	auto layer=std::make_shared<NeuralLogisticLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
-	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
+	    init_linear_layer(layer, input_indices, x.num_cols, 1.0, false);
 
 	// compute the layer's activations
-	auto A = layer.get_activations();
+	auto A = layer->get_activations();
 
 	// manually compute the layer's activations
 	auto biases =
-	    SGVector<float64_t>(params.vector, layer.get_num_neurons(), 0);
+	    SGVector<float64_t>(params.vector, layer->get_num_neurons(), 0);
 	auto weights = SGMatrix<float64_t>(
-	    params.vector, layer.get_num_neurons(), x.num_rows,
-	    layer.get_num_neurons());
-	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
+	    params.vector, layer->get_num_neurons(), x.num_rows,
+	    layer->get_num_neurons());
+	SGMatrix<float64_t> A_ref(layer->get_num_neurons(), x.num_cols);
 	shogun::linalg::add_vector(
 	    shogun::linalg::matrix_prod(weights, x), biases, A_ref);
 	shogun::linalg::logistic(A_ref, A_ref);
@@ -94,35 +94,35 @@ TEST_F(NeuralLogisticLayerTest, compute_local_gradients)
 	int32_t seed = 100;
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	CNeuralInputLayer* input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::mt19937_64 prng(seed);
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0, prng);
 
 	// initialize the layer
-	CNeuralLogisticLayer layer(9);
+	auto layer=std::make_shared<NeuralLogisticLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
-	    init_linear_layer(&layer, input_indices, x.num_cols, 1.0, false);
+	    init_linear_layer(layer, input_indices, x.num_cols, 1.0, false);
 
 	// initialize output
 	auto y = create_rand_matrix<float64_t>(
-	    layer.get_num_neurons(), x.num_cols, 0.0, 1.0, prng);
+	    layer->get_num_neurons(), x.num_cols, 0.0, 1.0, prng);
 
 	// compute the layer's local gradients
-	layer.compute_local_gradients(y);
-	SGMatrix<float64_t> LG = layer.get_local_gradients();
+	layer->compute_local_gradients(y);
+	SGMatrix<float64_t> LG = layer->get_local_gradients();
 
 	// manually compute local gradients
-	SGMatrix<float64_t> A = layer.get_activations();
+	SGMatrix<float64_t> A = layer->get_activations();
 	SGMatrix<float64_t> LG_numerical(A.num_rows, A.num_cols);
 	float64_t epsilon = 1e-9;
 	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
 	{
 		A[i] += epsilon;
-		float64_t error_plus = layer.compute_error(y);
+		float64_t error_plus = layer->compute_error(y);
 		A[i] -= 2*epsilon;
-		float64_t error_minus = layer.compute_error(y);
+		float64_t error_minus = layer->compute_error(y);
 		A[i] += epsilon;
 
 		LG_numerical[i] = (error_plus-error_minus)/(2*epsilon);

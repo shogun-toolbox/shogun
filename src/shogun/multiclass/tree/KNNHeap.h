@@ -44,17 +44,17 @@ namespace shogun
  * in case the heap is full already, the max among the stored values is automatically thrown out as the new value finds its
  * proper place in the heap.
  */
-class CKNNHeap
+class KNNHeap
 {
 public:
 	/** constructor
 	 *
 	 * @param k heap capacity i.e. the number of least distance values to be stored
 	 */
-	CKNNHeap(int32_t k=1);
+	KNNHeap(int32_t k=1);
 
 	/** destructor */
-	~CKNNHeap() { };
+	~KNNHeap() { };
 
 	/** push into heap
 	 *

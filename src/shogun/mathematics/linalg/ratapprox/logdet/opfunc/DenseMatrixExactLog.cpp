@@ -23,29 +23,29 @@ using namespace Eigen;
 namespace shogun
 {
 
-	CDenseMatrixExactLog::CDenseMatrixExactLog()
-	    : COperatorFunction<float64_t>(nullptr, OF_LOG)
+	DenseMatrixExactLog::DenseMatrixExactLog()
+	    : OperatorFunction<float64_t>(nullptr, OF_LOG)
 	{
 	}
 
-	CDenseMatrixExactLog::CDenseMatrixExactLog(
-	    CDenseMatrixOperator<float64_t>* op)
-	    : COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, OF_LOG)
+	DenseMatrixExactLog::DenseMatrixExactLog(
+	    std::shared_ptr<DenseMatrixOperator<float64_t>> op)
+	    : OperatorFunction<float64_t>(op->as<LinearOperator<float64_t>>(), OF_LOG)
 	{
 	}
 
-	CDenseMatrixExactLog::~CDenseMatrixExactLog()
+	DenseMatrixExactLog::~DenseMatrixExactLog()
 	{
 	}
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
-void CDenseMatrixExactLog::precompute()
+void DenseMatrixExactLog::precompute()
 {
 	SG_TRACE("Entering...");
 
 	// check for proper downcast
-	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto op
+		=m_linear_operator->as<DenseMatrixOperator<float64_t>>();
 	require(op, "Operator not an instance of DenseMatrixOperator!");
 	SGMatrix<float64_t> m=op->get_matrix_operator();
 
@@ -62,25 +62,25 @@ void CDenseMatrixExactLog::precompute()
 
 	// the log(C) is also a linear operator here
 	// reset the operator of this function with log(C)
-	SG_UNREF(m_linear_operator);
-	m_linear_operator=new CDenseMatrixOperator<float64_t>(log_m);
-	SG_REF(m_linear_operator);
+
+	m_linear_operator=std::make_shared<DenseMatrixOperator<float64_t>>(log_m);
+
 
 	SG_TRACE("Leaving...");
 }
 #else
-void CDenseMatrixExactLog::precompute()
+void DenseMatrixExactLog::precompute()
 {
 	io::warn("Eigen3.1.0 or later required!");
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
-float64_t CDenseMatrixExactLog::compute(SGVector<float64_t> sample) const
+float64_t DenseMatrixExactLog::compute(SGVector<float64_t> sample) const
 {
 	SG_TRACE("Entering...");
 
-	CDenseMatrixOperator<float64_t>* m_log_operator =
-		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto m_log_operator =
+		m_linear_operator->as<DenseMatrixOperator<float64_t>>();
 
 	SGVector<float64_t> vec = m_log_operator->apply(sample);
 	float64_t result = linalg::dot(sample, vec);

@@ -16,18 +16,18 @@ namespace shogun
 /** @brief CSquaredLoss implements the
  * squared loss function.
  */
-class CSquaredLoss: public CLossFunction
+class SquaredLoss: public LossFunction
 {
 public:
 	/**
 	 * Constructor
 	 */
-	CSquaredLoss(): CLossFunction() {};
+	SquaredLoss(): LossFunction() {};
 
 	/**
 	 * Destructor
 	 */
-	~CSquaredLoss() {};
+	~SquaredLoss() {};
 
 	/**
 	 * Get loss for an example

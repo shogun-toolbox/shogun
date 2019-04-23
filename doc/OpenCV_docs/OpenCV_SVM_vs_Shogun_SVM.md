@@ -193,20 +193,20 @@ We start with creating the training data as the ```DenseFeatures```.
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
     shogun_traindata = linalg::transpose_matrix(shogun_traindata);
-    CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
+    DenseFeatures<float64_t>* shogun_trainfeatures = new DenseFeatures<float64_t>(shogun_traindata);
 ```
 
 Now the training responses as the ```MulticlassLabels```.
 ```CPP
-    CDenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(trainresponse);
+    DenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
-    CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
+    MulticlassLabels* labels = new MulticlassLabels(shogun_vector_response);
 ```
 
 Now the Kernel.
 
 ```CPP
-    CLinearKernel* kernel = new CLinearKernel();
+    LinearKernel* kernel = new LinearKernel();
     kernel->init(shogun_trainfeatures, shogun_trainfeatures);
 ```
 
@@ -222,12 +222,12 @@ Prepare the testing data.
 ```CPP
     SGMatrix<float64_t> shogun_testdata=CV2SGFactory::get_sgmatrix<float64_t>(testdata);
     shogun_testdata = linalg::transpose_matrix(shogun_testdata);
-    CDenseFeatures<float64_t>* testfeatures=new CDenseFeatures<float64_t>(shogun_testdata);
+    DenseFeatures<float64_t>* testfeatures=new DenseFeatures<float64_t>(shogun_testdata);
 ```
 
 Testing Procedure.
 ```CPP
-    CMulticlassLabels* results=shogunsvm->apply_multiclass(testfeatures);
+    MulticlassLabels* results=shogunsvm->apply_multiclass(testfeatures);
     k=0;
     for(int i=0; i<testdata.rows; i++)
 	{

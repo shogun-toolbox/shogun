@@ -65,14 +65,14 @@ class CV2SGFactory
 		 * @param cv::Mat to be converted
 		 * @return DenseFeatures pointer of the specified data type
 		 */
-		template<typename SG_T> static CDenseFeatures<SG_T>* get_dense_features(cv::Mat);
+		template<typename SG_T> static DenseFeatures<SG_T>* get_dense_features(cv::Mat);
 };
 
-template<typename SG_T> CDenseFeatures<SG_T>* CV2SGFactory::get_dense_features
+template<typename SG_T> DenseFeatures<SG_T>* CV2SGFactory::get_dense_features
 	(cv::Mat cvMat)
 {
 	SGMatrix<SG_T> sgMat=CV2SGFactory::get_sgmatrix<SG_T>(cvMat);
-	CDenseFeatures<SG_T>* features=new CDenseFeatures<SG_T>(sgMat);
+	DenseFeatures<SG_T>* features=new DenseFeatures<SG_T>(sgMat);
 	return features;
 }
 

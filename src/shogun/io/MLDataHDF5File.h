@@ -28,11 +28,11 @@ struct TSGDataType;
  *
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CMLDataHDF5File : public CFile
+IGNORE_IN_CLASSLIST class MLDataHDF5File : public File
 {
 public:
 	/** default constructor  */
-	CMLDataHDF5File();
+	MLDataHDF5File();
 
 	/** constructor
 	 *
@@ -40,12 +40,12 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CMLDataHDF5File(char* fname,
+	MLDataHDF5File(char* fname,
                     const char* name=NULL,
                     const char* url_prefix="http://mldata.org/repository/data/download/");
 
 	/** default destructor */
-	virtual ~CMLDataHDF5File();
+	virtual ~MLDataHDF5File();
 
 	/** @name Vector Access Functions
 	 *

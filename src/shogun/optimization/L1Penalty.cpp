@@ -35,7 +35,7 @@ using namespace shogun;
 
 float64_t L1Penalty::get_penalty(float64_t variable)
 {
-	return CMath::abs(variable);
+	return Math::abs(variable);
 }
 
 void L1Penalty::set_rounding_epsilon(float64_t epsilon)
@@ -65,7 +65,7 @@ float64_t L1Penalty::get_sparse_variable(float64_t variable, float64_t penalty_w
 		if (variable>0.0)
 			variable=0.0;
 	}
-	if (CMath::abs(variable)<m_rounding_epsilon)
+	if (Math::abs(variable)<m_rounding_epsilon)
 		variable=0.0;
 	return variable;
 }

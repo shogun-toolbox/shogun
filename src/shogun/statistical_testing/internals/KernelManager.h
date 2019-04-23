@@ -39,10 +39,10 @@
 namespace shogun
 {
 
-class CKernel;
-class CDistance;
-class CCustomDistance;
-class CCustomKernel;
+class Kernel;
+class Distance;
+class CustomDistance;
+class CustomKernel;
 
 namespace internal
 {
@@ -55,9 +55,9 @@ public:
 	~KernelManager();
 
 	InitPerKernel kernel_at(index_t i);
-	CKernel* kernel_at(index_t i) const;
+	std::shared_ptr<shogun::Kernel> kernel_at(index_t i) const;
 
-	void push_back(CKernel* kernel);
+	void push_back(std::shared_ptr<shogun::Kernel> kernel);
 	const index_t num_kernels() const;
 
 	void precompute_kernel_at(index_t i);
@@ -65,12 +65,12 @@ public:
 
 	void clear();
 	bool same_distance_type() const;
-	CDistance* get_distance_instance() const;
-	void set_precomputed_distance(CCustomDistance* distance) const;
+	std::shared_ptr<Distance> get_distance_instance() const;
+	void set_precomputed_distance(std::shared_ptr<CustomDistance> distance) const;
 	void unset_precomputed_distance() const;
 private:
-	std::vector<std::shared_ptr<CKernel> > m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel> > m_precomputed_kernels;
+	std::vector<std::shared_ptr<shogun::Kernel> > m_kernels;
+	std::vector<std::shared_ptr<shogun::CustomKernel> > m_precomputed_kernels;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

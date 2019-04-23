@@ -44,7 +44,7 @@ namespace shogun
  * )
  *
  */
-class LearningRate: public CSGObject
+class LearningRate: public SGObject
 {
 public:
 	virtual ~LearningRate() {};

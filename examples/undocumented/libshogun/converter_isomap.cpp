@@ -20,17 +20,13 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = std::sin((i / float64_t(N * dim)) * 3.14);
 
-	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
-	SG_REF(features);
-	CIsomap* isomap = new CIsomap();
+	DenseFeatures<double>* features = new DenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	Isomap* isomap = new Isomap();
 	isomap->set_target_dim(2);
 	isomap->set_landmark(false);
 	isomap->set_k(4);
 	isomap->get_global_parallel()->set_num_threads(4);
 	auto embedding = isomap->transform(features);
-	SG_UNREF(embedding);
-	SG_UNREF(isomap);
-	SG_UNREF(features);
 	return 0;
 }
 #else //USE_GPL_SHOGUN

@@ -12,29 +12,29 @@
 
 using namespace shogun;
 
-CParameterObserverLogger::CParameterObserverLogger()
+ParameterObserverLogger::ParameterObserverLogger()
 {
 }
 
-CParameterObserverLogger::CParameterObserverLogger(
+ParameterObserverLogger::ParameterObserverLogger(
     std::vector<std::string>& parameters)
     : ParameterObserver(parameters)
 {
 }
 
-CParameterObserverLogger::~CParameterObserverLogger()
+ParameterObserverLogger::~ParameterObserverLogger()
 {
 }
 
-void CParameterObserverLogger::on_error(std::exception_ptr ptr)
+void ParameterObserverLogger::on_error(std::exception_ptr ptr)
 {
 }
 
-void CParameterObserverLogger::on_complete()
+void ParameterObserverLogger::on_complete()
 {
 }
 
-void CParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
+void ParameterObserverLogger::on_next_impl(const TimedObservedValue& value)
 {
 
 	auto name = value.first->get<std::string>("name");

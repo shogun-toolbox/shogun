@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
+ * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma,
  *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
@@ -15,14 +15,14 @@
 
 using namespace shogun;
 
-COnlineSVMSGD::COnlineSVMSGD()
-: COnlineLinearMachine()
+OnlineSVMSGD::OnlineSVMSGD()
+: OnlineLinearMachine()
 {
 	init();
 }
 
-COnlineSVMSGD::COnlineSVMSGD(float64_t C)
-: COnlineLinearMachine()
+OnlineSVMSGD::OnlineSVMSGD(float64_t C)
+: OnlineLinearMachine()
 {
 	init();
 
@@ -30,8 +30,8 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C)
 	C2=C;
 }
 
-COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
-: COnlineLinearMachine()
+OnlineSVMSGD::OnlineSVMSGD(float64_t C, std::shared_ptr<StreamingDotFeatures> traindat)
+: OnlineLinearMachine()
 {
 	init();
 	C1=C;
@@ -40,25 +40,25 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
 	set_features(traindat);
 }
 
-COnlineSVMSGD::~COnlineSVMSGD()
+OnlineSVMSGD::~OnlineSVMSGD()
 {
-	SG_UNREF(loss);
+
 }
 
-void COnlineSVMSGD::set_loss_function(CLossFunction* loss_func)
+void OnlineSVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
-	SG_REF(loss_func);
-	SG_UNREF(loss);
+
+
 	loss=loss_func;
 }
 
-bool COnlineSVMSGD::train(CFeatures* data)
+bool OnlineSVMSGD::train(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			error("Specified features are not of type CStreamingDotFeatures");
-		set_features((CStreamingDotFeatures*) data);
+		set_features(std::static_pointer_cast<StreamingDotFeatures>(data));
 	}
 
 	features->start_parser();
@@ -74,7 +74,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
+	float64_t eta0 = typw / Math::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	io::info("lambda={}, epochs={}, eta0={}", lambda, epochs, eta0);
@@ -147,7 +147,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	return true;
 }
 
-void COnlineSVMSGD::calibrate(int32_t max_vec_num)
+void OnlineSVMSGD::calibrate(int32_t max_vec_num)
 {
 	int32_t c_dim=1;
 	float32_t* c=SG_CALLOC(float32_t, c_dim);
@@ -167,7 +167,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=CMath::max(c, c_dim);
+		m=Math::max(c, c_dim);
 		n++;
 
 		features->release_example();
@@ -188,7 +188,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	SG_FREE(c);
 }
 
-void COnlineSVMSGD::init()
+void OnlineSVMSGD::init()
 {
 	t=1;
 	C1=1;
@@ -203,8 +203,8 @@ void COnlineSVMSGD::init()
 
 	use_regularized_bias=false;
 
-	loss=new CHingeLoss();
-	SG_REF(loss);
+	loss=std::make_shared<HingeLoss>();
+
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);

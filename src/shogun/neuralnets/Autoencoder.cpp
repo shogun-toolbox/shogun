@@ -40,21 +40,21 @@
 
 using namespace shogun;
 
-CAutoencoder::CAutoencoder() : CNeuralNetwork()
+Autoencoder::Autoencoder() : NeuralNetwork()
 {
 	init();
 }
 
-CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
-	CNeuralLayer* decoding_layer, float64_t sigma) : CNeuralNetwork()
+Autoencoder::Autoencoder(int32_t num_inputs, std::shared_ptr<NeuralLayer> hidden_layer,
+	std::shared_ptr<NeuralLayer> decoding_layer, float64_t sigma) : NeuralNetwork()
 {
 	init();
 
 	if (decoding_layer==NULL)
-		decoding_layer = new CNeuralLinearLayer(num_inputs);
+		decoding_layer = std::make_shared<NeuralLinearLayer>(num_inputs);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(num_inputs));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(num_inputs));
 	layers->append_element(hidden_layer);
 	layers->append_element(decoding_layer);
 
@@ -68,17 +68,17 @@ CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
 	initialize_neural_network(sigma);
 }
 
-CAutoencoder::CAutoencoder(
+Autoencoder::Autoencoder(
 	int32_t input_width, int32_t input_height, int32_t input_num_channels,
-	CNeuralConvolutionalLayer* hidden_layer,
-	CNeuralConvolutionalLayer* decoding_layer,
+	std::shared_ptr<NeuralConvolutionalLayer> hidden_layer,
+	std::shared_ptr<NeuralConvolutionalLayer> decoding_layer,
 	float64_t sigma)
-	: CNeuralNetwork()
+	: NeuralNetwork()
 {
 	init();
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(input_width, input_height, input_num_channels));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(input_width, input_height, input_num_channels));
 	layers->append_element(hidden_layer);
 	layers->append_element(decoding_layer);
 
@@ -93,7 +93,7 @@ CAutoencoder::CAutoencoder(
 }
 
 
-bool CAutoencoder::train(CFeatures* data)
+bool Autoencoder::train(std::shared_ptr<Features> data)
 {
 	require(data != NULL, "Invalid (NULL) feature pointer");
 
@@ -103,7 +103,7 @@ bool CAutoencoder::train(CFeatures* data)
 		m_dropout_input = m_noise_parameter;
 	if (m_noise_type==AENT_GAUSSIAN)
 	{
-		CNeuralInputLayer* input_layer = (CNeuralInputLayer*)get_layer(0);
+		auto input_layer = std::static_pointer_cast<NeuralInputLayer>(get_layer(0));
 		input_layer->gaussian_noise = m_noise_parameter;
 	}
 
@@ -130,30 +130,30 @@ bool CAutoencoder::train(CFeatures* data)
 
 	if (m_noise_type==AENT_GAUSSIAN)
 	{
-		CNeuralInputLayer* input_layer = (CNeuralInputLayer*)get_layer(0);
+		auto input_layer = std::static_pointer_cast<NeuralInputLayer>(get_layer(0));
 		input_layer->gaussian_noise = 0;
 	}
 
 	return result;
 }
 
-CDenseFeatures< float64_t >* CAutoencoder::transform(
-	CDenseFeatures< float64_t >* data)
+std::shared_ptr<DenseFeatures< float64_t >> Autoencoder::transform(
+	std::shared_ptr<DenseFeatures< float64_t >> data)
 {
 	SGMatrix<float64_t> hidden_activation = forward_propagate(data, m_num_layers-2);
-	return new CDenseFeatures<float64_t>(hidden_activation);
+	return std::make_shared<DenseFeatures<float64_t>>(hidden_activation);
 }
 
-CDenseFeatures< float64_t >* CAutoencoder::reconstruct(
-	CDenseFeatures< float64_t >* data)
+std::shared_ptr<DenseFeatures< float64_t >> Autoencoder::reconstruct(
+	std::shared_ptr<DenseFeatures< float64_t >> data)
 {
 	SGMatrix<float64_t> reconstructed = forward_propagate(data);
-	return new CDenseFeatures<float64_t>(reconstructed);
+	return std::make_shared<DenseFeatures<float64_t>>(reconstructed);
 }
 
-float64_t CAutoencoder::compute_error(SGMatrix< float64_t > targets)
+float64_t Autoencoder::compute_error(SGMatrix< float64_t > targets)
 {
-	float64_t error = CNeuralNetwork::compute_error(targets);
+	float64_t error = NeuralNetwork::compute_error(targets);
 
 	if (m_contraction_coefficient != 0.0)
 		error +=
@@ -163,13 +163,13 @@ float64_t CAutoencoder::compute_error(SGMatrix< float64_t > targets)
 }
 
 template <class T>
-SGVector<T> CAutoencoder::get_section(SGVector<T> v, int32_t i)
+SGVector<T> Autoencoder::get_section(SGVector<T> v, int32_t i)
 {
 	return SGVector<T>(v.vector+m_index_offsets[i],
 		get_layer(i)->get_num_parameters(), false);
 }
 
-void CAutoencoder::init()
+void Autoencoder::init()
 {
 	m_noise_type = AENT_NONE;
 	m_noise_parameter = 0.0;

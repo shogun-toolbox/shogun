@@ -6,8 +6,8 @@ using namespace shogun;
 
 TEST(UAIFileTest, preamble)
 {
-	CUAIFile* fout =
-	    new CUAIFile("UAIFileTest_unittest_preamble.uai", 'w', NULL);
+	auto fout =
+	    std::make_shared<UAIFile>("UAIFileTest_unittest_preamble.uai", 'w');
 
 	fout->set_net_type("MARKOV");
 
@@ -48,11 +48,11 @@ TEST(UAIFileTest, preamble)
 	factors_table[0] = f_t1;
 	factors_table[1] = f_t2;
 	fout->set_factors_table(2, factors_table);
+	// flush output
+	fout.reset();
 
-	SG_UNREF(fout);
-
-	CUAIFile* fin =
-	    new CUAIFile("UAIFileTest_unittest_preamble.uai", 'r', NULL);
+	auto fin =
+	    std::make_shared<UAIFile>("UAIFileTest_unittest_preamble.uai", 'r');
 
 	SGVector<char> net_type;
 	int32_t num_factors, num_vars;
@@ -104,7 +104,7 @@ TEST(UAIFileTest, preamble)
 		}
 	}
 
-	SG_UNREF(fin);
+
 
 	delete[] factors_table_in;
 	delete[] factors_scope_in;

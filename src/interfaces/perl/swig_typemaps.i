@@ -387,7 +387,7 @@ fail:
 
         %}
 
-/* CFeatures to ... */
+/* Features to ... */
 %define FEATURES_BY_TYPECODE(obj, f, type, typecode)
         switch (typecode) {
             case F_BOOL:
@@ -427,25 +427,25 @@ fail:
                 obj=SWIG_NewPointerObj(f, $descriptor(type<floatmax_t> *), SWIG_POINTER_EXCEPTION);
                 break;
             default:
-                obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+                obj=SWIG_NewPointerObj(f, $descriptor(shogun::Features*), SWIG_POINTER_EXCEPTION);
                 break;
         }
 %enddef
 
 
-%typemap(out) shogun::CFeatures*
+%typemap(out) shogun::Features*
 {
             int feats_class=$1->get_feature_class();
             int feats_type=$1->get_feature_type();
             switch (feats_class){
                 case C_DENSE:
                     {
-                        FEATURES_BY_TYPECODE($result, $1, shogun::CDenseFeatures, feats_type)
+                        FEATURES_BY_TYPECODE($result, $1, shogun::DenseFeatures, feats_type)
                             break;
                     }
                 case C_SPARSE:
                     {
-                        FEATURES_BY_TYPECODE($result, $1, shogun::CSparseFeatures, feats_type)
+                        FEATURES_BY_TYPECODE($result, $1, shogun::SparseFeatures, feats_type)
                             break;
                     }
                 case C_STRING:
@@ -454,7 +454,7 @@ fail:
                             break;
                     }
                 case C_COMBINED:
-                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedFeatures*), SWIG_POINTER_EXCEPTION);
+                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::CombinedFeatures*), SWIG_POINTER_EXCEPTION);
                     break;
                 case C_COMBINED_DOT:
                     $result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedDotFeatures*), SWIG_POINTER_EXCEPTION);
@@ -473,12 +473,12 @@ fail:
                     break;
                 case C_STREAMING_DENSE:
                     {
-                        FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingDenseFeatures, feats_type)
+                        FEATURES_BY_TYPECODE($result, $1, shogun::StreamingDenseFeatures, feats_type)
                             break;
                     }
                 case C_STREAMING_SPARSE:
                     {
-                        FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingSparseFeatures, feats_type)
+                        FEATURES_BY_TYPECODE($result, $1, shogun::StreamingSparseFeatures, feats_type)
                             break;
                     }
                 case C_STREAMING_STRING:
@@ -491,10 +491,10 @@ fail:
                     $result=SWIG_NewPointerObj($1, $descriptor(shogun::CBinnedDotFeatures*), SWIG_POINTER_EXCEPTION);
                     break;
                 case C_DIRECTOR_DOT:
-                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::CDirectorDotFeatures*), SWIG_POINTER_EXCEPTION);
+                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::DirectorDotFeatures*), SWIG_POINTER_EXCEPTION);
                     break;
                 default:
-                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+                    $result=SWIG_NewPointerObj($1, $descriptor(shogun::Features*), SWIG_POINTER_EXCEPTION);
                     break;
             }
             argvi++;

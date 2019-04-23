@@ -42,32 +42,32 @@ namespace {
 
 };
 
-CFastICA::CFastICA() : RandomMixin<CICAConverter>()
+FastICA::FastICA() : RandomMixin<ICAConverter>()
 {
 	init();
 }
 
-void CFastICA::init()
+void FastICA::init()
 {
 	whiten = true;
 	SG_ADD(&whiten, "whiten", "flag indicating whether to whiten the data");
 }
 
-CFastICA::~CFastICA()
+FastICA::~FastICA()
 {
 }
 
-void CFastICA::set_whiten(bool _whiten)
+void FastICA::set_whiten(bool _whiten)
 {
 	whiten = _whiten;
 }
 
-bool CFastICA::get_whiten() const
+bool FastICA::get_whiten() const
 {
 	return whiten;
 }
 
-void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
+void FastICA::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 	require(X.data(), "Features have not been provided.");
@@ -75,7 +75,7 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 	int p = X.num_cols;
 	int m = n;
 
-	Map<MatrixXd> EX(X.matrix,n,p);
+	Eigen::Map<MatrixXd> EX(X.matrix,n,p);
 
 	// Whiten
 	MatrixXd K;
@@ -116,7 +116,7 @@ void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
 		random::fill_array(m_mixing_matrix, NormalDistribution<float64_t>(), m_prng);
 	}
 
-	Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
+	Eigen::Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
 
 	W = sym_decorrelation(W);
 

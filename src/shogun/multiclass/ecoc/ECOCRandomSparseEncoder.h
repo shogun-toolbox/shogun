@@ -32,7 +32,7 @@ namespace shogun
  * * Q(+1) = 1/K + (K-2)/K * P(+1)
  * * Q(-1) = 1/K + (K-2)/K * P(-1)
  */
-class CECOCRandomSparseEncoder: public RandomMixin<CECOCEncoder>
+class ECOCRandomSparseEncoder: public RandomMixin<ECOCEncoder>
 {
 public:
     /** constructor
@@ -44,11 +44,11 @@ public:
      *
      * @see get_default_code_length
      */
-    CECOCRandomSparseEncoder(int32_t maxiter=10000, int32_t codelen=0,
+    ECOCRandomSparseEncoder(int32_t maxiter=10000, int32_t codelen=0,
             float64_t pzero=0.5, float64_t pposone=0.25, float64_t pnegone=0.25);
 
     /** destructor */
-    virtual ~CECOCRandomSparseEncoder() {}
+    virtual ~ECOCRandomSparseEncoder() {}
 
     /** set probability
      * @param pzero probability of zero
@@ -72,7 +72,7 @@ public:
     int32_t get_default_code_length(int32_t num_classes) const
     {
 		return static_cast<int32_t>(
-			CMath::round(15 * std::log(static_cast<float64_t>(num_classes))));
+			Math::round(15 * std::log(static_cast<float64_t>(num_classes))));
 	}
 
 	/** init codebook.
@@ -100,7 +100,7 @@ private:
      */
     bool check_probability(float64_t pzero, float64_t pposone, float64_t pnegone)
     {
-        if (CMath::abs(pzero + pposone + pnegone - 1) > 1e-5)
+        if (std::abs(pzero + pposone + pnegone - 1) > 1e-5)
             return false;
         return true;
     }

@@ -15,13 +15,13 @@
 namespace shogun
 {
 
-/** @brief Class CFactorType defines the way of factor parameterization
+/** @brief Class FactorType defines the way of factor parameterization
  */
-class CFactorType : public CSGObject
+class FactorType : public SGObject
 {
 public:
 	/** default constructor is prohibitted */
-	CFactorType();
+	FactorType();
 
 	/** Constructor
 	 * if w.size() == 0
@@ -34,10 +34,10 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	FactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
-	virtual ~CFactorType();
+	virtual ~FactorType();
 
 	/** @return name of class */
 	virtual const char* get_name() const { return "FactorType"; }
@@ -47,7 +47,7 @@ public:
 
 	/** set factor type id
 	 *
-	 * @param id type id in CFactorGraphModel
+	 * @param id type id in FactorGraphModel
 	 */
 	virtual void set_type_id(int32_t id);
 
@@ -112,14 +112,14 @@ protected:
 	SGVector<float64_t> m_w;
 };
 
-/** @brief Class CTableFactorType the way that store assignments of variables
+/** @brief Class TableFactorType the way that store assignments of variables
  * and energies in a table or a multi-array
  */
-class CTableFactorType : public CFactorType
+class TableFactorType : public FactorType
 {
 public:
 	/** default constructor */
-	CTableFactorType();
+	TableFactorType();
 
 	/** constructor
 	 *
@@ -127,10 +127,10 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CTableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
+	TableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
-	virtual ~CTableFactorType();
+	virtual ~TableFactorType();
 
 	/** @return class name */
 	virtual const char* get_name() const { return "TableFactorType"; }
