@@ -117,7 +117,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(true)};
 
-	for (size_t i = 0; i < par->get_num_observations(); i++)
+	for (index_t i = 0; i < par->get<index_t>("num_observations"); i++)
 	{
 		auto name = par->get_observation(i)->get<std::string>("name");
 		auto run = par->get_observation(i)->get(name);
@@ -148,7 +148,7 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(false)};
 
-	for (size_t i = 0; i < par->get_num_observations(); i++)
+	for (index_t i = 0; i < par->get<index_t>("num_observations"); i++)
 	{
 		auto name = par->get_observation(i)->get<std::string>("name");
 		auto run = par->get_observation(i)->get(name);
