@@ -54,7 +54,7 @@ namespace shogun
 	                    std::is_same<CMeanFunction, T>::value ||
 	                    std::is_same<CLossFunction, T>::value ||
 	                    std::is_same<CTokenizer, T>::value ||
-						std::is_same<CEvaluationResult, T>::value>
+	                    std::is_same<CEvaluationResult, T>::value>
 	{
 	};
 

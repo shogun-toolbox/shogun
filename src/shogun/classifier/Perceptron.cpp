@@ -73,7 +73,7 @@ void CPerceptron::iteration()
 		{
 			converged = false;
 			const auto gradient = learn_rate * true_label;
-			put("bias", bias+gradient);
+			put("bias", bias + gradient);
 			v.add(gradient, w);
 			put("w", w);
 		}
