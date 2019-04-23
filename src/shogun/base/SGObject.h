@@ -438,7 +438,8 @@ public:
 	}
 
 #ifndef SWIG
-	/** Typed array getter for an object array class parameter of a Shogun base class
+	/** Typed array getter for an object array class parameter of a Shogun base
+	* class
 	* type, identified by a name and an index.
 	*
 	* Returns nullptr if parameter of desired type does not exist.
@@ -448,7 +449,7 @@ public:
 	* @return desired element
 	*/
 	template <class T,
-			  class X = typename std::enable_if<is_sg_base<T>::value>::type>
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
 	T* get(const std::string& name, index_t index, std::nothrow_t) const
 	{
 		CSGObject* result = nullptr;
@@ -467,14 +468,15 @@ public:
 	}
 
 	template <class T,
-			class X = typename std::enable_if<is_sg_base<T>::value>::type>
+		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
 	T* get(const std::string& name, index_t index) const
 	{
 		auto result = this->get<T>(name, index, std::nothrow);
-		if (!result) {
-			SG_ERROR("Could not get array parameter %s::%s[%d] of type %s\n",
-					 get_name(), name.c_str(), index, demangled_type<T>().c_str());
-
+		if (!result)
+		{
+			SG_ERROR(
+				"Could not get array parameter %s::%s[%d] of type %s\n",
+				get_name(), name.c_str(), index, demangled_type<T>().c_str());
 		}
 		return result;
 	};
@@ -673,7 +675,8 @@ public:
 
 	/**
 	 * Detach an observer from the current SGObject.
-	 * @param subscription_index the index obtained by calling the subscribe procedure
+	 * @param subscription_index the index obtained by calling the subscribe
+	 * procedure
 	 */
 	void unsubscribe(ParameterObserver* obs);
 
@@ -967,7 +970,6 @@ private:
 	Unique<ParameterObserverList> param_obs_list;
 
 protected:
-
 	/**
 	 * Return total subscriptions
 	 * @return total number of subscriptions
@@ -1014,70 +1016,69 @@ protected:
 	void register_observable(
 		const std::string& name, const std::string& description);
 
-	/**
-	 * Get the current step for the observed values.
-	 */
+/**
+ * Get the current step for the observed values.
+ */
 #ifndef SWIG
-	SG_FORCED_INLINE int64_t get_step() const
-	{
-		int64_t step = -1;
-		Tag<int64_t> tag("current_iteration");
-		if (has(tag))
+		SG_FORCED_INLINE int64_t get_step() const
 		{
-			step = get(tag);
+			int64_t step = -1;
+			Tag<int64_t> tag("current_iteration");
+			if (has(tag))
+			{
+				step = get(tag);
+			}
+			return step;
 		}
-		return step;
-	}
 #endif
 
-	/** mapping from strings to enum for SWIG interface */
-	stringToEnumMapType m_string_to_enum_map;
+		/** mapping from strings to enum for SWIG interface */
+		stringToEnumMapType m_string_to_enum_map;
 
-public:
-	/** io */
-	SGIO* io;
+	public:
+		/** io */
+		SGIO* io;
 
-	/** parallel */
-	Parallel* parallel;
+		/** parallel */
+		Parallel* parallel;
 
-	/** version */
-	Version* version;
+		/** version */
+		Version* version;
 
-	/** parameters */
-	Parameter* m_parameters;
+		/** parameters */
+		Parameter* m_parameters;
 
-	/** model selection parameters */
-	Parameter* m_model_selection_parameters;
+		/** model selection parameters */
+		Parameter* m_model_selection_parameters;
 
-	/** parameters wrt which we can compute gradients */
-	Parameter* m_gradient_parameters;
+		/** parameters wrt which we can compute gradients */
+		Parameter* m_gradient_parameters;
 
-	/** Hash of parameter values*/
-	uint32_t m_hash;
+		/** Hash of parameter values*/
+		uint32_t m_hash;
 
-private:
+	private:
+		EPrimitiveType m_generic;
+		bool m_load_pre_called;
+		bool m_load_post_called;
+		bool m_save_pre_called;
+		bool m_save_post_called;
 
-	EPrimitiveType m_generic;
-	bool m_load_pre_called;
-	bool m_load_post_called;
-	bool m_save_pre_called;
-	bool m_save_post_called;
+		RefCount* m_refcount;
 
-	RefCount* m_refcount;
+		/** Subject used to create the params observer */
+		SGSubject* m_subject_params;
 
-	/** Subject used to create the params observer */
-	SGSubject* m_subject_params;
+		/** Parameter Observable */
+		SGObservable* m_observable_params;
 
-	/** Parameter Observable */
-	SGObservable* m_observable_params;
+		/** Subscriber used to call onNext, onComplete etc.*/
+		SGSubscriber* m_subscriber_params;
 
-	/** Subscriber used to call onNext, onComplete etc.*/
-	SGSubscriber* m_subscriber_params;
-
-	/** List of subscription for this SGObject */
-	std::map<int64_t, rxcpp::subscription> m_subscriptions;
-	int64_t m_next_subscription_index;
-};
+		/** List of subscription for this SGObject */
+		std::map<int64_t, rxcpp::subscription> m_subscriptions;
+		int64_t m_next_subscription_index;
+	};
 
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

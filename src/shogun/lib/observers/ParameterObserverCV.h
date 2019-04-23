@@ -38,8 +38,8 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
-#include <shogun/lib/observers/observers_utils.h>
 #include <shogun/lib/observers/ParameterObserver.h>
+#include <shogun/lib/observers/observers_utils.h>
 
 namespace shogun
 {

@@ -83,7 +83,8 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CCrossValidationResult* result = m_machine_eval->evaluate()->as<CCrossValidationResult>();
+		CCrossValidationResult* result =
+		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
 
 		if (print_state)
 			result->print_result();
