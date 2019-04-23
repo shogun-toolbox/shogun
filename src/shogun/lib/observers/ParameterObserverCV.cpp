@@ -56,8 +56,8 @@ CParameterObserverCV::~CParameterObserverCV()
 void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 {
 	CrossValidationStorage* recalled_value =
-	    dynamic_cast<CrossValidationStorage*>(value.first->get(
-	        value.first->get<std::string>("name")));
+	    dynamic_cast<CrossValidationStorage*>(
+	        value.first->get(value.first->get<std::string>("name")));
 	SG_REF(recalled_value);
 
 	/* Print information on screen if enabled*/
@@ -78,17 +78,25 @@ void CParameterObserverCV::print_observed_value(
 {
 	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
 	{
-		auto f = value->get("folds",i);
+		auto f = value->get("folds", i);
 		SG_PRINT("\n")
-		SG_PRINT("Current run index: %i\n", f->get<index_t>("current_run_index"))
-		SG_PRINT("Current fold index: %i\n", f->get<index_t>("current_fold_index"))
-		f->get<SGVector<index_t>>("train_indices").display_vector("Train Indices ");
-		f->get<SGVector<index_t>>("test_indices").display_vector("Test Indices ");
+		SG_PRINT(
+		    "Current run index: %i\n", f->get<index_t>("current_run_index"))
+		SG_PRINT(
+		    "Current fold index: %i\n", f->get<index_t>("current_fold_index"))
+		f->get<SGVector<index_t>>("train_indices")
+		    .display_vector("Train Indices ");
+		f->get<SGVector<index_t>>("test_indices")
+		    .display_vector("Test Indices ");
 		print_machine_information(f->get<CMachine*>("trained_machine"));
-		f->get<CLabels*>("test_result")->get_values().display_vector("Test Labels ");
-		f->get<CLabels*>("test_true_result")->get_values().display_vector(
-		    "Test True Label ");
-		SG_PRINT("Evaluation result: %f\n", f->get<float64_t>("evaluation_result"));
+		f->get<CLabels*>("test_result")
+		    ->get_values()
+		    .display_vector("Test Labels ");
+		f->get<CLabels*>("test_true_result")
+		    ->get_values()
+		    .display_vector("Test True Label ");
+		SG_PRINT(
+		    "Evaluation result: %f\n", f->get<float64_t>("evaluation_result"));
 		SG_UNREF(f)
 	}
 }

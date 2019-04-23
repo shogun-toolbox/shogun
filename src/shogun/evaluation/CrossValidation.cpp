@@ -99,7 +99,9 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		CrossValidationStorage* storage = new CrossValidationStorage();
 		SG_REF(storage)
 		storage->put("num_runs", utils::safe_convert<index_t>(m_num_runs));
-		storage->put("num_folds", utils::safe_convert<index_t>(m_splitting_strategy->get_num_subsets()));
+		storage->put(
+		    "num_folds", utils::safe_convert<index_t>(
+		                     m_splitting_strategy->get_num_subsets()));
 		storage->put("labels", m_labels);
 		storage->post_init();
 		SG_DEBUG("Ending CrossValidationStorage initilization.\n")
@@ -109,8 +111,9 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
 		/* Emit the value */
-		observe(i, "cross_validation_run", "One run of CrossValidation",
-				storage->as<CEvaluationResult>());
+		observe(
+		    i, "cross_validation_run", "One run of CrossValidation",
+		    storage->as<CEvaluationResult>());
 
 		SG_UNREF(storage)
 	}
