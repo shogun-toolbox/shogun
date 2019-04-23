@@ -88,38 +88,6 @@ public:
 	/** default destructor */
 	virtual ~CLeastAngleRegression();
 
-	/** set max number of non-zero variables for early stopping
-	 *
-	 * @param n 0 means no constraint
-	 */
-	void set_max_non_zero(int32_t n)
-	{
-		m_max_nonz = n;
-	}
-
-	/** get max number of non-zero variables for early stopping
-	 */
-	int32_t get_max_non_zero() const
-	{
-		return m_max_nonz;
-	}
-
-	/** set max l1-norm of estimator for early stopping
-	 *
-	 * @param norm the max l1-norm for beta
-	 */
-	void set_max_l1_norm(float64_t norm)
-	{
-		m_max_l1_norm = norm;
-	}
-
-	/** get max l1-norm of estimator for early stopping
-	 */
-	float64_t get_max_l1_norm() const
-	{
-		return m_max_l1_norm;
-	}
-
 	/** switch estimator
 	 *
 	 * @param num_variable number of non-zero coefficients
@@ -173,18 +141,6 @@ public:
 	virtual EMachineType get_classifier_type()
 	{
 		return CT_LARS;
-	}
-
-	/** Set epsilon used for early stopping */
-	void set_epsilon(float64_t epsilon)
-	{
-		m_epsilon = epsilon;
-	}
-
-	/** Get epsilon used for early stopping */
-	float64_t get_epsilon()
-	{
-		return m_epsilon;
 	}
 
 	/** @return object name */
