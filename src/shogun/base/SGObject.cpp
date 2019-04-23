@@ -15,6 +15,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/class_list.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
@@ -22,7 +23,6 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/observers/ParameterObserver.h>
-#include <shogun/base/class_list.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -798,33 +798,36 @@ void CSGObject::subscribe(ParameterObserver* obs)
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
-	rxcpp::subscription subscription = m_observable_params
-	                        ->filter([obs](Some<ObservedValue> v) {
-		                        return obs->filter(v->get<std::string>("name"));
-		                    })
-	                        .timestamp()
-	                        .subscribe(sub);
+	rxcpp::subscription subscription =
+	    m_observable_params
+	        ->filter([obs](Some<ObservedValue> v) {
+		        return obs->filter(v->get<std::string>("name"));
+		    })
+	        .timestamp()
+	        .subscribe(sub);
 
 	// Insert the subscription in the list
 	m_subscriptions.insert(
-			std::make_pair<int64_t, rxcpp::subscription>(
-					std::move(m_next_subscription_index),
-					std::move(subscription)));
+	    std::make_pair<int64_t, rxcpp::subscription>(
+	        std::move(m_next_subscription_index), std::move(subscription)));
 
 	obs->put("subscription_id", m_next_subscription_index);
 
 	m_next_subscription_index++;
 }
 
-void CSGObject::unsubscribe(ParameterObserver *obs) {
+void CSGObject::unsubscribe(ParameterObserver* obs)
+{
 
 	int64_t index = obs->get<int64_t>("subscription_id");
 
 	// Check if we have such subscription
 	auto it = m_subscriptions.find(index);
 	if (it == m_subscriptions.end())
-		SG_ERROR("The object %s does not have any registered parameter observer with index %i",
-		  this->get_name(), index);
+		SG_ERROR(
+		    "The object %s does not have any registered parameter observer "
+		    "with index %i",
+		    this->get_name(), index);
 
 	it->second.unsubscribe();
 	m_subscriptions.erase(index);
