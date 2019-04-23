@@ -55,7 +55,7 @@ SGMatrix<float64_t> calculate_weights(
 	for (auto o : range(obs.get_num_observations()))
 	{
 		auto obs_storage = obs.get_observation(o);
-		for (auto i : range(obs_storage->get<index_t("num_folds")))
+		for (auto i : range(obs_storage->get<index_t>("num_folds")))
 		{
 			auto fold = obs_storage->get("folds", i);
 			CMKLClassification* machine =
