@@ -168,7 +168,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	//========================================
 	int32_t nloop=0;
 	auto pb = SG_PROGRESS(range(0, max_active_allowed));
-	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
+	while (m_num_active < max_active_allowed && max_corr/n_vec > m_epsilon && !stop_cond)
 	{
 		COMPUTATION_CONTROLLERS
 
@@ -285,16 +285,16 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 			beta[m_active_set[i]] += gamma * wA(i);
 
 		// early stopping on max l1-norm
-		if (get_max_l1_norm() > 0)
+		if (m_max_l1_norm > 0)
 		{
 			ST l1 = SGVector<ST>::onenorm(&beta[0], n_fea);
-			if (l1 > get_max_l1_norm())
+			if (l1 > m_max_l1_norm)
 			{
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
 				ST l1_prev = (ST) SGVector<ST>::onenorm(&m_beta_path_t[nloop][0], n_fea);
-				ST s = (get_max_l1_norm()-l1_prev)/(l1-l1_prev);
+				ST s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
 
 				typename SGVector<ST>::EigenVectorXtMap map_beta(&beta[0], n_fea);
 				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(&m_beta_path_t[nloop][0], n_fea);
@@ -325,7 +325,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 			m_beta_idx[m_num_active] = nloop;
 
 		// early stopping with max number of non-zero variables
-		if (get_max_non_zero() > 0 && m_num_active >= get_max_non_zero())
+		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
 			stop_cond = true;
 		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
 
@@ -347,12 +347,12 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST>* data)
 	set_w(SGVector<float64_t>(n_fea));
 	switch_w(get_path_size()-1);
 
-	if (max_corr / n_vec > get_epsilon())
+	if (max_corr / n_vec > m_epsilon)
 	{
 		SG_WARNING(
 		    "Convergence level (%f) not below tolerance (%f) after %d "
 		    "iterations.\n",
-		    max_corr / n_vec, get_epsilon(), nloop);
+		    max_corr / n_vec, m_epsilon, nloop);
 	}
 
 	return true;
