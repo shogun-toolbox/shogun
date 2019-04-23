@@ -20,12 +20,12 @@ using namespace shogun;
 namespace shogun
 {
 	typedef Types<
-		bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
-		int64_t, uint64_t, float32_t, float64_t, floatmax_t, SGVector<int32_t>,
-		SGVector<int64_t>, SGVector<float32_t>, SGVector<float64_t>,
-		SGVector<floatmax_t>, SGMatrix<int32_t>, SGMatrix<int64_t>,
-		SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>>
-		SG_TYPES;
+	    bool, char, int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
+	    int64_t, uint64_t, float32_t, float64_t, floatmax_t, SGVector<int32_t>,
+	    SGVector<int64_t>, SGVector<float32_t>, SGVector<float64_t>,
+	    SGVector<floatmax_t>, SGMatrix<int32_t>, SGMatrix<int64_t>,
+	    SGMatrix<float32_t>, SGMatrix<float64_t>, SGMatrix<floatmax_t>>
+	    SG_TYPES;
 
 	enum class TYPE
 	{
@@ -56,11 +56,10 @@ namespace shogun
 		T_SGMATRIX_INT64 = 25,
 		T_UNDEFINED = 26
 	};
-
 	typedef std::unordered_map<std::type_index, TYPE> typemap;
-
 	namespace type_internal
 	{
+
 		template <typename T>
 		struct sg_type
 		{
@@ -164,7 +163,7 @@ namespace shogun
 			auto type = std::type_index(any.type_info());
 			auto it = map.find(type);
 
-			return it == map.end() ? TYPE::T_UNDEFINED : map.at(type);
+			return it == map.end() ? TYPE::T_UNDEFINED : (*it).second;
 		}
 
 		template <typename T>
@@ -182,8 +181,8 @@ namespace shogun
 			assert_return_type_is_valid()
 			{
 				static_assert(
-					wrong<T>::value, "All lambda definitions must be void and "
-									 "have the signature 'void f(auto value)'");
+				    wrong<T>::value, "All lambda definitions must be void and "
+				                     "have the signature 'void f(auto value)'");
 			}
 		};
 
@@ -193,9 +192,9 @@ namespace shogun
 			assert_arity_is_valid()
 			{
 				static_assert(
-					wrong<T>::value,
-					"All lambda definitions must have a single argument and "
-					"have the signature 'void f(auto value)'");
+				    wrong<T>::value,
+				    "All lambda definitions must have a single argument and "
+				    "have the signature 'void f(auto value)'");
 			}
 		};
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -205,8 +204,8 @@ namespace shogun
 #else
 		template <typename FunctorTraits>
 		using check_lambda_return = std::conditional_t<
-				std::is_void<typename FunctorTraits::result_type>::value, ok,
-				assert_return_type_is_valid>;
+		    std::is_void<typename FunctorTraits::result_type>::value, ok,
+		    assert_return_type_is_valid>;
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER < 1920
@@ -215,12 +214,14 @@ namespace shogun
 #else
 		template <typename FunctorTraits>
 		using check_lambda_arity = std::conditional_t<
-			FunctorTraits::arity == 1, ok, assert_arity_is_valid>;
+		    FunctorTraits::arity == 1, ok, assert_arity_is_valid>;
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER < 1920
 		template <typename F, typename... Args>
-		struct auto_function_traits {};
+		struct auto_function_traits
+		{
+		};
 #else
 		template <typename F>
 		struct function_traits : function_traits<decltype(&F::operator())>
@@ -236,7 +237,7 @@ namespace shogun
 
 		template <typename F, typename... Args>
 		struct auto_function_traits
-			: function_traits<decltype(&F::template operator()<Args...>)>
+		    : function_traits<decltype(&F::template operator()<Args...>)>
 		{
 		};
 #endif
@@ -251,147 +252,149 @@ namespace shogun
 		template <typename T, typename Check, typename FunctorT>
 		auto
 		execute_function_check_return_type(Check, const Any& any, FunctorT func)
-			-> Check
+		    -> Check
 		{
 		}
 
 		template <typename T, typename FunctorT>
 		auto
 		execute_function_check_return_type(ok, const Any& any, FunctorT func)
-			-> decltype(final_function_execute<T>(any, func))
+		    -> decltype(final_function_execute<T>(any, func))
 		{
 			final_function_execute<T>(any, func);
 		}
 
 		template <typename T, typename TraitsT, typename FunctorT>
 		auto execute_function_check_arity(ok, const Any& any, FunctorT func)
-			-> decltype(execute_function_check_return_type<T>(
-				check_lambda_return<TraitsT>{}, any, func))
+		    -> decltype(execute_function_check_return_type<T>(
+		        check_lambda_return<TraitsT>{}, any, func))
 		{
-			execute_function_check_return_type<T>(
-				check_lambda_return<TraitsT>{}, any, func);
+			return execute_function_check_return_type<T>(
+			    check_lambda_return<TraitsT>{}, any, func);
 		}
 
 		template <
-			typename T, typename TraitsT, typename Check, typename FunctorT>
+		    typename T, typename TraitsT, typename Check, typename FunctorT>
 		auto execute_function_check_arity(Check, const Any& any, FunctorT func)
-			-> Check
+		    -> Check
 		{
 		}
 
 		template <typename T, typename Traits, typename FunctorT>
 		auto execute_function_checks(const Any& any, FunctorT func)
-			-> decltype(execute_function_check_arity<T, Traits>(
-				check_lambda_arity<Traits>{}, any, func))
+		    -> decltype(execute_function_check_arity<T, Traits>(
+		        check_lambda_arity<Traits>{}, any, func))
 		{
 			execute_function_check_arity<T, Traits>(
-				check_lambda_arity<Traits>{}, any, func);
+			    check_lambda_arity<Traits>{}, any, func);
 		}
 
 		template <
-			typename T, typename Traits, typename Check, typename FunctorT>
+		    typename T, typename Traits, typename Check, typename FunctorT>
 		auto execute_function_checks(const Any& any, FunctorT func) -> Check
 		{
 		}
 
 		template <
-			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT,
-			typename traits = auto_function_traits<PrimitiveLambdaT, int>,
-			std::enable_if_t<
-				is_sg_primitive<T>::value &&
-				!is_none<PrimitiveLambdaT>::value>* = nullptr>
+		    typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
+		    typename MatrixLambdaT,
+		    typename traits = auto_function_traits<PrimitiveLambdaT, int>,
+		    std::enable_if_t<
+		        is_sg_primitive<T>::value &&
+		        !is_none<PrimitiveLambdaT>::value>* = nullptr>
 		auto execute_function(
-			const Any& any, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
-			-> decltype(execute_function_checks<T, traits>(any, primitive_func))
+		    const Any& any, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func)
+		    -> decltype(execute_function_checks<T, traits>(any, primitive_func))
 		{
 			execute_function_checks<T, traits>(any, primitive_func);
 		}
 
 		template <
-			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT,
-			typename traits = auto_function_traits<VectorLambdaT, int>,
-			std::enable_if_t<
-				is_sg_vector<T>::value && !is_none<VectorLambdaT>::value>* =
-				nullptr>
+		    typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
+		    typename MatrixLambdaT,
+		    typename traits =
+		        auto_function_traits<VectorLambdaT, SGVector<int>>,
+		    std::enable_if_t<
+		        is_sg_vector<T>::value && !is_none<VectorLambdaT>::value>* =
+		        nullptr>
 		auto execute_function(
-			const Any& any, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
-			-> decltype(execute_function_checks<T, traits>(any, vector_func))
+		    const Any& any, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func)
+		    -> decltype(execute_function_checks<T, traits>(any, vector_func))
 		{
 			execute_function_checks<T, traits>(any, vector_func);
 		}
 
 		template <
-			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT,
-			typename traits = auto_function_traits<MatrixLambdaT, int>,
-			std::enable_if_t<
-				is_sg_matrix<T>::value && !is_none<MatrixLambdaT>::value>* =
-				nullptr>
+		    typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
+		    typename MatrixLambdaT,
+		    typename traits =
+		        auto_function_traits<MatrixLambdaT, SGMatrix<int>>,
+		    std::enable_if_t<
+		        is_sg_matrix<T>::value && !is_none<MatrixLambdaT>::value>* =
+		        nullptr>
 		auto execute_function(
-			const Any& any, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
-			-> decltype(execute_function_checks<T, traits>(any, matrix_func))
+		    const Any& any, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func)
+		    -> decltype(execute_function_checks<T, traits>(any, matrix_func))
 		{
 			execute_function_checks<T, traits>(any, matrix_func);
 		}
 
 		template <
-			typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
-			typename MatrixLambdaT, typename traits = void,
-			std::enable_if_t<
-				(is_none<PrimitiveLambdaT>::value &&
-				 is_sg_primitive<T>::value) ||
-				(is_none<VectorLambdaT>::value && is_sg_vector<T>::value) ||
-				(is_none<MatrixLambdaT>::value && is_sg_matrix<T>::value)>* =
-				nullptr>
+		    typename T, typename PrimitiveLambdaT, typename VectorLambdaT,
+		    typename MatrixLambdaT, typename traits = void,
+		    std::enable_if_t<
+		        (is_none<PrimitiveLambdaT>::value &&
+		         is_sg_primitive<T>::value) ||
+		        (is_none<VectorLambdaT>::value && is_sg_vector<T>::value) ||
+		        (is_none<MatrixLambdaT>::value && is_sg_matrix<T>::value)>* =
+		        nullptr>
 		auto execute_function(
-			const Any& any, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
+		    const Any& any, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			SG_SWARNING(
-				"Ignoring Any dispatch call.\n"
-				"sg_any_dispatch requires a lambda function definition "
-				"for the expected underlying type of Any (%s).\n",
-				demangled_type<T>().c_str())
+			    "Ignoring Any dispatch call.\n"
+			    "sg_any_dispatch requires a lambda function definition "
+			    "for the expected underlying type of Any (%s).\n",
+			    demangled_type<T>().c_str())
 		}
 
 		template <
-			typename TypeList, typename PrimitiveLambdaT,
-			typename VectorLambdaT, typename MatrixLambdaT,
-			typename std::enable_if<std::is_same<
-				typename TypeList::Head, None>::value>::type* = nullptr>
+		    typename TypeList, typename PrimitiveLambdaT,
+		    typename VectorLambdaT, typename MatrixLambdaT,
+		    typename std::enable_if<std::is_same<
+		        typename TypeList::Head, None>::value>::type* = nullptr>
 		auto sg_type_finder(
-			const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
+		    const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func) -> void
 		{
 			SG_SERROR(
-				"Unsupported type %s\n",
-				demangled_type(any.type_info().name()).c_str())
+			    "Unsupported type %s\n",
+			    demangled_type(any.type_info().name()).c_str())
 		}
 
 		template <
-			typename TypeList, typename PrimitiveLambdaT,
-			typename VectorLambdaT, typename MatrixLambdaT,
-			typename std::enable_if<!std::is_same<
-				typename TypeList::Head, None>::value>::type* = nullptr>
+		    typename TypeList, typename PrimitiveLambdaT,
+		    typename VectorLambdaT, typename MatrixLambdaT,
+		    typename std::enable_if<!std::is_same<
+		        typename TypeList::Head, None>::value>::type* = nullptr>
 		auto sg_type_finder(
-			const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
-			VectorLambdaT vector_func, MatrixLambdaT matrix_func)
-			-> decltype(execute_function<typename TypeList::Head>(
-				any, primitive_func, vector_func, matrix_func))
+		    const Any& any, TYPE type, PrimitiveLambdaT primitive_func,
+		    VectorLambdaT vector_func, MatrixLambdaT matrix_func)
+		    -> decltype(execute_function<typename TypeList::Head>(
+		        any, primitive_func, vector_func, matrix_func))
 		{
 			if (type == sg_type<typename TypeList::Head>::ptype)
 			{
 				execute_function<typename TypeList::Head>(
-					any, primitive_func, vector_func, matrix_func);
+				    any, primitive_func, vector_func, matrix_func);
 			}
 			else
 				sg_type_finder<typename TypeList::Tail>(
-					any, type, primitive_func, vector_func, matrix_func);
+				    any, type, primitive_func, vector_func, matrix_func);
 		}
 
 	} // namespace type_internal
@@ -489,25 +492,25 @@ static const typemap sg_non_integer_typemap = {
 	 * @param matrix_func lambda to execute if underlying type is a SGMatrix
 	 */
 	template <
-		typename PrimitiveLambdaT = None, typename VectorLambdaT = None,
-		typename MatrixLambdaT = None>
+	    typename PrimitiveLambdaT = None, typename VectorLambdaT = None,
+	    typename MatrixLambdaT = None>
 	auto sg_any_dispatch(
-		const Any& any, const typemap& typesmap,
-		PrimitiveLambdaT primitive_func = None{},
-		VectorLambdaT vector_func = None{}, MatrixLambdaT matrix_func = None{})
-		-> decltype(type_internal::sg_type_finder<SG_TYPES>(
-			any, type_internal::get_type(any, typesmap), primitive_func,
-			vector_func, matrix_func))
+	    const Any& any, const typemap& typesmap,
+	    PrimitiveLambdaT primitive_func = None{},
+	    VectorLambdaT vector_func = None{}, MatrixLambdaT matrix_func = None{})
+	    -> decltype(type_internal::sg_type_finder<SG_TYPES>(
+	        any, type_internal::get_type(any, typesmap), primitive_func,
+	        vector_func, matrix_func))
 	{
 		TYPE type = type_internal::get_type(any, typesmap);
 		if (type == TYPE::T_UNDEFINED)
 			SG_SERROR(
-				"Type %s is not part of %s\n",
-				demangled_type(any.type_info().name()).c_str(),
-				type_internal::print_map(typesmap).c_str())
+			    "Type %s is not part of %s\n",
+			    demangled_type(any.type_info().name()).c_str(),
+			    type_internal::print_map(typesmap).c_str())
 		else
 			type_internal::sg_type_finder<SG_TYPES>(
-				any, type, primitive_func, vector_func, matrix_func);
+			    any, type, primitive_func, vector_func, matrix_func);
 	}
 
 } // namespace shogun
